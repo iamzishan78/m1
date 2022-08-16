@@ -46,7 +46,34 @@ export default function RevenueAppBar(props) {
         isShow: true,
         text: "Import Statement",
         action: () => {
-          history.push("/bulkupload");
+          history.push("/bulkupload/checkdetails");
+        },
+      },
+    ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeModule]);
+
+  const PropertyStatementAction = React.useMemo(() => {
+    return [
+      {
+        isShow: false,
+        text: `+ Add Property`,
+        action: () => {
+          addProperty({
+            variables: {
+              property: {
+                source: "Manual Entry",
+                status: "NotInPay",
+              },
+            },
+          });
+        },
+      },
+      {
+        isShow: true,
+        text: "Import Properties",
+        action: () => {
+          history.push("/bulkupload/properties", { title: 'Properties', previousRoute: '/revenue/properties' });
         },
       },
     ];
@@ -71,17 +98,17 @@ export default function RevenueAppBar(props) {
           </Grid>
           {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title ||
             activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title) && (
-              <Grid item xs={5} style={{ marginLeft: "20px" }}>
-                <RevenueSearch activeModule={activeModule} />
-              </Grid>
-            )}
+            <Grid item xs={5} style={{ marginLeft: "20px" }}>
+              <RevenueSearch activeModule={activeModule} />
+            </Grid>
+          )}
           {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PORTFOLIO.title && (
             <Grid item xs={7} style={{ marginLeft: "20px" }}>
               <ReportGroupHeader
                 type="Properties"
                 esFilters={propertiesReportGroup || []}
-                setESFilters={(filters) => dispatch(setRevenueKey('propertiesReportGroup', filters))}
-                setFilterToggle={() => { }}
+                setESFilters={(filters) => dispatch(setRevenueKey("propertiesReportGroup", filters))}
+                setFilterToggle={() => {}}
                 isBackground={false}
                 noUpdate={true}
                 fullWidth
@@ -101,25 +128,30 @@ export default function RevenueAppBar(props) {
       {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title && (
         <Grid item>
           <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-            <Button
-              color="primary"
-              variant="contained"
-              startIcon={<Add />}
-              onClick={() => {
-                addProperty({
-                  variables: {
-                    property: {
-                      source: "Manual Entry",
-                      status: "Unapproved",
-                    },
-                  },
-                });
-              }}
-            >
-              Add New Property
-            </Button>
+            <ButtonDropDown variant="contained" color="primary" options={PropertyStatementAction} />
           </div>
         </Grid>
+        // <Grid item>
+        //   <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+        //     <Button
+        //       color="primary"
+        //       variant="contained"
+        //       startIcon={<Add />}
+        //       onClick={() => {
+        //         addProperty({
+        //           variables: {
+        //             property: {
+        //               source: "Manual Entry",
+        //               status: "Not in Pay",
+        //             },
+        //           },
+        //         });
+        //       }}
+        //     >
+        //       Add New Property
+        //     </Button>
+        //   </div>
+        // </Grid>
       )}
     </Grid>
   );

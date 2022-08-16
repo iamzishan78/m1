@@ -23,7 +23,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { contactManagementRoutes } from 'utils/data';
+import { contactManagementRoutes } from "utils/data";
 import SupportCenterModal from "./components/SupportCenter";
 import { useStyles } from "./Common";
 
@@ -43,7 +43,7 @@ import ActivitySearch from "./components/ActivitySearch";
 import ActivityDashboardSearch from "./components/ActivityDashboardSearch";
 import DocumentSearch from "./components/DocumentSearch";
 import ContactSearch from "./components/ContactSearch";
-import ContactDetailsSearch from "../ExpandableCard/components/ContactSearch";
+import ContactBreadcrumbs from "./components/ContactBreadcrumbs";
 import SideNavigation from "./SideNavigation";
 import ProfileMenu from "components/Profile/ProfileMenu";
 
@@ -307,7 +307,7 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (location.pathname.startsWith("/calendar")) {
+    if (location.pathname.startsWith("/calendar/activities")) {
       setMatchActivities(true);
     } else {
       setMatchActivities(false);
@@ -364,7 +364,8 @@ export default function Navigation(props) {
       location.pathname.startsWith("/revenue/statement/details") ||
       location.pathname.includes("/line-item") ||
       location.pathname.startsWith("/revenue/property/details") ||
-      location.pathname.startsWith("/land/agreement/details")
+      location.pathname.startsWith("/land/agreement/details") ||
+      location.pathname.startsWith("/contacts/campaign/details")
     ) {
       return true;
     }
@@ -388,10 +389,12 @@ export default function Navigation(props) {
       {!checkIfIgnoreHeader() && (
         <AppBar
           position="fixed"
-          className={clsx(classes.appBar, {
+          className={clsx(!location.pathname.startsWith("/land") ? classes.appBar : classes.appBarWhite, {
             [classes.appBarShift]: openDrawer,
           })}
-          style={(location.pathname === "/contacts/activityDashboard" || location.pathname.includes('revenue')) ? { background: 'white' } : null}
+          style={
+            location.pathname === "/contacts/activityDashboard" || location.pathname.includes("revenue") ? { background: "white" } : null
+          }
         // style={{
         //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
         //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
@@ -404,7 +407,7 @@ export default function Navigation(props) {
                   <ActivitySearch />
                 </>
               )}
-              {(location.pathname === "/contacts/activityDashboard") && (
+              {location.pathname === "/contacts/activityDashboard" && (
                 <>
                   <ActivityDashboardSearch showLabel={location.pathname === "/contacts/activityDashboard"} />
                 </>
@@ -416,33 +419,34 @@ export default function Navigation(props) {
               )}
               {(location.pathname === "/contacts" ||
                 location.pathname === "/contacts/" ||
-                Object.values(contactManagementRoutes).find((item) => (item.link === location.pathname && item.search))) && <ContactSearch />}
-              {location.pathname.includes("/contact/details") && <ContactDetailsSearch showLinkIcon={true} />}
-
+                Object.values(contactManagementRoutes).find((item) => item.link === location.pathname && item.search)) && <ContactSearch />}
+              {location.pathname.includes("/contact/details") && <ContactBreadcrumbs />}
               {location.pathname.startsWith("/flow") && <DealSearch />}
               {location.pathname === "/dashboard" && (
                 <Typography variant="h4" style={{ color: "black", fontWeight: "bold", marginLeft: 15 }}>
                   Dashboard
                 </Typography>
               )}
-
-              {location.pathname.startsWith("/land") && <LandAppBar classes={classes} />}
-              {location.pathname.startsWith("/revenue") && <RevenueAppBar classes={classes} />}
-
-              {matchTrack ? <CardHeader className={classes.trackHeader} /> : null}
-
+              {location.pathname.startsWith("/land") && (
+                <LandAppBar classes={classes} user={stateApp.user} />
+              )}
+              {location.pathname.startsWith("/revenue") && (
+                <RevenueAppBar classes={classes} />
+              )}
+              {matchTrack ? (
+                <CardHeader className={classes.trackHeader} />
+              ) : null}
               {(matchFind || matchDocument) && (
                 <div className={classes.search} id="searchBarDivParent">
                   <SearchBarWithToggleButton />
                 </div>
               )}
-
               <div className={classes.grow1} />
 
               {matchActivities ? (
                 <div>
                   <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-                    <Button onClick={handleClickAddActivity} color="secondary" variant="contained" startIcon={<Add />}>
+                    <Button onClick={handleClickAddActivity} color="primary" variant="contained" startIcon={<Add />}>
                       Add Activity
                     </Button>
                   </div>
@@ -457,7 +461,6 @@ export default function Navigation(props) {
                 </Button>
               </div>
             )} */}
-
               <ProfileMenu />
             </Toolbar>
           )}

@@ -60,9 +60,9 @@ const FlowLineAction = ({ title, onEdit, onDelete, onDuplicate }) => {
   return (
     <>
       <Tooltip title={title}>
-        <IconButton 
-          size="medium" 
-          style={ICON_STYLE} 
+        <IconButton
+          size="medium"
+          style={ICON_STYLE}
           onClick={handleClick}
         >
           <ExpandMoreIcon />
@@ -74,7 +74,7 @@ const FlowLineAction = ({ title, onEdit, onDelete, onDuplicate }) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem 
+        <MenuItem
           disabled={EDIT_DISABLED}
           onClick={handleEditFlowline}
         >
@@ -94,7 +94,7 @@ const FlowLineAction = ({ title, onEdit, onDelete, onDuplicate }) => {
         </MenuItem>
         <MenuItem
           disabled={DELETE_DISABLED}
-          onClick={handleDeleteFlowline} 
+          onClick={handleDeleteFlowline}
         >
           <ListItemIcon classes={{ root: classes.icon }}>
             <DeleteIcon fontSize="small" />

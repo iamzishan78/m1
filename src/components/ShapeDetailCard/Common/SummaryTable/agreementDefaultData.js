@@ -21,7 +21,8 @@ const tableData = [
     label: "Agreement Type",
     type: "select",
     options: agreementTypes,
-    formatValue: (value) => agreementTypes.find((at) => at.value === value)?.label || "",
+    formatValue: (value) =>
+      agreementTypes.find((at) => at.value === value)?.label || "",
     key: "agreementType",
   },
   {
@@ -60,6 +61,11 @@ const tableData = [
     key: "effectiveDate",
   },
   {
+    label: "Term (months)",
+    type: "number",
+    key: "agreementTerm",
+  },
+  {
     label: "Expiration Date",
     type: "date",
     key: "expirationDate",
@@ -77,6 +83,21 @@ const tableData = [
     InputProps: {
       startAdornment: <InputAdornment position="start">$</InputAdornment>,
     },
+  },
+  {
+    label: "Acquisition ID",
+    type: "autocomplete",
+    key: "acquisitionID",
+  },
+  {
+    label: "Prospect",
+    type: "autocomplete",
+    key: "prospectID",
+  },
+  {
+    label: "Internal Company",
+    type: "autocomplete",
+    key: "internalCompany",
   },
   {
     label: "Approval Status",

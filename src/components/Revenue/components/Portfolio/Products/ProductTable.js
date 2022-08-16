@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: "18px !important",
   },
   nameCell: {
+    width: '100%',
     display: "flex",
     color: "#34b4e3",
   },
@@ -133,7 +134,7 @@ export default function ProductTable({ monthsInterval, items, name, unit }) {
                       </Box>
 
                     </TableCell>
-                    <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
+                    <TableCell scope="row" className={`${classes.leftRightColoredBorderCell} ${items.length - 1 === index ? classes.bottomColoredBorderCell : ''}`}>
                       <span>{displayValue(item.total)}</span>
                       <span style={{ display: 'grid' }}> {selectedItems[index] && Object.values(item.breakDown).map((value) => displayValue(value))}</span>
                     </TableCell>

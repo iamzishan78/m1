@@ -148,7 +148,7 @@ export default function Tags(props) {
   const [getUserAvailableTags, { data: dataUserAvailableTags }] = useLazyQuery(USERAVAILABLETAGSQUERY, {
     fetchPolicy: "cache-and-network",
   });
-  const [upsertTag, { data: upsertedTag }] = useMutation(UPSERTTAG);
+  const [upsertTag, { data: upsertedTag, loading: upsertLoading }] = useMutation(UPSERTTAG);
   const [removeTag] = useMutation(REMOVETAG);
 
   ///////////////////// START FETCHING TAGS DATA ////////////////////////////////////////////
@@ -232,11 +232,7 @@ export default function Tags(props) {
 
   useEffect(() => {
     if (dataUserAvailableTags && dataUserAvailableTags.userAvailableTags && tagsArray) {
-      let defaultTags = [
-        "Do Not Contact",
-        "Interested Seller",
-        "Out Of State Seller",
-      ];
+      let defaultTags = ["Do Not Contact", "Interested Seller", "Out Of State Seller"];
 
       defaultTags = defaultTags.filter((defaultTag) => {
         let found;
@@ -297,7 +293,8 @@ export default function Tags(props) {
             "getOwnersIdsFromTagsArray",
             "getContactsFilterOptions",
             "getContactWellInterestsFilterOptions",
-            "getESPaginatedList", "getESSimpleSearch",
+            "getESPaginatedList",
+            "getESSimpleSearch",
           ],
           awaitRefetchQueries: true,
         });
@@ -324,7 +321,8 @@ export default function Tags(props) {
               "getTagsByObjectsIds",
               "getContactsFilterOptions",
               "getContactWellInterestsFilterOptions",
-              "getESPaginatedList", "getESSimpleSearch",
+              "getESPaginatedList",
+              "getESSimpleSearch",
             ],
             awaitRefetchQueries: true,
           });
@@ -337,19 +335,19 @@ export default function Tags(props) {
 
   const removeTagFromList = (id) => {
     const tags = JSON.parse(JSON.stringify(tagsArray));
-    const index = tags.findIndex(tag => tag._id === id);
+    const index = tags.findIndex((tag) => tag._id === id);
     if (index > -1) {
       tags.splice(index, 1);
     }
     setTagsArray(tags);
     if (props.removeTagId) {
-      props.removeTagId(id)
+      props.removeTagId(id);
     }
-  }
+  };
 
   const DeleteTag = (TagIdOIds) => {
     if (!props.multipleIds) {
-      removeTagFromList(TagIdOIds)
+      removeTagFromList(TagIdOIds);
       removeTag({
         variables: {
           tagId: TagIdOIds,
@@ -365,16 +363,16 @@ export default function Tags(props) {
           "getTagsByObjectsIds",
           "getPaginatedContacts",
           "getContactsFilterOptions",
-          "getESPaginatedList", "getESSimpleSearch",
+          "getESPaginatedList",
+          "getESSimpleSearch",
         ],
         awaitRefetchQueries: true,
       });
-    }
-    else {
+    } else {
       let ids = TagIdOIds.split("???|||///");
 
       for (let i = 0; i < ids.length; i++) {
-        removeTagFromList(ids[i])
+        removeTagFromList(ids[i]);
         removeTag({
           variables: {
             tagId: ids[i],
@@ -390,7 +388,8 @@ export default function Tags(props) {
             "getTagsByObjectsIds",
             "getPaginatedContacts",
             "getContactsFilterOptions",
-            "getESPaginatedList", "getESSimpleSearch",
+            "getESPaginatedList",
+            "getESSimpleSearch",
           ],
           awaitRefetchQueries: true,
         });
@@ -436,9 +435,6 @@ export default function Tags(props) {
   const AddingAddRowToDropDown = () => {
     let { cleanArray } = cleanDropDownArray();
 
-    // if (props.multipleIds && userAvailableTagsArray) {
-    //   cleanArray = [...userAvailableTagsArray];
-    // }
     if (addInDropDown) {
       cleanArray.unshift(addInDropDown);
     }
@@ -461,7 +457,7 @@ export default function Tags(props) {
   const ToggleSharedButton = () => {
     return (
       <FormGroup style={{ display: "block" }}>
-        {!props.publicLeftBottom && <h3 style={{ width: "fit-content", margin: "0", float: "left" }}>Tags</h3>}
+        {!props.publicLeftBottom && <h3 style={{ width: "fit-content", margin: "0 13px", float: "left" }}>Tags</h3>}
         {props.shareable && (
           <FormControlLabel
             className={`${classes.switchButtom} ${props.publicLeftBottom ? classes.publicLeftBottom : ""} ${!publicTag ? classes.switchTextDeselected : ""
@@ -508,21 +504,19 @@ export default function Tags(props) {
               options={AddingAddRowToDropDown().map((option) => option)}
               value={tagsArray}
               freeSolo
-              renderTags={(value, getTagProps) =>
-                value.map((tag, index) => {
-                  if ((publicTag && tag.public) || (!publicTag && !tag.public && stateApp.user.email === tag.user.email)) {
-                    return (
-                      <Chip
-                        key={index}
-                        id={!props.multipleIds ? tag._id : tag.ids.join("???|||///")}
-                        label={tag.tag}
-                        {...getTagProps({ index })}
-                        deleteIcon={<ClearIcon />}
-                      />
-                    );
-                  }
-                })
-              }
+              renderTags={(value, getTagProps) => {
+                return value
+                  .filter((tag) => (publicTag && tag.public) || (!publicTag && !tag.public && stateApp.user.email === tag.user.email))
+                  .map((tag, index) => (
+                    <Chip
+                      key={index}
+                      id={!props.multipleIds ? tag._id : tag.ids.join("???|||///")}
+                      label={tag.tag}
+                      {...getTagProps({ index })}
+                      deleteIcon={<ClearIcon />}
+                    />
+                  ));
+              }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -542,13 +536,17 @@ export default function Tags(props) {
                   onBlur={() => {
                     setTFActive(false);
                   }}
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: upsertLoading ? <CircularProgress color="secondary" /> : <></>,
+                  }}
                 />
               )}
             />
           </Grid>
         </Grid>
       ) : (
-        <CircularProgress color="secondary"></CircularProgress>
+        <CircularProgress color="secondary" />
       )}
     </div>
   );

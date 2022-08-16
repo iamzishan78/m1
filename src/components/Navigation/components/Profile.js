@@ -14,7 +14,7 @@ const useStyles = makeStyles(() => ({
     marginLeft: "auto",
     marginBottom: "auto",
     maxHeight: "calc(100% - 72px)",
-    overflow: 'hidden'
+    overflow: "hidden",
   },
 }));
 

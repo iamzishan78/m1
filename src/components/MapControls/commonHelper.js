@@ -47,16 +47,35 @@ export const setFeatureProperty = (draw, drawFeatureID, field, value) => {
 }
 
 export const drawShapeLayerToggle = (stateApp, value) => {
-    stateApp.map.moveLayer('gl-draw-polygon-midpoint.cold');
-    stateApp.map.moveLayer('gl-draw-polygon-midpoint.hot');
-    stateApp.map.moveLayer('gl-draw-polygon-stroke-active.hot');
-    stateApp.map.moveLayer('gl-draw-polygon-stroke-active.cold');
+    const layers = [
+        'gl-draw-polygon-and-line-vertex-scale-icon',
+        'gl-draw-polygon-rotate-point-icon',
+        'gl-draw-polygon-fill-inactive',
+        'gl-draw-polygon-fill-active',
+        'gl-draw-polygon-midpoint',
+        'gl-draw-polygon-stroke-active',
+        'gl-draw-polygon-and-line-vertex-inactive',
+        'gl-draw-polygon-and-line-vertex-stroke-inactive'
+    ]
+
+    layers.forEach((layer) => {
+        stateApp.map.moveLayer(layer + '.cold');
+        stateApp.map.moveLayer(layer + '.hot');
+    })
+
+    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-scale-icon.cold');
+    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-scale-icon.hot');
+
+    // stateApp.map.moveLayer('gl-draw-polygon-midpoint.cold');
+    // stateApp.map.moveLayer('gl-draw-polygon-midpoint.hot');
+    // stateApp.map.moveLayer('gl-draw-polygon-stroke-active.hot');
+    // stateApp.map.moveLayer('gl-draw-polygon-stroke-active.cold');
 
 
-    stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-inactive.cold');
-    stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-inactive.hot');
-    stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-stroke-inactive.cold');
-    stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-stroke-inactive.hot');
+    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-inactive.cold');
+    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-inactive.hot');
+    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-stroke-inactive.cold');
+    // stateApp.map.moveLayer('gl-draw-polygon-and-line-vertex-stroke-inactive.hot');
 
     stateApp.map.setLayoutProperty('gl-draw-polygon-midpoint.cold', "visibility", value);
     stateApp.map.setLayoutProperty('gl-draw-polygon-midpoint.hot', "visibility", value);
@@ -66,7 +85,7 @@ export const drawShapeLayerToggle = (stateApp, value) => {
     stateApp.map.setLayoutProperty('gl-draw-polygon-and-line-vertex-stroke-inactive.hot', "visibility", value);
 }
 
-export const findBoundsMap = (shapes, map) => {
+export const findBoundsMap = (shapes, map, padding) => {
     let bound = null;
     if (shapes && shapes.length > 0) {
         shapes.forEach((shape) => {
@@ -89,8 +108,10 @@ export const findBoundsMap = (shapes, map) => {
             }
         });
     }
-    map.fitBounds([[bound.minLong, bound.minLat], [bound.maxLong, bound.maxLat],],
-        { padding: { top: 200, bottom: 200, left: 1200, right: 0 } });
+    if (bound)
+        map?.fitBounds([[bound.minLong, bound.minLat], [bound.maxLong, bound.maxLat],],
+            padding || { padding: { top: 200, bottom: 200, left: 1200, right: 0 } }
+        );
     return { ...bound };
 };
 
@@ -433,6 +454,32 @@ export const drawShapeStyles = [
         paint: {
             'circle-radius': 2,
             'circle-color': '#3bb2d0',
+        },
+    },
+
+    {
+        id: 'gl-draw-polygon-and-line-vertex-scale-icon',
+        type: 'symbol',
+        filter: [
+            'all',
+            ['==', 'meta', 'vertex'],
+            ['==', '$type', 'Point'],
+            ['!=', 'mode', 'static'],
+            ['has', 'heading'],
+        ],
+        layout: {
+            'icon-image': 'scale',
+            'icon-allow-overlap': true,
+            'icon-ignore-placement': true,
+            'icon-rotation-alignment': 'map',
+            'icon-rotate': ['get', 'heading'],
+        },
+        paint: {
+            'icon-opacity': 1.0,
+            'icon-opacity-transition': {
+                delay: 0,
+                duration: 0,
+            },
         },
     },
     {

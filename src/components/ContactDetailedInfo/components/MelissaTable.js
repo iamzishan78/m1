@@ -156,9 +156,8 @@ const MelissaTable = ({ ...props }) => {
     return (
       <FormGroup style={{ display: "block" }}>
         <FormControlLabel
-          className={`${classes.switchButtom}${
-            props.publicLeftBottom ? classes.publicLeftBottom : ""
-          } ${!showEmpty ? classes.switchTextDeselected : ""}`}
+          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""
+            } ${!showEmpty ? classes.switchTextDeselected : ""}`}
           control={
             <React.Fragment>
               <AntSwitch
@@ -201,14 +200,14 @@ const MelissaTable = ({ ...props }) => {
                       props.setSelectedPurchaseData(e.target.value)
                     }}
                   >
-                    {props.options?.map(option=>{
-                      return(
+                    {props.options?.map(option => {
+                      return (
                         <MenuItem value={option._id}>
-                          IDI Data -{" "}
+                          M1 Data -{" "}
                           {moment(option.date).format(
                             "MM/DD/YYYY hh:mm:ss a"
                           )}
-                        </MenuItem>                        
+                        </MenuItem>
                       )
                     })}
                   </Select>
@@ -242,8 +241,8 @@ const MelissaTable = ({ ...props }) => {
                             onlyChildren={value.inner ? true : false}
                             content={value.data}
                             linkType={value.linkType}
-                            isPurchased={props.header === "Purchased Data" }
-                            disabled={props.header === "Purchased Data" }
+                            isPurchased={props.header === "Purchased Data"}
+                            disabled={props.header === "Purchased Data"}
                           >
                             {value.inner}
                           </FieldContent>
@@ -272,8 +271,8 @@ const MelissaTable = ({ ...props }) => {
                               onlyChildren={value.inner ? true : false}
                               content={value.data}
                               linkType={value.linkType}
-                              isPurchased={props.header === "Purchased Data" }
-                              disabled={props.header === "Purchased Data" }
+                              isPurchased={props.header === "Purchased Data"}
+                              disabled={props.header === "Purchased Data"}
                             >
                               {value.inner}
                             </FieldContent>

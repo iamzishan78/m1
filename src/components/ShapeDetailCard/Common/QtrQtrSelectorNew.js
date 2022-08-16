@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-
+import * as turf from "@turf/turf";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
@@ -10,12 +9,12 @@ import { Box, FormControlLabel, Switch, Typography } from "@material-ui/core";
 import { getQtrFilterData } from "../../ParcelsDetailCard/ParcelSummary/helper";
 import { copy } from 'utils/helper';
 import SmallTXQtr from "components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/SmallTXQtr";
-import { changeModeToScaleRotate, drawBoundary, getDrawAdustedShape, getNewShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
+import { changeModeToScaleRotate, drawBoundary, getDrawAdustedShape, getNewShapeFromSelectedQuarters, getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 import { AppContext } from "AppContext";
-import { ExpandableCardContext } from "components/ExpandableCard/ExpandableCardContext";
-import { findBoundsMap } from "components/MapControls/commonHelper";
+import { drawShapeLayerToggle, findBoundsMap } from "components/MapControls/commonHelper";
 import { useMutation } from "@apollo/client";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
+import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import { calculateLandArea } from "components/Shared/functions/shapeLayer";
 
 const useStyles = makeStyles((theme) => ({
@@ -109,7 +108,6 @@ export default function QtrQtrSelectorNew({ layerData }) {
   layerData.state = ''
 
   const classes = useStyles({ layerData });
-  const history = useHistory();
   const [qtr, setQtr] = useState(layerData?.qtrQtrSelection?.selectedQtr ? copy(layerData.qtrQtrSelection.selectedQtr) : ["", "", "", ""])
 
   const [qtrQtr, setQtrQtr] = useState(layerData?.qtrQtrSelection?.qtrQtr ? copy(layerData.qtrQtrSelection.qtrQtr) : {})
@@ -119,18 +117,20 @@ export default function QtrQtrSelectorNew({ layerData }) {
     UPDATECUSTOMLAYER,
   );
 
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [, , handleCloseExpandableCard] = useContext(ExpandableCardContext);
+  const [stateApp] = useContext(AppContext);
+  const [, setStateMapControls] = useContext(MapControlsContext);
 
   const eventsConfiguredRef = useRef(false);
 
   useEffect(() => {
     if (layerData?.qtrQtrSelection) {
       setQtr(copy(layerData.qtrQtrSelection.selectedQtr))
-      setQtrQtr(copy(layerData.qtrQtrSelection.qtrQtr))
+      if (layerData.qtrQtrSelection.qtrQtr)
+        setQtrQtr(copy(layerData.qtrQtrSelection.qtrQtr))
     }
 
   }, [layerData?.qtrQtrSelection])
+
 
   useEffect(() => {
     if (!layerData?.qtrQtrSelection?.qtrQtr) {
@@ -160,24 +160,45 @@ export default function QtrQtrSelectorNew({ layerData }) {
       });
       eventsConfiguredRef.current = true;
     }
+
+    return () => {
+      stateApp?.draw?.deleteAll();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.map, stateApp.currentFeature]);
+
+
+  useEffect(() => {
+    if (showAdjustGrid) {
+      const feature = copy(layerData.shape)
+      let layerDataCopy = copy(layerData)
+      if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
+        feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
+      }
+      setStateMapControls((state) => ({ ...state, selectedMapControl: "" }))
+      drawShapeLayerToggle(stateApp, "visible")
+      stateApp.draw.deleteAll();
+      getRotateAbleShapeFromSelectedQuarters(feature, stateApp.draw)
+    } else {
+      stateApp?.draw?.deleteAll();
+    }
+  }, [showAdjustGrid]);
 
   const updateLayerQtr = () => {
     const values = Object.keys(qtrQtr).filter((key) => qtrQtr[key]).map((key) => key.toUpperCase())
     const feature = copy(layerData.shape)
     let layerDataCopy = copy(layerData)
 
-    let newShape = {};
-    const drawFeature = stateApp.rotateableFeature;
+    let newShape = {}
+    const drawFeature = stateApp.draw.getAll().features[0]
     if (drawFeature) {
       feature.geometry = drawFeature.geometry
-      newShape = getDrawAdustedShape(feature, values);
+      newShape = getDrawAdustedShape(feature, values)
     } else {
       if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
         feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
       }
-      newShape = getNewShapeFromSelectedQuarters(feature, values);
+      newShape = getNewShapeFromSelectedQuarters(feature, values)
     }
 
     if (!layerDataCopy.qtrQtrSelection) layerDataCopy.qtrQtrSelection = {}
@@ -186,9 +207,11 @@ export default function QtrQtrSelectorNew({ layerData }) {
     }
     layerDataCopy.qtrQtrSelection.qtrQtr = qtrQtr;
     layerDataCopy.qtrQtrSelection.selectedQtr = qtr;
-    layerDataCopy.shape.geometry = newShape.geometry;
-    layerDataCopy.shape.properties.shapeArea = calculateLandArea(newShape);
-
+    newShape = turf.intersect(layerDataCopy.shape.geometry, newShape.geometry);
+    if (newShape) {
+      layerDataCopy.shape.geometry = newShape.geometry;
+      layerDataCopy.shape.properties.shapeArea = calculateLandArea(newShape);
+    }
     const customLayer = {
       shapeJson: layerDataCopy.shape,
       qtrQtrSelection: layerDataCopy.qtrQtrSelection,
@@ -209,16 +232,16 @@ export default function QtrQtrSelectorNew({ layerData }) {
   const checkForDisabled = () => {
     let isDisabled = true
 
-    if (!layerData?.qtrQtrSelection?.qtrQtr && !Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
+    if (qtrQtr && !layerData?.qtrQtrSelection?.qtrQtr && !Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
       setDisableUpdate(true)
       return
     }
 
-    if (!layerData?.qtrQtrSelection?.qtrQtr && Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
+    if (qtrQtr && !layerData?.qtrQtrSelection?.qtrQtr && Object.keys(qtrQtr).find((key) => qtrQtr[key] !== true)) {
       setDisableUpdate(false)
       return
     }
-    Object.keys(qtrQtr).forEach((key) => {
+    qtrQtr && Object.keys(qtrQtr).forEach((key) => {
       if (layerData?.qtrQtrSelection?.qtrQtr[key] !== qtrQtr[key]) {
         isDisabled = false
       }
@@ -240,26 +263,6 @@ export default function QtrQtrSelectorNew({ layerData }) {
     setDisableUpdate(isDisabled)
   }
 
-  const openShapeEditPanel = () => {
-    setShowAdjustGrid(true);
-    // Activiate the edit mode
-    setStateApp((state) => ({
-      ...state,
-      popupOpen: false,
-      expandedCard: false,
-      showDrawShapesPopup: true,
-      selectedUserDefinedLayer: state.selectedParcel?.feature || state.selectedShape?.feature,
-      currentFeature: state.selectedParcel?.feature || state.selectedShape?.feature,
-      featureToEdit: state.selectedParcel?.feature || state.selectedShape?.feature,
-      openDrawShapesControl: true,
-      editParcelAndShape: true,
-      editDraw: true,
-      shapeEditMode: "rotate"
-    }));
-    history.replace({ pathname: '/' });
-    handleCloseExpandableCard();
-  }
-
   return (
     <div>
       <Grid container spacing={1} direction="row">
@@ -271,7 +274,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
             control={
               <Switch
                 checked={showAdjustGrid}
-                onChange={openShapeEditPanel}
+                onChange={() => setShowAdjustGrid(!showAdjustGrid)}
                 size="small"
               />
             }
@@ -315,7 +318,10 @@ export default function QtrQtrSelectorNew({ layerData }) {
           </Grid>
         </Grid>
         <Grid item md={3} style={{ paddingTop: '1.8em', }}>
-          <Button variant="contained" color="primary" size="large" disabled={disableUpdate} onClick={updateLayerQtr}>Update</Button>
+          <Button variant="contained" color="primary" size="large" disabled={disableUpdate} onClick={() => {
+            updateLayerQtr()
+            setShowAdjustGrid(false)
+          }}>Update</Button>
         </Grid>
 
       </Grid>

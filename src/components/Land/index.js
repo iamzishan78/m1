@@ -8,6 +8,7 @@ import { replaceLinkId } from "components/Shared/functions";
 
 //Actions
 import { toggleQuickActionsPanel, setActiveModule } from "store/actions/commonActions";
+import { padEnd } from "lodash";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
   // PORTFOLIO: {
@@ -34,6 +35,18 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     title: "Tracts",
     link: "/land/tracts",
     component: "Tracts",
+  },
+  UNIT: {
+    featureFlag: "LANDMODULE",
+    title: "Units",
+    link: "/land/units",
+    component: "Units",
+  },
+  WELLS: {
+    featureFlag: "LANDMODULE",
+    title: "Wells",
+    link: "/land/wells",
+    component: "Wells",
   },
   REPORTING_GROUPS: {
     featureFlag: "LANDREPORTINGGROUPS",
@@ -83,3 +96,4 @@ export default function Revenue() {
     </QuickActionPanel>
   );
 }
+

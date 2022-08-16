@@ -1,21 +1,26 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
-import { Grid, ListItemIcon, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase } from "@material-ui/core";
+import { Grid, ListItemIcon, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase, Accordion, AccordionSummary, AccordionDetails } from "@material-ui/core";
 import get from "lodash/get";
 import Avatar from "react-avatar";
 import SearchIcon from "@material-ui/icons/Search";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import AddIcon from "@material-ui/icons/Add";
 import { useHistory } from "react-router-dom";
+import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
+import DomainOutlinedIcon from '@material-ui/icons/DomainOutlined';
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { ADDCONTACT } from "graphQL/useMutationAddContact";
 import { AppContext } from "../../AppContext";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import DeleteIcon from "@material-ui/icons/Delete";
+import CloseIcon from "@material-ui/icons/Close";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import IconButton from "@material-ui/core/IconButton";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { REMOVEDEALDESCRIPTOR } from "../../graphQL/useMutationRemoveDealDescriptor";
 import Link from "@material-ui/core/Link";
+import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
+import './Contact.css'
 
 const useStyles = makeStyles((theme) => ({
   rootPadding: {
@@ -75,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-
+let contactDetail = {}
 export default function Contacts(props) {
   let history = useHistory();
   const classes = useStyles();
@@ -91,13 +96,21 @@ export default function Contacts(props) {
   const [addContact, setAddContact] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [mutationLoading, setMutationLoading] = useState(false);
+  const [expandedPanel, setExpandedPanel] = useState(false);
   const [getPaginatedContacts, { data: allContacts, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+  });
+  const [getPaginatedContactList, { data: allContactList }] = useLazyQuery(PAGINATEDCONTACTSQUERY, {
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
   });
   const [addNewContact, { data: addContactData }] = useMutation(ADDCONTACT);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
 
+  const handleAccordionChange = (panel) => (event, isExpanded) => {
+    setExpandedPanel(isExpanded ? panel : false);
+  };
   useEffect(() => {
     //will also run during initial mount
     setIsNextPageLoading(true);
@@ -132,13 +145,61 @@ export default function Contacts(props) {
     }
   }, [allContacts]);
 
+  useEffect(() => {
+    if (allContactList?.paginatedContacts && allContactList?.paginatedContacts?.edges[0]) {
+      if (filteredContacts && filteredContacts.length > 0) {
+        let filterData = filteredContacts.map((dataMap, index) => {
+          console.log('data map id ', allContactList?.paginatedContacts?.edges[0].node)
+          if (dataMap === allContactList?.paginatedContacts?.edges[0].node.name) {
+            contactDetail = {
+              _id: dataMap._id,
+              descriptorId: dataMap.descriptorId,
+              name: allContactList?.paginatedContacts?.edges[0].node.name,
+              mobilePhone: allContactList?.paginatedContacts?.edges[0].node.mobilePhone ? allContactList?.paginatedContacts?.edges[0].node.mobilePhone : "",
+              address1: allContactList?.paginatedContacts?.edges[0].node.address1 ? allContactList?.paginatedContacts?.edges[0].node.address1 + " " + allContactList?.paginatedContacts?.edges[0].node.city + " " + allContactList?.paginatedContacts?.edges[0].node.state + " " + allContactList?.paginatedContacts?.edges[0].node.zip : "",
+              primaryEmail: allContactList?.paginatedContacts?.edges[0].node.primaryEmail ? allContactList?.paginatedContacts?.edges[0].node.primaryEmail : ""
+            }
+          } else if (dataMap.name === allContactList?.paginatedContacts?.edges[0].node.name) {
+            contactDetail = {
+              _id: dataMap._id,
+              descriptorId: dataMap.descriptorId,
+              name: allContactList?.paginatedContacts?.edges[0].node.name,
+              mobilePhone: allContactList?.paginatedContacts?.edges[0].node.mobilePhone ? allContactList?.paginatedContacts?.edges[0].node.mobilePhone : "",
+              address1: allContactList?.paginatedContacts?.edges[0].node.address1 ? allContactList?.paginatedContacts?.edges[0].node.address1 + " " + allContactList?.paginatedContacts?.edges[0].node.city + " " + allContactList?.paginatedContacts?.edges[0].node.state + " " + allContactList?.paginatedContacts?.edges[0].node.zip : "",
+              primaryEmail: allContactList?.paginatedContacts?.edges[0].node.primaryEmail ? allContactList?.paginatedContacts?.edges[0].node.primaryEmail : ""
+            }
+          } else {
+            contactDetail = {
+              _id: dataMap._id,
+              descriptorId: dataMap.descriptorId,
+              name: dataMap.name ? dataMap.name : dataMap,
+              mobilePhone: dataMap.mobilePhone ? dataMap.mobilePhone : "",
+              address1: dataMap.address1 ? dataMap.address1 : "",
+              primaryEmail: dataMap.primaryEmail ? dataMap.primaryEmail : "",
+            }
+          }
+          return contactDetail;
+        })
+        const uniqueIds = [];
+        const unique = filterData.filter(element => {
+          const isDuplicate = uniqueIds.includes(element.name);
+          if (!isDuplicate) {
+            uniqueIds.push(element.id);
+            return true;
+          }
+        });
+        setFilteredContacts(unique)
+      }
+    }
+  }, [allContactList]);
+
   const loadNextPage = async (pageVariables) => {
     setIsNextPageLoading(true);
-    fetchMorePaginatedContacts(pageVariables);
+    fetchMorePaginatedContacts(528487);
   };
 
   useEffect(() => {
-    let filtered = contacts?.filter((c) => c.toLowerCase().includes(search.toLowerCase()));
+    let filtered = contacts?.filter((c) => c ? c : c.name.toLowerCase().includes(search.toLowerCase()));
     setFilteredContacts(filtered);
   }, [search, contacts]);
 
@@ -158,7 +219,6 @@ export default function Contacts(props) {
   useEffect(() => {
     GettingContacts();
   }, [search, props, GettingContacts]);
-
   useEffect(() => {
     setMutationLoading(props.loading);
   }, [props.loading]);
@@ -177,6 +237,17 @@ export default function Contacts(props) {
       setMutationLoading(false);
     }
   };
+
+  const toggleAcordion = (c) => {
+    if (c && c !== "" && c !== "Empty") {
+      setIsNextPageLoading(true);
+      getPaginatedContactList({
+        variables: {
+          search: c,
+        },
+      });
+    }
+  }
 
   const gotoContact = (index) => {
     setStateApp((stateApp) => ({
@@ -279,7 +350,7 @@ export default function Contacts(props) {
         </Grid>
       </Grid>
       <Divider />
-      <div className={classes.list}>
+      <div className={classes.list} style={{ padding: '0px' }}>
         <Grid container className={classes.actionGrid}>
           <Grid item xs={12}>
             {mutationLoading === true && (
@@ -295,43 +366,67 @@ export default function Contacts(props) {
             filteredContacts.map((c, i) => (
               <>
                 <ListItem key={i}>
-                  <ListItemIcon>
-                    <Avatar
-                      color={Avatar.getRandomColor(c, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
-                      fgColor="#000"
-                      name={c}
-                      size="35"
-                      round
-                    />
-                  </ListItemIcon>
-                  <Link
-                    style={{
-                      cursor: "pointer",
-                    }}
-                    color="primary"
-                    onClick={() => gotoContact(i)}
-                  >
-                    {c}
-                  </Link>
 
-                  {mutationLoading === stateApp.activeDeal?.contacts[i]?._id ? (
-                    <ListItemSecondaryAction>
-                      <IconButton edge="end" aria-label="delete">
-                        <CircularProgress />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  ) : (
-                    <ListItemSecondaryAction
-                      onClick={() => {
-                        DeleteContact(i);
-                        setMutationLoading(stateApp.activeDeal?.contacts[i]?._id);
+                  {/* {c} */}
+                  <Accordion expanded={expandedPanel === 'panel' + i.toString()} onChange={handleAccordionChange('panel' + i.toString())}>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel1a-content"
+                      id="panel1a-header"
+                      IconButtonProps={{
+                        onClick: () => toggleAcordion(c.name ? c.name : c, i)
                       }}
                     >
-                      <IconButton edge="end" aria-label="delete">
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  )}
+                      <ListItemIcon>
+                        <Avatar
+                          color={Avatar.getRandomColor(c.name ? c.name : c, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
+                          fgColor="#000"
+                          name={c.name ? c.name : c}
+                          size="35"
+                          round
+                        />
+                      </ListItemIcon>
+                      <Link
+                        style={{
+                          cursor: "pointer",
+                        }}
+                        color="primary"
+                        onClick={() => gotoContact(i)}
+                      >
+                        <Typography>{c.name ? c.name : c}</Typography>
+                      </Link>
+                      {mutationLoading === stateApp.activeDeal?.contacts[i]?._id ? (
+                        <ListItemSecondaryAction>
+                          <IconButton edge="end" aria-label="delete">
+                            <CircularProgress />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                      ) : (
+                        <ListItemSecondaryAction
+                          onClick={() => {
+                            DeleteContact(i);
+                            setMutationLoading(stateApp.activeDeal?.contacts[i]?._id);
+                          }}
+
+                        >
+                          <IconButton edge="end" aria-label="delete" size="small">
+                            <CloseIcon fontSize="small" />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+
+                      )}
+
+                    </AccordionSummary>
+
+                    <AccordionDetails >
+                      <div className="acc-data">
+                        {c.primaryEmail ? <p className="address"><EmailOutlinedIcon /> <Typography className="address_tabs"> {c.primaryEmail}</Typography></p> : null}
+                        {c.mobilePhone ? <p className="address"><CallOutlinedIcon /> <Typography className="address_tabs">{c.mobilePhone}</Typography></p> : null}
+                        {c.address1 ? <p className="address"><DomainOutlinedIcon /> <Typography className="address_tabs">{c.address1}</Typography></p>
+                          : null}
+                      </div>
+                    </AccordionDetails>
+                  </Accordion>
                 </ListItem>
                 <Divider key={`divider-${i}`} />
               </>

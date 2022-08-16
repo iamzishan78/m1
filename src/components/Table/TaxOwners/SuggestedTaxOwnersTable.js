@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
 
 function SuggestedOwnerTable(props) {
   const classes = usetableStyles();
+  const { jobType, jobName } = props;
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -398,6 +399,8 @@ function SuggestedOwnerTable(props) {
       />
       {showConvertDialog && (
         <MultipleOwnerToContactDrawerContainer
+          jobType={jobType}
+          jobName={jobName}
           onClose={() => {
             setShowConvertDialog(false);
           }}
@@ -408,8 +411,8 @@ function SuggestedOwnerTable(props) {
               setM1nSelectedRowsIndexesRef.current(m1nSelectedRowsIndexes);
             }
           }}
-          onSuccess={() => {}}
-          setRows={() => {}}
+          onSuccess={() => { }}
+          setRows={() => { }}
         />
       )}
     </Container>

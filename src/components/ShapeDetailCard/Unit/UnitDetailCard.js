@@ -4,7 +4,7 @@ import set from "lodash/set";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
 import GavelIcon from "@material-ui/icons/Gavel";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Taps from "components/Shared/Taps";
 import TabPanels from "components/Shared/TabPanels";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
@@ -16,6 +16,7 @@ import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import TabButtons from "components/Shared/TabPanels/TabButtons";
 import UnitSummary from "./UnitSummary";
 import UnitOwnersTable from "components/Table/Shape/UnitOwnersTable";
+import UnitInterestOwnerTable from "components/Table/Shape/UnitInterestOwnerTable";
 import ShapeWellInterestTable from "components/Table/Shape/ShapeWellInterestTable";
 import AssociatedWellsShapeTable from "components/Table/Wells/AssociatedWellsShapeTable";
 import UnitTractsTable from "components/Table/Shape/UnitTractsTable";
@@ -39,8 +40,16 @@ export default function UnitDetailCard(props) {
 
   const classes = detailCardStyles();
   const showSummary = true;
+  const [isFiltered, setIsFiltered] = useState(false);
 
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
+
+  const contactsAdded = useSelector((state) => state?.common?.contactsAdded)
+
+  useEffect(() => {
+    if (contactsAdded)
+      setSelectedTab(0)
+  }, [contactsAdded]);
 
   useEffect(() => {
     if (props.id) {
@@ -62,6 +71,7 @@ export default function UnitDetailCard(props) {
       });
       setProperties(shape.properties);
     }
+
   }, [dataCustomLayer]);
 
   useEffect(() => {
@@ -71,6 +81,9 @@ export default function UnitDetailCard(props) {
         // Updating stateapp parcel object
         const customLayer = updatedUnit.updateCustomLayer.customLayer;
         const feature = JSON.parse(customLayer.shape);
+
+        if (feature?.properties?.netRoyalityAcres && !feature?.properties?.netRoyalityAcres?.unitNra)
+          feature.properties.netRoyalityAcres.unitNra = feature.properties?.netRoyalityAcres?.calculatedNra
         setProperties({ ...feature.properties });
 
         feature.id = customLayer._id;
@@ -114,16 +127,10 @@ export default function UnitDetailCard(props) {
     });
   };
 
-  const updateCustomProperties = (type, value, id) => {
+  const updateCustomProperties = (type, value, key, id) => {
     const shape = uniObj.shape;
-    const customRow = properties.custom_data_arr.find((p) => p.id === id);
-    if (type === "key") {
-      customRow.key = value;
-    } else {
-      customRow.value = value;
-    }
-    properties.custom_data = {};
-    properties.custom_data_arr.forEach((data) => {
+    set(properties, `${key}`, value);
+    properties.custom_data_arr?.forEach((data) => {
       properties.custom_data[data.key] = data.value;
     });
     const customLayer = {};
@@ -163,7 +170,7 @@ export default function UnitDetailCard(props) {
     return (
       <div className={classes.documentHeader}>
         <GavelIcon />
-        <span>LIMITED TITLE RUNSHEET</span>
+        <span>RUNSHEET INSTRUMENTS</span>
       </div>
     );
   };
@@ -200,42 +207,60 @@ export default function UnitDetailCard(props) {
           tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "Tracts", "Documents"]}
           openTabIdex={selectedTab}
           tabPanels={[
-            <UnitSummary
-              properties={properties}
-              setProperties={setProperties}
-              updateProperties={updateProperties}
-              updateCustomProperties={updateCustomProperties}
-              id={props.id}
-              customLayer={uniObj}
-            />,
+            <div style={{
+              height: "calc(100vh - 285px)",
+              overflow: "overlay"
+            }}>
+              <UnitSummary
+                properties={properties}
+                setProperties={setProperties}
+                updateProperties={updateProperties}
+                updateCustomProperties={updateCustomProperties}
+                id={props.id}
+                customLayer={uniObj}
+              />
+            </div>,
             <TabPanels
               value={selectedTab}
               panels={[
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <UnitOwnersTable
+                <div className={!isFiltered ? classes.subContent : classes.subContent3}>
+                  <UnitInterestOwnerTable
+                    esIndex="shapeowners_flat"
+                    customLayer={uniObj}
+                    parent="ownersPerUnit"
+                    shapeType="Unit"
+                    targetLabel="Unit Ownership"
+                    setIsFiltered={setIsFiltered}
+                    header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
+                    dense
+                  />
+                  {/* <UnitOwnersTable
                     customLayer={uniObj}
                     parent="ownersPerUnit"
                     shapeType="Unit"
                     targetLabel="Unit Ownership"
                     header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
                     setSelectedTab={setSelectedTab}
+                    setIsFiltered={setIsFiltered}
                     dense
-                  />
+                  /> */}
                 </div>,
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
+                <div className={!isFiltered ? classes.subContent : classes.subContent3}>
                   <SuggestedShapeTaxOwnersTable
                     customLayer={uniObj}
                     parent="potentialOwnersPerUnit"
                     shapeType="Unit"
                     targetLabel="well"
+                    jobType="SHAPEOWNER"
+                    jobName="Convert potential owner to unit owner"
                     header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
                     setSelectedTab={setSelectedTab}
+                    setIsFiltered={setIsFiltered}
                     dense
                   />
                 </div>,
               ]}
             />,
-
             <div className={showSummary ? classes.subContent : classes.subContent2}>
               <ParcelDetailsRunsheetTable
                 customLayer={uniObj}
@@ -303,6 +328,7 @@ export default function UnitDetailCard(props) {
                 header={<DocumentHeader />}
                 addAble={{ type: "UnitDocument" }}
                 dense
+                targetLabel="documents"
               />
             </div>,
           ]}

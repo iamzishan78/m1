@@ -3,7 +3,20 @@ import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "lodash";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { CircularProgress, Dialog, DialogTitle, Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import {
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  Typography,
+  IconButton,
+  Tabs,
+  Tab,
+  Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@material-ui/core";
 import {
   LocalAtm as CurrencyIcon,
   InfoOutlined as InfoOutlinedIcon,
@@ -15,9 +28,9 @@ import Tags from "components/Shared/Tagger";
 import MetaField from "components/Table/helpers/MetaField";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { GETCHECK } from "graphQL/useQueryCheck";
-import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { REMOVE_CHECKS } from "graphQL/useMutationRemoveChecks";
 import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
+import { UPDATE_CHECK_DATA } from "graphQL/useMutationUpdateCheck";
 import { AppContext } from "AppContext";
 
 // Components
@@ -43,12 +56,13 @@ const useStyles = makeStyles((theme) => ({
   },
   titleText: {
     marginLeft: 16,
+    width: "calc(65vw - 10px)",
   },
   highlighter: {
     background: "#263451",
     padding: "5px 16px",
     borderRadius: 16,
-    width: "max-content",
+    width: "160px",
     transform: "translateX(5px) translateY(11px)",
     height: "32px",
   },
@@ -93,6 +107,7 @@ const useStyles = makeStyles((theme) => ({
     "& fieldset": {
       border: "none",
     },
+    width: "100%",
   },
   tabsSectionDetails: {
     maxHeight: "calc(100vh - 280px)",
@@ -135,7 +150,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsDetailContainer: ({ collapse }) => ({
     padding: 20,
-    maxWidth: !collapse ? "calc(100% - 444px)" : "100%",
+    maxWidth: !collapse ? "calc(100% - 644px)" : "100%",
   }),
   menuIcon: {
     background: "transparent",
@@ -197,9 +212,8 @@ export default function DetailComponents(props) {
   const [checksFlatData, setChecksFlatData] = useState({});
   const selectedTabRef = useRef(null);
   const [isButtonScroll, setButtonScroll] = useState(false);
-  const [collapse, setCollapse] = useState(false);
+  const [collapse, setCollapse] = useState(true);
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [loader, setLoader] = useState(false);
@@ -207,35 +221,34 @@ export default function DetailComponents(props) {
 
   const history = useHistory();
   const previousRoute = history.pathHistory[1];
-  const isLineItem = history.location.pathname.includes('/line-item')
-  const checkId = history.location.pathname.replace('/line-item', '').split("/")[history.location.pathname.replace('/line-item', '').split("/").length - 1];
+  const isLineItem = history.location.pathname.includes("/line-item");
+  const checkId = history.location.pathname.replace("/line-item", "").split("/")[
+    history.location.pathname.replace("/line-item", "").split("/").length - 1
+  ];
 
   const classes = useStyles({ ...props, collapse });
   // queries
   const [updateOwner] = useMutation(UPSERT_USER_DESCRIPTOR);
+  const [updateCheck] = useMutation(UPDATE_CHECK_DATA);
 
   const [getCheck, { data: getCheckResult }] = useLazyQuery(GETCHECK, {
     fetchPolicy: "no-cache",
   });
-  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-    fetchPolicy: "no-cache",
-  });
 
   // mutations
-  const [removeChecks, { data: removeChecksResult }] = useMutation(REMOVE_CHECKS, {
+  const [removeChecks] = useMutation(REMOVE_CHECKS, {
     refetchQueries: ["getESPaginatedList"],
     awaitRefetchQueries: true,
   });
 
   useEffect(() => {
-    if (getCheckResult?.getCheck?.check)
-      setChecksFlatData(getCheckResult.getCheck.check)
-  }, [getCheckResult])
+    if (getCheckResult?.getCheck?.check) setChecksFlatData(getCheckResult.getCheck.check);
+  }, [getCheckResult]);
 
   const handleDeleteCancel = () => {
     setCheckIdToDelete(null);
     setOpenDeleteConfirmDialog(false);
-    setAnchorEl(false)
+    setAnchorEl(false);
   };
 
   const handleDeleteAccept = () => {
@@ -244,12 +257,12 @@ export default function DetailComponents(props) {
       setLoader(true);
       removeChecks({
         variables: {
-          checkIds: [checkIdToDelete]
-        }
+          checkIds: [checkIdToDelete],
+        },
       }).then(() => {
         setLoader(false);
         history.push(previousRoute || "/revenue/statements");
-      })
+      });
     }
   };
 
@@ -274,28 +287,15 @@ export default function DetailComponents(props) {
       getCheck({
         variables: { id: checkId },
       });
-      getAllMongoUsers();
     }
   }, []);
 
   useEffect(() => {
-    if (userLists && userLists.allMongoUsers) {
-      setUsers(
-        userLists.allMongoUsers.map((user) => ({
-          value: user._id,
-          text: user.name,
-          email: user.email,
-        }))
-      );
-    }
-  }, [userLists]);
-
-  useEffect(() => {
     return () => {
-      setStateApp({ ...stateApp, viewDoc: null })
-    }
-  },[])
-  
+      setStateApp({ ...stateApp, viewDoc: null });
+    };
+  }, []);
+
   const handleScroll = (e) => {
     if (!isButtonScroll) {
       const { scrollTop } = e.target;
@@ -311,15 +311,25 @@ export default function DetailComponents(props) {
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
 
   const onUpdateMetaData = (data) => {
-    updateOwner({
-      variables: {
-        descriptorObject: data.owner,
-        userId: stateApp.user.mongoId,
-        relatedObject: checksFlatData._id,
-        relatedObjectType: 'Check'
-      }
-    });
-  }
+    if (data.owner)
+      updateOwner({
+        variables: {
+          descriptorObject: data.owner,
+          userId: stateApp.user.mongoId,
+          relatedObject: checksFlatData._id,
+          relatedObjectType: "Check",
+        },
+      });
+    else {
+      updateCheck({
+        variables: {
+          check: { _id: checksFlatData._id, ...data },
+        },
+        refetchQueries: ["getCheck"],
+        awaitRefetchQueries: true,
+      });
+    }
+  };
 
   return (
     <>
@@ -329,7 +339,7 @@ export default function DetailComponents(props) {
           onClose={handleDeleteCancel}
           deleteFunc={handleDeleteAccept}
           m1nSelectedRowsIds={[document._id]}
-          setM1nSelectedRowsIndexes={() => { }}
+          setM1nSelectedRowsIndexes={() => {}}
         >
           Do you want to delete the selected statement?
         </DeleteConfirmationDialogContent>
@@ -340,11 +350,10 @@ export default function DetailComponents(props) {
         </DialogTitle>
       </Dialog>
 
-
-
       <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor?.["name"]}`}>
-
-        {isLineItem ? <LineItem checkId={checkId} /> :
+        {isLineItem ? (
+          <LineItem checkId={checkId} />
+        ) : (
           <>
             <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
               <div className="flex column alignStart justifyStart w-100">
@@ -354,9 +363,9 @@ export default function DetailComponents(props) {
                   </IconButton>
                   <div className={classes.titleText}>
                     {checksFlatData && (
-                      <Typography
-                        style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
-                      >{`${checksFlatData?.checkNumber || ''} - ${checksFlatData?.payor?.name || ''}`}</Typography>
+                      <Typography style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}>{`${
+                        checksFlatData?.checkNumber || ""
+                      } - ${checksFlatData?.payor?.name || ""}`}</Typography>
                     )}
                     <div className={classes.tagsContainer}>
                       <div className={classes.highlighter}>
@@ -403,8 +412,8 @@ export default function DetailComponents(props) {
                 {/*** Component for viewing selected pdf file*/}
 
                 {/**
-                  * Detail tabs section
-                  */}
+                 * Detail tabs section
+                 */}
                 <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
                   <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
                     <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
@@ -421,18 +430,38 @@ export default function DetailComponents(props) {
                   </div>
                 </div>
 
-
                 <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
               </div>
 
-              {!collapse && <MetadataDrawer data={checksFlatData} onUpdate={onUpdateMetaData} targetLabel='CHECK' setCollapse={setCollapse} users={users} targetSourceId={checkId} setStateApp={setStateApp} />}
+              {!collapse && (
+                <div
+                  style={{
+                    marginTop: 20,
+                    marginRight: 24,
+                    height: "calc(100vh - 270px)",
+                    width: "620px",
+                    maxWidth: "620px",
+                  }}
+                >
+                  <MetadataDrawer
+                    data={checksFlatData}
+                    onUpdate={onUpdateMetaData}
+                    targetLabel="Check"
+                    setCollapse={setCollapse}
+                    targetSourceId={checkId}
+                    setStateApp={setStateApp}
+                    descriptionKey="description"
+                    isApproval={true}
+                  />
+                </div>
+              )}
             </div>
 
             {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
 
             {/**
-       * Menu for meta data
-       */}
+             * Menu for meta data
+             */}
             <Menu
               id="revStatementMenu"
               anchorEl={anchorEl}
@@ -457,7 +486,7 @@ export default function DetailComponents(props) {
               </MenuItem>
             </Menu>
           </>
-        }
+        )}
       </NavHeader>
     </>
   );

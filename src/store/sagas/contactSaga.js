@@ -9,7 +9,7 @@ import { CREATE_JOB } from "graphQL/useMutationCreateJob";
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-import { toggleBulkUploadAction } from "store/actions/commonActions";
+import { setReduxKey, toggleBulkUploadAction } from "store/actions/commonActions";
 import { GET_JOB_UPLOAD_URI } from "graphQL/useQueryGetJobUploadUri";
 import { GET_CONTACT_CAMPAIGN, CONVERT_TAX_OWNER_TO_CONTACT, CONVERT_MULTIPLE_OWNER_TO_CONTACT } from "store/type";
 
@@ -40,9 +40,9 @@ function* convertTaxOwnerToContact(action) {
       jobType: "CONTACTS",
       userId,
     },
-    {
-      fetchPolicy: "no-cache",
-    });
+      {
+        fetchPolicy: "no-cache",
+      });
 
     const { uri, id, internalKey } = uploadUri.data.getJobUploadUri.job;
 
@@ -64,40 +64,41 @@ function* convertTaxOwnerToContact(action) {
 }
 
 function* convertMultipleOwnerToContact(action) {
-  
+
   const bulkUpload = yield select((state) => state.common.bulkUpload);
+  yield put(setReduxKey("contactsAdded", false))
   try {
-    const { rows, entitiesIds, existingContactId, actionType, userId } = action.payload;
+    const { rows, entitiesIds, existingContactId, actionType, userId, jobType, jobName } = action.payload;
     let _id, _res;
     if (entitiesIds?.length > 0) {
       const id = yield call(Api.mutate, INITIALIZE_EXPORT_JOB, {
-          entitiesIds
-        },
+        entitiesIds
+      },
       );
       _id = id;
     } else {
       let owners = [];
-      for(let i = 0; i < rows.length; i++) {
-        owners.push({ node: {...rows[i], OwnerType: rows[i].ownershipType } });
+      for (let i = 0; i < rows.length; i++) {
+        owners.push({ node: { ...rows[i], OwnerType: rows[i].ownershipType } });
       }
       owners = formatTaxOwners(copy(owners), action.payload);
-  
+
       const uploadUri = yield call(Api.query, GET_JOB_UPLOAD_URI, {
-        jobName: "Contacts",
-        jobType: "CONTACTS",
+        jobName: jobName ? jobName : "Contacts",
+        jobType: jobType ? jobType : "CONTACTS",
         userId,
         requestPayload: {
           existingContactId,
           actionType
         },
       },
-      {
-        fetchPolicy: "no-cache",
-      }
+        {
+          fetchPolicy: "no-cache",
+        }
       );
-  
+
       const { uri, id, internalKey } = uploadUri.data.getJobUploadUri.job;
-  
+
       const res = yield call(Api.fetchBlob, JSON.stringify(owners), id, internalKey, uri);
       _id = id;
       _res = res;

@@ -100,7 +100,7 @@ const AppProvider = (props) => {
     checkedLayers: [2, 5],
     wellsLayerIndex: null,
     checkedHeats: [],
-    checkedBaseLayers: [0, 1, 2, 3, 4, 5],
+    checkedBaseLayers: [0, 1, 2, 3, 4],
     checkedUserDefinedLayers: [],
     checkedFileLayers: [],
     tempCheckedUserDefinedLayer: null,

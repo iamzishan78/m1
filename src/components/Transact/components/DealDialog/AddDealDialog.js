@@ -15,7 +15,7 @@ import { ADDCONTACT } from "graphQL/useMutationAddContact";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { Dialog, Avatar, CircularProgress, Container, Button } from "@material-ui/core";
+import { Dialog, Avatar, CircularProgress, Button } from "@material-ui/core";
 import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import DealDialogHeader from "components/Transact/components/DealDialog/DealDialogHeader";
 import Drawer from "components/Transact/components/Drawer";
@@ -51,6 +51,7 @@ import "./dialog.css";
 import CustomAvatar from "components/Shared/ui/CustomAvatar";
 
 import MapProvider from "components/Map/MapProvider";
+import { getRandomColor } from "components/Shared/functions/ui";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -312,7 +313,6 @@ function AddDealDialog(props) {
   const [receivedDate, setReceivedDate] = useState("");
   const [bidDate, setBidDate] = useState("");
   const [closeDate, setCloseDate] = useState("");
-  const [colaborators, setColaborators] = useState([]);
   const [originationDate, setOriginationDate] = useState(null);
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
@@ -324,7 +324,7 @@ function AddDealDialog(props) {
   const [hasNextPage, setHasNextPage] = useState(true);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
-  let [transactData, setTransactData] = useState(props.transactData ? { ...props.transactData } : null);
+  let [transactData] = useState(props.transactData ? { ...props.transactData } : null);
 
   const [mapSettings, setMapSettings] = useState(null);
 
@@ -332,19 +332,19 @@ function AddDealDialog(props) {
     fetchPolicy: "no-cache",
   });
 
-  const [addContact, { data: addContactData, called: addContactCalled, loading: addContactLoading }] = useMutation(ADDCONTACT);
+  const [addContact, { data: addContactData, loading: addContactLoading }] = useMutation(ADDCONTACT);
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
   });
 
-  const [addDeal, { data: dealData, loading: addDealLoading }] = useMutation(ADDDEAL);
+  const [addDeal, { loading: addDealLoading }] = useMutation(ADDDEAL);
   const [createDealDefaultSettings] = useMutation(CREATE_DEAL_DEFAULT_SETTINGS);
   const [updateDeal, { loading: updateDealLoading }] = useMutation(UPDATEDEAL);
   const [upsertDealDescriptor, { loading: upsertDealDescriptorLoading }] = useMutation(UPSERTDEALDESCRIPTOR);
   const [removeDealDescriptor] = useMutation(REMOVEDEALDESCRIPTOR);
   const [updateStageDealDescriptor, { data: updatedStageDealDescriptor }] = useMutation(UPDATE_STAGE_DEAL_DESCRIPTOR);
-  const [updateStageDealDescriptors, { data: updatedStageDealDescriptors }] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
+  const [updateStageDealDescriptors] = useMutation(UPDATESTAGEDEALDESCRIPTORS);
 
   const [getContact, { data: cData }] = useLazyQuery(CONTACT, {
     fetchPolicy: "cache-and-network",
@@ -445,7 +445,7 @@ function AddDealDialog(props) {
         }));
       }
     }
-  }
+  };
   // }, [dealData]);
 
   useEffect(() => {
@@ -633,7 +633,6 @@ function AddDealDialog(props) {
       setCloseDate(card.closeDate ? moment.parseZone(card.closeDate).format("yyyy-MM-DD") : "");
       setMapSettings(card.mapSettings ? card.mapSettings : null);
       setDealPosition(card.position ? card.position : null);
-      // setColaborators(card.colaborators ? card.colaborators : []);
       setOriginationDate(card.ts ? card.ts : null);
 
       setOwnerId(card.owners[0]?.relatedObject?._id || card.ownerId);
@@ -672,7 +671,6 @@ function AddDealDialog(props) {
     setBidDate("");
     setCloseDate("");
     setMapSettings(null);
-    setColaborators([]);
     setOriginationDate(null);
     setTarget({});
     setCardId("");
@@ -693,13 +691,14 @@ function AddDealDialog(props) {
     }
   }, [addContactData]);
 
-
   useEffect(() => {
-    if (stateApp?.activeDeal?.mapSettings?.mapDefaultPosition != null &&
-      stateApp?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition) {
+    if (
+      stateApp?.activeDeal?.mapSettings?.mapDefaultPosition != null &&
+      stateApp?.mapVars !== stateApp?.activeDeal?.mapSettings?.mapDefaultPosition
+    ) {
       setStateApp((state) => {
-        return { ...state, mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition }
-      })
+        return { ...state, mapVars: stateApp?.activeDeal?.mapSettings?.mapDefaultPosition };
+      });
     }
   }, [mapSettings]);
 
@@ -711,7 +710,7 @@ function AddDealDialog(props) {
         variables: {
           deal: { _id: cardId, IsDeleted: true },
         },
-        refetchQueries: ["getPipeline", "getContactDeals"],
+        refetchQueries: ["getPipeline", "getContactDeals", "getContactSummary"],
         awaitRefetchQueries: true,
       }).then((result) => {
         const {
@@ -753,7 +752,7 @@ function AddDealDialog(props) {
         receivedDate: selectedReceivedDate && selectedReceivedDate !== "" ? new Date(`${selectedReceivedDate}T08:00`).toUTCString() : null,
         bidDate: selectedBidDate && selectedBidDate !== "" ? new Date(`${selectedBidDate}T08:00`).toUTCString() : null,
         closeDate: selectedCloseDate && selectedCloseDate !== "" ? new Date(`${selectedCloseDate}T08:00`).toUTCString() : null,
-        mapSettings: mapSettings
+        mapSettings: mapSettings,
       };
 
       if (cardId) {
@@ -774,16 +773,14 @@ function AddDealDialog(props) {
               upsertDealDescriptor({
                 variables: {
                   dealId: cardId,
-                  relatedObject: [contactId], // HERE
+                  relatedObject: [contactId],
                   relatedObjectType: "Contact",
                   userId: stateApp.user.mongoId,
                 },
-                refetchQueries: ["getPipeline", "getContactDeals"],
+                refetchQueries: ["getPipeline", "getContactDeals", "getContactSummary"],
                 awaitRefetchQueries: true,
               }).then((result) => {
-                const {
-                  data: { upsertDealDescriptor },
-                } = result;
+                const { data: { upsertDealDescriptor } } = result;
                 if (upsertDealDescriptor?.success === false) success = false;
                 resolve();
               });
@@ -808,7 +805,7 @@ function AddDealDialog(props) {
                     relatedObjectType: "User",
                     userId: stateApp.user.mongoId,
                   },
-                  refetchQueries: ["getPipeline", "getContactDeals"],
+                  refetchQueries: ["getPipeline", "getContactDeals", "getContactSummary"],
 
                   awaitRefetchQueries: true,
                 }).then((result) => {
@@ -830,7 +827,7 @@ function AddDealDialog(props) {
                     id: stateApp.activeDeal?.owners[0]?._id,
                     relatedObjectType: "User",
                   },
-                  refetchQueries: ["getPipeline", "getContactDeals"],
+                  refetchQueries: ["getPipeline", "getContactDeals", "getContactSummary"],
 
                   awaitRefetchQueries: true,
                 }).then((result) => {
@@ -882,7 +879,7 @@ function AddDealDialog(props) {
                 variables: {
                   descriptor: movedCardDescriptor,
                 },
-                refetchQueries: ["getPipeline", "getContactDeals"],
+                refetchQueries: ["getPipeline", "getContactDeals", "getContactSummary"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
@@ -912,7 +909,7 @@ function AddDealDialog(props) {
                 variables: {
                   deal,
                 },
-                refetchQueries: ["getPipeline", "getContactDeals"],
+                refetchQueries: ["getPipeline", "getContactDeals", "getContactSummary"],
                 awaitRefetchQueries: true,
               }).then((result) => {
                 const {
@@ -989,7 +986,7 @@ function AddDealDialog(props) {
           ],
           awaitRefetchQueries: true,
         }).then((result) => {
-          finishCreatingDeal(result?.data)
+          finishCreatingDeal(result?.data);
         });
       }
     }
@@ -1060,8 +1057,12 @@ function AddDealDialog(props) {
         relatedObjectType: "Contact",
         userId: stateApp.user.mongoId,
       },
-      refetchQueries: ["getPipeline", "getContactDeals", "getDeal"],
+      refetchQueries: ["getPipeline", "getContactDeals"],
       awaitRefetchQueries: true,
+    }).then(result => {
+      getDeal({
+        variables: { id: stateApp.activeDeal._id }
+      });
     });
   };
 
@@ -1165,9 +1166,9 @@ function AddDealDialog(props) {
         zoom: stateApp?.mapVars?.zoom,
         bearing: stateApp?.mapVars?.bearing,
         pitch: stateApp?.mapVars?.pitch,
-        center: stateApp?.mapVars?.center
-      }
-    })
+        center: stateApp?.mapVars?.center,
+      },
+    });
   }, [stateApp.mapVars]);
 
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
@@ -1281,7 +1282,11 @@ function AddDealDialog(props) {
                         </Grid>
                         <Grid item xs={9}>
                           <Autocomplete
-                            options={users.filter((u) => u.text)}
+                            options={users
+                              .filter((u) => u.text)
+                              .sort((a, b) => {
+                                return a.text.localeCompare(b.text);
+                              })}
                             onChange={(e, user) => {
                               setOwnerId(user?.value);
                             }}
@@ -1312,7 +1317,14 @@ function AddDealDialog(props) {
                                   startAdornment: (
                                     <>
                                       <InputAdornment position="start">
-                                        <Avatar className={classes.dealOwnerAvatar}>
+                                        <Avatar
+                                          style={{
+                                            backgroundColor: users.find((user) => user?.value === ownerId)
+                                              ? getRandomColor(users.find((user) => user?.value === ownerId).text.toString())
+                                              : "",
+                                          }}
+                                          className={classes.dealOwnerAvatar}
+                                        >
                                           {users.find((user) => user?.value === ownerId) ? (
                                             <CustomAvatar
                                               diglog={true}
@@ -1321,8 +1333,7 @@ function AddDealDialog(props) {
                                                 users
                                                   .find((user) => user?.value === ownerId)
                                                   .text.toString()
-                                                  .toUpperCase()
-                                                  .split(" ").length > 1
+                                                  .toUpperCase().length > 1
                                                   ? users.find((user) => user?.value === ownerId).text.toString()
                                                   : "Add Owner"
                                               }
@@ -1369,7 +1380,7 @@ function AddDealDialog(props) {
                               root: classes.dateRoot,
                               focused: classes.focused,
                               notchedOutline: classes.notchedOutline,
-                              light: classes.light
+                              light: classes.light,
                             },
                           }}
                         />
@@ -1464,14 +1475,13 @@ function AddDealDialog(props) {
                           fullWidth
                         >
                           {selectedPipe && <option value={selectedPipe._id}>{selectedPipe.name}</option>}
-                          {sortedPipelines?.map((pipeline, i) => {
-                            if (selectedPipe && selectedPipe._id === pipeline._id) return <></>;
-                            return (
+                          {sortedPipelines
+                            .filter((pipeline) => selectedPipe?._id !== pipeline?._id)
+                            .map((pipeline, i) => (
                               <option value={pipeline._id} key={i}>
                                 {pipeline.name}
                               </option>
-                            );
-                          })}
+                            ))}
                         </TextField>
                       </Grid>
                     </Grid>
@@ -1595,26 +1605,24 @@ function AddDealDialog(props) {
           )}
           {["Deal", "Map"].includes(stateApp.transactBarView) && (
             <div style={{ marginTop: 2 }}>
-              <DealComments setNewCommentId={setNewCommentId} targetLabel='deal' targetSourceId={stateApp.activeDeal?.cardId} />
+              <DealComments setNewCommentId={setNewCommentId} targetLabel="deal" targetSourceId={stateApp.activeDeal?.cardId} />
             </div>
           )}
         </RightDialog>
         {stateApp.transactBarView === "Map" && (
-          <div
-            maxWidth="calc(100vw - 28vw)"
-            style={{ position: "relative", "z-index": "9999", width: "calc(100vw - 30vw)" }}
-          >
-            <MapProvider match={{
-              params: {
-                expandedPanel: false,
-                openSpeedDial: false,
-                viewPortCallback: (mapSettings) => {
-                  console.log("here")
-                  setMapSettings(mapSettings)
+          <div maxWidth="calc(100vw - 28vw)" style={{ position: "relative", "z-index": "9999", width: "calc(100vw - 30vw)" }}>
+            <MapProvider
+              match={{
+                params: {
+                  expandedPanel: false,
+                  openSpeedDial: false,
+                  viewPortCallback: (mapSettings) => {
+                    console.log("here");
+                    setMapSettings(mapSettings);
+                  },
                 },
-              }
-            }} >
-            </MapProvider>
+              }}
+            ></MapProvider>
             <div
               style={{
                 position: "relative",
@@ -1622,7 +1630,7 @@ function AddDealDialog(props) {
                 "margin-right": "40px",
                 width: "fit-content",
                 "background-color": "#fff",
-                padding: "10px"
+                padding: "10px",
               }}
               className={classes.inputFieldDealName}
             >

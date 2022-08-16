@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { debounce, get, set } from "lodash";
+import _, { debounce, get, set } from "lodash";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import {
@@ -30,14 +30,23 @@ import RelatedWells from "components/Land/components/Agreements/detailComponents
 import Documents from "components/Land/components/Agreements/detailComponents/documents";
 
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import moment from "moment";
+import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
+import MapImgViewIcon from "components/Shared/svgIcons/MapImgViewIcon";
+import MapProvider from "components/Map/MapProvider";
 
 const useStyles = makeStyles((theme) => ({
+  mapProvider: {
+    position: "relative",
+    zIndex: "9999",
+    height: "calc(100vw - 63vw)",
+  },
   detailHeader: {
     backgroundColor: "#fff",
     padding: "20px 27px 0px 45px",
@@ -125,6 +134,12 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: !metaCollapse ? "#eceded" : "#fff",
     },
   }),
+  mapButton: ({ mapCollapse }) => ({
+    backgroundColor: !mapCollapse ? "#eceded" : "#fff",
+    "&:hover": {
+      backgroundColor: !mapCollapse ? "#eceded" : "#fff",
+    },
+  }),
   validationButton: ({ validationCollapse }) => ({
     backgroundColor: !validationCollapse ? "#eceded" : "#fff",
     "&:hover": {
@@ -153,7 +168,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabsDetailContainer: ({ metaCollapse }) => ({
     padding: 20,
-    maxWidth: !metaCollapse ? "calc(100% - 444px)" : "100%",
+    width: !metaCollapse ? "calc(100% - 644px)" : "100%",
   }),
   menuIcon: {
     marginLeft: 10,
@@ -211,6 +226,7 @@ const StyledTab = withStyles((theme) => ({
 export default function DetailComponents(props) {
   const { id: agreementId } = useParams();
   const dispatch = useDispatch();
+  const history = useHistory();
   const agreementDetails = useSelector(({ Land }) => Land.agreement?.activeAgreement?.shape)?.properties;
   const activeAgreement = useSelector(({ Land }) => Land.agreement?.activeAgreement);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -218,24 +234,24 @@ export default function DetailComponents(props) {
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
   const [isButtonScroll, setButtonScroll] = useState(false);
-  const [metaCollapse, setMetaCollapse] = useState(false);
+  const [metaCollapse, setMetaCollapse] = useState(true);
+  const [mapCollapse, setMapCollapse] = useState(true);
   const [validationCollapse, setValidationCollapse] = useState(true);
   const [flowlineCollapse, setFlowlineCollapse] = useState(true);
-  const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
   const [uniObj, setUniObj] = useState();
+  const [openDialog, setOpenDialog] = useState(false);
 
-  const classes = useStyles({ ...props, metaCollapse, validationCollapse, flowlineCollapse });
+  const classes = useStyles({ ...props, metaCollapse, validationCollapse, flowlineCollapse, mapCollapse });
   // queries
 
-  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-    fetchPolicy: "no-cache",
-  });
+
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
   const [getStandardProvisions, { data: standardProvisions }] = useLazyQuery(GET_STANDARD_PROVISIONS);
   const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
   const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
+  const [updateMetaData] = useMutation(UPSERT_USER_DESCRIPTOR);
 
   useEffect(() => {
     return () => {
@@ -269,10 +285,9 @@ export default function DetailComponents(props) {
 
   useEffect(() => {
     if (agreementId) {
-      getAllMongoUsers();
       getCustomLayer({ variables: { id: agreementId } });
     }
-  }, [agreementId, getAllMongoUsers, getCustomLayer]);
+  }, [agreementId, getCustomLayer]);
 
   useEffect(() => {
     if (dataCustomLayer && dataCustomLayer.customLayer) {
@@ -298,18 +313,6 @@ export default function DetailComponents(props) {
   }, [dataCustomLayer?.customLayer]);
 
   useEffect(() => {
-    if (userLists && userLists.allMongoUsers) {
-      setUsers(
-        userLists.allMongoUsers.map((user) => ({
-          value: user._id,
-          text: user.name,
-          email: user.email,
-        }))
-      );
-    }
-  }, [userLists]);
-
-  useEffect(() => {
     if (activeAgreement) {
       let shape = activeAgreement.shape;
       if (activeAgreement.shapeJson) shape = copy(activeAgreement.shapeJson);
@@ -322,28 +325,39 @@ export default function DetailComponents(props) {
 
   useEffect(() => {
     if (activeAgreement?._id) {
-      getShapeSummaryDetails({ variables: { shapeId: activeAgreement._id } });
+      getShapeSummaryDetails({
+        variables: {
+          shapeId: activeAgreement._id,
+          shapeType: "Agreement"
+        }
+      });
     }
   }, [activeAgreement, getShapeSummaryDetails]);
 
   useEffect(() => {
+    const escapeFunc = (e) => {
+      if (e.key === 'Escape') {
+        setMapCollapse(true);
+      }
+    }
+    document.addEventListener('keyup', escapeFunc);
     return () => {
       setStateApp({ ...stateApp, viewDoc: null })
+      document.removeEventListener('keyup', escapeFunc);
     }
-  },[])
-  
+  }, []);
+
   const updateAgreement = (field, value, isCustom) => {
     if (agreementDetails[field] === value) return;
     const shape = activeAgreement.shape;
-    if (!isCustom) {
-      set(shape.properties, field, value);
-      shape.properties[field] = value;
-    } else {
-      const customData = { ...agreementDetails.custom_data };
-      customData[field] = value;
-      shape.properties.custom_data = customData;
+    if (field === 'agreementTerm' || field === 'effectiveDate') {
+      if (field === 'agreementTerm') {
+        shape.properties.expirationDate = moment(shape.properties.effectiveDate, 'YYYY-MM-DD').add(parseInt(value), 'months').format('YYYY-MM-DD');
+      } else {
+        shape.properties.expirationDate = moment(value, 'YYYY-MM-DD').add(parseInt(shape.properties.agreementTerm), 'months').format('YYYY-MM-DD');
+      }
     }
-
+    set(shape, `properties.${field}`, value);
     const customLayer = {};
     let shapeLabel = shape.properties.shapeLabel;
     if (field === "agreementNumber") shapeLabel = `${value}${shape.properties.agreementName ? `-${shape.properties.agreementName}` : ""}`;
@@ -400,12 +414,31 @@ export default function DetailComponents(props) {
 
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
 
+  const handleDeleteAgreement = () => {
+    updateCustomLayer({
+      variables: {
+        customLayerId: dataCustomLayer?.customLayer?._id,
+        customLayer: {
+          IsDeleted: true,
+        },
+      }
+    }).then(({ data }) => {
+      if (data.updateCustomLayer?.success)
+        history.push('/land/agreements')
+    });
+  }
+
+
   return (
-    <NavHeader title={`${agreementDetails?.agreementNumber} - ${agreementDetails?.agreementName}`}>
+    <NavHeader
+      title={`${agreementDetails?.agreementNumber} - ${agreementDetails?.agreementName}`}
+    >
       {/**
        * Detail title section
        */}
-      <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
+      <div
+        className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}
+      >
         <div className="flex column alignStart justifyStart w-100">
           <div className={classes.title}>
             <IconButton className={classes.icon}>
@@ -414,7 +447,11 @@ export default function DetailComponents(props) {
             <div className={classes.titleText}>
               {agreementDetails && (
                 <Typography
-                  style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "large",
+                    marginLeft: 8,
+                  }}
                 >{`${agreementDetails?.agreementNumber} - ${agreementDetails?.agreementName}`}</Typography>
               )}
               <div className={classes.tagsContainer}>
@@ -424,7 +461,13 @@ export default function DetailComponents(props) {
                   </Typography>
                 </div>
                 <div className={classes.tags}>
-                  <Tags width="100%" targetSourceId={agreementId} targetLabel="agreement" publicLeftBottom onlyTags />
+                  <Tags
+                    width="100%"
+                    targetSourceId={agreementId}
+                    targetLabel="agreement"
+                    publicLeftBottom
+                    onlyTags
+                  />
                 </div>
               </div>
             </div>
@@ -450,7 +493,8 @@ export default function DetailComponents(props) {
               </StyledTabs>
             </div>
             <div className={classes.metaActions}>
-              <Button
+              {/* temp hide these buttons until we add the functionality -kc 20220520 */}
+              {/* <Button
                 startIcon={<RuleIcon />}
                 className={classes.validationButton}
                 onClick={() => setValidationCollapse(!validationCollapse)}
@@ -459,11 +503,27 @@ export default function DetailComponents(props) {
               </Button>
               <Button startIcon={<FlowIcon />} className={classes.flowlineButton} onClick={() => setFlowlineCollapse(!flowlineCollapse)}>
                 Flowline
+              </Button> */}
+              <Button
+                startIcon={<MapImgViewIcon />}
+                className={classes.mapButton}
+                onClick={() => { setMapCollapse(o => !o) }}
+              >
+                Map View
               </Button>
-              <Button startIcon={<InfoOutlinedIcon />} className={classes.metaButton} onClick={() => setMetaCollapse(!metaCollapse)}>
+              <Button
+                startIcon={<InfoOutlinedIcon />}
+                className={classes.metaButton}
+                onClick={() => setMetaCollapse(!metaCollapse)}
+              >
                 Metadata
               </Button>
-              <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
+              <IconButton
+                size="small"
+                component="span"
+                className={classes.menuIcon}
+                onClick={handleMenuClick}
+              >
                 <MoreHorizIcon size="medium" />
               </IconButton>
             </div>
@@ -472,40 +532,109 @@ export default function DetailComponents(props) {
       </div>
 
       <div className="flex justifyBetween alignStart w-100">
-        <div className={`w-100 ${classes.tabsDetailContainer}`}>
-          {/*** Component for viewing selected pdf file*/}
-
+        <div className={classes.tabsDetailContainer}>
           {/**
            * Detail tabs section
            */}
 
-          <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
-            <div id="parent-div" className={classes.tabsSectionDetails} onScroll={handleScroll}>
-              <div id="summary-div" className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null} style={{ backgroundColor: "#fff" }}>
-                <Summary
+          <div
+            className={classes.tabsSection}
+            style={{ display: stateApp.viewDoc ? "none" : "" }}
+          >
+            <div
+              id="parent-div"
+              className={classes.tabsSectionDetails}
+              onScroll={handleScroll}
+            >
+              {
+                mapCollapse ?
+                  <div
+                    id="summary-div"
+                    className={classes.tabDetailSection}
+                    ref={tab === 0 ? selectedTabRef : null}
+                    style={{ backgroundColor: "#fff" }}
+                  >
+                    <Summary
+                      agreementDetails={agreementDetails}
+                      activeAgreement={activeAgreement}
+                      agreementProvisions={get(
+                        agreementProvisions,
+                        "getAgreementProvisions",
+                        []
+                      )}
+                      standardProvisions={get(
+                        standardProvisions,
+                        "getStandardProvisions",
+                        []
+                      )}
+                      updateAgreement={updateAgreement}
+                      shapeSummaryDetails={
+                        dataShapeSummaryDetails?.shapeSummaryDetails
+                      }
+                    />
+                  </div>
+                  : <div
+                    id="summary-div"
+                    ref={tab === 0 ? selectedTabRef : null}
+                    className={`${classes.mapProvider}  summary-div-small-map`}
+                  >
+                    <MapProvider
+                      match={{
+                        params: {
+                          expandedPanel: false,
+                          openSpeedDial: false,
+                          hideShape: true,
+                          paramId: agreementId,
+                          layerPadding: { padding: { top: 50, bottom: 50, left: !metaCollapse ? 300 : 700, right: 20 } }
+                        },
+                      }}
+                    ></MapProvider>
+                  </div>
+              }
+              <div
+                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
+              />
+              <div
+                id="related-parties-div"
+                className={classes.tabDetailSection}
+                ref={tab === 1 ? selectedTabRef : null}
+              >
+                <RelatedParties
                   agreementDetails={agreementDetails}
-                  activeAgreement={activeAgreement}
-                  agreementProvisions={get(agreementProvisions, "getAgreementProvisions", [])}
-                  standardProvisions={get(standardProvisions, "getStandardProvisions", [])}
-                  updateAgreement={updateAgreement}
-                  shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails}
+                  agreementId={agreementId}
                 />
               </div>
-              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="related-parties-div" className={classes.tabDetailSection} ref={tab === 1 ? selectedTabRef : null}>
-                <RelatedParties agreementDetails={agreementDetails} agreementId={agreementId} />
-              </div>
-              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="provisions-div" className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
+              <div
+                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
+              />
+              <div
+                id="provisions-div"
+                className={classes.tabDetailSection}
+                ref={tab === 2 ? selectedTabRef : null}
+              >
                 <Provisions
                   agreementDetails={agreementDetails}
                   agreementId={agreementId}
-                  agreementProvisions={get(agreementProvisions, "getAgreementProvisions", [])}
-                  standardProvisions={get(standardProvisions, "getStandardProvisions", [])}
+                  agreementProvisions={get(
+                    agreementProvisions,
+                    "getAgreementProvisions",
+                    []
+                  )}
+                  standardProvisions={get(
+                    standardProvisions,
+                    "getStandardProvisions",
+                    []
+                  )}
                 />
               </div>
-              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="legal-description-div" className={classes.tabDetailSection} ref={tab === 3 ? selectedTabRef : null}>
+              <div
+                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
+              />
+              <div
+                id="legal-description-div"
+                className={classes.tabDetailSection}
+                ref={tab === 3 ? selectedTabRef : null}
+              >
                 <LegalDescription
                   agreementDetails={agreementDetails}
                   uniObj={uniObj}
@@ -513,28 +642,65 @@ export default function DetailComponents(props) {
                   updateAgreement={updateAgreement}
                 />
               </div>
-              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="related-wells-div" className={classes.tabDetailSection} ref={tab === 4 ? selectedTabRef : null}>
-                <RelatedWells uniObj={uniObj} shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails} />
+              <div
+                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
+              />
+              <div
+                id="related-wells-div"
+                className={classes.tabDetailSection}
+                ref={tab === 4 ? selectedTabRef : null}
+              >
+                <RelatedWells
+                  uniObj={uniObj}
+                  shapeSummaryDetails={
+                    dataShapeSummaryDetails?.shapeSummaryDetails
+                  }
+                />
               </div>
-              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="related-docs-div" className={classes.tabDetailSection} ref={tab === 5 ? selectedTabRef : null}>
+              <div
+                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
+              />
+              <div
+                id="related-docs-div"
+                className={classes.tabDetailSection}
+                ref={tab === 5 ? selectedTabRef : null}
+              >
                 <Documents uniObj={uniObj} />
               </div>
             </div>
           </div>
 
-          <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
+          {/*** Component for viewing selected pdf file*/}
+          {stateApp.viewDoc && (
+            <DocViewer
+              divCondition={true}
+              DocStyle={{ height: "calc(100vh - 280px)" }}
+            />
+          )}
         </div>
 
         {!metaCollapse && (
-          <MetadataDrawer
-            setCollapse={setMetaCollapse}
-            users={users}
-            targetSourceId={agreementId}
-            description={agreementDetails?.description}
-            targetLabel="Shape"
-          />
+          <div
+            style={{
+              marginTop: 20,
+              marginRight: 24,
+              height: "calc(100vh - 270px)",
+              width: 620,
+            }}
+          >
+            <MetadataDrawer
+              setCollapse={setMetaCollapse}
+              targetSourceId={agreementId}
+              data={agreementDetails}
+              targetLabel="Shape"
+              showDescription={false}
+              descriptionKey="description"
+              ownerPlaceHolder='Assign Approver'
+              ownerTitle="Approver"
+              isApproval={true}
+              onUpdate={(data) => updateAgreement('approvalStatus', data.status)}
+            />
+          </div>
         )}
       </div>
 
@@ -552,13 +718,35 @@ export default function DetailComponents(props) {
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <MenuItem>
+        <MenuItem
+          onClick={() => {
+            setOpenDialog(true);
+            setAnchorEl(null);
+          }}
+        >
           <ListItemIcon>
             <DeleteIcon size="medium" />
           </ListItemIcon>
           <ListItemText>Delete</ListItemText>
         </MenuItem>
       </Menu>
-    </NavHeader>
+
+      {/**
+       * Delete Custom Layer confirmation dialog
+       * */}
+      {
+        openDialog && (
+          <DeleteConfirmationDialogContent
+            header="Delete Agreement"
+            onClose={() => setOpenDialog(false)}
+            deleteFunc={handleDeleteAgreement}
+            m1nSelectedRowsIds={null}
+            setM1nSelectedRowsIndexes={() => { }}
+          >
+            Are you sure you want to delete this agreement?
+          </DeleteConfirmationDialogContent>
+        )
+      }
+    </NavHeader >
   );
 }

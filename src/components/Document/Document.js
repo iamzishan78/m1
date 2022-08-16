@@ -1,6 +1,7 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import { isEmpty } from "lodash";
 
 import { AppContext } from "AppContext";
 import Drawer from "./components/Drawer";
@@ -28,12 +29,17 @@ const useStyles = makeStyles((theme) => ({
         },
       },
     },
+
+    '& .MuiDrawer-paperAnchorRight': {
+      overflow: "hidden",
+    }
   },
 }));
 
 export default function DocumentComponent() {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [refetch, refetchData] = useState(false);
   let history = useHistory();
 
   useEffect(() => {
@@ -43,28 +49,28 @@ export default function DocumentComponent() {
         pdfView: null,
         viewDoc: null,
         selectedDocument: {},
-        DocumentDrawer: false
+        DocumentDrawer: false,
       }));
-    }
+    };
   }, [setStateApp]);
 
   const onCloseHandler = () => {
-    history.push('/documents');
+    history.push("/documents");
     setStateApp((state) => ({
       ...state,
       pdfView: null,
       viewDoc: null,
     }));
-  }
+  };
 
   return (
     <div className={classes.root}>
-      <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} />
-      <Drawer />
+      <DocumentsTable parent="Documents" documentSearchQuery={stateApp.documentSearchQuery} refetch={refetch} refetchData={refetchData} />
+      <Drawer refetchData={refetchData} />
       {stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0 ? (
         <DocViewer width="calc(100vw - 515px)" onCloseHandler={onCloseHandler} />
       ) : (
-        <DocViewer width="calc(100vw)" onCloseHandler={onCloseHandler} />
+        !isEmpty(stateApp.viewDoc) && <DocViewer width="calc(100vw)" onCloseHandler={onCloseHandler} />
       )}
     </div>
   );

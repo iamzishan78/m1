@@ -1,11 +1,11 @@
 import React, { Fragment, useState, useContext, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../AppContext";
-import { MapControlsContext } from "components/MapControls/MapControlsContext";
-import { useMediaQuery } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
+import InboxIcon from '@material-ui/icons/Inbox';
+import DraftsIcon from '@material-ui/icons/Drafts';
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import Button from "@material-ui/core/Button";
@@ -24,10 +24,16 @@ import MapGridTaxOwnersTable from "components/Table/TaxOwners/MapGridTaxOwnersTa
 import MapGridOperatorTable from "components/Table/Operator/MapGridOperatorTable";
 import MapGridContactTable from "components/Table/Contact/MapGridContactTable";
 import MapGridUnitTable from "components/Table/Unit/MapGridUnitTable";
+import AgreementsTable from "components/Table/Agreement/AgreementsTable";
+import TractsTable from "components/Table/Tract/TractsTable";
 
 import SearchPanel from "./components/SearchPanel";
-import { platformDataInitialData } from "./components/data";
+import { platformDataInitialData, snapGridSideBarData } from "./components/data";
 import MapGridLayersTable from "components/Table/Layer/MapGridLayersTable";
+import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -127,30 +133,37 @@ const useStyles = makeStyles((theme) => {
       "& div": {
         "&>.MuiPaper-root": {
           "&>:nth-child(3)": {
-            minHeight: ({ mapGridCardActiveTap, mapGridCardActivated }) =>
+            minHeight: ({ mapGridCardActiveTap, mapGridCardActivated, userGridViewFilters, dockMenu }) =>
               mapGridCardActiveTap === 0
                 ? mapGridCardActivated === "exp"
                   ? "calc(91vh - 233px)"
-                  : "calc(58.75vh - 235px)"
+                  : dockMenu === "bottom"
+                    ? userGridViewFilters?.length > 0
+                      ? "calc(58.75vh - 320px)"
+                      : "calc(58.75vh - 280px)"
+                    : userGridViewFilters?.length > 0
+                      ? "calc(58.75vh - 275px)"
+                      : "calc(58.75vh - 235px)"
                 : mapGridCardActivated === "exp"
                   ? "calc(91vh - 183px)"
                   : "calc(58.75vh - 183px)",
             "@media (max-height:930px)": {
               maxHeight: ({ dockMenu }) => {
-                if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 590px)"
-                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 204px)"
-                else if (dockMenu === "full") return "calc(100vh - 153px)"
-              }
+                if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 590px)";
+                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 204px)";
+                else if (dockMenu === "full") return "calc(100vh - 153px)";
+              },
             },
             "@media (max-height:1600px)": {
-              maxHeight: ({ dockMenu }) => {
-                if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 640px)"
-                else if (dockMenu === "left" || dockMenu === "right") return "calc(100vh - 204px)"
-                else if (dockMenu === "full") return "calc(100vh - 183px)"
-              }
+              maxHeight: ({ dockMenu, userGridViewFilters }) => {
+                if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 640px)";
+                else if (dockMenu === "left" || dockMenu === "right")
+                  return userGridViewFilters?.length > 0 ? "calc(100vh - 235px)" : "calc(100vh - 200px)";
+                else if (dockMenu === "full") return userGridViewFilters?.length ? "calc(100vh - 275px)" : "calc(100vh - 183px)";
+              },
             },
           },
-        }
+        },
       },
     },
     tapsLabelsButtons: {
@@ -220,13 +233,6 @@ const TabLabels = ({ labels, value, setValue }) => {
 function MapGridCard(props) {
   // contexts
   const [stateApp] = useContext(AppContext);
-  const [stateMapControls] = useContext(MapControlsContext);
-  // const dcreenSizes = {
-  //   "1000": useMediaQuery("(min-height: 1000px)"),
-  //   "1200": useMediaQuery("(min-height: 1200px)"),
-  //   "1400": useMediaQuery("(min-height: 1400px)"),
-  //   "1600": useMediaQuery("(min-height: 1600px)")
-  // }
 
   // function state
   const [searchTapValue, SearchTapValue] = useState(stateApp.layerGridCard ? platformDataInitialData[3] : platformDataInitialData[0]);
@@ -234,9 +240,10 @@ function MapGridCard(props) {
   const [dockMenu, SetDockMenu] = useState("bottom");
   const [trackedTapValue, TrackedTapValue] = useState(0);
 
-  // selectorsW
+  // selectors
   const { mapGridCardActivated, mapGridCardActiveTap, selectedOwner } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
   const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
+  const userGridViewFilters = useSelector(({ session }) => session.userGridViewSettings?.filters);
 
   const dispatch = useDispatch();
 
@@ -274,6 +281,7 @@ function MapGridCard(props) {
     mapGridCardActivated,
     mapGridCardActiveTap,
     viewportWells: stateApp.viewportWells,
+    userGridViewFilters,
     // screenSizes
   });
 
@@ -308,7 +316,7 @@ function MapGridCard(props) {
         privateColumns: operatorsColumnHeaders,
       },
       {
-        label: "layer"
+        label: "layer",
       },
       {
         label: "lease",
@@ -322,7 +330,6 @@ function MapGridCard(props) {
         label: "location",
         privateColumns: locationsColumnHeaders,
       },
-
     ],
     []
   );
@@ -342,9 +349,9 @@ function MapGridCard(props) {
   };
 
   const options = {
-    toolbarActionMarginRight: "87px !important",
+    toolbarActionMarginRight: "105px !important",
     customToolbar: () => {
-      const dynamicLeftPos = mapGridCardActiveTap !== 2 ? 222 : 122
+      const dynamicLeftPos = mapGridCardActiveTap !== 2 ? 236 : 122;
       return (
         <div style={{ display: "flex", float: "left", position: "relative", left: `${dynamicLeftPos}px`, marginRight: "15px" }}>
           <DockMenu setSelectedDockMenu={setSelectedDockMenu} />
@@ -374,8 +381,8 @@ function MapGridCard(props) {
     isLayerOnly: stateApp.selectedLayer,
     handleChange: handleSearchPanelChange,
     value: searchTapValue,
-    ativateSearchPanel: ativateSearchPanel
-  }
+    ativateSearchPanel: ativateSearchPanel,
+  };
 
   const CardReturn = () => {
     return (
@@ -383,6 +390,7 @@ function MapGridCard(props) {
         {selectedOwner ? (
           <OwnersSummaryCard />
         ) : (
+
           <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: "relative" }}>
             {/* //// search panel //// */}
             <TabPanel
@@ -391,116 +399,151 @@ function MapGridCard(props) {
               className={classes.tapsPanelsPadding}
               style={{ position: "absolute", width: "100%" }}
             >
-              <div style={{ position: "relative" }} classes={classes.gridTables}>
-                {/* <TabPanels
+              <Grid
+                container
+                direction="row"
+                style={{ height: '100%', marginBottom: '20px' }}
+              >
+
+
+                <Grid item md={2} style={{ backgroundColor: '#F2F2F2' }}>
+                  <Typography variant="h6" component="h1" style={{ fontWeight: "bold", padding: '10px 0px 0px 20px' }}>
+                    M1 Platform
+                  </Typography>
+
+                  <List component="nav" aria-label="main mailbox folders">
+
+                    {snapGridSideBarData.map((row) => {
+                      const Icon = row.Icon
+                      return (
+                        <FeatureFlag feature={FEATURES[row.featureFlag]} noCheck={!FEATURES[row.featureFlag]}>
+                          <ListItem
+                            button
+                            selected={row.value === searchTapValue.value}
+                            onClick={() => handleSearchPanelChange(row)}
+                          >
+                            <ListItemIcon>
+                              <Icon />
+                            </ListItemIcon>
+                            <ListItemText primary={row.label} />
+                          </ListItem>
+                        </FeatureFlag>
+                      )
+                    }
+                    )}
+                  </List>
+                </Grid>
+
+                <Grid item md={10}>
+                  <div style={{ position: "relative" }} classes={classes.gridTables}>
+                    {/* <TabPanels
                   value={searchTapValue.index}
                   panels={getTaps.map((tab, index) => {
                     return ( */}
-                <Fragment>
-                  {searchTapValue.value === 'well' && (
-                    <MapGridWellsTable
-                      dense
-                      parent="search"
-                      customOptions={options}
-                      targetLabel={searchTapValue.value}
-                      header={
-                        <SearchPanel
-                          {...commonProps}
+                    <Fragment>
+                      {searchTapValue.value === "well" && (
+                        <MapGridWellsTable
+                          dense
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={<SearchPanel {...commonProps} />}
+                          showTags
+                          showComments
+                          showTracks
                         />
-                      }
-                      showTags
-                      showComments
-                      showTracks
-                    />
-                  )}
-                  {searchTapValue.value === 'owner' && stateApp.gridPolygonString && (
-                    <ShapeGridTaxOwnersTable
-                      parent="boundary_grid_owners"
-                      header={
-                        <SearchPanel
-                          {...commonProps}
+                      )}
+                      {searchTapValue.value === "owner" && stateApp.gridPolygonString && (
+                        <ShapeGridTaxOwnersTable
+                          parent="boundary_grid_owners"
+                          header={<SearchPanel {...commonProps} />}
+                          customOptions={options}
+                          targetLabel="owner"
+                          showTracks
                         />
-                      }
-                      customOptions={options}
-                      targetLabel="owner"
-                      showTracks
-                    />
-                  )}
-                  {searchTapValue.value === 'owner' && !stateApp.gridPolygonString && (
-                    <MapGridTaxOwnersTable
-                      dense
-                      parent="search"
-                      customOptions={options}
-                      targetLabel={searchTapValue.value}
-                      header={
-                        <SearchPanel
-                          {...commonProps}
+                      )}
+                      {searchTapValue.value === "owner" && !stateApp.gridPolygonString && (
+                        <MapGridTaxOwnersTable
+                          dense
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={<SearchPanel {...commonProps} />}
+                          showTags
+                          showComments
+                          showTracks
                         />
-                      }
-                      showTags
-                      showComments
-                      showTracks
-                    />
-                  )}
-                  {searchTapValue.value === 'operator' && (
-                    <MapGridOperatorTable
-                      dense
-                      parent="search"
-                      customOptions={options}
-                      targetLabel={searchTapValue.value}
-                      header={
-                        <SearchPanel
-                          {...commonProps}
+                      )}
+                      {searchTapValue.value === "operator" && (
+                        <MapGridOperatorTable
+                          dense
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={<SearchPanel {...commonProps} />}
+                          showTags
+                          showComments
+                          showTracks
                         />
-                      }
-                      showTags
-                      showComments
-                      showTracks
-                    />
-                  )}
-                  {searchTapValue.value === 'layer' && (
-                    <MapGridLayersTable
-                      dense
-                      parent="search"
-                      customOptions={options}
-                      targetLabel={'operator'}
-                      header={
-                        <SearchPanel
-                          {...commonProps}
+                      )}
+                      {searchTapValue.value === "layer" && (
+                        <MapGridLayersTable
+                          dense
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={"operator"}
+                          header={<SearchPanel {...commonProps} />}
                         />
-                      }
-                    />
-                  )}
-                  {searchTapValue.value === 'contacts' && (
-                    <MapGridContactTable
-                      dense
-                      parent="search"
-                      customOptions={options}
-                      targetLabel={searchTapValue.value}
-                      header={
-                        <SearchPanel
-                          isShapeGridOnly={stateApp.gridPolygonString}
-                          handleChange={handleSearchPanelChange}
-                          value={searchTapValue}
-                          ativateSearchPanel={ativateSearchPanel}
+                      )}
+                      {searchTapValue.value === "contacts" && (
+                        <MapGridContactTable
+                          dense
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={
+                            <SearchPanel
+                              isShapeGridOnly={stateApp.gridPolygonString}
+                              handleChange={handleSearchPanelChange}
+                              value={searchTapValue}
+                              ativateSearchPanel={ativateSearchPanel}
+                            />
+                          }
                         />
-                      }
-                    />
-                  )}
-                  {searchTapValue.value === 'unit' && (
-                    <MapGridUnitTable
-                      dense
-                      parent="search"
-                      customOptions={options}
-                      targetLabel={searchTapValue.value}
-                      header={
-                        <SearchPanel
-                          {...commonProps}
+                      )}
+                      {searchTapValue.value === "unit" && (
+                        <MapGridUnitTable
+                          dense
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={<SearchPanel {...commonProps} />}
                         />
-                      }
-                    />
-                  )}
-                  {/* <M1nTable
+                      )}
+                      {searchTapValue.value === "agreement" && (
+                        <AgreementsTable
+                          isCheckboxSticky={true}
+                          dense
+                          esIndex={'shapes_flat'}
+                          parent="AgreementsTable"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={<SearchPanel {...commonProps} />}
+                          isSnapGrid
+                        />
+                      )}
+                      {searchTapValue.value === "tract" && (
+                        <TractsTable
+                          dense
+                          esIndex={'shapes_flat'}
+                          parent="search"
+                          customOptions={options}
+                          targetLabel={searchTapValue.value}
+                          header={<SearchPanel {...commonProps} />}
+                          isSnapGrid
+                        />
+                      )}
+                      {/* <M1nTable
                             dense
                             options={options}
                             parent="search"
@@ -517,11 +560,14 @@ function MapGridCard(props) {
                             showComments={tab.showComments}
                             showTracks={tab.showTracks}
                           /> */}
-                </Fragment>
-                {/* )
+                    </Fragment>
+                    {/* )
                   })}
                 /> */}
-              </div>
+                  </div>
+
+                </Grid>
+              </Grid >
             </TabPanel>
 
             {/* //// tracked panel //// */}
@@ -612,8 +658,11 @@ function MapGridCard(props) {
               </div>
             </TabPanel>
           </div>
-        )}
-      </Card>
+
+
+        )
+        }
+      </Card >
     );
   };
 
@@ -636,30 +685,6 @@ function MapGridCard(props) {
       }}
     />
   );
-
-  const LayerGridCard = () => {
-    return (
-      <Card className={`${mapGridCardActivated === "exp" ? "noDrag" : ""} ${classes.dockMenu}`}>
-        <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: "relative" }}>
-          <div style={{ position: "relative" }} classes={classes.gridTables}>
-            <MapGridLayersTable
-              dense
-              parent="search"
-              customOptions={options}
-              header={
-                <SearchPanel
-                  isShapeGridOnly={stateApp.gridPolygonString}
-                  handleChange={handleSearchPanelChange}
-                  value={searchTapValue}
-                  ativateSearchPanel={ativateSearchPanel}
-                />
-              }
-            />
-          </div>
-        </div>
-      </Card>
-    )
-  }
 
   return (
     <div className={classes.card}>

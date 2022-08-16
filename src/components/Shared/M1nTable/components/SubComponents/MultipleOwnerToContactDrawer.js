@@ -6,7 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 
 import {
   CircularProgress, Tab, Tabs,
-  Button, Grid, Container, Box, 
+  Button, Grid, Container, Box,
   RadioGroup, FormControlLabel,
   IconButton, FormControl, Radio,
 } from "@material-ui/core";
@@ -15,16 +15,17 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import CloseSharp from "@material-ui/icons/CloseSharp";
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import DoneSharpIcon from "@material-ui/icons/DoneSharp";
 import RemoveSharpIcon from "@material-ui/icons/RemoveSharp";
 
 import Tags from "components/Shared/Tagger";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
-import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 
 import AutocompEntityNamesVirtualizeList from "./AutocompEntityNamesVirtualizeList";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 import { setStateIfDeepEqual } from "../../../functions";
 
@@ -64,7 +65,7 @@ const styles = () => ({
   },
   bold: {
     fontWeight: "bold",
-  },  
+  },
 });
 
 const useStyles = makeStyles(styles);
@@ -83,11 +84,12 @@ const MultipleOwnerToContactDrawer = ({
   onClose,
   rows,
   setRows,
-  setM1nSelectedRowsIndexes,
   getContactCampaignAction,
   convertMultipleOwnerToContactAction,
   campaignList,
   isEntities,
+  jobName,
+  jobType,
   onSuccess
 }) => {
   const [stateApp] = React.useContext(AppContext);
@@ -104,7 +106,8 @@ const MultipleOwnerToContactDrawer = ({
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   const [newTagsIds, setNewTagsIds] = useState([]);
-  
+  const [campaigns, setCampaigns] = useState([]);
+
   const { control, getValues, watch } = useForm();
 
   const contactStatus = watch("contactStatus", contactStatusOptions[0].value);
@@ -153,27 +156,22 @@ const MultipleOwnerToContactDrawer = ({
     setRows(rows.filter((r) => r.id !== row.id));
   };
 
-  const handleClose = () => {
-    setM1nSelectedRowsIndexes([])
-    onClose();
-  }
-
   const onConvert = () => {
     let ownerIds = [];
     let entitiesIds = [];
     let entities = rows.filter((row) => row.isEntity);
     let owners = rows.filter((row) => !row.isEntity);
 
-    if(entities.length > 0){
+    if (entities.length > 0) {
       let Ids = entities.filter((row) => row.id !== primaryOwner.id);
       Ids.unshift(primaryOwner);
       entitiesIds = Ids.map(id => id._id)
-    }else if(owners.length > 0){
+    } else if (owners.length > 0) {
       let Ids = owners.filter((row) => row.id !== primaryOwner.id);
       Ids.unshift(primaryOwner);
-      ownerIds = Ids.reduce((ids, row) => { ids.push({id: row.globalOwnerId || row.id, ownershipType: row.ownershipType}); return ids; }, []);
+      ownerIds = Ids.reduce((ids, row) => { ids.push({ id: row.globalOwnerId || row.id, ownershipType: row.ownershipType }); return ids; }, []);
     }
-    
+
     let existingContactId = null;
     let action = actionType
     if (tab === TAB.EXISTING) {
@@ -182,17 +180,16 @@ const MultipleOwnerToContactDrawer = ({
     }
 
     const index = rows.findIndex(row => row.id === primaryOwner.id);
-    if(index > -1){
+    if (index > -1) {
       rows[index].isPrimary = true
     }
     const values = getValues();
-    
-    if(entitiesIds.length === 0){
-      convertMultipleOwnerToContactAction({ ...values, rows, existingContactId, actionType: action, userId: userId, tags: newTagsIds });
-     } else {
-     convertMultipleOwnerToContactAction({ ...values, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds });
+
+    if (entitiesIds.length === 0) {
+      convertMultipleOwnerToContactAction({ ...values, campaigns, rows, existingContactId, actionType: action, userId: userId, tags: newTagsIds, jobType, jobName });
+    } else {
+      convertMultipleOwnerToContactAction({ ...values, campaigns, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds, jobType, jobName });
     }
-    setM1nSelectedRowsIndexes([])
     onClose();
     setLoading(false);
   };
@@ -207,7 +204,7 @@ const MultipleOwnerToContactDrawer = ({
     <RightDialog open={true}>
       <Container maxWidth="sm" >
         <div >
-          <Box p={3} pt={1}>
+          <Box pt={1} pb={3} p={0}>
             <Grid container direction="row" spacing={4} justify="space-between" alignItems="center" >
               <Grid item>
                 <Typography className={classes.topHeading} variant="h5" component="h2">
@@ -215,8 +212,8 @@ const MultipleOwnerToContactDrawer = ({
                 </Typography>
               </Grid>
               <Grid item>
-                <IconButton aria-label="delete" color="primary" onClick={handleClose}>
-                  <CloseSharp />
+                <IconButton aria-label="delete" color="primary" onClick={onClose}>
+                  <KeyboardTabIcon />
                 </IconButton>
               </Grid>
             </Grid>
@@ -237,12 +234,6 @@ const MultipleOwnerToContactDrawer = ({
               </FormControl>
             </Box>
             }
-
-            {/* <Box mt={2}>
-              <Typography>
-                Selected interest owners will be combined into a single contact.
-            </Typography>
-            </Box> */}
             {
               tab === TAB.EXISTING &&
               <Box mt={2}>
@@ -269,10 +260,10 @@ const MultipleOwnerToContactDrawer = ({
             </Box>
           </Box>
 
-          <Box ml={3}>
+          <Box>
             {rows.map((row) => (
 
-              <Grid container direction="row" spacing={2} alignItems="center" key={row.id}>
+              <Grid container direction="row" spacing={2} alignItems="center" key={row.id} justify="space-between" display="flex">
                 {
                   tab === TAB.NEW && actionType === ACTION.COMBINE && <Grid item md={1}>
                     {primaryOwner.id === row.id ? (
@@ -292,7 +283,7 @@ const MultipleOwnerToContactDrawer = ({
                     <Grid container alignItems='center' style={{ paddingLeft: 10 }}>
                       <div style={{ width: '100%' }}>{row.name || row.OwnerName}</div>
                       <div>{row.StreetAddress || row.address1} {row.City || row.city}, {row.State || row.state}, {row.Zip || row.zip}</div>
-                      
+
                     </Grid>
                   </Typography>
                 </Grid>
@@ -355,23 +346,22 @@ const MultipleOwnerToContactDrawer = ({
                 />
               </div>
               <div className={classes.field}>
-                <label className={classes.bold}>Campaign Name</label>
+                <label className={classes.bold}>Campaign Names</label>
                 <Controller
                   control={control}
-                  name="campaign"
-                  render={(props) => (
-                    <AutoCompleteWithAddNew
-                      value={searchCampaign}
-                      onSearch={(value) => {
-                        setSearchCampaign(value);
+                  name="campaignNames"
+                  render={(params) => (
+                    <CampaignNameField
+                      {...params}
+                      value={params.value}
+                      className={classes.maxWidth}
+                      onChange={(values, id) => {
+                        const _campaigns = [...campaigns, { id, name: values[values.length - 1] }];
+                        params.onChange(values);
+                        setCampaigns(_campaigns);
                       }}
-                      setValue={(value) => {
-                        props.onChange(value);
-                      }}
-                      options={campaignList.map((campaign) => ({
-                        _id: campaign,
-                        name: campaign,
-                      }))}
+                      fullWidth
+                      targetLabel="Shape"
                     />
                   )}
                 />
@@ -379,7 +369,15 @@ const MultipleOwnerToContactDrawer = ({
             </>
           }
           <Box marginTop={3} >
-            <Tags variant="standard" setTagId={setTagId} targetLabel="contact" targetSourceId="new" hidePlusIcon />
+            <Tags
+              variant="standard"
+              setTagId={setTagId}
+              targetLabel="contact"
+              targetSourceId="new"
+              hidePlusIcon
+              shareable={false}
+              width="100%"
+            />
           </Box>
 
           {((tab === TAB.EXISTING && nameAutValue && nameAutValue.id === 0)) &&
@@ -392,7 +390,7 @@ const MultipleOwnerToContactDrawer = ({
           <Box pt={6} mt={6} mb={6} mr={2}>
             <Grid container direction="row" justify="flex-end" alignItems="flex-end">
               <Grid item>
-                <Button onClick={handleClose}>Cancel</Button>
+                <Button onClick={onClose}>Cancel</Button>
               </Grid>
               <Grid item>
 

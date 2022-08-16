@@ -71,7 +71,7 @@ const TwitterCard = () => {
 
   return (
     <Fragment>
-      <CardHeader
+      {/* <CardHeader
         className={classes.header}
        // action={<DragHandle />}
         title={`Twitter Feed`}
@@ -97,7 +97,7 @@ const TwitterCard = () => {
         >
           <SearchIcon />
         </IconButton>
-      </Paper>
+      </Paper> */}
       <TwitterWidget />
     </Fragment>
   );

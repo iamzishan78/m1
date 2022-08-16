@@ -7,7 +7,7 @@ import TractInterestsTable from "../../../Table/Tract/TractInterestsTable";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 import TabPanels from "components/Shared/TabPanels";
 import TabButtons from "components/Shared/TabPanels/TabButtons";
-
+import TractsFilters from "components/Land/components/Tracts/TractsFilters";
 function Tracts(props) {
   const [stateApp] = useContext(AppContext);
   // const history = useHistory();
@@ -23,7 +23,6 @@ function Tracts(props) {
   // const [netAcresSum, setNetAcresSum] = useState(0);
   // const [netRoyaltyAcresSum, setNetRoyaltyAcresSum] = useState(0);
   // const [openDrawer, setOpenDrawer] = useState(false);
-
   const onTractCount = (count) => {
     setTractCount(count);
   }
@@ -101,17 +100,31 @@ function Tracts(props) {
   );
 
   return (
-    <div style={{ marginTop: 62, padding: "75px 56px" }}>
-      <AnalyticsCards
-        parent={"Tracts"}
-        esIndex={esIndex[selectedTractTab]}
-        esFilters={esFilters}
-        totalCount={tractCount}
-        setESFilters={setESFilters}
-        cardsDefault={cardsDefault}
-        landSearchQuery={stateApp.landSearchQuery}
-      />
-      <div style={{ marginTop: "40px" }}>
+    <>
+
+      <div
+        style={{
+          marginTop: '65px',
+          padding: "20px 75px 0px 75px"
+        }}
+      >
+        <TractsFilters selectedTractTab={selectedTractTab} />
+        <AnalyticsCards
+          parent={"Tracts"}
+          esIndex={esIndex[selectedTractTab]}
+          esFilters={esFilters}
+          totalCount={tractCount}
+          setESFilters={setESFilters}
+          cardsDefault={cardsDefault}
+          landSearchQuery={stateApp.landSearchQuery}
+        />
+      </div>
+
+      <div
+        style={{
+          marginTop: "40px",
+          marginLeft: "-10px",
+        }}>
         <TabPanels
           value={selectedTractTab}
           panels={[
@@ -138,11 +151,13 @@ function Tracts(props) {
                 onTractCount={onTractCount}
                 landSearchQuery={stateApp.landSearchQuery}
               />
+
             </div>
           ]}
         />
+
       </div>
-    </div>
+    </>
   )
 }
 

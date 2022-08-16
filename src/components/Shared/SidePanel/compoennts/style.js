@@ -54,15 +54,15 @@ export const useStyles = makeStyles((theme) => ({
   itemOne: {
     "&.MuiDivider-root": {
       "&::before": {
-        borderTop: "thin solid green"
+        borderTop: "thin solid green",
       },
       "&::after": {
-        borderTop: "thin solid blue"
-      }
+        borderTop: "thin solid blue",
+      },
     },
     "& .MuiDivider-wrapper": {
-      fontSize: 16
-    }
+      fontSize: 16,
+    },
   },
   mapPositionSection: {
     minWidth: "425px",
@@ -106,6 +106,22 @@ export const useStyles = makeStyles((theme) => ({
     overflow: "overlay",
     backgroundColor: "#0e111a",
   },
+  totalHitMap: {
+    backgroundColor: "#18AADD",
+    color: "#FFFFFF",
+    height: '1.3rem',
+    width: '1.3rem',
+    
+    position: 'absolute',
+    left:'57px',
+    top:'1px',
+    zIndex: '1',
+    textAlign: 'center',
+     "& span" : {
+       padding: '0px'
+     }
+  },
+
   heatmapList: {
     padding: 0,
     minWidth: "425px",
@@ -230,6 +246,19 @@ export const useStyles = makeStyles((theme) => ({
       width: "25ch",
       height: "2ch",
     },
+  },
+  totalFilter: {
+    backgroundColor: "#18AADD",
+    color: "#FFFFFF",
+    height: '1.3rem',
+    width: '1.3rem',
+    marginLeft: '-15px',
+    position: 'relative',
+    zIndex: '1',
+    textAlign: 'center',
+     "& span" : {
+       padding: '0px'
+     }
   },
 }));
 
@@ -359,6 +388,7 @@ export const StyledListItemSecondaryAction = withStyles((theme) => ({
   // this is the layer "manager" button styling
 
   root: {
+    right: "16px !important",
     "& .MuiButton-textPrimary": {
       color: theme.palette.common.white,
       background: "#17acdd",

@@ -98,7 +98,7 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
   const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
 
   const platformData = useMemo(() => {
-    let data = platformDataInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())).filter(data => isShapeGridOnly ? data.shapeGrid ? true : false : true)
+    let data = platformDataInitialData.filter((data) => !search || data.label.toLocaleLowerCase().includes(search.toLocaleLowerCase())).filter(data => isShapeGridOnly ? data.shapeGrid ? true : false : true)
     return data.filter((data) => {
       if (!data.isLayer) return true
       if (data.isLayer && isLayerOnly) {
@@ -110,7 +110,7 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
   }, [search, isLayerOnly])
 
   const userDefinedData = useMemo(() => {
-    return userDefinedInitialData.filter((data) => !search || data.label.toLocaleLowerCase().startsWith(search.toLocaleLowerCase())).filter(data => isShapeGridOnly ? data.shapeGrid ? true : false : true)
+    return userDefinedInitialData.filter((data) => !search || data.label.toLocaleLowerCase().includes(search.toLocaleLowerCase())).filter(data => isShapeGridOnly ? data.shapeGrid ? true : false : true)
 
   }, [search])
 
@@ -161,7 +161,7 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
           </Grid>
 
           {platformData.map((icon) => {
-            if(mapGridCardActivated && !icon.shapeGrid) return false
+            if (mapGridCardActivated && !icon.shapeGrid) return false
             const Icon = icon.Icon
             return <FeatureFlag feature={FEATURES[icon.featureFlag]} noCheck={!FEATURES[icon.featureFlag]}>
               <StyledMenuItem key={icon.index} selected={icon.value === value.value} onClick={() => { handleChange(icon); handleClose(); }}>
@@ -173,25 +173,27 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
             </FeatureFlag>
           })}
 
-            <Grid container className={classes.underlinedHeader} direction="row" justifyContent="space-between" alignItems="center" >
-              <Grid item>
-                <Typography variant="h6">
-                  User Defined Data
-                </Typography>
-              </Grid>
+          <Grid container className={classes.underlinedHeader} direction="row" justifyContent="space-between" alignItems="center" >
+            <Grid item>
+              <Typography variant="h6">
+                User Defined Data
+              </Typography>
             </Grid>
+          </Grid>
 
-            {userDefinedData.map((icon) => {
-              if(mapGridCardActivated && !icon.mapGrid) return false
-              const Icon = icon.Icon
-              return <StyledMenuItem key={icon.index} selected={icon.value === value.value} onClick={() => { handleChange(icon); handleClose() }}>
+          {userDefinedData.map((icon) => {
+            if (mapGridCardActivated && !icon.mapGrid) return false
+            const Icon = icon.Icon
+            return <FeatureFlag feature={FEATURES[icon.featureFlag]} noCheck={!FEATURES[icon.featureFlag]}>
+              <StyledMenuItem key={icon.index} selected={icon.value === value.value} onClick={() => { handleChange(icon); handleClose() }}>
                 <ListItemIcon>
                   <Icon className={classes.icon} fontSize="small" color="#bdc7d1" opacity="1" />
                 </ListItemIcon>
 
                 <ListItemText primary={icon.label} />
               </StyledMenuItem>
-            })}
+            </FeatureFlag>
+          })}
         </Grid>
       </StyledMenu>
     </>

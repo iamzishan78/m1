@@ -194,20 +194,25 @@ export default function CSVFileReader(props) {
       if (data && data.length <= 10001) {
         stateNav.bulkUploadFromMap && stateNav.bulkUploadParcel && data.forEach((data) => {
           Object.assign(data.data, {
-          ...(stateNav.bulkUploadParcel?.id) && { 'Parcel Id': stateNav.bulkUploadParcel?.id },
-          ...(stateNav.bulkUploadParcel?.shapeLabel) && { 'Parcel Name': stateNav.bulkUploadParcel?.shapeLabel }
+            ...(stateNav.bulkUploadParcel?.id) && { 'Parcel Id': stateNav.bulkUploadParcel?.id },
+            ...(stateNav.bulkUploadParcel?.shapeLabel) && { 'Parcel Name': stateNav.bulkUploadParcel?.shapeLabel }
           })
         })
         stateNav.bulkUploadFromMap && stateNav.bulkUploadShape && data.forEach((data) => {
           Object.assign(data.data, {
-          ...(stateNav.bulkUploadShape?.id) && { 'Shape Id': stateNav.bulkUploadShape?.id },
-          ...(stateNav.bulkUploadShape?.shapeLabel) && { 'Shape Name': stateNav.bulkUploadShape?.shapeLabel },
-          ...(stateNav.bulkUploadShape?.shapeType) && { 'Shape Type': stateNav.bulkUploadShape?.shapeType }
+            ...(stateNav.bulkUploadShape?.id) && { 'Shape Id': stateNav.bulkUploadShape?.id },
+            ...(stateNav.bulkUploadShape?.shapeLabel) && { 'Shape Name': stateNav.bulkUploadShape?.shapeLabel },
+            ...(stateNav.bulkUploadShape?.shapeType) && { 'Shape Type': stateNav.bulkUploadShape?.shapeType }
           })
         })
         stateApp.jobType === "TRACTS" && data.forEach((data) => {
           Object.assign(data.data, {
-          ...(data.data["PLSS Township"] || data.data["PLSS Range"]) && { "PLSS Township/Range": [data.data["PLSS Township"], data.data["PLSS Range"]].join(" ") }
+            ...(data.data["PLSS Township"] || data.data["PLSS Range"]) && { "PLSS Township/Range": [data.data["PLSS Township"], data.data["PLSS Range"]].join(" ") }
+          })
+        })
+        stateApp.jobType === "UNITS" && data.forEach((data) => {
+          Object.assign(data.data, {
+            ...(data.data["PLSS Township"] || data.data["PLSS Range"]) && { "PLSS Township/Range": [data.data["PLSS Township"], data.data["PLSS Range"]].join(" ") }
           })
         })
         mapped_headers_from_CSV(data);
@@ -278,7 +283,7 @@ export default function CSVFileReader(props) {
               removeButtonColor="#659cef"
               config={{
                 header: true,
-                transform: (value, header) => { return value === "" ? undefined : value},
+                transform: (value, header) => { return value === "" ? undefined : value },
                 dynamicTyping: true
               }}
               onRemoveFile={handleOnRemoveFile}

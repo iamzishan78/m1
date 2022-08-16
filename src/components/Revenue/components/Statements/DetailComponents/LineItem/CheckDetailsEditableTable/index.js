@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Paper, Button, TableContainer, CircularProgress, IconButton, TextField } from "@material-ui/core";
 import SearchIcon from '@material-ui/icons/Search';
-import { Clear } from "@material-ui/icons";
 import CloseIcon from '@material-ui/icons/Close';
 import TableHOC from "components/Table/TableHOC";
 
@@ -128,7 +127,7 @@ function CheckDetailsEditableTable(props) {
             props.setLoading(false);
         }
     });
-    const [getESCount, { data: eSCount }] = useLazyQuery(GET_ES_COUNT, {fetchPolicy: "no-cache"});
+    const [getESCount, { data: eSCount }] = useLazyQuery(GET_ES_COUNT, { fetchPolicy: "no-cache" });
     const [loadMoreList, { data: loadMoreData, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
     });
 
@@ -156,10 +155,10 @@ function CheckDetailsEditableTable(props) {
     }, [props.parent, props.checkId, search.text]);
 
     useEffect(() => {
-        if(eSCount?.getESCount){
+        if (eSCount?.getESCount) {
             setStartPaginationAt(eSCount.getESCount.total)
         }
-    },[eSCount])
+    }, [eSCount])
 
     const [updateCheckDetail] = useMutation(UPDATE_CHECK_DETAIL);
 
@@ -202,7 +201,7 @@ function CheckDetailsEditableTable(props) {
                     variables: {
                         property: {
                             source: 'Manual Entry',
-                            status: 'Unapproved',
+                            approvalStatus: 'Unapproved',
                             number: value
                         }
                     },
@@ -224,7 +223,7 @@ function CheckDetailsEditableTable(props) {
             refetchQueries: [],
             awaitRefetchQueries: true
         }).then((resp) => {
-            if (!row._id && resp?.data?.updateCheckDetail?.updatedCheckDetail?._id){
+            if (!row._id && resp?.data?.updateCheckDetail?.updatedCheckDetail?._id) {
                 set(row, `_id`, resp.data.updateCheckDetail.updatedCheckDetail._id)
                 setResetAnchor(!resetAnchor)
                 // if(newPropertyAdded){
@@ -235,10 +234,10 @@ function CheckDetailsEditableTable(props) {
     })
 
     useEffect(() => {
-        if(currentRowIndex){
+        if (currentRowIndex) {
             AnchorEl(document.getElementById(`${currentRowIndex}-0`))
         }
-    },[resetAnchor]);
+    }, [resetAnchor]);
 
     const cols = () => RevenueStatementHeadCells.map((cell, index) => {
         cell.value = (row, { focus }) => {
@@ -254,7 +253,7 @@ function CheckDetailsEditableTable(props) {
                     <div id={`id-${cell.id}`}></div>
                     {
                         focus && cell.type === 'autocomplete' ? <AutoCompleteField label={cell.title} value={get(row, cell.id)} column={cell} index={index} onChange={onFieldChange(row._id, cell.id)}
-                            query={GET_ES_FILTER_LIST} esIndex='properties_flat' />
+                            query={GET_ES_FILTER_LIST} esIndex={cell.esIndex} />
 
                             : focus && cell.type === 'date' ? <>
                                 <Date
@@ -343,7 +342,7 @@ function CheckDetailsEditableTable(props) {
 
     // get paginated data hits from checkdetails_flat table
     useEffect(() => {
-        if(startPaginationAt > 0) {
+        if (startPaginationAt > 0) {
             getESPaginatedList({
                 variables: {
                     esIndex,

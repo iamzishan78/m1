@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
-import { useHistory } from "react-router-dom";
-import { get } from "lodash";
+import React, { useEffect, useState, useContext, useMemo } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+import { get, isEmpty } from "lodash";
 import { Grid, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Link from "@material-ui/core/Link";
@@ -12,7 +12,7 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 
 //Contexts
 import { AppContext } from "AppContext";
-import { DocumentContextProvider, DocumentContext } from "components/Document/DocumentContext";
+import { DocumentContextProvider } from "components/Document/DocumentContext";
 
 //Components
 import WellSearchApiFieldES from "components/Shared/Forms/Fields/WellSearchApiFieldES";
@@ -26,9 +26,10 @@ import { DELETE_WELL_DESCRIPTOR, UPSERT_WELL_DESCRIPTOR } from "graphQL/useMutat
 
 const useStyles = makeStyles((theme) => ({
   rootPadding: {
-    padding: "6px 15px",
+    padding: "6px 30px 6px 15px",
   },
   list: {
+    overflowX: "hidden",
     overflowY: "auto",
     maxHeight: "79vh",
     "& .MuiList-padding": {
@@ -110,10 +111,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descriptorObject, relatedObjectType }) => {
+const AssociatedWellsList = ({
+  title,
+  relatedObject,
+  relatedObjectType,
+  details
+}) => {
   // Initials
   let history = useHistory();
+  const location = useLocation();
   const classes = useStyles();
+
+  const moduleName = useMemo(() => {
+    if (!isEmpty(details)) {
+      return `${details.number}-${details.name}`;
+    }
+    return "";
+  }, [details]);
 
   // States
   const [search, setSearch] = useState("");
@@ -123,7 +137,6 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
   const [wells, setWells] = useState([]);
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  // const { getWellsFromDocument, wells, wellsFromDocument, getWellsLoading, setWells } = React.useContext(DocumentContext);
   const [getWellsDescriptors, { data: associatedWells, loading: getWellsLoading }] = useLazyQuery(GET_WELL_DESCRIPTORS);
 
   // Mutattions
@@ -146,6 +159,12 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (location.state?.focusOnWellSearch) {
+      setAddWell(true);
+    }
+  }, [location.state]);
 
   // delete well from File Descriptor
   const deleteWell = async (well) => {
@@ -177,7 +196,14 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
 
   // sending to wells page
   const goToWell = (well) => {
-    history.push(`/map/wells/${well?.id.toUpperCase()}`, { showWellBreadcrumb: true });
+    const id = well?.id ?? well.globalWell;
+    history.push(`/map/wells/${id.toUpperCase()}`, {
+      showWellBreadcrumb: true,
+      breadcrumbs: [
+        { title: "Properties", url: "/revenue/properties" },
+        { title: moduleName, url: `/revenue/property/details/${relatedObject}` },
+      ],
+    });
     setStateApp({ ...stateApp, DocumentDrawer: false, selectedDocument: {} });
   };
 
@@ -193,8 +219,9 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
       setWells(wells);
     }
   };
+
   return (
-    <div style={{ marginRight: "14px" }}>
+    <>
       <Grid container direction="row" justify="space-between" alignItems="center" className={classes.rootPadding}>
         {!addWell && (
           <React.Fragment>
@@ -312,7 +339,7 @@ const AssociatedWellsList = ({ title, fetchAssociatedWells, relatedObject, descr
           )}
         </List>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -324,6 +351,7 @@ export default function AssociatedWellsProvider(props) {
   );
 }
 
-AssociatedWellsProvider.defaultProps = {
+AssociatedWellsList.defaultProps = {
   title: "Wells",
+  details: {}
 };

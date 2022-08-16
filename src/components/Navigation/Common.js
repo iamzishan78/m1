@@ -24,6 +24,20 @@ export const useStyles = makeStyles((theme) => ({
       marginLeft: "52px",
     },
   },
+  appBarWhite: {
+    height: "64px",
+    background: "#ffff",
+    zIndex: 1000,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    paddingRight: "0 !important",
+    boxShadow: "none",
+    "& .MuiToolbar-root": {
+      marginLeft: "52px",
+    },
+  },
   appBarShift: {
     marginLeft: `${drawerWidth}px`,
     transition: theme.transitions.create(["width", "margin"], {
@@ -87,9 +101,9 @@ export const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
     overflowX: "hidden",
-    width: theme.spacing(6) + 4,
+    width: theme.spacing(7) + 4,
     [theme.breakpoints.up("sm")]: {
-      width: theme.spacing(6) + 4,
+      width: theme.spacing(7) + 4,
     },
     borderRight: "1px solid rgb(38 52 81) !important",
   },
@@ -99,9 +113,9 @@ export const useStyles = makeStyles((theme) => ({
   },
   content: (props) => ({
     flexGrow: 1,
-    width: props.user ? "calc(100% - 52px)" : "calc(100% - 0px)",
+    width: props.user ? "calc(100% - 60px)" : "calc(100% - 0px)",
     position: "absolute",
-    left: props.user ? "52px" : "0px",
+    left: props.user ? "60px" : "0px",
     height: "100%",
   }),
   grow1: {
@@ -443,7 +457,8 @@ export const useStyles = makeStyles((theme) => ({
   },
   sideNavIcon: {
     minWidth: 0,
-    marginRight: 12,
+    marginRight: 22,
+    marginLeft: 3,
     border: "1px solid #263451",
     borderRadius: "5px",
     "& svg": {
@@ -481,6 +496,30 @@ export const useStyles = makeStyles((theme) => ({
     // width: "120px",
     fontSize: "15px",
     padding: "10px",
+  },
+  editWorkspaceIcon: {
+    textAlign: "right",
+    margin: "5px 0px 0px 108px",
+    "& svg": {
+      color: "white",
+      fill: "#ffff",
+    },
+  },
+  workspaceIcon: {
+    width: "260px",
+    paddingLeft: "5px",
+    paddingRight: "15px",
+    display: "flex",
+    alignItems: "center",
+    "& img": {
+      width: "50px",
+      height: "52px",
+    },
+    "& .MuiTypography-root": {
+      marginLeft: "10px",
+      fontWeight: "bold",
+      fontSize: "2.6rem !important",
+    },
   },
 }));
 

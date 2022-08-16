@@ -1,13 +1,24 @@
 import React, { useEffect, useState, useContext } from "react";
 import { get, debounce } from "lodash";
 import moment from "moment";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 import { useForm, Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
-import { Grid, TextField, Button, Select, MenuItem } from "@material-ui/core";
+import {
+  Grid,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  IconButton,
+  Typography,
+} from "@material-ui/core";
+import { Clear } from "@material-ui/icons";
+import { Autocomplete, createFilterOptions } from "@material-ui/lab";
+import loadashFilter from "lodash/filter";
 import { KeyboardDatePicker } from "@material-ui/pickers";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import StateField from "./State";
 import CountyField from "./County";
 import AssociatedWellsList from "components/Shared/Wells/AssociatedWells";
@@ -18,7 +29,14 @@ import { AppContext } from "AppContext";
 
 import { CONTACT_ENTITY } from "graphQL/useQueryContactEntity";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
+// import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { GET_AUTOCOMPLETE_PROPERTY_LIST } from "graphQL/useQueryGetProperty";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
+import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
+import { useDispatch } from "react-redux";
+import { showInfoMessage } from "actions";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -61,14 +79,14 @@ const useStyles = makeStyles((theme) => ({
   },
   associatedWell: {
     border: "2px solid #d5d5d5",
-    height: "382px",
+    height: "525px",
     borderRadius: "15px",
     maxWidth: "30%",
     width: "30%",
   },
   adornmentAutocomplete: {
     "& .MuiAutocomplete-endAdornment": {
-      right: "50px !important",
+      right: "60px !important",
       "& .MuiAutocomplete-clearIndicator": {
         display: "none",
       },
@@ -76,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
   },
   contactCardIcon: {
     position: "absolute",
-    right: "6px !important",
+    right: "12px !important",
     marginTop: "4px !important",
     cursor: "pointer",
   },
@@ -92,39 +110,85 @@ const useStyles = makeStyles((theme) => ({
       padding: "12px 0px",
     },
     "& .MuiFormControl-marginNormal": {
-      margin: "0px"
+      margin: "0px",
     },
   },
   textField: {
     margin: "0px",
     "& .MuiOutlinedInput-input": {
-      padding: "5px",
+      padding: "13px",
     },
   },
   field: {
     "& .MuiAutocomplete-clearIndicator": {
-      marginRight: "10px",
+      marginRight: "15px",
     },
     "& .MuiFormControl-marginNormal": {
-      margin: "0px"
+      margin: "0px",
     },
     "& .MuiFormControl-marginDense": {
-      margin: "0px"
-    }
+      margin: "0px",
+    },
   },
 }));
 
 export default function HeaderSection(props) {
   const classes = useStyles();
   let history = useHistory();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const [, setStateApp] = useContext(AppContext);
   const { control, setValue, watch, register, reset } = useForm();
   const { propertyDetails, propertyOwnerContact, setEntityToConvert } = props;
   const [entityType, setEntityType] = useState("");
+  const [searchOperator, setSearchOperator] = useState("");
 
-  const [getContactEntity, { data: contactEntityData }] =
-    useLazyQuery(CONTACT_ENTITY);
+  const [getOperatorList, { data: operatorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  const [getContactEntity, { data: contactEntityData }] = useLazyQuery(CONTACT_ENTITY);
+  const {
+    data: acquisitionOptions,
+    loading,
+    error,
+  } = useQuery(GET_AUTOCOMPLETE_PROPERTY_LIST, { variables: { key: "acquisitionID" } });
+  const {
+    data: prospectOptions,
+    loading: prospectOptionsLoading,
+    error: prospectOptionsError,
+  } = useQuery(GET_AUTOCOMPLETE_PROPERTY_LIST, {
+    variables: { key: "prospectID" },
+  });
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
+
+  // console.log('operatorList', operatorList, get(operatorList,'getESFilterList.hits',[])?.map((campaign) => ({
+  //   _id: campaign.key,
+  //   name: campaign.key,
+  // })))
+  useEffect(() => {
+    return () => {
+      const number = watch("number");
+      const name = watch("name");
+
+      if (!number && !name){
+        dispatch(
+          showInfoMessage(
+            "Operator Prop # or Property Name is required."
+          )
+        );
+        history.goBack();
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    getOperatorList({
+      variables: {
+        search: searchOperator ? `${searchOperator}*` : "*",
+        filterKey: "operator.name.keyword",
+        esIndex: "properties_flat",
+        size: 50,
+      }
+    })
+  }, [getOperatorList, searchOperator])
 
   useEffect(() => {
     register("state");
@@ -137,16 +201,13 @@ export default function HeaderSection(props) {
       delete data.owner;
       delete data.operator;
       let owner = {};
-      let operator = {};
+      // let operator = {};
       if (propertyOwnerContact) {
-        owner = propertyOwnerContact?.find(
-          (owner) => owner.entityId === propertyDetails?.owner?._id
-        );
-        operator = propertyOwnerContact?.find(
-          (owner) => owner.entityId === propertyDetails?.operator?._id
-        );
+        owner = propertyOwnerContact?.find((owner) => owner.entityId === propertyDetails?.owner?._id);
+        // operator = propertyOwnerContact?.find((owner) => owner.entityId === propertyDetails?.operator?._id);
       }
-      reset({ ...data, owner: { ...owner, number: data.ownerNumber }, operator });
+      setSearchOperator(propertyDetails?.operator?.name)
+      reset({ ...data, owner: { ...owner, number: data.ownerNumber }, operator: propertyDetails?.operator?.name });
     }
   }, [propertyDetails, propertyOwnerContact]);
 
@@ -169,14 +230,11 @@ export default function HeaderSection(props) {
   };
 
   const checkIfContact = (entityId) => {
-    return !!propertyOwnerContact?.find(
-      (contact) => contact.entityId === entityId
-    );
+    return !!propertyOwnerContact?.find((contact) => contact.entityId === entityId);
   };
 
   const setEntity = (entityDetails) => {
-    if (entityDetails && !checkIfContact(entityDetails?._id))
-      setEntityToConvert({ ...entityDetails, isEntity: true });
+    if (entityDetails && !checkIfContact(entityDetails?._id)) setEntityToConvert({ ...entityDetails, isEntity: true });
   };
 
   const updatePropertyData = (key, value) => {
@@ -192,20 +250,11 @@ export default function HeaderSection(props) {
     });
   };
 
-  const onKeyDown = (e, key, value) => {
-    if (e.key === "Escape") {
-      setValue(key, propertyDetails[key]);
-    }
-    if (e.key === "Enter") {
-      e.preventDefault();
-      updatePropertyData(key, value);
-    }
-  };
-
-
   const handleUpdate = debounce((key, value) => {
     updatePropertyData(key, value);
-  }, 500)
+  }, 500);
+
+  const getMappedOptions = (strArray) => strArray?.map(option => ({ name: option, value: option })) || [];
 
   return (
     <Grid container direction="row" justify="space-between" alignItems="center">
@@ -219,25 +268,29 @@ export default function HeaderSection(props) {
           spacing={1}
           className={classes.fieldsSection}
         >
+
+
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Property #</div>
+                <div className={classes.label}>Internal Prop #</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
                   control={control}
-                  name="number"
+                  name="internalID"
                   render={(params) => (
                     <TextField
                       {...params}
                       className={classes.textField}
                       variant="outlined"
                       margin="dense"
-                      type="text"
+                      placeholder=""
                       fullWidth
-                      onChange={(e) => { params.onChange(e.target.value); handleUpdate("number", e.target.value) }}
-                    // onBlur={(e) => updatePropertyData("number", params.value)}
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                      }}
+                      onBlur={(e) => handleUpdate("internalID", e.target.value)}
                     />
                   )}
                 />
@@ -248,7 +301,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Property</div>
+                <div className={classes.label}>Property Name</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
@@ -262,12 +315,136 @@ export default function HeaderSection(props) {
                       margin="dense"
                       type="text"
                       fullWidth
-                      onChange={(e) => { params.onChange(e.target.value);}}
-                    // onKeyDown={(e) => onKeyDown(e, "name", params.value)}
-                      onBlur={(e) =>handleUpdate("name", e.target.value) }
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                      }}
+                      onBlur={(e) => handleUpdate("name", e.target.value)}
                     />
                   )}
                 />
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <Grid item xs={5}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={3}>
+                <div className={classes.label}>Operator Prop #</div>
+              </Grid>
+              <Grid item xs={8}>
+                <Controller
+                  control={control}
+                  name="number"
+                  render={(params) => (
+                    <TextField
+                      {...params}
+                      className={classes.textField}
+                      variant="outlined"
+                      margin="dense"
+                      type="text"
+                      fullWidth
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                      }}
+                      onBlur={(e) => handleUpdate("number", e.target.value)}
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <Grid item xs={7}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={2}>
+                <div className={classes.label}>Operator</div>
+              </Grid>
+              <Grid item xs={9}>
+                <Controller
+                  control={control}
+                  name="operator"
+                  render={(props) => (
+                    <AutoCompleteWithAddNew
+                      value={searchOperator}
+                      variant="outlined"
+                      onSearch={(value) => {
+                        setSearchOperator(value);
+                      }}
+                      setValue={(value) => {
+                        handleUpdate("operator", { name: value?.name });
+                        props.onChange(value);
+                      }}
+                      options={get(
+                        operatorList,
+                        "getESFilterList.hits",
+                        []
+                      )?.map((campaign) => ({
+                        _id: campaign.key,
+                        name: campaign.key,
+                      }))}
+                    />
+                  )}
+                />
+                {/* <Controller
+                  control={control}
+                  name="operator"
+                  render={(params) => (
+                    <ContactPaginatedAutocomplete
+                      className={classes.field}
+                      nameAutValue={
+                        params.value ? params.value : { _id: "", name: "" }
+                      }
+                      setNameAutValue={(value) => {
+                        if (value) contactEntity(value?._id, "operator");
+                        else handleUpdate("operator", null);
+                      }}
+                      renderInput={(params2) => (
+                        <TextField
+                          {...params2}
+                          margin="dense"
+                          variant="outlined"
+                          InputLabelProps={{
+                            ...params2.InputLabelProps,
+                            shrink: true,
+                          }}
+                          InputProps={{
+                            ...params2.InputProps,
+                            endAdornment: (
+                              <React.Fragment>
+                                {params2.InputProps.endAdornment}
+                                <div
+                                  className={classes.contactCardIcon}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (params?.value?._id) {
+                                      history.push(
+                                        `/contact/details/${params?.value?._id}`
+                                      );
+                                      setStateApp((stateApp) => ({
+                                        ...stateApp,
+                                        selectedContact: `${params?.value?._id}`,
+                                      }));
+                                    }
+                                  }}
+                                >
+                                  <ContactCardIcon
+                                    fill={
+                                      !checkIfContact(
+                                        propertyDetails?.operator?._id
+                                      )
+                                        ? "darkgrey"
+                                        : undefined
+                                    }
+                                  />
+                                </div>
+                              </React.Fragment>
+                            ),
+                          }}
+                        />
+                      )}
+                    />
+                  )}
+                /> */}
               </Grid>
             </Grid>
           </Grid>
@@ -289,9 +466,12 @@ export default function HeaderSection(props) {
                       margin="dense"
                       placeholder=""
                       fullWidth
-                      onChange={(e) => { params.onChange(e.target.value); handleUpdate("ownerNumber", e.target.value) }}
-                    // onKeyDown={(e) => onKeyDown(e, "ownerNumber", params.value)}
-                    // onBlur={() => setValue("ownerNumber", propertyDetails.ownerNumber)}
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                      }}
+                      onBlur={(e) =>
+                        handleUpdate("ownerNumber", e.target.value)
+                      }
                     />
                   )}
                 />
@@ -302,28 +482,9 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Owner</div>
+                <div className={classes.label}>Owner Name</div>
               </Grid>
               <Grid item xs={9}>
-                {/* 
-                <Controller
-                  control={control}
-                  name='owner'
-                  defaultValue={{ _id: propertyDetails?.owner } || {}}
-                  render={(
-                    { onChange, value, ref },
-                  ) => (
-                    <AutocompEntityNamesList variant='outlined' margin='' size='' nameAutValue={value} withContactCard={true}
-                      setNameAutValue={(value) => {
-                        if (value?._id)
-                          onChange({ _id: value._id, name: value.name });
-                        else
-                          onChange({});
-                        handleUpdate('owner', { name: value?.name, _id: value?._id })
-                      }} />
-                  )}
-                /> */}
-
                 <Controller
                   control={control}
                   name="owner"
@@ -334,9 +495,8 @@ export default function HeaderSection(props) {
                       }
                       className={classes.field}
                       setNameAutValue={(value) => {
-                        if (value)
-                          contactEntity(value?._id, "owner");
-                        else handleUpdate("owner", null)
+                        if (value) contactEntity(value?._id, "owner");
+                        else handleUpdate("owner", null);
                       }}
                       renderInput={(params2) => (
                         <TextField
@@ -357,13 +517,15 @@ export default function HeaderSection(props) {
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     if (params?.value?._id) {
-                                      history.push(`/contact/details/${params?.value?._id}`);
+                                      history.push(
+                                        `/contact/details/${params?.value?._id}`
+                                      );
                                       setStateApp((stateApp) => ({
                                         ...stateApp,
                                         selectedContact: `${params?.value?._id}`,
                                       }));
                                     }
-                                    setEntity(propertyDetails?.owner)
+                                    setEntity(propertyDetails?.owner);
                                   }}
                                 >
                                   <ContactCardIcon
@@ -385,106 +547,83 @@ export default function HeaderSection(props) {
               </Grid>
             </Grid>
           </Grid>
-
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Date</div>
+                <div className={classes.label}>DO Date</div>
               </Grid>
               <Grid item xs={8} className={classes.datePicker}>
                 <Controller
                   control={control}
                   name="documentDate"
                   render={(params) => (
-                    <KeyboardDatePicker
+                    <TextField
                       autoOk
-                      disableToolbar
-                      variant="inline"
-                      inputVariant="outlined"
-                      format="MM/DD/YYYY"
+                      type="date"
+                      variant="outlined"
                       margin="normal"
-                      id="date-picker-inline"
-                      value={params.value ? params.value : null}
-                      onChange={(date) => {
+                      fullWidth
+                      value={moment(params?.value || "").format("yyyy-MM-DD")}
+                      onChange={(e) => {
+                        params.onChange(moment(e.target.value).toISOString());
+                      }}
+                      onBlur={(e) => {
                         updatePropertyData(
                           "documentDate",
-                          moment(date).toISOString()
+                          moment(e.target.value).toISOString()
                         );
                       }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      disableToolbar
                       KeyboardButtonProps={{ "aria-label": "change date" }}
-                      InputAdornmentProps={{ position: "start" }}
-                      fullWidth
+                      format="MM/DD/YYYY"
+                      PopoverProps={{ disablePortal: false }}
+                      InputProps={{
+                        endAdornment: (
+                          <IconButton
+                            onClick={(event) =>
+                              updatePropertyData("documentDate", null)
+                            }
+                          >
+                            <Clear style={{ height: 22, width: 22 }} />
+                          </IconButton>
+                        ),
+                        classes: {
+                          root: classes.dateRoot,
+                        },
+                      }}
                     />
                   )}
                 />
               </Grid>
             </Grid>
           </Grid>
-
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Operator</div>
+                <div className={classes.label}>DO Status</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
                   control={control}
-                  name="operator"
+                  name="divOrderStatus"
                   render={(params) => (
-                    <ContactPaginatedAutocomplete
-                      className={classes.field}
-                      nameAutValue={
-                        params.value ? params.value : { _id: "", name: "" }
-                      }
-                      setNameAutValue={(value) => {
-                        if (value)
-                          contactEntity(value?._id, "operator");
-                        else handleUpdate("operator", null)
+                    <Select
+                      {...params}
+                      id="divOrderStatus-simple-select-outlined-label"
+                      variant="outlined"
+                      value={params.value ? params.value : ""}
+                      fullWidth
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                        updatePropertyData("divOrderStatus", e.target.value);
                       }}
-                      renderInput={(params2) => (
-                        <TextField
-                          {...params2}
-                          margin="dense"
-                          variant="outlined"
-                          InputLabelProps={{
-                            ...params2.InputLabelProps,
-                            shrink: true,
-                          }}
-                          InputProps={{
-                            ...params2.InputProps,
-                            endAdornment: (
-                              <React.Fragment>
-                                {params2.InputProps.endAdornment}
-                                <div
-                                  className={classes.contactCardIcon}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (params?.value?._id) {
-                                      history.push(`/contact/details/${params?.value?._id}`);
-                                      setStateApp((stateApp) => ({
-                                        ...stateApp,
-                                        selectedContact: `${params?.value?._id}`,
-                                      }));
-                                      // setEntity(propertyDetails?.owner)
-                                    }
-                                  }}
-                                >
-                                  <ContactCardIcon
-                                    fill={
-                                      !checkIfContact(
-                                        propertyDetails?.operator?._id
-                                      )
-                                        ? "darkgrey"
-                                        : undefined
-                                    }
-                                  />
-                                </div>
-                              </React.Fragment>
-                            ),
-                          }}
-                        />
-                      )}
-                    />
+                    >
+                      <MenuItem value="Received">Received</MenuItem>
+                      <MenuItem value="Not Received">Not Received</MenuItem>
+                    </Select>
                   )}
                 />
               </Grid>
@@ -529,7 +668,8 @@ export default function HeaderSection(props) {
                     <CountyField
                       value={params.value}
                       state={selectedState}
-                      onCountyChange={({ county }) => {
+                      onCountyChange={(selectedCounty) => {
+                        const county = selectedCounty?.county ?? "";
                         updatePropertyData("county", county);
                         setValue("county", county);
                       }}
@@ -540,36 +680,9 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-          <Grid item xs={5}>
-            <Grid container className={classes.gridStyle}>
-              <Grid item xs={3}>
-                <div className={classes.label}>Source</div>
-              </Grid>
-              <Grid item xs={8}>
-                <Controller
-                  control={control}
-                  name="source"
-                  render={(params) => (
-                    <Select
-                      {...params}
-                      id="source-simple-select-outlined-label"
-                      variant="outlined"
-                      value={params.value ? params.value : ''}
-                      fullWidth
-                      onChange={(e) => {
-                        updatePropertyData("source", e.target.value);
-                      }}
-                    >
-                      <MenuItem value="Manual Entry">Manual Entry</MenuItem>
-                      <MenuItem value="Imported">Imported</MenuItem>
-                    </Select>
-                  )}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
+         
 
-          <Grid item xs={7}>
+          {/* <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
                 <div className={classes.label}>Status</div>
@@ -583,15 +696,281 @@ export default function HeaderSection(props) {
                       {...params}
                       id="status-simple-select-outlined-label"
                       variant="outlined"
-                      value={params.value ? params.value : ''}
+                      value={params.value ? params.value : ""}
                       fullWidth
                       onChange={(e) => {
                         updatePropertyData("status", e.target.value);
                       }}
                     >
-                      <MenuItem value="Approved">Approved</MenuItem>
-                      <MenuItem value="Unapproved">Unapproved</MenuItem>
+                      <MenuItem value="In Pay">In Pay</MenuItem>
+                      <MenuItem value="Not in Pay">Not in Pay</MenuItem>
                     </Select>
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Grid> */}
+          <Grid item xs={5}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={3}>
+                <div className={classes.label}>Pay Status</div>
+              </Grid>
+              <Grid item xs={8}>
+                <Controller
+                  control={control}
+                  name="status"
+                  render={(params) => (
+                    <Select
+                      {...params}
+                      id="status-simple-select-outlined-label"
+                      variant="outlined"
+                      value={params.value ? params.value : ""}
+                      fullWidth
+                      onChange={(e) => {
+                        updatePropertyData("status", e.target.value);
+                      }}
+                    >
+                      <MenuItem value="InPay">In Pay</MenuItem>
+                      <MenuItem value="NotInPay">Not in Pay</MenuItem>
+                    </Select>
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <Grid item xs={7}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={2}>
+                <div className={classes.label}>Internal Company</div>
+              </Grid>
+              <Grid item xs={9}>
+                <Controller
+                  control={control}
+                  name="internalCompany"
+                  render={(params) => {
+                    return (
+                      <AutoCompleteTypeComponent
+                        {...params}
+                        autoFocus={false}
+                        shapeType={"Unit"}
+                        typeKey={"internalCompany"}
+                        variant="outlined"
+                        onChange={(e, value) => {
+                          params.onChange(value?.name || "");
+                        }}
+                        onBlur={(e) => {
+                          handleUpdate("internalCompany", e.target.value || "");
+                        }}
+                      />
+                    );
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <Grid item xs={5}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={3}>
+                <div className={classes.label}>Prospect</div>
+              </Grid>
+              <Grid item xs={8}>
+                <Controller
+                  control={control}
+                  name="prospectID"
+                  render={(params) => (
+                    <Autocomplete
+                      className={classes.field}
+                      value={
+                        params.value
+                          ? { _id: params.value, name: params.value }
+                          : null
+                      }
+                      disableListWrap
+                      onBlur={(e) =>
+                        updatePropertyData("prospectID", e.target.value)
+                      }
+                      options={getMappedOptions(
+                        prospectOptions?.getAutoCompletePropertyList
+                      )}
+                      getOptionLabel={(option) => {
+                        // Value selected with enter, right from the input
+                        if (typeof option === "string") {
+                          return option;
+                        }
+                        // Add "xxx" option created dynamically
+                        if (option.inputValue) {
+                          return option.name;
+                        }
+
+                        if (option?.name) return option.name;
+                        else return "";
+                      }}
+                      getOptionSelected={(option, value) => {
+                        return option?._id === value?._id;
+                      }}
+                      renderOption={(option) => {
+                        if (option.isNew)
+                          return (
+                            <Typography style={{ color: "midnightblue" }}>
+                              Add '{option.name}'
+                            </Typography>
+                          );
+
+                        return (
+                          <Grid container spacing={0}>
+                            <Grid container item xs={12} alignItems="center">
+                              <Grid item xs>
+                                <span style={{ fontWeight: 400 }}>
+                                  {option.name}
+                                </span>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        );
+                      }}
+                      filterOptions={(options, params) => {
+                        const inputValue = params.inputValue;
+                        const filtered = createFilterOptions()(options, {
+                          ...params,
+                          inputValue,
+                        });
+                        const isExist = loadashFilter(filtered, (filter) => {
+                          return filter._id === inputValue;
+                        });
+                        // Suggest the creation of a new value
+                        if (
+                          inputValue !== "" &&
+                          (!isExist || isExist.length === 0)
+                        ) {
+                          filtered.unshift({
+                            value: inputValue,
+                            name: inputValue,
+                            isNew: true,
+                          });
+                        }
+                        return filtered;
+                      }}
+                      onChange={(event, newValue) => {
+                        setValue("prospectID", newValue?.value || "");
+                      }}
+                      renderInput={(props) => (
+                        <TextField
+                          variant={"outlined"}
+                          margin="dense"
+                          {...props}
+                          InputProps={{
+                            ...props.InputProps,
+                          }}
+                          fullWidth
+                          size="small"
+                        />
+                      )}
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={7}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={2}>
+                <div className={classes.label}>Acquisition ID</div>
+              </Grid>
+              <Grid item xs={9}>
+                <Controller
+                  control={control}
+                  name="acquisitionID"
+                  render={(params) => (
+                    <Autocomplete
+                      className={classes.field}
+                      value={
+                        params.value
+                          ? { _id: params.value, name: params.value }
+                          : null
+                      }
+                      disableListWrap
+                      onBlur={(e) =>
+                        updatePropertyData("acquisitionID", e.target.value)
+                      }
+                      options={getMappedOptions(
+                        acquisitionOptions?.getAutoCompletePropertyList
+                      )}
+                      getOptionLabel={(option) => {
+                        // Value selected with enter, right from the input
+                        if (typeof option === "string") {
+                          return option;
+                        }
+                        // Add "xxx" option created dynamically
+                        if (option.inputValue) {
+                          return option.name;
+                        }
+
+                        if (option?.name) return option.name;
+                        else return "";
+                      }}
+                      getOptionSelected={(option, value) => {
+                        return option?._id === value?._id;
+                      }}
+                      renderOption={(option) => {
+                        if (option.isNew)
+                          return (
+                            <Typography style={{ color: "midnightblue" }}>
+                              Add '{option.name}'
+                            </Typography>
+                          );
+
+                        return (
+                          <Grid container spacing={0}>
+                            <Grid container item xs={12} alignItems="center">
+                              <Grid item xs>
+                                <span style={{ fontWeight: 400 }}>
+                                  {option.name}
+                                </span>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        );
+                      }}
+                      filterOptions={(options, params) => {
+                        const inputValue = params.inputValue;
+                        const filtered = createFilterOptions()(options, {
+                          ...params,
+                          inputValue,
+                        });
+                        const isExist = loadashFilter(filtered, (filter) => {
+                          return filter._id === inputValue;
+                        });
+                        // Suggest the creation of a new value
+                        if (
+                          inputValue !== "" &&
+                          (!isExist || isExist.length === 0)
+                        ) {
+                          filtered.unshift({
+                            value: inputValue,
+                            name: inputValue,
+                            isNew: true,
+                          });
+                        }
+                        return filtered;
+                      }}
+                      onChange={(event, newValue) => {
+                        setValue("acquisitionID", newValue?.value || "");
+                      }}
+                      renderInput={(props) => (
+                        <TextField
+                          variant={"outlined"}
+                          margin="dense"
+                          {...props}
+                          InputProps={{
+                            ...props.InputProps,
+                          }}
+                          fullWidth
+                          size="small"
+                        />
+                      )}
+                    />
                   )}
                 />
               </Grid>
@@ -620,7 +999,9 @@ export default function HeaderSection(props) {
                       fullWidth
                       multiline
                       rows={5}
-                      onBlur={(e) => updatePropertyData("legalDescription", params.value)}
+                      onBlur={(e) =>
+                        updatePropertyData("legalDescription", params.value)
+                      }
                     />
                   )}
                 />
@@ -634,6 +1015,7 @@ export default function HeaderSection(props) {
           title="Associated Wells"
           relatedObject={props.propertyId}
           relatedObjectType="Property"
+          details={propertyDetails}
         />
       </Grid>
     </Grid>

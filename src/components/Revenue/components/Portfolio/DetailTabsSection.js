@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, Tabs, Tab } from "@material-ui/core";
@@ -7,6 +7,7 @@ import { Typography, Tabs, Tab } from "@material-ui/core";
 import RevenueSection from "./RevenueSection";
 import AdjustmentSection from "./AdjustmentSection";
 import ProductsSection from "./Products";
+import { debounce } from "lodash";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -115,6 +116,7 @@ const StyledTab = withStyles((theme) => ({
 export default function DetailTabsSection({ monthsInterval, portfolioSummary }) {
   const classes = useStyles();
   const [tab, setTab] = useState(0);
+  const [isButtonScroll, setButtonScroll] = useState(false);
   const selectedTabRef = useRef(null);
   const [adjustmentTotals, setAdjustmentTotals] = useState([]);
   const [netRevenueTotals, setNetRevenueTotals] = useState([]);
@@ -128,6 +130,17 @@ export default function DetailTabsSection({ monthsInterval, portfolioSummary }) 
       });
   }, [tab]);
 
+  const handleScroll = (e) => {
+    if (!isButtonScroll) {
+      const { scrollTop } = e.target;
+      if (scrollTop <= 270 && tab !== 0) setTab(0);
+      else if (scrollTop > 270 && scrollTop <= 470 && tab !== 1) setTab(1);
+      else if (scrollTop > 470 && tab !== 2) setTab(2);
+    }
+    handleEndScroll();
+  };
+
+  const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
   const adjustmentsRef = useCallback(obj => {
     if (obj != null) {
       setAdjustmentTotals(obj);
@@ -141,16 +154,23 @@ export default function DetailTabsSection({ monthsInterval, portfolioSummary }) 
   }, []);
 
   return (
-    <div className={classes.tabsSection}>
-      <div className={classes.tabsHeader}>
-        <StyledTabs value={tab} onChange={(event, tab) => setTab(tab)} aria-label="ant example">
+    <div className={classes.tabsSection} >
+      <div className={classes.tabsHeader} >
+        <StyledTabs
+          value={tab}
+          onChange={(event, tab) => {
+            setButtonScroll(true);
+            setTab(tab);
+          }}
+          aria-label="ant example"
+        >
           <StyledTab label="Revenue" />
           <StyledTab label="Adjustments" />
           <StyledTab label="Products" />
           {/* <StyledTab label="Properties" /> */}
         </StyledTabs>
       </div>
-      <div style={{ overflow: "overlay", backgroundColor: "#f3f3f3" }}>
+      <div style={{ overflow: "overlay", backgroundColor: "#f3f3f3", maxHeight: "calc(100vh - 235px)" }} onScroll={handleScroll}>
         <div className={classes.revenueSection} ref={tab === 0 ? selectedTabRef : null}>
           <RevenueSection monthsInterval={monthsInterval} portfolioSummary={portfolioSummary} adjustmentsRef={adjustmentsRef} netRevenueRef={netRevenueRef} />
         </div>

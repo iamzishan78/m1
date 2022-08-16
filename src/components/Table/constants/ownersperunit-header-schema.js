@@ -36,7 +36,7 @@ const OwnersPerUnitHeadCells = [
   },
   {
     name: "ownerType",
-    esKey: 'contact.ownerType',
+    esKey: 'contact.ownerType.keyword',
     label: "Entity Type",
     options: { filter: true }
   },
@@ -105,6 +105,23 @@ const OwnersPerUnitHeadCells = [
     esKey: "contact.contactStatus.keyword",
     label: "Status",
     options: {
+      filter: true,
+    },
+  },
+  {
+    name: "contact",
+    label: "Campaign Name",
+    esKey: "contact.campaignName.keyword",
+    options: {
+      customRender: (value) => {
+        if (typeof value.campaignName === "string") {
+          return value.campaignName;
+        } else {
+          return value.campaignName?.map((v, index) => `${v}${index < value?.length - 1 ? ", " : ""}`);
+        }
+      },
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      sort: true,
       filter: true,
     },
   },
@@ -189,6 +206,7 @@ const OwnersPerUnitHeadCells = [
     options: {
       display: false,
       filter: true,
+      forceFilter: true,
       viewColumns: false,
     },
     custom: {
@@ -204,6 +222,19 @@ const OwnersPerUnitHeadCells = [
           value: "false",
         },
       ],
+    },
+  },
+  {
+    name: "actionMenu",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+      parent: "Unit detail"
     },
   },
 ];

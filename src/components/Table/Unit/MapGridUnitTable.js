@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Container } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import debounce from "lodash/debounce";
@@ -23,11 +23,21 @@ import TableHeader from "components/Table/constants/map-grid-unit-header-schema"
 import { usetableStyles } from "../Styles";
 
 function MapGridUnitTable(props) {
+  // const defaultView = {
+  //   name: `All Units`,
+  //   type: "Default",
+  // };
+
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
   );
+  // const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
+
+  // const GridViewModule = userGridViewSettings[`Agreements`];
+
+  // const [selectedGridView, setSelectedGridView] = useState(defaultView);
 
   const [getShapeOwnerDataById, { data: owners }] = useLazyQuery(
     GET_SHAPE_OWNERS_DATA_BY_ID,
@@ -55,6 +65,7 @@ function MapGridUnitTable(props) {
           objectName: hit.Operator,
         },
       };
+      hit.ownersCount = get(hit, "interestSummary.unitInterestCount", "");
       hit.qualifier = get(hit, "qualifier.name", "");
       hit.lastUpdated = moment(hit._ts).format('MM/DD/YYYY');
       hit = props.setGenricData(hit, hit._id, [], []);
@@ -68,14 +79,19 @@ function MapGridUnitTable(props) {
     return hits;
   };
 
+  // useEffect(() => {
+  //   setSelectedGridView(GridViewModule || defaultView);
+  // }, [GridViewModule]);
+
   useEffect(() => {
     setTableMeta({
-      addableName: "Unit",
-      extendSearchQuery: searchInput,
-      searchFields: ["name", "_all"],
+      extendSearchQuery: searchInput || stateApp.landSearchQuery,
+      // selectedGridView: GridViewModule || defaultView,
+      searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
       startPaginationAt: 25,
+      // typeKeyword: { gridViewCategory: "Units", metaModule: "Unit" },
       filters: [
         {
           field: "layer.keyword",
@@ -85,26 +101,25 @@ function MapGridUnitTable(props) {
       defaultSort: { field: '_ts', order: 'desc' },
       polygon: stateApp?.currentFeature?.geometry && {
         type: "geo_intersects",
-        field: "geoJSON",
+        field: "shapeGeometry",
         value: stateApp?.currentFeature?.geometry
       },
       formatHits,
     });
     // eslint-disable-next-line
-  }, [searchInput]);
+  }, [searchInput, stateApp.landSearchQuery]);
 
   useEffect(() => {
     if (owners?.getShapeOwnerDataById && get(status, "getESFilterList.hits", [])) {
       const rows = JSON.parse(JSON.stringify(props.rows));
-      const contactStatuses = get(status, "getESFilterList.hits", []).map(s => ({ name:s.key, data:[] }));
+      const contactStatuses = get(status, "getESFilterList.hits", []).map(s => ({ name: s.key, data: [] }));
 
       for (let i = 0; i < rows.length; i++) {
-        rows[i].ownersCount = owners?.getShapeOwnerDataById[rows[i]._id].total;
-        for(let j=0; j<contactStatuses.length; j++){
+        for (let j = 0; j < contactStatuses.length; j++) {
           const data = owners?.getShapeOwnerDataById[rows[i]._id].status[contactStatuses[j].name]
-          contactStatuses[j].data = data ?[data] : [0]
+          contactStatuses[j].data = data ? [data] : [0]
         }
-        rows[i].unitStatus = {series: contactStatuses, xaxis:['']}
+        rows[i].unitStatus = { series: contactStatuses, xaxis: [''] }
       }
       props.setRows(rows);
     }
@@ -113,7 +128,7 @@ function MapGridUnitTable(props) {
   useEffect(() => {
     if (props.rows.length > 0) {
       const ids = props.rows
-        .filter((row) => typeof row.ownersCount !== "number")
+        .filter((row) => !row.unitStatus)
         .map((row) => row._id);
       if (ids.length > 0) {
         getShapeOwnerDataById({
@@ -124,7 +139,7 @@ function MapGridUnitTable(props) {
       }
     }
   }, [props.rows]);
-  
+
   useEffect(() => {
     getStatus({
       variables: {
@@ -133,7 +148,7 @@ function MapGridUnitTable(props) {
         size: 50,
       }
     });
-  },[]);
+  }, []);
 
   return (
     <Container

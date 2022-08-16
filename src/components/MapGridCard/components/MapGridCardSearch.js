@@ -56,8 +56,6 @@ function MapGridCardSearch(props) {
 
 
   // function states 
-  const [inputValue, setInputValue] = React.useState("");
-  const [options, setOptions] = React.useState([]);
   const [searchTop] = React.useState(100);
 
   const [getESSimpleSearch, { data: esSearchData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });
@@ -179,6 +177,13 @@ function MapGridCardSearch(props) {
         setMapGridCardState({
           searchResultData: [...newOptions],
           searchloading: false,
+        })
+      );
+    }
+    return () => {
+      dispatch(
+        setMapGridCardState({
+          searchInputValue: '',
         })
       );
     }

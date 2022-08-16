@@ -16,8 +16,15 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import { CircularProgress } from "@material-ui/core";
+import TractIcon from "components/Shared/svgIcons/tract";
+import UnitIcon from "components/Shared/svgIcons/unit";
+import NotificationsIcon from "@material-ui/icons/Notifications";
+import FolderIcon from "@material-ui/icons/Folder";
+import ContactIcon from "@material-ui/icons/Group";
+import FlowIcon from "@material-ui/icons/Repeat";
+import { LocalAtm } from "@material-ui/icons";
+import { DescriptionOutlined } from "@material-ui/icons";
 
-import { CommentText } from "components/Transact/components/DealComments";
 import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
 import { UPDATE_NOTIFICATION_STATUS } from "graphQL/useMutationUpdateNotificationStatus";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
@@ -25,6 +32,8 @@ import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { AppContext } from "AppContext";
 
 import ReactTimeAgo from "react-time-ago";
+import { dateIsValid } from "utils/helper";
+import { CommonCommentText } from "components/Shared/CommentComponent";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -60,6 +69,11 @@ const useStyles = makeStyles((theme) => ({
     textDecoration: "none",
     color: "black",
     cursor: "pointer",
+    display: "flex",
+    "& svg": {
+      color: "#000000",
+      marginRight: "7px",
+    },
     "&:hover": {
       textDecoration: "underline",
     },
@@ -94,6 +108,9 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "10px",
     fontSize: "12px",
   },
+  sysNotification: {
+    marginLeft: 0,
+  },
   customTabs: {
     float: "right",
     paddingRight: "30px",
@@ -122,8 +139,12 @@ const Notifications = () => {
   const [tab, setTab] = useState(0);
 
   const [updateNotificationStatus] = useMutation(UPDATE_NOTIFICATION_STATUS);
+
   const [getNotifications, { data: notificationsData, loading }] =
-    useLazyQuery(GET_NOTIFICATIONS);
+    useLazyQuery(GET_NOTIFICATIONS, {
+      fetchPolicy: 'cache-and-network'
+    });
+
   const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
     fetchPolicy: "cache-first",
   });
@@ -202,6 +223,28 @@ const Notifications = () => {
       </Grid>
     );
   };
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case "PARCEL":
+        return <TractIcon />;
+      case "UNIT":
+        return <UnitIcon />;
+      case "AGREEMENT":
+        return <FolderIcon />;
+      case "CONTACT":
+        return <ContactIcon />;
+      case "DEAL":
+        return <FlowIcon />;
+      case "CHECK":
+        return <LocalAtm />;
+      case "PROPERTY":
+        return <DescriptionOutlined />;
+      default:
+        return;
+    }
+  };
+
+  console.log(notifications)
   return (
     <Fragment>
       <CardHeader
@@ -211,98 +254,94 @@ const Notifications = () => {
       />
 
       {loading ? (
-        <CircularProgress
-          className={classes.progress}
-          size={80}
-          disableShrink
-          color="secondary"
-        ></CircularProgress>
+        <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
       ) : (
         <List style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
-          {notifications.map(
-            (
-              {
-                _id,
-                state,
-                source,
-                parent,
-                notificationType,
-                parentType,
-                pipelineId,
-                stageId,
-              },
-              i
-            ) => {
-              const user = users.find((user) => source.user === user._id);
-              return (
-                <Paper key={i} className={classes.paper}>
-                  <Grid
-                    container
-                    direction="row"
-                    justify="space-between"
-                    alignItems="center"
-                    style={
-                      state === "UNREAD"
-                        ? { borderLeft: "4px solid #01B0F0" }
-                        : { borderLeft: "4px solid #BFBFBF" }
+          {notifications.map(({ _id, state, source, parent, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
+            const user = users.find((user) => source.user === user._id);
+            return (
+              <Paper key={i} className={classes.paper}>
+                <Grid
+                  container
+                  direction="row"
+                  justify="space-between"
+                  alignItems="center"
+                  style={
+                    state === "UNREAD"
+                      ? { borderLeft: "4px solid #01B0F0" }
+                      : { borderLeft: "4px solid #BFBFBF" }
+                  }
+                  className={classes.listitem}
+                  spacing={1}
+                  onClick={() => {
+                    updateNotificationStatus({
+                      variables: {
+                        id: _id,
+                        state: "READ",
+                      },
+                      refetchQueries: ["getNotifications"],
+                      awaitRefetchQueries: false,
+                    });
+                    if (parentType === "DEAL") {
+                      history.push(
+                        `/flow/${pipelineId}/lane/${stageId}/card/${parent._id}/`
+                      );
+                    } else if (
+                      parentType === "PARCEL" ||
+                      parentType === "UNIT"
+                    ) {
+                      history.push(
+                        `/map/${parentType.toLowerCase()}s/${parent._id}`
+                      );
+                    } else if (parentType === "AGREEMENT") {
+                      history.push(`/map/${parent.layer}s/${parent._id}`);
+                    } else if (parentType === "CHECK") {
+                      history.push(`/revenue/statement/details/${parent._id}`);
+                    } else if (parentType === "PROPERTY") {
+                      history.push(`/revenue/property/details/${parent._id}`);
+                    } else if (parentType === "CONTACT") {
+                      history.push(`/contact/details/${parent._id}`);
                     }
-                    className={classes.listitem}
-                    spacing={1}
-                    onClick={() => {
-                      updateNotificationStatus({
-                        variables: {
-                          id: _id,
-                          state: "READ",
-                        },
-                        refetchQueries: ["getNotifications"],
-                        awaitRefetchQueries: false,
-                      });
-                      if (parentType === "DEAL") {
-                        history.push(`/flow/${pipelineId}/lane/${stageId}/card/${parent._id}/`);
-                      } else if (parentType === "PARCEL" || parentType === "UNIT") {
-                        history.push(`/map/${parentType.toLowerCase()}s/${parent._id}`);
-                      } else if (parentType === "AGREEMENT") {
-                        history.push(`/map/${parent.layer}s/${parent._id}`);
-                      } else if (parentType === "CHECK") {
-                        history.push(`/revenue/statement/details/${parent._id}`);
-                      } else if (parentType === "PROPERTY") {
-                        history.push(`/revenue/property/details/${parent._id}`);
-                      }
-
-                    }}
-                  >
-                    <Grid item xs={10} zeroMinWidth>
-                      {parent && (parentType === "DEAL" || parentType === "PARCEL" || parentType === "UNIT" || parentType === "AGREEMENT") && (
-                        <span className={classes.title}>{parent.name}</span>
+                  }}
+                >
+                  <Grid item xs={10} zeroMinWidth>
+                    {parent &&
+                      (parentType === "DEAL" ||
+                        parentType === "PARCEL" ||
+                        parentType === "UNIT" ||
+                        parentType === "AGREEMENT" ||
+                        parentType === "CONTACT") && (
+                        <span className={classes.title}>
+                          {getNotificationIcon(parentType)}
+                          {parent.name}
+                        </span>
                       )}
-                      {parent && parentType === "CHECK" && (
-                        <span className={classes.title}>{parent.checkNumber}-{parent?.payor?.name}</span>
-                      )}
-                      {parent && parentType === "PROPERTY" && (
-                        <span className={classes.title}>{parent.number}-{parent.name}</span>
-                      )}
-                      {notificationType === "MENTION" && (
-                        <Grid container className={classes.gridStyle}>
-                          <Grid item xs={1}>
-                            <IconButton
-                              style={{ marginTop: "0px", marginLeft: "14px" }}
-                            >
-                              {profilesInfo[user?.email]?.profileImage ? (
-                                <Avatar
-                                  src={profilesInfo[user?.email].profileImage}
-                                  size="38"
-                                  round
-                                />
-                              ) : (
-                                <Avatar name={user?.name} size="38" round />
-                              )}
-                            </IconButton>
-                          </Grid>
-                          <Grid item xs={11} className={classes.paddingLeft10}>
-                            <div>
-                              <span className={classes.bold}>{user?.name}</span>
-                              <ReactTimeAgo
-                                className={classes.commentTime}
+                    {parent && parentType === "CHECK" && (
+                      <span className={classes.title}>
+                        {getNotificationIcon(parentType)}
+                        {parent.checkNumber}-{parent?.payor?.name}
+                      </span>
+                    )}
+                    {parent && parentType === "PROPERTY" && (
+                      <span className={classes.title}>
+                        {getNotificationIcon(parentType)}
+                        {parent.number}-{parent.name}
+                      </span>
+                    )}
+                    {notificationType === "SYSTEM" && (
+                      <Grid container className={classes.gridStyle}>
+                        <Grid item xs={1}>
+                          <IconButton
+                            style={{ marginTop: "0px", marginLeft: "14px" }}
+                          >
+                            <NotificationsIcon />
+                          </IconButton>
+                        </Grid>
+                        <Grid item xs={11} className={classes.paddingLeft10}>
+                          <div>
+                            {
+                              dateIsValid(Date.parse(dateTimeAdded)) && <ReactTimeAgo
+                                className={[classes.commentTime, classes.sysNotification]}
                                 date={
                                   new Date(
                                     new Intl.DateTimeFormat("en-US", {
@@ -311,58 +350,91 @@ const Notifications = () => {
                                       day: "2-digit",
                                       hour: "2-digit",
                                       minute: "2-digit",
-                                    }).format(Date.parse(source.ts))
+                                    }).format(Date.parse(dateTimeAdded))
                                   )
                                 }
                                 locale="en-US"
                               />
-                            </div>
-                            <CommentText users={users} eachComment={source} />
-                          </Grid>
+                            }
+                            <br />
+                            <span>{message}</span>
+                          </div>
                         </Grid>
-                      )}
-                    </Grid>
-                    <Grid item xs={2} style={{ textAlign: "-webkit-center" }}>
-                      <Tooltip title="Mark as unread">
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            updateNotificationStatus({
-                              variables: {
-                                id: _id,
-                                state: "UNREAD",
-                              },
-                              refetchQueries: ["getNotifications"],
-                              awaitRefetchQueries: false,
-                            });
-                          }}
-                        >
-                          <MarkUnreadIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Archive notification">
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            updateNotificationStatus({
-                              variables: {
-                                id: _id,
-                                state: "ARCHIVED",
-                              },
-                              refetchQueries: ["getNotifications"],
-                              awaitRefetchQueries: false,
-                            });
-                          }}
-                        >
-                          <ArchiveIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </Grid>
+                      </Grid>
+                    )}
+                    {notificationType === "MENTION" && (
+                      <Grid container className={classes.gridStyle}>
+                        <Grid item xs={1}>
+                          <IconButton
+                            style={{ marginTop: "0px", marginLeft: "14px" }}
+                          >
+                            {profilesInfo[user?.email]?.profileImage ? (
+                              <Avatar
+                                src={profilesInfo[user?.email].profileImage}
+                                size="38"
+                                round
+                              />
+                            ) : (
+                              <Avatar name={user?.name} size="38" round />
+                            )}
+                          </IconButton>
+                        </Grid>
+                        <Grid item xs={11} className={classes.paddingLeft10}>
+                          <div>
+                            <span className={classes.bold}>{user?.name}</span>
+                            {
+                              <ReactTimeAgo
+                                className={classes.commentTime}
+                                date={new Date(!isNaN(Number(source.ts)) ? Number(source.ts) : source.ts)}
+                                locale="en-US"
+                              />
+                            }
+                          </div>
+                          <CommonCommentText users={users} eachComment={source} />
+                        </Grid>
+                      </Grid>
+                    )}
                   </Grid>
-                </Paper>
-              );
-            }
-          )}
+                  <Grid item xs={2} style={{ textAlign: "-webkit-center" }}>
+                    <Tooltip title="Mark as unread">
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateNotificationStatus({
+                            variables: {
+                              id: _id,
+                              state: "UNREAD",
+                            },
+                            refetchQueries: ["getNotifications"],
+                            awaitRefetchQueries: false,
+                          });
+                        }}
+                      >
+                        <MarkUnreadIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Archive notification">
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          updateNotificationStatus({
+                            variables: {
+                              id: _id,
+                              state: "ARCHIVED",
+                            },
+                            refetchQueries: ["getNotifications"],
+                            awaitRefetchQueries: false,
+                          });
+                        }}
+                      >
+                        <ArchiveIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Grid>
+                </Grid>
+              </Paper>
+            );
+          })}
         </List>
       )}
     </Fragment>

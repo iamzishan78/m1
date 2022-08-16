@@ -1,47 +1,70 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Button } from "@material-ui/core";
+import { FormControl, Grid, InputLabel, Select } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import { useLazyQuery } from "@apollo/client";
 import moment from "moment";
+import { useSelector } from "react-redux";
+import ReportGroupHeader from "components/Shared/ReportGroupHeader";
+import { MenuItem } from "material-ui";
+import { MuiThemeProvider } from "material-ui/styles";
 
 const useStyles = makeStyles((theme) => ({
-    actionBar: {
-        backgroundColor: "#f7f7f7",
-        width: "100%",
-        minHeight: "65px",
-        marginTop: "80px",
+  actionBar: {
+    backgroundColor: "#f7f7f7",
+    width: "100%",
+    minHeight: "65px",
+    marginTop: "80px",
+  },
+  actionsGrid: {
+    marginTop: "6px",
+    "& .MuiButtonBase-root": {
+      width: "149px",
+      height: "35px",
+      fontWeight: "bold",
     },
-    actionsGrid: {
-        marginTop: "6px",
-        "& .MuiButtonBase-root": {
-            width: "149px",
-            height: "35px",
-            fontWeight: "bold",
-        },
-    },
+  },
+  viewSwitcher: {
+    height: "40px",
+    backgroundColor: "white",
+  },
+
+  formControl: {
+    width: '100%'
+  }
 }));
 
 
-const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFilterToggle }) => {
+const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFilterToggle, extraFitlers= [] }) => {
     const classes = useStyles();
 
     const [selectedFilter, setSelectedFilter] = useState('');
-    const [fromDate, setFromDate] = React.useState('');
-    const [toDate, setToDate] = React.useState(moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD'));
+    const [fromDate, setFromDate] = React.useState(null);
+    const [toDate, setToDate] = React.useState(null);
     const [lastCheckMinDate, setLastCheckMinDate] = useState('');
+    const [status, setStatus] = useState('ALL');
+    const [propertyFilter, setPropertyFilter] = useState([]);
+    
+    const propertiesReportGroup = useSelector(
+      ({ Revenue }) => Revenue.propertiesReportGroup
+    );
 
     const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
         fetchPolicy: "no-cache",
         onCompleted: (data) => {
             if (data?.getESMinValue) {
+                console.log(data?.getESMinValue);
                 setLastCheckMinDate(data?.getESMinValue);
-                setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
+                // setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
+                // setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
             }
         },
     });
-
+    useEffect(() => {
+        setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
+        setToDate(moment().subtract(0, 'months').endOf('month').format('yyyy-MM-DD'));
+    }, []);
     useEffect(() => {
         getESMinValue({
             variables: {
@@ -54,51 +77,100 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
 
 
     useEffect(() => {
-        setESFilters([
-            {
-                field,
-                value: {
-                    range: {
-                        [field]: {
-                            gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
-                            lte: toDate ? `${toDate}T00:00:00.000Z` : null,
-                        },
-                    },
-                },
-                includeEmpty: selectedFilter === 'All Dates' ? true : undefined
-            },
-        ])
-        setFilterToggle(!filterToggle)
+      updateFilters();
+    }, [toDate, fromDate, status, propertyFilter]);
 
-    }, [toDate, fromDate])
+    const updateFilters = () => {
+      const filters = [];
+
+      filters.push({
+        field,
+        value: {
+          range: {
+            [field]: {
+              gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
+              lte: toDate ? `${toDate}T00:00:00.000Z` : null,
+            },
+          },
+        },
+        includeEmpty: selectedFilter === "All Dates" ? true : undefined,
+      });
+
+      if (propertyFilter[0]) {
+        filters.push(propertyFilter[0]);
+      }
+
+      if (status !== "ALL") {
+        filters.push({
+          field: "status.keyword",
+          value: status,
+        });
+      }
+
+      setESFilters(filters);
+      setFilterToggle(!filterToggle);
+    };
 
     return (
-        <div className={classes.actionBar}>
-            <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "0px 36px 0px 45px" }}>
-                {/* <Grid style={{ marginTop: "2px", padding: 0 }}>
-    <label className={classes.label}>Last Check Date</label>
-  </Grid> */}
-                <Grid item xs={8} md={8} lg={9} xl={8} style={{ marginTop: "4px" }}>
-                    <CustomDates fromDate={fromDate} setFromDate={setFromDate} toDate={toDate} setToDate={setToDate} label="Last Check Date" isProperties lastCheckMinDate={lastCheckMinDate} onChange={setSelectedFilter} />
-                </Grid>
-                <Grid item xs={3} md={3} lg={3} xl={4}>
-                    <Grid container display="flex" justify="flex-end" direction="row" spacing={2} className={classes.actionsGrid}>
-                        <Grid item>
-                            {/* hiding until we have views for properties - kc */}
-                            {/* <Button variant="contained" color="secondary">
-          Save View
-        </Button> */}
-                        </Grid>
-                        <Grid item>
-                            {/* <Button variant="contained" color="secondary" onClick={() => setFilterToggle(!filterToggle)}>
-                                Filter
-                            </Button> */}
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
-        </div>
-    )
+      <div className={classes.actionBar}>
+        <Grid
+          container
+          alignItems="center"
+          // justifyContent="space-between"
+          spacing={2}
+          style={{ padding: "0px 36px 0px 45px" }}
+        >
+          <CustomDates
+            fromDate={fromDate}
+            setFromDate={setFromDate}
+            toDate={toDate}
+            setToDate={setToDate}
+            //label="Last Check"
+            isProperties
+            lastCheckMinDate={lastCheckMinDate}
+            onChange={setSelectedFilter}
+          />
+          <Grid item xs maxWidth>
+            {extraFitlers.includes("propertyGroup") && (
+              <ReportGroupHeader
+                type="Properties"
+                esFilters={propertiesReportGroup || []}
+                setESFilters={(value) => setPropertyFilter(value)}
+                setFilterToggle={() => {}}
+                isBackground={false}
+                noUpdate={true}
+                strechedWidth
+                isShrink
+                noPadding
+              />
+            )}
+          </Grid>
+          <Grid item xs md>
+            {extraFitlers.includes("status") && (
+              <MuiThemeProvider>
+                <FormControl variant="outlined" className={classes.formControl}>
+                  <InputLabel id="status-outlined-label">Status</InputLabel>
+
+                  <Select
+                    fullWidth
+                    labelId="status-outlined-label"
+                    id="status-filter"
+                    value={status ? status : ""}
+                    className={classes.viewSwitcher}
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
+                    <MenuItem value="ALL">All</MenuItem>
+                    <MenuItem value="InPay">In Pay</MenuItem>
+                    <MenuItem value="NotInPay">Not In Pay</MenuItem>
+                  </Select>
+                </FormControl>
+              </MuiThemeProvider>
+            )}
+          </Grid>
+
+        </Grid>
+      </div>
+    );
 }
 
 export default LastCheckDateFilter

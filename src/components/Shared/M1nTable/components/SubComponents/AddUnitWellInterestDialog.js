@@ -174,7 +174,7 @@ function AddUnitInterestDialog(props) {
       setLoading(true);
       updateShapeWellInterests({
         variables: {
-          wellInterest: [{
+          wellInterests: [{
             id: props.wellInterest._id,
             isDeleted: true
           }],

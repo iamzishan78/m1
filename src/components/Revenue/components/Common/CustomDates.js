@@ -38,6 +38,9 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   inputFieldDate: {
+    "&.MuiFormControl-marginDense": {
+      marginBottom: 8,
+    },
     "& .MuiOutlinedInput-input": {
       paddingLeft: "0px",
     },
@@ -65,7 +68,7 @@ export default function Portfolio({
     if (isProperties) {
       handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
     } else {
-      handleDateTypeChange(CUSTOM_DATES.LAST_YEAR_TO_DATE);
+      handleDateTypeChange(CUSTOM_DATES.THIS_YEAR_TO_DATE);
     }
     delete CUSTOM_DATES.THIS_WEEK;
     delete CUSTOM_DATES.LAST_WEEK;
@@ -92,13 +95,13 @@ export default function Portfolio({
     handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate);
   };
   return (
-    <Grid container direction="row" display="flex" alignItems="center" spacing={3}>
+    <>
       {label && (
         <Grid style={{ marginTop: "2px", padding: 0 }}>
           <label className={classes.label}>{label}</label>
         </Grid>
       )}
-      <Grid item xs={3} sm={3} md={3} lg={3} xl={3} style={{ marginTop: "2px" }}>
+      <Grid item xs md style={{ marginTop: "2px", minWidth: "285px" }}>
         <Autocomplete
           size="small"
           onChange={(event, newValue) => {
@@ -113,14 +116,14 @@ export default function Portfolio({
             else return true;
           })}
           renderInput={(params) => (
-            <TextField {...params} label="Date Range" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
+            <TextField {...params} label="Check Date Range" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
           )}
-          defaultValue={isProperties ? CUSTOM_DATES.ALL_DATES : CUSTOM_DATES.LAST_YEAR_TO_DATE}
+          defaultValue={CUSTOM_DATES.THIS_YEAR_TO_DATE}
           disableListWrap
           id="custom-date-dropdown"
         />
       </Grid>
-      <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+      <Grid item xs md>
         <TextField
           size="small"
           margin="dense"
@@ -152,7 +155,7 @@ export default function Portfolio({
       <Grid>
         <label>to</label>
       </Grid>
-      <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+      <Grid item xs md>
         <TextField
           size="small"
           margin="dense"
@@ -181,6 +184,6 @@ export default function Portfolio({
           }}
         />
       </Grid>
-    </Grid>
+    </>
   );
 }

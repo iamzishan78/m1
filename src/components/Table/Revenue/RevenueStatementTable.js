@@ -9,6 +9,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { REMOVE_CHECKS } from "graphQL/useMutationRemoveChecks";
 // import { GET_VALIDATION_CHECK } from "graphQL/useQueryValidationCheck";
 import { GET_ES_POTENTIAL_ISSUES_SUMMARY } from "graphQL/useQueryESSummary";
+import { GET_ES_SIMPLE_COUNT } from "graphQL/useQueryESCount";
 import TableHeader from "components/Table/constants/revenue-statement-header-schema";
 import { deepEqualObjects, copy } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
@@ -16,10 +17,9 @@ import DeleteConfirmationDialogContent from "components/Shared/M1nTable/componen
 const genericDataActions = ["tags", "comments"];
 
 function RevenueStatementTable(props) {
-  const classes = usetableStyles();
+  const classes = usetableStyles({ isRevenueTable: true });
 
   const [potentialIssuesList, setPotentialIssuesList] = useState([]);
-  const [pIssuesArr, setIssuesArr] = useState([]);
 
   const {
     // rows,
@@ -39,16 +39,16 @@ function RevenueStatementTable(props) {
     awaitRefetchQueries: true,
   });
 
-  // const [getRevenueValidationCheck, { data: validationData }] = useLazyQuery(
-  //   GET_VALIDATION_CHECK,
-  //   {
-  //     context: { batch: true },
-  //     fetchPolicy: "no-cache",
-  //   }
-  // );
-
   const [getPotentialIssues, { data: potentialIssues }] = useLazyQuery(
     GET_ES_POTENTIAL_ISSUES_SUMMARY,
+    {
+      context: { batch: true },
+      fetchPolicy: "no-cache",
+    }
+  );
+
+  const [getESSimpleCount, { data: approvedCount }] = useLazyQuery(
+    GET_ES_SIMPLE_COUNT,
     {
       context: { batch: true },
       fetchPolicy: "no-cache",
@@ -74,10 +74,9 @@ function RevenueStatementTable(props) {
         );
         return hit;
       });
-      onGettingStatements(hits);
       return hits;
     },
-    [onGettingStatements, setGenricData]
+    [setGenricData]
   );
 
   const formatedFilter = esFilters ? copy(esFilters) : [];
@@ -89,14 +88,14 @@ function RevenueStatementTable(props) {
     fixedFilters.push(formatedFilter[0])
   }
 
-  useEffect(() => {
+  useEffect(() => { 
     setTableMeta({
       TableHeader: copy(TableHeader),
       esIndex: "checks_flat",
       filters: fixedFilters,
       extendSearchQuery: revenueSearchQuery,
       searchFields: ["checkNumber", "_all"],
-      startPaginationAt: 24,
+      startPaginationAt: 25,
       defaultSort: { field: "checkDate", order: "desc" },
       formatHits,
       initializeGenericData: { key: "_id", actions: genericDataActions },
@@ -104,86 +103,51 @@ function RevenueStatementTable(props) {
   }, [setTableMeta, formatHits, revenueSearchQuery, filterToggle]);
 
   useEffect(() => {
-    // Potential Issues
-    getPotentialIssues({
-      variables: {
-        esIndex: "checkdetails_flat",
-        size: 50,
-        extendSearchQuery: "potentialIssues",
-      },
-    });
-  }, [getPotentialIssues]);
+    if(fixedFilters.length > 0){
+      getESSimpleCount({
+        variables: {
+          index: 'checks_flat',
+          filters: [ 
+            ...fixedFilters,  
+            {field: "approvalStatus.keyword", value: "Approved" },
+            ...props.selectedFilters.current
+          ],
+          search: {
+            query: revenueSearchQuery,
+            fields: ["checkNumber", "_all"]
+        },
+        }
+      })
+      getPotentialIssues({
+        variables: {
+          filters: [ 
+            ...fixedFilters,  
+            ...props.selectedFilters.current
+          ],
+          search: {
+            query: revenueSearchQuery,
+            fields: ["checkNumber", "_all"]
+        },
+        sort: { field: "checkDate", order: "desc" },
+          pagination: {
+            first: props.total,
+            after: null
+        },
+        }
+      })
+    }
+  },[props.rows])
+
+  useEffect(() => {
+    if(approvedCount?.getESSimpleCount && props.total > 0 ){
+      onGettingStatements({ approvedCount: approvedCount.getESSimpleCount.total, statementCount: props.total })
+    }
+  },[approvedCount, props.total])
 
   //  Potential issues
   useEffect(() => {
     if (issues?.hits?.length > 0) {
       const allIssues = issues?.hits.filter((issue) => {
-        const checkAmt = issue?.checkAmt?.value?.toFixed(2);
-        const checkDetailAmt = issue?.checkDetailAmt?.value?.toFixed(2);
-        if (Number(checkAmt) !== Number(checkDetailAmt)) {
-          return issue;
-        }
-      });
-      setIssuesArr(allIssues);
-      setPotentialIssuesList(allIssues);
-    } else {
-      setPotentialIssuesList([]);
-    }
-  }, [potentialIssues, issues]);
-
-  // useEffect(() => {
-  //   if (validationData?.getRevenueValidationCheck?.hits) {
-  //     const validation = JSON.parse(
-  //       JSON.stringify(validationData.getRevenueValidationCheck.hits)
-  //     );
-  //     const newRows = JSON.parse(JSON.stringify(rows));
-  //     for (let i = 0; i < newRows.length; i++) {
-  //       if (validation[newRows[i]._id]) {
-  //         newRows[i].validation = !(
-  //           parseFloat(
-  //             validation[newRows[i]._id].checkDetailAmt.value.toFixed(2)
-  //           ) === newRows[i].checkAmount
-  //         );
-  //       } else {
-  //         newRows[i].validation = false;
-  //       }
-  //     }
-  //     setRows(newRows);
-  //   }
-  // }, [validationData]);
-
-  // useEffect(() => {
-  //   if (searchedRows?.length > 0) {
-  //     const validationRows = searchedRows.filter(r => typeof r.validation === 'undefined')
-  //     const objectsIdsArray = validationRows.map((check) => check._id);
-  //     if(objectsIdsArray.length > 0){
-  //       getRevenueValidationCheck({
-  //         variables: {
-  //           checkIds: objectsIdsArray,
-  //         },
-  //       });
-  //     }
-  //   }
-  // }, [searchedRows]);
-
-  useEffect(() => {
-    if (issues?.hits?.length > 0 && searchedRows?.length > 0) {
-      const issuesArr = issues?.hits.filter((issue) => {
-        for (let i = 0; i < searchedRows?.length; i++) {
-          if (searchedRows[i]._id === issue.key) {
-            return issue;
-          }
-        }
-      });
-      setIssuesArr(issuesArr);
-    } else {
-      setIssuesArr([])
-    }
-  }, [issues, searchedRows]);
-
-  useEffect(() => {
-    if (pIssuesArr.length > 0) {
-      const allIssues = pIssuesArr?.filter((issue) => {
         const checkAmt = issue?.checkAmt?.value?.toFixed(2);
         const checkDetailAmt = issue?.checkDetailAmt?.value?.toFixed(2);
         if (Number(checkAmt) !== Number(checkDetailAmt)) {
@@ -196,7 +160,7 @@ function RevenueStatementTable(props) {
       onGettingPotentialIssues([]);
       setPotentialIssuesList([]);
     }
-  }, [pIssuesArr, onGettingPotentialIssues]);
+  }, [potentialIssues, issues]);
 
   const deleteFunc = (ids) => {
     if (ids.length > 0) {
@@ -233,13 +197,12 @@ function RevenueStatementTable(props) {
             )}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
-            {`Do you want to delete the selected revenue statement${
-              props.selectedRows &&
+            {`Do you want to delete the selected revenue statement${props.selectedRows &&
               props.selectedRows.length > 1 &&
               props.selectedRows.length > 1
-                ? "s"
-                : ""
-            }?`}
+              ? "s"
+              : ""
+              }?`}
           </DeleteConfirmationDialogContent>
         )}
       </Dialog>

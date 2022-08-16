@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import clsx from "clsx";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import moment from "moment";
 import { useDispatch } from "react-redux";
-import {
-  showErrorMessage,
-  showSuccessMessage,
-} from "../../../actions";
+import { showErrorMessage, showSuccessMessage } from "actions";
+import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -16,25 +14,20 @@ import { Dialog, CircularProgress } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
-import CloseIcon from "@material-ui/icons/Close";
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import Select from "@material-ui/core/Select";
 import Grid from "@material-ui/core/Grid";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import { AppContext } from "../../../AppContext";
-import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
-import { DateTimePicker } from "@material-ui/pickers";
-import {
-  ADDACTIVITY,
-  UPDATEACTIVITY,
-} from "../../../graphQL/useMutationActivity";
-import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { TRANSACTIONDATA } from "../../../graphQL/useQueryTransactionData";
-import { OPENDEALS } from "../../../graphQL/useQueryOpenDeals";
-import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
-import { DELETEACTIVITY } from "../../../graphQL/useMutationActivity";
+import { AppContext } from "AppContext";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
+import { ADDACTIVITY, UPDATEACTIVITY } from "graphQL/useMutationActivity";
+import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { OPENDEALS } from "graphQL/useQueryOpenDeals";
+import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { DELETEACTIVITY } from "graphQL/useMutationActivity";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -129,6 +122,16 @@ const useStyles = makeStyles((theme) => ({
   dialog: {
     zIndex: "99999 !important",
   },
+  menu: {
+    "& .MuiListItem-root": {
+      "& .MuiListItemIcon-root": {
+        minWidth: "30px",
+        "& .MuiSvgIcon-root": {
+          fill: "red !important",
+        },
+      },
+    },
+  },
 }));
 
 const initialErrors = {
@@ -143,10 +146,6 @@ const initialErrors = {
 
 const getCurrentDate = () => {
   const d = new Date().toISOString();
-  return d.slice(0, d.indexOf("T"));
-};
-
-const getDateFromString = (d) => {
   return d.slice(0, d.indexOf("T"));
 };
 
@@ -174,7 +173,7 @@ function AddActivityDialog(props) {
   const [dealId, setDealId] = useState(null);
   const [errors, setErrors] = useState({ ...initialErrors });
   const [users, setUsers] = useState([]);
-
+  const [anchorEl, setAnchorEl] = useState();
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
@@ -297,7 +296,7 @@ function AddActivityDialog(props) {
       setClosed(false);
       setNotes("");
       setOwner({
-        name: stateApp.user.fullname || stateApp.user.email,
+        name: stateApp.user.fullname || stateApp.user.displayName,
         id: stateApp.user.mongoId,
       });
       setDealId(null);
@@ -384,6 +383,7 @@ function AddActivityDialog(props) {
           isClosed: closed,
         },
       },
+      refetchQueries: ["getContact"],
     });
 
     onModalClose();
@@ -439,6 +439,14 @@ function AddActivityDialog(props) {
     }
   };
 
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <div style={{ padding: "30px" }}>
       {deleteDialogOpen && (
@@ -462,31 +470,56 @@ function AddActivityDialog(props) {
       )}
 
       <Grid item xs={12} style={{ minHeight: "35px" }}>
-        <h4 style={{ margin: "0 0 30px 0", float: "left", fontSize: "1.1rem" }}>
-          Recent Activities
-        </h4>
-        {!addNew &&
-          <IconButton
-            size="small"
-            style={{ float: "right", top: "-5px", right: "37px" }}
-            disabled={addLoading || updateLoading}
-            onClick={openConfirmationDialog}
-          >
-            {isDeleting ? <CircularProgress size={20} color="secondary" /> :
-              <DeleteIcon
-                className={classes.closeIcon}
-                fontSize="small"
-              />
-            }
-          </IconButton>
-        }
-        <IconButton
-          onClick={onModalClose}
-          size="small"
-          style={{ float: "right", top: "-5px", right: `${addNew ? -5 : -26}px` }}
-        >
-          <CloseIcon className={classes.closeIcon} fontSize="small" />
-        </IconButton>
+        <div style={{ justifyContent: "space-between", display: "flex" }}>
+          <h4 style={{ margin: "0 0 30px 0", float: "left", fontSize: "1.1rem" }}>
+            Recent Activities
+          </h4>
+          <div>
+            {!addNew && (
+              <>
+                <IconButton
+                  size="small"
+                  component="span"
+                  disabled={addLoading || updateLoading}
+                  style={{
+                    background: "transparent",
+                    paddingLeft: "10px",
+                    align: "center",
+                  }}
+                  onClick={handleMenuClick}
+                >
+                  <MoreHorizIcon size="medium" />
+                </IconButton>
+                <Menu
+                  id="dealMenu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                  className={classes.menu}
+                  getContentAnchorEl={null}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                  transformOrigin={{ vertical: "top", horizontal: "center" }}
+                >
+                  <MenuItem onClick={openConfirmationDialog}>
+                    <ListItemIcon>
+                      <DeleteIcon size="medium" />
+                    </ListItemIcon>
+                    <ListItemText>Delete</ListItemText>
+                  </MenuItem>
+                </Menu>
+              </>
+            )}
+
+            <IconButton
+              onClick={onModalClose}
+              size="small"
+              style={{ float: "right", top: "-5px" }}
+            >
+              <KeyboardTabIcon fontSize="large" />
+            </IconButton>
+          </div>
+        </div>
       </Grid>
       <Grid></Grid>
       <TextField
@@ -626,7 +659,7 @@ function AddActivityDialog(props) {
         onChange={(e, deal) => {
           setDealId(deal?._id);
         }}
-        value={openDeals.find((deal) => deal._id === dealId) || null}
+        value={openDeals?.find((deal) => deal._id === dealId) || null}
         getOptionSelected={(option) => option.id === dealId}
         getOptionLabel={(option) => option.name}
         renderOption={(option) => {

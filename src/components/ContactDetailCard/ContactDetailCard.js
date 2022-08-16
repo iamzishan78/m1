@@ -1,68 +1,58 @@
 // react core
 import React, { useContext, useState, useEffect } from "react";
-
 // mui styling
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 // mui core components
-import { Grid, Menu, MenuItem } from "@material-ui/core";
+import { Grid, IconButton, Tabs, Tab, Menu, MenuItem, Badge, CircularProgress } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import AddIcCallIcon from "@material-ui/icons/AddIcCall";
+import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import { useHistory } from "react-router-dom";
 
 // internal components
 import Comments from "../Shared/Comments";
 import Tags from "../Shared/Tagger";
 import Avatar from "react-avatar";
-import Badge from "@material-ui/core/Badge";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
-import EmailOutlinedIcon from '@material-ui/icons/EmailOutlined';
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import RequestPageIcon from "components/Shared/svgIcons/request_page";
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import { CONTACT_PURCHASE_DATA } from "graphQL/useQueryContactPurchaseData";
-import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
-import { LASTMELISSARECORD } from "../../graphQL/useQueryGetMelissaRecords";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { TRANSACTIONDATA } from "graphQL/useQueryTransactionData";
+import { LASTMELISSARECORD } from "graphQL/useQueryGetMelissaRecords";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
-import Documents from "../Shared/Documents";
-import ParcelsCard from "./components/ParcelsCard";
-import ShapeOwnershipCard from "./components/ShapeOwnershipCard";
-import LeadStage from "../Shared/LeadStage";
-import Divider from "@material-ui/core/Divider";
+import AddDealDialog from "components/Transact/components/DealDialog/AddDealDialog";
 import RightDialog from "./components/RightDialog";
 import Dialog from "@material-ui/core/Dialog";
 import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import ArrowForwardIosRoundedIcon from "@material-ui/icons/ArrowForwardIosRounded";
-import ArrowBackIosRoundedIcon from "@material-ui/icons/ArrowBackIosRounded";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleRightColumn } from "../../actions";
-import MessageRoundedIcon from "@material-ui/icons/MessageRounded";
-import DescriptionRoundedIcon from "@material-ui/icons/DescriptionRounded";
-import Card from "@material-ui/core/Card";
-import DealsNew from "./components/DealsNew";
-import WellsCard from "./components/WellsCard";
-import RecentActivities from "../RecentActivities/RecentActivities";
-import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
+import { useSelector, useDispatch } from "react-redux";
 import ContactDataMissingDialog from "./components/ContactDataMissingDialog";
-import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
-import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
-import DocViewer from "../Shared/DocViewer";
+import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
+import DocViewer from "components/Shared/DocViewer";
+import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
+import AddActivityDialog from "../ContactDetailCard/components/AddActivityDialog";
+import SummaryFields from "../ContactDetailedInfo/components/SummaryFields";
+import ContactDetailedSelector from "./components/ContactDetailSelector";
+import PipelinesFetchHoc from "components/Transact/components/Common/PipelinesFetchHoc";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Link from "@material-ui/core/Link";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Typography from "@material-ui/core/Typography";
-import get from "lodash/get";
+import { get } from "lodash";
 
-import { truncate } from "components/Shared/functions";
 // contexts
-import { AppContext } from "../../AppContext";
+import { AppContext } from "AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
+import { toggleRightColumn } from "actions/ContactDetailCard";
+import { getAddressUrl } from "utils/helper";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
@@ -73,14 +63,6 @@ const useStyles = makeStyles((theme) => ({
       cursor: "pointer",
       color: "rgb(18, 150, 194)",
     },
-  },
-  header: {
-    borderBottom: "1px solid rgba(224, 224, 224, 1)",
-    backgroundColor: "#F2F2F2",
-    minHeight: "64px",
-    display: "flex",
-    position: "relative",
-    alignItems: "center",
   },
   topBar: {
     color: "#12ABE0",
@@ -101,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     transition: "width 0.3s ease-out",
     webkitTransition: "width 0.3s ease-out",
-    width: ({ shrinkRightColumn }) => (shrinkRightColumn ? "68px" : "37%"),
+    width: ({ shrinkRightColumn }) => (shrinkRightColumn ? "0px" : "37%"),
   },
   gridStyling: {
     "& .MuiListItem-container": {
@@ -113,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
   },
   pDealCard: {
     fontWeight: "bold !important",
-    marginTop: "7 !important",
+    marginTop: "8 !important",
     marginBottom: "7!important",
   },
   divDealCard: {
@@ -130,6 +112,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: "50%",
     maxWidth: "calc( 100% - 400px)",
     float: "left",
+    fontWeight: "bold",
     "& h2": {
       margin: "0",
       color: "#202020",
@@ -141,12 +124,7 @@ const useStyles = makeStyles((theme) => ({
       maxWidth: "100%",
     },
     "& h4": { margin: "0" },
-    "& a": { color: "#12ABE0 !important" },
-  },
-  tags: {
-    "& fieldset": {
-      border: "none",
-    },
+    "& a": { color: "#919191 !important" },
   },
   Comments: {
     "& fieldset": {
@@ -177,6 +155,8 @@ const useStyles = makeStyles((theme) => ({
   },
   mainGridContainer: {
     display: "flex",
+    marginTop: "8px",
+    height: "calc(100vh - 210px)",
     "& a": { color: "#757575" },
     "& .MuiPopover-paper": {
       zIndex: "1700",
@@ -260,10 +240,13 @@ const useStyles = makeStyles((theme) => ({
   },
   leftColumn: {
     MinHeight: "100%",
-    backgroundColor: "#fff",
+    backgroundColor: "#f2f2f2",
     flexGrow: "1",
     transition: "width 0.3s ease-out",
     webkitTransition: "width 0.3s ease-out",
+    overflow: "overlay",
+    maxHeight: "calc(100vh - 85px)",
+    width: "100%",
   },
   shrinkRightColumn: {
     position: "absolute",
@@ -295,37 +278,166 @@ const useStyles = makeStyles((theme) => ({
   },
   menuIcon: {
     padding: "0px !important",
-    margin: "0px !important",
-    minWidth: "0px !important",
-    background: "white !important",
-    color: "black !important",
+    margin: "0px 15px !important",
+    "& svg": {
+      cursor: "pointer",
+      fill: "#808080 !important",
+    },
   },
 
   emailButton: {
     backgroundColor: "#011133 !important",
-    '& .MuiButton-label': {
-      color: 'white !important'
+    "& .MuiButton-label": {
+      color: "white !important",
     },
   },
   disabledButton: {
     backgroundColor: "white !important",
-    '& .MuiButton-label': {
-      color: 'grey !important'
+    "& .MuiButton-label": {
+      color: "grey !important",
     },
-  }
+  },
+  pulloutBox: {
+    position: "absolute",
+    top: "126px",
+    right: 0,
+    height: "80px",
+    color: "white",
+    width: "20px",
+    background: "#141d32",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    "& svg": {
+      transform: "scaleX(0.5)",
+    },
+  },
+  contactDataButton: {
+    margin: "0px 5px",
+    fontWeight: "600",
+    border: "3px solid #eeebeb",
+  },
+  detailHeader: {
+    backgroundColor: "#fff",
+    padding: "20px 27px 0px 45px",
+    marginTop: "8px",
+  },
+  title: {
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
+  },
+  titleText: {
+    marginLeft: 16,
+    width: "100%",
+    display: "flex !important",
+    flexDirection: "column",
+  },
+  highlighter: {
+    background: "#263451",
+    padding: "5px 16px",
+    borderRadius: 16,
+    width: "max-content",
+    transform: "translateX(5px) translateY(11px)",
+    height: "32px",
+  },
+  highlight: {
+    color: "#ffffff",
+    textTransform: "uppercase",
+    fontWeight: "bold",
+  },
+  tabsHeader: {
+    background: "#ffffff",
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+  },
+  tabsSection: {},
+  tagsContainer: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  tags: {
+    "& fieldset": {
+      border: "none",
+    },
+    width: "calc(100vw - 785px)",
+  },
+  metaActions: {
+    position: "absolute",
+    right: "15px",
+    "& button": {
+      margin: "0px 5px",
+      color: "grey",
+      fontWeight: "bold",
+      textTransform: "capitalize",
+      padding: "6px 12px",
+    },
+  },
+  summarySection: {
+    width: "100%",
+    backgroundColor: "#fff",
+  },
+  detailCardSection: {
+    backgroundColor: "#fff",
+    marginTop: "3px",
+    width: "100%",
+  },
 }));
 
-export default function ContactDetailCard(props) {
+const StyledTabs = withStyles({
+  root: {
+    textTransform: "capitalize",
+  },
+  indicator: {
+    backgroundColor: "#12abe0",
+    height: "5px",
+  },
+})(Tabs);
+
+const StyledTab = withStyles((theme) => ({
+  root: {
+    textTransform: "uppercase",
+    minWidth: 72,
+    fontWeight: theme.typography.fontWeightRegular,
+    marginRight: theme.spacing(4),
+    fontFamily: [
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(","),
+    "&:hover": {
+      color: "black",
+      opacity: 1,
+    },
+    "&$selected": {
+      color: "black",
+      fontWeight: theme.typography.fontWeightMedium,
+    },
+    "&:focus": {
+      color: "black",
+    },
+  },
+  selected: {},
+}))((props) => <Tab disableRipple {...props} />);
+
+function ContactDetailCard(props) {
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
+  const dispatch = useDispatch();
 
   let history = useHistory();
   const pathName = history.location.pathname;
   const contactId = pathName.split("contact/details/")[1].replace("/", "");
   const shrinkRightColumn = useSelector(({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn);
-  const { statements } = useSelector(({ Revenue }) => Revenue);
-  const { selectedPipe } = useSelector(({ Flow }) => Flow);
   const classes = useStyles({ ...props, shrinkRightColumn });
   const [openDialog, setOpenDialog] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -336,12 +448,12 @@ export default function ContactDetailCard(props) {
   const [showExpandableCard, setShowExpandableCard] = useState(false);
   const [expCardSubComponent, setExpCardSubComponent] = useState(null);
   const [showShrinkColumnContent, setShowShrinkColumnContent] = useState(false);
+  const [showActivityDialog, setActivityDialog] = useState(null);
   const [purchaseData, setPurchaseData] = useState([]);
 
   const [expCardSubComponentTitle, setExpCardSubComponentTitle] = useState(null);
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
-  const [getSecondContact, { data: secondContact }] = useLazyQuery(CONTACT);
   const [getContactPurchaseData, { data: contactPurchaseData }] = useLazyQuery(CONTACT_PURCHASE_DATA);
 
   const [getTransactionData, { data: tData, tLoading }] = useLazyQuery(TRANSACTIONDATA);
@@ -351,16 +463,10 @@ export default function ContactDetailCard(props) {
   });
   const [updateContact] = useMutation(UPDATECONTACT);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleClickRightDialogOpen = (childrenToOpen) => {
-    setRightDialogOpen(childrenToOpen);
-  };
+  const handleClose = event => setAnchorEl(null);
+
   const handleClickRightDialogClose = (e) => {
     e.preventDefault();
     setRightDialogOpen(false);
@@ -373,11 +479,7 @@ export default function ContactDetailCard(props) {
       contactUpdated: null,
     }));
   };
-  const handleOpenExpandableCard = (subComponent, subComponentTitle) => {
-    setExpCardSubComponent(subComponent);
-    setExpCardSubComponentTitle(subComponentTitle);
-    setShowExpandableCard(true);
-  };
+
   const handleExpandClick = async (type) => {
     setOpenDialog(type);
   };
@@ -390,13 +492,23 @@ export default function ContactDetailCard(props) {
   };
 
   useEffect(() => {
+    setActivityDialog(!!stateApp.activitySideDialog);
+  }, [stateApp.activitySideDialog]);
+
+  useEffect(() => {
+    if (!showActivityDialog) {
+      setStateApp(() => ({ ...stateApp, selectedActivity: null, activitySideDialog: false }));
+    }
+  }, [showActivityDialog]);
+
+  useEffect(() => {
     setTimeout(() => {
       setShowShrinkColumnContent(shrinkRightColumn);
     }, 300);
   }, [shrinkRightColumn]);
 
   useEffect(() => {
-    if (stateApp.selectedContact) {
+    if (stateApp.selectedContact && stateApp.selectedContact === contactId) {
       getContact({
         variables: {
           contactId: stateApp.selectedContact,
@@ -422,19 +534,8 @@ export default function ContactDetailCard(props) {
   }, [contactPurchaseData]);
 
   useEffect(() => {
-    if (history.location.search.includes("/contact/details")) {
-      const id = history.location.search.split("?return-url=/contact/details/")[1].split("/")[0];
-      getSecondContact({
-        variables: {
-          contactId: id,
-        },
-      });
-    }
-  }, []);
-
-  useEffect(() => {
     if (data && data.contact) {
-      setContactData(data.contact);
+      setContactData({ ...data.contact, metaOwner: { _id: data.contact.contactOwnerId } });
       setStateApp((stateApp) => ({
         ...stateApp,
         currentContatcAtivities: data.contact.activityLog,
@@ -477,9 +578,9 @@ export default function ContactDetailCard(props) {
         ...stateApp,
         dealDialog: false,
         activeDeal: { cardId: null, laneId: null },
-      }))
-    }
-  },[])
+      }));
+    };
+  }, []);
 
   const checkModuleHistory = () => {
     if (stateNav.contactFromMap) {
@@ -490,42 +591,6 @@ export default function ContactDetailCard(props) {
     return !!stateNav.contactFromMap;
   };
 
-  const checkRevenueStatement = () => {
-    if (history.pathHistory[1]?.includes("/revenue/statement/details")) {
-      return true
-    }
-  };
-
-  const checkRevenueProperty = () => {
-    if (history.pathHistory[1]?.includes("/revenue/property/details")) {
-      return true
-    }
-  };
-
-  const getFlowlineReturnUrl = () => {
-    const searchParams = new URLSearchParams(window.location.search?.replace("?", ""));
-    const returnUrl = searchParams.get("return-url");
-    return returnUrl;
-  };
-  const isPrevUrlFlowline = getFlowlineReturnUrl() && stateApp.activeDeal?._id;
-
-  const agreementBreadcrumbsParams = React.useMemo(() => {
-    const { state } = history.location;
-    const params = [];
-    if (state) {
-      const { showAgreementBreadcrumb, agreementBreadcrumbsParams: breadcrumbParams } = state;
-      if (showAgreementBreadcrumb && breadcrumbParams) {
-        Object.keys(breadcrumbParams).forEach((key) => {
-          params.push({
-            text: key,
-            url: breadcrumbParams[key],
-          });
-        });
-      }
-    }
-    return params;
-  }, [history.location]);
-
   const ExtenstionGetter = (name) => {
     let fileExtension = name?.slice(name.lastIndexOf(".") + 1)?.toLowerCase();
 
@@ -535,587 +600,266 @@ export default function ContactDetailCard(props) {
   const getName = (contact) => {
     return contact.name || `${get(contact, "firstName", "")} ${get(contact, "lastName", "")}`;
   };
+  const togglePullout = () => dispatch(toggleRightColumn());
+
   return contactData ? (
-    <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)", overflow: "scroll" }}>
-      <div className={classes.header}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "left",
-            paddingLeft: "25px",
-          }}
-        >
-          <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-            {agreementBreadcrumbsParams.map((item, index) => (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => history.push(item.url)}
-                key={index}
-              >
-                {item.text}
-              </Link>
-            ))}
-            {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => history.push("/contacts")}
-              >
-                Contacts
-              </Link>
-            )}
-            {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push(`/contact/details/${get(secondContact, "contact._id", "")}`);
-                  setStateApp((stateApp) => ({
-                    ...stateApp,
-                    selectedContact: get(secondContact, "contact._id", ""),
-                  }));
-                }}
-              >
-                {getName(secondContact.contact)}
-              </Link>
-            )}
-            {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push(history.location.search.split("?return-url=")[1]);
-                }}
-              >
-                Deals
-              </Link>
-            )}
-            {isPrevUrlFlowline && get(secondContact, "contact.name", "") && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => history.push(history.location.search.split("?return-url=")[1])}
-              >
-                {truncate(stateApp.activeDeal.name, 30)}
-              </Link>
-            )}
-            {isPrevUrlFlowline && selectedPipe && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => history.push("/flow")}
-              >
-                Flow
-              </Link>
-            )}
-            {isPrevUrlFlowline && selectedPipe && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => history.push(`/flow/${selectedPipe?._id}`)}
-              >
-                {truncate(get(selectedPipe, "name", ""), 30)}
-              </Link>
-            )}
-            {isPrevUrlFlowline && selectedPipe && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => history.push(getFlowlineReturnUrl())}
-              >
-                {truncate(stateApp.activeDeal.name, 30)}
-              </Link>
-            )}
-            {checkModuleHistory() && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push(history.pathHistory[1]);
-                  setStateNav((stateApp) => ({
-                    ...stateApp,
-                    contactFromMap: false,
-                  }));
-                }}
-              >
-                Map
-              </Link>
-            )}
-
-            {checkRevenueStatement() && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push('/revenue/statements');
-                }}
-              >
-                Revenue Statements
-              </Link>
-            )}
-            {checkRevenueStatement() && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push(history.pathHistory[1]);
-                }}
-              >
-                {`${statements?.activeStatement?.checkNumber} - ${statements?.activeStatement?.payor?.["name"]}`}
-              </Link>
-            )}
-
-            {checkRevenueProperty() && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push('/revenue/properties');
-                }}
-              >
-                Revenue Properties
-              </Link>
-            )}
-            {checkRevenueProperty() && (
-              <Link
-                style={{
-                  marginLeft: "5px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                }}
-                color="inherit"
-                onClick={() => {
-                  history.push(history.pathHistory[1]);
-                }}
-              >
-                {get(stateApp.selectedRevenueProperty, 'number', '')}-{get(stateApp.selectedRevenueProperty, 'name', '')}
-              </Link>
-            )}
-
-            <Link
-              style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer" }}
-              color="inherit"
-              onClick={() => history.push("/contacts")}
-            >
-              Contacts
-            </Link>
-
-            <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{getName(contactData)}</Typography>
-          </Breadcrumbs>
-        </div>
-      </div>
-      <div className={classes.mainGridContainer}>
-        {/*/////////// left column //////////// */}
-
-        {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
-          <div className={classes.leftColumn}>
-            {" "}
-            <DocViewer DocStyle={{ backgroundColor: "white !important", width: "70vw" }} divCondition={true}></DocViewer>
-          </div>
-        ) : (
-          <Grid container className={classes.leftColumn}>
-            {/*/////////// section 1 //////////// */}
-
-            <Grid
-              item
-              xs={12}
-              style={{
-                padding: "20px 25px",
-              }}
-              className={classes.border}
-            >
-              <div className={classes.leftColumnTopRigthCorner}>
-                {/* temporary removal until melissa is reactivated */}
-                {/* <Button
-                variant="contained"
-                // size="small"
-                onClick={() => {
-                  handleExpandClick("buyContactsInfo");
-                }}
-              >
-                Buy Contact Info
-              </Button> */}
-
-                {contactData.primaryEmail ? (
-                  <a href={"mailto:" + contactData.primaryEmail}>
-                    <Button
-                      className={classes.emailButton}
-                      startIcon={<EmailOutlinedIcon />}
-                    >
-                      Email
-                    </Button>
-                  </a>
-                ) :
-                  (<Button
-                    className={classes.disabledButton}
-                    variant="outlined"
-                    startIcon={<EmailOutlinedIcon />}
+    <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)", width: "100%", backgroundColor: "#F2F2F2" }}>
+      {/**
+       * Detail title section
+       */}
+      <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
+        <div className="flex column alignStart justifyStart w-100">
+          <div className={classes.title}>
+            <StyleBadge>
+              <Avatar
+                className={classes.grey}
+                name={
+                  contactData.name ||
+                  `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`
+                }
+                size="93"
+                round
+              />
+            </StyleBadge>
+            <div className={classes.titleText}>
+              <div className={classes.userName}>
+                <h2 style={{ width: "max-content" }}>
+                  <FieldContent
+                    noInputFooter
+                    noMargin
+                    id={contactData._id}
+                    entity={contactData.entity}
+                    content={{ name: getName(contactData) }}
                     disabled
                   >
-                    Email
-                  </Button>)}
+                    {(contactData.facebook || contactData.twitter || contactData.linkedIn) && (
+                      <span className={classes.socialMediaSection}>
+                        {contactData.facebook && (
+                          <a
+                            href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${contactData.facebook
+                              }`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <FacebookIcon />
+                          </a>
+                        )}
+                        {contactData.twitter && (
+                          <a
+                            href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${contactData.twitter
+                              }`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <TwitterIcon className={classes.twitterIcon} />
+                          </a>
+                        )}
+                        {contactData.linkedIn && (
+                          <a
+                            href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${contactData.linkedIn
+                              }`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <LinkedInIcon />
+                          </a>
+                        )}
+                      </span>
+                    )}
+                  </FieldContent>
+                </h2>
+                <Link onClick={() => window.open(getAddressUrl(contactData), "_blank")}>
+                  <FieldContent
+                    childrenLeft
+                    noMargin
+                    name="Address"
+                    id={contactData._id}
+                    entity={contactData.entity}
+                    disabled
+                    content={{
+                      address1: contactData.address1,
+                      address2: contactData.address2,
+                      city: contactData.city,
+                      state: contactData.state,
+                      zip: contactData.zip,
+                      country: contactData.country,
+                    }}
+                  />
+                </Link>
+              </div>
+              <div className={classes.tagsContainer}>
+                <div className={classes.highlighter}>
+                  <Typography className={classes.highlight} variant="highlight">
+                    {get(contactData, "status", "Contact")}
+                  </Typography>
+                </div>
+                <div className={classes.tags}>
+                  <Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" publicLeftBottom onlyTags />
+                </div>
+                <div className={classes.metaActions}>
+                  <Button
+                    className={classes.contactDataButton}
+                    startIcon={<RequestPageIcon color="grey" />}
+                    onClick={() => {
+                      handleExpandClick("buyContactsInfo");
+                    }}
+                  >
+                    Contact Data
+                  </Button>
+                  <Button
+                    className={classes.contactDataButton}
+                    startIcon={<MonetizationOnIcon color="grey" />}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setStateApp((stateApp) => ({
+                        ...stateApp,
+                        dealDialog: true,
+                      }));
+                    }}
+                  >
+                    Add Deal
+                  </Button>
+                  <Button
+                    className={classes.contactDataButton}
+                    startIcon={<AddIcCallIcon color="grey" />}
+                    onClick={() => setActivityDialog(true)}
+                  >
+                    Add Activity
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-                <Button className={classes.menuIcon} onClick={handleClick}>
-                  <MoreVertIcon aria-controls="simple-menu" aria-haspopup="true" />
-                </Button>
+      <div className={classes.mainGridContainer}>
+        <Grid container className={classes.leftColumn}>
+          {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
+            <DocViewer
+              divCondition={true}
+              DocStyle={{
+                position: "relative",
+                height: "calc(100% - 5px)",
+                width: "100vw"
+              }}
+            />
+          ) : (
+            <>
+              <div className={classes.summarySection}>
+                <Grid item xs={12} container spacing={0} style={{ padding: "5px 20px", height: "550px", textAlign: "center" }}>
+                  <SummaryFields contactData={contactData} />
+                </Grid>
+              </div>
+              <div className={classes.detailCardSection}>
+                {/* <Divider sx={{backgroundColor: '#F2F2F2', borderBottomWidth: 5}}/> */}
 
-                <Menu
-                  id="simple-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "center",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "center",
-                  }}
-                >
-                  <FeatureFlag feature={FEATURES.IDICORE}>
-                    <MenuItem
-                      className={classes.userMenuItem}
-                      onClick={(e) => {
-                        if (!contactData.firstName || !contactData.lastName || !contactData.address1) {
-                          handleExpandClick("contactDataMissing");
-                        } else {
-                          handleExpandClick("buyContactsInfo");
-                        }
-                        handleClose();
-                      }}
-                    >
-                      Purchase contact data
-                    </MenuItem>
-                  </FeatureFlag>
+                <Grid item xs={12} container className={classes.border} spacing={0}
+                  style={{
+                    padding: "0px 0px",
+                    //  height: '100vh'
+                  }}>
+                  <ContactDetailedSelector
+                    purchaseData={purchaseData}
+                    contactData={contactData}
+                    onAddActivity={setActivityDialog}
+                  />
+                </Grid>
+              </div>
+            </>
+          )}
+        </Grid>
+        {/*/////////// rigth column //////////// */}
+        <div className={classes.rightColumnGrid}>
+          {!shrinkRightColumn && !showShrinkColumnContent && (
+            <div
+              style={{
+                margin: "0px 15px",
+                height: "calc(100vh - 210px)",
+              }}
+            >
+              <MetadataDrawer
+                title="Additional Details"
+                documentsTitle="Recent Documents"
+                setCollapse={() => togglePullout()}
+                targetSourceId={contactData._id}
+                showDescription={false}
+                targetLabel="Contact"
+                ownerTitle="Contact Owner"
+                commentsWidth="25vw"
+                viewAllDocuments
+                menuComponent={
+                  <IconButton className={classes.menuIcon} onClick={handleClick}>
+                    <MoreHorizIcon fontSize="medium" aria-controls="simple-menu" aria-haspopup="true" />
+                  </IconButton>
+                }
+                data={contactData}
+                onUpdate={({ ownerName, owner }) => {
+                  updateContact({
+                    variables: {
+                      contact: {
+                        contactOwner: ownerName,
+                        contactOwnerId: owner,
+                        _id: contactData._id,
+                        lastUpdateBy: stateApp.user.mongoId,
+                      },
+                      ignoreResponse: true,
+                    },
+                    refetchQueries: ["getPaginatedContacts", "getContact"],
+                    awaitRefetchQueries: false,
+                  });
+                }}
+                activityLog={contactData.activityLog}
+              />
+
+              <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "center",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "center",
+                }}
+              >
+                <FeatureFlag feature={FEATURES.IDICORE}>
                   <MenuItem
                     className={classes.userMenuItem}
                     onClick={(e) => {
+                      if (!contactData.firstName || !contactData.lastName || !contactData.address1) {
+                        handleExpandClick("contactDataMissing");
+                      } else {
+                        handleExpandClick("buyContactsInfo");
+                      }
                       handleClose();
-                      handleExpandClick("deleteConfirmation");
                     }}
                   >
-                    Delete contact
+                    Purchase contact data
                   </MenuItem>
-                </Menu>
-              </div>
-              <div>
-                <div className={classes.userIcon}>
-                  <StyleBadge>
-                    <Avatar
-                      className={classes.grey}
-                      name={
-                        contactData.name ||
-                        `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`
-                      }
-                      size="93"
-                      round
-                    />
-                  </StyleBadge>
-                </div>
-                <div className={classes.userName}>
-                  <h2 style={{ width: "max-content" }}>
-                    <FieldContent
-                      noInputFooter
-                      noMargin
-                      id={contactData._id}
-                      entity={contactData.entity}
-                      content={{ name: getName(contactData) }}
-                      disabled
-                    >
-                      {(contactData.facebook || contactData.twitter || contactData.linkedIn) && (
-                        <span className={classes.socialMediaSection}>
-                          {contactData.facebook && (
-                            <a
-                              href={`${!contactData.facebook.startsWith("http") && !contactData.facebook.startsWith("//") ? "//" : ""}${contactData.facebook
-                                }`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              <FacebookIcon />
-                            </a>
-                          )}
-                          {contactData.twitter && (
-                            <a
-                              href={`${!contactData.twitter.startsWith("http") && !contactData.twitter.startsWith("//") ? "//" : ""}${contactData.twitter
-                                }`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              <TwitterIcon className={classes.twitterIcon} />
-                            </a>
-                          )}
-                          {contactData.linkedIn && (
-                            <a
-                              href={`${!contactData.linkedIn.startsWith("http") && !contactData.linkedIn.startsWith("//") ? "//" : ""}${contactData.linkedIn
-                                }`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              <LinkedInIcon />
-                            </a>
-                          )}
-                        </span>
-                      )}
-                    </FieldContent>
-                  </h2>
-                  <h4>
-                    <FieldContent
-                      childrenLeft
-                      noMargin
-                      name="Address"
-                      id={contactData._id}
-                      entity={contactData.entity}
-                      content={{
-                        address1: contactData.address1,
-                        address2: contactData.address2,
-                        city: contactData.city,
-                        state: contactData.state,
-                        zip: contactData.zip,
-                        country: contactData.country,
-                      }}
-                    />
-                  </h4>
-                  <h4>
-                    <FieldContent
-                      childrenLeft
-                      noMargin
-                      name={"Company Name Or Job Title"}
-                      id={contactData._id}
-                      entity={contactData.entity}
-                      content={{
-                        companyName: contactData.companyName,
-                        jobTitle: contactData.jobTitle,
-                      }}
-                    />
-                  </h4>
-                </div>
-              </div>
-            </Grid>
-            {/*/////////// section 2 //////////// */}
-            <Grid
-              item
-              xs={12}
-              style={{
-                padding: "10px 15px 0px 15px",
-              }}
-              className={classes.border}
-            >
-              <div className={classes.tags}>
-                <Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" publicLeftBottom />
-              </div>
-            </Grid>
-
-            {/*/////////// section 3 //////////// */}
-            <Grid item xs={12} container className={classes.border} spacing={0} style={{ padding: "23px 28px" }}>
-              <ContactDetailedInfo user={stateApp.user} purchaseData={purchaseData} contactData={contactData} />
-            </Grid>
-            {/*/////////// new section - lead stage //////////// */}
-            <Grid item xs={12} className={`${classes.border}`}>
-              <div className={classes.SectMargin}>
-                <Grid item xs={12} style={{ minHeight: "33px" }}>
-                  <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
-                    Lead Stage changed:{" "}
-                    <span style={{ fontWeight: "normal" }}>
-                      {anyToDate(
-                        contactData.lastUpdateLeadStageAt ? contactData.lastUpdateLeadStageAt : contactData.lastUpdateAt
-                      ).toLocaleString()}
-                    </span>
-                  </h4>
-                </Grid>
-
-                <Grid item xs={12} style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}>
-                  <LeadStage leadStage={contactData.leadStage ? contactData.leadStage : "New"} id={contactData._id} />
-                </Grid>
-              </div>
-            </Grid>
-
-            {/*/////////// new section -associated interests and deals //////////// */}
-            <Grid container item xs={12} className={`${classes.border}`} style={{ padding: "23px 28px" }} spacing={0}>
-              <Grid item xs={12}>
-                <h4 style={{ margin: "0 0 13px 0", float: "left" }}>Associated Interests &amp; Deals</h4>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Grid container spacing={2}>
-                  <Grid item xs={3} style={{ minWidth: "250px" }}>
-                    <Card raised style={{ minHeight: "165px", height: "100%" }}>
-                      <WellsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
-                    </Card>
-                  </Grid>
-                  {/* TEMP DELETION UNTIL CODE COMES */}
-                  <Grid item xs={3} style={{ minWidth: "250px" }}>
-                    <Card raised style={{ minHeight: "35px", height: "100%" }}>
-                      <ShapeOwnershipCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
-                    </Card>
-                  </Grid>
-                  <Grid item xs={3} style={{ minWidth: "250px" }}>
-                    <Card raised style={{ minHeight: "35px", height: "100%" }}>
-                      <ParcelsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
-                    </Card>
-                  </Grid>
-                  <Grid item xs={3} style={{ minWidth: "250px" }}>
-                    <Card raised style={{ minHeight: "165px", height: "100%" }}>
-                      <DealsNew
-                        handleOpenExpandableCard={handleOpenExpandableCard}
-                        contact={contactData}
-                        transactData={transactData}
-                        transactId={transactId}
-                      />
-                    </Card>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-
-            {/*/////////// Recent Activities. //////////// */}
-            <Grid item xs={12} className={`${classes.border}`}>
-              <div className={classes.SectMargin}>
-                <RecentActivities
-                  header={"Recent Activities"}
-                  handleOpenExpandableCard={handleOpenExpandableCard}
-                  id={contactData._id}
-                  user_id={stateApp.user.email}
-                  contactData={contactData}
-                  activityLog={contactData.activityLog}
-                />
-              </div>
-            </Grid>
-          </Grid>
-        )}
-        {/*/////////// rigth column //////////// */}
-        <div className={classes.rightColumnGrid}>
-          {/* <IconButton
-            size="small"
-            className={classes.shrinkRightColumn}
-            onClick={() => {
-              dispatch(toggleRightColumn());
-            }}
-          >
-            {shrinkRightColumn ? (
-              <ArrowBackIosRoundedIcon />
-            ) : (
-                <ArrowForwardIosRoundedIcon />
-              )}
-          </IconButton> */}
-
-          {shrinkRightColumn || showShrinkColumnContent ? (
-            <div style={{ width: "68px" }}>
-              {/* <IconButton className={classes.shrinkRightColumnIcons}>
-                <MessageRoundedIcon
-                  onClick={() => {
-                    dispatch(toggleRightColumn());
+                </FeatureFlag>
+                <MenuItem
+                  className={classes.userMenuItem}
+                  onClick={(e) => {
+                    handleClose();
+                    handleExpandClick("deleteConfirmation");
                   }}
-                />
-              </IconButton> */}
-
-              {/* <IconButton className={classes.shrinkRightColumnIcons}>
-                <DescriptionRoundedIcon
-                  onClick={() =>
-                    handleOpenExpandableCard(
-                      <ViewDocuments
-                        id={contactData._id}
-                        user_id={stateApp.user.email}
-                        activityLog={contactData.activityLog}
-                      />,
-                      "Documents"
-                    )
-                  }
-                />
-              </IconButton> */}
+                >
+                  Delete contact
+                </MenuItem>
+              </Menu>
             </div>
-          ) : (
-            <Grid container spacing={0} id="expandedRCContent">
-              {/* //////////// Deal Card ////////////// */}
-
-              {/* TEMPORARY COMMENT OUT. DO NOT DELETE. */}
-              {/* <Grid item xs={12}>
-                <Paper className={classes.paper}>
-                  <div className={classes.divDealCard}>
-                    <p className={classes.pDealCard}>
-                      Add a deal for this contact?
-                    </p>
-                    <Button variant="contained" color="secondary">
-                      Add Deal
-                    </Button>
-                  </div>
-                </Paper>
-              </Grid>
-              */}
-
-              {/* <Grid item xs={12}>
-                <Deals
-                  contact={contactData}
-                  transactData={transactData}
-                  transactId={transactId}
-                  selectRowOpenContact={props.selectRowOpenContact}
-                />
-                <Divider />
-              </Grid> */}
-
-              <Grid item xs={12} className={classes.Comments}>
-                <Comments targetSourceId={contactData._id} targetLabel="contact" detailCard top={2} viewAll={handleClickRightDialogOpen} />
-                <Divider />
-              </Grid>
-
-              <Grid item xs={12} className={classes.Comments}>
-                <Documents handleOpenExpandableCard={handleOpenExpandableCard} id={contactData._id} user_id={stateApp.user.email} />
-                <Divider />
-              </Grid>
-            </Grid>
           )}
         </div>
+        {shrinkRightColumn && (
+          <div className={classes.pulloutBox} onClick={togglePullout}>
+            <ArrowBackIosIcon />
+          </div>
+        )}
 
         {openDialog === "buyContactsInfo" && (
           <RightDialog open={openDialog ? true : false} handleClickDialogClose={handleCloseDialog} width={"700px"}>
@@ -1236,6 +980,30 @@ export default function ContactDetailCard(props) {
             </div>
           </Dialog>
         )}
+        {showActivityDialog && (
+          <RightDialog open={true} handleClickDialogClose={() => setActivityDialog(false)} width="700px">
+            <AddActivityDialog
+              onClose={() => setActivityDialog(false)}
+              id={props.id}
+              contactData={contactData}
+              selectedActivity={stateApp.selectedActivity}
+            />
+          </RightDialog>
+        )}
+        {stateApp.dealDialog && (
+          <AddDealDialog
+            open={stateApp.dealDialog ? true : false}
+            width="450px"
+            onClose={() =>
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                dealDialog: false,
+                activeDeal: { cardId: null, laneId: null },
+              }))
+            }
+            contactId={contactData?._id}
+          />
+        )}
       </div>
     </div>
   ) : (
@@ -1252,3 +1020,5 @@ export default function ContactDetailCard(props) {
     </div>
   );
 }
+
+export default PipelinesFetchHoc(ContactDetailCard)

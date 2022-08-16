@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import { Radio, Checkbox } from "@material-ui/core";
+import { Checkbox } from "@material-ui/core";
 import clsx from "clsx";
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
-import Check from "@material-ui/icons/Check";
 import { useDispatch } from "react-redux";
 import StepConnector from "@material-ui/core/StepConnector";
 import Button from "@material-ui/core/Button";
@@ -26,6 +25,7 @@ import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_JOB_UPLOAD_URI } from "graphQL/useQueryGetJobUploadUri";
 import { showSuccessMessage } from "../../../actions";
 import { BlockBlobClient } from "@azure/storage-blob";
+import jobHeaders from '../jobHeaders'
 
 const QontoConnector = withStyles({
   alternativeLabel: {
@@ -254,10 +254,15 @@ export default function CustomizedSteppers(props) {
         element.createAt = changeDate;
         element.lastUpdateBy = userID;
         element.lastUpdateAt = changeDate;
+        if (props.selectedJob.type === "UNITS") {
+          element['shape.shapeType'] = "Unit";
+        }
         delete element.tableData;
       });
+
       getJobUploadUri({
         variables: {
+          requestPayload: { sampleCsv: jobHeaders[props.selectedJob.type] },
           jobName: props.selectedJob.name,
           jobType: props.selectedJob.type,
           userId: userID,

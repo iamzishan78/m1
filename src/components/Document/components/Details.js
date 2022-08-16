@@ -1,40 +1,30 @@
 import React, { useEffect, useState, Fragment } from "react";
-import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
-import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
-import Drawer from "@material-ui/core/Drawer";
-import RightActionsPanel from "./RightActionsPanel";
 import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import { AppContext } from "AppContext";
-import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
-import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
-import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
-import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from "@material-ui/core";
+import { IconButton, TextField, withStyles } from "@material-ui/core";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
-import { KeyboardDatePicker } from "@material-ui/pickers";
+import { Clear } from "@material-ui/icons";
 import UploadZone from "../../Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import DeleteIcon from "@material-ui/icons/Delete";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
-import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
-import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
-import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
-import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
+import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
+import { useLazyQuery } from "@apollo/client";
 import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
-import { setStateIfDeepEqual } from "components/Shared/functions";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
+import moment from "moment";
+import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
+
 const filter = createFilterOptions();
 
 const useStyles = makeStyles({
@@ -78,6 +68,12 @@ const useStyles = makeStyles({
     fontWeight: "normal",
     marginBottom: "8px",
   },
+  dateRoot: {
+    color: "grey",
+    "& input": {
+      marginLeft: "20px",
+    },
+  },
   uploadSubtext: {
     color: "rgb(176, 176, 176)",
     margin: "0",
@@ -111,6 +107,9 @@ const useStyles = makeStyles({
     color: "red",
   },
   Uploadcomp: {
+    "& .MuiDropzoneArea-root": {
+      minHeight: '90px'
+    }
     // width: "200px !important",
     // height: "200px !important",
   },
@@ -175,6 +174,9 @@ const LightTooltip = withStyles((theme) => ({
 
 const documentInitial = {
   documentName: "",
+  book: "",
+  page: "",
+  instrument: "",
   recordingInfo: "",
   dateTime: null,
   documentNumber: "",
@@ -201,6 +203,8 @@ export default function DocumentDetails(props) {
     setOpenDeleteConfirmDialog,
     setFileIdToDelete,
     handleClose,
+    setReplaceFile,
+    replaceFile,
     viewFiles,
     viewFileSResult,
   } = props;
@@ -232,7 +236,7 @@ export default function DocumentDetails(props) {
 
   useEffect(() => {
     if (metaDataRes?.getMetaData?.metaData) {
-      sortFields(metaDataRes.getMetaData.metaData)
+      sortFields(metaDataRes.getMetaData.metaData);
     }
   }, [metaDataRes]);
 
@@ -261,11 +265,10 @@ export default function DocumentDetails(props) {
   }, [viewFileResult]);
 
   const sortFields = (gridViews) => {
-    const metaData = []
-    console.log(stateApp.selectedView)
-    if (stateApp.selectedView.columns?.length > 0) {
+    const metaData = [];
+    if (stateApp.selectedView?.columns?.length > 0) {
       for (let i = 0; i < stateApp.selectedView.columns?.length; i++) {
-        const data = gridViews.find(view => view.name === stateApp.selectedView.columns[i].name)
+        const data = gridViews.find((view) => view.name === stateApp.selectedView.columns[i].name);
         if (data) {
           metaData.push(data);
         }
@@ -274,8 +277,6 @@ export default function DocumentDetails(props) {
     } else {
       setMetaData(gridViews);
     }
-
-
   };
 
   const UpDatefileFN = () => {
@@ -288,23 +289,28 @@ export default function DocumentDetails(props) {
     const fileId = fileData?.addFileDescriptor?.file?.id;
     if (stateApp.selectedDocument.fileId || fileId) {
       setLoader(true);
+      const document = {
+        book: newDocument.book,
+        page: newDocument.page,
+        instrument: newDocument.instrument,
+        recordingInfo: newDocument.recordingInfo,
+        documentName: newDocument.documentName,
+        dateTime: newDocument.dateTime,
+        documentNumber: newDocument.documentNumber,
+        documentType: documentType,
+        partyName1: nameAutValueParty1._id,
+        partyName2: nameAutValueParty2._id,
+        fileId: fileId || newDocument.fileId,
+        custom_data: newDocument.custom_data,
+      }
       updateDocument({
         variables: {
-          document: {
-            recordingInfo: newDocument.recordingInfo,
-            documentName: newDocument.documentName,
-            dateTime: newDocument.dateTime,
-            documentNumber: newDocument.documentNumber,
-            documentType: documentType,
-            partyName1: nameAutValueParty1._id,
-            partyName2: nameAutValueParty2._id,
-            fileId: fileId || newDocument.fileId,
-            custom_data: newDocument.custom_data,
-          },
+          document,
         },
-        refetchQueries: ["getESDocuments"],
+        refetchQueries: ["getParcelFiles", "getParcelFilesCount"],
         awaitRefetchQueries: true,
       }).then(() => {
+        props.refetchData({ ...document })
         setFileData(null);
         setStateApp({
           ...stateApp,
@@ -321,6 +327,18 @@ export default function DocumentDetails(props) {
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
     if (viewFileLoading) {
+    }
+  };
+
+  const onFileUpload = (file) => {
+    if (replaceFile === 'IN_PROGRESS') {
+      setReplaceFile('DONE')
+    }
+    else {
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        selectedDocument: { _id: file.id, ...file },
+      }));
     }
   };
 
@@ -342,7 +360,7 @@ export default function DocumentDetails(props) {
               alignItems: "start",
             }}
           >
-            <h4>Document Number</h4>
+            <h4>File Number</h4>
             <TextField
               className={classes.maxWidth}
               multiline
@@ -362,7 +380,7 @@ export default function DocumentDetails(props) {
               alignItems: "start",
             }}
           >
-            <h4>Document Name</h4>
+            <h4>File Name</h4>
             <TextField
               className={classes.maxWidth}
               multiline
@@ -382,7 +400,7 @@ export default function DocumentDetails(props) {
               alignItems: "start",
             }}
           >
-            <h4>Document Type</h4>
+            <h4>File Type</h4>
             <DocumentType
               className={classes.maxWidth}
               documentTypes={documentTypes}
@@ -402,25 +420,47 @@ export default function DocumentDetails(props) {
               alignItems: "start",
             }}
           >
-            <h4>Document Date</h4>
-            <KeyboardDatePicker
-              className={classes.maxWidth}
-              disableToolbar
-              variant="inline"
-              format="MM/DD/YYYY"
+            <h4>File Date</h4>
+            <TextField
+              autoOk
+              type="date"
+              //variant="outlined"
               margin="normal"
-              id="date-picker-inline"
-              value={newDocument?.dateTime ? new Date(newDocument.dateTime) : null}
-              onChange={(date) => {
-                setNewDocument({
-                  ...newDocument,
-                  dateTime: date ? String(date["_d"]) : "",
-                });
+              fullWidth
+              value={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
+              onChange={(event) => {
+                const splittedDate = event?.target?.value.split("-")
+                if (splittedDate.length === 3) {
+                  const newDate = new Date()
+                  newDate.setYear(splittedDate[0])
+                  newDate.setMonth(Number(splittedDate[1]) - 1)
+                  newDate.setDate(splittedDate[2])
+                  setNewDocument({ ...newDocument, dateTime: newDate })
+                } else {
+                  setNewDocument({ ...newDocument, dateTime: null })
+                }
+
               }}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
+
+              InputLabelProps={{
+                shrink: true,
+              }}
+              disableToolbar
+              KeyboardButtonProps={{ "aria-label": "change date" }}
+              format="MM/DD/YYYY"
+              PopoverProps={{ disablePortal: false }}
+              InputProps={{
+                endAdornment: (
+                  <IconButton onClick={(event) => setNewDocument({ ...newDocument, dateTime: null })}>
+                    <Clear style={{ height: 22, width: 22 }} />
+                  </IconButton>
+                ),
+                classes: {
+                  root: classes.dateRoot,
+                },
               }}
             />
+
           </ListItem>
 
           {/* TEMPORARY COMMENT OUT UNTIL FEATURE IS FIXED */}
@@ -444,7 +484,10 @@ export default function DocumentDetails(props) {
                   <h4>Party 2 Name</h4>
                   <ContactPaginatedDropdown nameAutValue={nameAutValueParty2} setNameAutValue={setNameAutValueParty2} />
                 </ListItem> */}
-          <ListItem
+
+          {/* Hiding Recording info */}
+
+          {/* <ListItem
             style={{
               flexDirection: "column",
               justifyContent: "start",
@@ -463,9 +506,65 @@ export default function DocumentDetails(props) {
                 });
               }}
             />
+          </ListItem> */}
+
+          <ListItem
+            style={{
+              flexDirection: "row",
+              justifyContent: "start",
+              alignItems: "start",
+            }}
+          >
+            <div style={{
+              marginRight: "15px",
+            }}>
+              <h4>Book</h4>
+              <TextField
+                className={classes.maxWidth}
+                multiline
+                value={newDocument?.book}
+                onChange={(e) => {
+                  setNewDocument({
+                    ...newDocument,
+                    book: e.target.value,
+                  });
+                }}
+              />
+            </div>
+
+            <div style={{
+              marginRight: "15px",
+            }}>
+              <h4>Page</h4>
+              <TextField
+                className={classes.maxWidth}
+                multiline
+                value={newDocument?.page}
+                onChange={(e) => {
+                  setNewDocument({
+                    ...newDocument,
+                    page: e.target.value,
+                  });
+                }}
+              />
+            </div>
+            <div>
+              <h4>Instrument #</h4>
+              <TextField
+                className={classes.maxWidth}
+                multiline
+                value={newDocument?.instrument}
+                onChange={(e) => {
+                  setNewDocument({
+                    ...newDocument,
+                    instrument: e.target.value,
+                  });
+                }}
+              />
+            </div>
           </ListItem>
 
-          {metaData.map((meta) => {
+          {metaData.map((meta, index) => {
             const value = newDocument.custom_data[meta.name];
             let isInView = false;
             if (stateApp.selectedView && stateApp.selectedView?.columns?.length > 0) {
@@ -508,8 +607,11 @@ export default function DocumentDetails(props) {
                       }}
                     >
                       <h4>{meta.label}</h4>
-                      <CustomFieldSelect
+                      <ReactSelectField
+                        isSingleSelect={true}
                         fullWidth
+                        showUnderline
+                        showChevron={true}
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}
                         column={meta}
@@ -534,8 +636,26 @@ export default function DocumentDetails(props) {
                       }}
                     >
                       <h4>{meta.label}</h4>
-                      <CustomFieldMultiSelect
+                      {/* <CustomFieldMultiSelect
                         fullWidth
+                        index={"documentTable"}
+                        dropdownOptions={meta.dropdownOptions}
+                        column={meta}
+                        value={value}
+                        onCustomKeyChange={(value) => {
+                          const custom_data = JSON.parse(JSON.stringify(newDocument.custom_data));
+                          custom_data[meta.name] = value ? value : null; // empty string is falsey so null
+                          setNewDocument({
+                            ...newDocument,
+                            custom_data,
+                          });
+                        }}
+                      /> */}
+
+                      <ReactSelectField
+                        fullWidth
+                        showUnderline
+                        showChevron={true}
                         index={"documentTable"}
                         dropdownOptions={meta.dropdownOptions}
                         column={meta}
@@ -558,7 +678,7 @@ export default function DocumentDetails(props) {
         </List>
       </div>
       <div style={{ flexShrink: 0 }}>
-        {stateApp.selectedDocument?.fileId || fileData ? (
+        {(stateApp.selectedDocument?.fileId || fileData) && replaceFile !== 'IN_PROGRESS' ? (
           <ListItem>
             <div style={{ display: "flex", justifyContent: "start" }}>
               {viewFileSResult?.viewFiles?.map((value, key) => {
@@ -572,8 +692,11 @@ export default function DocumentDetails(props) {
                             <IconButton
                               size="small"
                               onClick={() => {
+                                setReplaceFile('INITIATE')
                                 setOpenDeleteConfirmDialog(true);
                                 setFileIdToDelete(stateApp.selectedDocument.fileId);
+                                // setStateApp((state) => ({ ...state, selectedDocument: { ...state.selectedDocument, fileId: null } }))
+                                // setFileData(null)
                               }}
                             >
                               <DeleteIcon />
@@ -645,8 +768,11 @@ export default function DocumentDetails(props) {
                             <IconButton
                               size="small"
                               onClick={() => {
+                                setReplaceFile('INITIATE')
                                 setOpenDeleteConfirmDialog(true);
                                 setFileIdToDelete(value.id);
+                                // setStateApp((state) => ({ ...state, selectedDocument: { ...state.selectedDocument, fileId: null } }))
+                                // setFileData(null)
                               }}
                             >
                               <DeleteIcon />
@@ -703,21 +829,17 @@ export default function DocumentDetails(props) {
           </ListItem>
         )}
 
-        {!stateApp.selectedDocument?.fileId && !fileData ? (
+        {(!stateApp.selectedDocument?.fileId && !fileData) || replaceFile === 'IN_PROGRESS' ? (
           <div className={classes.Uploadcomp}>
             <UploadZone
               style={{
-                // width: "75px !important",
-                // height: "50px !important",
                 paddingLeft: "50px",
+                height: '90px'
               }}
               userId={stateApp.user.mongoId}
               setFileData={setFileData}
-            // relatedObjectId={props.id}
-            // userId={userId}
-            // relatedObjectType={relatedObjectType} //Contact or Deal
-            // loading={props.loading}
-            // disabled={props.disabled}
+              fileId={replaceFile ? null : stateApp.selectedDocument?._id}
+              onFileUpload={onFileUpload}
             />
           </div>
         ) : null}
@@ -756,68 +878,10 @@ export default function DocumentDetails(props) {
           </Button>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 
-const ContactPaginatedDropdown = ({ nameAutValue, setNameAutValue }) => {
-  const classes = useStyles();
-  const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
-  const [hasNextPage, setHasNextPage] = useState(true);
-  const [isNextPageLoading, setIsNextPageLoading] = useState(false);
-  const [nameAutInputValue, NameAutInputValue] = useState("");
-  const setNameAutInputValue = (newState) => {
-    setStateIfDeepEqual(NameAutInputValue, newState);
-  };
-
-  const [getPaginatedContacts, { data: allContacts, loading: contactsLoading, fetchMore: fetchMorePaginatedContacts }] = useLazyQuery(
-    PAGINATEDCONTACTSQUERY,
-    {
-      fetchPolicy: "cache-and-network",
-      nextFetchPolicy: "cache-first",
-    }
-  );
-
-  useEffect(() => {
-    if (allContacts?.paginatedContacts) {
-      setMongoEntitiesArray([...allContacts?.paginatedContacts?.edges?.map((el) => el.node)]);
-      setHasNextPage(allContacts?.paginatedContacts?.pageInfo?.hasNextPage);
-    }
-    setIsNextPageLoading(false);
-  }, [allContacts]);
-
-  useEffect(() => {
-    //will also run during initial mount
-    setIsNextPageLoading(true);
-    getPaginatedContacts({
-      variables: {
-        search: nameAutInputValue,
-      },
-    });
-  }, [nameAutInputValue]);
-
-  const loadNextPage = async (pageVariables) => {
-    setIsNextPageLoading(true);
-    fetchMorePaginatedContacts(pageVariables);
-    return null;
-  };
-
-  return (
-    <AutocompEntityNamesVirtualizeList
-      className={classes.maxWidth}
-      mongoEntitiesArray={mongoEntitiesArray}
-      setMongoEntitiesArray={setMongoEntitiesArray}
-      nameAutValue={nameAutValue}
-      setNameAutValue={setNameAutValue}
-      nameAutInputValue={nameAutInputValue}
-      setNameAutInputValue={setNameAutInputValue}
-      hasNextPage={hasNextPage}
-      isNextPageLoading={isNextPageLoading}
-      loadNextPage={loadNextPage}
-      addNew={true}
-    />
-  );
-};
 
 const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
   const useStyles = makeStyles({

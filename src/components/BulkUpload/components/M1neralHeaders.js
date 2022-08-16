@@ -12,7 +12,8 @@ import { AppContext } from "../../../AppContext";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 // queries
 import { useApolloClient } from "@apollo/client";
-import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
+// import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
+// import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
 const useStyles = makeStyles({
   root: {
@@ -35,7 +36,7 @@ const useStyles = makeStyles({
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#929292",
       borderRadius: 10,
-  },
+    },
   },
 });
 const main_div = {
@@ -155,7 +156,6 @@ export default function M1neralHeaders(props) {
   const changeDataToSendState = async () => {
     let headers = stateApp.mappedHeadersFromCSV;
     let arr_data = stateApp.csvContactsList;
-
     // let filtered_data_to_send = arr_data.map((obj) => {
     let filtered_data_to_send = [];
     for await (const obj of arr_data) {
@@ -169,22 +169,31 @@ export default function M1neralHeaders(props) {
           return_obj[header.actual_key] = obj.data[header.mapped_key];
         }
       }
-
+      if(['PROPERTIES'].includes(stateApp.jobType)) {
+        Object.keys(return_obj).forEach(key => {
+          if(return_obj[key] instanceof Date ){
+            return_obj[key] = return_obj[key].toISOString()
+          }
+          if(key === 'wellsApiNumbers' && typeof return_obj[key] === 'number' ){
+            return_obj[key] = return_obj[key].toString()
+          }
+        })
+      }
       if (['PARCELINTERESTS'].includes(stateApp.jobType)) {
         if (!return_obj["parcel._id"] ||
-            !return_obj["parcel.name"]) {
-              filtered_data_to_send.push(null)
-              continue;
+          !return_obj["parcel.name"]) {
+          filtered_data_to_send.push(null)
+          continue;
         }
       }
       if (['SHAPEOWNER'].includes(stateApp.jobType)) {
         if (!return_obj["shape._id"] ||
-            !return_obj["shape.name"]) {
-              filtered_data_to_send.push(null)
-              continue;
+          !return_obj["shape.name"]) {
+          filtered_data_to_send.push(null)
+          continue;
         }
       }
-      if (['CONTACTS','PARCELINTERESTS','SHAPEOWNER'].includes(stateApp.jobType)) {
+      if (['CONTACTS', 'PARCELINTERESTS', 'SHAPEOWNER'].includes(stateApp.jobType)) {
         if (
           return_obj === {} ||
           !(
@@ -219,53 +228,135 @@ export default function M1neralHeaders(props) {
         }
       }
 
-      if (['TRACTS'].includes(stateApp.jobType) && 
-          (!return_obj["landgrid._id"] ||
-          !return_obj["landgrid.name"])) {
-        const { data: landGridGeoms } = await client.query({
-          query: GET_ES_SIMPLE_SEARCH,
-          variables: {
-            index: "platformData:landgrid",
-            filters: [
-              ...[
-                "landgrid.level1Type.State",
-                "landgrid.level2Type.County",
-                "landgrid.level3Type.Survey",
-                "landgrid.level4Type.Block",
-                "landgrid.level5Type.Section",
-                "landgrid.level6Type.Abstract",
-                "landgrid.level3Type.Meridian",
-                "landgrid.level5Type.TownshipRange",
-                "landgrid.level6Type.Section"
-              ].flatMap((key) => {
-                const keyParts = key.split(".");
-                return (return_obj[key]) ?
-                  [
-                    { field: `${keyParts[1]}.keyword`, value: keyParts[2]},
-                    { field: `${keyParts[1].replace("Type", "Name")}.keyword`, value: return_obj[key]}
-                  ] :
-                  []
-              }),
-              {field: "level7Id.keyword", value: undefined},
-              {field: "level8Id.keyword", value: undefined},
-              {field: "level9Id.keyword", value: undefined},
-              {field: "level10Id.keyword", value: undefined}
-            ],
-            sort: [],
-          }
-        });
+      // if (['TRACTS'].includes(stateApp.jobType) &&
+      //   (!return_obj["landgrid._id"] ||
+      //     !return_obj["landgrid.name"])) {
+      //   const { data: landGridGeoms } = await client.query({
+      //     query: GET_ES_SIMPLE_SEARCH,
+      //     variables: {
+      //       index: "platformData:landgrid",
+      //       filters: [
+      //         ...[
+      //           "landgrid.level1Type.State",
+      //           "landgrid.level2Type.County",
+      //           "landgrid.level3Type.Survey",
+      //           "landgrid.level4Type.Block",
+      //           "landgrid.level5Type.Section",
+      //           "landgrid.level6Type.Abstract",
+      //           "landgrid.level3Type.Meridian",
+      //           "landgrid.level5Type.TownshipRange",
+      //           "landgrid.level6Type.Section"
+      //         ].flatMap((key) => {
+      //           const keyParts = key.split(".");
+      //           return (return_obj[key]) ?
+      //             [
+      //               { field: `${keyParts[1]}.keyword`, value: keyParts[2] },
+      //               { field: `${keyParts[1].replace("Type", "Name")}.keyword`, value: return_obj[key] }
+      //             ] :
+      //             []
+      //         }),
+      //         { field: "level7Id.keyword", value: undefined },
+      //         { field: "level8Id.keyword", value: undefined },
+      //         { field: "level9Id.keyword", value: undefined },
+      //         { field: "level10Id.keyword", value: undefined }
+      //       ],
+      //       sort: [],
+      //     }
+      //   });
 
-        if (landGridGeoms?.getESSimpleSearch?.total === 1) {
-          return_obj["landgrid._id"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?._id;
-          return_obj["landgrid.name"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?.level6Name;
-        }
+      //   if (landGridGeoms?.getESSimpleSearch?.total > 0) {
+      //     return_obj["landgrid._id"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?._id;
+      //     return_obj["landgrid.name"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?.level6Name;
+      //   }
 
-        if (!return_obj["landgrid._id"] ||
-            !return_obj["landgrid.name"]) {
-              filtered_data_to_send.push(null)
-              continue;
-        }
-      }
+      //   if (!return_obj["landgrid._id"] ||
+      //     !return_obj["landgrid.name"]) {
+      //     filtered_data_to_send.push(null)
+      //     continue;
+      //   }
+      // }
+
+
+      // if (['UNITS'].includes(stateApp.jobType) &&
+      //   (!return_obj["landgrid._id"] ||
+      //     !return_obj["landgrid.name"])) {
+      //   const { data: landGridGeoms } = await client.query({
+      //     query: GET_ES_PAGINATED_LIST,
+      //     variables: {
+      //       esIndex: "platformData:landgrid",
+      //       filters: [
+      //         ...[
+      //           "landgrid.level1Type.State",
+      //           "landgrid.level2Type.County",
+      //           "landgrid.level3Type.Survey",
+      //           "landgrid.level4Type.Block",
+      //           "landgrid.level5Type.Section",
+      //           "landgrid.level6Type.Abstract",
+      //           "landgrid.level3Type.Meridian",
+      //           "landgrid.level5Type.TownshipRange",
+      //           "landgrid.level6Type.Section"
+      //         ].flatMap((key) => {
+      //           const keyParts = key.split(".");
+      //           return (return_obj[key]) ?
+      //             [
+      //               { field: `${keyParts[1]}.keyword`, value: keyParts[2] },
+      //               { field: `${keyParts[1].replace("Type", "Name")}.keyword`, value: return_obj[key] }
+      //             ] :
+      //             []
+      //         }),
+      //         { field: "level7Id.keyword", value: undefined },
+      //         { field: "level8Id.keyword", value: undefined },
+      //         { field: "level9Id.keyword", value: undefined },
+      //         { field: "level10Id.keyword", value: undefined }
+      //       ],
+      //       pagination: {
+      //         first: 25,
+      //         keep_alive: "1micros"
+      //       },
+      //       sort: [],
+      //     }
+      //   });
+
+      //   if (landGridGeoms?.getESSimpleSearch?.total > 0) {
+      //     return_obj["landgrid._id"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?._id;
+      //     return_obj["landgrid.name"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?.level6Name;
+      //   }
+
+      //   if (!return_obj["landgrid._id"] ||
+      //     !return_obj["landgrid.name"]) {
+      //     filtered_data_to_send.push(null)
+      //     continue;
+      //   }
+      // }
+
+      // if ('CONTACTSWELLINTEREST' === stateApp.jobType &&
+      //   (return_obj["well.globalWell"] ||
+      //     return_obj["well.apiNumber"])) {
+      //   const query = {
+      //     fields:['name^4', '_all'],
+      //     query:return_obj["well.globalWell"] || return_obj["well.apiNumber"] ? return_obj["well.apiNumber"].toString() : return_obj["well.apiNumber"]
+      //   }
+      //   const { data: wellsGeoms } = await client.query({
+      //     query: GET_ES_SIMPLE_SEARCH,
+      //     variables: {
+      //       index: "platformData:wells",
+      //       search: query,
+      //       sort: [],
+      //     }
+      //   });
+
+      //   if (wellsGeoms?.getESSimpleSearch?.total > 0) {
+      //     return_obj["well.globalWell"] = return_obj["well.globalWell"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.id;
+      //     return_obj["well.apiNumber"] = return_obj["well.apiNumber"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.ApiNumber;
+      //     return_obj["well.wellName"] = return_obj["well.wellName"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.WellName;
+      //     return_obj["well.state"] = return_obj["well.state"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.State;
+      //     return_obj["well.county"] = return_obj["well.county"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.County;
+      //     return_obj["well.leaseId"] = return_obj["well.leaseId"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.LeaseId;
+      //     return_obj["well.lease"] = return_obj["well.lease"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.Lease;
+      //     return_obj["well.leaseAcres"] = return_obj["well.leaseAcres"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.leaseAcres;
+      //   }
+      // }
+
 
       filtered_data_to_send.push(return_obj)
     };
@@ -338,11 +429,11 @@ export default function M1neralHeaders(props) {
                             id={"select" + index}
                             defaultValue={(() => {
                               const matchedKeyIndex = data.find(el => el?.actual_key === row?.actual_key)
-                              return row.actual_key === "" 
+                              return row.actual_key === ""
                                 ? "initial"
                                 : matchedKeyIndex?.actual_key
                             })()}
-                            onChange={(event) => 
+                            onChange={(event) =>
                               handleChange_select(event, index)
                             }
                           >
@@ -350,16 +441,16 @@ export default function M1neralHeaders(props) {
                               {" "}
                               Select Header{" "}
                             </option>
-                            {[ ...data ].sort((a, b) => a.label.toUpperCase() < b.label.toUpperCase() ? -1 : 1)
-                             .map((option, i) => {
-                              return (
-                                <option value={option.actual_key} key={i}>
-                                  {(() => {
-                                    return option.label
-                                  })()}
-                                </option>
-                              );
-                            })}
+                            {[...data].sort((a, b) => a.label.toUpperCase() < b.label.toUpperCase() ? -1 : 1)
+                              .map((option, i) => {
+                                return (
+                                  <option value={option.actual_key} key={i}>
+                                    {(() => {
+                                      return option.label
+                                    })()}
+                                  </option>
+                                );
+                              })}
                           </select>
                         </div>
                       </StyledTableCell>
@@ -375,6 +466,6 @@ export default function M1neralHeaders(props) {
           uploading contacts.
         </div>
       </div>
-      </div>
+    </div>
   );
 }

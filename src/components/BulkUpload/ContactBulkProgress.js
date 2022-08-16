@@ -2,21 +2,25 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "AppContext";
 import { useQuery, useApolloClient } from "@apollo/client";
 import { useMutation } from "@apollo/client";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_JOBS_STATUS } from "graphQL/useQueryGetJobStatus";
-import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import Loader from "components/Loaders/serverLoader";
+import { setReduxKey } from "store/actions/commonActions";
+import useRefetchHelper from "components/Shared/Hooks/useRefetchHelper";
 
 const ContactBulkProgress = () => {
   const [stateApp] = useContext(AppContext);
   const bulkUpload = useSelector((state) => state.common.bulkUpload);
+  const refetchHelper = useRefetchHelper()
+
+  const dispatch = useDispatch();
 
   const [pollingStarted, setPollingStarted] = useState(false);
 
   const [updateJob, { data: updatedJob }] = useMutation(UPDATE_JOB, {
-    refetchQueries: [ GET_JOBS_STATUS ]
+    refetchQueries: [GET_JOBS_STATUS]
   });
 
   const {
@@ -40,7 +44,7 @@ const ContactBulkProgress = () => {
     })
     return matching
   }
-  
+
   const refetchQueryByName = (name) => {
     return Promise.all(findQueries(client.queryManager, name).map(q => q.observableQuery.refetch()))
   }
@@ -58,6 +62,7 @@ const ContactBulkProgress = () => {
       const pendingJobs = dataJobs.getJobsStatus.jobs.find(
         (job) => job.status === "Created" || job.status === "Pending" || job.status === "Started"
       );
+
       if (pendingJobs && !pollingStarted) {
         startPolling(3000);
         setPollingStarted(true);
@@ -87,13 +92,14 @@ const ContactBulkProgress = () => {
   const downloadResults = async (job, onCloseToast) => {
     if (job?.resultsPayload?.datasets) {
       for (const dataset of job?.resultsPayload?.datasets) {
+        console.log('dataset', dataset.uri)
         // job?.resultsPayload?.datasets.map(async (dataset) => {
         let a = document.createElement("a");
         a.href = dataset.uri;
         a.download = dataset.fileName;
         a.click();
 
-        await new Promise((resolve) => setTimeout(resolve, 1 * 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1 * 2000));
       }
       onCloseToast(job._id);
     }
@@ -110,13 +116,20 @@ const ContactBulkProgress = () => {
         message = dataJobs.getJobsStatus.jobs[i].activitiesStatus[dataJobs.getJobsStatus.jobs[i].activitiesStatus.length - 1];
       } else {
         const status = dataJobs.getJobsStatus.jobs[i].status;
+        if (status === "Completed")
+          dispatch(setReduxKey("contactsAdded", true))
         const type = dataJobs.getJobsStatus.jobs[i].type;
-        if(type === 'contacts'){
+        if (type === 'contacts') {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Contacts creation completed" : "Contacts creation failed";
-        }else{
+        } else if (type === 'PROPERTIES') {
+          message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Import successfully completed" : "Import Failed";
+        } else {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Export successfully completed" : "Export Failed";
-        }
+          if (type === 'SHAPEOWNER' && status === "Completed")
+            refetchHelper(['getCustomLayer'])
 
+        }
+        if (status === 'Completed with errors') message = status
       }
 
       if (state === "create") {
@@ -124,10 +137,10 @@ const ContactBulkProgress = () => {
           Loader.createToast(dataJobs.getJobsStatus.jobs[i]._id, message, progress, onCloseToast);
         }
       } else {
-        if (dataJobs.getJobsStatus.jobs[i].status === "Completed") {
+        if (dataJobs.getJobsStatus.jobs[i].status === "Completed" || dataJobs.getJobsStatus.jobs[i].status === "Completed with errors") {
           Loader.successToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
           downloadResults(dataJobs.getJobsStatus.jobs[i], onCloseToast);
-          if ( dataJobs.getJobsStatus.jobs[i].type === "contacts")
+          if (dataJobs.getJobsStatus.jobs[i].type === "contacts")
             refetchQueryByName("checkIfOwnersAreContacts");
         } else if (dataJobs.getJobsStatus.jobs[i].status === "Failed") {
           Loader.errorToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);

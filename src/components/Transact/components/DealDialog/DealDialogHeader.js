@@ -8,7 +8,6 @@ import FormControl from "@material-ui/core/FormControl";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
 const getDealNameFieldHeight = (title) => {
@@ -249,18 +248,6 @@ const DealDialogHeader = ({
         )}
       </Grid>
       <Grid item container xs={12} style={{ padding: "0px 0px 0px 10px" }} alignItems="center">
-        {/* {!((Object.keys(contact).length === 0 && contact.constructor === Object) || contact === null) && !isTransactPage && (
-          <TextField
-            variant="outlined"
-            margin="dense"
-            value={<Typography noWrap> {contact?.name} </Typography>}
-            label="Contact Name"
-            fullWidth
-            disabled
-            className={classes.inputField}
-          />
-        )} */}
-
         <FormControl variant="outlined" className={classes.inputFieldDealName} style={{ marginLeft: "-15px" }} fullWidth size="small">
           <TextField
             margin="dense"

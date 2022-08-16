@@ -37,7 +37,8 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import polylabel from "polylabel";
 import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from "mapbox-gl-draw-circle";
 import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
-import { SRMode } from 'mapbox-gl-draw-scale-rotate-mode';
+// import { SRMode } from 'mapbox-gl-draw-scale-rotate-mode';
+import { SRMode, TxCenter } from './MapBoxDrawRotate/index';
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
@@ -133,7 +134,7 @@ const random_hex_color_code = () => {
 };
 let hoveredAbstractId = null;
 
-function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial = true, width }) {
+function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial = true, width, hideShape = false, layerPadding = null }) {
   // context states
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -441,9 +442,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       if (currentFeature?.Id) currentFeature.id = currentFeature.Id;
       setStateApp({ ...stateApp, selectedWell: currentFeature, selectedWellId: paramId.toLowerCase(), popupOpen: false, expandedCard: true });
       setShowExpandableCard(true);
-      if (map) {
+      if (map && currentFeature) {
         findBoundsMap([currentFeature.geoJSON], map);
-        drawWellBoundary(map, [currentFeature.Longitude, currentFeature.Latitude]);
+        if (currentFeature.Longitude)
+          drawWellBoundary(map, [currentFeature.Longitude, currentFeature.Latitude]);
       }
       return;
     }
@@ -462,7 +464,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       jsonLayer.id = layer.customLayer._id;
 
       if (!loading) {
-        findBoundsMap([jsonLayer], map);
+        findBoundsMap([jsonLayer], map, layerPadding);
 
         drawBoundary(map, jsonLayer);
       }
@@ -481,7 +483,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
     // }
   }
 
-  useEffect(() => { if (paramId) getCustomLayer(); }, [loading, paramId, map]);
+  useEffect(() => {
+    if (paramId) {
+      getCustomLayer();
+    }
+  }, [loading, paramId, map]);
 
   useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId) {
@@ -1210,12 +1216,15 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       } else if (feature.source === "parcels_source") {
         setStateApp((state) => {
           if (state.isDrawing) return state;
+          findBoundsMap([selectedUserDefinedLayer], map);
           return {
             ...state,
+            expandedCard: true,
             selectedUserDefinedLayer: null,
             selectedParcel: { ...feature.properties, feature: selectedUserDefinedLayer },
           };
         });
+        drawBoundary(map, selectedUserDefinedLayer);
       } else if (feature.source === "interests_source" && !drawMode.includes("draw") && !drawMode.includes("drag")) {
         setStateApp((state) => {
           if (state.isDrawing) return state;
@@ -1290,7 +1299,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         });
       }
       setStateApp((state) => {
-        if (!state.showDrawShapesPopup || ifDefaultSources(feature.source)) createUDPopUp(feature.properties);
+        if ((!state.showDrawShapesPopup || ifDefaultSources(feature.source)) && state.shapeEditMode !== 'redraw') createUDPopUp(feature.properties);
         return state;
       });
       map.resize();
@@ -1301,7 +1310,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         var clusterId = feature.properties.cluster_id;
         map.getSource(feature.source).getClusterExpansionZoom(clusterId, function (err, zoom) {
           if (err) return;
-
           map.easeTo({
             center: feature.geometry.coordinates,
             zoom: zoom,
@@ -1461,7 +1469,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       }
 
       var bbox = [[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]];
-      let features = map.queryRenderedFeatures(bbox, { layers: [...defaultLayers] });
+      const mapLayers = map.getStyle().layers
+      const layersToQuery = defaultLayers.filter((layerId) => mapLayers.find((mLayer) => mLayer.id === layerId))
+      let features = map.queryRenderedFeatures(bbox, { layers: [...layersToQuery] });
       if (features?.length === 0)
         return ''
 
@@ -1565,10 +1575,19 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                 data = stateApp.customLayers;
             }
             if (data) {
+              if (data.length > 0)
+                if (data[0].__typename === "CustomLayer")
+                  data = data.filter((layer) => layer?.shapeJson?.geometry?.type)
               beforeLayer = setLayer(data, layer.identifier, map, beforeLayer);
+              if (['Land Grid'].includes(layer.identifier)) {
+                setStateApp((stateApp) => ({
+                  ...stateApp,
+                  baseMapLayers: [...stateApp.baseMapLayers],
+                }));
+              }
             }
           }
-        } else if (layer.layerType == "file layer") {
+        } else if (layer.layerType === "file layer") {
           let layerData = layersData.find((l) => l.file === layer.file);
           if (layerData.fileUrl) {
             if (layerData.layerPaintProps[0].sourceProps) {
@@ -1636,8 +1655,22 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
   useEffect(() => {
     // USE EFFECT FOR BASEMAP LAYER HANDLING
+    const mapLayers = copy(stateApp.layers)
     if (stateApp.baseMapLayers && stateApp.baseMapLayers.length > 0 && map) {
-      stateApp.baseMapLayers.forEach((l) => {
+      const landLayer = mapLayers?.find((layer) => layer.identifier === 'Land Grid')
+      const baseMapLandIndex = stateApp.baseMapLayers.findIndex((layer) => layer.name === 'Land Grid')
+      if (!landLayer?.layerSettings?.visiable && stateApp.checkedBaseLayers.includes(baseMapLandIndex)) {
+        setStateApp((state) => ({ ...state, checkedBaseLayers: stateApp.checkedBaseLayers.filter((l) => l !== baseMapLandIndex) }))
+        return
+      }
+      stateApp.baseMapLayers.forEach((l, index) => {
+        if (l.name === 'Land Grid' && !stateApp.checkedBaseLayers.includes(index)) {
+          if (landLayer) {
+            landLayer.layerSettings.visiable = false;
+            setStateApp((state) => ({ ...state, layers: [...mapLayers] }))
+          }
+        }
+
         l.id.forEach((k) => {
           if (map.getLayer(k)) {
             map.setLayoutProperty(k, "visibility", "none");
@@ -1654,6 +1687,14 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           let belowlayer = null;
           for (let k = layers.length - 1; k >= 0; k--) {
             let i = layers[k];
+            if (stateApp.baseMapLayers[i].name === 'Land Grid') {
+
+              if (landLayer) {
+                landLayer.layerSettings.visiable = true;
+                setStateApp((state) => ({ ...state, layers: [...mapLayers] }))
+              }
+              continue;
+            }
             let currentLayerArray = stateApp.baseMapLayers[i].id;
             // eslint-disable-next-line no-loop-func
             currentLayerArray.forEach((j) => {
@@ -2719,7 +2760,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         filterLayers.forEach((filterLayer) => {
           const baseFilter = getLayerBaseFilters(filterLayer);
 
-          console.log("filterCustomArray[filterLayer]", filterCustomArray[filterLayer]);
           if (filterCustomArray[filterLayer]) {
             if (
               [
@@ -2730,10 +2770,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                 "rigs",
               ].indexOf(filterLayer) > -1
             ) {
-              console.log("on select operator");
-              // const filterClusterLayer = filterLayer + "-clusters";
-              // const filterClusterLayerLabel = filterLayer + "-clusters-counts";
-              console.log("baseFilter", baseFilter);
               map.setFilter(filterLayer, ["all", baseFilter, ["within", mergeIntoMultiPolygon(filterCustomArray[filterLayer])]]);
             } else if (["recent_submitted_permits", "recent_submitted_permit_laterals"].indexOf(filterLayer) > -1) {
               map.setFilter(filterLayer, [
@@ -4518,7 +4554,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
     const signal = abortController.signal;
 
-    const styleTypes = ["Satellite", "Basic", "Dark", "Light", "Outdoors"];
+    let styleTypes = ["Satellite", "Basic", "Dark", "Light", "Outdoors"];
+    const isDarkMapAllowed = stateApp?.user?.features?.find(f => f.name === 'DarkBaseMap')
+    if (!isDarkMapAllowed)
+      styleTypes = styleTypes.filter((style) => style !== 'Dark')
     let recurseLimit = 5;
 
     let styles = await styleTypes.reduce(async function reduceFunction(styles, styleType) {
@@ -5001,7 +5040,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             direct_select: DirectMode,
             simple_select: SimpleSelectMode,
             draw_rectangle: CostumDrawRectangle,
-            scaleRotateMode: SRMode,
+            tx_poly: SRMode,
+            // tx_poly: TxRectMode,
           },
         });
         newMap.addControl(Draw);
@@ -5644,7 +5684,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           map.setPitch(0);
           map.setBearing(0);
         }
-
         setStateApp((stateApp) => ({
           ...stateApp,
           mapVars: {
@@ -6039,29 +6078,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
     if (stateApp.parcelDetailCardOpen && stateApp.parcelDetailCardOpen === true && map) {
       // set and remove map marker
-
-      let coordinates = stateApp.selectedParcel.shapeCenter;
-      if (typeof stateApp.selectedParcel.shapeCenter === "string") {
-        coordinates = JSON.parse(stateApp.selectedParcel.shapeCenter);
-      }
-      const longitude = coordinates[0];
-      const latitude = coordinates[1];
-
-      const mapBounds = map.getBounds();
-      const fitBounds = fitOverBounds();
-      const screenLeftLng = fitBounds?.minLong || mapBounds._sw.lng;
-      const screenRightLng = fitBounds?.maxLong || mapBounds._ne.lng;
-      const alpha = (screenRightLng - screenLeftLng) / 2;
-
-      const bbox = [
-        [longitude - 1.5 * alpha, fitBounds?.minLat || latitude],
-        [longitude + 0.5 * alpha, fitBounds?.maxLat || latitude],
-      ];
-
-      map.fitBounds(bbox, {
-        speed: 0.75,
-        linear: true,
-      });
+      if (stateApp.selectedParcel.feature)
+        findBoundsMap([stateApp.selectedParcel.feature], map);
 
       setStateApp((state) => ({
         ...state,
@@ -6118,15 +6136,15 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
     }
   }, [parcelBoundaryId]);
 
-  useEffect(() => {
-    if (map && stateApp.selectedParcel) {
-      setParcelBoundaryId(stateApp.selectedParcel.id);
-    } else if (map) {
-      if (map.getLayer("parcelBoundary")) map.removeLayer("parcelBoundary");
-      if (map.getSource("parcelBoundarySource")) map.removeSource("parcelBoundarySource");
-      setParcelBoundaryId(null);
-    }
-  }, [stateApp.selectedParcel]);
+  // useEffect(() => {
+  //   if (map && stateApp.selectedParcel) {
+  //     setParcelBoundaryId(stateApp.selectedParcel.id);
+  //   } else if (map) {
+  //     if (map.getLayer("parcelBoundary")) map.removeLayer("parcelBoundary");
+  //     if (map.getSource("parcelBoundarySource")) map.removeSource("parcelBoundarySource");
+  //     setParcelBoundaryId(null);
+  //   }
+  // }, [stateApp.selectedParcel]);
 
   useEffect(() => {
     if ((!stateApp.selectedUserDefinedLayer && !stateApp.selectedShape && !stateApp.selectedParcel) || stateApp.shapeEdit) {
@@ -6199,7 +6217,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           />
         </div>
       )}
-      {stateApp.selectedShape?.shapeLabel && stateApp.expandedCard && (
+      {stateApp.selectedShape?.shapeLabel && stateApp.expandedCard && !hideShape && (
         <div className={classes.draggable}>
           <ExpandableCardProvider
             expanded={true}

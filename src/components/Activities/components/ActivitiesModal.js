@@ -20,6 +20,7 @@ import TaskIcon from "@material-ui/icons/WatchLater";
 import DeadlineIcon from "@material-ui/icons/Flag";
 import EmailIcon from "@material-ui/icons/Email";
 import ContactMailIcon from "@material-ui/icons/ContactMail";
+import TextMsgIcon from "@material-ui/icons/Textsms";
 
 import DocumentIcon from "@material-ui/icons/DescriptionOutlined";
 import PersonIcon from "@material-ui/icons/Person";
@@ -193,7 +194,7 @@ const initialErrors = {
 
 const localizer = momentLocalizer(moment);
 
-export default function ActivitiesModal({ selectedActivity, events, setSelectedActivityId }) {
+export default function ActivitiesModal({ events, setSelectedActivityId }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const history = useHistory();
@@ -211,6 +212,7 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
   const [dealId, setDealId] = useState(null);
   const [errors, setErrors] = useState({ ...initialErrors });
   const [users, setUsers] = useState([]);
+  const { selectedActivity } = stateApp;
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "cache-and-network",
@@ -513,20 +515,20 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
       open={!!stateApp.activityDialog}
       onClose={
         addLoading && updateLoading
-          ? () => {}
+          ? () => { }
           : () => {
-              onModalClose();
-            }
+            onModalClose();
+          }
       }
     >
       <ExpandableCardProvider
         expanded={true}
         handleCloseExpandableCard={
           addLoading && updateLoading
-            ? () => {}
+            ? () => { }
             : () => {
-                onModalClose();
-              }
+              onModalClose();
+            }
         }
         title={addNew ? "Add Activity" : "Activity Details"}
         subTitle={""}
@@ -572,6 +574,18 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
                     <CallIcon /> <span>Call</span>
                   </span>
                   <span
+                    className={clsx(classes.filterDisplay, activityType === "text_message" && classes.active)}
+                    onClick={() => setActivityType("text_message")}
+                  >
+                    <TextMsgIcon /> <span>Text Message</span>
+                  </span>
+                  <span
+                    className={clsx(classes.filterDisplay, activityType === "email" && classes.active)}
+                    onClick={() => setActivityType("email")}
+                  >
+                    <EmailIcon /> <span>Email</span>
+                  </span>
+                  <span
                     className={clsx(
                       classes.filterDisplay,
 
@@ -592,12 +606,6 @@ export default function ActivitiesModal({ selectedActivity, events, setSelectedA
                     onClick={() => setActivityType("deadline")}
                   >
                     <DeadlineIcon /> <span>Deadline</span>
-                  </span>
-                  <span
-                    className={clsx(classes.filterDisplay, activityType === "email" && classes.active)}
-                    onClick={() => setActivityType("email")}
-                  >
-                    <EmailIcon /> <span>Email</span>
                   </span>
                   <span
                     className={clsx(classes.filterDisplay, activityType === "mailer" && classes.active)}

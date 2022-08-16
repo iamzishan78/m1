@@ -31,23 +31,22 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   container: {
-      padding: 0,
-      "& div": {
-        "&>.MuiPaper-root": {
-          "&>:nth-child(3)": {
-            maxHeight: "55vh",
-            "@media (max-height:900px)": {
-              maxHeight: "52vh",
-            },
-            "@media (max-height:800px)": {
-              maxHeight: "48vh",
-            },
-            "@media (max-height:768px)": {
-              maxHeight: "45vh",
-            },
+    padding: 0,
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": {
+          "@media (max-height:900px)": {
+            maxHeight: "52vh",
+          },
+          "@media (max-height:800px)": {
+            maxHeight: "48vh",
+          },
+          "@media (max-height:768px)": {
+            maxHeight: "45vh",
           },
         },
       },
+    },
   }
 }));
 
@@ -177,9 +176,9 @@ function UnitInterestsTable(props) {
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
       const objectsIdsArray = tableData?.hits?.map((hit) => hit.shape?._id);
-    //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
+      //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
       props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
-    //   props.ifAreContacts(globalOwnerIds);
+      //   props.ifAreContacts(globalOwnerIds);
     }
   }, [tableData]);
 

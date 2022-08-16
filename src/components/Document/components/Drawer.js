@@ -21,6 +21,11 @@ import AssociatedWells from "./AssociatedWells";
 import { DocumentContext } from "../DocumentContext";
 
 const useStyles = makeStyles({
+  drawer: {
+    '& .MuiDrawer-paper': {
+      overflowY: 'inherit'
+    }
+  },
   list: {
     width: 250,
   },
@@ -141,13 +146,11 @@ const useStyles = makeStyles({
   },
 });
 
-export default function DocumentDrawer() {
+export default function DocumentDrawer(props) {
   const classes = useStyles();
   const [activePanel, setPanel] = useState("Home");
   const [fileData, setFileData] = useState(null);
-  const [state, setState] = React.useState({
-    right: false,
-  });
+  // const [state, setState] = useState({right: false});
   const [anchorEl, setAnchorEl] = useState();
 
   const [stateApp, setStateApp] = React.useContext(AppContext);
@@ -155,16 +158,20 @@ export default function DocumentDrawer() {
 
   // Fetching wells from descriptor
   useEffect(() => {
-    getWellsFromDocument({
-      variables: {
-        descriptorObject: stateApp.selectedDocument._id,
-      },
-    });
+    if (!props.isRelatedDocuments)
+      getWellsFromDocument({
+        variables: {
+          descriptorObject: stateApp.selectedDocument._id,
+        },
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.selectedDocument._id]);
 
   const documentInitial = {
     documentName: "",
+    book: "",
+    page: "",
+    instrument: "",
     recordingInfo: "",
     dateTime: null,
     documentNumber: "",
@@ -189,6 +196,7 @@ export default function DocumentDrawer() {
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
+  const [replaceFile, setReplaceFile] = useState(null);
 
   let [loader, setLoader] = useState(false);
 
@@ -197,7 +205,7 @@ export default function DocumentDrawer() {
   const handleDeleteCancel = () => {
     setFileIdToDelete(null);
     setOpenDeleteConfirmDialog(false);
-    setNewDocument(documentInitial);
+    setReplaceFile('CANCEL')
   };
   const handleClose = () => {
     setStateApp({
@@ -218,23 +226,29 @@ export default function DocumentDrawer() {
       setLoader(true);
       updateDocument({
         variables: {
-          document: {
-            fileId: fileIdToDelete,
-            isDeleted: true,
-          },
+          document: { fileId: fileIdToDelete, isDeleted: true }
         },
-        refetchQueries: ["getESDocuments"],
+        // refetchQueries: replaceFile === 'INITIATE' ? [] : ["getESDocuments"],
         awaitRefetchQueries: true,
       }).then(() => {
-        setStateApp({
-          ...stateApp,
-          DocumentDrawer: false,
-          selectedDocument: {},
-        });
+
+        if (replaceFile === 'INITIATE') {
+          setReplaceFile('IN_PROGRESS')
+        } else {
+          props.refetchData(fileIdToDelete)
+        }
+
+        if (replaceFile !== 'INITIATE') {
+          setStateApp({
+            ...stateApp,
+            DocumentDrawer: false,
+            selectedDocument: {},
+          });
+          setNewDocument(documentInitial);
+          setNameAutValueParty1({ name: "", _id: null });
+          setNameAutValueParty2({ name: "", _id: null });
+        }
         setFileIdToDelete(null);
-        setNewDocument(documentInitial);
-        setNameAutValueParty1({ name: "", _id: null });
-        setNameAutValueParty2({ name: "", _id: null });
         setOpenDeleteConfirmDialog(false);
         setLoader(false);
       });
@@ -254,7 +268,7 @@ export default function DocumentDrawer() {
         variables: { fileIds: ID },
       });
       if (stateApp.selectedDocument) {
-        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, recordingInfo, custom_data } =
+        const { documentName, dateTime, documentNumber, documentType, partyName1, partyName2, fileId, book, page, instrument, recordingInfo, custom_data } =
           stateApp.selectedDocument;
         setNameAutValueParty1({
           name: partyName1?.entityDetail?.name,
@@ -266,6 +280,9 @@ export default function DocumentDrawer() {
         });
 
         setNewDocument({
+          book,
+          page,
+          instrument,
           recordingInfo,
           documentName,
           dateTime,
@@ -283,11 +300,8 @@ export default function DocumentDrawer() {
   }, [stateApp.selectedDocument]);
 
   const toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
-      return;
-    }
-
-    setState({ ...state, [anchor]: open });
+    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) { return; }
+    // setState({ ...state, [anchor]: open });
   };
 
   const handleMenuClick = (event) => {
@@ -319,7 +333,7 @@ export default function DocumentDrawer() {
       >
         <div style={{ flexShrink: 0 }}>
           <div className={classes.titleSection}>
-            <div>{stateApp.selectedDocument?.fileId ? <h2>Document Detail</h2> : <h2>Add New Document</h2>}</div>
+            <div>{stateApp.selectedDocument?.fileId ? <h2>File Detail</h2> : <h2>Add New Document</h2>}</div>
             <div style={{ cursor: "pointer" }}>
               {stateApp.selectedDocument?.fileId && (
                 <IconButton
@@ -353,6 +367,7 @@ export default function DocumentDrawer() {
                   onClick={() => {
                     setOpenDeleteConfirmDialog(true);
                     setFileIdToDelete(stateApp.selectedDocument.fileId);
+                    handleMenuClose();
                   }}
                 >
                   <ListItemIcon>
@@ -365,12 +380,13 @@ export default function DocumentDrawer() {
           </div>
         </div>
         <div className={classes.contentRoot}>
-          <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} />
-          <div style={{ marginRight: "60px" }}>
+          {!props.isRelatedDocuments && <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} />}
+          <div style={{ marginRight: !props.isRelatedDocuments ? "60px" : "" }}>
             {activePanel === "Home" && (
               <DetailsPanel
                 newDocument={newDocument}
                 setNewDocument={setNewDocument}
+                refetchData={props.refetchData}
                 fileData={fileData}
                 setFileData={setFileData}
                 setLoader={setLoader}
@@ -383,15 +399,13 @@ export default function DocumentDrawer() {
                 setFileIdToDelete={setFileIdToDelete}
                 handleClose={handleClose}
                 viewFiles={viewFiles}
+                replaceFile={replaceFile}
+                setReplaceFile={setReplaceFile}
                 viewFileSResult={viewFileSResult}
               />
             )}
             {activePanel === "Wells" && <AssociatedWells />}
-            {activePanel === "Info" && (
-              <Information
-                fileData={fileData}
-              />
-            )}
+            {activePanel === "Info" && <Information fileData={fileData} />}
           </div>
         </div>
       </div>
@@ -400,14 +414,14 @@ export default function DocumentDrawer() {
 
   return (
     <div>
-      <Drawer anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>
+      <Drawer className={classes.drawer} anchor={"right"} open={stateApp.DocumentDrawer === true || Object.entries(stateApp.selectedDocument).length > 0}>
         <Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
           <DeleteConfirmationDialogContent
             header="Delete Document"
             onClose={handleDeleteCancel}
             deleteFunc={handleDeleteAccept}
             m1nSelectedRowsIds={[document._id]}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete the selected documents?
           </DeleteConfirmationDialogContent>
@@ -423,3 +437,7 @@ export default function DocumentDrawer() {
     </div>
   );
 }
+
+Drawer.defaultProps = {
+  isRelatedDocuments: false,
+};

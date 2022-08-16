@@ -239,11 +239,76 @@ const ContactsHeadCells = [
       sort: true,
     },
   },
-
+  {
+    name: "mobilephone2",
+    label: "Mobile Phone 2",
+    esKey: 'mobilephone2.keyword',
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: true,
+    },
+  },
   {
     name: "AltPhone",
     label: "Primary Work Phone",
     esKey: 'AltPhone.keyword',
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: true,
+    },
+  },
+  {
+    name: "mobilephone3",
+    label: "Mobile Phone 3",
+    esKey: 'mobilephone3.keyword',
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: true,
+    },
+  },
+  {
+    name: "homePhone2",
+    label: "Home Phone 2",
+    esKey: 'homePhone2.keyword',
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: true,
+    },
+  },
+  {
+    name: "homePhone3",
+    label: "Home Phone 3",
+    esKey: 'homePhone3.keyword',
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: true,
+    },
+  },
+  {
+    name: "AltPhone2",
+    label: "Work Phone 2",
+    esKey: 'AltPhone2.keyword',
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: true,
+    },
+  },
+  {
+    name: "AltPhone3",
+    label: "Work Phone 3",
+    esKey: 'AltPhone3.keyword',
     options: {
       display: false,
       filter: false,
@@ -357,72 +422,6 @@ const ContactsHeadCells = [
     name: "relatives",
     label: "Relative Names",
     esKey: 'relatives.keyword',
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: true,
-    },
-  },
-  {
-    name: "homePhone2",
-    label: "Home Phone 2",
-    esKey: 'homePhone2.keyword',
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: true,
-    },
-  },
-  {
-    name: "homePhone3",
-    label: "Home Phone 3",
-    esKey: 'homePhone3.keyword',
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: true,
-    },
-  },
-  {
-    name: "mobilephone2",
-    label: "Mobile Phone 2",
-    esKey: 'mobilephone2.keyword',
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: true,
-    },
-  },
-  {
-    name: "mobilephone3",
-    label: "Mobile Phone 3",
-    esKey: 'mobilephone3.keyword',
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: true,
-    },
-  },
-  {
-    name: "AltPhone2",
-    label: "Work Phone 2",
-    esKey: 'AltPhone2.keyword',
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: true,
-    },
-  },
-  {
-    name: "AltPhone3",
-    label: "Work Phone 3",
-    esKey: 'AltPhone3.keyword',
     options: {
       display: false,
       filter: false,
@@ -623,11 +622,13 @@ const ContactsHeadCells = [
   {
     name: "lastUpdateAt",
     label: "Last Updated",
-    esKey: 'lastUpdateAt.keyword',
+    esKey: 'lastUpdateAt',
     noFilter: true,
     options: {
       filter: false,
       sort: true,
+      sortDescFirst: true,
+      sortDirection: 'desc',
     },
   },
   // {

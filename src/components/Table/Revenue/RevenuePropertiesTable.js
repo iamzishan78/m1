@@ -14,6 +14,11 @@ import TableESHOC from "../TableESHOC";
 
 const genericDataActions = ["tags", "comments"];
 
+const statusData = [
+  { label:'Not in Pay', value: 'NotInPay' },
+  { label:'In Pay', value: 'InPay' },
+]
+
 function RevenuePropertiesTable(props) {
   const classes = usetableStyles();
   const { esIndex, setESFilters } = props;
@@ -21,11 +26,13 @@ function RevenuePropertiesTable(props) {
   const dispatch = useDispatch();
   const [refetchData, setRefetchData] = useState(false)
 
-
   const esFilters = props.esFilters ? props.esFilters : []
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
+      if(statusData.find(st => st.value === hit.status)){
+        hit.status = statusData.find(st => st.value === hit.status).label
+      }
       hit = props.setGenricData(
         hit,
         hit._id,
@@ -33,12 +40,12 @@ function RevenuePropertiesTable(props) {
         genericDataActions
       );
       hit.payorName = hit?.operator?.name;
-      hit.wellApiNumber = hit?.well?.apiNumber
-      hit.wellName = hit?.well?.wellName;
+      hit.wellApiNumber = hit?.wells?.length > 1 ? 'MULTIPLE' : hit?.wells && hit?.wells[0] ? hit?.wells[0].apiNumber : '';
+      hit.wellName = hit?.wells?.length > 1 ? 'MULTIPLE' : hit?.wells && hit?.wells[0] ? hit?.wells[0].wellName : '';
       hit.checkNumber = hit?.lastCheck?.checkNumber;
       hit.amount = hit?.lastCheck?.netOwnerValue;
       hit.type = hit?.lastCheck?.interestType[0];
-      hit.lastChecked = new Date(hit?.lastCheck?.checkDate).toLocaleDateString();
+      hit.lastChecked = hit?.lastCheck?.checkDate ? new Date(hit?.lastCheck?.checkDate).toLocaleDateString() : ''
       return hit;
     });
     return hits
@@ -52,6 +59,10 @@ function RevenuePropertiesTable(props) {
       formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field]
       fixedFilters.push(formatedFilter[0])
     }
+
+    // fixedFilters[1].type = "value";
+    // fixedFilters[1].value = "";
+
     props.setInitialFilters(formatedFilter)
     props.setTableMeta({
       extendSearchQuery: props.revenueSearchQuery,
@@ -110,10 +121,7 @@ function RevenuePropertiesTable(props) {
         orderByTracks={false}
         startPaginationAt={props.startPaginationAt}
         onTableChange={props.onTableChange}
-        options={{
-          ...props.options,
-          ...props.customOptions,
-        }}
+        options={{ ...props.options, ...props.customOptions }}
         parent={props.parent}
         setColumnsBase={[]}
         setRefetchData={setRefetchData}

@@ -11,3 +11,17 @@ export const UNLINK_GLOBAL_OWNER = gql`
     unlinkGlobalOwners(contactId: $contactId, globalOwner: $globalOwner)
   }
 `
+
+export const LINK_PLATFORM_OWNER = gql`
+  mutation linkPlatformOwnersToContact(
+    $contactId: ID
+    $contact: JSON
+    $userId: ID
+  ) {
+    linkPlatformOwnersToContact(
+      contactId: $contactId
+      contact: $contact
+      userId: $userId
+    )
+  }
+`;

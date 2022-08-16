@@ -35,7 +35,7 @@ export const useStyles = makeStyles((theme) => ({
     padding: 0,
   },
   titleText: {
-    marginRight: "15px",
+    marginRight: "40px",
     textTransform: "uppercase",
     fontWeight: "bold",
   },
@@ -44,6 +44,8 @@ export const useStyles = makeStyles((theme) => ({
     "& .MuiOutlinedInput-root": {
       height: `46px !important`,
       borderRadius: "6px !important",
+      paddingTop: `0 !important`,
+      paddingBottom: `0 !important`,
     },
   },
   gridStyle: {
@@ -86,11 +88,11 @@ export const useStyles = makeStyles((theme) => ({
   mapSection: {
     height: "382px",
     width: "45%",
-    margin: "10px 10px 0px 0px"
+    margin: "10px 10px 0px 0px",
   },
   adornmentAutocomplete: {
     "& .MuiAutocomplete-endAdornment": {
-      right: "50px !important",
+      right: "60px !important",
       "& .MuiAutocomplete-clearIndicator": {
         display: "none",
       },
@@ -110,6 +112,10 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   datePicker: {
+    margin: "5px",
+    "&& span": {
+      pointerEvents: "none",
+    },
     "& .MuiIconButton-root": {
       padding: "12px 0px",
     },
@@ -175,6 +181,37 @@ export const useStyles = makeStyles((theme) => ({
       marginTop: "20px",
     },
   },
+
+  descriptionInput: {
+    width: "100%",
+    margin: "20px 0 0",
+    "& .MuiTextField-root": {
+      backgroundColor: "#fffcdc",
+      borderRadius: 4,
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "none",
+    },
+    "& textarea": {
+      height: "323px",
+    },
+  },
+
+  foodText: {
+    position: "absolute",
+    bottom: "20px",
+    right: "0px",
+    fontSize: "10px",
+    color: "#6e6e6e",
+    margin: "0 !important",
+    textAlign: "right",
+    height: "0",
+    paddingRight: "10px",
+    "& span": {
+      fontWeight: "bold",
+    },
+  },
+
   pencilIcon: {
     cursor: "pointer",
   },

@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiInputBase-input": { color: "transparent", caretColor: "black" },
     "& .MuiInputBase-inputMultiline": {
       height: "201px !important",
-      zIndex: 9999,
       overflow: "overlay",
       paddingRight: "8px",
       "*::-webkit-scrollbar": {
@@ -46,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   customTextField: {
+    "& textarea": {
+      zIndex: 99
+    },
     "& textarea::placeholder": {
       color: "black",
     },
@@ -190,8 +192,6 @@ export default function DealComment({
   };
 
   const onInputChange = (event, value, reason) => {
-
-    // value = value.replace(/\s\s/g, ' ');
     if (!isSelected) {
       setCommentValue(value);
     } else {
@@ -307,6 +307,7 @@ export default function DealComment({
         <>
           <Button
             className={classes.commentBtn}
+            style={{ marginBottom: "10px" }}
             variant="contained"
             color="primary"
             onClick={() => {
@@ -318,6 +319,7 @@ export default function DealComment({
 
           <Button
             className={classes.commentBtn}
+            style={{ marginRight: "10px", marginBottom: "10px" }}
             variant="contained"
             onClick={() => {
               setComment("");

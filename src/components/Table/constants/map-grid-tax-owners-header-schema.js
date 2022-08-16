@@ -66,6 +66,15 @@ const ownersColumnHeaders = [
     },
   },
   // {
+  //   name: "wellCount",
+  //   label: "Interest Count",
+  //   esKey: "wellCount",
+  //   options: {
+  //     sort: true,
+  //     filter: true,
+  //   },
+  // },
+  // {
   //   name: "tags",
   //   label: "Tags ",
   //   options: {
@@ -111,39 +120,39 @@ const ownersColumnHeaders = [
       viewColumns: false,
     },
   },
-  {
-    name: "isTracked",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-      filterOptions: {
-        names: ["Tracked", "Untracked"],
-        logic(tracked, filterVal) {
-          return !(
-            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
-            (filterVal.indexOf("Untracked") >= 0 && !tracked)
-          );
-        },
-      },
-      filterType: "dropdown",
-    },
-  },
-  {
-    name: "detailCard",
-    label: " ",
-    options: {
-      filter: false,
-      sort: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  // {
+  //   name: "isTracked",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //     filterOptions: {
+  //       names: ["Tracked", "Untracked"],
+  //       logic(tracked, filterVal) {
+  //         return !(
+  //           (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+  //           (filterVal.indexOf("Untracked") >= 0 && !tracked)
+  //         );
+  //       },
+  //     },
+  //     filterType: "dropdown",
+  //   },
+  // },
+  // {
+  //   name: "detailCard",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     sort: false,
+  //     searchable: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
   {
     name: "coordinates",
     label: " ",

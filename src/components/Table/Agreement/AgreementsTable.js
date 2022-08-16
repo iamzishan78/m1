@@ -1,354 +1,241 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Container } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import Table from "components/Shared/M1nTable/components/Table";
-import TableHOC from "components/Table/TableHOC";
-import moment from "moment";
+import TableESHOC from "components/Table/TableESHOC";
+import Agreements from "components/Shared/svgIcons/agreements";
 
-// QUERIES
-import { useLazyQuery } from "@apollo/client";
-
-import { setStateIfDeepEqual, deepEqualObjects } from "components/Shared/functions";
+import { deepEqualObjects, copy } from "components/Shared/functions";
+import { HeaderComponent } from "components/Table/helpers";
 
 // Header Schemas
 import TableHeader from "components/Table/constants/agreements-header-schema";
-import { handleSelectedGridChange } from 'components/Table/helpers'
 
 // Utilities
-import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
-import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
-import { setColumnsData } from "components/Table/helpers";
+import { useSelector } from "react-redux";
 
-const useStyles = makeStyles((theme) => ({
-  agreementTable: {
-    "& ::-webkit-scrollbar": {
-      height: "0.7em !important",
-    },
-  },
-  container: {
-    padding: 0,
-    "& div": {
-      "&>.MuiPaper-root": {
-        "&>:nth-child(3)": {
-          maxHeight: "55vh",
-          "@media (max-height:900px)": {
-            maxHeight: "52vh",
-          },
-          "@media (max-height:800px)": {
-            maxHeight: "48vh",
-          },
-          "@media (max-height:768px)": {
-            maxHeight: "45vh",
-          },
-        },
-      },
-    },
-  },
-}));
+import { useMutation } from "@apollo/client";
 
+import debounce from "lodash/debounce";
+import { AppContext } from "AppContext";
+
+import { usetableStyles } from "../Styles";
+import CustomerViewCol from "../helpers/CustomerView";
+import MetaField from "../helpers/MetaField";
+import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
+import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
+import GridView from "components/Shared/GridView";
+
+// value formatters 
+import convert_date from "components/Shared/valueformatters/convert_date.js";
+
+const genericDataActions = ['tags', 'comments', 'tracks']
 function AgreementsTable(props) {
-  const { esIndex, setESFilters, esFilters } = props;
-  const classes = useStyles();
-
-  // function states
-  const [filters, setFilters] = useState([]);
-  const [columns, Columns] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
-  // const [potentialIssuesList, setPotentialIssuesList] = useState([]);
-  // const [pIssuesArr, setIssuesArr] = useState([]);
-
-  const [esSearch, setESSearch] = useState("");
-  const setColumns = (newState) => {
-    setStateIfDeepEqual(Columns, newState);
+  const defaultView = {
+    name: `All Agreements`,
+    type: "Default",
   };
+
+  const [showSaveAsNew, setShowSaveAsNew] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedGridView, setSelectedGridView] = useState(defaultView);
+  const [stateApp] = useContext(AppContext);
 
   // queries
+  const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
+  const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
 
-  const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
-    fetchPolicy: "no-cache",
-    onCompleted: () => {
-      props.setLoading(false);
-    },
-  });
+  const classes = usetableStyles({ isFullHeight: true });
 
-  // const [getESAggsActiveCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
-  //     onCompleted: (aggsData) => {
-  //         if(aggsData?.getESAggsList?.aggregations?.activeCount) {
-  //             props.onActiveCount(aggsData?.getESAggsList?.aggregations?.activeCount?.value)
-  //         }
-  //     }
-  // });
+  const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
-  // const [getESAggsApprovedCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
-  //     onCompleted: (aggsData) => {
-  //         if(aggsData?.getESAggsList?.aggregations?.approvedCount) {
-  //             props.onApprovedCount(aggsData?.getESAggsList?.aggregations?.approvedCount?.value)
-  //         }
-  //     }
-  // });
+  const GridViewModule = userGridViewSettings[`Agreements`];
 
-  // const [getPotentialIssues, { data: potentialIssues }] = useLazyQuery(GET_ES_POTENTIAL_ISSUES, { fetchPolicy: "no-cache" });
+  const searchInput = useSelector(
+    (state) => state.MapGridCard.searchInputValue
+  );
+  const { setESFilters } = props;
 
-  const tableData = elasticData?.getESPaginatedList;
-  // const issues = potentialIssues?.getPotentialIssuesSummary;
+  const esFilters = props.esFilters ? props.esFilters : []
 
-  const startPaginationAt = 10;
-  const extendSearchQuery = `shapeJson.properties.type:agreement`
-  const count = tableData?.total || 0;
-  const options = {
-    rowsPerPageOptions: [10, 25, 50, 100],
-    rowsPerPage: 10,
-    count: count,
-    serverSide: true,
-    search: false,
-    rowsSelected: selectedRows.map((sR) => sR.dataIndex),
-    filter: true,
-    searchText: esSearch,
+  const setTableMeta = React.useMemo(
+    () =>
+      debounce((request, top, callback) => {
+        props.setTableMeta(request);
+      }, 500),
+    []
+  );
+
+  const formatHits = (hits) => {
+    hits = hits.map((hit) => {
+      hit.agreementId = hit._id
+      hit.agreementType = agreementTypes.find((type) => type.value === hit.agreementType || type.label === hit.agreementType)?.label;
+      hit.agreementDate = hit.agreementDate ? convert_date(hit.agreementDate) : null;
+      hit.effectiveDate = hit.effectiveDate ? convert_date(hit.effectiveDate) : null;
+      hit.expirationDate = hit.expirationDate ? convert_date(hit.expirationDate) : null;
+      hit.extensionDate = hit.extensionDate ? convert_date(hit.extensionDate) : null;
+      hit.State = hit?.originalProperties?.State;
+      hit.County = hit?.originalProperties?.County;
+      hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
+      hit.commentsCounter = hit.comments ? hit.comments.length : 0;
+      // hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
+      return hit;
+    });
+    return hits
+  }
+
+  useEffect(() => {
+    setSelectedGridView(GridViewModule || defaultView);
+  }, [GridViewModule]);
+
+
+  useEffect(() => {
+    const formatedFilter = esFilters ? copy(esFilters) : []
+    props.setInitialFilters(formatedFilter)
+    setTableMeta({
+      // addableName: "Unit",
+      extendSearchQuery: props.landSearchQuery || searchInput || '',
+      selectedGridView: GridViewModule || defaultView,
+      customDataESKey: 'shapeJson.properties.custom_data',
+      searchFields: ["*"],
+      TableHeader: copy(TableHeader(!!props.isSnapGrid)),
+      esIndex: "shapes_flat",
+      startPaginationAt: 25,
+      typeKeyword: { gridViewCategory: "Agreements", metaModule: "Agreement" },
+      filters: [
+        {
+          field: "shapeJson.properties.type.keyword",
+          value: "agreement",
+        },
+      ],
+      defaultSort: { field: '_ts', order: 'desc' },
+      polygon: stateApp?.currentFeature?.geometry && {
+        type: "geo_intersects",
+        field: "shapeGeometry",
+        value: stateApp?.currentFeature?.geometry
+      },
+      formatHits,
+
+      modifySelectedGridView: modifySelectedGridView
+    });
+    // eslint-disable-next-line
+  }, [searchInput, props.landSearchQuery, props.filterToggle]);
+
+  useEffect(() => {
+    props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView: GridViewModule || defaultView }));
+    // eslint-disable-next-line
+  }, [GridViewModule]);
+
+  useEffect(() => {
+    props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);
+  }, [props?.options?.count])
+
+  useEffect(() => {
+    setESFilters && setESFilters(props.initialFilters)
+    // eslint-disable-next-line
+  }, [props.initialFilters]);
+
+  const onCustomKeyChange = (value = null, index, key) => {
+    const rows = JSON.parse(JSON.stringify(props.rows));
+    rows[index].custom_data = {
+      ...props.rows[index].custom_data,
+      [`${key}`]: value,
+    };
+    props.setRows(rows);
+
+    const customLayer = {
+      shapeJson: {
+        ...props.rows[index].shapeJson,
+        properties: {
+          ...props.rows[index].shapeJson.properties,
+          custom_data: { [`${key}`]: value },
+        }
+      }
+    }
+
+    updateCustomLayer({
+      variables: {
+        customLayerId: props.rows[index]._id,
+        customLayer: customLayer
+      },
+      refetchQueries: ["customLayer"],
+    });
+
   };
 
-  useEffect(() => {
-    setESSearch(props.landSearchQuery ? `${props.landSearchQuery}*` : "");
-  }, [props.landSearchQuery]);
+  const handleDefaultView = (view, user) => {
+    return view;
+  };
 
-  // get paginated data hits from checks_flat table
-  useEffect(() => {
-    getESPaginatedList({
-      variables: {
-        esIndex,
-        search: esSearch ? `${esSearch} AND ${extendSearchQuery}` : extendSearchQuery,
-        pagination: {
-          first: startPaginationAt,
-          keep_alive: "1micros",
-        },
-        filters: esFilters,
-      },
-    });
-    // Potential Issues
-    // getPotentialIssues({
-    //     variables: {
-    //         esIndex: "checkdetails_flat",
-    //         size: 50,
-    //     },
-    // });
-  }, [props.parent, esSearch, props.filterToggle]);
+  const modifySelectedGridView = (selectedGridView) => {
+    if (selectedGridView?.name === 'My Agreements' && selectedGridView?.filters?.length)
+      selectedGridView.filters[0].value = stateApp.user._id;
+  };
 
-  //  Potential issues
-  // useEffect(() => {
-  //     if (issues?.hits?.length > 0) {
-  //         const allIssues = issues?.hits.filter((issue) => {
-  //             const checkAmt = issue?.checkAmt?.value.toFixed(2);
-  //             const checkDetailAmt = issue?.checkDetailAmt?.value.toFixed(2);
-  //             if (Number(checkAmt) !== Number(checkDetailAmt)) {
-  //                 return issue;
-  //             }
-  //         });
-  //         setPotentialIssuesList(allIssues);
-  //     } else {
-  //         setPotentialIssuesList([]);
-  //     }
-  // }, [issues]);
 
-  useEffect(() => {
-    if (tableData?.hits?.length > 0) {
-      const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
-      //   const globalOwnerIds = tableData?.hits?.map((hit) => hit.globalOwnerId);
-      props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
-      //   props.ifAreContacts(globalOwnerIds);
-    }
-  }, [tableData]);
-
-  useEffect(() => {
-    if (esFilters.length === 0) {
-      setFilters([])
-    }
-    handleSelectedGridChange(TableHeader, { filters: esFilters }, columns, true)
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [esFilters])
-
-  useEffect(() => {
-    if (tableData) {
-      if (tableData?.hits?.length > 0) {
-        const hits = tableData?.hits.map((hit) => {
-          hit.agreementType = agreementTypes.find((type) => type.value === hit.agreementType || type.label === hit.agreementType)?.label;
-          hit.agreementDate = hit.agreementDate ? moment(new Date(hit.agreementDate)).format("MM/DD/YYYY") : null;
-          hit.effectiveDate = hit.effectiveDate ? moment(new Date(hit.effectiveDate)).format("MM/DD/YYYY") : null;
-          hit.expirationDate = hit.expirationDate ? moment(new Date(hit.expirationDate)).format("MM/DD/YYYY") : null;
-          hit.extensionDate = hit.extensionDate ? moment(new Date(hit.extensionDate)).format("MM/DD/YYYY") : null;
-          hit.State = hit?.originalProperties?.State;
-          hit.County = hit?.originalProperties?.County;
-          hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
-          hit.commentsCounter = hit.comments ? hit.comments.length : 0;
-          hit = props.setGenricData(hit, hit._id, ["comments", "tags"]);
-          return hit;
-        });
-
-        // props.onGettingStatements(hits);
-        props.setRows(hits);
-
-        setColumnsData(
-          TableHeader,
-          filters,
-          JSON.parse(JSON.stringify(TableHeader)),
-          setColumns,
-          setFilters,
-          GET_ES_FILTER_LIST,
-          esIndex,
-          extendSearchQuery
-        );
-
-        // let headers = copy(TableHeader)
-
-        // headers.forEach((column) => {
-        //     if (column?.options?.filter) {
-        //         column.options = {
-        //             ...column.options,
-        //             filter: true,
-        //             filterType: 'custom',
-        //             filterOptions: {
-        //                 display: (filterList, onChange, index, column) => {
-        //                     column.filterKey = headers.find(el => el.name === column.name)?.esKey;
-        //                     return (
-        //                         <AutoCompleteFilter filterList={[...esFilters, filterList]} column={column} index={index} onChange={onChange}
-        //                             query={GET_ES_FILTER_LIST} esIndex={esIndex} />
-        //                     );
-        //                 }
-        //             }
-        //         }
-        //     }
-        // })
-
-        // setColumns(headers);
-        props.setLoading(false);
-      } else if (tableData?.hits?.length === 0) {
-        props.setRows([]);
-        props.setLoading(false);
-        // props.onGettingStatements([]);
-        // props.onGettingPotentialIssues([]);
-        // setPotentialIssuesList([]);
-      }
-
-      if (props.onAgreementCount)
-        props.onAgreementCount(count);
-      // getESAggsActiveCount({
-      //     variables: {
-      //         esIndex,
-      //         search: esSearch,
-      //         filters: [ ...esFilters, {
-      //             field: "shapeJson.properties.agreementStatus",
-      //             value: "ACTIVE"
-      //         }],
-      //         aggs: {
-      //             activeCount: {
-      //                 cardinality: { field: "shapeJson.id.keyword" }
-      //             }
-      //         }
-      //     }
-      // });
-      // getESAggsApprovedCount({
-      //     variables: {
-      //         esIndex,
-      //         search: esSearch,
-      //         filters: [ ...esFilters, {
-      //             field: "shapeJson.properties.approvalStatus",
-      //             value: "APPROVED"
-      //         }],
-      //         aggs: {
-      //             approvedCount: {
-      //                 cardinality: { field: "shapeJson.id.keyword" }
-      //             }
-      //         }
-      //     }
-      // })
-    }
-  }, [tableData, props.dependencyUpdate]);
-
-  // useEffect(() => {
-  //     if (issues?.hits?.length > 0 && tableData?.hits?.length > 0) {
-  //         const issuesArr = issues?.hits.filter((issue) => {
-  //             for (let i = 0; i < tableData?.hits?.length; i++) {
-  //                 if (tableData?.hits[i]._id === issue.key) {
-  //                     return issue;
-  //                 }
-  //             }
-  //         });
-  //         setIssuesArr(issuesArr);
-  //     }
-  // }, [tableData]);
-
-  // useEffect(() => {
-  //     if (pIssuesArr.length > 0) {
-  //         const allIssues = pIssuesArr?.filter((issue) => {
-  //             const checkAmt = issue?.checkAmt?.value.toFixed(2);
-  //             const checkDetailAmt = issue?.checkDetailAmt?.value.toFixed(2);
-  //             if (Number(checkAmt) !== Number(checkDetailAmt)) {
-  //                 return issue;
-  //             }
-  //         });
-  //         setPotentialIssuesList(allIssues);
-  //         props.onGettingPotentialIssues(allIssues);
-  //     } else {
-  //         props.onGettingPotentialIssues([]);
-  //         setPotentialIssuesList([]);
-  //     }
-  // }, [pIssuesArr]);
-
-  const onTableChange = (action, tableState, rows, meta) => {
-    tableState.esIndex = esIndex;
-    // setESSearch(tableState.searchText ? `${tableState.searchText}*` : '')
-    const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList);
-    switch (action) {
-      case "filterChange":
-      case "resetFilters":
-        tableActions.extendSearchQuery(extendSearchQuery);
-        setESFilters(tableActions.pageESVariables.variables.filters);
-        setFilters(tableState.filterList)
-        tableActions.genericESAction();
-        break;
-      case "search":
-      case "sort":
-      case "changeRowsPerPage":
-        tableActions.extendSearchQuery(extendSearchQuery);
-        setFilters(tableState.filterList)
-        tableActions.genericESAction();
-        break;
-      case "rowSelectionChange":
-        setSelectedRows(tableState.selectedRows.data);
-        break;
-      case "changePage":
-        tableActions.extendSearchQuery(extendSearchQuery);
-        tableActions.changeESPage();
-        break;
-      default:
-    }
+  const headerProps = {
+    columns: props.columns,
+    showViewModal,
+    selectedGridView,
+    updateGridView,
+    setShowSaveAsNew,
+    setShowViewModal,
+    Icon: Agreements,
+    label: "Agreements",
+    selectedFilters: props.selectedFilters.current,
   };
 
   return (
-    <div className={classes.agreementTable}>
-      <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
-        <Table
-          style={{ backgroundColor: "#fff" }}
-          header={props.header}
-          columns={columns}
-          rows={props.rows}
-          total={false}
-          addAble={{ type: "Agreements" }}
-          loading={props.loading}
-          targetLabel={props.targetLabel}
-          uploadIcon={null}
-          dense={props.dense ? props.dense : undefined}
-          orderByTracks={false}
-          startPaginationAt={null}
-          onTableChange={onTableChange}
-          options={options}
-          parent={props.parent}
-          setColumnsBase={[]}
+    <Container
+      maxWidth={false}
+      className={classes.container}
+      id={props.id ? props.id : props.parent}
+    >
+      {showViewModal && (
+        <GridView
+          columns={props.columns}
+          module="Agreements"
+          handleDefaultView={handleDefaultView}
+          handleClose={() => setShowViewModal(false)}
+          setSelectedGridView={setSelectedGridView}
+          selectedGridView={selectedGridView}
+          setShowViewModal={setShowViewModal}
+          setShowSaveAsNew={setShowSaveAsNew}
+          showSaveAsNew={showSaveAsNew}
+          selectedFilters={props.selectedFilters.current}
         />
-      </Container>
-    </div>
+      )}
+
+      {stateApp.showFieldModal && <MetaField customDataPrefix='shapeJson.properties.custom_data' customDataPostfix='.keyword' columns={props.columns} category="Agreement" updateColumnSorting={props.updateColumnSorting} />}
+      <Table
+        style={{ backgroundColor: "#fff" }}
+        header={props.header}
+        columns={props.columns}
+        headerProps={headerProps}
+        headerComponent={HeaderComponent}
+        viewColumn={CustomerViewCol}
+        viewColumnProps={props.viewColumnProps}
+        rows={props.rows}
+        total={false}
+        addAble={{ type: "Tracts" }}
+        loading={props.loading}
+        targetLabel={props.targetLabel}
+        uploadIcon={null}
+        dense={props.dense ? props.dense : undefined}
+        orderByTracks={false}
+        startPaginationAt={null}
+        onTableChange={props.onTableChange}
+        onCustomKeyChange={onCustomKeyChange}
+        options={{
+          ...props.options,
+          ...props.customOptions,
+        }}
+        parent={props.parent}
+        setColumnsBase={[]}
+      />
+    </Container>
   );
 }
 
-export default React.memo(TableHOC(AgreementsTable), deepEqualObjects);
+export default React.memo(TableESHOC(AgreementsTable, "Agreement"), deepEqualObjects)

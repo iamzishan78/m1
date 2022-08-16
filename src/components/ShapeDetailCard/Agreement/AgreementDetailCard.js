@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
-import set from "lodash/set";
+import { set } from "lodash";
 import { useHistory } from "react-router-dom";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
@@ -27,6 +27,7 @@ import { copy } from "components/Shared/functions";
 import { detailCardStyles } from "../style";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
+import moment from "moment";
 
 export default function AgreementDetailCard(props) {
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ export default function AgreementDetailCard(props) {
   const [selectedWellTab, setWellSelectedTab] = useState(0);
   const [selectedTractTab, setTractSelectedTab] = useState(0);
   const [uniObj, setUniObj] = useState();
+  const [tractOwners, setTractOwners] = useState();
   const [infoMessage, setInfoMessage] = useState(false);
   const [properties, setProperties] = useState();
   const [_, setStateApp] = useContext(AppContext);
@@ -50,7 +52,7 @@ export default function AgreementDetailCard(props) {
   useEffect(() => {
     return history.listen((location) => {
       console.log(`You changed the page to: ${location.pathname}`);
-      if (!properties?.agreementNumber && !location.pathname.includes(uniObj._id)) {
+      if (!properties?.agreementNumber && !location.includes(uniObj._id)) {
         setStateApp((state) => ({
           ...state,
           selectedShape: null,
@@ -120,8 +122,7 @@ export default function AgreementDetailCard(props) {
     }
 
     const shape = uniObj.shape;
-    set(shape.properties, field, value);
-    shape.properties[field] = value;
+    set(shape, `properties.${field}`, value);
 
     const customLayer = {};
     let shapeLabel = shape.properties.shapeLabel;
@@ -134,6 +135,24 @@ export default function AgreementDetailCard(props) {
       const newPath = `/map/${value}s/${uniObj._id}`;
       history.location.pathname !== newPath && history.replace(newPath);
     }
+
+
+    if (field === 'agreementTerm' || field === 'effectiveDate') {
+      if (field === 'agreementTerm') {
+        shape.properties.expirationDate = moment(shape.properties.effectiveDate).add(parseInt(value), 'months').toDate();
+      } else {
+        shape.properties.expirationDate = moment(value).add(parseInt(shape.properties.agreementTerm), 'months').toDate();
+      }
+    }
+
+    // if (field ==='agreementTerm' || field ==='effectiveDate') {
+    //   if (field ==='agreementTerm') {
+    //     shape.properties.expirationDate = moment(shape.properties.effectiveDate, 'YYYY-MM-DD').add(parseInt(value), 'months').format('YYYY-MM-DD');
+    //   } else {
+    //     shape.properties.expirationDate = moment(value, 'YYYY-MM-DD').add(parseInt(shape.properties.agreementTerm), 'months').format('YYYY-MM-DD');
+    //   }
+    // }
+
 
     shape.properties.shapeLabel = shapeLabel;
     shape.name = shapeLabel;
@@ -150,10 +169,12 @@ export default function AgreementDetailCard(props) {
         customLayerId: uniObj._id,
         customLayer,
       },
+      refetchQueries: ["getMetaData"],
+      awaitRefetchQueries: true,
     });
   };
 
-  const updateCustomProperties = (type, value, id) => {
+  const updateCustomProperties = (type, value, key) => {
     const shape = uniObj.shape;
     // const customRow = properties.custom_data_arr.find((p) => p.id === id);
     // if (type === "key") {
@@ -161,9 +182,14 @@ export default function AgreementDetailCard(props) {
     // } else {
     //   customRow.value = value;
     // }
-    properties[type] = value;
-    properties.custom_data = {};
-    properties.custom_data_arr.forEach((data) => {
+
+    // Used for Agreement nra, net_acres and grossAcres overidden
+    if (value?.overridden?.toString()) {
+      set(properties, `overridden.${key}`, value.overridden);
+      value = value.value
+    }
+    set(properties, `${key}`, value);
+    properties.custom_data_arr?.forEach((data) => {
       properties.custom_data[data.key] = data.value;
     });
     const customLayer = {};
@@ -238,7 +264,7 @@ export default function AgreementDetailCard(props) {
             />,
             <Grid container direction="column" alignItems="center" style={{ display: "block", padding: "20px 20px 0px 20px" }}>
               <Grid item xs={12} style={{ padding: "15px 5px 25px 0px" }}>
-                <AgreementLegalDescriptionFields agreementDetails={uniObj?.shape?.properties} updateAgreement={updateCustomProperties} />
+                <AgreementLegalDescriptionFields tractOwners={tractOwners} agreementDetails={uniObj?.shape?.properties} updateAgreement={updateCustomProperties} />
               </Grid>
               {uniObj && (
                 <Grid item xs={12}>
@@ -247,6 +273,7 @@ export default function AgreementDetailCard(props) {
                     panels={[
                       <div className={showSummary ? classes.subContent : classes.subContent2}>
                         <AgreementOwnersTractsTable
+                          setRecord={setTractOwners}
                           customLayer={uniObj}
                           shapeType="Agreement"
                           header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
@@ -304,6 +331,7 @@ export default function AgreementDetailCard(props) {
                 header={<DocumentHeader />}
                 addAble={{ type: "AgreementDocument" }}
                 dense
+                targetLabel="documents"
               />
             </div>,
           ]}

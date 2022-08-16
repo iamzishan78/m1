@@ -209,7 +209,6 @@ export default function UnitDetailCard(props) {
     customLayer.shape = JSON.stringify(shape)
     customLayer.shapeJson = shape
 
-
     updateCustomLayer({
       variables: {
         customLayerId: uniObj._id,
@@ -264,7 +263,7 @@ export default function UnitDetailCard(props) {
     return (
       <div className={classes.documentHeader}>
         <GavelIcon />
-        <span>LIMITED TITLE RUNSHEET</span>
+        <span>RUNSHEET INSTRUMENTS</span>
       </div>
     )
   };
@@ -320,6 +319,8 @@ export default function UnitDetailCard(props) {
                     parent="potentialOwnersPerUnit"
                     shapeType='Unit'
                     targetLabel="well"
+                    jobType="SHAPEOWNER"
+                    jobName="Convert potential owner to unit owner"
                     header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
                     setSelectedTab={setSelectedTab}
                     dense

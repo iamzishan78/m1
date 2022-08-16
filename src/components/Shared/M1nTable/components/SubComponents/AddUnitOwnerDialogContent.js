@@ -26,6 +26,7 @@ import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/Currenc
 import ContactStatus from 'components/ContactDetailCard/components/ContactStatus';
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -67,16 +68,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
   const { control, reset, setValue, getValues } = useForm();
-
-  const [newOwner, setNewOwner] = useState({
-    working_interest: null,
-    royalty_interest: null,
-    orri: null,
-    nra: null,
-    nri: null,
-    customLayer: props.customLayerId,
-  });
-  const [changedKeys, setChangedKeys] = useState({});
+  const [isNraOverridden, setIsNRAOverridden] = useState(false);
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
 
@@ -95,11 +87,11 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         name,
         ownerEntity,
         contactStatus,
-        ownerType
+        ownerType,
+        contact: { campaignName }
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
-
-      reset({
+      const owner = {
         working_interest: working_interest || null,
         royalty_interest: royalty_interest || null,
         orri: orri || null,
@@ -111,15 +103,15 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         contactStatus: contactStatus || null,
         ownerType,
         customLayer,
-      });
+        campaignName
+      }
+      let calculatedNRA = calculateNRA(royalty_interest, orri);
+      if (!isNaN(parseFloat(calculatedNRA)))
+        setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)))
+
+      reset(owner);
     }
   }, [selectedRow]);
-
-  useEffect(() => {
-    const netAcresChanged = isNetAcresChanged(newOwner.net_acres, false);
-    const nraChanged = isNRAChanged(newOwner.nra, false);
-    setChangedKeys({ netAcres: netAcresChanged, nra: nraChanged });
-  }, [newOwner.net_acres, newOwner.nra]);
 
   // CONTACT
 
@@ -167,20 +159,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     }
   }, [nameAutValue])
 
-  console.log('values', getValues());
   const emptyStates = () => {
-    setNewOwner({
-      working_interest: null,
-      royalty_interest: null,
-      orri: null,
-      nri: null,
-      nra: null,
-      seller_asking_price: null,
-      competitor_offer_price: null,
-      offer_price: null,
-      customLayer: props.customLayerId,
-      contactStatus: ''
-    });
     setNameAutValue(null);
     // setSelectedRow(null);
   };
@@ -191,6 +170,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   };
 
   const handleAddUpdate = (ownerToAdd) => {
+
+    if (ownerToAdd.nra) {
+      ownerToAdd.nra = addTrailingZeros(parseFloat(ownerToAdd.nra).toFixed(8));
+    }
 
     if (selectedRow) {
       ownerToAdd._id = selectedRow._id;
@@ -207,7 +190,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             },
           ],
         },
-        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
+        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
         awaitRefetchQueries: true,
       });
     } else {
@@ -222,7 +205,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             lastUpdateBy: stateApp.user.mongoId,
           },
         },
-        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
+        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
         awaitRefetchQueries: true,
       });
     }
@@ -247,27 +230,24 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerToAdd.name = nameAutValue.name;
       }
 
-      updateContact({
-        variables: {
-          contact: {
-            _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
-            contactStatus: ownerToAdd.contactStatus,
-            lastUpdateBy: stateApp.user.mongoId,
-            ownerType: ownerToAdd.ownerType
+      if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
+        (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
+        (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
+      ) {
+        updateContact({
+          variables: {
+            contact: {
+              _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
+              contactStatus: ownerToAdd.contactStatus,
+              lastUpdateBy: stateApp.user.mongoId,
+              ownerType: ownerToAdd.ownerType,
+              campaignName: ownerToAdd.campaignName
+            }
           }
-        }
-      }).then(res => {
-        handleAddUpdate(ownerToAdd)
-      });
+        })
+      }
+      handleAddUpdate(ownerToAdd);
     }
-  };
-
-  const calculateNetAcres = (interest) => {
-    if (!interest) return null;
-    const netAcres = addTrailingZeros(
-      stateApp.selectedShape.sdGrossAcres ? (stateApp.selectedShape.sdGrossAcres * interest).toFixed(8) : null
-    );
-    return netAcres;
   };
 
   const calculateNRA = (interest1, interest2, unitAcres = uAcres) => {
@@ -275,20 +255,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     let nra = parseFloat(unitAcres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0));
     nra = addTrailingZeros(nra.toFixed(8));
     return nra;
-  };
-
-  const isNetAcresChanged = (netAcres, stateUpdate = true) => {
-    const isChanged = calculateNetAcres(newOwner.mineral_interest) !== netAcres;
-    if (stateUpdate) {
-      setChangedKeys({ ...changedKeys, netAcres: isChanged });
-    } else return isChanged;
-  };
-  const isNRAChanged = (nra, stateUpdate = true) => {
-    let calculatedNRA = calculateNRA(newOwner.royalty_interest, newOwner.orri);
-    if (nra === "NaN") nra = null;
-    if (stateUpdate) {
-      setChangedKeys({ ...changedKeys, nra: calculatedNRA !== nra });
-    } else return calculatedNRA !== nra;
   };
 
   const classes = useStyles();
@@ -380,7 +346,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        setValue("nra", calculateNRA(e.target.value, getValues().orri));
+                        if (!isNraOverridden) setValue("nra", calculateNRA(e.target.value, getValues().orri));
                       }}
                       fullWidth
                       defaultValue=""
@@ -402,7 +368,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        setValue("nra", calculateNRA(getValues().royalty_interest, e.target.value));
+                        if (!isNraOverridden) { setValue("nra", calculateNRA(getValues().royalty_interest, e.target.value)); }
                       }}
                       fullWidth
                       defaultValue=""
@@ -452,24 +418,28 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 <Controller
                   control={control}
                   name="nra"
-                  render={(props) => (
+                  render={(params) => (
                     <TextField
                       size="small"
                       type="number"
-                      value={props.value}
-                      inputRef={props.ref}
+                      value={params.value}
+                      inputRef={params.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        props.onChange(e.target.value);
-                        setValue("nra", calculateNRA(e.target.value, getValues().orri));
+                        const value = addTrailingZeros(e.target.value);
+                        const nra = calculateNRA(getValues().royalty_interest, getValues().orri)
+                        setIsNRAOverridden(parseFloat(value) !== parseFloat(nra))
+                        params.onChange(e.target.value);
                       }}
+                      className={isNraOverridden ? classes.baseValueChanged : classes.maxWidth}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {changedKeys.nra && (
+                            {isNraOverridden && (
                               <IconButton
                                 aria-label="toggle royality-acres"
                                 onClick={() => {
+                                  setIsNRAOverridden(false)
                                   setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri));
                                 }}
                               >
@@ -573,6 +543,26 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         props.onChange(val);
                       }}
                       value={props.value ? props.value : ""}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Campaign Names</h3>
+
+                <Controller
+                  control={control}
+                  defaultValue={''}
+                  name="campaignName"
+                  render={(params) => (
+                    <CampaignNameField
+                      {...params}
+                      className={classes.maxWidth}
+                      onChange={(values, id) => {
+                        params.onChange(values);
+                      }}
+                      fullWidth
+                      targetLabel="Contact"
                     />
                   )}
                 />

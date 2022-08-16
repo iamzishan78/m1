@@ -2,29 +2,28 @@ import React, { useState, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import { useMutation } from "@apollo/client";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
-import {
-  UPDATEMELISSA,
-  UPDATEMELISSAADDRESS,
-} from "graphQL/useMutationUpdateMelissaRecords";
+import { UPDATE_CONTACT_PURCHASE_DATA } from "graphQL/useMutationContactPurchaseData";
+import { UPDATEMELISSA, UPDATEMELISSAADDRESS } from "graphQL/useMutationUpdateMelissaRecords";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { AppContext } from "AppContext";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
-import PencilEditIcon from 'components/ContactDetailCard/components/FieldContent/PencilEditIcon'
-import MergeHistory from 'components/ContactDetailCard/components/FieldContent/MergeHistory'
-import CopyPurchaseInfo from 'components/ContactDetailCard/components/FieldContent/CopyPurchaseInfo'
-import { textFieldLabels, getHrefValue, LinkTypes, FieldTypes } from 'components/ContactDetailCard/components/FieldContent/helper'
-import useStyles from 'components/ContactDetailCard/components/FieldContent/style'
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import PencilEditIcon from "components/ContactDetailCard/components/FieldContent/PencilEditIcon";
+import MergeHistory from "components/ContactDetailCard/components/FieldContent/MergeHistory";
+import CopyPurchaseInfo from "components/ContactDetailCard/components/FieldContent/CopyPurchaseInfo";
+import { textFieldLabels, getHrefValue, LinkTypes, FieldTypes } from "components/ContactDetailCard/components/FieldContent/helper";
+import useStyles from "components/ContactDetailCard/components/FieldContent/style";
+import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-import {timeZoneOptions} from  './timeZoneList';
+import { timeZoneOptions } from "./timeZoneList";
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
+import { get } from "lodash";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import EntityType from "./EntityType";
-import CampaignNameField from './CampaignNameField';
-import ContactStatus from 'components/ContactDetailCard/components/ContactStatus'
+import CampaignNameField from "./CampaignNameField";
+import ContactStatus from "components/ContactDetailCard/components/ContactStatus";
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -71,51 +70,52 @@ export default function FieldContent({
   const [fieldsCount, setFieldsCount] = useState(0);
 
   const [updateContact, { loading }] = useMutation(UPDATECONTACT);
-  const [updateMelissa, { melissaLoading }] = useMutation(UPDATEMELISSA);
-  const [updateMelissaAddress, { melissaAddressLoading }] = useMutation(
-    UPDATEMELISSAADDRESS
-  );
-  const classes = useStyles({ noMargin, loading, fieldsCount });
+  const [updateContactPurchaseData, { loading: loadingPurchaseData }] = useMutation(UPDATE_CONTACT_PURCHASE_DATA);
+  const [updateMelissa] = useMutation(UPDATEMELISSA);
+  const [updateMelissaAddress] = useMutation(UPDATEMELISSAADDRESS);
+  const classes = useStyles({ noMargin, loading: loading || loadingPurchaseData, fieldsCount });
 
   // contactOwnerId field used in autocomplete of contact owner
-  const ignorableFieldsInCount = ['contactOwnerId'];
+  const ignorableFieldsInCount = ["contactOwnerId"];
 
   const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
   // const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
-  const [statusOptions, setStatusOptions] = useState([])
+  const [statusOptions, setStatusOptions] = useState([]);
 
   useEffect(() => {
     getFilters({
       variables: {
-          esIndex:'contacts_flat',
-          filterKey: 'status.keyword',
-          size: 50,
+        esIndex: "contacts_flat",
+        filterKey: "status.keyword",
+        size: 50,
       },
     });
-  },[])
+  }, []);
 
   useEffect(() => {
-    if(filtersData?.getESFilterList?.hits){
-      const allFiltersData = filtersData.getESFilterList.hits.map(hit => hit.key)
-      let filterData = filtersData.getESFilterList.hits.map(hit => hit.key)
-      for(let i = 0; i < contactStatusOptions.length; i++){
-        filterData = filterData.filter(d => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label)
+    if (filtersData?.getESFilterList?.hits) {
+      const allFiltersData = filtersData.getESFilterList.hits.map((hit) => hit.key);
+      let filterData = filtersData.getESFilterList.hits.map((hit) => hit.key);
+      for (let i = 0; i < contactStatusOptions.length; i++) {
+        filterData = filterData.filter((d) => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label);
       }
-      for(let i = 0; i < contactStatusOptions.length; i++){
-        if((contactStatusOptions[i].notInclude && allFiltersData.find(d => d === contactStatusOptions[i].value)) || !contactStatusOptions[i].notInclude){
-          filterData.push(contactStatusOptions[i].label)
+      for (let i = 0; i < contactStatusOptions.length; i++) {
+        if (
+          (contactStatusOptions[i].notInclude && allFiltersData.find((d) => d === contactStatusOptions[i].value)) ||
+          !contactStatusOptions[i].notInclude
+        ) {
+          filterData.push(contactStatusOptions[i].label);
         }
       }
-      setStatusOptions(filterData)
+      setStatusOptions(filterData);
     }
-  },[filtersData])
+  }, [filtersData]);
 
   useEffect(() => {
     if (content) {
       setEditContent({ ...content });
       setShowContent({ ...content });
-
 
       let count = 0;
       for (const fieldName in content) {
@@ -127,9 +127,8 @@ export default function FieldContent({
     }
   }, [content]);
 
-
-  useEffect(() => { 
-    editContent.ownerType && handleUpdating()
+  useEffect(() => {
+    editContent.ownerType && handleUpdating();
   }, [editContent.ownerType]);
 
   useEffect(() => {
@@ -139,8 +138,7 @@ export default function FieldContent({
         fieldName = key;
         break;
       }
-      if (document.getElementById("fieldContentInput" + fieldName))
-        document.getElementById("fieldContentInput" + fieldName).focus();
+      if (document.getElementById("fieldContentInput" + fieldName)) document.getElementById("fieldContentInput" + fieldName).focus();
     }
   }, [edit]);
 
@@ -162,38 +160,44 @@ export default function FieldContent({
       for (const field in editContent) {
         const value = val ? val : editContent[field];
         if (value !== null && value !== undefined) {
-          if(field === 'status'){
+          if (field === "status") {
             trimmedEditContent[field] = value;
-          }else{
-            trimmedEditContent[field] = typeof value === 'string' ? value.trim() : value;
+          } else {
+            trimmedEditContent[field] = typeof value === "string" ? value.trim() : value;
           }
           if (trimmedEditContent[field] !== content[field]) differences = true;
         }
       }
 
       if (differences) {
-        updateContact({
-          variables: {
-            contact: trimmedEditContent,
-            ignoreResponse: true,
-          },
-          refetchQueries: [
-            "getPaginatedContacts",
-            "getContact",
-            "getparcelOwners",
-          ],
-          awaitRefetchQueries: false,
-        }).then((res) => {
-          let entries = Object.entries(editContent);
-          entries.forEach((entry) => {
-            content = { ...content, [entry[0]]: entry[1] }
+        if (isPurchased) {
+          updateContactPurchaseData({
+            variables: {
+              purchaseData: trimmedEditContent,
+            },
+            refetchQueries: ["getContactPurchaseData"],
+            awaitRefetchQueries: false,
           });
-          setShowContent({ ...content });
-          setEditContent({ ...content });
-          setStateApp({ ...stateApp, contactUpdated: id });
-        });
+        } else {
+          updateContact({
+            variables: {
+              contact: trimmedEditContent,
+              ignoreResponse: true,
+            },
+            refetchQueries: ["getPaginatedContacts", "getContact", "getparcelOwners"],
+            awaitRefetchQueries: false,
+          }).then((res) => {
+            let entries = Object.entries(editContent);
+            entries.forEach((entry) => {
+              content = { ...content, [entry[0]]: entry[1] };
+            });
+            setShowContent({ ...content });
+            setEditContent({ ...content });
+            setStateApp({ ...stateApp, contactUpdated: id });
+          });
+        }
       }
-    } else if (fieldType == FieldTypes.MelissaRecord) {
+    } else if (fieldType === FieldTypes.MelissaRecord) {
       let entries = Object.entries(editContent)[0];
       let key = entries[0];
       let updatedValue = entries[1];
@@ -210,7 +214,7 @@ export default function FieldContent({
         setIsCurEdited(true);
         let entries = Object.entries(editContent);
         entries.forEach((entry) => {
-          content = { ...content, [entry[0]]: entry[1] }
+          content = { ...content, [entry[0]]: entry[1] };
         });
         setShowContent({ ...content });
         setEditContent({ ...content });
@@ -232,7 +236,7 @@ export default function FieldContent({
         setIsCurEdited(true);
         let entries = Object.entries(editContent);
         entries.forEach((entry) => {
-          content = { ...content, [entry[0]]: entry[1] }
+          content = { ...content, [entry[0]]: entry[1] };
         });
         setShowContent({ ...content });
         setEditContent({ ...content });
@@ -244,20 +248,19 @@ export default function FieldContent({
   let inputsArray = [];
   if (edit) {
     for (const fieldName in editContent) {
-
-      if (fieldName === 'contactOwner' || fieldName === 'contactOwnerId') {
-        if (fieldName === 'contactOwner')
+      if (fieldName === "contactOwner" || fieldName === "contactOwnerId") {
+        if (fieldName === "contactOwner")
           inputsArray.push(
             <ContactAutoComplete
-              value={editContent.contactOwnerId ? editContent.contactOwnerId : ''}
+              value={editContent.contactOwnerId ? editContent.contactOwnerId : ""}
               onChange={(e, user) => {
-                setEditContent({ 'contactOwner': user.text, 'contactOwnerId': user.value });
+                setEditContent({ contactOwner: user.text, contactOwnerId: user.value });
               }}
               onKeyDown={(event) => {
                 event.stopPropagation();
                 if (event.key === "Escape") {
                   setEdit(null);
-                  setEditContent({ 'contactOwner': content.contactOwner, 'contactOwnerId': content.contactOwnerId });
+                  setEditContent({ contactOwner: content.contactOwner, contactOwnerId: content.contactOwnerId });
                 }
                 if (event.key === "Enter") {
                   event.preventDefault();
@@ -266,141 +269,79 @@ export default function FieldContent({
               }}
               onBlur={() => {
                 setEdit(null);
-                setEditContent({ 'contactOwner': content.contactOwner, 'contactOwnerId': content.contactOwnerId });
+                setEditContent({ contactOwner: content.contactOwner, contactOwnerId: content.contactOwnerId });
               }}
             />
-          )
-      }
-
-      else if (editContent.hasOwnProperty(fieldName)) {
+          );
+      } else if (editContent.hasOwnProperty(fieldName)) {
         inputsArray.push(
-          fieldName === 'contactStatus' ? 
-          <ContactStatus
-            className={classes.maxWidth}
-            setValue={(value) => {
-              let val = value.name
-              const data = contactStatusOptions.find(s => s.label === val)
-              if(data){
-                val = data.value
-              }
-              setEditContent((editContent) => ({
-                ...editContent,
-                [fieldName]: val,
-              }));
-              handleUpdating(val)
-            }}
-            value={editContent[fieldName] === null ? "" : editContent[fieldName]}
-          />:
-          fieldName === 'status' ? 
-          <Status
-            className={classes.maxWidth}
-            options={statusOptions}
-            setDocumentType={(value) => {
-              let val = value.name
-              const data = contactStatusOptions.find(s => s.label === val)
-              if(data){
-                val = data.value
-              }
-              setEditContent((editContent) => ({
-                ...editContent,
-                [fieldName]: val,
-              }));
-              handleUpdating(val)
-            }}
-            value={editContent[fieldName] === null ? "" : editContent[fieldName]}
-          />:
-            fieldName === 'timeZone' ?
-            <Autocomplete
-            id={"fieldContentInput" + fieldName}
-            key={"fieldContentInput" + fieldName}
-            options={timeZoneOptions}
-            getOptionLabel={(option) => option.title || editContent[fieldName]}
-            style={{ width: 300 }}
-            onChange={(e,data) => {
-              e.persist();
-              setEditContent((editContent) => ({
-                ...editContent,
-                [fieldName]: data?.title || ""
-              }));
-            }}
-            value={
-              editContent[fieldName] === null ? "" : editContent[fieldName]
-            }
-            autoComplete
-            onKeyDown={(event) => {
-              event.stopPropagation();
-              if (event.key === "Escape") {
-                if (fieldsCount <= 1) {
-                  setEdit(null);
-                  setEditContent((editContent) => ({
-                    ...editContent,
-                    [fieldName]: content[fieldName],
-                  }));
-                }
-              }
-              if (event.key === "Enter") {
-                event.preventDefault();
-                handleUpdating();
-              }
-            }}
-            onBlur={() => {
-              if (fieldsCount <= 1) {
-                setEdit(null);
-                setEditContent((editContent) => ({
-                  ...editContent,
-                  [fieldName]: content[fieldName],
-                }));
-              }
-            }}
-            style={{width:'100%'}}
-            renderInput={(params) => 
-              <TextField 
-              {...params}  
-              label={fieldsCount > 1 ? textFieldLabels(fieldName) : null} 
-              className={classes.editTextField}
-              />
-            }
-            /> :
-            fieldName === 'ownerType' ? 
-            <EntityType
+          fieldName === "contactStatus" ? (
+            <ContactStatus
               className={classes.maxWidth}
-              options={statusOptions}
-              setDocumentType={(value) => {
-                let val = value.name
-                const data = contactStatusOptions.find(s => s.label === val)
-                if(data){
-                  val = data.value
+              setValue={(value) => {
+                let val = value.name;
+                const data = contactStatusOptions.find((s) => s.label === val);
+                if (data) {
+                  val = data.value;
                 }
                 setEditContent((editContent) => ({
                   ...editContent,
                   [fieldName]: val,
-                }));          
+                }));
+                handleUpdating(val);
               }}
               value={editContent[fieldName] === null ? "" : editContent[fieldName]}
-            />:
-            <TextField
-            key={"fieldContentInput" + fieldName}
-            id={"fieldContentInput" + fieldName}
-            className={classes.editTextField}
-            variant="outlined"
-            size="small"
-            autoComplete="nope"
-            fullWidth
-            label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
-            multiline
-            value={
-              editContent[fieldName] === null ? "" : editContent[fieldName]
-            }
-            onChange={(e) => {
-              e.persist();
-              setEditContent((editContent) => ({
-                ...editContent,
-                [fieldName]: e.target.value,
-              }));
-            }}
-            onKeyDown={(event) => {
-              event.stopPropagation();
-              if (event.key === "Escape") {
+            />
+          ) : fieldName === "status" ? (
+            <Status
+              className={classes.maxWidth}
+              options={statusOptions}
+              setDocumentType={(value) => {
+                let val = value.name;
+                const data = contactStatusOptions.find((s) => s.label === val);
+                if (data) {
+                  val = data.value;
+                }
+                setEditContent((editContent) => ({
+                  ...editContent,
+                  [fieldName]: val,
+                }));
+                handleUpdating(val);
+              }}
+              value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+            />
+          ) : fieldName === "timeZone" ? (
+            <Autocomplete
+              id={"fieldContentInput" + fieldName}
+              key={"fieldContentInput" + fieldName}
+              options={timeZoneOptions}
+              getOptionLabel={(option) => option || editContent[fieldName]}
+              onChange={(e, data) => {
+                e.persist();
+                setEditContent((editContent) => ({
+                  ...editContent,
+                  [fieldName]: data || "",
+                }));
+              }}
+              value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+              autoComplete
+              onKeyDown={(event) => {
+                event.stopPropagation();
+                if (event.key === "Escape") {
+                  if (fieldsCount <= 1) {
+                    setEdit(null);
+                    setEditContent((editContent) => ({
+                      ...editContent,
+                      [fieldName]: content[fieldName],
+                    }));
+                  }
+                }
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  handleUpdating();
+                }
+              }}
+              onBlur={() => {
                 if (fieldsCount <= 1) {
                   setEdit(null);
                   setEditContent((editContent) => ({
@@ -408,23 +349,91 @@ export default function FieldContent({
                     [fieldName]: content[fieldName],
                   }));
                 }
-              }
-
-              if (event.key === "Enter") {
-                event.preventDefault();
-                handleUpdating();
-              }
-            }}
-            onBlur={() => {
-              if (fieldsCount <= 1) {
-                setEdit(null);
+              }}
+              style={{ width: "100%" }}
+              renderInput={(params) => (
+                <TextField {...params} label={fieldsCount > 1 ? textFieldLabels(fieldName) : null} className={classes.editTextField} />
+              )}
+            />
+          ) : fieldName === "ownerType" ? (
+            <EntityType
+              className={classes.maxWidth}
+              options={statusOptions}
+              setDocumentType={(value) => {
+                let val = value.name;
+                const data = contactStatusOptions.find((s) => s.label === val);
+                if (data) {
+                  val = data.value;
+                }
                 setEditContent((editContent) => ({
                   ...editContent,
-                  [fieldName]: content[fieldName],
+                  [fieldName]: val,
                 }));
-              }
-            }}
-          />
+              }}
+              value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+            />
+          ) : fieldName === "campaignName" ? (
+            <CampaignNameField
+              className={classes.maxWidth}
+              onChange={(value) => {
+                setEditContent((editContent) => ({
+                  ...editContent,
+                  campaignName: value,
+                }));
+                handleUpdating(value);
+              }}
+              value={get(editContent, "campaignName", [])}
+              fullWidth
+              targetLabel="Contact"
+              targetLabelId={id}
+            />
+          ) : (
+            <TextField
+              key={"fieldContentInput" + fieldName}
+              id={"fieldContentInput" + fieldName}
+              className={classes.editTextField}
+              variant="outlined"
+              size="small"
+              autoComplete="nope"
+              fullWidth
+              label={fieldsCount > 1 ? textFieldLabels(fieldName) : null}
+              multiline
+              value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+              onChange={(e) => {
+                e.persist();
+                setEditContent((editContent) => ({
+                  ...editContent,
+                  [fieldName]: e.target.value,
+                }));
+              }}
+              onKeyDown={(event) => {
+                event.stopPropagation();
+                if (event.key === "Escape") {
+                  if (fieldsCount <= 1) {
+                    setEdit(null);
+                    setEditContent((editContent) => ({
+                      ...editContent,
+                      [fieldName]: content[fieldName],
+                    }));
+                  }
+                }
+
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  handleUpdating();
+                }
+              }}
+              onBlur={() => {
+                if (fieldsCount <= 1) {
+                  setEdit(null);
+                  setEditContent((editContent) => ({
+                    ...editContent,
+                    [fieldName]: content[fieldName],
+                  }));
+                }
+              }}
+            />
+          )
         );
       }
     }
@@ -442,13 +451,8 @@ export default function FieldContent({
   }
 
   let textArray = [];
-  let campaignName = false;
   for (const key in showContent) {
-    if (
-      showContent.hasOwnProperty(key) &&
-      showContent[key] &&
-      showContent[key] !== ""
-    ) {
+    if (showContent.hasOwnProperty(key) && showContent[key] && showContent[key] !== "") {
       if (
         key === "zip" ||
         key === "country" ||
@@ -463,92 +467,58 @@ export default function FieldContent({
         textArray = [[textArray.join(", "), showContent[key]].join(" ")];
       } else if (key === "jobTitle") {
         textArray = [[textArray.join(", "), showContent[key]].join(" - ")];
-      } else if (key === "campaignName") {
-        campaignName = true
       } else if (key === "contactOwner" || key === "contactOwnerId") {
-        if (key === "contactOwner")
-          textArray.push(showContent[key] || '');
-
+        if (key === "contactOwner") textArray.push(showContent[key] || "");
       } else textArray.push(showContent[key]);
     }
   }
 
-  const renderOutput = campaignName ? 
-    <CampaignNameField
-      className={classes.maxWidth}
-      onChange={(value) => {
-        setEditContent((editContent) => ({
-          ...editContent,
-          campaignName: value,
-        }));
-        handleUpdating(value)
-      }}
-      value={editContent['campaignName'] === null ? [] : editContent['campaignName']}
-      fullWidth
-    /> : (
-      <span>
-        {childrenLeft && !onlyChildren && children ? children : ""}
-        {textArray.length > 0
-          ? onlyChildren
+  const renderOutput = (
+    <span>
+      {childrenLeft && !onlyChildren && children ? children : ""}
+      {textArray.length > 0
+        ? onlyChildren
+          ? children
             ? children
-              ? children
-              : ""
-            : textArray.join(", ")
-          : `${name ? name + " " : ""} Not Available`}
-        {!onlyChildren && !disabled && (
-          <PencilEditIcon
-            handleUpdating={handleUpdating}
-            anchorEl={edit}
-            setAnchorEl={setEdit}
-            content={inputsArray}
-            onClick={handleEditClick}
-          />
-        )}
-        {
-          fieldType == FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />
-        }
-        {
-          isPurchased && <CopyPurchaseInfo updateContact={updateContact} userId={stateApp.user.mongoId}  content={content} contactId={id} />
-        }
+            : ""
+          : textArray.join(", ")
+        : `${name ? name + " " : ""} Not Available`}
+      {!onlyChildren && !disabled && (
+        <PencilEditIcon
+          handleUpdating={handleUpdating}
+          anchorEl={edit}
+          setAnchorEl={setEdit}
+          content={inputsArray}
+          onClick={handleEditClick}
+        />
+      )}
+      {fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />}
+      {isPurchased && <CopyPurchaseInfo updateContact={updateContact} userId={stateApp.user.mongoId} content={content} contactId={id} />}
 
-        {!childrenLeft && !onlyChildren && children ? children : ""}
-        {isCurEdited ? " (edited)" : ""}
-      </span>
-    );
+      {!childrenLeft && !onlyChildren && children ? children : ""}
+      {isCurEdited ? " (edited)" : ""}
+    </span>
+  );
 
   return (
     <React.Fragment>
-      <p
-        className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP}`}
-        style={campaignName ? { width: '100%'} : {}}
-      >
-        {(linkType == LinkTypes.Mail || linkType == LinkTypes.Simple) &&
-          textArray.length > 0 ? (
-            <a
-              href={getHrefValue(textArray.join(", "), linkType)}
-              target="_blank"
-              className={classes.noTextDecoration} rel="noreferrer"
-            >
-              {renderOutput}
-            </a>
-          ) : (
-            renderOutput
-          )}
+      <p className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP}`} style={{ width: "100%" }}>
+        {(linkType === LinkTypes.Mail || linkType === LinkTypes.Simple) && textArray.length > 0 ? (
+          <a href={getHrefValue(textArray.join(", "), linkType)} target="_blank" className={classes.noTextDecoration} rel="noreferrer">
+            {renderOutput}
+          </a>
+        ) : (
+          renderOutput
+        )}
       </p>
-      {loading && (
+      {(loading || loadingPurchaseData) && (
         <div style={{ height: "0", width: "0" }}>
-          <CircularProgress
-            className={classes.loader}
-            size={22}
-            color="secondary"
-          ></CircularProgress>
+          <CircularProgress className={classes.loader} size={22} color="secondary" />
         </div>
       )}
     </React.Fragment>
   );
 }
-
-
 
 const Status = ({ setDocumentType, value, options, ...other }) => {
   const useStyles = makeStyles({
@@ -566,7 +536,7 @@ const Status = ({ setDocumentType, value, options, ...other }) => {
 
   const classes = useStyles();
 
-  const [search, setSearch] = useState(value)
+  const [search, setSearch] = useState(value);
 
   const onInputChange = (event, value) => {
     setSearch(value);

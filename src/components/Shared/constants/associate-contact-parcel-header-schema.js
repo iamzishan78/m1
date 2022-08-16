@@ -25,13 +25,15 @@ const AssociateContactWellHeadCells = [
       viewColumns: false,
     },
   },
-  { name: "parcelName", label: "Tract Name" },
+  // hide custom render of blue link for now as it is not consistent with unit interests
+  //{ name: "parcelName", label: "Tract Name", options:{setCellProps: () => ({ style: { minWidth: "200px", maxWidth: "200px", fontWeight: 600, color: "#17aadd", } }),}},
+  { name: "parcelName", label: "Tract Name", options:{setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }),}},
   { name: "state", label: "State" },
   { name: "county", label: "County" },
-  { name: "survey", label: "Survey / Meridian" },
-  { name: "block", label: "Block / Township" },
-  { name: "section", label: "Section / Range" },
-  { name: "abstract", label: "Abstract / Section" },
+  { name: "survey", label: "Survey/ Meridian" },
+  { name: "block", label: "Block/ Township" },
+  { name: "section", label: "Section/ Range" },
+  { name: "abstract", label: "Abstract/ Section" },
   { name: "grantee", label: "Alternate Survey" },
   { name: "qtr_calls", label: "QTR Calls" },
   {
@@ -50,9 +52,9 @@ const AssociateContactWellHeadCells = [
   { name: "mineral_interest", label: "Mineral Interest" },
   { name: "royalty_interest", label: "Royalty Interest" },
   { name: "orri", label: "ORRI" },
-  { name: "unknown_interest", label: "Unknown Interest" },
+  // { name: "unknown_interest", label: "Unknown Interest" },
   { name: "record_title", label: "Record Title" },
-  { name: "operating_rights", label: "Operating Rights" },
+  { name: "operating_rights", label: "Working Interest" },
   { name: "nri", label: "NRI" },
   { name: "net_acres", label: "Net Acres" },
   { name: "nra", label: "NRA", editable: true},
@@ -109,27 +111,27 @@ const AssociateContactWellHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "isTracked",
-    label: "Track",
-    options: {
-      sort: false,
-      filter: false,
-      searchable: false,
-      download: false,
-      print: false,
-      filterOptions: {
-        names: ["Tracked", "Untracked"],
-        logic(tracked, filterVal) {
-          return !(
-            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
-            (filterVal.indexOf("Untracked") >= 0 && !tracked)
-          );
-        },
-      },
-      filterType: "dropdown",
-    },
-  },
+  // {
+  //   name: "isTracked",
+  //   label: "Track",
+  //   options: {
+  //     sort: false,
+  //     filter: false,
+  //     searchable: false,
+  //     download: false,
+  //     print: false,
+  //     filterOptions: {
+  //       names: ["Tracked", "Untracked"],
+  //       logic(tracked, filterVal) {
+  //         return !(
+  //           (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+  //           (filterVal.indexOf("Untracked") >= 0 && !tracked)
+  //         );
+  //       },
+  //     },
+  //     filterType: "dropdown",
+  //   },
+  // },
   {
     name: "detailCard",
     label: " ",

@@ -66,7 +66,7 @@ export default [
         actual_key: "entityDetail.city",
     },
     {
-        label: "State",
+        label: "AddressState",
         mapped_key: "",
         required: false,
         actual_key: "entityDetail.state",
@@ -228,6 +228,12 @@ export default [
         actual_key: "campaignName",
     },
     {
+        label: "Status",
+        mapped_key: "",
+        required: false,
+        actual_key: "contactStatus"
+    },
+    {
         label: "Website",
         mapped_key: "",
         required: false,
@@ -238,6 +244,18 @@ export default [
         mapped_key: "",
         required: false,
         actual_key: "contactOwner",
+    },
+    {
+        label: "Notes/Comments",
+        mapped_key: "",
+        required: false,
+        actual_key: "comment"
+    },
+    {
+        label: "Tags",
+        mapped_key: "",
+        required: false,
+        actual_key: "contact.tags"
     },
     // {
     //   label: "Comments",

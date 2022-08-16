@@ -216,24 +216,6 @@ const ShapeActionsPopup = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.currentFeature]);
 
-  // useEffect(() => {
-  //   const { shapeEditMode, currentFeature } = stateApp;
-  //   if (shapeEditMode && currentFeature) {
-  //     if (shapeEditMode === "rotate") {
-  //       const feature = copy(currentFeature);
-  //       let layerDataCopy = copy(currentFeature);
-  //       if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
-  //         feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
-  //       }
-  //       drawShapeLayerToggle(stateApp, "visible");
-  //       stateApp.draw.deleteAll();
-  //       getRotateAbleShapeFromSelectedQuarters(feature, stateApp.draw);
-  //     } else if (shapeEditMode === "fullEdit") {
-  //       actionEdit();
-  //     }
-  //   }
-  // }, [stateApp.shapeEditMode]);
-
   const closeDrawTool = () => {
     stateApp.draw.changeMode("direct_select", { featureId: props.selectedFeature.id });
     setFeatureProperty(stateApp.draw, props.selectedFeature.id, "shapeEdit", false);
@@ -248,12 +230,6 @@ const ShapeActionsPopup = (props) => {
       gridPolygonString: getPolygonString(props.selectedFeature),
     }));
     dispatch(toggleMapGridCardAtived());
-    // dispatch(
-    //   setMapGridCardState({
-    //     mapGridCardActivated: true,
-    //     mapGridCardActiveTap: 2,
-    //   })
-    // );
     closeDrawTool();
   };
 
@@ -611,6 +587,10 @@ const ShapeActionsPopup = (props) => {
       }
       currentFeature.geometry = newShape.geometry;
     }
+    if (isShapeResizeMode && stateApp.shapeEditMode === "resize") {
+      drawFeature = stateApp.draw.getAll().features[0];
+      currentFeature.geometry = drawFeature.geometry;
+    }
     const shapeJson = {
       ...currentFeature,
       shapeArea: calculateLandArea(currentFeature),
@@ -655,7 +635,9 @@ const ShapeActionsPopup = (props) => {
         className={classes.parcelPopover}
       >
         <MenuItem disabled>Shape Layer Type</MenuItem>
-        <MenuItem onClick={(event) => setAgreementAnchorEl(event.currentTarget)}>Agreement</MenuItem>
+        <FeatureFlag feature={FEATURES.AGREEMENT_LAYER}>
+          <MenuItem onClick={(event) => setAgreementAnchorEl(event.currentTarget)}>Agreement</MenuItem>
+        </FeatureFlag>
         <MenuItem onClick={saveAndOpenParcelDetail}>Tract</MenuItem>
         <MenuItem onClick={() => saveAndOpenShapeDetail("unit")}>Unit Boundary</MenuItem>
       </Menu>
@@ -826,7 +808,7 @@ const ShapeActionsPopup = (props) => {
           )}
 
           {(selectedAction === "edit-aoi" ||
-            selectedAction === "edit-shape") && (
+            selectedAction === "edit-shape" || stateApp.shapeEditMode === 'redraw') && (
               <span className={classes.multiSelectCheck}>
                 <Tooltip title="Confirm Editing">
                   <IconButton
@@ -834,7 +816,7 @@ const ShapeActionsPopup = (props) => {
                     aria-label="Set Boundary"
                     onClick={() => {
                       if (selectedAction === "edit-aoi") confirmEditing();
-                      else if (selectedAction === "edit-shape") confirmShapeEditing();
+                      else if (selectedAction === "edit-shape" || (stateApp.shapeEditMode === 'redraw')) confirmShapeEditing();
                     }}
                   >
                     <CheckCircle />

@@ -1,6 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
-import { AppContext } from "../../AppContext";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import M1nTable from "../Shared/M1nTable/M1nTable";
@@ -92,7 +91,7 @@ export default function DealsDetailCard(props) {
 
   return (
     <Grid container className={classes.gridWidthScroll} spacing={0}>
-      <DocViewer />
+      <DocViewer width="72vw" />
       <div className={classes.dealContainer}>
         <DealDisplay dealSum={activeSum} dealType="ACTIVE" dealLength={activeDeals.length} color="rgb(143,229,210)" />
         <DealDisplay dealSum={wonSum} dealType="CLOSED" dealLength={wonDeals.length} color="rgb(223,168,89)" />

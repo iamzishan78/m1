@@ -1,31 +1,29 @@
-import React, { useState, useContext, useEffect } from "react";
-import Link from "@material-ui/core/Link";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/styles";
 import { useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import Breadcrumbs from "@material-ui/core/Breadcrumbs";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-import { AppContext } from "AppContext";
-import { NavigationContext } from "components/Navigation/NavigationContext";
 import DealsDetailCard from "./DealsDetailCard";
 import { CONTACTDEALS } from "graphQL/useQueryContactDeals";
 import { CONTACT } from "graphQL/useQueryContact";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    marginTop: "65px",
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": {
+          maxHeight: "calc(50vh - 266px) !important"
+        },
+      },
+    },
   },
 }));
+
 
 export default function ContactDocumentsCard(props) {
   let history = useHistory();
   const classes = useStyles();
-  const [, setStateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
 
   const [allDeals, setAllDeals] = useState([]);
   const [wonDeals, setWonDeals] = useState([]);
@@ -33,7 +31,7 @@ export default function ContactDocumentsCard(props) {
   const [activeDeals, setActiveDeals] = useState([]);
   const [contactData, setContactData] = useState(null);
 
-  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 2];
+  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
   const [getContactDeals, { data: deals, loading }] = useLazyQuery(CONTACTDEALS, { fetchPolicy: "cache-and-network" });
@@ -91,72 +89,17 @@ export default function ContactDocumentsCard(props) {
     }
   }, [data]);
 
-  const checkModuleHistory = () => {
-    return !!stateNav.contactFromMap;
-  };
-
   return contactData ? (
     <div variant="outlined" className={classes.root}>
-      <Toolbar style={{ backgroundColor: "#F0F6F8" }}>
-        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-          {checkModuleHistory() && (
-            <Link
-              style={{
-                marginLeft: "5px",
-                fontSize: "16px",
-                cursor: "pointer",
-              }}
-              color="inherit"
-              onClick={() => {
-                history.push("/");
-                setStateNav((stateApp) => ({
-                  ...stateApp,
-                  contactFromMap: false,
-                }));
-              }}
-            >
-              Map
-            </Link>
-          )}
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => history.push("/contacts")}
-          >
-            Contacts
-          </Link>
-          <Link
-            style={{
-              marginLeft: "5px",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
-            color="inherit"
-            onClick={() => {
-              history.push(`/contact/details/${contactId}`);
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                selectedContact: contactId,
-              }));
-            }}
-          >
-            {contactData?.name}
-          </Link>
-          <Typography
-            style={{
-              color: "#18AADD",
-              fontSize: "16px",
-              marginLeft: "5px",
-            }}
-          >
-            Deals
-          </Typography>
-        </Breadcrumbs>
-      </Toolbar>
+      <div
+        style={{
+          backgroundColor: "#F2F2F2",
+          minHeight: "4px",
+          display: "flex",
+          position: "relative",
+          alignItems: "center",
+        }}
+      />
 
       <DealsDetailCard activeDeals={activeDeals} lostDeals={lostDeals} closedDeals={wonDeals} contact={contactData} />
     </div>
@@ -165,7 +108,7 @@ export default function ContactDocumentsCard(props) {
       style={{
         padding: "20px",
         position: "absolute",
-        height: "100%",
+        height: "95%",
         width: "100%",
         zIndex: "50",
       }}

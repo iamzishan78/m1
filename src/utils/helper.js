@@ -3,6 +3,7 @@ import moment from "moment";
 import { getSession } from "utils/user";
 import { wellsKeys } from "utils/data";
 import { tenantsCredentials } from "components/Login/AADAuthConfig";
+import { addTrailingZeros } from "components/Shared/functions";
 
 const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
 const isDev = process.env.REACT_APP_NODE_ENV === "development";
@@ -10,6 +11,23 @@ const isDev = process.env.REACT_APP_NODE_ENV === "development";
 export const copy = (data) => {
   return data ? JSON.parse(JSON.stringify(data)) : null;
 };
+
+export const dateIsValid = (date) => {
+  try {
+    date = new Date(
+      new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(date)
+    )
+    return date instanceof Date && !isNaN(date);
+  } catch (e) {
+    return false
+  }
+}
 
 export const getURL = () => {
   let tenantName = window.sessionStorage.getItem("tenantName");
@@ -56,7 +74,7 @@ export const formatTaxOwners = (owners, formData) => {
       // contact
       ...(owners[i].isContact)
         ? { _id: owners[i].isContact }
-        : { 
+        : {
           isPrimary: owners[i].isPrimary,
           "entityDetail.name": newFullName,
           "entityDetail.firstName": firstName,
@@ -91,7 +109,8 @@ export const formatTaxOwners = (owners, formData) => {
       // convert extras
       status: formData.contactStatus,
       contactOwner: formData.contactOwner,
-      campaignName: formData.campaign?.name,
+      campaignName: formData.campaigns?.map(campaign => campaign.name),
+      campaigns: formData.campaigns,
       tags: formData.tags,
 
       // default
@@ -119,7 +138,7 @@ export const getSearchQuery = (extendSearchQuery, filters) => {
 };
 
 export const getTermsFilters = (filters) => {
- return Object.entries(filters).filter(([key, value]) => {
+  return Object.entries(filters).filter(([key, value]) => {
     return Array.isArray(value) && value.length > 0
   }).map(([key, value]) => {
     return {
@@ -158,6 +177,11 @@ export const getRangeFilters = (filters, format) => {
   return customFilters;
 };
 
+export const getRoundedNra = (unitNra) => {
+  let nra = parseFloat(unitNra || 0);
+  return addTrailingZeros(nra.toFixed(8));
+}
+
 export const getShapeFilter = (polygon) => {
   const coordinates = [];
   if (polygon && typeof polygon === "string" && polygon.includes("POLYGON")) {
@@ -184,6 +208,19 @@ export const getContactsAddress = (contact) => {
   };
 };
 
+export const getAddressUrl = (owner) => {
+  let address = "https://www.google.com/maps/search/";
+  if (owner.StreetAddress) address = `${address}${owner.StreetAddress.replace(/ /g, "+")}`;
+  if (owner.address1) address = `${address}${owner.address1.replace(/ /g, "+")}`;
+  if (owner.City) address = `${address},+${owner.City.replace(/ /g, "+")}`;
+  if (owner.city) address = `${address},+${owner.city.replace(/ /g, "+")}`;
+  if (owner.State) address = `${address},+${owner.State}`;
+  if (owner.state) address = `${address},+${owner.state}`;
+  if (owner.Zip) address = `${address}+${owner.Zip}`;
+  if (owner.zip) address = `${address},+${owner.zip}`;
+  return address;
+};
+
 export const getMapFilters = (stateNav, searchInput, gridPolygonString, format) => {
   const extendSearchQuery = searchInput
 
@@ -195,7 +232,7 @@ export const getMapFilters = (stateNav, searchInput, gridPolygonString, format) 
     state: stateNav.stateName ? [stateNav.stateName] : [],
     county: stateNav.countyName ? [stateNav.countyName] : [],
   });
-  
+
   const termsFilters = (format === "simple")
     ? getTermsFilters({
       wellType: stateNav.typeName,
@@ -316,17 +353,22 @@ export const formattingGridView = (view) => {
   return view;
 }
 
+// This function will return the index of column 
+export const getIndexofColumn = (columns, columnName) => {
+  return columns.indexOf(columns.find(c => c.name === columnName));
+}
+
 export const getAppliedFilters = (filters, columns, filtersData) => {
   const appliedFilters = []
   filters.forEach((val, index) => {
     if (val.length > 0) {
-      if(columns[index].custom?.isDate){
+      if (columns[index].custom?.isDate) {
         const filterData = filtersData[columns[index].name];
         const data = filterData.find(f => f.key === val[0])
         appliedFilters.push({ field: columns[index].esKey, value: data.key_as_string });
-      }else{
+      } else {
         appliedFilters.push({ field: columns[index].esKey, value: val[0] })
-      }  
+      }
     }
   })
   return appliedFilters
@@ -335,7 +377,7 @@ export const getAppliedFilters = (filters, columns, filtersData) => {
 export const getFilterList = (columns) => {
   const filterList = [];
   columns.forEach((column) => {
-    if(column.options.filterList) {
+    if (column.options.filterList) {
       filterList.push(column.options.filterList)
     }
   })
@@ -343,14 +385,21 @@ export const getFilterList = (columns) => {
 }
 
 export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFromDate, setToDate, minDate) => {
-  if(onChange){
+  if (onChange) {
     onChange(date)
   }
+  // let minDateValue;
+  // if(minDate === undefined || minDate === ''){
+  //   minDateValue = moment('2021-11-01').startOf('month').format("yyyy-MM-DD");
+  // } else {
+  //   minDateValue = `${moment(minDate).startOf('month').format("yyyy-MM-DD")}`;
+  // }
+  // console.log(minDateValue);
   const currentYear = Math.round(new Date().getFullYear());
   switch (date) {
     case CUSTOM_DATES.THIS_YEAR_TO_LAST_MONTH:
       setFromDate(`${currentYear}-01-01`);
-      setToDate(moment().subtract(1, 'months').startOf('month').format('yyyy-MM-DD'));
+      setToDate(moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD'));
       break;
     case CUSTOM_DATES.THIS_YEAR_TO_DATE:
       setFromDate(`${currentYear}-01-01`);
@@ -390,8 +439,8 @@ export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFrom
       setToDate(`${moment().format('yyyy-MM-DD')}`);
       break;
     case CUSTOM_DATES.LAST_WEEK:
-      setFromDate(`${moment().startOf('week').subtract(7,'days').format("yyyy-MM-DD")}`);
-      setToDate(`${moment().startOf('week').subtract(1,'days').format('yyyy-MM-DD')}`);
+      setFromDate(`${moment().startOf('week').subtract(7, 'days').format("yyyy-MM-DD")}`);
+      setToDate(`${moment().startOf('week').subtract(1, 'days').format('yyyy-MM-DD')}`);
       break;
     default:
       setFromDate(`${moment().startOf('month').format('yyyy-MM-DD')}`);

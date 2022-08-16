@@ -1,8 +1,74 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-export const usetableStyles = makeStyles((theme) => ({
+export const usetableStyles = makeStyles(() => ({
   container: {
     padding: "0 !important",
+    "& .MuiTableRow-hover": {
+      "&:hover": {
+        "& .MuiTableCell-root": {
+          backgroundColor: "#dfdfdf",
+        },
+      },
+    },
+  },
+  subComponentsClasses: {
+    "& .MuiTableHead-root": {
+      zIndex: (p) => (p.isRevenueTable ? 995 : 0),
+    },
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": {
+          maxHeight: "67vh",
+          minHeight: "67vh",
+          "@media (max-height:1600px)": {
+            maxHeight: "65vh",
+            minHeight: "65vh",
+          },
+          "@media (max-height:1400px)": {
+            maxHeight: "60vh",
+            minHeight: "60vh",
+          },
+          "@media (max-height:1300px)": {
+            maxHeight: "56vh",
+            minHeight: "56vh",
+          },
+          "@media (max-height:1200px)": {
+            maxHeight: "58vh",
+            minHeight: (p) => (p.isFullHeight ? "75vh" : "58vh"),
+          },
+          "@media (max-height:1100px)": {
+            maxHeight: "51vh",
+            minHeight: "51vh",
+          },
+          "@media (max-height:1000px)": {
+            maxHeight: "49vh",
+            minHeight: "49vh",
+          },
+          "@media (max-height:900px)": {
+            maxHeight: "44vh",
+            minHeight: "44vh",
+          },
+          "@media (max-height:850px)": {
+            maxHeight: "42vh",
+            minHeight: "42vh",
+          },
+          "@media (max-height:800px)": {
+            maxHeight: "40vh",
+            minHeight: "40vh",
+          },
+          "@media (max-height:768px)": {
+            maxHeight: "37vh",
+            minHeight: "37vh",
+          },
+        },
+      },
+    },
+  },
+  container2: {
+    width: "100%",
+    "& .MuiTableCell-paddingCheckbox": {
+      position: (p) => (p.isCheckboxSticky ? "sticky !important" : ""),
+    },
   },
   multiSelectionTopBarButtons: {
     margin: "0px 5px",
@@ -92,5 +158,17 @@ export const usetableStyles = makeStyles((theme) => ({
     overflow: "scroll",
     height: "96%",
     width: "100%",
+  },
+
+  switchButtom: {
+    float: "right",
+    width: "fit-content",
+    alignSelf: "flex-end",
+    marginTop: "10px",
+    marginRight: "5px",
+    "& span.MuiTypography-body1": {
+      marginRight: "5px",
+      fontSize: "0.9rem",
+    },
   },
 }));

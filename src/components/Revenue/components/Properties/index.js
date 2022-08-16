@@ -1,6 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
 import { AppContext } from "AppContext";
-import { useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTable";
@@ -11,8 +10,9 @@ import LastCheckDateFilter from "../Common/LastCheckDateFilter";
 const useStyles = makeStyles((theme) => ({
   propertyTableContainer: {
     paddingTop: theme.spacing(1),
-    paddingLeft: "38px",
-    paddingRight: "38px",
+    // paddingLeft: "38px",
+    // paddingRight: "38px",
+    marginLeft: '-8px',
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
@@ -73,7 +73,6 @@ export default function Properties() {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   // redux
-  const dispatch = useDispatch();
   const [filterToggle, setFilterToggle] = React.useState(false);
 
 
@@ -84,8 +83,8 @@ export default function Properties() {
   const [propertiesCount, setPropertiesCount] = useState(0);
   const [esFilters, ESFilters] = useState([]);
 
-  const setESFilters = (newState) => {
-    setStateIfDeepEqual(ESFilters, newState);
+  const setESFilters = (newFilter) => {
+    setStateIfDeepEqual(ESFilters, newFilter);
   };
 
   const onPropertiesCount = (count) => {
@@ -98,7 +97,7 @@ export default function Properties() {
         return { ...state, revenueSearchQuery: '' };
       });
     }
-  },[])
+  }, [])
 
   // cards default
   const cardsDefault = [
@@ -107,11 +106,11 @@ export default function Properties() {
       points: 0,
     },
     {
-      heading: "Active",
+      heading: "In Pay",
       points: 0,
     },
     {
-      heading: "Inactive",
+      heading: "Not In Pay",
       points: 0,
     },
     {
@@ -123,7 +122,14 @@ export default function Properties() {
 
   return (
     <>
-      <LastCheckDateFilter field={"lastCheck.checkDate"} esIndex={esIndex} setESFilters={setESFilters} setFilterToggle={setFilterToggle} filterToggle={filterToggle} />
+      <LastCheckDateFilter
+        field={"lastCheck.checkDate"}
+        esIndex={esIndex}
+        setESFilters={setESFilters}
+        setFilterToggle={setFilterToggle}
+        filterToggle={filterToggle}
+        extraFitlers={["status", "propertyGroup"]}
+      />
 
       <AnalyticsCards
         parent={"Properties"}
@@ -145,9 +151,11 @@ export default function Properties() {
           loading={false}
           filterToggle={filterToggle}
           setESFilters={setESFilters}
+          isCheckboxSticky={true}
           onPropertiesCount={onPropertiesCount}
           startPaginationAt={startPaginationAt}
           revenueSearchQuery={stateApp.revenueSearchQuery}
+          actionColumns={[" ", "Tags", "Comments", "Status"]}
         />
       </div>
     </>
