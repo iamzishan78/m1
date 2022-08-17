@@ -2693,8 +2693,8 @@ function SubTable(props) {
                       {props.parent === "ownersPerParcel" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
                           <span> {tableMeta.rowData[props.columns.findIndex(
-                          (val) => val.name === "isPurchased"
-                        )] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                            (val) => val.name === "isPurchased"
+                          )] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 
@@ -3620,7 +3620,7 @@ function SubTable(props) {
         }
       }
 
-      if (props.targetLabel === "Unit Ownership" || props.targetLabel === "contactUnits") {
+      if (props.targetLabel === "Unit Ownership") {
         if (rows[dataIndex]?._id) {
           setOpenDialog("addOwnerToUnit");
           setSelectedRow(rows[dataIndex]);
