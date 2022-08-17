@@ -1,14 +1,14 @@
-import React, { useContext, useState, useEffect, useMemo } from "react";
+import React, { useContext, useState, useMemo } from "react";
 import { useMutation } from "@apollo/client";
 import { v4 as uuid } from "uuid";
 import { MapControlsContext } from "../../MapControlsContext";
-import { Typography, Paper, Grid, Button, IconButton, Divider, FormControlLabel, Switch, ClickAwayListener, TextField, Select, MenuItem, InputLabel } from "@material-ui/core";
+import { Typography, Paper, Grid, Button, IconButton, Divider, FormControlLabel, Switch, ClickAwayListener, TextField } from "@material-ui/core";
 import { Close as CloseIcon } from "@material-ui/icons";
-import FormControl from "@material-ui/core/FormControl";
 import { getDefaultSettings } from "../addUserHelper";
 import { ADDLAYER } from "graphQL/useMutationAddLayer";
 import { AppContext } from "AppContext";
 import { ColorPickerStyledBox, useLayerStyle, useStyles, WidthPicker } from "./Common";
+import { Autocomplete } from "@material-ui/lab";
 
 function LayerManager(props) {
   const classes = useStyles();
@@ -41,22 +41,19 @@ function LayerManager(props) {
   // }
 
   const createLayer = () => {
-
-    const dataset = stateApp.datasets.find((dataset) => dataset.name === source)
-    const category = dataset.categories.find((category) => category._id === selectCategory)
     addLayer({
       variables: {
         layer: {
           ...layer,
           groupId: null,
           groupName: null,
-          file: dataset.file,
+          file: source.file,
           layerName: layerName,
           identifier: layerName + uuid(),
           layerType: "file layer",
-          layerGeometry: category.layerGeometry,
-          layerCategory: category.name,
-          originalFile: dataset.originalFile,
+          layerGeometry: selectCategory.layerGeometry,
+          layerCategory: selectCategory.name,
+          originalFile: source.originalFile,
           defaultSettings: handleLayerChange(),
           layerPaintProps: undefined,
           layerSettings: undefined,
@@ -85,7 +82,7 @@ function LayerManager(props) {
   }, [stateApp.datasets])
 
   const layerCategories = useMemo(() => {
-    const dataset = stateApp.datasets.find((dataset) => dataset.name === source)
+    const dataset = stateApp.datasets.find((dataset) => dataset.name === source?.name)
     return dataset?.categories || []
   }, [source])
 
@@ -106,24 +103,24 @@ function LayerManager(props) {
         <div style={{ height: 'calc(100vh - 125px)', overflowY: 'scroll', overflowX: 'hidden' }}>
           <Grid container spacing={3} style={{ padding: "20px" }}>
             <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel className={classes.label}>
-                  Select Data Source
-                </InputLabel>
-                <Select onChange={(evt) => setSource(evt.target.value)}>
-                  {datasets.map((dataset) => <MenuItem value={dataset.name}>{dataset.name}</MenuItem>)}
-                </Select>
-              </FormControl>
+              <Autocomplete
+                id="data-source"
+                options={datasets}
+                getOptionLabel={(option) => option.name}
+                value={source}
+                onChange={(_, dataset) => setSource(dataset)}
+                renderInput={(params) => <TextField {...params} label="Select Data Source" />}
+              />
             </Grid>
             <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel className={classes.label}>
-                  Select Category
-                </InputLabel>
-                <Select onChange={(evt) => setCategory(evt.target.value)}>
-                  {layerCategories?.map((layerCategory) => <MenuItem value={layerCategory._id}>{`${layerCategory.name}(${layerCategory.layerGeometry})`}</MenuItem>)}
-                </Select>
-              </FormControl>
+              <Autocomplete
+                id="layer-category"
+                options={layerCategories}
+                value={selectCategory}
+                getOptionLabel={(option) => `${option.name}(${option.layerGeometry})`}
+                onChange={(_, layerCategory) => setCategory(layerCategory)}
+                renderInput={(params) => <TextField {...params} label="Select Category" />}
+              />
             </Grid>
             <Grid item xs={12}>
               <TextField margin="dense" id="layerName" label="Enter Layer Name" fullWidth onChange={(e) => setLayerName(e.target.value)} />
