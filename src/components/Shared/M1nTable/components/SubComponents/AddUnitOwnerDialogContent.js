@@ -564,6 +564,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       }}
                       fullWidth
                       targetLabel="Contact"
+                      simpleChips
                     />
                   )}
                 />

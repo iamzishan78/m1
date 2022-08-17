@@ -364,23 +364,6 @@ export default function FieldContent({
               onKeyDown={(event) => keyDownHandler(event, [fieldName])}
               onBlur={() => onBlurHandler([fieldName])}
             />
-          ) : fieldName === "campaignName" ? (
-            <CampaignNameField
-              className={classes.maxWidth}
-              onChange={(value) => {
-                setEditContent((editContent) => ({
-                  ...editContent,
-                  campaignName: value,
-                }));
-                handleUpdating(value);
-              }}
-              value={get(editContent, "campaignName", [])}
-              fullWidth
-              targetLabel="Contact"
-              targetLabelId={id}
-              onKeyDown={(event) => keyDownHandler(event, [fieldName])}
-              onBlur={() => onBlurHandler([fieldName])}
-            />
           ) : (
             <TextField
               key={"fieldContentInput" + fieldName}
@@ -443,7 +426,24 @@ export default function FieldContent({
     }
   }
 
-  const renderOutput = (
+  const renderOutput = content.campaignName ? (
+    <CampaignNameField
+      className={classes.maxWidth}
+      onChange={(value) => {
+        setEditContent((editContent) => ({
+          ...editContent,
+          campaignName: value,
+        }));
+        handleUpdating(value);
+      }}
+      value={get(editContent, "campaignName", [])}
+      fullWidth
+      targetLabel="Contact"
+      targetLabelId={id}
+      onKeyDown={(event) => keyDownHandler(event, ["campaignName"])}
+      onBlur={() => onBlurHandler(["campaignName"])}
+    />
+  ) : (
     <span>
       {childrenLeft && !onlyChildren && children ? children : ""}
       {textArray.length > 0
