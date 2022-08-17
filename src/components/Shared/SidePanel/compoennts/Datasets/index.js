@@ -89,11 +89,11 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function Datasets({ layerMap, headerButton, search }) {
+function Datasets({ headerButton, search }) {
 
     const classes = useStyles();
     const [stateApp, setStateApp] = useContext(AppContext);
-    const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
+    const [_, setStateMapControls] = useContext(MapControlsContext);
     const dispatch = useDispatch();
 
     const [getDatasets, { data: _datasets }] = useLazyQuery(GET_DATASETS);
@@ -107,7 +107,7 @@ function Datasets({ layerMap, headerButton, search }) {
     }, [])
 
     const datasets = useMemo(() => {
-        if (_datasets?.getDatasets?.length && layerMap.length && mapSettings?.userMapSettings?.message) {
+        if (_datasets?.getDatasets?.length && mapSettings?.userMapSettings?.message) {
             let datasets = copy(_datasets.getDatasets)
             const settings = mapSettings?.userMapSettings?.settings?.settings || {}
 
@@ -135,7 +135,7 @@ function Datasets({ layerMap, headerButton, search }) {
             return datasets
         } else
             return []
-    }, [_datasets, layerMap, mapSettings, search])
+    }, [_datasets, mapSettings, search])
 
     const getBorderColor = useCallback((name) => (stateApp?.selectedDataset?.sourceName === name ? '#05aff0' : '#263451'), [stateApp.selectedDataset])
 

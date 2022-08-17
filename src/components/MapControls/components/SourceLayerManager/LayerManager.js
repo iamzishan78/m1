@@ -3,7 +3,7 @@ import update from "immutability-helper";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../../MapControlsContext";
 import { AppContext } from "AppContext";
-import { Grid, Typography, Divider } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { Close as CloseButton } from "@material-ui/icons";
 import Dialog from "@material-ui/core/Dialog";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -162,13 +162,8 @@ export default function AddLayer(props) {
     }
   }, [stateApp.layers]);
 
-  const handleClose = () => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      addLayer: false,
-      manageSourceLayer: false,
-      manageLayer: false,
-    }));
+  const handleChange = () => {
+    setCurrentLayers((currentLayers) => { handleApplyChange(currentLayers); return currentLayers; })
   };
 
   const windowClose = () => {
@@ -200,6 +195,7 @@ export default function AddLayer(props) {
     }
 
     setCurrentLayers(update(currentLayers, updatefn));
+    handleChange()
   };
 
   const changeLayerName = (layer, name) => {
@@ -215,9 +211,10 @@ export default function AddLayer(props) {
     }
 
     setCurrentLayers(update(currentLayers, updatefn));
+    handleChange()
   };
 
-  const handleApplyChange = () => {
+  const handleApplyChange = (currentLayers) => {
     if (!deepEqual(currentLayers, stateApp.layers)) {
       const layersToUpdate = [];
       const layersSettingsToUpdate = [];
@@ -256,8 +253,6 @@ export default function AddLayer(props) {
         });
       }
     }
-
-    handleClose();
   };
 
   const parseGeoForTypesAndNames = (geo, name) => {
@@ -421,7 +416,7 @@ export default function AddLayer(props) {
   }, [currentLayers]);
 
   return (
-    <ClickAwayListener onClickAway={handleApplyChange}>
+    <ClickAwayListener onClickAway={() => { }}>
       <div style={{ height: "100%", display: "flex", width: "100%" }}>
         <div>
           <div className={classes.contentRoot}>

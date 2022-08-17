@@ -37,7 +37,6 @@ const Secondarypanel = () => {
     <div className={classes.root}>
       {stateMapControls.manageLayer && <LayerManager />}
       {stateMapControls.manageSourceLayer && <SourceLayerManager />}
-      {/* {stateMapControls.manageSourceLayer && <SourceManager />} */}
       {stateMapControls.manageTransferData && <TransferDataManager />}
       {stateMapControls.addLayer && <AddALayer />}
       {stateMapControls.selectedLayer && <LayerStyling layer={stateApp.selectedLayer} fileName={stateApp.selectedLayer.fileName} />}
