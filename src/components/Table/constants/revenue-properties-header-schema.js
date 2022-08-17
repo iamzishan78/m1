@@ -13,6 +13,7 @@ const styles = {
 
 const ComponentPropertyName = ({ value, tableMeta }) => {
   const history = useHistory();
+
   return (
     <div
       style={{
@@ -45,8 +46,8 @@ const ComponentPropertyName = ({ value, tableMeta }) => {
           <ErrorOutline style={{
             width: "17px",
             height: "17px",
-            color:"gray"
-          }} 
+            color: "gray"
+          }}
           />
         </div>
       }
