@@ -225,6 +225,7 @@ const ConvertTaxOwnerToContact = ({
                 }}
                 fullWidth
                 targetLabel="Shape"
+                simpleChips
               />
             )}
           />
