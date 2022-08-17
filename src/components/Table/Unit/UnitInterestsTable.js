@@ -19,9 +19,6 @@ import TableHeader from "components/Table/constants/unit-interests-header-schema
 // Utilities
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-// import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
-// import { GET_ES_POTENTIAL_ISSUES } from "graphQL/useQueryPotentialIssue";
-// import { AutoCompleteFilter } from "../AutoCompleteFilter";
 import { setColumnsData } from "components/Table/helpers";
 
 const useStyles = makeStyles((theme) => ({
@@ -59,8 +56,6 @@ function UnitInterestsTable(props) {
   // function states
   const [columns, Columns] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
-  // const [potentialIssuesList, setPotentialIssuesList] = useState([]);
-  // const [pIssuesArr, setIssuesArr] = useState([]);
 
   const [esSearch, setESSearch] = useState("");
 
@@ -79,35 +74,7 @@ function UnitInterestsTable(props) {
       },
     }
   );
-
-  // const [getESAggsGrossAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
-  //     onCompleted: (aggsData) => {
-  //         if(aggsData?.getESAggsList?.aggregations?.grossAcresSum) {
-  //             props.onGrossAcresSum(aggsData?.getESAggsList?.aggregations?.grossAcresSum?.value)
-  //         }
-  //     }
-  // });
-
-  // const [getESAggsNetAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
-  //     onCompleted: (aggsData) => {
-  //         if(aggsData?.getESAggsList?.aggregations?.netAcresSum) {
-  //             props.onNetAcresSum(aggsData?.getESAggsList?.aggregations?.netAcresSum?.value)
-  //         }
-  //     }
-  // });
-
-  // const [getESAggsNetRoyaltyAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, { context: { batch: true }, fetchPolicy: "no-cache",
-  //     onCompleted: (aggsData) => {
-  //         if(aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum) {
-  //             props.onNetRoyaltyAcresSum(aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum?.value)
-  //         }
-  //     }
-  // });
-
-  // const [getPotentialIssues, { data: potentialIssues }] = useLazyQuery(GET_ES_POTENTIAL_ISSUES, { fetchPolicy: "no-cache" });
-
   const tableData = elasticData?.getESPaginatedList;
-  // const issues = potentialIssues?.getPotentialIssuesSummary;
 
   const startPaginationAt = 10;
   // const esIndex = 'shapeowners_flat';
@@ -148,30 +115,7 @@ function UnitInterestsTable(props) {
         filters: esStaticFilters,
       },
     });
-    // Potential Issues
-    // getPotentialIssues({
-    //     variables: {
-    //         esIndex: "checkdetails_flat",
-    //         size: 50,
-    //     },
-    // });
   }, [props.parent, esSearch]);
-
-  //  Potential issues
-  // useEffect(() => {
-  //     if (issues?.hits?.length > 0) {
-  //         const allIssues = issues?.hits.filter((issue) => {
-  //             const checkAmt = issue?.checkAmt?.value.toFixed(2);
-  //             const checkDetailAmt = issue?.checkDetailAmt?.value.toFixed(2);
-  //             if (Number(checkAmt) !== Number(checkDetailAmt)) {
-  //                 return issue;
-  //             }
-  //         });
-  //         setPotentialIssuesList(allIssues);
-  //     } else {
-  //         setPotentialIssuesList([]);
-  //     }
-  // }, [issues]);
 
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
@@ -185,31 +129,7 @@ function UnitInterestsTable(props) {
   useEffect(() => {
     if (tableData) {
       if (tableData?.hits?.length > 0) {
-        // const resolvePath = (obj, path) => {
-        //     if (!obj) return null
-        //     // if (Array.isArray(obj)) obj = obj[0]
-
-        //     const parts = path.split(".");
-        //     const optionalPath = parts[0].endsWith('?')
-        //     if (optionalPath) parts[0] = parts[0].slice(0,-1)
-        //     if (parts.length == 1) {
-        //         return obj[parts[0]] ||
-        //         (optionalPath && typeof obj !== 'object' ? obj : null);
-        //     }
-        //     return resolvePath(obj[parts[0]], parts.slice(1).join(".")) ||
-        //     (optionalPath ? resolvePath(obj, parts.slice(1).join(".")) : resolvePath(null, parts.slice(1).join(".")));
-        // }
-
         const hits = tableData?.hits.map((hit) => {
-          // let tempHit = { ...hit}
-          // TableHeader.forEach((col) => {
-          //     if (col?.options?.dbName) {
-          //         tempHit[col.name] = resolvePath(tempHit, col.options.dbName)
-          //         if (col.name === 'QtrCalls') tempHit[col.name] = tempHit[col.name]?.filter(el => el)?.map((qtr, i) => `${qtr}/${i + 1}`)?.join()
-          //     }
-          // })
-          // tempHit = props.setGenricData(tempHit, tempHit.contact._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
-
           hit.QtrCalls = hit.qtr
             ?.filter((el) => el)
             ?.map((qtr, i) => `${qtr}/${i + 1}`)
@@ -225,30 +145,7 @@ function UnitInterestsTable(props) {
           return hit;
         });
 
-        // props.onGettingStatements(hits);
         props.setRows(hits);
-        // let headers = copy(TableHeader)
-
-        // headers.forEach((column) => {
-        //     if (column?.options?.filter) {
-        //         column.options = {
-        //             ...column.options,
-        //             filter: true,
-        //             filterType: 'custom',
-        //             filterOptions: {
-        //                 display: (filterList, onChange, index, column) => {
-        //                     column.filterKey = headers.find(el => el.name === column.name)?.esKey;
-        //                     return (
-        //                         <AutoCompleteFilter filterList={filterList} column={column} index={index} onChange={onChange}
-        //                             query={GET_ES_FILTER_LIST} esIndex={esIndex} filters={esFilters} />
-        //                     );
-        //                 }
-        //             }
-        //         }
-        //     }
-        // })
-
-        // setColumns(headers);
 
         setColumnsData(
           TableHeader,
@@ -264,86 +161,11 @@ function UnitInterestsTable(props) {
       } else if (tableData?.hits?.length === 0) {
         props.setRows([]);
         props.setLoading(false);
-        // props.onGettingStatements([]);
-        // props.onGettingPotentialIssues([]);
-        // setPotentialIssuesList([]);
       }
 
       props.onTractCount(count);
-      // getESAggsGrossAcresSum({
-      //     variables: {
-      //         esIndex,
-      //         search: esSearch,
-      //         filters: esFilters,
-      //         aggs: {
-      //             grossAcresSum: {
-      //                 sum: {
-      //                     field: "grossAcres"
-      //                 }
-      //             }
-      //         }
-      //     }
-      // });
-      // getESAggsNetAcresSum({
-      //     variables: {
-      //         esIndex,
-      //         search: esSearch,
-      //         filters: esFilters,
-      //         aggs: {
-      //             netAcresSum: {
-      //                 sum: {
-      //                     field: "net_acres"
-      //                 }
-      //             }
-      //         }
-      //     }
-      // })
-      // getESAggsNetRoyaltyAcresSum({
-      //     variables: {
-      //         esIndex,
-      //         search: esSearch,
-      //         filters: esFilters,
-      //         aggs: {
-      //             netRoyaltyAcresSum: {
-      //                 sum: {
-      //                     field: "nra"
-      //                 }
-      //             }
-      //         }
-      //     }
-      // })
     }
   }, [tableData, props.dependencyUpdate]);
-
-  // useEffect(() => {
-  //     if (issues?.hits?.length > 0 && tableData?.hits?.length > 0) {
-  //         const issuesArr = issues?.hits.filter((issue) => {
-  //             for (let i = 0; i < tableData?.hits?.length; i++) {
-  //                 if (tableData?.hits[i]._id === issue.key) {
-  //                     return issue;
-  //                 }
-  //             }
-  //         });
-  //         setIssuesArr(issuesArr);
-  //     }
-  // }, [tableData]);
-
-  // useEffect(() => {
-  //     if (pIssuesArr.length > 0) {
-  //         const allIssues = pIssuesArr?.filter((issue) => {
-  //             const checkAmt = issue?.checkAmt?.value.toFixed(2);
-  //             const checkDetailAmt = issue?.checkDetailAmt?.value.toFixed(2);
-  //             if (Number(checkAmt) !== Number(checkDetailAmt)) {
-  //                 return issue;
-  //             }
-  //         });
-  //         setPotentialIssuesList(allIssues);
-  //         props.onGettingPotentialIssues(allIssues);
-  //     } else {
-  //         props.onGettingPotentialIssues([]);
-  //         setPotentialIssuesList([]);
-  //     }
-  // }, [pIssuesArr]);
 
   const onTableChange = (action, tableState, rows, meta) => {
     tableState.esIndex = esIndex;
@@ -392,7 +214,6 @@ function UnitInterestsTable(props) {
           columns={columns}
           rows={props.rows}
           total={false}
-          // potentialIssues={potentialIssuesList}
           addAble={{ type: "TractInterests" }}
           loading={props.loading}
           targetLabel={props.targetLabel}

@@ -1,4 +1,5 @@
 import vf_currency from "components/Shared/valueformatters/vf_currency";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 const OwnersPerUnitHeadCells = [
   {
@@ -114,11 +115,18 @@ const OwnersPerUnitHeadCells = [
     esKey: "contact.campaignName.keyword",
     options: {
       customRender: (value) => {
-        if (typeof value.campaignName === "string") {
-          return value.campaignName;
-        } else {
-          return value.campaignName?.map((v, index) => `${v}${index < value?.length - 1 ? ", " : ""}`);
-        }
+        return (
+          <CampaignNameField
+            value={value.campaignName}
+            fullWidth
+            disabled
+          />
+        )
+        // if (typeof value.campaignName === "string") {
+        //   return value.campaignName;
+        // } else {
+        //   return value.campaignName?.map((v, index) => `${v}${index < value?.length - 1 ? ", " : ""}`);
+        // }
       },
       setCellProps: () => ({ style: { minWidth: "200px" } }),
       sort: true,

@@ -699,6 +699,7 @@ export default function DetailComponents(props) {
               ownerTitle="Approver"
               isApproval={true}
               onUpdate={(data) => updateAgreement('approvalStatus', data.status)}
+              isSource={false}
             />
           </div>
         )}
