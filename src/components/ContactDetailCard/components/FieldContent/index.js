@@ -340,31 +340,6 @@ export default function FieldContent({
               autoComplete
               onKeyDown={(event) => keyDownHandler(event, [fieldName])}
               onBlur={() => onBlurHandler([fieldName])}
-              // onKeyDown={(event) => {
-              //   event.stopPropagation();
-              //   if (event.key === "Escape") {
-              //     if (fieldsCount <= 1) {
-              //       setEdit(null);
-              //       setEditContent((editContent) => ({
-              //         ...editContent,
-              //         [fieldName]: content[fieldName],
-              //       }));
-              //     }
-              //   }
-              //   if (event.key === "Enter") {
-              //     event.preventDefault();
-              //     handleUpdating();
-              //   }
-              // }}
-              // onBlur={() => {
-              //   if (fieldsCount <= 1) {
-              //     setEdit(null);
-              //     setEditContent((editContent) => ({
-              //       ...editContent,
-              //       [fieldName]: content[fieldName],
-              //     }));
-              //   }
-              // }}
               style={{ width: "100%" }}
               renderInput={(params) => (
                 <TextField {...params} label={fieldsCount > 1 ? textFieldLabels(fieldName) : null} className={classes.editTextField} />
@@ -386,6 +361,8 @@ export default function FieldContent({
                 }));
               }}
               value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+              onKeyDown={(event) => keyDownHandler(event, [fieldName])}
+              onBlur={() => onBlurHandler([fieldName])}
             />
           ) : fieldName === "campaignName" ? (
             <CampaignNameField
@@ -403,21 +380,6 @@ export default function FieldContent({
               targetLabelId={id}
               onKeyDown={(event) => keyDownHandler(event, [fieldName])}
               onBlur={() => onBlurHandler([fieldName])}
-            // onKeyDown={(event) => {
-            //   event.stopPropagation();
-            //   if (event.key === "Escape") {
-            //     setEdit(null);
-            //     setEditContent({ campaignName: content.campaignName });
-            //   }
-            //   if (event.key === "Enter") {
-            //     event.preventDefault();
-            //     handleUpdating();
-            //   }
-            // }}
-            // onBlur={() => {
-            //   setEdit(null);
-            //   setEditContent({ campaignName: content.campaignName });
-            // }}
             />
           ) : (
             <TextField
@@ -440,32 +402,6 @@ export default function FieldContent({
               }}
               onKeyDown={(event) => keyDownHandler(event, [fieldName])}
               onBlur={() => onBlurHandler([fieldName])}
-            // onKeyDown={(event) => {
-            //   event.stopPropagation();
-            //   if (event.key === "Escape") {
-            //     if (fieldsCount <= 1) {
-            //       setEdit(null);
-            //       setEditContent((editContent) => ({
-            //         ...editContent,
-            //         [fieldName]: content[fieldName],
-            //       }));
-            //     }
-            //   }
-
-            //   if (event.key === "Enter") {
-            //     event.preventDefault();
-            //     handleUpdating();
-            //   }
-            // }}
-            // onBlur={() => {
-            //   if (fieldsCount <= 1) {
-            //     setEdit(null);
-            //     setEditContent((editContent) => ({
-            //       ...editContent,
-            //       [fieldName]: content[fieldName],
-            //     }));
-            //   }
-            // }}
             />
           )
         );
