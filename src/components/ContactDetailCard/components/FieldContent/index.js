@@ -148,6 +148,28 @@ export default function FieldContent({
     setEdit(!edit ? e.currentTarget : null);
   };
 
+  const keyDownHandler = (event, fieldNames) => {
+    const fields = {};
+    fieldNames.forEach(field => fields[field] = content[field]);
+    event.stopPropagation();
+    if (event.key === "Escape") {
+      setEdit(null);
+      setEditContent({ ...fields });
+    }
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleUpdating();
+    }
+  }
+
+  const onBlurHandler = (fieldNames) => {
+    const fields = {};
+    fieldNames.forEach(field => fields[field] = content[field]);
+
+    setEdit(null);
+    setEditContent({ ...fields });
+  }
+
   const handleUpdating = (val = null) => {
     if (fieldType == FieldTypes.Contact) {
       let trimmedEditContent = {
@@ -256,21 +278,8 @@ export default function FieldContent({
               onChange={(e, user) => {
                 setEditContent({ contactOwner: user.text, contactOwnerId: user.value });
               }}
-              onKeyDown={(event) => {
-                event.stopPropagation();
-                if (event.key === "Escape") {
-                  setEdit(null);
-                  setEditContent({ contactOwner: content.contactOwner, contactOwnerId: content.contactOwnerId });
-                }
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  handleUpdating();
-                }
-              }}
-              onBlur={() => {
-                setEdit(null);
-                setEditContent({ contactOwner: content.contactOwner, contactOwnerId: content.contactOwnerId });
-              }}
+              onKeyDown={(event) => keyDownHandler(event, ["contactOwner", "contactOwnerId"])}
+              onBlur={() => onBlurHandler(["contactOwner", "contactOwnerId"])}
             />
           );
       } else if (editContent.hasOwnProperty(fieldName)) {
@@ -291,6 +300,8 @@ export default function FieldContent({
                 handleUpdating(val);
               }}
               value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+              onKeyDown={(event) => keyDownHandler(event, [fieldName])}
+              onBlur={() => onBlurHandler([fieldName])}
             />
           ) : fieldName === "status" ? (
             <Status
@@ -309,6 +320,8 @@ export default function FieldContent({
                 handleUpdating(val);
               }}
               value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+              onKeyDown={(event) => keyDownHandler(event, [fieldName])}
+              onBlur={() => onBlurHandler([fieldName])}
             />
           ) : fieldName === "timeZone" ? (
             <Autocomplete
@@ -325,31 +338,33 @@ export default function FieldContent({
               }}
               value={editContent[fieldName] === null ? "" : editContent[fieldName]}
               autoComplete
-              onKeyDown={(event) => {
-                event.stopPropagation();
-                if (event.key === "Escape") {
-                  if (fieldsCount <= 1) {
-                    setEdit(null);
-                    setEditContent((editContent) => ({
-                      ...editContent,
-                      [fieldName]: content[fieldName],
-                    }));
-                  }
-                }
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  handleUpdating();
-                }
-              }}
-              onBlur={() => {
-                if (fieldsCount <= 1) {
-                  setEdit(null);
-                  setEditContent((editContent) => ({
-                    ...editContent,
-                    [fieldName]: content[fieldName],
-                  }));
-                }
-              }}
+              onKeyDown={(event) => keyDownHandler(event, [fieldName])}
+              onBlur={() => onBlurHandler([fieldName])}
+              // onKeyDown={(event) => {
+              //   event.stopPropagation();
+              //   if (event.key === "Escape") {
+              //     if (fieldsCount <= 1) {
+              //       setEdit(null);
+              //       setEditContent((editContent) => ({
+              //         ...editContent,
+              //         [fieldName]: content[fieldName],
+              //       }));
+              //     }
+              //   }
+              //   if (event.key === "Enter") {
+              //     event.preventDefault();
+              //     handleUpdating();
+              //   }
+              // }}
+              // onBlur={() => {
+              //   if (fieldsCount <= 1) {
+              //     setEdit(null);
+              //     setEditContent((editContent) => ({
+              //       ...editContent,
+              //       [fieldName]: content[fieldName],
+              //     }));
+              //   }
+              // }}
               style={{ width: "100%" }}
               renderInput={(params) => (
                 <TextField {...params} label={fieldsCount > 1 ? textFieldLabels(fieldName) : null} className={classes.editTextField} />
@@ -386,6 +401,23 @@ export default function FieldContent({
               fullWidth
               targetLabel="Contact"
               targetLabelId={id}
+              onKeyDown={(event) => keyDownHandler(event, [fieldName])}
+              onBlur={() => onBlurHandler([fieldName])}
+            // onKeyDown={(event) => {
+            //   event.stopPropagation();
+            //   if (event.key === "Escape") {
+            //     setEdit(null);
+            //     setEditContent({ campaignName: content.campaignName });
+            //   }
+            //   if (event.key === "Enter") {
+            //     event.preventDefault();
+            //     handleUpdating();
+            //   }
+            // }}
+            // onBlur={() => {
+            //   setEdit(null);
+            //   setEditContent({ campaignName: content.campaignName });
+            // }}
             />
           ) : (
             <TextField
@@ -406,32 +438,34 @@ export default function FieldContent({
                   [fieldName]: e.target.value,
                 }));
               }}
-              onKeyDown={(event) => {
-                event.stopPropagation();
-                if (event.key === "Escape") {
-                  if (fieldsCount <= 1) {
-                    setEdit(null);
-                    setEditContent((editContent) => ({
-                      ...editContent,
-                      [fieldName]: content[fieldName],
-                    }));
-                  }
-                }
+              onKeyDown={(event) => keyDownHandler(event, [fieldName])}
+              onBlur={() => onBlurHandler([fieldName])}
+            // onKeyDown={(event) => {
+            //   event.stopPropagation();
+            //   if (event.key === "Escape") {
+            //     if (fieldsCount <= 1) {
+            //       setEdit(null);
+            //       setEditContent((editContent) => ({
+            //         ...editContent,
+            //         [fieldName]: content[fieldName],
+            //       }));
+            //     }
+            //   }
 
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  handleUpdating();
-                }
-              }}
-              onBlur={() => {
-                if (fieldsCount <= 1) {
-                  setEdit(null);
-                  setEditContent((editContent) => ({
-                    ...editContent,
-                    [fieldName]: content[fieldName],
-                  }));
-                }
-              }}
+            //   if (event.key === "Enter") {
+            //     event.preventDefault();
+            //     handleUpdating();
+            //   }
+            // }}
+            // onBlur={() => {
+            //   if (fieldsCount <= 1) {
+            //     setEdit(null);
+            //     setEditContent((editContent) => ({
+            //       ...editContent,
+            //       [fieldName]: content[fieldName],
+            //     }));
+            //   }
+            // }}
             />
           )
         );

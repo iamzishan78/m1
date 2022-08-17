@@ -71,6 +71,8 @@ export default function CampaignNameField(props) {
       options={options}
       value={inputValue}
       multiple
+      onKeyDown={props.onKeyDown ? props.onKeyDown : () => { }}
+      onBlur={props.onBlur ? props.onBlur : () => { }}
       renderInput={(params) => (
         <TextField
           {...params}
