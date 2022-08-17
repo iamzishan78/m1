@@ -272,7 +272,7 @@ function MapGridCard(props) {
                     )}
                     {searchTapValue.value === "parcelInterests" && (
                       <ContactParcelInterestTable
-                        parent="assocTaxRollInterests"
+                        parent="contactAssocTaxRollInterests"
                         header={"Tract Interests"}
                         targetLabel="parcel"
                         contactId={props.contactData._id}
