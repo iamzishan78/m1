@@ -53,6 +53,9 @@ const useStyles = makeStyles((theme) => ({
 
         "& .dIcon": {
             fill: '#506187',
+            position: 'absolute',
+            height: '53px',
+            width: '43px'
         },
 
         "& .actionIcons": {
@@ -216,12 +219,14 @@ function Datasets({ headerButton, search }) {
             <div className={classes.root}>
                 {datasets?.map(({ sourceName, Icon, categories, ...rest }) => (
                     <Grid className="item" key={sourceName} onClick={() => onItemClick({ sourceName, Icon, categories, ...rest })}>
-                        <Box borderColor={getBorderColor(sourceName)} borderLeft={4} margin={1} marginLeft={0}>
-                            <Grid container direction="column" justifyContent="center" style={{ paddingLeft: '10px' }}>
+                        <Box borderColor={getBorderColor(sourceName)} borderLeft={4} margin={1} marginLeft={0} >
+
+                            <Icon className='dIcon' />
+                            <Grid container direction="column" justifyContent="center" style={{ paddingLeft: '45px' }}>
                                 <Grid item md={12}>
                                     <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ width: '100%' }}>
                                         <Grid item style={{ display: 'flex', flexDirection: 'inline' }}>
-                                            <Icon className='dIcon' />
+
                                             <Typography style={{
                                                 color: '#ffff', textOverflow: 'ellipsis',
                                                 whiteSpace: 'nowrap',
