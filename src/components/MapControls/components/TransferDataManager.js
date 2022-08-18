@@ -201,7 +201,7 @@ export default function TransferDataManager(props) {
       </Grid>
       <Divider />
       <div className={classes.contentRoot}>
-        <Typography varient="h3" style={{ textAlign: "start", paddingBottom: "5px", fontWeight: "bolder", fontFamily: 'sans-serif' }} onClick={(e) => e.stopPropagation()}>
+        <Typography variant="h6" style={{ textAlign: "start", paddingBottom: "5px", fontWeight: "bolder", fontFamily: 'sans-serif' }} onClick={(e) => e.stopPropagation()}>
           Select Datasource to Transfer
         </Typography>
         <Typography varient="h6" style={{ textAlign: "start", marginBottom: "10px" }} onClick={(e) => e.stopPropagation()}>
