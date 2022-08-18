@@ -14,6 +14,7 @@ import ContactsTable from "components/Table/Contact/ContactsTable";
 import * as Components from "components/Contacts/components";
 
 import { contactManagementRoutes } from "utils/data";
+import { options } from "@amcharts/amcharts4/core";
 
 //// WE MAY NOT BE USING THIS ENTIRE FILE ANYMORE
 
@@ -58,6 +59,7 @@ export default function Contacts() {
       }
     });
     if (option) {
+      if (contactManagementRoutes[option.parent]) option.parent = contactManagementRoutes[option.parent];
       dispatch(setActiveModule(option));
     }
   }, [location.pathname]);

@@ -1,11 +1,14 @@
-// this is an array of global default settings.
-// initally being used for commonalities on grids
+// this is an array of global default settings. 
+// initally being used for commonalities on grids 
 
 import Typography from "@material-ui/core/Typography";
 
+
 const GlobalSettings = {
+
   // this is custom options settings for control grid elements (frist column w/ row level indicators and controls)
   muiGridControlOptions: {
+
     // styling props applied to the individual cells w/in a column
     setCellProps: () => ({
       style: {
@@ -13,10 +16,10 @@ const GlobalSettings = {
         whiteSpace: "nowrap",
         position: "sticky",
         left: "77px",
-        // background: "white",
+        background: "white",
         zIndex: 200,
-        boxShadow: "inset -1px 0px 0px 0px lightgrey",
-      },
+        boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+      }
     }),
 
     // styling props applied to the column header cell
@@ -24,8 +27,8 @@ const GlobalSettings = {
       style: {
         position: "sticky",
         left: "77px",
-        zIndex: 201,
-      },
+        zIndex: 201
+      }
     }),
 
     // indicates if the column will be added to sorting
@@ -34,21 +37,24 @@ const GlobalSettings = {
     // indicates if the column will be added to filtering
     filter: true,
 
-    // indicates if the column will show on the "show column" toolbar
+    // indicates if the column will show on the "show column" toolbar 
     viewColumns: false,
 
-    // display indicates if the default is set to show the column in the grid
+    // display indicates if the default is set to show the column in the grid 
     display: true,
+
   },
+
 
   // this is custom options settings for standard grid elements (data display)
   muiGridStandardOptions: {
+
     // styling props applied to the individual cells w/in a column
     setCellProps: () => ({
       style: {
         minWidth: "250px",
         maxWidth: "250px",
-        padding: "0px 25px 0px 0px",
+        padding: '0px 25px 0px 0px'
         // width: "1000px"
         // whiteSpace: "nowrap",
         // position: "sticky",
@@ -56,7 +62,7 @@ const GlobalSettings = {
         // background: "white",
         // zIndex: 200,
         // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
-      },
+      }
     }),
 
     // styling props applied to the column header cell
@@ -68,7 +74,7 @@ const GlobalSettings = {
         // minWidth: "100px",
         // maxWidth: "100px",
         // width: "100px"
-      },
+      }
     }),
 
     // indicates if the column will be added to sorting
@@ -77,10 +83,10 @@ const GlobalSettings = {
     // indicates if the column will be added to filtering
     filter: true,
 
-    // indicates if the column will show on the "show column" toolbar
+    // indicates if the column will show on the "show column" toolbar 
     viewColumns: true,
 
-    // display indicates if the default is set to show the column in the grid
+    // display indicates if the default is set to show the column in the grid 
     display: true,
 
     // gridElementStyling: {
@@ -107,6 +113,15 @@ const GlobalSettings = {
         //     }}
         //     style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
         //   >
+
+<<<<<<< HEAD
+        <Typography
+          noWrap
+          variant="body2"
+        // className={classes.gridElementStyling}
+        >
+          {value ? value : <span style={{ color: "#959595" }}>--</span>}
+=======
 
         <Typography
           noWrap
