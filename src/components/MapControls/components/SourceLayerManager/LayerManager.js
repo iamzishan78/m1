@@ -430,7 +430,7 @@ export default function AddLayer(props) {
 
             <div onClick={(e) => e.stopPropagation()}>
               <StyledListItem2 button onClick={handleClickM1List}>
-                <ListItemText primary="M1neral Platform Sources" />
+                <ListItemText primary="M1neral Platform Layers" />
                 {openM1 ? <ExpandLess /> : <ExpandMore />}
               </StyledListItem2>
               <Collapse in={openM1} timeout="auto" unmountOnExit>
