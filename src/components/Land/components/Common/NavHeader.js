@@ -47,7 +47,7 @@ export default function DetailComponents(props) {
               <Link
                 style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer", fontWeight: "bold" }}
                 color="inherit"
-                onClick={() => history.push("/contacts/campaigns")}
+                onClick={() => history.push(activeModule.parent?.link ?? activeModule.link)}
               >
                 {activeModule.title}
               </Link>
