@@ -3,7 +3,7 @@ import update from "immutability-helper";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../../MapControlsContext";
 import { AppContext } from "AppContext";
-import { Typography, Divider, MenuItem, Menu } from "@material-ui/core";
+import { Typography, Divider, MenuItem, Menu, Popper, ClickAwayListener, MenuList, Paper, Grow } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
 import Checkbox from "@material-ui/core/Checkbox";
 import { Collapse } from "@material-ui/core";
@@ -119,7 +119,7 @@ const useStyles = makeStyles((theme) => ({
   moreIcon: {
     color: "#0000008a",
     marginRight: '15px',
-    display: "none",
+    visibility: "hidden"
   }
 }));
 
@@ -168,11 +168,32 @@ const StyledListItem = withStyles((theme) => ({
 
     "&:hover": {
       "& .moreIcon": {
-        display: "block",
+        visibility: "visible"
       }
     }
   },
 }))(ListItem);
+
+// Hook
+function useOnClickOutside(ref, handler) {
+  useEffect(
+    () => {
+      const listener = (event) => {
+        if (!ref.current || ref.current.contains(event.target)) {
+          return;
+        }
+        handler(event);
+      };
+      document.addEventListener("mousedown", listener);
+      document.addEventListener("touchstart", listener);
+      return () => {
+        document.removeEventListener("mousedown", listener);
+        document.removeEventListener("touchstart", listener);
+      };
+    },
+    [ref, handler]
+  );
+}
 
 export default function SourceManager(props) {
   const classes = useStyles();
@@ -478,13 +499,16 @@ export default function SourceManager(props) {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMenuClose = () => {
+  const handleMenuClose = (e) => {
     setAnchorEl(null);
   };
+
+  useOnClickOutside({ current: anchorEl }, handleMenuClose);
 
   return (
     <div style={{ height: "100%", display: "flex", width: "100%" }}>
@@ -665,18 +689,8 @@ export default function SourceManager(props) {
                                     <StyledListItem key={index} ContainerComponent="li">
 
                                       <ListItemText style={{ padding: '5px 0px 5px 40px' }} id={labelId} primary={truncate(layer.layerName || layer.name, 30)} />
-                                      <MoreHorizIcon className={"moreIcon " + classes.moreIcon} aria-controls="more-menu" aria-haspopup="true" onClick={handleClick} />
+                                      <MoreHorizIcon aria-controls={"more-source-menu"} className={"moreIcon " + classes.moreIcon} onClick={handleClick} />
 
-                                      <Menu
-                                        id="more-menu"
-                                        anchorEl={anchorEl}
-                                        keepMounted
-                                        open={Boolean(anchorEl)}
-                                        onClose={handleMenuClose}
-                                      >
-                                        <MenuItem onClick={handleMenuClose}><EditIcon /> Edit Name</MenuItem>
-                                        <MenuItem onClick={handleMenuClose}><DeleteIcon /> Delete</MenuItem>
-                                      </Menu>
                                     </StyledListItem>
                                   );
                                 })}
@@ -686,6 +700,7 @@ export default function SourceManager(props) {
 
                       </Fragment>))
                   }
+
                 </div>
               </div>
             </div>
@@ -693,6 +708,26 @@ export default function SourceManager(props) {
         }
       />
       {/* //// delete confirmation dialog */}
+
+
+      <Popper open={Boolean(anchorEl)} anchorEl={anchorEl} role={undefined} transition disablePortal >
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+          >
+            <Paper style={{ zIndex: 10 }}>
+              <ClickAwayListener onClickAway={handleMenuClose}>
+                <MenuList autoFocusItem={Boolean(anchorEl)} id="menu-list-grow">
+                  <MenuItem onClick={handleMenuClose}><EditIcon /> Edit Name</MenuItem>
+                  <MenuItem onClick={handleMenuClose}><DeleteIcon /> Delete</MenuItem>
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+
       {openDeleteDialog && (
         <Dialog
           className={classes.dialog}
