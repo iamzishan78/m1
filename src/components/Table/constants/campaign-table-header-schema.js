@@ -91,7 +91,7 @@ const CampaignsHeadCells = [
   {
     name: "createdAt",
     label: "Created Date",
-    esKey: "createdAt.keyword",
+    esKey: "createdAt",
     options: {
       display: true,
       sort: true,
