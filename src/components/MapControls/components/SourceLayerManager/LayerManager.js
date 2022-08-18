@@ -401,7 +401,7 @@ export default function AddLayer(props) {
   }, [currentLayers]);
 
   const UdLayers = React.useMemo(() => {
-    const layers = currentLayers.filter((layer) => layer.layerCategory === "UD layer");
+    const layers = currentLayers.filter((layer) => layer.layerCategory === "UD layer" || layer.file);
     const groupHandled = [];
     for (let index = 0; index < layers.length; index++) {
       const UdLayer = layers[index];
