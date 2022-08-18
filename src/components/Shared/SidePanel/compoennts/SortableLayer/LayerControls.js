@@ -69,17 +69,18 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
     updateLayer(updatedLayer);
   };
 
-  useEffect(() => {
-    setStateApp((state) => {
-      if (state.selectedLayer) {
-        setStateApp((state) => ({
-          ...state,
-          selectedLayer: layer,
-        }))
-      }
-      return state
-    });
-  }, [layer.fileName])
+  // useEffect(() => {
+  //   setStateApp((state) => {
+  //     if (state.selectedLayer) {
+  //       debugger
+  //       setStateApp((state) => ({
+  //         ...state,
+  //         selectedLayer: layer,
+  //       }))
+  //     }
+  //     return state
+  //   });
+  // }, [layer.fileName])
 
   const handleColorPicker = (layer) => {
     setTimeout(() => {

@@ -145,6 +145,7 @@ function Datasets({ headerButton, search }) {
             setStateApp((state) => ({ ...state, layerGridCard: false }));
             dispatch(setMapGridCardState({ mapGridCardActivated: true }));
         } else {
+            debugger
             setStateApp((state) => ({
                 ...state,
                 selectedLayer: { ...dataset.categories[0] },
