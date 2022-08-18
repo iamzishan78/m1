@@ -205,14 +205,14 @@ export default function TransferDataManager(props) {
           Select Datasource to Transfer
         </Typography>
         <Typography varient="h6" style={{ textAlign: "start", marginBottom: "10px" }} onClick={(e) => e.stopPropagation()}>
-          Transfer row from one source category into a M1 platform dataset Result will represent a copy of the source at the time of point where the transfer occurs.
+          Transfer rows from one source category into a M1 platform dataset. Results will represent a copy of the source at the point in time when the transfer occurs.
         </Typography>
         <Divider style={{ height: '2px', marginTop: "15px" }} />
         <Typography varient="h5" style={{ textAlign: "start", marginTop: "5px", fontWeight: "bolder", fontFamily: 'sans-serif' }} onClick={(e) => e.stopPropagation()}>
           Transfer source category from:
         </Typography>
         <Typography varient="h6" style={{ textAlign: "start", marginBottom: "10px" }} onClick={(e) => e.stopPropagation()}>
-          <span style={{ textDecoration: "underline" }}>Please select 1 category.</span> Category type needs to align to create a match (ex. Polygon to polygon)
+          <span style={{ textDecoration: "underline" }}>Please select 1 category</span> The category type needs to align to create a match (ex. polygon to polygon)
         </Typography>
         <div onClick={(e) => e.stopPropagation()}>
 
@@ -249,7 +249,7 @@ export default function TransferDataManager(props) {
             To the Following Platform Source Category:
           </Typography>
           <Typography varient="h6" style={{ textAlign: "start", marginBottom: "10px" }} onClick={(e) => e.stopPropagation()}>
-            <span style={{ textDecoration: "underline" }}>Please select 1 category.</span> Category type needs to align to create a match (ex. Polygon to polygon)
+            <span style={{ textDecoration: "underline" }}>Please select 1 category</span> The category type needs to align to create a match (ex. polygon to polygon)
           </Typography>
 
           <Fragment key={dataset.sourceName}>
