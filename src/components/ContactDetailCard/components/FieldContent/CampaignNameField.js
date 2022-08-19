@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { CircularProgress } from "@material-ui/core";
-import Chip from "@material-ui/core/Chip";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/core/styles";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
+import Chip from "@material-ui/core/Chip";
 import Grid from "@material-ui/core/Grid";
 import ClearIcon from "@material-ui/icons/Clear";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { UPSERT_CAMPAIGN_DESCRIPTORS } from "graphQL/useMutationCampaign";
 import "components/Shared/Tagger.css";
-import { copy } from 'utils/helper';
-
-import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter.js";
 
 const useStyles = makeStyles((theme) => ({
   rootDiv: {
@@ -50,7 +47,16 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiChip-root": {
       backgroundColor: "#ECEDED",
       color: "#606060",
+      // "&;disabled": {
+      //   backgroundColor: "#f0f0f0 !important"
+      // }
     },
+    "& .MuiChip-root.Mui-disabled": {
+      backgroundColor: "#f0f0f0 !important"
+    },
+    "& .MuiInputBase-input.Mui-disabled": {
+      display: "none"
+    }
   },
   input: {
     "& input": {
@@ -71,6 +77,9 @@ const useStyles = makeStyles((theme) => ({
           !showPlusAddIcon ? "" : "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
         backgroundColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "rgba(0, 0, 0, 0.08)"),
       },
+      // "&.MuiChip-root.Mui-disabled": {
+      //   backgroundColor: "#f0f0f0"
+      // },
       transition: ({ showPlusAddIcon }) =>
         !showPlusAddIcon
           ? ""
@@ -80,186 +89,122 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CampaignNameField(props) {
-  const [tFActive, setTFActive] = useState(false);
-  const [textValue, setTextValue] = useState("");
-  const [loadingTags, setLoadingTags] = useState(true);
-  const [addInDropDown, setAddInDropDown] = useState(false);
   const [options, setOptions] = useState([]);
+  const [inputValue, setInputValue] = useState([]);
+  const [tFActive, setTFActive] = useState(false);
 
   const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
-
-  const showPlusAddIcon = () => {
-    if (tFActive || textValue) return false;
-    return true;
-  };
-
-  const classes = useStyles({ ...props, showPlusAddIcon: showPlusAddIcon() });
+  const [upsertCampaignDescriptors] = useMutation(UPSERT_CAMPAIGN_DESCRIPTORS);
 
   useEffect(() => {
     if (campaignfiltersData?.getESFilterList?.hits) {
-      const allFiltersData = campaignfiltersData.getESFilterList.hits.map(hit => hit.key)
-      setOptions(allFiltersData.filter(d => d))
-      setLoadingTags(false);
+      const allFiltersData = campaignfiltersData.getESFilterList.hits.map((hit) => hit.key);
+      setOptions(allFiltersData.filter((d) => d));
     }
   }, [campaignfiltersData]);
 
   useEffect(() => {
+    const campaignName = props.value ? typeof props.value === "string" ? [props.value] : props.value : [];
+    setInputValue(campaignName);
+  }, [props.value]);
+
+  useEffect(() => {
     getCampaignFilters({
       variables: {
-        esIndex: 'contacts_flat',
-        filterKey: 'campaignName.keyword',
+        esIndex: "campaigns_flat",
+        filterKey: "name.keyword",
         size: 50,
       },
     });
-  }, []);
+  }, [getCampaignFilters]);
 
-  const UpperAndCleanTagText = (tagText) => {
-    return tagText
-      .trim()
-      .split(" ")
-      .filter((word) => word !== "")
-      .map((word) => capitalizeFirstLetter(word))
-      .join(" ");
+  const showPlusAddIcon = () => {
+    if (tFActive || props.disabled || props.simpleChips) return false;
+    return true;
   };
+  const classes = useStyles({ ...props, showPlusAddIcon: showPlusAddIcon() });
 
-  const NewTag = (tagText) => {
-    tagText = UpperAndCleanTagText(tagText);
-    if (addInDropDown && tagText === addInDropDown) {
-      tagText = UpperAndCleanTagText(textValue);
-    }
-    setTextValue("");
-
-    const value = copy(props.value)
-    value.push(tagText);
-    props.onChange(value)
-
-  };
-
-  const DeleteTag = (valueToRemove) => {
-    const value = copy(props.value)
-    const index = value.findIndex(v => v === valueToRemove)
-    if (index > -1) {
-      value.splice(index, 1);
-      props.onChange(value)
-    }
-  };
-
-  const handleChangeTags = (e, v) => {
-    e.persist();
-
-    if (e.key && e.key === "Enter") {
-      NewTag(v[v.length - 1]);
-    } else if (e.target.tagName === "svg" || e.target.tagName === "path") {
-      let valueToRemove = '';
-      if (e.target.tagName === "svg") {
-        valueToRemove = e.target.parentNode.id;
+  const handleChange = (values, reason) => {
+    let campaign, payload = {
+      relatedObjectType: props.targetLabel,
+      relatedObject: props.targetLabelId,
+      isDeleted: false
+    };
+    if (reason === 'select-option') {
+      campaign = campaignfiltersData.getESFilterList.hits.find(hit => hit.key === values[values.length - 1]);
+      if (campaign) {
+        payload.descriptorObject = campaign.original.hits.hits[0]._id;
       }
-      if (e.target.tagName === "path") {
-        valueToRemove = e.target.parentNode.parentNode.id;
-      }
-      DeleteTag(valueToRemove);
     } else {
-      if (e.type === "click") {
-        NewTag(e.target.innerText);
+      const deletedCampaign = campaignfiltersData.getESFilterList.hits.find(hit => hit.key === inputValue.find(v => !values.includes(v)));
+      if (deletedCampaign) {
+        payload.descriptorObject = deletedCampaign.original.hits.hits[0]._id;
       }
+      payload.isDeleted = true;
     }
+    props.onChange(values, payload.descriptorObject);
+    if (payload.relatedObject)
+      upsertCampaignDescriptors({
+        variables: {
+          descriptors: [payload]
+        }
+      });
+    setInputValue(values);
   };
-
-  const cleanDropDownArray = () => {
-    let cleanArray = options.filter((tag) => props.value.indexOf(tag) === -1);
-    cleanArray = [...new Set(cleanArray)];
-    cleanArray.sort();
-    return { cleanArray };
-  };
-
-  useEffect(() => {
-    if (textValue && options && props.value) {
-      const { cleanArray } = cleanDropDownArray();
-      if (
-        cleanArray.indexOf(UpperAndCleanTagText(textValue)) === -1 &&
-        props.value.indexOf(UpperAndCleanTagText(textValue)) === -1 &&
-        textValue.trim() !== ""
-      ) {
-        setAddInDropDown(`Add "${UpperAndCleanTagText(textValue)}"`);
-      } else {
-        setAddInDropDown(false);
-      }
-    }
-  }, [textValue]);
-
-  const AddingAddRowToDropDown = () => {
-    let { cleanArray } = cleanDropDownArray();
-    if (addInDropDown) {
-      cleanArray.unshift(addInDropDown);
-    }
-    return cleanArray;
-  };
-
 
   return (
     <div id="taggerRoot" className={classes.rootDiv}>
-      {!loadingTags ? (
-        <Grid container>
-          <Grid item xs={12}>
-            <Autocomplete
-              className={classes.chip}
-              multiple
-              id="tags-outlined"
-              onChange={(e, newValue) => {
-                handleChangeTags(e, newValue);
-              }}
-              options={AddingAddRowToDropDown()}
-              value={props.value}
-              freeSolo
-              renderTags={(value, getTagProps) =>
-                value.map((tag, index) => {
-                  return (
-                    <Chip
-                      key={index}
-                      id={tag}
-                      label={tag}
-                      {...getTagProps({ index })}
-                      deleteIcon={<ClearIcon />}
-                    />
-                  );
-                })
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  variant={"standard"}
-                  className={classes.input}
-                  placeholder={!showPlusAddIcon() ? "" : "+"}
-                  fullWidth
-                  value={textValue}
-                  onChange={(e) => {
-                    setTextValue(e.target.value);
-                  }}
-                  onClick={() => {
-                    if (props.type === "textfield") {
-                      setTFActive(true);
-                    }
-                  }}
-                  onBlur={() => {
-                    setTFActive(false);
-                  }}
-                  InputProps={{
-                    ...params.InputProps,
-                    disableUnderline: true,
-
-                  }}
+      <Grid container>
+        <Grid item xs={12}>
+          <Autocomplete
+            className={classes.chip}
+            multiple
+            id="tags-outlined"
+            onChange={(e, newValue, reason) => handleChange(newValue, reason)}
+            options={options}
+            value={inputValue}
+            freeSolo
+            disabled={props.disabled}
+            renderTags={(value, getTagProps) => {
+              return value.map((tag, index) => (
+                <Chip
+                  key={index}
+                  id={tag}
+                  label={tag}
+                  {...getTagProps({ index })}
+                  deleteIcon={!props.disabled ? <ClearIcon /> : <></>}
                 />
-              )}
-            />
-          </Grid>
+              ))
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant={"standard"}
+                className={classes.input}
+                placeholder={!showPlusAddIcon() ? "" : "+"}
+                fullWidth
+                onClick={() => {
+                  if (props.type === "textfield") {
+                    setTFActive(true);
+                  }
+                }}
+                onBlur={() => {
+                  setTFActive(false);
+                }}
+                InputProps={{
+                  ...params.InputProps,
+                  disableUnderline: !props.simpleChips,
+                }}
+              />
+            )}
+          />
         </Grid>
-      ) : (
-        <CircularProgress color="secondary"></CircularProgress>
-      )}
+      </Grid>
     </div>
   );
 }
 
 CampaignNameField.defaultProps = {
   type: "textfield",
+  simpleChips: false
 };

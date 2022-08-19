@@ -26,7 +26,7 @@ import { AppContext } from "AppContext";
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
-  // match unit nra value with system generated nra 
+  // match unit nra value with system generated nra
   const getNraClass = () => {
     if (value.unitNra === value.calculatedNra)
       return ''
@@ -86,7 +86,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
   );
 }
 
-export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [] }) {
+export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [], id }) {
   const classes = summaryTableStyles();
   const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
@@ -445,7 +445,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                 ) : (
                   <div style={{ minWidth: "30px", cursor: "pointer" }}>
                     <Grid
-                      style={data.key === "campaignName" ? { display: "block" } : { display: "flex" }}
+                      style={{ display: "flex" }}
                       container
                       direction="row"
                       justifyContent="space-between"
@@ -460,16 +460,6 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           {data.type === "custom" && (
                             <>
                               {data.key === "qualifier" && (properties[data.key]?.name || "-")}
-                              {data.key === "campaignName" && (
-                                <CampaignNameField
-                                  className={classes.maxWidth}
-                                  onChange={(value) => {
-                                    updateProperties(null, data.key, value);
-                                  }}
-                                  value={properties[data.key] ? properties[data.key] : []}
-                                  fullWidth
-                                />
-                              )}
                             </>
                           )}
                           {data.type !== "date" &&
@@ -488,9 +478,21 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             </Typography>
 
                           </> || 0)}
+                          {data.key === "campaignName" && (
+                            <CampaignNameField
+                              className={classes.maxWidth}
+                              onChange={(value) => {
+                                updateProperties(null, data.key, value);
+                              }}
+                              value={properties[data.key] ? properties[data.key] : []}
+                              fullWidth
+                              targetLabel="Shape"
+                              targetLabelId={id}
+                            />
+                          )}
                         </Grid>
                       )}
-                      {!data.nonEditable && (
+                      {!data.nonEditable && data.key !== "campaignName" && (
                         <Grid item>
                           {editIconState[data.key] && (
                             <Tooltip title={"Edit"} placement="top">

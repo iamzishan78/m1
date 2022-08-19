@@ -422,24 +422,23 @@ export default function DocumentDetails(props) {
           >
             <h4>File Date</h4>
             <TextField
-              autoOk
+              // autoOk
               type="date"
               //variant="outlined"
+              defaultValue={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
               margin="normal"
               fullWidth
-              value={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
               onChange={(event) => {
                 const splittedDate = event?.target?.value.split("-")
                 if (splittedDate.length === 3) {
                   const newDate = new Date()
-                  newDate.setYear(splittedDate[0])
+                  newDate.setYear(Number(splittedDate[0]))
                   newDate.setMonth(Number(splittedDate[1]) - 1)
-                  newDate.setDate(splittedDate[2])
+                  newDate.setDate(Number(splittedDate[2]))
                   setNewDocument({ ...newDocument, dateTime: newDate })
                 } else {
                   setNewDocument({ ...newDocument, dateTime: null })
                 }
-
               }}
 
               InputLabelProps={{

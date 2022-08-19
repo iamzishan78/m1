@@ -70,7 +70,6 @@ const tableData = [
     label: "Campaign Name",
     type: "custom",
     key: "campaignName",
-    nonEditable: true,
   },
 ];
 export default tableData;
