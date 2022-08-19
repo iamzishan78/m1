@@ -155,7 +155,7 @@ export default function CampaignNameField(props) {
   return (
     <div id="taggerRoot" className={classes.rootDiv}>
       <Grid container>
-        <Grid item xs={12}>
+        <Grid item xs={12} md={12}>
           <Autocomplete
             className={classes.chip}
             multiple
