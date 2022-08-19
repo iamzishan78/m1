@@ -63,13 +63,13 @@ export default function AutocompEntityNamesList({ nameAutValue, setNameAutValue,
         //set ownerType according to to contact
         const contactName = nameAutValue?.name
         if (rest?.setOwnerTypeOfConctact && contactName) {
-            const ownerType = mongoEntitiesArray.find(entity => entity.name === contactName).ownerType
+            const ownerType = mongoEntitiesArray.find(entity => entity.name === contactName)?.ownerType
             if (ownerType)
                 rest.setOwnerTypeOfConctact(ownerType);
 
         }
 
-    }, [nameAutValue]);
+    }, [nameAutValue, mongoEntitiesArray]);
 
     const loadNextPage = async (pageVariables) => {
         setIsNextPageLoading(true);
