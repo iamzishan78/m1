@@ -165,6 +165,18 @@ const unitsColumnHeaders = [
     },
   },
   {
+    name: "netRoyalityAcres",
+    label: "Unit NRA",
+    esKey: "shapeJson.properties.netRoyalityAcres.unitNra",
+    options: {
+      sort: true,
+      filter: true,
+      customRender: (value) => {
+        return value?.unitNra;
+      },
+    },
+  },
+  {
     name: "campaignName",
     label: "Campaign Name",
     esKey: "shapeJson.properties.campaignName.keyword",
