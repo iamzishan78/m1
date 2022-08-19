@@ -43,9 +43,9 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "45px",
     marginBottom: 0,
 
-    "& .MuiFormControlLabel-label":{
-      paddingLeft: theme.spacing(1)
-    }
+    "& .MuiFormControlLabel-label": {
+      paddingLeft: theme.spacing(1),
+    },
   },
   switchControl: {
     "& > .MuiFormControlLabel-label": {
@@ -63,10 +63,18 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
   tableCell: {
-    border: 'none',
+    border: "none",
     paddingLeft: 4,
-    paddingRight: 4
-  }
+    paddingRight: 4,
+  },
+  cardSwitchControl: {
+    marginLeft: 0,
+    marginRight: 0,
+
+    "& .MuiFormControlLabel-label": {
+      flex: 1,
+    },
+  },
 }));
 
 const dealFlowLine = [
@@ -325,6 +333,8 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
                         />
                       }
                       label="Show description on card"
+                      labelPlacement="start"
+                      className={classes.cardSwitchControl}
                     />
                   )}
                 />
@@ -353,6 +363,8 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
                         />
                       }
                       label="Show rotten indicator on card"
+                      labelPlacement="start"
+                      className={classes.cardSwitchControl}
                     />
                   )}
                 />
@@ -396,7 +408,11 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
                                       >
                                         <DragIndicator />
                                       </TableCell>
-                                      <TableCell className={classes.tableCell} align="left" scope="row">
+                                      <TableCell
+                                        className={classes.tableCell}
+                                        align="left"
+                                        scope="row"
+                                      >
                                         {fieldObj.name}
                                       </TableCell>
                                       <TableCell
