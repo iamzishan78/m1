@@ -120,6 +120,11 @@ const useStyles = makeStyles((theme) => ({
     color: "#0000008a",
     marginRight: '15px',
     visibility: "hidden"
+  },
+  moreSourceIcon: {
+    color: "#0000008a",
+    marginRight: '15px',
+    visibility: "hidden"
   }
 }));
 
@@ -142,6 +147,11 @@ const StyledListItem2 = withStyles((theme) => ({
       border: "2px solid #263451",
       "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
         color: "#263451",
+      }
+    },
+    "&:hover": {
+      "& .moreSourceIcon": {
+        visibility: "visible"
       }
     }
   },
@@ -498,6 +508,7 @@ export default function SourceManager(props) {
 
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [actionItem, setActionItem] = React.useState(null);
 
 
   const handleClick = (event) => {
@@ -509,6 +520,21 @@ export default function SourceManager(props) {
   };
 
   useOnClickOutside({ current: anchorEl }, handleMenuClose);
+
+  const sourceNameChange = () => {
+
+  }
+
+  const openEditField = (name) => {
+    const isSource = !actionItem?.category
+
+    console.log(actionItem?.type, actionItem?.category?.layerName, actionItem?.category?.name, name)
+    if (isSource) {
+      return actionItem?.type === 'editName' && actionItem?.dataset?.sourceName === name
+    } else {
+      return actionItem?.type === 'editName' && (actionItem?.category?.layerName === name || actionItem?.category?.name === name)
+    }
+  }
 
   return (
     <div style={{ height: "100%", display: "flex", width: "100%" }}>
@@ -678,7 +704,9 @@ export default function SourceManager(props) {
                               onChange={() => { handleDatasetChange(dataset, !dataset.visibility); }}
                               inputProps={{ "aria-label": "primary checkbox" }}
                             />
-                            <ListItemText primary={dataset.sourceName} />
+                            <EditableTextField onChange={sourceNameChange} item={dataset} name={dataset.sourceName} isEditable={true} openEditField={openEditField(dataset.sourceName)} />
+                            {/* <ListItemText primary={dataset.sourceName} /> */}
+                            <MoreHorizIcon aria-controls={"source-menu"} className={"moreSourceIcon " + classes.moreSourceIcon} onClick={(e) => { e.stopPropagation(); handleClick(e); setActionItem({ dataset }) }} />
                             {openDataSets[dataset.sourceName] ? <ExpandLess /> : <ExpandMore />}
                           </StyledListItem2>
                             <Collapse in={openDataSets[dataset.sourceName]} timeout="auto" unmountOnExit>
@@ -687,10 +715,10 @@ export default function SourceManager(props) {
                                   const labelId = `m1layer-list-label-${index}`;
                                   return (
                                     <StyledListItem key={index} ContainerComponent="li">
+                                      <EditableTextField onChange={sourceNameChange} item={layer} name={layer.layerName || layer.name} isEditable={true} openEditField={openEditField(layer.layerName || layer.name)} />
 
-                                      <ListItemText style={{ padding: '5px 0px 5px 40px' }} id={labelId} primary={truncate(layer.layerName || layer.name, 30)} />
-                                      <MoreHorizIcon aria-controls={"more-source-menu"} className={"moreIcon " + classes.moreIcon} onClick={handleClick} />
-
+                                      {/* <ListItemText style={{ padding: '5px 0px 5px 40px' }} id={labelId} primary={truncate(layer.layerName || layer.name, 30)} /> */}
+                                      <MoreHorizIcon aria-controls={"more-source-menu"} className={"moreIcon " + classes.moreIcon} onClick={(e) => { handleClick(e); setActionItem({ dataset, category: layer }) }} />
                                     </StyledListItem>
                                   );
                                 })}
@@ -719,8 +747,8 @@ export default function SourceManager(props) {
             <Paper style={{ zIndex: 10 }}>
               <ClickAwayListener onClickAway={handleMenuClose}>
                 <MenuList autoFocusItem={Boolean(anchorEl)} id="menu-list-grow">
-                  <MenuItem onClick={handleMenuClose}><EditIcon /> Edit Name</MenuItem>
-                  <MenuItem onClick={handleMenuClose}><DeleteIcon /> Delete</MenuItem>
+                  <MenuItem onClick={(e) => { e.stopPropagation(); setActionItem((actionItem) => ({ ...actionItem, type: 'editName' })); handleMenuClose() }}><EditIcon /> Edit Name</MenuItem>
+                  <MenuItem onClick={(e) => { e.stopPropagation(); setActionItem((actionItem) => ({ ...actionItem, type: 'delete' })); handleMenuClose() }}><DeleteIcon /> Delete</MenuItem>
                 </MenuList>
               </ClickAwayListener>
             </Paper>
