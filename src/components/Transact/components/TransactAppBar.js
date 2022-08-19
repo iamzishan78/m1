@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Typography, AppBar, Button, ButtonGroup, Tooltip, IconButton } from "@material-ui/core";
-import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
+import { Launch } from "@material-ui/icons";
 import Add from "@material-ui/icons/Add";
 import { makeStyles } from "@material-ui/core/styles";
 import { setFlowState } from "actions";
@@ -144,6 +144,16 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     float: "right",
+
+    "& .MuiIconButton-root": {
+      display: "none",
+    },
+    "&:hover .MuiIconButton-root": {
+      display: "block",
+      "& .MuiIconButton-label": {
+        marginLeft: '0 !important'
+      }
+    },
   },
 }));
 
@@ -202,7 +212,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
               <IconButton
                 disabled={!selectedPipe}
                 size="medium"
-                style={{ marginLeft: 10, marginRight: 10 }}
+                style={{ marginLeft: 10, marginRight: 10, padding: 8 }}
                 onClick={() => {
                   dispatch(
                     setFlowState({
@@ -211,7 +221,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
                   );
                 }}
               >
-                <ExpandMoreIcon />
+                <Launch />
               </IconButton>
             </Tooltip>
           </div>
@@ -220,39 +230,22 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
           <div className={classes.left}>
             <div>
               <Button onClick={handleClickAddDeal} color="secondary" className={classes.newDealAction} startIcon={<Add />}>
-                New Deal
+                { selectedPipe?.flowLineType === "general" ? "New Task" : "Add Deal"}
               </Button>
             </div>
             <ButtonGroup style={{ minHeight: 36 }}>
-              <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${dealFilter === "all" && classes.activeBtn}`}
-                onClick={() => setDealFilter("all")}
-              >
-                ALL
-              </Button>
-              <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${dealFilter === "open" && classes.activeBtn}`}
-                onClick={() => setDealFilter("open")}
-              >
-                OPEN
-              </Button>
-              <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${dealFilter === "won" && classes.activeBtn}`}
-                onClick={() => setDealFilter("won")}
-              >
-                WON
-              </Button>
-
-              <Button
-                size="small"
-                className={`${classes.filterToggleBtn} ${dealFilter === "lost" && classes.activeBtn}`}
-                onClick={() => setDealFilter("lost")}
-              >
-                LOST
-              </Button>
+              {
+                (selectedPipe?.flowLineType === "general" ? ["all", "open", "closed"] : ["all", "open", "won", "lost"]).map(filter => 
+                  <Button
+                    key={filter + "_button_filter"}
+                    size="small"
+                    className={`${classes.filterToggleBtn} ${dealFilter === filter && classes.activeBtn}`}
+                    onClick={() => setDealFilter(filter)}
+                  >
+                    {filter.capitalize()}
+                  </Button>
+                  )
+              }
             </ButtonGroup>
           </div>
         </div>

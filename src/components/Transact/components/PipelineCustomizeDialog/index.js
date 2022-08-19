@@ -35,11 +35,6 @@ import { ADD_PIPELINE } from "graphQL/useMutationAddPipeline";
 import { ADDSTAGES } from "graphQL/useMutationAddStages";
 import { UPDATESTAGES } from "graphQL/useMutationUpdateStages";
 
-const DIALOG_WIDTHS = {
-  BASIC: "450px",
-  LANES: "1100px",
-};
-
 const useStyles = makeStyles((theme) => ({
   root: {
     "& .MuiTabs-root": {
@@ -56,10 +51,9 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-  stickyHeader: (props) => ({
+  stickyHeader:  {
     padding: "25px",
-    width: props.width,
-  }),
+  },
   panelInfo: {},
   deleteIcon: {
     fill: theme.palette.secondary.main,
@@ -109,7 +103,6 @@ const a11yProps = (index) => ({
 const PipelineCustomDialog = (props) => {
   const dispatch = useDispatch();
   const [tab, setTab] = useState(0);
-  const [width, setDialogWidth] = useState(DIALOG_WIDTHS.BASIC);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteFunc, setDeleteFunc] = useState(null);
   const [stages, setStages] = useState([]);
@@ -131,17 +124,11 @@ const PipelineCustomDialog = (props) => {
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
 
-  const classes = useStyles({ width });
+  const classes = useStyles();
 
   useEffect(() => {
     return () => reset({});
   }, [reset]);
-
-  useEffect(() => {
-    if (selectedStageForDetail) {
-      setDialogWidth(DIALOG_WIDTHS.BASIC);
-    }
-  }, [selectedStageForDetail]);
 
   useEffect(() => {
     if (dataDealsCountByPipeline?.nonDeletedDealsCountInAPipeline) {
@@ -162,9 +149,6 @@ const PipelineCustomDialog = (props) => {
   const handleMenuClose = () => setAnchorEl(null);
 
   const handleChange = (event, tab) => {
-    if (tab === 0) {
-      setDialogWidth(DIALOG_WIDTHS.BASIC);
-    } else setDialogWidth(DIALOG_WIDTHS.LANES);
     setTab(tab);
   };
 
@@ -389,7 +373,7 @@ const PipelineCustomDialog = (props) => {
       {openPipeDialog === "newPipe" || openPipeDialog ? (
         <RightDialog
           open={openPipeDialog === "newPipe" || openPipeDialog}
-          width={width}
+          width={'1100px'}
           handleClickDialogClose={() => {
             handleSaveOrUpdate();
             handleClose();
@@ -397,10 +381,20 @@ const PipelineCustomDialog = (props) => {
         >
           <div className={classes.root}>
             <div className={classes.stickyHeader}>
-              <Grid container justify="space-between" direction="row" display="flex">
+              <Grid
+                container
+                justify="space-between"
+                direction="row"
+                display="flex"
+              >
                 <Grid item>
-                  <Typography variant="h5" style={{ float: "left", fontSize: "1.3rem" }}>
-                    {openPipeDialog === "newPipe" ? "New Flowline" : "Edit Flowline"}
+                  <Typography
+                    variant="h5"
+                    style={{ float: "left", fontSize: "1.3rem" }}
+                  >
+                    {openPipeDialog === "newPipe"
+                      ? "New Flowline"
+                      : "Edit Flowline"}
                   </Typography>
                 </Grid>
                 <Grid item xs={6} className={classes.dialogActions}>
@@ -481,6 +475,7 @@ const PipelineCustomDialog = (props) => {
                     <DealStagesPanel
                       showWarningMessage={showWarningMessage}
                       stages={stages}
+                      flowLineType={watch('flowLineType')}
                       setStages={setStages}
                       stagesError={stagesError}
                       setStageError={setStageError}
@@ -493,7 +488,10 @@ const PipelineCustomDialog = (props) => {
             ) : (
               <>
                 <div style={{ marginLeft: "23px" }}>
-                  <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+                  <Breadcrumbs
+                    separator={<NavigateNextIcon fontSize="small" />}
+                    aria-label="breadcrumb"
+                  >
                     <Link
                       style={{
                         marginLeft: "5px",
@@ -502,15 +500,25 @@ const PipelineCustomDialog = (props) => {
                       }}
                       onClick={() => {
                         setStage(null);
-                        setDialogWidth(DIALOG_WIDTHS.LANES);
                       }}
                     >
                       Lane
                     </Link>
-                    <Typography style={{ color: "#18AADD", fontSize: "16px", marginLeft: "5px" }}>{selectedStageForDetail.name}</Typography>
+                    <Typography
+                      style={{
+                        color: "#18AADD",
+                        fontSize: "16px",
+                        marginLeft: "5px",
+                      }}
+                    >
+                      {selectedStageForDetail.name}
+                    </Typography>
                   </Breadcrumbs>
                 </div>
-                <StageDetails selectedStageForDetail={selectedStageForDetail} selectedPipe={selectedPipe} />
+                <StageDetails
+                  selectedStageForDetail={selectedStageForDetail}
+                  selectedPipe={selectedPipe}
+                />
               </>
             )}
           </div>
@@ -527,13 +535,17 @@ const PipelineCustomDialog = (props) => {
           maxWidth="sm"
         >
           <DeleteConfirmationDialogContent
-            header={deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`}
+            header={
+              deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`
+            }
             onClose={handleCloseDeleteDialog}
-            deleteFunc={deleteFunc ? deleteFunc : () => { }}
+            deleteFunc={deleteFunc ? deleteFunc : () => {}}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
+            setM1nSelectedRowsIndexes={() => {}}
           >
-            {deleteDialogOpen === "pipe" ? "Are you sure you want to delete the flowline?" : "Are you sure you want to delete the stage?"}
+            {deleteDialogOpen === "pipe"
+              ? "Are you sure you want to delete the flowline?"
+              : "Are you sure you want to delete the stage?"}
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
