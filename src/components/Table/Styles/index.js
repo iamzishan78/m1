@@ -6,7 +6,7 @@ export const usetableStyles = makeStyles(() => ({
     "& .MuiTableRow-hover": {
       "&:hover": {
         "& .MuiTableCell-root": {
-          backgroundColor: "#dfdfdf",
+          backgroundColor: "#dfdfdf !important",
         },
       },
     },

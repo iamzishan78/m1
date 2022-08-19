@@ -185,7 +185,7 @@ const useStyles = makeStyles((theme) => ({
     // }),
     "& .MuiTableCell-body": {
       padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
-      backgroundColor: "#fff",
+      // backgroundColor: "#fff",
     },
     // "& .MuiTableCell-paddingCheckbox": {
     //   position: "relative",
@@ -3620,7 +3620,7 @@ function SubTable(props) {
         }
       }
 
-      if (props.targetLabel === "Unit Ownership") {
+      if (props.targetLabel === "Unit Ownership" || props.targetLabel === "contactUnits") {
         if (rows[dataIndex]?._id) {
           setOpenDialog("addOwnerToUnit");
           setSelectedRow(rows[dataIndex]);

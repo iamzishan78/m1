@@ -16,10 +16,10 @@ const GlobalSettings = {
         whiteSpace: "nowrap",
         position: "sticky",
         left: "77px",
-        background: "white",
+        backgroundColor: "white",
         zIndex: 200,
-        boxShadow: 'inset -1px 0px 0px 0px lightgrey',
-      }
+        boxShadow: "inset -1px 0px 0px 0px lightgrey",
+      },
     }),
 
     // styling props applied to the column header cell
@@ -114,24 +114,18 @@ const GlobalSettings = {
         //     style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
         //   >
 
-
         <Typography
           noWrap
-          variant='body2'
+          variant="body2"
         // className={classes.gridElementStyling}
         >
-          {value ? (value) : (<span
-            style={{ color: "#959595" }}
-          >--</span>)}
-
+          {value ? value : <span style={{ color: "#959595" }}>--</span>}
         </Typography>
 
         //   </p>
       );
     },
-
-  }
-
+  },
 };
 
 export default GlobalSettings;
