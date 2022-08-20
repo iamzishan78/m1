@@ -10,7 +10,7 @@ import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
 
 const filter = createFilterOptions();
 
-export default function EntityType({ setDocumentType, value /*, ...other */ }) {
+export default function EntityType({ setDocumentType, value, ...other }) {
   const useStyles = makeStyles({
     inputRoot: {
       backgroundColor: "#ffffff",
@@ -136,7 +136,7 @@ export default function EntityType({ setDocumentType, value /*, ...other */ }) {
           size="small"
         />
       )}
-    // {...other}
+      {...other}
     />
   );
 };

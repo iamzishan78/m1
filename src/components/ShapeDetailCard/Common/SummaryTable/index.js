@@ -26,7 +26,7 @@ import { AppContext } from "AppContext";
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
-  // match unit nra value with system generated nra 
+  // match unit nra value with system generated nra
   const getNraClass = () => {
     if (value.unitNra === value.calculatedNra)
       return ''
@@ -439,18 +439,6 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             }}
                           />
                         )}
-                        {data.key === "campaignName" && (
-                          <CampaignNameField
-                            className={classes.maxWidth}
-                            onChange={(value) => {
-                              updateProperties(null, data.key, value);
-                            }}
-                            value={properties[data.key] ? properties[data.key] : []}
-                            fullWidth
-                            targetLabel="Shape"
-                            targetLabelId={id}
-                          />
-                        )}
                       </>
                     )}
                   </>
@@ -472,7 +460,6 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           {data.type === "custom" && (
                             <>
                               {data.key === "qualifier" && (properties[data.key]?.name || "-")}
-                              {data.key === "campaignName" && (properties[data.key] || "-")}
                             </>
                           )}
                           {data.type !== "date" &&
@@ -491,9 +478,21 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             </Typography>
 
                           </> || 0)}
+                          {data.key === "campaignName" && (
+                            <CampaignNameField
+                              className={classes.maxWidth}
+                              onChange={(value) => {
+                                updateProperties(null, data.key, value);
+                              }}
+                              value={properties[data.key] ? properties[data.key] : []}
+                              fullWidth
+                              targetLabel="Shape"
+                              targetLabelId={id}
+                            />
+                          )}
                         </Grid>
                       )}
-                      {!data.nonEditable && (
+                      {!data.nonEditable && data.key !== "campaignName" && (
                         <Grid item>
                           {editIconState[data.key] && (
                             <Tooltip title={"Edit"} placement="top">
