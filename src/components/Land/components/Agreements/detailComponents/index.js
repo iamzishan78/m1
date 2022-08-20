@@ -357,6 +357,11 @@ export default function DetailComponents(props) {
         shape.properties.expirationDate = moment(value, 'YYYY-MM-DD').add(parseInt(shape.properties.agreementTerm), 'months').format('YYYY-MM-DD');
       }
     }
+    // Used for Agreement nra, net_acres and grossAcres overidden
+    if (value?.overridden?.toString()) {
+      set(shape, `properties.overridden.${field}`, value.overridden);
+      value = value.value
+    }
     set(shape, `properties.${field}`, value);
     const customLayer = {};
     let shapeLabel = shape.properties.shapeLabel;
