@@ -3620,7 +3620,7 @@ function SubTable(props) {
         }
       }
 
-      if (props.targetLabel === "Unit Ownership" || props.targetLabel === "contactUnits") {
+      if (props.targetLabel === "Unit Ownership") {
         if (rows[dataIndex]?._id) {
           setOpenDialog("addOwnerToUnit");
           setSelectedRow(rows[dataIndex]);
