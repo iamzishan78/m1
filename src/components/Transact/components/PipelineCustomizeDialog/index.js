@@ -35,6 +35,11 @@ import { ADD_PIPELINE } from "graphQL/useMutationAddPipeline";
 import { ADDSTAGES } from "graphQL/useMutationAddStages";
 import { UPDATESTAGES } from "graphQL/useMutationUpdateStages";
 
+const DIALOG_WIDTHS = {
+  BASIC: "450px",
+  LANES: "1100px",
+};
+
 const useStyles = makeStyles((theme) => ({
   root: {
     "& .MuiTabs-root": {
@@ -51,9 +56,10 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-  stickyHeader:  {
+  stickyHeader: ({ width }) => ({
     padding: "25px",
-  },
+    width: width,
+  }),
   panelInfo: {},
   deleteIcon: {
     fill: theme.palette.secondary.main,
@@ -103,6 +109,7 @@ const a11yProps = (index) => ({
 const PipelineCustomDialog = (props) => {
   const dispatch = useDispatch();
   const [tab, setTab] = useState(0);
+  const [width, setDialogWidth] = useState(DIALOG_WIDTHS.BASIC);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteFunc, setDeleteFunc] = useState(null);
   const [stages, setStages] = useState([]);
@@ -124,7 +131,7 @@ const PipelineCustomDialog = (props) => {
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
 
-  const classes = useStyles();
+  const classes = useStyles({ width });
 
   useEffect(() => {
     return () => reset({});
@@ -145,10 +152,19 @@ const PipelineCustomDialog = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataDealsCountByPipeline]);
 
+  useEffect(() => {
+    if (selectedStageForDetail) {
+      setDialogWidth(DIALOG_WIDTHS.LANES);
+    }
+  }, [selectedStageForDetail]);
+
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
   const handleChange = (event, tab) => {
+    if (tab === 0) {
+      setDialogWidth(DIALOG_WIDTHS.BASIC);
+    } else setDialogWidth(DIALOG_WIDTHS.LANES);
     setTab(tab);
   };
 
@@ -373,7 +389,7 @@ const PipelineCustomDialog = (props) => {
       {openPipeDialog === "newPipe" || openPipeDialog ? (
         <RightDialog
           open={openPipeDialog === "newPipe" || openPipeDialog}
-          width={'1100px'}
+          width={width}
           handleClickDialogClose={() => {
             handleSaveOrUpdate();
             handleClose();
@@ -475,7 +491,7 @@ const PipelineCustomDialog = (props) => {
                     <DealStagesPanel
                       showWarningMessage={showWarningMessage}
                       stages={stages}
-                      flowLineType={watch('flowLineType')}
+                      flowLineType={watch("flowLineType")}
                       setStages={setStages}
                       stagesError={stagesError}
                       setStageError={setStageError}
