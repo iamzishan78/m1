@@ -28,6 +28,7 @@ import moment from "moment";
 import { useLazyQuery } from "@apollo/client";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "../../graphQL/useQueryViewFile";
 import DocViewer from "../Shared/DocViewer";
+import { isEmpty } from "lodash";
 
 // functions / value formatters
 import get_file_icon from "../Shared/functions/get_file_icon.js";
@@ -168,6 +169,10 @@ export default function ViewDocuments(props) {
     fetchPolicy: "no-cache",
   });
 
+  const [viewFiles, { data: viewFilesResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
+    fetchPolicy: "no-cache",
+  });
+
   useEffect(() => {
     if (viewFileResult?.viewFile?.uri) {
       let a = document.createElement("a");
@@ -178,9 +183,7 @@ export default function ViewDocuments(props) {
       a.click();
     }
   }, [viewFileResult]);
-  const [viewFiles, { data: viewFileResultt, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
-    fetchPolicy: "no-cache",
-  });
+
   useEffect(() => {
     let ID = [];
     for (let i = 0; i < files?.getFileDescriptors.length; i++) {
@@ -193,6 +196,21 @@ export default function ViewDocuments(props) {
       setAllDocuments(files?.getFileDescriptors);
     }
   }, [files]);
+
+  useEffect(() => {
+    if (viewFilesResult && allDocuments) {
+      setAllDocuments(
+        allDocuments.map((document) => {
+          const fileUrl = viewFilesResult.viewFiles.find(result => result.id === document.fileId).uri
+          return {
+            ...document,
+            fileUrl: fileUrl
+          };
+        })
+      );
+    }
+  }, [viewFilesResult]);
+
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
   };
@@ -220,7 +238,7 @@ export default function ViewDocuments(props) {
 
   return (
     <div className={classes.viewAllCard}>
-      <DocViewer
+      {!isEmpty(stateApp?.viewDoc) && <DocViewer
         divCondition={false}
         DocStyle={{
           top: "56% ",
@@ -228,7 +246,8 @@ export default function ViewDocuments(props) {
           width: "98vw ",
           transform: `translate(1%, -101%)`,
         }}
-      ></DocViewer>
+      ></DocViewer>}
+
 
       <div className={classes.header}>
         <div className={classes.headerLeft}>
@@ -314,14 +333,14 @@ export default function ViewDocuments(props) {
                     style={{ cursor: "pointer" }}
                     onClick={() => {
                       // TEMP COMMENT OUT UNTI QUERY URI IS FIXED
-                      // if (ExtenstionGetter(doc.fileName) === 'pdf') {
-                      // 	setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
-                      // }
-                      // else {
-                      // 	handleViewFile(doc.fileId)
-                      // }
+                      if (ExtenstionGetter(doc.fileName) === 'pdf') {
+                        setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
+                      }
+                      else {
+                        handleViewFile(doc.fileId)
+                      }
 
-                      handleViewFile(doc.fileId);
+
                     }}
                   >
                     <h4 className={classes.uploadTitle}>{doc.fileName}</h4>
