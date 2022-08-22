@@ -2,16 +2,6 @@ import React, { useEffect, useState } from "react";
 // import MUIDataTable from "mui-datatables";
 import { makeStyles } from "@material-ui/core/styles";
 import {
-  MenuItem,
-  Checkbox,
-  Select,
-  InputLabel,
-  Grid,
-  Button,
-  FormControl,
-  Icon,
-  Typography,
-  OutlinedInput,
   TextField,
   InputAdornment,
   IconButton,
@@ -20,7 +10,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import SearchIcon from "@material-ui/icons/Search";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import DeleteDocumentConfirmation from "../Shared/DeleteDocumentConfirmation";
 
 import { GETCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 import { AppContext } from "../../AppContext";
@@ -169,7 +158,7 @@ export default function ViewDocuments(props) {
     fetchPolicy: "no-cache",
   });
 
-  const [viewFiles, { data: viewFilesResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
+  const [viewFiles, { data: viewFilesResult }] = useLazyQuery(VIEWFILESQUERY, {
     fetchPolicy: "no-cache",
   });
 
