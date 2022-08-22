@@ -24,7 +24,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from '@material-ui/icons/Edit';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import DeleteConfirmationDialog from "../DeleteConfirmationDialog";
+import DeleteSourceAndCategoryConfirmationDialog from "./DeleteSourceAndCategoryConfirmationDialog";
 import Box from "@material-ui/core/Box";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
@@ -40,6 +40,7 @@ import { useHistory } from "react-router-dom";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
+import { UPDATE_DATASET } from "graphQL/useMutationDataset";
 
 const GCS_North_American_1927 =
   'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
@@ -218,6 +219,7 @@ export default function SourceManager(props) {
   const [openUDLayers, setUDLayersStates] = useState([]);
 
   const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
+  const [updateDataset] = useMutation(UPDATE_DATASET, { refetchQueries: ["getDatasets"], awaitRefetchQueries: true });
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
   const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, { refetchQueries: ["getUserMapSettings"], awaitRefetchQueries: true });
 
@@ -302,49 +304,6 @@ export default function SourceManager(props) {
     }
 
     setCurrentLayers(update(currentLayers, updatefn));
-  };
-
-  const handleApplyChange = () => {
-    if (!deepEqual(currentLayers, stateApp.layers)) {
-      const layersToUpdate = [];
-      const layersSettingsToUpdate = [];
-      for (let i = 0; i < currentLayers.length; i++) {
-        if (!deepEqualObjects(currentLayers[i], stateApp.layers[i])) {
-          layersSettingsToUpdate.push({
-            _id: currentLayers[i]._id,
-            layerSettings: currentLayers[i].layerSettings,
-          });
-          layersToUpdate.push({
-            _id: currentLayers[i].layerId,
-            layerName: currentLayers[i].layerName,
-            groupName: currentLayers[i].groupName,
-          });
-        }
-      }
-
-      //// saving to stateApp
-      setStateApp({
-        ...stateApp,
-        layers: [...currentLayers],
-      });
-
-      //// saving to mongo
-      if (layersToUpdate.length > 0) {
-        updateManyLayer({
-          variables: {
-            layers: layersToUpdate,
-          },
-        });
-
-        updateManyUserLayerSettings({
-          variables: {
-            manySettings: layersSettingsToUpdate,
-          },
-        });
-      }
-    }
-
-    handleClose();
   };
 
   const parseGeoForTypesAndNames = (geo, name) => {
@@ -521,14 +480,27 @@ export default function SourceManager(props) {
 
   useOnClickOutside({ current: anchorEl }, handleMenuClose);
 
-  const sourceNameChange = () => {
-
+  const datasetNameChange = (item, name) => {
+    const isSource = !actionItem?.category
+    if (isSource) {
+      actionItem.dataset.sourceName = name
+    } else {
+      const category = actionItem.dataset.categories.find((category) => category.name === actionItem.category.name)
+      category.name = name
+      category.layerName = name
+    }
+    setStateApp((stateApp) => {
+      const index = stateApp.datasets.findIndex((dataset) => dataset._id === actionItem.dataset._id)
+      stateApp.datasets[index] = actionItem.dataset
+      return {
+        ...stateApp
+      }
+    })
+    updateDataset({ variables: { dataset: actionItem.dataset } })
   }
 
   const openEditField = (name) => {
     const isSource = !actionItem?.category
-
-    console.log(actionItem?.type, actionItem?.category?.layerName, actionItem?.category?.name, name)
     if (isSource) {
       return actionItem?.type === 'editName' && actionItem?.dataset?.sourceName === name
     } else {
@@ -633,7 +605,8 @@ export default function SourceManager(props) {
                                       <EditableTextField onChange={changeLayerName} item={groupLayer} name={groupLayer.layerName} isEditable={checkIfDeleteAllow(layer)} />
                                       <ListItemSecondaryAction>
                                         {
-                                          checkIfDeleteAllow(layer) && <Tooltip title="Delete" placement="top">
+                                          checkIfDeleteAllow(layer) &&
+                                          <Tooltip title="Delete" placement="top">
                                             <IconButton
                                               edge="end"
                                               size="small"
@@ -704,7 +677,7 @@ export default function SourceManager(props) {
                               onChange={() => { handleDatasetChange(dataset, !dataset.visibility); }}
                               inputProps={{ "aria-label": "primary checkbox" }}
                             />
-                            <EditableTextField onChange={sourceNameChange} item={dataset} name={dataset.sourceName} isEditable={true} openEditField={openEditField(dataset.sourceName)} />
+                            <EditableTextField onChange={datasetNameChange} item={dataset} name={dataset.sourceName} isEditable={true} openEditField={openEditField(dataset.sourceName)} />
                             {/* <ListItemText primary={dataset.sourceName} /> */}
                             <MoreHorizIcon aria-controls={"source-menu"} className={"moreSourceIcon " + classes.moreSourceIcon} onClick={(e) => { e.stopPropagation(); handleClick(e); setActionItem({ dataset }) }} />
                             {openDataSets[dataset.sourceName] ? <ExpandLess /> : <ExpandMore />}
@@ -712,10 +685,10 @@ export default function SourceManager(props) {
                             <Collapse in={openDataSets[dataset.sourceName]} timeout="auto" unmountOnExit>
                               <List className={classes.list}>
                                 {dataset.categories.map((layer, index) => {
-                                  const labelId = `m1layer-list-label-${index}`;
+                                  // const labelId = `m1layer-list-label-${index}`;
                                   return (
-                                    <StyledListItem key={index} ContainerComponent="li">
-                                      <EditableTextField onChange={sourceNameChange} item={layer} name={layer.layerName || layer.name} isEditable={true} openEditField={openEditField(layer.layerName || layer.name)} />
+                                    <StyledListItem key={index} ContainerComponent="li" style={{ padding: 10 }}>
+                                      <EditableTextField onChange={datasetNameChange} item={layer} name={layer.layerName || layer.name} isEditable={true} openEditField={openEditField(layer.layerName || layer.name)} />
 
                                       {/* <ListItemText style={{ padding: '5px 0px 5px 40px' }} id={labelId} primary={truncate(layer.layerName || layer.name, 30)} /> */}
                                       <MoreHorizIcon aria-controls={"more-source-menu"} className={"moreIcon " + classes.moreIcon} onClick={(e) => { handleClick(e); setActionItem({ dataset, category: layer }) }} />
@@ -748,7 +721,7 @@ export default function SourceManager(props) {
               <ClickAwayListener onClickAway={handleMenuClose}>
                 <MenuList autoFocusItem={Boolean(anchorEl)} id="menu-list-grow">
                   <MenuItem onClick={(e) => { e.stopPropagation(); setActionItem((actionItem) => ({ ...actionItem, type: 'editName' })); handleMenuClose() }}><EditIcon /> Edit Name</MenuItem>
-                  <MenuItem onClick={(e) => { e.stopPropagation(); setActionItem((actionItem) => ({ ...actionItem, type: 'delete' })); handleMenuClose() }}><DeleteIcon /> Delete</MenuItem>
+                  <MenuItem onClick={(e) => { e.stopPropagation(); setOpenDeleteDialog(actionItem); handleMenuClose() }}><DeleteIcon /> Delete</MenuItem>
                 </MenuList>
               </ClickAwayListener>
             </Paper>
@@ -766,10 +739,10 @@ export default function SourceManager(props) {
           fullWidth={true}
           maxWidth={"sm"}
         >
-          <DeleteConfirmationDialog
+          <DeleteSourceAndCategoryConfirmationDialog
             openDialog={openDeleteDialog ? true : false}
             handleDialogClose={setOpenDeleteDialog}
-            layer={openDeleteDialog}
+            actionItem={openDeleteDialog}
           />
         </Dialog>
       )}

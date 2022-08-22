@@ -5,3 +5,9 @@ export const ADD_DATASET = gql`
     addDataset(dataset: $dataset)
   }
 `;
+
+export const UPDATE_DATASET = gql`
+  mutation updateDataset($dataset: JSON) {
+    updateDataset(dataset: $dataset)
+  }
+`;

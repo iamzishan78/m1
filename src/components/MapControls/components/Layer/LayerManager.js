@@ -144,7 +144,6 @@ function LayerManager(props) {
                 </div>
               </Grid>
             }
-
             {(layer.layerSettings?.interaction?.interactionAble || layer.layerType === 'file layer') &&
               <Grid item xs={12}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
