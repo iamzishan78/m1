@@ -28,7 +28,7 @@ const useStyles = makeStyles({
 
 const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpenShapeDetail, updateAndOpenShapeDetail, classes }) => {
   const [selectedType, setSelectedType] = useState("new");
-  const [selectedShapeType, setSelectedShapeType] = useState();
+  const [selectedShapeType, setSelectedShapeType] = useState('lease');
   const [selectedAgreement, setSelectedAgreement] = useState();
   const shapeActionClasses = useStyles();
 
@@ -87,6 +87,7 @@ const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpe
               </InputLabel>
               <Select
                 labelId="agreement-outlined-label"
+                defaultValue={'lease'}
                 id="agreement-outlined"
                 value={selectedShapeType}
                 fullWidth

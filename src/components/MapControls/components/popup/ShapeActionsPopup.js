@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import * as turf from "@turf/turf";
 import hat from "hat";
 import polylabel from "polylabel";
-import { FormControl, InputLabel, ListItem, ListItemText, Menu, MenuItem, Select } from "@material-ui/core";
+import { Menu, MenuItem } from "@material-ui/core";
 import { Grid } from "@material-ui/core";
 import Modal from "@material-ui/core/Modal";
 import Button from "@material-ui/core/Button";
@@ -29,7 +29,7 @@ import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
 import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
 import { ABSTRACTGEOCONTAINSQUERY } from "graphQL/useQueryAbstractGeoContains";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
-import { addCustomShapeProperties, drawBoundary, getDrawAdustedShape, getRotateAbleShapeFromSelectedQuarters } from "../DrawShapes/drawShapesHelpers";
+import { addCustomShapeProperties, drawBoundary, getDrawAdustedShape } from "../DrawShapes/drawShapesHelpers";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived } from "actions";
@@ -46,6 +46,7 @@ import { copy, getPolygonString } from "components/Shared/functions";
 import { calculateLandArea } from "components/Shared/functions/shapeLayer";
 import ShapeEditActions from "components/MapControls/components/popup/ShapeEditActions";
 import AgreementTypeMenu from "./AgreementTypeMenu";
+import { capitalize } from "lodash"
 
 
 const useStyles = makeStyles({
