@@ -89,14 +89,11 @@ export const usetableStyles = makeStyles(() => ({
     "& .MuiTableCell-paddingCheckbox": {
       position: (p) => (p.isCheckboxSticky ? "sticky !important" : ""),
     },
-<<<<<<< HEAD
 
     '& .MuiTableRow-footer': {
       visibility: (p) => p.infScrollHeight ? 'hidden' : '',
       display: (p) => p.infScrollHeight ? 'none' : '',
     }
-=======
->>>>>>> 01d952e1e3882c80ee2fb722c5e903ad52acb4e7
   },
   ESHOCInfScroll: {
     "& div": {
