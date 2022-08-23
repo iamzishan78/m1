@@ -109,7 +109,8 @@ export const formatTaxOwners = (owners, formData) => {
       // convert extras
       status: formData.contactStatus,
       contactOwner: formData.contactOwner,
-      campaignName: formData.campaign?.name,
+      campaignName: formData.campaigns?.map(campaign => campaign.name),
+      campaigns: formData.campaigns,
       tags: formData.tags,
 
       // default

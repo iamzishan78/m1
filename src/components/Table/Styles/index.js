@@ -6,9 +6,9 @@ export const usetableStyles = makeStyles(() => ({
     "& .MuiTableRow-hover": {
       "&:hover": {
         "& .MuiTableCell-root": {
-          backgroundColor: "#dfdfdf"
-        }
-      }
+          backgroundColor: "#dfdfdf !important",
+        },
+      },
     },
     // "& ::-webkit-scrollbar": {
     //   height: "0.7em !important",
@@ -18,10 +18,9 @@ export const usetableStyles = makeStyles(() => ({
       display: (p) => p.isHideFooter ? 'none' : '',
     }
   },
-
   subComponentsClasses: {
     "& .MuiTableHead-root": {
-      zIndex: (p) => p.isRevenueTable ? 995 : 0,
+      zIndex: (p) => (p.isRevenueTable ? 995 : 0),
     },
     "& div": {
       "&>.MuiPaper-root": {
@@ -42,7 +41,7 @@ export const usetableStyles = makeStyles(() => ({
           },
           "@media (max-height:1200px)": {
             maxHeight: "58vh",
-            minHeight: (p) => p.isFullHeight ? '75vh' : '58vh',
+            minHeight: (p) => (p.isFullHeight ? "75vh" : "58vh"),
           },
           "@media (max-height:1100px)": {
             maxHeight: "51vh",
@@ -88,13 +87,16 @@ export const usetableStyles = makeStyles(() => ({
   ESHOCContainer: {
     width: "100%",
     "& .MuiTableCell-paddingCheckbox": {
-      position: (p) => p.isCheckboxSticky ? 'sticky !important' : '',
+      position: (p) => (p.isCheckboxSticky ? "sticky !important" : ""),
     },
+<<<<<<< HEAD
 
     '& .MuiTableRow-footer': {
       visibility: (p) => p.infScrollHeight ? 'hidden' : '',
       display: (p) => p.infScrollHeight ? 'none' : '',
     }
+=======
+>>>>>>> 01d952e1e3882c80ee2fb722c5e903ad52acb4e7
   },
   ESHOCInfScroll: {
     "& div": {

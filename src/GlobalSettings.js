@@ -153,9 +153,9 @@ const GlobalSettings = {
         </Typography>
       );
     },
-
-  }
-
+  },
 };
+
+
 
 export default GlobalSettings;

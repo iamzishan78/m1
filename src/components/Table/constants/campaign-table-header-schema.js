@@ -1,5 +1,4 @@
 import { history } from "store";
-import CampaignStatus from "components/Table/Contact/CampaignStatus";
 
 const CampaignsHeadCells = [
   {
@@ -27,13 +26,11 @@ const CampaignsHeadCells = [
           <p
             onClick={(e) => {
               e.stopPropagation();
-              
-              history.push(
-                {
-                  pathname: `/contacts/campaignManagement/:id`,
-                  state: { campaignName: value }
-                }
-              );
+
+              history.push({
+                pathname: `/contacts/campaign/details/${tableMeta.rowData[0]}`,
+                state: { campaignName: value },
+              });
             }}
             style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
           >
@@ -46,56 +43,82 @@ const CampaignsHeadCells = [
     },
   },
   {
-    name: "type",
-    label: "Campaign Type",
-    esKey: "type.keyword",
-    options: {
-      display: true,
-      sort: true,
-      filter: true,
-    },
-  },
-  {
-    name: "entityType",
-    label: "Entity Type",
-    esKey: "type.keyword",
-    options: {
-      display: true,
-      sort: true,
-      filter: true,
-    },
-  },
-  {
-    name: "currentEntities",
-    label: "# Current Entities",
-    esKey: "type.keyword",
-    options: {
-      display: true,
-      sort: true,
-      filter: true,
-    },
-  },
-  {
-    name: "type",
-    label: "# Sent",
-    esKey: "type.keyword",
-    options: {
-      display: true,
-      sort: true,
-      filter: true,
-    },
-  },
-  {
     name: "status",
     label: "Campaign Status",
-    esKey: "type.keyword",
+    esKey: "status.keyword",
     options: {
       display: true,
       sort: true,
       filter: true,
+    },
+  },
+  {
+    name: "unitCount",
+    label: "Units",
+    esKey: "unitCount",
+    options: {
+      display: true,
+      sort: true,
+      filter: false,
       customRender: (value, tableMeta) => {
-        return <CampaignStatus status={value} />;
+        return <p>{value}</p>;
       },
+    },
+  },
+  {
+    name: "totalNra",
+    label: "Total NRA",
+    esKey: "totalNra",
+    options: {
+      display: true,
+      sort: true,
+      filter: false,
+      customRender: (value, tableMeta) => {
+        return <p>{value}</p>;
+      },
+    },
+  },
+  {
+    name: "owner",
+    label: "Supervisor",
+    esKey: "owner.name.keyword",
+    options: {
+      display: true,
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "createdAt",
+    label: "Created Date",
+    esKey: "createdAt",
+    options: {
+      display: true,
+      sort: true,
+      filter: true,
+    },
+  },
+
+  {
+    name: "tags",
+    label: "Tags",
+    esKey: "tags",
+    options: {
+      display: true,
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      viewColumns: false,
     },
   },
 ];

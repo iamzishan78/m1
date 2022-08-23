@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { get } from "lodash";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -26,6 +27,7 @@ import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/Currenc
 import ContactStatus from 'components/ContactDetailCard/components/ContactStatus';
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -86,7 +88,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         name,
         ownerEntity,
         contactStatus,
-        ownerType
+        ownerType,
+        contact
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
@@ -98,9 +101,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         seller_asking_price: seller_asking_price || null,
         competitor_offer_price: competitor_offer_price || null,
         offer_price: offer_price || null,
-        contactStatus: contactStatus || null,
+        contactStatus: contactStatus || contact.contactStatus,
         ownerType,
         customLayer,
+        campaignName: contact.campaignName
       }
       let calculatedNRA = calculateNRA(royalty_interest, orri);
       if (!isNaN(parseFloat(calculatedNRA)))
@@ -179,7 +183,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           shapeType: props.shapeType,
           shapeOwners: [
             {
-              shapeId: props.shapeId,
+              shapeId: props.shapeId ?? get(selectedRow, "customLayer._id"),
               relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
               ...ownerToAdd,
               createBy: stateApp.user.mongoId,
@@ -195,7 +199,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         variables: {
           shapeType: props.shapeType,
           shapeOwner: {
-            shapeId: props.shapeId,
+            shapeId: props.shapeId ?? get(selectedRow, "customLayer._id"),
             relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
             ...ownerToAdd,
             createBy: stateApp.user.mongoId,
@@ -228,19 +232,22 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       }
 
       if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
-        (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType)) {
+        (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
+        (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
+      ) {
         updateContact({
           variables: {
             contact: {
               _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
               contactStatus: ownerToAdd.contactStatus,
               lastUpdateBy: stateApp.user.mongoId,
-              ownerType: ownerToAdd.ownerType
+              ownerType: ownerToAdd.ownerType,
+              campaignName: ownerToAdd.campaignName
             }
           }
         })
       }
-      handleAddUpdate(ownerToAdd)
+      handleAddUpdate(ownerToAdd);
     }
   };
 
@@ -537,6 +544,27 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         props.onChange(val);
                       }}
                       value={props.value ? props.value : ""}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Campaign Names</h3>
+
+                <Controller
+                  control={control}
+                  defaultValue={''}
+                  name="campaignName"
+                  render={(params) => (
+                    <CampaignNameField
+                      {...params}
+                      className={classes.maxWidth}
+                      onChange={(values, id) => {
+                        params.onChange(values);
+                      }}
+                      fullWidth
+                      targetLabel="Contact"
+                      simpleChips
                     />
                   )}
                 />
