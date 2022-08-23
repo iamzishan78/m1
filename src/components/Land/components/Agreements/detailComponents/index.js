@@ -383,6 +383,7 @@ export default function DetailComponents(props) {
       variables: {
         customLayerId: activeAgreement._id,
         customLayer,
+        userId: stateApp.user.mongoId
       },
       refetchQueries: ["customLayer"],
     });
