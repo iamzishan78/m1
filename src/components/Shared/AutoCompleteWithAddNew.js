@@ -29,7 +29,7 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant })
   const classes = useStyles();
 
   const onInputChange = (event, value) => {
-    onSearch(value);
+    if (onSearch) onSearch(value);
   };
 
   return (
@@ -95,7 +95,7 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant })
       renderInput={(params) => (
         <TextField
           margin="dense"
-          variant={variant? variant :'standard'}
+          variant={variant ? variant : 'standard'}
           {...params}
           InputProps={{
             ...params.InputProps,
