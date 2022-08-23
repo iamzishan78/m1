@@ -42,7 +42,7 @@ const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer
                     after: null
                 },
                 search: {
-                    query: search,
+                    query: search ? `*${search}*` : '',
                     fields: ['*'],
                 },
                 filters
