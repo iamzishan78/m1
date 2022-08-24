@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, Fragment } from "react";
+import React, { useContext, useState, useEffect, Fragment, useCallback, useMemo, memo } from "react";
 import update from "immutability-helper";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../../MapControlsContext";
@@ -206,12 +206,24 @@ function useOnClickOutside(ref, handler) {
   );
 }
 
-export default function SourceManager(props) {
+const SourceManagerMemo = memo(SourceManager);
+export default function SourceManagerContainer(props) {
+  const [stateApp, setStateApp] = useContext(AppContext);
+
+  const setStateAppCallback = useCallback(setStateApp, [])
+  const stateAppMemo = useMemo(() => ({ layers: stateApp.layers, user: stateApp.user, datasets: stateApp.datasets }), [stateApp.user, stateApp.datasets, stateApp.layers])
+
+  return <SourceManagerMemo {...props} stateApp={stateAppMemo} setStateApp={setStateAppCallback} />
+}
+
+function SourceManager(props) {
   const classes = useStyles();
   let history = useHistory();
 
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const { stateApp, setStateApp } = props;
+
+  console.log('stateApp', stateApp)
   const [openM1, setOpenM1] = React.useState(true);
   const [openDataSets, setOpenDataSets] = React.useState({});
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
@@ -288,7 +300,10 @@ export default function SourceManager(props) {
 
     const newLayers = update(currentLayers, updatefn)
     setCurrentLayers(newLayers);
-    setTimeout(() => { setStateApp({ ...stateApp, layers: newLayers }); }, 0)
+    const datasetIndex = stateApp.datasets.findIndex(d => d._id === dataset._id);
+    dataset.visibility = value
+    stateApp.datasets[datasetIndex] = dataset
+    setTimeout(() => { setStateApp((stateApp) => ({ ...stateApp, layers: newLayers })); }, 0)
   }
 
   const changeLayerName = (layer, name) => {
@@ -492,9 +507,7 @@ export default function SourceManager(props) {
     setStateApp((stateApp) => {
       const index = stateApp.datasets.findIndex((dataset) => dataset._id === actionItem.dataset._id)
       stateApp.datasets[index] = actionItem.dataset
-      return {
-        ...stateApp
-      }
+      return { ...stateApp }
     })
     updateDataset({ variables: { dataset: actionItem.dataset } })
   }

@@ -38,8 +38,9 @@ const useStyles = makeStyles((theme) => ({
         },
         '& .menu': {
             paddingRight: "10px",
+            color: '#ffff',
             '& .MuiTypography-body1': {
-                fontWeight: 700,
+                fontWeight: 500,
             }
         }
     },
@@ -82,7 +83,7 @@ export default function DatasetMenu({ dataset, handleRemove, handleTransfer }) {
                 className={classes.popover}
             >
                 <div className={'menu'}>
-                    <List component="nav" aria-label="main mailbox folders" disablePadding>
+                    <List component="nav" aria-label="main mailbox folders" disablePadding >
                         <ListItem button onClick={(e) => { handleClose(e); handleTransfer(dataset); }}>
                             <ArrowForwardOutlinedIcon />
                             <ListItemText primary="Transfer" />

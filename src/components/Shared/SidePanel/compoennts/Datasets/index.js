@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo } from "react";
+import React, { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/styles";
 import { Typography } from "@material-ui/core";
@@ -92,10 +92,19 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function Datasets({ headerButton, search }) {
+const DatasetsMemo = memo(Datasets);
+export default function DatasetsContainer(props) {
+    const [stateApp, setStateApp] = useContext(AppContext);
+
+    const setStateAppCallback = useCallback(setStateApp, [])
+    const stateAppMemo = useMemo(() => ({ layers: stateApp.layers, user: stateApp.user, selectedDataset: stateApp.selectedDataset }), [stateApp])
+
+    return <DatasetsMemo stateApp={stateAppMemo} setStateApp={setStateAppCallback} {...props} />
+}
+
+function Datasets({ headerButton, search, stateApp, setStateApp }) {
 
     const classes = useStyles();
-    const [stateApp, setStateApp] = useContext(AppContext);
     const [_, setStateMapControls] = useContext(MapControlsContext);
     const dispatch = useDispatch();
 
@@ -103,6 +112,7 @@ function Datasets({ headerButton, search }) {
     const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
     const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, { refetchQueries: ["getUserMapSettings"], awaitRefetchQueries: true });
     const [userMapSettings, { data: mapSettings }] = useLazyQuery(USER_MAP_SETTINGS_QUERY);
+    const [changedDataset, setChangedDataset] = useState()
 
     useEffect(() => {
         userMapSettings({ variables: { user: stateApp.user._id, type: 'DatasetVisibility' } })
@@ -132,13 +142,16 @@ function Datasets({ headerButton, search }) {
                 }
             })
             setStateApp((state) => ({ ...state, datasets }));
-            datasets = datasets.filter((dataset) => dataset.visibility)
+            datasets = datasets.filter((dataset) => {
+                if (dataset._id === changedDataset?._id) dataset.visibility = changedDataset.visibility
+                return dataset.visibility
+            })
             if (search)
                 datasets = datasets.filter((dataset) => dataset.name.toLowerCase().includes(search.toLowerCase()))
             return datasets
         } else
             return []
-    }, [_datasets, mapSettings, search])
+    }, [_datasets, mapSettings, search, changedDataset])
 
     const getBorderColor = useCallback((name) => (stateApp?.selectedDataset?.sourceName === name ? '#05aff0' : '#263451'), [stateApp.selectedDataset])
 
@@ -148,7 +161,6 @@ function Datasets({ headerButton, search }) {
             setStateApp((state) => ({ ...state, layerGridCard: false }));
             dispatch(setMapGridCardState({ mapGridCardActivated: true }));
         } else {
-            debugger
             setStateApp((state) => ({
                 ...state,
                 selectedLayer: { ...dataset.categories[0] },
@@ -161,6 +173,9 @@ function Datasets({ headerButton, search }) {
     }
 
     const handleRemove = (dataset, value) => {
+        dataset.visibility = value
+        setChangedDataset({ ...dataset })
+
         const updatefn = {};
         const layersSettingsToUpdate = [];
         stateApp.layers.forEach((clayer, layerIndex) => {
@@ -237,7 +252,7 @@ function Datasets({ headerButton, search }) {
                                         <Grid item className='actionIcons'>
                                             <GridOnIcon className='actionIcon' />
                                             {sourceName === 'M1 Platform' && <Box paddingRight='24px' />}
-                                            {sourceName !== 'M1 Platform' && <DatasetMenu handleRemove={handleRemove} handleTransfer={handleTransfer} dataset={{ sourceName, Icon, categories, ...rest }} />}
+                                            {sourceName !== 'M1 Platform' && <DatasetMenu setChangedDataset={setChangedDataset} handleRemove={handleRemove} handleTransfer={handleTransfer} dataset={{ sourceName, Icon, categories, ...rest }} />}
                                         </Grid>
                                     </Grid>
                                 </Grid>
@@ -253,4 +268,4 @@ function Datasets({ headerButton, search }) {
     );
 }
 
-export default React.memo(Datasets, deepEqualObjects);
+// export default React.memo(Datasets, deepEqualObjects);
