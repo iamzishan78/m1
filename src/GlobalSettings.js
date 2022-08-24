@@ -79,9 +79,9 @@ const GlobalSettings = {
     setCellHeaderProps: () => ({
       style: {
         position: "sticky",
-        paddingLeft: '70px',
         zIndex: 201,
         left: "167px",
+        paddingLeft: "0px"
       }
     }),
 
