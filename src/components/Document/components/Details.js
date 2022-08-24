@@ -310,7 +310,8 @@ export default function DocumentDetails(props) {
         refetchQueries: ["getParcelFiles", "getParcelFilesCount"],
         awaitRefetchQueries: true,
       }).then(() => {
-        props.refetchData({ ...document })
+        if (props?.refetchData)
+          props.refetchData({ ...document })
         setFileData(null);
         setStateApp({
           ...stateApp,
