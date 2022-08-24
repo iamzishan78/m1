@@ -390,6 +390,12 @@ export const getFilterList = (columns) => {
   return filterList
 }
 
+export const removeCommasFromString = (str) => {
+  // This function will convert "1,232,232.00" into "1232232"
+  return parseFloat(str.replace(/,/g, ''))
+}
+
+
 export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFromDate, setToDate, minDate) => {
   if (onChange) {
     onChange(date)
