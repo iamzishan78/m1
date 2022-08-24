@@ -358,6 +358,12 @@ export const getIndexofColumn = (columns, columnName) => {
   return columns.indexOf(columns.find(c => c.name === columnName));
 }
 
+// This function will find value inside passed function
+export const findInFunction = (value, func) => {
+  const funcToString = func.toString()
+  return funcToString.includes(value)
+}
+
 export const getAppliedFilters = (filters, columns, filtersData) => {
   const appliedFilters = []
   filters.forEach((val, index) => {
