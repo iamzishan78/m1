@@ -66,6 +66,9 @@ const AutoCompleteDocumentList = ({ onSelect, search, setSearch }) => {
         if (option?.name) return option.name;
         else return "";
       }}
+      filterOptions={(options, value) => {
+        return options
+      }}
       getOptionSelected={(option, value) => {
         return option?._id === value?._id;
       }}
@@ -76,7 +79,7 @@ const AutoCompleteDocumentList = ({ onSelect, search, setSearch }) => {
               <Grid item xs>
                 <span style={{ fontWeight: 400 }}>{option.name}</span>
                 <Typography variant="body2" color="textSecondary">
-                  {option.documentNumber}
+                  {option.documentNumber} {option.documentNumber && option.documentName ? ' - ' : ''} {option.documentName}
                 </Typography>
               </Grid>
             </Grid>

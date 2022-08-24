@@ -22,7 +22,6 @@ import ReactTimeAgo from "react-time-ago";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
-import { dateIsValid } from "utils/helper";
 import moment from "moment";
 
 TimeAgo.addDefaultLocale(en);
@@ -96,6 +95,42 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: "10px"
   }
 }));
+
+export const CommonCommentText = ({ eachComment, users }) => {
+  const classes = useStyles();
+  let formatComment = eachComment.comment.split(" ")
+
+  return (
+    <div id={eachComment._id} className={`${classes.whiteSpace}`}>
+      {formatComment.map((word, index) => {
+        if (word.includes("{{") && word.includes("}}")) {
+          const splittedWord = word.split(/\r?\n/);
+
+          // splitt word to manage new lines in the word
+          if (splittedWord.length) {
+            return (<>
+              {splittedWord.map(sWord => {
+                if (sWord.includes("{{") && sWord.includes("}}")) {
+                  const firstPart = sWord.split("{{")[0];
+                  const secondPart = sWord.split("}}")[1];
+                  let id = sWord.split("{{")[1];
+                  id = id.split("}}")[0];
+                  return <> <span className="blue">{firstPart}@{users.find(user => user._id === id)?.name}{secondPart} </span>{splittedWord.length > 1 && <br />} </>
+                }
+                else return <span>{sWord} <br /> </span>;
+
+              })}
+            </>)
+          }
+
+          return <span>{splittedWord}</span>;
+        } else {
+          return <span>{word} </span>;
+        }
+      })}
+    </div >
+  );
+};
 
 export default function CommentComponent(props) {
   const { targetSourceId, commentsHeight } = props;
@@ -271,6 +306,7 @@ export default function CommentComponent(props) {
 
   const updateComment = (value) => {
     setLoadingComments(true);
+
     upsertComment({
       variables: {
         comment: {
@@ -316,7 +352,23 @@ export default function CommentComponent(props) {
   };
 
   const addNewComment = (value) => {
-    setLoadingComments(true);
+    const userDetails = stateApp.user
+    setCommentsArray(state => {
+      const newComment = {
+        comment: value,
+        commentedOn: targetSourceId,
+        isEdited: false,
+        public: true,
+        ts: Date.now(),
+        user: { name: userDetails.name, email: userDetails.email, __typename: 'User' },
+        __typename: "Comment",
+        _id: "62e78820b4f930ae6002a7f2"
+
+      }
+      state.push(newComment)
+      return state
+    })
+
     upsertComment({
       variables: {
         comment: {
@@ -379,19 +431,19 @@ export default function CommentComponent(props) {
                         container
                         className={classes.gridStyle}
                         onMouseOver={() =>
-                          setShowCommentActionId(eachComment._id)
+                          setShowCommentActionId(eachComment?._id)
                         }
                         onMouseLeave={() => setShowCommentActionId(null)}
                       >
                         <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
                           <IconButton>
-                            {profilesInfo[eachComment.user.email]?.profileImage ||
+                            {profilesInfo[eachComment.user?.email]?.profileImage ||
                               eachComment.isNew ? (
                               <Avatar
                                 src={
                                   eachComment.isNew
                                     ? profileImage
-                                    : profilesInfo[eachComment.user.email]
+                                    : profilesInfo[eachComment.user?.email]
                                       .profileImage
                                 }
                                 size="38"
@@ -399,7 +451,7 @@ export default function CommentComponent(props) {
                               />
                             ) : (
                               <Avatar
-                                name={eachComment.user.name}
+                                name={eachComment.user?.name}
                                 size="38"
                                 round
                               />
@@ -409,7 +461,7 @@ export default function CommentComponent(props) {
                         <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
                           <div>
                             <span className={classes.bold}>
-                              {eachComment.user.name}
+                              {eachComment.user?.name}
                             </span>
                             {
                               <ReactTimeAgo
@@ -423,7 +475,8 @@ export default function CommentComponent(props) {
                                 (Edited)
                               </span>
                             )}
-                            {eachComment.user.email === stateApp.user.email &&
+                            {
+                              eachComment.user?.email === stateApp.user.email &&
                               showCommentActionId === eachComment._id &&
                               editCommentId !== eachComment._id && (
                                 <div
@@ -460,7 +513,7 @@ export default function CommentComponent(props) {
 
                           }
                           {editCommentId !== eachComment._id ? (
-                            <CommentText users={users} eachComment={eachComment} />
+                            <CommonCommentText users={users} eachComment={eachComment} />
                           ) : (
                             <div className={classes.border}>
                               <CommentField
@@ -541,20 +594,39 @@ export default function CommentComponent(props) {
 
 export const CommentText = ({ eachComment, users }) => {
   const classes = useStyles();
+  let formatComment = eachComment.comment.split(" ")
+
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
-      {eachComment.comment.split(" ").map((word) => {
+      {formatComment.map((word, index) => {
         if (word.includes("{{") && word.includes("}}")) {
-          const firstPart = word.split("{{")[0];
-          const secondPart = word.split("}}")[1];
-          let id = word.split("{{")[1];
-          id = id.split("}}")[0];
-          return <span className="blue">{firstPart}@{users.find(user => user._id === id)?.name}{secondPart} </span>
+          const splittedWord = word.split(/\r?\n/);
+
+          // splitt word to manage new lines in the word
+          if (splittedWord.length) {
+            return (<>
+              {splittedWord.map(sWord => {
+                if (sWord.includes("{{") && sWord.includes("}}")) {
+                  const firstPart = sWord.split("{{")[0];
+                  const secondPart = sWord.split("}}")[1];
+                  let id = sWord.split("{{")[1];
+                  id = id.split("}}")[0];
+                  return <span className="blue">{firstPart}@{users.find(user => user._id === id)?.name}{secondPart} </span>
+                }
+                else if (sWord === "")
+                  return <br />
+                else return <span>{sWord} <br /> </span>;
+
+              })}
+            </>)
+          }
+
+          return <span>{splittedWord}</span>;
         } else {
           return <span>{word} </span>;
         }
       })}
-    </div>
+    </div >
   );
 };
 

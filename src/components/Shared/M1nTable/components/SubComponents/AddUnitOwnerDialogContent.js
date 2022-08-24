@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { get } from "lodash";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -26,6 +27,7 @@ import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/Currenc
 import ContactStatus from 'components/ContactDetailCard/components/ContactStatus';
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -67,18 +69,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
   const { control, reset, setValue, getValues } = useForm();
-
-  const [newOwner, setNewOwner] = useState({
-    working_interest: null,
-    royalty_interest: null,
-    orri: null,
-    nra: null,
-    nri: null,
-    customLayer: props.customLayerId,
-  });
-  const [changedKeys, setChangedKeys] = useState({});
+  const [isNraOverridden, setIsNRAOverridden] = useState(false);
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
+  const [ownerTypeOfConctact, setOwnerTypeOfConctact] = useState();
 
   useEffect(() => {
     if (selectedRow) {
@@ -95,7 +89,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         name,
         ownerEntity,
         contactStatus,
-        ownerType
+        ownerType,
+        contact
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
@@ -107,21 +102,18 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         seller_asking_price: seller_asking_price || null,
         competitor_offer_price: competitor_offer_price || null,
         offer_price: offer_price || null,
-        contactStatus: contactStatus || null,
+        contactStatus: contactStatus || contact.contactStatus,
         ownerType,
         customLayer,
+        campaignName: contact.campaignName
       }
+      let calculatedNRA = calculateNRA(royalty_interest, orri);
+      if (!isNaN(parseFloat(calculatedNRA)))
+        setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)))
 
-      setNewOwner({ ...newOwner, ...owner });
       reset(owner);
     }
   }, [selectedRow]);
-
-  useEffect(() => {
-    const netAcresChanged = isNetAcresChanged(newOwner.net_acres, false);
-    const nraChanged = isNRAChanged(newOwner.nra, false);
-    setChangedKeys({ netAcres: netAcresChanged, nra: nraChanged });
-  }, [newOwner.net_acres, newOwner.nra]);
 
   // CONTACT
 
@@ -170,18 +162,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   }, [nameAutValue])
 
   const emptyStates = () => {
-    setNewOwner({
-      working_interest: null,
-      royalty_interest: null,
-      orri: null,
-      nri: null,
-      nra: null,
-      seller_asking_price: null,
-      competitor_offer_price: null,
-      offer_price: null,
-      customLayer: props.customLayerId,
-      contactStatus: ''
-    });
     setNameAutValue(null);
     // setSelectedRow(null);
   };
@@ -204,7 +184,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           shapeType: props.shapeType,
           shapeOwners: [
             {
-              shapeId: props.shapeId,
+              shapeId: props.shapeId ?? get(selectedRow, "customLayer._id"),
               relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
               ...ownerToAdd,
               createBy: stateApp.user.mongoId,
@@ -220,7 +200,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         variables: {
           shapeType: props.shapeType,
           shapeOwner: {
-            shapeId: props.shapeId,
+            shapeId: props.shapeId ?? get(selectedRow, "customLayer._id"),
             relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
             ...ownerToAdd,
             createBy: stateApp.user.mongoId,
@@ -252,27 +232,24 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerToAdd.name = nameAutValue.name;
       }
 
-      updateContact({
-        variables: {
-          contact: {
-            _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
-            contactStatus: ownerToAdd.contactStatus,
-            lastUpdateBy: stateApp.user.mongoId,
-            ownerType: ownerToAdd.ownerType
+      if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
+        (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
+        (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
+      ) {
+        updateContact({
+          variables: {
+            contact: {
+              _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
+              contactStatus: ownerToAdd.contactStatus,
+              lastUpdateBy: stateApp.user.mongoId,
+              ownerType: ownerToAdd.ownerType,
+              campaignName: ownerToAdd.campaignName
+            }
           }
-        }
-      }).then(res => {
-        handleAddUpdate(ownerToAdd)
-      });
+        })
+      }
+      handleAddUpdate(ownerToAdd);
     }
-  };
-
-  const calculateNetAcres = (interest) => {
-    if (!interest) return null;
-    const netAcres = addTrailingZeros(
-      stateApp.selectedShape.sdGrossAcres ? (stateApp.selectedShape.sdGrossAcres * interest).toFixed(8) : null
-    );
-    return netAcres;
   };
 
   const calculateNRA = (interest1, interest2, unitAcres = uAcres) => {
@@ -280,20 +257,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     let nra = parseFloat(unitAcres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0));
     nra = addTrailingZeros(nra.toFixed(8));
     return nra;
-  };
-
-  const isNetAcresChanged = (netAcres, stateUpdate = true) => {
-    const isChanged = calculateNetAcres(getValues().mineral_interest) !== netAcres;
-    if (stateUpdate) {
-      setChangedKeys({ ...changedKeys, netAcres: isChanged });
-    } else return isChanged;
-  };
-  const isNRAChanged = (nra, stateUpdate = true) => {
-    let calculatedNRA = calculateNRA(getValues().royalty_interest, getValues().orri);
-    if (nra === "NaN") nra = null;
-    if (stateUpdate) {
-      setChangedKeys({ ...changedKeys, nra: calculatedNRA !== nra });
-    } else return calculatedNRA !== nra;
   };
 
   const classes = useStyles();
@@ -326,7 +289,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <h3>Name</h3>
-                <AutocompEntityNamesList userId={stateApp.user.mongoId} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
+                <AutocompEntityNamesList userId={stateApp.user.mongoId} setOwnerTypeOfConctact={setOwnerTypeOfConctact} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
               </Grid>
               <Grid item xs={12}>
                 <h3>Entity Type</h3>
@@ -344,7 +307,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         }
                         setValue('ownerType', val);
                       }}
-                      value={props.value ?? ""}
+                      value={ownerTypeOfConctact ?? ""}
                     />
                   )}
                 />
@@ -385,7 +348,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        setValue("nra", calculateNRA(e.target.value, getValues().orri));
+                        if (!isNraOverridden) setValue("nra", calculateNRA(e.target.value, getValues().orri));
                       }}
                       fullWidth
                       defaultValue=""
@@ -407,7 +370,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        setValue("nra", calculateNRA(getValues().royalty_interest, e.target.value));
+                        if (!isNraOverridden) { setValue("nra", calculateNRA(getValues().royalty_interest, e.target.value)); }
                       }}
                       fullWidth
                       defaultValue=""
@@ -466,26 +429,20 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         const value = addTrailingZeros(e.target.value);
+                        const nra = calculateNRA(getValues().royalty_interest, getValues().orri)
+                        setIsNRAOverridden(parseFloat(value) !== parseFloat(nra))
                         params.onChange(e.target.value);
-                        setNewOwner({
-                          ...newOwner,
-                          nra: value || null,
-                        });
                       }}
-                      className={changedKeys.nra ? classes.baseValueChanged : classes.maxWidth}
+                      className={isNraOverridden ? classes.baseValueChanged : classes.maxWidth}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {changedKeys.nra && (
+                            {isNraOverridden && (
                               <IconButton
                                 aria-label="toggle royality-acres"
                                 onClick={() => {
-                                  const nra = calculateNRA(getValues().royalty_interest, getValues().orri);
-                                  setValue("nra", nra);
-                                  setNewOwner({
-                                    ...newOwner,
-                                    nra,
-                                  });
+                                  setIsNRAOverridden(false)
+                                  setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri));
                                 }}
                               >
                                 <AutorenewIcon />
@@ -588,6 +545,27 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         props.onChange(val);
                       }}
                       value={props.value ? props.value : ""}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Campaign Names</h3>
+
+                <Controller
+                  control={control}
+                  defaultValue={''}
+                  name="campaignName"
+                  render={(params) => (
+                    <CampaignNameField
+                      {...params}
+                      className={classes.maxWidth}
+                      onChange={(values, id) => {
+                        params.onChange(values);
+                      }}
+                      fullWidth
+                      targetLabel="Contact"
+                      simpleChips
                     />
                   )}
                 />

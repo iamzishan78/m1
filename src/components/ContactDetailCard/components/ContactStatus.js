@@ -26,7 +26,6 @@ const useStyles = makeStyles({
 
 const filter = createFilterOptions();
 const ContactStatus = ({ setValue, value, ...other }) => {
-  console.log("value", value);
   const classes = useStyles();
   const [search, setSearch] = useState(value);
   const [newStatusOptions, setNewStatusOptions] = useState([]);

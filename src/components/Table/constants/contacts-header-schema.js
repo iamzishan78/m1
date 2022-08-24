@@ -111,8 +111,10 @@ const ContactsHeadCells = [
     esKey: 'name.keyword',
     // editable: true,
     options: {
-      sort: true,
-      filter: true,
+      // ...GlobalSettings.muiGridInfScrollOptions,
+      ignoreGlobal: true,
+      // sort: true,
+      // filter: true,
     },
   },
   {
@@ -199,6 +201,7 @@ const ContactsHeadCells = [
     // editable: true,
     esKey: ['address1.keyword', 'city.keyword', 'state.keyword', 'zip.keyword'],
     options: {
+      ignoreGlobal: true,
       dbName: "address1",
       sort: true,
       filter: true,
@@ -611,6 +614,7 @@ const ContactsHeadCells = [
     label: "Updated By",
     esKey: 'lastUpdateBy.name.keyword',
     options: {
+      ignoreGlobal: true, 
       display: false,
       sort: true,
       filter: false,
@@ -625,6 +629,7 @@ const ContactsHeadCells = [
     esKey: 'lastUpdateAt',
     noFilter: true,
     options: {
+      ignoreGlobal: true, 
       filter: false,
       sort: true,
       sortDescFirst: true,
@@ -658,6 +663,7 @@ const ContactsHeadCells = [
     options: {
       dbName: "tags.tag",
       sort: true,
+      ignoreGlobal: true,
       download: false,
       print: false,
       filter: true,
@@ -671,6 +677,7 @@ const ContactsHeadCells = [
     label: " ",
     options: {
       dbName: "comments.comment",
+      ignoreGlobal: true,
       filter: false,
       searchable: false,
       sort: true,
@@ -712,6 +719,7 @@ const ContactsHeadCells = [
     name: "actionMenu",
     label: " ",
     options: {
+      ignoreGlobal: true,
       filter: false,
       searchable: false,
       sort: true,

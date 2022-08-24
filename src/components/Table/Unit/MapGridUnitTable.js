@@ -90,7 +90,7 @@ function MapGridUnitTable(props) {
       searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
-      startPaginationAt: 25,
+      startPaginationAt: 50,
       // typeKeyword: { gridViewCategory: "Units", metaModule: "Unit" },
       filters: [
         {
@@ -150,6 +150,8 @@ function MapGridUnitTable(props) {
     });
   }, []);
 
+  // console.log('FISHBRAIN -1', props)
+
   return (
     <Container
       maxWidth={false}
@@ -175,6 +177,7 @@ function MapGridUnitTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

@@ -109,7 +109,8 @@ export const formatTaxOwners = (owners, formData) => {
       // convert extras
       status: formData.contactStatus,
       contactOwner: formData.contactOwner,
-      campaignName: formData.campaign?.name,
+      campaignName: formData.campaigns?.map(campaign => campaign.name),
+      campaigns: formData.campaigns,
       tags: formData.tags,
 
       // default
@@ -357,6 +358,12 @@ export const getIndexofColumn = (columns, columnName) => {
   return columns.indexOf(columns.find(c => c.name === columnName));
 }
 
+// This function will find value inside passed function
+export const findInFunction = (value, func) => {
+  const funcToString = func.toString()
+  return funcToString.includes(value)
+}
+
 export const getAppliedFilters = (filters, columns, filtersData) => {
   const appliedFilters = []
   filters.forEach((val, index) => {
@@ -382,6 +389,12 @@ export const getFilterList = (columns) => {
   })
   return filterList
 }
+
+export const removeCommasFromString = (str) => {
+  // This function will convert "1,232,232.00" into "1232232"
+  return parseFloat(str.replace(/,/g, ''))
+}
+
 
 export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFromDate, setToDate, minDate) => {
   if (onChange) {

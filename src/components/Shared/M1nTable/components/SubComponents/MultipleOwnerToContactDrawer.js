@@ -22,10 +22,10 @@ import RemoveSharpIcon from "@material-ui/icons/RemoveSharp";
 import Tags from "components/Shared/Tagger";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
-import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 
 import AutocompEntityNamesVirtualizeList from "./AutocompEntityNamesVirtualizeList";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 import { setStateIfDeepEqual } from "../../../functions";
 
@@ -106,6 +106,7 @@ const MultipleOwnerToContactDrawer = ({
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
   const [newTagsIds, setNewTagsIds] = useState([]);
+  const [campaigns, setCampaigns] = useState([]);
 
   const { control, getValues, watch } = useForm();
 
@@ -185,9 +186,9 @@ const MultipleOwnerToContactDrawer = ({
     const values = getValues();
 
     if (entitiesIds.length === 0) {
-      convertMultipleOwnerToContactAction({ ...values, rows, existingContactId, actionType: action, userId: userId, tags: newTagsIds, jobType, jobName });
+      convertMultipleOwnerToContactAction({ ...values, campaigns, rows, existingContactId, actionType: action, userId: userId, tags: newTagsIds, jobType, jobName });
     } else {
-      convertMultipleOwnerToContactAction({ ...values, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds, jobType, jobName  });
+      convertMultipleOwnerToContactAction({ ...values, campaigns, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds, jobType, jobName });
     }
     onClose();
     setLoading(false);
@@ -233,12 +234,6 @@ const MultipleOwnerToContactDrawer = ({
               </FormControl>
             </Box>
             }
-
-            {/* <Box mt={2}>
-              <Typography>
-                Selected interest owners will be combined into a single contact.
-            </Typography>
-            </Box> */}
             {
               tab === TAB.EXISTING &&
               <Box mt={2}>
@@ -351,23 +346,23 @@ const MultipleOwnerToContactDrawer = ({
                 />
               </div>
               <div className={classes.field}>
-                <label className={classes.bold}>Campaign Name</label>
+                <label className={classes.bold}>Campaign Names</label>
                 <Controller
                   control={control}
-                  name="campaign"
-                  render={(props) => (
-                    <AutoCompleteWithAddNew
-                      value={searchCampaign}
-                      onSearch={(value) => {
-                        setSearchCampaign(value);
+                  name="campaignNames"
+                  render={(params) => (
+                    <CampaignNameField
+                      {...params}
+                      value={params.value}
+                      className={classes.maxWidth}
+                      onChange={(values, id) => {
+                        const _campaigns = [...campaigns, { id, name: values[values.length - 1] }];
+                        params.onChange(values);
+                        setCampaigns(_campaigns);
                       }}
-                      setValue={(value) => {
-                        props.onChange(value);
-                      }}
-                      options={campaignList.map((campaign) => ({
-                        _id: campaign,
-                        name: campaign,
-                      }))}
+                      fullWidth
+                      targetLabel="Shape"
+                      simpleChips
                     />
                   )}
                 />
