@@ -15,7 +15,7 @@ function Agreements(props) {
   const [agreementCount, setAgreementCount] = useState(0);
   const [esFilters, ESFilters] = useState([]);
 
-  // waypointKey should any key of tableHader which do not have customRender in schema file
+  // waypointKey should any key of Table Header which do not have customRender in schema file
   const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 66px)" }
 
   const setESFilters = (newState) => {
