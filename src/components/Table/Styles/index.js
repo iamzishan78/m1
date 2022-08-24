@@ -3,6 +3,10 @@ import { makeStyles } from "@material-ui/core/styles";
 export const usetableStyles = makeStyles(() => ({
   container: {
     padding: "0 !important",
+    "& .MuiTableCell-head": {
+      paddingLeft: (p) => (p.isAgreementsTable ? "17px !important" : " "),
+    },
+
     "& .MuiTableRow-hover": {
       "&:hover": {
         "& .MuiTableCell-root": {
@@ -119,7 +123,7 @@ export const usetableStyles = makeStyles(() => ({
       overflow: "hidden",
     }
   },
-  
+
   multiSelectionTopBarButtons: {
     margin: "0px 5px",
     fontWeight: "600",
