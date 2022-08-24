@@ -321,6 +321,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     setSearch(value);
     filterLayers(value);
   };
+
+  const layerGroups = () => {
+    return panelItems.filter(item => item.type === "group");
+  }
+
   const secondaryPanelState = React.useMemo(() => {
     if (stateMapControls.addLayer || stateMapControls.selectedLayer || stateMapControls.manageTransferData || stateMapControls.manageSourceLayer || stateMapControls.manageLayer) {
       return true;
@@ -407,18 +412,20 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           <div className={classes.panelContent}>
 
             <StyledMenuSecondaryHeaderItem>
-              <ListItemText primary={title} />
+              <div>
+                <ListItemText primary={title} />
+                <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} layerGroups={layerGroups()} />
+              </div>
               {headerButton && (
                 <StyledListItemSecondaryAction>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} />
-
                     <Button onClick={() => headerButton.fn()} color="secondary" variant="outlined" startIcon={headerButton.icon}>
                       {headerButton.text}
                     </Button>
                   </div>
                 </StyledListItemSecondaryAction>
               )}
+
             </StyledMenuSecondaryHeaderItem>
 
             {/* base Stuff */}
