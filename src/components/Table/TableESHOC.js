@@ -31,8 +31,6 @@ import moment from "moment";
 
 import GlobalSettings from "..//..//GlobalSettings.js";
 
-
-
 export const TableESHOC = (Component, shouldGridViewSort = true) => {
     const hocWithDefaultProps = function HOC(props) {
         const dispatch = useDispatch();
@@ -107,7 +105,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const activeFiltersRef = useRef();
         const tableStateRef = useRef();
 
-
         const [dependencyUpdate, SetDependencyUpdate] = useState(false);
 
         const history = useHistory();
@@ -131,7 +128,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
             }
         }, [gridViewsData]);
-
 
         useEffect(() => {
             if (metaDataRes?.getMetaData?.metaData) {
@@ -185,7 +181,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 })
             }
         }, [tableMeta.selectedGridView, columns.length, metaDatas]);
-
 
         const updateColumnSorting = (value) => {
             dispatch(
@@ -429,7 +424,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             }
 
             // shift _id and sticky Colums to the first Place
-
             let stickyColumns = tableCols.filter(cD => cD.name === '_id' || cD?.options?.stickyColumn)
             tableCols = tableCols.filter(cD => cD.name !== "_id" && !cD.options?.stickyColumn);
             tableCols.unshift(...stickyColumns);

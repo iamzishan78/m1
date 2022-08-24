@@ -81,6 +81,7 @@ const GlobalSettings = {
         position: "sticky",
         zIndex: 201,
         left: "167px",
+        paddingLeft: "0px"
       }
     }),
 
