@@ -6,6 +6,8 @@ import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTa
 import { setStateIfDeepEqual } from "components/Shared/functions";
 // actions
 import LastCheckDateFilter from "../Common/LastCheckDateFilter";
+import { useLazyQuery } from "@apollo/client";
+import { GET_UNMAPPED_PROPERTY_COUNT } from "graphQL/useQueryGetProperty";
 
 const useStyles = makeStyles((theme) => ({
   propertyTableContainer: {
@@ -101,6 +103,14 @@ export default function Properties() {
     setPropertiesCount(count);
   };
 
+  const [getUnmappedPropertyCount, { data: getUnmappedPropertyCountResult }] = useLazyQuery(GET_UNMAPPED_PROPERTY_COUNT, {
+    fetchPolicy: "no-cache",
+  });
+
+  useEffect(() => {
+    getUnmappedPropertyCount();
+  }, [])
+
   useEffect(() => {
     return () => {
       setStateApp((state, props) => {
@@ -148,6 +158,7 @@ export default function Properties() {
         cardsDefault={cardsDefault}
         totalCount={propertiesCount}
         landSearchQuery={stateApp.revenueSearchQuery}
+        unmappedPropertyCount={getUnmappedPropertyCountResult?.getUnmappedPropertyCount?.unmappedCount}
       />
       {/* use propertyTableContainer class as container if not using infinite scroll */}
       <div className={classes.propertyTableInfContainer}>
