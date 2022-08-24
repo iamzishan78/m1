@@ -28,7 +28,7 @@ export default function RevenueStatements() {
   const [filterToggle, setFilterToggle] = React.useState(false);
 
   // waypointKey should any key of tableHader which do not have customRender in schema file
-  const loadMore = { type: 'infiniteScroll', height: "calc(74vh - 65px)" }
+  const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 422px)' }
 
   useEffect(() => {
     return () => {

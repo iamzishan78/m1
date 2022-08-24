@@ -91,7 +91,7 @@ export default function Properties() {
   const [esFilters, ESFilters] = useState([]);
 
   // waypointKey should any key of tableHader which do not have customRender in schema file
-  const loadMore = { type: 'infiniteScroll', height: "calc(76vh - 60px)" }
+  const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 386px)' }
 
   const setESFilters = (newFilter) => {
     setStateIfDeepEqual(ESFilters, newFilter);
