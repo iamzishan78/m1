@@ -70,6 +70,9 @@ const ReactSelectField = ({
   variant,
   tooltipView
 }) => {
+  if (!isSingleSelect && !Array.isArray(value) && value) {
+    value = [value]
+  }
   const classes = useStyles({ showUnderline, showChevron });
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef(null);
