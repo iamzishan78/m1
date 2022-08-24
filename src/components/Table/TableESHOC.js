@@ -31,8 +31,6 @@ import moment from "moment";
 
 import GlobalSettings from "..//..//GlobalSettings.js";
 
-
-
 export const TableESHOC = (Component, shouldGridViewSort = true) => {
     const hocWithDefaultProps = function HOC(props) {
         const dispatch = useDispatch();
@@ -107,7 +105,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const activeFiltersRef = useRef();
         const tableStateRef = useRef();
 
-
         const [dependencyUpdate, SetDependencyUpdate] = useState(false);
 
         const history = useHistory();
@@ -131,7 +128,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
             }
         }, [gridViewsData]);
-
 
         useEffect(() => {
             if (metaDataRes?.getMetaData?.metaData) {
@@ -185,7 +181,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 })
             }
         }, [tableMeta.selectedGridView, columns.length, metaDatas]);
-
 
         const updateColumnSorting = (value) => {
             dispatch(
@@ -292,14 +287,19 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 if (formatHits)
                     hits = formatHits(hits)
 
-                if (isFiniteScroll && changePage) {
-                    const rowIndex = rows.length - 5
-                    setRows(rows.concat(tableData?.hits));
-                    document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
-                    isPageChanged(false)
+                if (isFiniteScroll) {
+                    if (changePage) {
+                        const rowIndex = rows.length - 5
+                        setRows(rows.concat(tableData?.hits));
+                        document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
+                        isPageChanged(false)
+                    }
+                    else if (rows.length < 1)
+                        setRows(hits);
                 }
-                else
+                else {
                     setRows(hits);
+                }
 
                 if (formatColumns)
                     TableHeader = formatColumns(TableHeader, hits)
@@ -328,7 +328,8 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             tableCols.forEach((column, index) => {
                 // Update global setting of sticky column in case of infinite scroll
                 const setCellProps = column.options?.setCellProps
-                if (isFiniteScroll && setCellProps && findInFunction("sticky", setCellProps) && column.name !== '_id') {
+                if (isFiniteScroll && rows.length && setCellProps
+                    && findInFunction("sticky", setCellProps) && column.name !== '_id') {
                     column.options.setCellProps = GlobalSettings.muiGridInfScrollOptions.setCellProps
                     column.options.setCellHeaderProps = GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps
                 }
@@ -423,7 +424,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             }
 
             // shift _id and sticky Colums to the first Place
-
             let stickyColumns = tableCols.filter(cD => cD.name === '_id' || cD?.options?.stickyColumn)
             tableCols = tableCols.filter(cD => cD.name !== "_id" && !cD.options?.stickyColumn);
             tableCols.unshift(...stickyColumns);
@@ -437,6 +437,9 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     sort: false,
                     viewColumns: false
                 }
+
+                if (!rows.length)
+                    idOptions.display = false
 
                 tableCols[0].label = " "
                 tableCols[0].options = { ...tableCols[0].options, ...idOptions }
