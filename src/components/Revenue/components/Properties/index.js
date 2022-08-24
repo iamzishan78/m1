@@ -63,6 +63,13 @@ const useStyles = makeStyles((theme) => ({
     },
     // marginTop: theme.spacing(2),
   },
+
+  propertyTableInfContainer: {
+    paddingTop: theme.spacing(1),
+    // paddingLeft: "38px",
+    // paddingRight: "38px",
+    marginLeft: '-8px',
+  },
   label: {
     fontSize: 16,
     fontWeight: "bold",
@@ -82,6 +89,9 @@ export default function Properties() {
 
   const [propertiesCount, setPropertiesCount] = useState(0);
   const [esFilters, ESFilters] = useState([]);
+
+  // waypointKey should any key of tableHader which do not have customRender in schema file
+  const loadMore = { type: 'infiniteScroll', height: "calc(76vh - 60px)" }
 
   const setESFilters = (newFilter) => {
     setStateIfDeepEqual(ESFilters, newFilter);
@@ -139,8 +149,8 @@ export default function Properties() {
         totalCount={propertiesCount}
         landSearchQuery={stateApp.revenueSearchQuery}
       />
-
-      <div className={classes.propertyTableContainer}>
+      {/* use propertyTableContainer class as container if not using infinite scroll */}
+      <div className={classes.propertyTableInfContainer}>
         <RevenuePropertiesTable
           searchBar={false}
           esIndex={esIndex}
@@ -156,6 +166,7 @@ export default function Properties() {
           startPaginationAt={startPaginationAt}
           revenueSearchQuery={stateApp.revenueSearchQuery}
           actionColumns={[" ", "Tags", "Comments", "Status"]}
+          loadMore={loadMore}
         />
       </div>
     </>

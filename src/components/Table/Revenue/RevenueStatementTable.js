@@ -223,7 +223,6 @@ function RevenueStatementTable(props) {
         options={props.options}
         parent={props.parent}
         setColumnsBase={[]}
-        headerZIndex={0}
         {...props.esHocProps}
       />
     </Container>
