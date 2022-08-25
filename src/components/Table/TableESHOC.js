@@ -522,6 +522,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     })();
             }
 
+
             if (actions.includes('ifAreContacts')) {
                 const ifAreContacs = checkIfOwnersAreContactsDataRef?.current?.ifAreContacts || []
                 if (ifAreContacs.length > 0) {
