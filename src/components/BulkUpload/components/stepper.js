@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { set } from "lodash";
+import { set, get } from "lodash";
+import { useForm } from "react-hook-form";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Checkbox } from "@material-ui/core";
 import clsx from "clsx";
@@ -170,6 +171,7 @@ const stepper_style = {
 };
 export default function CustomizedSteppers(props) {
   const classes = useStyles();
+  const { control, watch, getValues, reset } = useForm();
   const [statementInfo, setStatementsInfo] = useState({});
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const history = useHistory();
@@ -189,6 +191,10 @@ export default function CustomizedSteppers(props) {
 
   const userID = stateApp.user.mongoId;
   let data_to_send = stateApp.csvContactsListToSend;
+
+  const payor = watch("payor");
+  const checkAmount = watch("checkAmount");
+  const checkNumber = watch("checkNumber");
 
   useEffect(() => {
     if (createJobData?.createJob && jobId) {
@@ -329,8 +335,15 @@ export default function CustomizedSteppers(props) {
           <div>
             {stateApp.activeStepNumber === 0 ? (
               <>
-                <RevenueStatementInfoForm statementInfo={statementInfo} setStatementsInfo={setStatementsInfo} />
-                <CSVFileReader />
+                <RevenueStatementInfoForm
+                  statementInfo={statementInfo}
+                  setStatementsInfo={setStatementsInfo}
+                  control={control}
+                  watch={watch}
+                  getValues={getValues}
+                  reset={reset}
+                />
+                <CSVFileReader disabled={!(get(payor, "_id", "") && checkNumber && checkAmount)} />
               </>
             ) : null}
             {stateApp.activeStepNumber === 1 ? <M1neralHeaders /> : null}

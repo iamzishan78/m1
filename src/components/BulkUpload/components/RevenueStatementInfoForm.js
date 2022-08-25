@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
 import { get } from "lodash";
-import { Grid, TextField, InputAdornment, IconButton } from "@material-ui/core";
+import { Grid, TextField, InputAdornment } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Clear } from "@material-ui/icons";
-import { Controller, useForm } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import { useLazyQuery } from "@apollo/client";
 
 import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
@@ -46,9 +45,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RevenueStatementInfoForm = ({ statementInfo, setStatementsInfo }) => {
+const RevenueStatementInfoForm = ({ statementInfo, setStatementsInfo, ...rest }) => {
   const classes = useStyles();
-  const { control, watch, getValues, reset } = useForm();
+  const { control, watch, getValues, reset } = rest;
 
   const [getPayorList, { data: payorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
