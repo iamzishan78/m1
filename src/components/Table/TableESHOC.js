@@ -287,19 +287,14 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 if (formatHits)
                     hits = formatHits(hits)
 
-                if (isFiniteScroll) {
-                    if (changePage) {
-                        const rowIndex = rows.length - 5
-                        setRows(rows.concat(tableData?.hits));
-                        document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
-                        isPageChanged(false)
-                    }
-                    else if (rows.length < 1)
-                        setRows(hits);
+                if (isFiniteScroll && changePage) {
+                    const rowIndex = rows.length - 5
+                    setRows(rows.concat(tableData?.hits));
+                    document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
+                    isPageChanged(false)
                 }
-                else {
+                else
                     setRows(hits);
-                }
 
                 if (formatColumns)
                     TableHeader = formatColumns(TableHeader, hits)
