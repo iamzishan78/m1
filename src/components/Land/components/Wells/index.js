@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import WellIcon from "components/Shared/svgIcons/well";
 import MyWellsGridTable from "components/Table/Wells/MyWellsGridTable";
+import WellsFilters from "components/Land/components/Wells/WellsFilters";
 
 const useStyles = makeStyles((theme) => ({
   custom: {
@@ -29,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Wells(props) {
+  const [filters, setFilters] = useState([]);
   const classes = useStyles();
 
   const Header = () => {
@@ -55,10 +57,11 @@ function Wells(props) {
       marginTop: "65px",
       marginLeft: '-10px'
       }}>
-
+      <WellsFilters filters={filters} setFilters={setFilters} />
       <div className={classes.custom} >
         <MyWellsGridTable
           dense
+          filters={filters}
           header={<Header />}
           parent="WellsTable"
           targetLabel="wells"

@@ -38,6 +38,8 @@ function MyWellsGridTable(props) {
 
   useEffect(() => {
     setTableMeta({
+      filters: props.filters,
+      addBtnText:'WELLS',
       extendSearchQuery: stateApp.landSearchQuery,
       searchFields: ["*"],
       TableHeader: copy(TableHeader),
@@ -47,7 +49,7 @@ function MyWellsGridTable(props) {
       formatHits,
     });
     // eslint-disable-next-line
-  }, [stateApp.landSearchQuery]);
+  }, [stateApp.landSearchQuery, props.filters]);
 
   return (
     <Container
