@@ -75,6 +75,10 @@ const LandSearch = () => {
     }
   }, []);
 
+  useEffect(() => {
+    setSearch(stateApp.landSearchQuery)
+  }, [stateApp.landSearchQuery]);
+
   return (
     <div className={classes.search}>
       <TextField
