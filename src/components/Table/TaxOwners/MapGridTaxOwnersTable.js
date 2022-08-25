@@ -83,6 +83,7 @@ function MapGridTaxOwnersTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

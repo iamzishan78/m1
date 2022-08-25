@@ -74,7 +74,7 @@ const CampaignsHeadCells = [
       sort: true,
       filter: false,
       customRender: (value, tableMeta) => {
-        return <p>{value}</p>;
+        return <p>{value.toFixed(2)}</p>;
       },
     },
   },

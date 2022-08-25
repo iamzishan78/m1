@@ -17,6 +17,8 @@ import "./index.css";
 import ActivitiesAppBar from "./components/ActivitiesAppbar";
 import ActivitiesModal from "./components/ActivitiesModal";
 import { AppContext } from "../../AppContext";
+import ActivitiesTable from "../../components/Table/Activities/ActivitiesTable";
+
 
 const localizer = momentLocalizer(moment);
 
@@ -109,6 +111,24 @@ const getFilterCondition = (e, activityFilterByType, activityFilterByTime, activ
 
 const Activities = () => {
   const classes = useStyles();
+
+  const esIndex = "activities_flat";
+  const searchFields = ["name", "_all"];
+  const [filterToggle, setFilterToggle] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState({
+    toDate: null,
+    fromDate: null,
+  });  
+  const [tableFilters, setTableFilters] = useState([]);
+
+  const filtersChange = (filters) => {
+    setTableFilters(filters);
+  };
+
+
+
+
+
   let history = useHistory();
   const [getAllActivities, { data: activitiesData, loading: activitiesLoading }] = useLazyQuery(GETALLACTIVITIES, {
     fetchPolicy: `network-only`,
@@ -247,9 +267,24 @@ const Activities = () => {
                   type="Activity"
                 />
               </div>
-              <div className={classes.table}>
+
+              {/* <div className={classes.table}>
                 <M1nTable dense activities={filteredEvents} parent="Activities" />
+              </div> */}
+
+              <div className={classes.table}>
+              <ActivitiesTable
+                esIndex={esIndex}
+                searchFields={searchFields}
+                filtersChange={filtersChange}
+                appliedFilters={appliedFilters}
+                filterToggle={filterToggle}
+                targetLabel={"activitiesDashboard"}
+                header="Activities"
+              />              
               </div>
+
+
             </div>
           )}
           <ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} />
