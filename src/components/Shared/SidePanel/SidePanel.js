@@ -291,12 +291,12 @@ export default function SidePanel() {
           }
 
           const index = layerAndGroups.findIndex((layerAndGroup) => layerAndGroup.id === emptyGroup.above)
-          if (index && layerAndGroups[index].type === 'layer') {
+          if (index && layerAndGroups[index]?.type === 'layer') {
             layerAndGroups.splice(index + 1, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
             layerAndGroups.splice(index + 2, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
             return
           }
-          if (index && layerAndGroups[index].type === 'group') {
+          if (index && layerAndGroups[index]?.type === 'group') {
             layerAndGroups.splice(index + 2, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
             layerAndGroups.splice(index + 3, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
             return

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { get } from "lodash";
 import { TransitionGroup } from "react-transition-group";
@@ -322,9 +322,9 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     filterLayers(value);
   };
 
-  const layerGroups = () => {
+  const layerGroups = useMemo(() => {
     return panelItems.filter(item => item.type === "group");
-  }
+  }, [panelItems])
 
   const secondaryPanelState = React.useMemo(() => {
     if (stateMapControls.addLayer || stateMapControls.selectedLayer || stateMapControls.manageTransferData || stateMapControls.manageSourceLayer || stateMapControls.manageLayer) {
@@ -414,7 +414,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
             <StyledMenuSecondaryHeaderItem>
               <div>
                 <ListItemText primary={title} />
-                <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} layerGroups={layerGroups()} />
+                <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} layerGroups={layerGroups} />
               </div>
               {headerButton && (
                 <StyledListItemSecondaryAction>
