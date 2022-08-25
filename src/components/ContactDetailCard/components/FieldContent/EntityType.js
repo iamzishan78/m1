@@ -32,6 +32,10 @@ export default function EntityType({ setDocumentType, value, ...other }) {
   const [getEntityTypeFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
+    setSearch(value)
+  }, [value])
+
+  useEffect(() => {
     getEntityTypeFilters({
       variables: {
         esIndex: 'contacts_flat',
