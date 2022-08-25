@@ -22,7 +22,6 @@ import ReactTimeAgo from "react-time-ago";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
-import { dateIsValid } from "utils/helper";
 import moment from "moment";
 
 TimeAgo.addDefaultLocale(en);

@@ -18,7 +18,7 @@ import { getMapFilters } from "utils/helper";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { NavigationContext } from "components/Navigation/NavigationContext";
-import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 
@@ -70,6 +70,7 @@ const ConvertTaxOwnerToContact = ({
   const [newTagsIds, setNewTagsIds] = useState([]);
   const [searchCampaign, setSearchCampaign] = useState("");
   const [includeFilter, setIncludeFilter] = useState(true);
+  const [campaigns, setCampaigns] = useState([]);
   const { control, getValues, watch } = useForm();
 
   const contactStatus = watch("contactStatus", contactStatusOptions[0].value);
@@ -139,7 +140,7 @@ const ConvertTaxOwnerToContact = ({
 
   const onConvert = () => {
     const values = getValues();
-    convertTaxOwnerToContactAction({ ...values, tags: newTagsIds, userId });
+    convertTaxOwnerToContactAction({ ...values, campaigns, tags: newTagsIds, userId });
     onClose();
   };
 
@@ -208,23 +209,23 @@ const ConvertTaxOwnerToContact = ({
           />
         </div>
         <div className={classes.field}>
-          <label className={classes.bold}>Campaign Name</label>
+          <label className={classes.bold}>Campaign Names</label>
           <Controller
             control={control}
-            name="campaign"
-            render={(props) => (
-              <AutoCompleteWithAddNew
-                value={searchCampaign}
-                onSearch={(value) => {
-                  setSearchCampaign(value);
+            name="campaignNames"
+            render={(params) => (
+              <CampaignNameField
+                {...params}
+                value={params.value}
+                className={classes.maxWidth}
+                onChange={(values, id) => {
+                  const _campaigns = [...campaigns, { id, name: values[values.length - 1] }];
+                  params.onChange(values);
+                  setCampaigns(_campaigns);
                 }}
-                setValue={(value) => {
-                  props.onChange(value);
-                }}
-                options={campaignList.map((campaign) => ({
-                  _id: campaign,
-                  name: campaign,
-                }))}
+                fullWidth
+                targetLabel="Shape"
+                simpleChips
               />
             )}
           />
