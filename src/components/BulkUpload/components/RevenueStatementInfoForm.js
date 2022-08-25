@@ -75,7 +75,7 @@ const RevenueStatementInfoForm = ({ statementInfo, setStatementsInfo }) => {
     <div className={classes.root}>
       <div className={classes.title}>Begin by entering the following revenue statement information</div>
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <Grid container display="flex" direction="row" alignItems="center" style={{ padding: "10px 35px", maxWidth: "570px" }}>
+        <Grid container display="flex" direction="row" alignItems="center" style={{ padding: "10px 35px", maxWidth: "540px" }}>
           <Grid item sm={12} md={12}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={4}>
