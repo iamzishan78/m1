@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { set } from "lodash";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Checkbox } from "@material-ui/core";
 import clsx from "clsx";
@@ -10,22 +11,20 @@ import { useDispatch } from "react-redux";
 import StepConnector from "@material-ui/core/StepConnector";
 import Button from "@material-ui/core/Button";
 import CSVFileReader from "./CSVFileReader";
+import RevenueStatementInfoForm from "./RevenueStatementInfoForm";
 import M1neralHeaders from "./M1neralHeaders";
 import ReviewCSV from "./ReviewCSV";
 import UploadStepperComponent from "./UploadStepperComponent";
 import { AppContext } from "../../../AppContext";
-import { NavigationContext } from "../../Navigation/NavigationContext";
 import { useHistory } from "react-router-dom";
 import { matchRoutes } from "react-router-config";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { showErrorMessage } from "actions";
-import { ADDBULKCONTACT } from "../../../graphQL/useMutationAddBulkContacts";
 import { CREATE_JOB } from "graphQL/useMutationCreateJob";
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_JOB_UPLOAD_URI } from "graphQL/useQueryGetJobUploadUri";
-import { showSuccessMessage } from "../../../actions";
 import { BlockBlobClient } from "@azure/storage-blob";
-import jobHeaders from '../jobHeaders'
+import jobHeaders from "../jobHeaders";
 
 const QontoConnector = withStyles({
   alternativeLabel: {
@@ -171,18 +170,17 @@ const stepper_style = {
 };
 export default function CustomizedSteppers(props) {
   const classes = useStyles();
+  const [statementInfo, setStatementsInfo] = useState({});
   const [stateApp, setStateApp] = React.useContext(AppContext);
-  const [stateNav, setStateNav] = React.useContext(NavigationContext);
   const history = useHistory();
   const previousRoute = matchRoutes(props.routes, history.pathHistory[1]);
 
   const [contactList, setContactList] = useState(null);
   const [jobId, setJobId] = useState(null);
-  const [processing, setProcessing] = useState(false)
+  const [processing, setProcessing] = useState(false);
 
   const steps = getSteps();
   const dispatch = useDispatch();
-  // const [createBulkContacts] = useMutation(ADDBULKCONTACT);
   const [getJobUploadUri, { data: contactUploadUri }] = useLazyQuery(GET_JOB_UPLOAD_URI, {
     fetchPolicy: "no-cache",
   });
@@ -199,15 +197,14 @@ export default function CustomizedSteppers(props) {
           job: {
             _id: jobId,
             createJobResponse: createJobData?.createJob.body,
-          }
-        }
-      })
+          },
+        },
+      });
     }
-  }, [createJobData, jobId])
+  }, [createJobData, jobId]);
 
   useEffect(() => {
-    if (contactUploadUri?.getJobUploadUri?.success &&
-      !processing) {
+    if (contactUploadUri?.getJobUploadUri?.success && !processing) {
       setProcessing(true);
       setStateApp((state) => ({
         ...state,
@@ -217,45 +214,51 @@ export default function CustomizedSteppers(props) {
       const id = contactUploadUri.getJobUploadUri.job.id;
       const interal_key = contactUploadUri.getJobUploadUri.job.internalKey;
 
-      setJobId(id)
+      setJobId(id);
 
       const blockBlobClient = new BlockBlobClient(uri);
-      blockBlobClient.uploadBrowserData(contactList, {
-        maxSingleShotSize: 4 * 1024 * 1024,
-        blobHTTPHeaders: {
-          blobContentDisposition: `attachment; filename="${id}"`
-        },
-        metadata: {
-          Internalkey: interal_key || ""
-        }
-      })
+      blockBlobClient
+        .uploadBrowserData(contactList, {
+          maxSingleShotSize: 4 * 1024 * 1024,
+          blobHTTPHeaders: {
+            blobContentDisposition: `attachment; filename="${id}"`,
+          },
+          metadata: {
+            Internalkey: interal_key || "",
+          },
+        })
         .then((res) => {
           if (res?._response?.status === 201) {
             createJob({
               variables: {
                 jobId: id,
-                sendEmail: true
+                sendEmail: true,
               },
-            })
+            });
           } else {
             dispatch(showErrorMessage("Upload failed"));
           }
         })
         .catch((err) => console.log(err));
     }
-
-  }, [contactUploadUri])
+  }, [contactUploadUri]);
 
   const handleNext = () => {
     if (stateApp.activeStepNumber === steps.length - 2) {
-      const changeDate = new Date()
+      const changeDate = new Date();
       data_to_send.forEach((element) => {
         element.createBy = userID;
         element.createAt = changeDate;
         element.lastUpdateBy = userID;
         element.lastUpdateAt = changeDate;
+        set(element, "check.payor", statementInfo.payor);
+        set(element, "check.payee", statementInfo.payee);
+        set(element, "check.checkNumber", statementInfo.checkNumber);
+        set(element, "check.checkAmount", statementInfo.checkAmount);
+        set(element, "check.checkDate", statementInfo.checkDate);
+        set(element, "check.sourceId", statementInfo.sourceId);
         if (props.selectedJob.type === "UNITS") {
-          element['shape.shapeType'] = "Unit";
+          element["shape.shapeType"] = "Unit";
         }
         delete element.tableData;
       });
@@ -268,28 +271,7 @@ export default function CustomizedSteppers(props) {
           userId: userID,
         },
       });
-      setContactList(JSON.stringify(data_to_send))
-      // let ret_val = createBulkContacts({
-      //   variables: {
-      //     contactList: data_to_send,
-      //   },
-      //   refetchQueries: ["getPaginatedContacts", "getContact"],
-      //   awaitRefetchQueries: true,
-      // });
-
-      // ret_val.then((result) => {
-      //   const {
-      //     data: {
-      //       createBulkContacts: { success },
-      //     },
-      //   } = result;
-
-      //   if (success === true) {
-      //     dispatch(
-      //       showSuccessMessage("All records have been uploaded successfully")
-      //     );
-      //   }
-      // });
+      setContactList(JSON.stringify(data_to_send));
 
       setStateApp((state) => ({
         ...state,
@@ -330,34 +312,30 @@ export default function CustomizedSteppers(props) {
   };
 
   let routeChange = (route) => {
-    history.push(route || '/');
+    history.push(route || "/");
   };
 
   return (
     <div className={classes.root}>
-      <Stepper
-        style={stepper_style}
-        alternativeLabel
-        activeStep={stateApp.activeStepNumber}
-        connector={<QontoConnector />}
-      >
+      <Stepper style={stepper_style} alternativeLabel activeStep={stateApp.activeStepNumber} connector={<QontoConnector />}>
         {steps.map((label) => (
           <Step key={label}>
-            <NewSteplabel StepIconComponent={QontoStepIcon}>
-              {label}
-            </NewSteplabel>
+            <NewSteplabel StepIconComponent={QontoStepIcon}>{label}</NewSteplabel>
           </Step>
         ))}
       </Stepper>
       <div>
         <div>
           <div>
-            {stateApp.activeStepNumber === 0 ? <CSVFileReader /> : null}
+            {stateApp.activeStepNumber === 0 ? (
+              <>
+                <RevenueStatementInfoForm statementInfo={statementInfo} setStatementsInfo={setStatementsInfo} />
+                <CSVFileReader />
+              </>
+            ) : null}
             {stateApp.activeStepNumber === 1 ? <M1neralHeaders /> : null}
             {stateApp.activeStepNumber === 2 ? <ReviewCSV /> : null}
-            {stateApp.activeStepNumber === 3 ? (
-              <UploadStepperComponent />
-            ) : null}
+            {stateApp.activeStepNumber === 3 ? <UploadStepperComponent /> : null}
           </div>
           <div style={mapping_buttons_div}>
             {stateApp.activeStepNumber < 3 ? (
@@ -368,9 +346,7 @@ export default function CustomizedSteppers(props) {
             {stateApp.activeStepNumber > 0 ? (
               <Button
                 disabled={
-                  (stateApp.activeStepNumber === 1 &&
-                    !stateApp.csvContactsListToSend) ||
-                  stateApp.csvContactsListToSend.length === 0
+                  (stateApp.activeStepNumber === 1 && !stateApp.csvContactsListToSend) || stateApp.csvContactsListToSend.length === 0
                 }
                 variant="contained"
                 color="primary"
