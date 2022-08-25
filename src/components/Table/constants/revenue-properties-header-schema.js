@@ -15,6 +15,7 @@ const styles = {
 
 const ComponentPropertyName = ({ value, tableMeta }) => {
   const history = useHistory();
+
   return (
     <div
       style={{

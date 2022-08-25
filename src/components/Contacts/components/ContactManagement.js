@@ -19,6 +19,9 @@ const ContactManagement = () => {
   const [stateApp] = useContext(AppContext);
   const { activeModule } = useSelector(({ common }) => common);
 
+  // waypointKey should any key of Table Header which do not have customRender in schema file
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 66px)" }
+
   const getCustomAppliedFilters = () => {
     if (activeModule?.filterValue) {
       return [
@@ -38,6 +41,7 @@ const ContactManagement = () => {
         contactSearchQuery={stateApp.contactSearchQuery}
         userId={stateApp.user.mongoId}
         customAppliedFilters={getCustomAppliedFilters()}
+        loadMore={loadMore}
       />
     </div>
   );

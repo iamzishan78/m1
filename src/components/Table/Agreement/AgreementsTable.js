@@ -115,8 +115,6 @@ function AgreementsTable(props) {
         value: stateApp?.currentFeature?.geometry
       },
       formatHits,
-
-      modifySelectedGridView: modifySelectedGridView
     });
     // eslint-disable-next-line
   }, [searchInput, props.landSearchQuery, props.filterToggle]);
