@@ -1352,9 +1352,6 @@ function SubTable(props) {
           };
           return
         }
-
-        console.log('FISHBRAIN 5', column)
-
         switch (column.name) {
 
 
