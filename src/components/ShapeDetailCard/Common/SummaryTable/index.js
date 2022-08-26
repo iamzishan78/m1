@@ -95,6 +95,14 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
 
   const [filteredTableData, setFilteredTableData] = useState(tableData);
 
+  // Data fix for tract
+  if (properties?.originalProperties?.StateAbbreviation)
+    properties.originalProperties.State = properties?.State || properties?.originalProperties?.StateAbbreviation;
+  if (properties?.originalProperties?.ShortName)
+    properties.originalProperties.Section = properties?.Section || properties?.originalProperties?.ShortName;
+  if (properties?.originalProperties?.PrincipalMeridian)
+    properties.originalProperties.Meridian = properties?.Meridian || properties?.originalProperties?.PrincipalMeridian
+  // Data fix for tract
   const [tableTempProperties, setTableTempProperties] = useState(properties);
 
   useEffect(() => {
