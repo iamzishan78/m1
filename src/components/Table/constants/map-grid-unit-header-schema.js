@@ -1,5 +1,5 @@
-import GlobalSettings from "GlobalSettings";
 import vf_currency from "components/Shared/valueformatters/vf_currency";
+import { history } from "store";
 
 const unitsColumnHeaders = [
   {
@@ -31,8 +31,39 @@ const unitsColumnHeaders = [
     label: "Unit Name",
     esKey: "name.keyword",
     options: {
-      ...GlobalSettings.muiGridControlOptions,
       ignoreGlobal: true,
+      setCellProps: () => ({
+        style: {
+          minWidth: "250px",
+          whiteSpace: "nowrap",
+          position: "sticky",
+          left: "77px",
+          background: "white",
+          zIndex: 200,
+          boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          position: "sticky",
+          minWidth: "250px",
+          left: "77px",
+          zIndex: 201
+        }
+      }),
+      customRender: (value, tableMeta, updateValue) => {
+        return (
+          <p
+            onClick={(e) => {
+              e.stopPropagation();
+              history.push(`/map/units/${tableMeta.rowData[0]}`);
+            }}
+            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+          >
+            {value}
+          </p>
+        );
+      },
     },
   },
   {
