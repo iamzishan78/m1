@@ -45,6 +45,7 @@ export default function AnalyticsCards({
   totalCount,
   cardsDefault,
   landSearchQuery,
+  unmappedPropertyCount = 0
 }) {
   const classes = useStyles();
   const [cards, setCards] = useState(cardsDefault);
@@ -85,7 +86,7 @@ export default function AnalyticsCards({
       (item) => ["in pay", "inpay"].includes(item.key.toLowerCase()) && item
     );
     return activeBucket && activeBucket?.length > 0
-      ?  _.sumBy(activeBucket, "doc_count")
+      ? _.sumBy(activeBucket, "doc_count")
       : 0;
   }
 
@@ -97,7 +98,6 @@ export default function AnalyticsCards({
       ? activeBucket[0]["doc_count"]
       : 0;
   }
-
 
   const [getESAggsApprovedCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
@@ -115,6 +115,7 @@ export default function AnalyticsCards({
             buckets && buckets.length > 0 ? getNotInPayCounts(buckets) : 0;
           cards[1].points = inPayCounts;
           cards[2].points = notInPayCounts;
+          cards[3].points = unmappedPropertyCount
           setCards(cards);
         }
       }

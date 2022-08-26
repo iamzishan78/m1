@@ -105,13 +105,13 @@ const ContactBreadcrumbs = () => {
   }, [dataCustomLayer]);
 
   const checkRevenueStatement = () => {
-    if (history.pathHistory[1]?.includes("/revenue/statement/details")) {
+    if (history.pathHistory[1]?.includes && history.pathHistory[1]?.includes("/revenue/statement/details")) {
       return true;
     }
   };
 
   const checkRevenueProperty = () => {
-    if (history.pathHistory[1]?.includes("/revenue/property/details")) {
+    if (history.pathHistory[1]?.includes && history.pathHistory[1]?.includes("/revenue/property/details")) {
       return true;
     }
   };
@@ -147,7 +147,7 @@ const ContactBreadcrumbs = () => {
   const checkModuleHistory = () => {
     if (stateNav.contactFromMap) {
       return !!stateNav.contactFromMap;
-    } else if (history.pathHistory[1]?.includes("/map/")) {
+    } else if (history.pathHistory[1]?.includes && history.pathHistory[1]?.includes("/map/")) {
       return true;
     }
     return !!stateNav.contactFromMap;
@@ -480,8 +480,8 @@ const ContactBreadcrumbs = () => {
           )}
         </Breadcrumbs>
       </div>
-      <LinkWithIcon objectId={contactId.toLowerCase()} iconZiseSmall={false} />
-    </div >
+      <LinkWithIcon objectId={contactId.toLowerCase()} contact={data?.contact} iconZiseSmall={false} />
+    </div>
   );
 };
 

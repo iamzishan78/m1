@@ -39,23 +39,25 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
   const [keysSum, setKeysSum] = useState({})
 
   useEffect(() => {
-    if (!_.isEmpty(agreementDetails)) reset(agreementDetails);
+    reset(agreementDetails);
   }, [reset, agreementDetails]);
 
   useEffect(() => {
     if (tractOwners) {
       const sum = tractOwners.reduce((sum, tractOwner) => {
         if (tractOwner.sdGrossAcres)
-          sum.grossAcres += Number(tractOwner.sdGrossAcres)
+          sum.grossAcres += parseFloat(tractOwner.sdGrossAcres)
         if (tractOwner.net_acres)
-          sum.netAcres += Number(tractOwner.net_acres)
+          sum.netAcres += parseFloat(tractOwner.net_acres)
         if (tractOwner.nra)
-          sum.netRoyalty += Number(tractOwner.nra)
+          sum.netRoyalty += parseFloat(tractOwner.nra)
         return sum
       }, { grossAcres: 0, netAcres: 0, netRoyalty: 0 });
-      if (!agreementDetails.grossAcres) agreementDetails.grossAcres = sum.grossAcres
-      if (!agreementDetails.netAcres) agreementDetails.netAcres = sum.netAcres
-      if (!agreementDetails.netRoyalty) agreementDetails.netRoyalty = sum.netRoyalty
+      sum.grossAcres = addTrailingZeros(sum.grossAcres?.toFixed(8))
+      sum.netAcres = addTrailingZeros(sum.netAcres?.toFixed(8))
+      sum.netRoyalty = addTrailingZeros(sum.netRoyalty?.toFixed(8))
+
+      console.log(sum)
       reset(agreementDetails);
       setKeysSum(sum)
     }
@@ -63,8 +65,12 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
   }, [tractOwners])
 
   const offClickHandler = (key, value) => {
-
-    if (tractOwners) updateAgreement('value', value, key)
+    if (agreementDetails[key] == value) return
+    const fieldValue = {
+      overridden: parseFloat(value) !== parseFloat(keysSum[key]),
+      value
+    }
+    if (tractOwners) updateAgreement('value', fieldValue, key)
     else updateAgreement(key, value)
   };
 

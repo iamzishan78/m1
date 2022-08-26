@@ -66,7 +66,7 @@ function MapGridWellsTable(props) {
   useEffect(() => {
     const { filters } = getMapFilters(stateNav, "", stateApp.gridPolygonString, "simple");
     setTableMeta({
-      addableName: "Wells",
+      addBtnText: "Well",
       extendSearchQuery: searchInput,
       searchFields: ["wellName", "api"],
       filters,
@@ -128,6 +128,7 @@ function MapGridWellsTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

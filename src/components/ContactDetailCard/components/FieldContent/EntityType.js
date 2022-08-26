@@ -10,7 +10,7 @@ import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
 
 const filter = createFilterOptions();
 
-export default function EntityType({ setDocumentType, value /*, ...other */ }) {
+export default function EntityType({ setDocumentType, value, ...other }) {
   const useStyles = makeStyles({
     inputRoot: {
       backgroundColor: "#ffffff",
@@ -30,6 +30,10 @@ export default function EntityType({ setDocumentType, value /*, ...other */ }) {
   const [search, setSearch] = useState(value)
 
   const [getEntityTypeFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+
+  useEffect(() => {
+    setSearch(value)
+  }, [value])
 
   useEffect(() => {
     getEntityTypeFilters({
@@ -136,7 +140,7 @@ export default function EntityType({ setDocumentType, value /*, ...other */ }) {
           size="small"
         />
       )}
-    // {...other}
+      {...other}
     />
   );
 };

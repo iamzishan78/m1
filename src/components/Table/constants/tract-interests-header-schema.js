@@ -5,44 +5,43 @@ const TractInterestsHeadCells = [
         name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
     },
     {
-        name: "contactId", options: { 
+        name: "contactId", options: {
             dbName: "contact._id",
-            filter: false, 
-            display: false, 
-            sort: false, 
+            filter: false,
+            display: false,
+            sort: false,
             viewColumns: false
         }
     },
     {
-        name: "customLayerId", options: { 
-            filter: false, 
-            display: false, 
-            sort: false, 
+        name: "customLayerId", options: {
+            filter: false,
+            display: false,
+            sort: false,
             viewColumns: false
         }
     },
 
     {
-        name: "tractName", label: "Tract Name", esKey: 'shape.shapeJson.properties.shapeLabel.keyword', 
-        options: { 
+        name: "tractName", label: "Tract Name", esKey: 'shape.shapeJson.properties.shapeLabel.keyword',
+        options: {
             dbName: "shape.shapeJson.properties.shapeLabel",
-            sort: true, 
+            sort: true,
             filter: true,
             setCellProps: () => ({ style: { minWidth: "250px" } }),
-            //hide custom render of blue link for now as it is not consistent with unit interests
-            // customRender: (value, tableMeta, updateValue) => {
-            //     return (
-            //       <p
-            //         onClick={(e) => {
-            //           e.stopPropagation();
-            //             history.push(`/map/parcels/${tableMeta.rowData[2]}`, { showTractsBreadcrumb: true });
-            //         }}
-            //         style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-            //       >
-            //         {value}
-            //       </p>
-            //     );
-            //   },
+            customRender: (value, tableMeta, updateValue) => {
+                return (
+                    <p
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            history.push(`/map/parcels/${tableMeta.rowData[2]}`, { showTractsBreadcrumb: true });
+                        }}
+                        style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+                    >
+                        {value}
+                    </p>
+                );
+            },
         }
     },
     {
@@ -50,30 +49,36 @@ const TractInterestsHeadCells = [
             'shape.shapeJson.properties.originalProperties.State.keyword',
             'shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword'
         ],
-        options: { 
+        options: {
             dbName: "shape.shapeJson.properties.originalProperties.0?.State?.StateAbbreviation?",
-            sort: true, 
-            filter: true 
-        }
+            sort: true,
+            filter: true
+        },
+        custom: {
+            multi_filter_keys: true,
+        },
     },
     {
-        name: "County", label: "County", esKey: 'shape.shapeJson.properties.originalProperties.County.keyword', 
-        options: { 
+        name: "County", label: "County", esKey: 'shape.shapeJson.properties.originalProperties.County.keyword',
+        options: {
             dbName: "shape.shapeJson.properties.originalProperties.0?.County",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
         name: "SurveyMeridian", label: "Survey/ Meridian", esKey: [
             'shape.shapeJson.properties.originalProperties.Survey.keyword',
             'shape.shapeJson.properties.originalProperties.PrincipalMeridian.keyword'
-        ], 
-        options: { 
+        ],
+        options: {
             dbName: "shape.shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
-            sort: true, 
-            filter: true 
-        }
+            sort: true,
+            filter: true
+        },
+        custom: {
+            multi_filter_keys: true,
+        },
     },
     // {
     //     name: "PrincipalMeridian", label: "PrincipalMeridian", esKey: 'shapeJson.properties.originalProperties.PrincipalMeridian.keyword', 
@@ -87,12 +92,15 @@ const TractInterestsHeadCells = [
         name: "BlockTownship", label: "Block/ Township", esKey: [
             'shape.shapeJson.properties.originalProperties.Block.keyword',
             'shape.shapeJson.properties.originalProperties.Township.keyword'
-        ], 
-        options: { 
+        ],
+        options: {
             dbName: "shape.shapeJson.properties.originalProperties.0?.Block?.Township?",
-            sort: true, 
-            filter: true 
-        }
+            sort: true,
+            filter: true
+        },
+        custom: {
+            multi_filter_keys: true,
+        },
     },
     // {
     //     name: "Township", label: "Township", esKey: 'shapeJson.properties.originalProperties.Township.keyword', 
@@ -106,12 +114,15 @@ const TractInterestsHeadCells = [
         name: "SectionRange", label: "Section/ Range", esKey: [
             'shape.shapeJson.properties.originalProperties.Section.keyword',
             'shape.shapeJson.properties.originalProperties.Range.keyword'
-        ], 
-        options: { 
+        ],
+        options: {
             dbName: "shape.shapeJson.properties.originalProperties.0?.Section?.Range?",
-            sort: true, 
-            filter: true 
-        }
+            sort: true,
+            filter: true
+        },
+        custom: {
+            multi_filter_keys: true,
+        },
     },
     // {
     //     name: "Range", label: "Range", esKey: 'shapeJson.properties.originalProperties.Range.keyword', 
@@ -125,94 +136,108 @@ const TractInterestsHeadCells = [
         name: "AbstractSection", label: "Abstract/ Section", esKey: [
             'shape.shapeJson.properties.originalProperties.AbstractName.keyword',
             'shape.shapeJson.properties.originalProperties.ShortName.keyword'
-        ], 
-        options: { 
+        ],
+        options: {
             dbName: "shape.shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
-            sort: true, 
-            filter: true 
-        }
+            sort: true,
+            filter: true
+        },
+        custom: {
+            multi_filter_keys: true,
+        },
     },
     {
-        name: "QtrCalls", label: "QTR Calls", esKey: 'qtr.keyword', 
-        options: { 
+        name: "QtrCalls", label: "QTR Calls", esKey: 'qtr.keyword',
+        options: {
             dbName: "qtr",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
-        name: "GrossAcres", label: "Gross Acres", esKey: 'shape.shapeJson.properties.sdGrossAcres.keyword', 
-        options: { 
+        name: "GrossAcres", label: "Gross Acres", esKey: 'shape.shapeJson.properties.sdGrossAcres.keyword',
+        options: {
             dbName: "shape.shapeJson.properties.sdGrossAcres",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
-        name: "depthFrom", label: "Depth From", esKey: 'depthFrom.keyword', 
-        options: { 
+        name: "depthFrom", label: "Depth From", esKey: 'depthFrom.keyword',
+        options: {
             dbName: "depthFrom",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
-        name: "depthTo", label: "Depth To", esKey: 'depthTo.keyword', 
-        options: { 
+        name: "depthTo", label: "Depth To", esKey: 'depthTo.keyword',
+        options: {
             dbName: "depthTo",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
-        name: "name", label: "Owner Name", esKey: 'contact.entityDetail.name.keyword', 
-        options: { 
+        name: "name", label: "Owner Name", esKey: 'contact.entityDetail.name.keyword',
+        options: {
             dbName: "contact.entityDetail.name",
-            sort: true, 
-            filter: true, 
+            sort: true,
+            filter: true,
             setCellProps: () => ({ style: { minWidth: "225px" } }),
         }
     },
     {
-        name: "mineral_interest", label: "Mineral Interest", esKey: 'mineral_interest', 
-        options: { 
+        name: "mineral_interest", label: "Mineral Interest", esKey: 'mineral_interest',
+        options: {
             dbName: "mineral_interest",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
-        name: "royalty_interest", label: "Royalty Interest", esKey: 'royalty_interest', 
-        options: { 
+        name: "royalty_interest", label: "Royalty Interest", esKey: 'royalty_interest',
+        options: {
             dbName: "royalty_interest",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
-        name: "orri", label: "ORRI", esKey: 'orri', 
-        options: { 
+        name: "orri", label: "ORRI", esKey: 'orri',
+        options: {
             dbName: "orri",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
-        name: "net_acres", label: "Net Acres", esKey: 'net_acres', 
-        options: { 
+        name: "net_acres", label: "Net Acres", esKey: 'net_acres',
+        options: {
             dbName: "net_acres",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
-        name: "nra", label: "NRA", esKey: 'nra', 
-        options: { 
+        name: "nra", label: "NRA", esKey: 'nra',
+        options: {
             dbName: "nra",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
+
+    {
+        name: "department", label: "Department", esKey: 'shape.shapeJson.properties.department.keyword',
+        options: {
+            dbName: "shape.shapeJson.properties.department",
+            sort: true,
+            filter: true,
+        }
+    },
+
+
     // {
     //     name: "ShortName", label: "ShortName", esKey: 'shapeJson.properties.originalProperties.ShortName.keyword', 
     //     options: { 
@@ -332,6 +357,7 @@ const TractInterestsHeadCells = [
         name: "commentsCounter",
         label: " ",
         options: {
+            ignoreGlobal: true,
             dbName: "comments.comment",
             filter: false,
             searchable: false,

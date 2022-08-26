@@ -29,7 +29,7 @@ import CloseIcon from "@material-ui/icons/Close";
 
 // import value formatters
 import capitalizeFirstLetter from "../Shared/valueformatters/capitalize-first-letter.js";
-import { CommentText } from "components/Transact/components/DealComments";
+import { CommonCommentText } from "components/Shared/CommentComponent";
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -607,16 +607,19 @@ export default function Comments(props) {
                     <ListItemText
                       className={classes.listItemText}
                       primary={
-                        <div style={{ marginBottom: '8px' }}>
-                          <div style={{
-                            marginTop: '2px',
-                            marginBottom: '5px',
-                            fontWeight: 'bolder',
-                            color: '#3e3e3e',
-                            fontSize: '15px',
-                          }}>{comment?.commentType || 'General'}</div>
-                          <CommentText users={userLists?.allMongoUsers} eachComment={comment} />
-                        </div>
+                        // <div style={{ marginBottom: '8px' }}>
+                        //   <div style={{
+                        //     marginTop: '2px',
+                        //     marginBottom: '5px',
+                        //     fontWeight: 'bolder',
+                        //     color: '#3e3e3e',
+                        //     fontSize: '15px',
+                        //   }}>{comment?.commentType || 'General'}</div>
+                        //   <CommentText users={userLists?.allMongoUsers} eachComment={comment} />
+                        // </div>
+                        <React.Fragment>
+                          <CommonCommentText users={userLists?.allMongoUsers} eachComment={comment} />
+                        </React.Fragment>
                       }
                       secondary={
                         `${comment.user.name}` +

@@ -7,21 +7,22 @@ import { useLazyQuery } from "@apollo/client";
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { capitalizeFirstLetter } from "components/Shared/functions";
 
-export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, searchFields, esIndex, filters, custom, setFilters }) {
+export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, searchFields, esIndex, filters, custom, setFilters, multiple, ...others }) {
+    const filterValue = multiple ? filterList[index].map((key) => ({ key })) : { key: filterList[index][0] }
     const [open, setOpen] = useState(false);
     const [stateApp, setStateApp] = useContext(AppContext);
     const [options, setOptions] = useState([]);
-    const [value, setValue] = useState({ key: filterList[index][0] });
+    const [value, setValue] = useState(filterValue);
     const [search, setSearch] = useState(filterList[index][0]);
     const { label, filterKey, type } = column
     const [getFilters, { data: filtersData, loading }] = useLazyQuery(query, { fetchPolicy: "no-cache" });
     const getFiltersType = query?.definitions?.[0]?.name?.value
-
     useEffect(() => {
         setSearch(filterList[index][0])
         if (!filterList[index][0]) {
-            setValue({})
+            setValue(filterValue)
         }
     }, [filterList[index][0]]);
 
@@ -44,7 +45,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
                     setStateApp((state, props) => {
                         return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
                     });
-                }else if (custom?.isDateTime) {
+                } else if (custom?.isDateTime) {
                     filtersData[keys[0]].hits = filtersData[keys[0]]?.hits.filter((hit) => hit.key)
                     const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key: moment(new Date(hit.key)).format("MM/DD/YYYY HH:mm:ss.SSS"), key_as_string: hit.key_as_string || hit.key }))
                     setOptions(hits)
@@ -90,6 +91,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
                 extendSearchQuery,
                 size: 50,
                 key_as_string: custom?.key_as_string,
+                multi_filter_keys: custom?.multi_filter_keys,
                 filterAggs: {
                     query: rawSearch,
                     field: typeof filterKey === 'string' ? filterKey : undefined,
@@ -102,6 +104,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
 
     return (
         <Autocomplete
+            multiple={multiple}
             id={`filter-autocomplete-${custom?.filterLabel || label}`}
             open={open}
             onOpen={() => {
@@ -110,28 +113,46 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
             onClose={() => {
                 setOpen(false);
             }}
-            value={value}
+
+            disabled={others.disabled || false}
+            value={multiple && !value ? [] : value}
             inputValue={search?.toString()}
             getOptionSelected={(option, value) => option.key === value.key}
-            getOptionLabel={(option) => option?.key?.toString().replace(/^\,|\,$/gm, "")}
+            getOptionLabel={(option) => capitalizeFirstLetter(option?.key?.toString().replace(/^\,|\,$/gm, ""))}
             onChange={(e, value2, reason) => {
-                if (reason === 'clear' || !value2?.key) {
+                if (reason === 'clear' || (multiple && value2.length === 0) || (!multiple && !value2?.key)) {
                     filterList[index].pop()
                     setSearch('')
-                    setValue({})
+                    setValue(multiple ? [] : {})
                 } else {
-                    filterList[index][0] = typeof value2.key === 'string' ? value2.key.replace(/^\,|\,$/gm, "") : value2.key
-                    setSearch(value2.key)
+                    if (multiple) {
+                        filterList[index].length = 0
+                        value2.forEach(v => {
+                            const val = typeof v.key === 'string' ? v.key.replace(/^\,|\,$/gm, "") : v.key
+                            filterList[index].push(val)
+                        })
+                        setSearch(value2[value2.length - 1]?.key)
+                    } else {
+                        filterList[index][0] = typeof value2.key === 'string' ? value2.key.replace(/^\,|\,$/gm, "") : value2.key
+                        setSearch(value2.key)
+                    }
+
                     setValue(value2)
+                    if (value2?.esKey) column.activeFilterKey = value2?.esKey
+
                 }
                 if (setFilters) setFilters(filterList)
-                onChange(filterList[index], index, column);
+
+                column.filterList = filterList[index]
+                onChange(filterList[index], index, column, value2?.esKey || '');
             }}
             options={options}
             loading={loading}
             renderInput={(params) => (
                 <TextField
                     {...params}
+                    variant={others?.variant ? others?.variant : "standard"}
+                    style={{ background: "white" }}
                     label={custom?.filterLabel || label}
                     onChange={(e) => {
                         handleChange(e.target.value);

@@ -216,24 +216,6 @@ const ShapeActionsPopup = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.currentFeature]);
 
-  // useEffect(() => {
-  //   const { shapeEditMode, currentFeature } = stateApp;
-  //   if (shapeEditMode && currentFeature) {
-  //     if (shapeEditMode === "rotate") {
-  //       const feature = copy(currentFeature);
-  //       let layerDataCopy = copy(currentFeature);
-  //       if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
-  //         feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
-  //       }
-  //       drawShapeLayerToggle(stateApp, "visible");
-  //       stateApp.draw.deleteAll();
-  //       getRotateAbleShapeFromSelectedQuarters(feature, stateApp.draw);
-  //     } else if (shapeEditMode === "fullEdit") {
-  //       actionEdit();
-  //     }
-  //   }
-  // }, [stateApp.shapeEditMode]);
-
   const closeDrawTool = () => {
     stateApp.draw.changeMode("direct_select", { featureId: props.selectedFeature.id });
     setFeatureProperty(stateApp.draw, props.selectedFeature.id, "shapeEdit", false);
@@ -248,12 +230,6 @@ const ShapeActionsPopup = (props) => {
       gridPolygonString: getPolygonString(props.selectedFeature),
     }));
     dispatch(toggleMapGridCardAtived());
-    // dispatch(
-    //   setMapGridCardState({
-    //     mapGridCardActivated: true,
-    //     mapGridCardActiveTap: 2,
-    //   })
-    // );
     closeDrawTool();
   };
 
@@ -396,7 +372,9 @@ const ShapeActionsPopup = (props) => {
       return;
     }
     let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
-
+    abstractShape.properties.State = abstractShape?.properties?.State || abstractShape?.properties?.StateAbbreviation;
+    abstractShape.properties.Section = abstractShape?.properties?.Section || abstractShape?.properties?.ShortName;
+    abstractShape.properties.Meridian = abstractShape?.properties?.Meridian || abstractShape?.properties?.PrincipalMeridian
     let originalProperties;
     let parcelName = getParcelAndShapeName(abstractShape);
     originalProperties = abstractShape.properties;
@@ -408,6 +386,7 @@ const ShapeActionsPopup = (props) => {
       geometry: abstractShape.geometry,
       properties: {
         originalProperties: originalProperties,
+        ...originalProperties,
         sdType: "parcel",
         shapeLabel: parcelName,
         projectName: "",
