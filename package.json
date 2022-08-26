@@ -141,6 +141,7 @@
     "viewport-mercator-project": "^7.0.2"
   },
   "scripts": {
+    "cypress:open": "cypress open",
     "legacy-start": "react-scripts start",
     "start": "craco start",
     "legacy-build": "react-scripts build",
@@ -178,6 +179,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.3"
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "cypress": "^10.6.0"
   }
 }
