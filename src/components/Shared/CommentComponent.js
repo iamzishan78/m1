@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-flex",
   },
   commentContent: {
-    width: "100%",
+    width: "84%",
     paddingRight: "10px"
   }
 }));
