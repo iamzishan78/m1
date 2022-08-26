@@ -30,7 +30,7 @@ function MyWellsGridTable(props) {
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
-      hit = { ...hit.wellData }
+      hit = { ...hit.wellData, sort: hit.sort }
       return hit;
     });
     return hits;
@@ -76,6 +76,7 @@ function MyWellsGridTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

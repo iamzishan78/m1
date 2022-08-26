@@ -33,6 +33,8 @@ function Wells(props) {
   const [filters, setFilters] = useState([]);
   const classes = useStyles();
 
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 166px)" }
+
   const Header = () => {
     return (
       <div style={{
@@ -55,7 +57,8 @@ function Wells(props) {
   return (
     <div style={{ 
       marginTop: "65px",
-      marginLeft: '-10px'
+      marginLeft: '-10px',
+      marginBottom: '-10px'
       }}>
       <WellsFilters filters={filters} setFilters={setFilters} />
       <div className={classes.custom} >
@@ -65,6 +68,7 @@ function Wells(props) {
           header={<Header />}
           parent="WellsTable"
           targetLabel="wells"
+          loadMore={loadMore}
         />
       </div>
     </div>
