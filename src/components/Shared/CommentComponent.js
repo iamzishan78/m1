@@ -91,14 +91,14 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-flex",
   },
   commentContent: {
-    width: "86%",
+    width: "100%",
     paddingRight: "10px"
   }
 }));
 
 export const CommonCommentText = ({ eachComment, users }) => {
   const classes = useStyles();
-  let formatComment = eachComment.comment.split(" ")
+  let formatComment = (eachComment?.comment|| '').split(" ")
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
@@ -199,13 +199,12 @@ export default function CommentComponent(props) {
     if (dataComments && dataComments.commentsByObjectId) {
       if (props.activityLog && props.activityLog.length > 0) {
         let activittyData = [];
-        console.log(props.activityLog);
         props.activityLog.forEach(element => {
           activittyData.push({
             user: { name: element.ownerName, email: element.ownerName },
             activityData: element,
             comment: element.notes,
-            ts: new Date(element._ts).getTime(),
+            ts: new Date(Number(element._ts)).getTime(),
             isActivity: true,
             isEdited: false,
             public: true,
@@ -354,8 +353,7 @@ export default function CommentComponent(props) {
   const addNewComment = (value) => {
     const userDetails = stateApp.user
     setCommentsArray(state => {
-      const newComment = {
-        comment: value,
+      let newComment = {
         commentedOn: targetSourceId,
         isEdited: false,
         public: true,
@@ -363,10 +361,14 @@ export default function CommentComponent(props) {
         user: { name: userDetails.name, email: userDetails.email, __typename: 'User' },
         __typename: "Comment",
         _id: "62e78820b4f930ae6002a7f2"
-
+      }
+      if (typeof value === 'object') {
+        newComment = { ...value, ...newComment };
+      } else {
+        newComment['comment'] = value;
       }
       state.push(newComment)
-      return state
+      return state;
     })
 
     upsertComment({
@@ -594,7 +596,7 @@ export default function CommentComponent(props) {
 
 export const CommentText = ({ eachComment, users }) => {
   const classes = useStyles();
-  let formatComment = eachComment.comment.split(" ")
+  let formatComment = (eachComment?.comment || '').split(" ")
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>

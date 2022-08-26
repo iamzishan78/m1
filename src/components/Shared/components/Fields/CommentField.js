@@ -119,9 +119,10 @@ const useStyles = makeStyles((theme) => ({
   headerActions: {
     display: "flex",
     justifyContent: "space-between",
+    fontSize: '14px',
   },
   selectedTab: {
-    borderBottom: "5px solid #01B0F0",
+    borderBottom: "4px solid #01B0F0",
   },
   selectCommentType: {
     width: '100%',
@@ -362,6 +363,9 @@ export default function DealComment({
   return (
     <>
       <Autocomplete
+        onFocus={() => {
+          setShowCommentTypeDialog(false);
+        }}
         id='txtArea'
         className={classes.search}
         style={{
@@ -437,80 +441,17 @@ export default function DealComment({
           </>
         )}
       />
-      {!isEdit ? (
-        <>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}>
-            <div style={{
-              padding: '0px 10px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              color: '#949494',
-            }} onClick={() => setShowCommentTypeDialog(true)}>
-              {showCommentType && <>
-                <EditNoteIcon fill={showCommentTypeDialog ? 'black' : ''} />
-                <span style={{ marginLeft: '1px' }}>{selectedCommentType}</span>
-              </>}
-            </div>
-            {showActions && (
-              <Button
-                className={classes.commentBtn}
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  upsertComment({ comment, commentType: selectedCommentType });
-                  setNameAutValue({});
-                }}
-              >
-                Comment
-              </Button>
-            )}
-          </div>
-        </>
-      ) : (
-        <>
-          <Button
-            className={classes.commentBtn}
-            style={{ marginBottom: "10px" }}
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              upsertComment({ comment, commentType: selectedCommentType });
-            }}
-          >
-            Save Changes
-          </Button>
-
-          <Button
-            className={classes.commentBtn}
-            style={{ marginRight: "10px", marginBottom: "10px" }}
-            variant="contained"
-            onClick={() => {
-              setComment("");
-              setEditCommentId("");
-            }}
-          >
-            Cancel
-          </Button>
-        </>
-      )}
-      <Dialog
-        className={classes.dialog}
-        // style={{
-        //   zIndex: '99999999999 !important',
-        //   backgroundColor: 'red',
-        // }}
-        open={showCommentTypeDialog}
-        onClose={() => {
-          // setOpenDialog(false);
-        }}
-
-        onBackdropClick={() => {
-          setShowCommentTypeDialog(false);
+      {showCommentTypeDialog && <div
+        style={{
+          position: 'absolute',
+          bottom: selectedTab === 'New Comment Type' ? '25px' : '69px',
+          background: 'white',
+          zIndex: '9999',
+          boxShadow: '0 10px 40px 0 rgb(0 0 0 / 15%)',
+          padding: '15px',
+          width: '315px',
+          padding: '15px',
+          left: '12px',
         }}
       >
         <Grid item className={classes.headerActions}>
@@ -585,6 +526,7 @@ export default function DealComment({
               }}
               onClick={() => {
                 setShowCommentTypeDialog(false);
+                setSelectedTab('Existing')
               }}
             >
               Cancel
@@ -604,7 +546,78 @@ export default function DealComment({
             </Button>
           </div>
         }
-      </Dialog>
+      </div>}
+      {!isEdit ? (
+        <>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+            onClick={() => {
+              if (showCommentTypeDialog) {
+                setShowCommentTypeDialog(false);
+                setSelectedTab('Existing')
+              }
+            }}>
+            <div style={{
+              padding: '0px 10px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              color: '#949494',
+            }} onClick={() => setShowCommentTypeDialog(o => !o)}>
+              {showCommentType && <>
+                <EditNoteIcon fill={showCommentTypeDialog ? 'black' : ''} />
+                <span style={{ marginLeft: '1px' }}>{selectedCommentType}</span>
+              </>}
+            </div>
+            {showActions && (
+              <Button
+                className={classes.commentBtn}
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  if (!showCommentTypeDialog) {
+                    upsertComment({ comment, commentType: selectedCommentType });
+                    setSelectedTab('Existing');
+                    setNameAutValue({});
+                  }
+                }}
+              >
+                Comment
+              </Button>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          <Button
+            className={classes.commentBtn}
+            style={{ marginBottom: "10px" }}
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              upsertComment({ comment, commentType: selectedCommentType });
+            }}
+          >
+            Save Changes
+          </Button>
+
+          <Button
+            className={classes.commentBtn}
+            style={{ marginRight: "10px", marginBottom: "10px" }}
+            variant="contained"
+            onClick={() => {
+              setComment("");
+              setEditCommentId("");
+            }}
+          >
+            Cancel
+          </Button>
+        </>
+      )
+      }
     </>
   );
 }
