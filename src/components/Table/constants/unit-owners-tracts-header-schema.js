@@ -4,19 +4,6 @@ const UnitOwnersTractHeadCells = [
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-    name: "state",
-    label: "State",
-    esKey: "tract.state.keyword",
-    options: { sort: true, filter: true },
-    style: { maxWidth: 80 },
-  },
-  {
-    name: "county",
-    label: "County",
-    esKey: "tract.county.keyword",
-    options: { sort: true, filter: true },
-  },
-  {
     name: "tractName",
     label: "Tract Name",
     esKey: "tract.tractName.keyword",
@@ -28,6 +15,19 @@ const UnitOwnersTractHeadCells = [
       minWidth: 200,
       maxWidth: 300,
     },
+  },
+  {
+    name: "state",
+    label: "State",
+    esKey: "tract.state.keyword",
+    options: { sort: true, filter: true },
+    style: { maxWidth: 80 },
+  },
+  {
+    name: "county",
+    label: "County",
+    esKey: "tract.county.keyword",
+    options: { sort: true, filter: true },
   },
   {
     name: "SurveyMeridian", label: "Survey/ Meridian", esKey: [
@@ -134,6 +134,7 @@ const UnitOwnersTractHeadCells = [
     esKey: "orri",
     options: { sort: true, filter: true },
   },
+  { name: "working_interest", esKey: "working_interest", type: "number", label: "WI", options: { filter: true } },
   {
     name: "sdGrossAcres",
     label: "Gross Acres",
