@@ -1282,26 +1282,11 @@ function SubTable(props) {
 
         switch (column.name) {
           case "name":
-
-
             {
               column.options = {
                 ...column.options,
                 customRender: (value, tableMeta) => {
-
-
                   if (props.targetLabel === "unit" && column.name === "name") {
-
-                    const splitNumber = value?.split("_");
-
-                    const styles = {
-                      cursor: 'pointer',
-                      //minWidth: "1400px"
-                      // position: 'relative',
-                      // left: '55px',
-                      minWidth: '300px',
-                      maxWidth: '300px'
-                    };
                     const targetSourceId = tableMeta.rowData[1];
                     const commentValue = tableMeta.rowData[21]
                     // const isSnapGrid = column.options.isSnapGrid || false
@@ -1336,15 +1321,11 @@ function SubTable(props) {
                               // paddingRight: "100px"
                             }}
                           >
-
                             <Box
-
                               onClick={(e) => {
                                 e.stopPropagation();
                                 openUnitDetailCard(tableMeta.rowData[0]);
                               }}
-
-
                               sx={{
                                 color: "#17aadd",
                                 cursor: 'pointer',
@@ -1358,14 +1339,10 @@ function SubTable(props) {
                                 },
 
                               }}
-
                             >
-
-
                               {tableMeta?.rowData[2]}
                             </Box>
                           </Grid>
-
                           <Grid item>
                             <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
                           </Grid>
