@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
         position:'relative',
         padding: '20px',
         '& .MuiInputLabel-filled': {
-            color: 'grey'
+            color: 'lightgrey'
         },
         '& .MuiFilledInput-input': {
             color: '#fff'
@@ -69,9 +69,9 @@ const useStyles = makeStyles((theme) => ({
     },
     helperText: {
         position: 'absolute',
-        right: 0,
-        bottom: 10,
-        color: '#FFF',
+        right: 30,
+        bottom: 20,
+        color: 'gray',
         fontSize: 12
     },
     searchInput: {
@@ -171,7 +171,7 @@ export default function AddGroup({ userId, above, layerGroups }) {
     return (
         <div>
             <IconButton size='small' aria-controls="group-button" aria-haspopup="true" onClick={handleClick} >
-                <CreateNewFolderIcon style={{ fontSize: 20, color: 'grey',  marginRight: '10px' }} />
+                <CreateNewFolderIcon style={{ fontSize: 20, color: 'lightgray',  marginRight: '10px' }} />
             </IconButton>
             <Menu
                 id="group-button"

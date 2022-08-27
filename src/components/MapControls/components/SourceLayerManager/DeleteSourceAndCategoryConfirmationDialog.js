@@ -76,7 +76,7 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
         }}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle style={{ textAlign: "center", padding: "24px 24px 0 24px" }}>Do you want to permanently delete the selected {title}?' This action will also delete all layers tied to selected {title}.?</DialogTitle>
+        <DialogTitle style={{ textAlign: "center", padding: "24px 24px 0 24px" }}>Do you want to permanently delete the selected {title}? This action will also delete all layers tied to selected {title}?</DialogTitle>
 
         <DialogActions>
           <Button
