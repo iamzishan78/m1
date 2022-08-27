@@ -50,6 +50,8 @@ const DocumentsHeadCells = [
   //   name: "dateTime",
   //   label: "DATE & TIME",
   // },
+
+  // infiniteScroll key should be added in a which do not have customRender in schema file as it will be override in table.js
   {
     name: "documentNumber",
     infiniteScroll: true,

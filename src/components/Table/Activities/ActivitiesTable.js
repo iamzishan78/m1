@@ -258,6 +258,7 @@ function ActivitiesTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
       <ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} />
     </Container>

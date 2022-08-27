@@ -151,6 +151,7 @@ function MapGridLayersTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
       {stateApp.selectedDataset?.fileName &&
         <div style={{ position: 'absolute', fontWeight: 'bold', fontSize: '16px', bottom: '0px', right: '410px', padding: '13px 54px 16px 19px', borderBottom: '1px solid rgba(224, 224, 224, 1)', backgroundColor: '#F2F2F2' }}>{stateApp.selectedDataset?.fileName}</div>

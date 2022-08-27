@@ -405,7 +405,9 @@ const ShapeActionsPopup = (props) => {
       return;
     }
     let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
-
+    abstractShape.properties.State = abstractShape?.properties?.State || abstractShape?.properties?.StateAbbreviation;
+    abstractShape.properties.Section = abstractShape?.properties?.Section || abstractShape?.properties?.ShortName;
+    abstractShape.properties.Meridian = abstractShape?.properties?.Meridian || abstractShape?.properties?.PrincipalMeridian
     let originalProperties;
     let parcelName = getParcelAndShapeName(abstractShape);
     originalProperties = abstractShape.properties;
@@ -417,6 +419,7 @@ const ShapeActionsPopup = (props) => {
       geometry: abstractShape.geometry,
       properties: {
         originalProperties: originalProperties,
+        ...originalProperties,
         sdType: "parcel",
         shapeLabel: parcelName,
         projectName: "",

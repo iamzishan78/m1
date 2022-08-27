@@ -26,7 +26,7 @@ const DocumentsHeadCells = [
     name: "fileId",
     options: {
       display: false,
-      filter: true,
+      filter: false,
       searchable: false,
       sort: false,
       download: false,

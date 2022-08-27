@@ -3,13 +3,24 @@ import { makeStyles } from "@material-ui/core/styles";
 export const usetableStyles = makeStyles(() => ({
   container: {
     padding: "0 !important",
+    "& .MuiTableCell-head": {
+      paddingLeft: (p) => (p.isAgreementsTable ? "17px !important" : " "),
+    },
+
     "& .MuiTableRow-hover": {
       "&:hover": {
         "& .MuiTableCell-root": {
-          backgroundColor: "#dfdfdf",
+          backgroundColor: "#dfdfdf !important",
         },
       },
     },
+    // "& ::-webkit-scrollbar": {
+    //   height: "0.7em !important",
+    // },
+    '& .MuiTableRow-footer': {
+      visibility: (p) => p.isHideFooter ? 'hidden' : '',
+      display: (p) => p.isHideFooter ? 'none' : '',
+    }
   },
   subComponentsClasses: {
     "& .MuiTableHead-root": {
@@ -64,12 +75,55 @@ export const usetableStyles = makeStyles(() => ({
       },
     },
   },
-  container2: {
+  // container2: {
+  //   width: "100%",
+  //   "& .MuiTableCell-paddingCheckbox": {
+  //     position: (p) => p.isCheckboxSticky ? 'sticky !important' : '',
+  //   },
+
+  //   '& .MuiTableRow-footer': {
+  //     visibility: (p) => p.isHideFooter ? 'hidden' : '',
+  //     display: (p) => p.isHideFooter ? 'none' : '',
+  //   }
+
+  // },
+
+  ESHOCContainer: {
     width: "100%",
     "& .MuiTableCell-paddingCheckbox": {
       position: (p) => (p.isCheckboxSticky ? "sticky !important" : ""),
     },
+
+    '& .MuiTableRow-footer': {
+      visibility: (p) => p.infScrollHeight ? 'hidden' : '',
+      display: (p) => p.infScrollHeight ? 'none' : '',
+    }
   },
+  ESHOCInfScroll: {
+    "& div": {
+      "&>.MuiPaper-root": {
+        display: "flex",
+        "flex-direction": "column",
+        height: (p) => p.infScrollHeight,
+        position: "relative",
+        "align-items": "stretch",
+        "&>.MuiPaper-root": {
+          display: "contents",
+        },
+        "&>:nth-child(3)": {
+          height: "inherit !important",
+        },
+        "&> table": {
+          bottom: 0,
+        },
+      },
+    },
+
+    '& .MuiDrawer-paperAnchorRight': {
+      overflow: "hidden",
+    }
+  },
+
   multiSelectionTopBarButtons: {
     margin: "0px 5px",
     fontWeight: "600",

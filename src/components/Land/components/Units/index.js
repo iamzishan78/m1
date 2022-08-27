@@ -6,28 +6,28 @@ import MapGridUnitTable from "components/Table/Unit/MapGridUnitTable";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
-  custom: {
-    padding: 0,
-    "& ::-webkit-scrollbar": {
-      height: "0.7em !important",
-    },
-    "& div": {
-      "&>.MuiPaper-root": {
-        "&>:nth-child(3)": {
-          maxHeight: "72vh",
-          "@media (max-height:900px)": {
-            maxHeight: "72vh",
-          },
-          "@media (max-height:800px)": {
-            maxHeight: "70vh",
-          },
-          "@media (max-height:768px)": {
-            maxHeight: "65vh",
-          },
-        },
-      },
-    },
-  },
+  // custom: {
+  //   padding: 0,
+  //   "& ::-webkit-scrollbar": {
+  //     height: "0.7em !important",
+  //   },
+  //   "& div": {
+  //     "&>.MuiPaper-root": {
+  //       "&>:nth-child(3)": {
+  //         maxHeight: "72vh",
+  //         "@media (max-height:900px)": {
+  //           maxHeight: "72vh",
+  //         },
+  //         "@media (max-height:800px)": {
+  //           maxHeight: "70vh",
+  //         },
+  //         "@media (max-height:768px)": {
+  //           maxHeight: "65vh",
+  //         },
+  //       },
+  //     },
+  //   },
+  // },
 }));
 
 function Units(props) {
@@ -43,6 +43,9 @@ function Units(props) {
   const onAgreementCount = (count) => {
     setAgreementCount(count);
   };
+
+  // waypointKey should any key of Table Header which do not have customRender in schema file
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 66px)" }
 
   const esIndex = "shapes_flat";
 
@@ -67,13 +70,13 @@ function Units(props) {
   ];
 
   return (
-    <div style={{ 
+    <div style={{
       // marginTop: 20, 
       // padding: "75px 20px" 
       marginTop: "65px",
       marginLeft: '-10px'
 
-      }}>
+    }}>
 
       {/* <AnalyticsCards
         parent={"Agreements"}
@@ -85,12 +88,14 @@ function Units(props) {
         landSearchQuery={stateApp.landSearchQuery}
       /> */}
 
-      <div className={classes.custom} >
+      <div
+      // className={classes.custom} 
+      >
         <MapGridUnitTable
-          dense
           parent="UnitsTable"
           targetLabel="unit"
           header="Units"
+          loadMore={loadMore}
         />
       </div>
     </div>

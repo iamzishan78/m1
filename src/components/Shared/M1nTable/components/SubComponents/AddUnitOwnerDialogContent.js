@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { get } from "lodash";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -71,6 +72,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
+  const [ownerTypeOfConctact, setOwnerTypeOfConctact] = useState();
 
   useEffect(() => {
     if (selectedRow) {
@@ -88,7 +90,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerEntity,
         contactStatus,
         ownerType,
-        contact: { campaignName }
+        contact
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
@@ -100,10 +102,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         seller_asking_price: seller_asking_price || null,
         competitor_offer_price: competitor_offer_price || null,
         offer_price: offer_price || null,
-        contactStatus: contactStatus || null,
+        contactStatus: contactStatus || contact.contactStatus,
         ownerType,
         customLayer,
-        campaignName
+        campaignName: contact.campaignName
       }
       let calculatedNRA = calculateNRA(royalty_interest, orri);
       if (!isNaN(parseFloat(calculatedNRA)))
@@ -182,7 +184,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           shapeType: props.shapeType,
           shapeOwners: [
             {
-              shapeId: props.shapeId,
+              shapeId: props.shapeId ?? get(selectedRow, "customLayer._id"),
               relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
               ...ownerToAdd,
               createBy: stateApp.user.mongoId,
@@ -198,7 +200,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         variables: {
           shapeType: props.shapeType,
           shapeOwner: {
-            shapeId: props.shapeId,
+            shapeId: props.shapeId ?? get(selectedRow, "customLayer._id"),
             relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
             ...ownerToAdd,
             createBy: stateApp.user.mongoId,
@@ -287,7 +289,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <h3>Name</h3>
-                <AutocompEntityNamesList userId={stateApp.user.mongoId} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
+                <AutocompEntityNamesList userId={stateApp.user.mongoId} setOwnerTypeOfConctact={setOwnerTypeOfConctact} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
               </Grid>
               <Grid item xs={12}>
                 <h3>Entity Type</h3>
@@ -305,7 +307,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         }
                         setValue('ownerType', val);
                       }}
-                      value={props.value ?? ""}
+                      value={ownerTypeOfConctact ?? ""}
                     />
                   )}
                 />
@@ -563,6 +565,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       }}
                       fullWidth
                       targetLabel="Contact"
+                      simpleChips
                     />
                   )}
                 />

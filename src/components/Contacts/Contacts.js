@@ -14,6 +14,7 @@ import ContactsTable from "components/Table/Contact/ContactsTable";
 import * as Components from "components/Contacts/components";
 
 import { contactManagementRoutes } from "utils/data";
+import { options } from "@amcharts/amcharts4/core";
 
 //// WE MAY NOT BE USING THIS ENTIRE FILE ANYMORE
 
@@ -50,6 +51,10 @@ export default function Contacts() {
   const [allowedPaths, setAllowablePaths] = useState({});
   const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
+  // waypointKey should any key of Table Header which do not have customRender in schema file
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 66px)" }
+
+
   useEffect(() => {
     let option = {};
     Object.values(contactManagementRoutes).forEach((item) => {
@@ -58,6 +63,7 @@ export default function Contacts() {
       }
     });
     if (option) {
+      if (contactManagementRoutes[option.parent]) option.parent = contactManagementRoutes[option.parent];
       dispatch(setActiveModule(option));
     }
   }, [location.pathname]);
@@ -128,6 +134,7 @@ export default function Contacts() {
             headerLabel="Contacts"
             contactSearchQuery={stateApp.contactSearchQuery}
             userId={stateApp.user.mongoId}
+            loadMore={loadMore}
           />
         </div>
       </FeatureFlag>

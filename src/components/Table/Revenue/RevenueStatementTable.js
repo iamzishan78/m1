@@ -88,7 +88,7 @@ function RevenueStatementTable(props) {
     fixedFilters.push(formatedFilter[0])
   }
 
-  useEffect(() => { 
+  useEffect(() => {
     setTableMeta({
       TableHeader: copy(TableHeader),
       esIndex: "checks_flat",
@@ -103,46 +103,46 @@ function RevenueStatementTable(props) {
   }, [setTableMeta, formatHits, revenueSearchQuery, filterToggle]);
 
   useEffect(() => {
-    if(fixedFilters.length > 0){
+    if (fixedFilters.length > 0) {
       getESSimpleCount({
         variables: {
           index: 'checks_flat',
-          filters: [ 
-            ...fixedFilters,  
-            {field: "approvalStatus.keyword", value: "Approved" },
+          filters: [
+            ...fixedFilters,
+            { field: "approvalStatus.keyword", value: "Approved" },
             ...props.selectedFilters.current
           ],
           search: {
             query: revenueSearchQuery,
             fields: ["checkNumber", "_all"]
-        },
+          },
         }
       })
       getPotentialIssues({
         variables: {
-          filters: [ 
-            ...fixedFilters,  
+          filters: [
+            ...fixedFilters,
             ...props.selectedFilters.current
           ],
           search: {
             query: revenueSearchQuery,
             fields: ["checkNumber", "_all"]
-        },
-        sort: { field: "checkDate", order: "desc" },
+          },
+          sort: { field: "checkDate", order: "desc" },
           pagination: {
             first: props.total,
             after: null
-        },
+          },
         }
       })
     }
-  },[props.rows])
+  }, [props.rows])
 
   useEffect(() => {
-    if(approvedCount?.getESSimpleCount && props.total > 0 ){
+    if (approvedCount?.getESSimpleCount && props.total > 0) {
       onGettingStatements({ approvedCount: approvedCount.getESSimpleCount.total, statementCount: props.total })
     }
-  },[approvedCount, props.total])
+  }, [approvedCount, props.total])
 
   //  Potential issues
   useEffect(() => {
@@ -223,7 +223,7 @@ function RevenueStatementTable(props) {
         options={props.options}
         parent={props.parent}
         setColumnsBase={[]}
-        headerZIndex={0}
+        {...props.esHocProps}
       />
     </Container>
   );
