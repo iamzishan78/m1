@@ -65,7 +65,7 @@ const TableRowComponent = (props) => {
             )}
             selected={rowSelected}
             {...rest}>
-            {inView || !onInfiniteScroll || totalRows < 150 ? props.children : <div style={{ height: '40px' }}></div>}
+            {inView || !onInfiniteScroll ? props.children : <div style={{ height: '40px' }}></div>}
             {/* {} */}
         </TableRow>
     );
