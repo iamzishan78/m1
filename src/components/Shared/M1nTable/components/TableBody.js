@@ -14,6 +14,7 @@ import { withStyles } from '@material-ui/core/styles';
 import cloneDeep from 'lodash.clonedeep';
 import { getPageValue } from './utils';
 import clsx from 'clsx';
+import { Waypoint } from 'react-waypoint';
 
 const defaultBodyStyles = theme => ({
     root: {},
@@ -35,7 +36,6 @@ const defaultBodyStyles = theme => ({
         },
     },
 });
-
 class TableBody extends React.Component {
     static propTypes = {
         /** Data used to describe table */
@@ -257,11 +257,19 @@ class TableBody extends React.Component {
 
                         return (
                             <React.Fragment key={rowIndex}>
+                                {
+                                    rowIndex === tableRows.length - 5 && <Waypoint
+                                        onEnter={() => { if (components.onInfiniteScroll) components.onInfiniteScroll() }}
+                                    />
+                                }
+
                                 <TableBodyRow
                                     {...bodyClasses}
                                     options={options}
                                     rowSelected={isRowSelected}
                                     isRowSelectable={isRowSelectable}
+                                    onInfiniteScroll={components.onInfiniteScroll}
+                                    totalRows={tableRows.length}
                                     onClick={this.handleRowClick.bind(null, row, { rowIndex, dataIndex })}
                                     className={clsx({
                                         [classes.lastStackedCell]:

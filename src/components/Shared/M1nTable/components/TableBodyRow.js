@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useInView } from "react-intersection-observer";
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
@@ -37,13 +37,12 @@ const defaultBodyRowStyles = theme => ({
 });
 
 const TableRowComponent = (props) => {
-    const { classes, options, rowSelected, onClick, className, isRowSelectable, ...rest } = props;
+    const { classes, options, rowSelected, onClick, className, isRowSelectable, onInfiniteScroll, totalRows, ...rest } = props;
     const [ref, inView] = useInView();
     var methods = {};
     if (onClick) {
         methods.onClick = onClick;
     }
-
     return (
         <TableRow
             ref={ref}
@@ -66,7 +65,7 @@ const TableRowComponent = (props) => {
             )}
             selected={rowSelected}
             {...rest}>
-            {inView ? props.children : <div style={{ height: '40px' }}></div>}
+            {inView || !onInfiniteScroll || totalRows < 150 ? props.children : <div style={{ height: '40px' }}></div>}
             {/* {} */}
         </TableRow>
     );

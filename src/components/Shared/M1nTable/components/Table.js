@@ -1215,34 +1215,6 @@ function SubTable(props) {
           return;
         }
 
-        if (column?.infiniteScroll) {
-          column.options = {
-            ...column.options,
-            customBodyRender: (value, tableMeta) => {
-              const rowIndex = tableMeta.rowIndex;
-              if (rowIndex === props.rows.length - 5) {
-                return (
-                  <Fragment>
-                    <Waypoint
-                      onEnter={() => {
-                        if (props.onInfiniteScroll) props.onInfiniteScroll()
-                      }}
-                    />
-
-                    <div id={`waypoint-${rowIndex}`}>
-                      {gridElement(value)}
-                    </div>
-
-                  </Fragment>
-                );
-              } else {
-                return (gridElement(value))
-              }
-            },
-          };
-          return
-        }
-
         switch (column.name) {
           case "detailCard":
             column.options = {
@@ -4174,6 +4146,7 @@ function SubTable(props) {
 
           columns={columns ? columns : []}
           components={{
+            onInfiniteScroll: props.onInfiniteScroll,
             TableBody: TableBody,
             TableViewCol: CustomTableViewCol,
 
