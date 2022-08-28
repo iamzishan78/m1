@@ -4620,6 +4620,7 @@ function SubTable(props) {
 
           columns={columns ? columns : []}
           components={{
+            showRowNumber: !!props.onInfiniteScroll,
             onInfiniteScroll: props.onInfiniteScroll,
             TableBody: TableBody,
             Checkbox: CustomCheckbox,

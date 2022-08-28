@@ -142,7 +142,7 @@ const TableSelectCell = ({
                 {selectableOn !== 'none' && selectableRowsHideCheckboxes !== true && renderCheckBox()}
 
                 {
-                    components.onInfiniteScroll &&
+                    components.showRowNumber &&
                     <div style={{ fontWeight: 'bold' }}>
                         {rowIndex + 1}
                     </div>
