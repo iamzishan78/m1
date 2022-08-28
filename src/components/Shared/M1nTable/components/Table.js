@@ -120,21 +120,16 @@ import PostAddIcon from "@material-ui/icons/PostAdd";
 import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import MapFilledIcon from "components/Shared/svgIcons/MapFilled";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
-import { getIndexofColumn } from "utils/helper";
 import ReactSelectField from "./SubComponents/ReactSelectField";
-import { Waypoint } from "react-waypoint";
-import TableBody from "./TableBody";
+import TableBody from "./MUIDataTable/TableBody";
 
 
-import Radio from '@material-ui/core/Radio';
 import Checkbox from '@material-ui/core/Checkbox';
 import GlobalStyles from "GlobalStyles";
 
@@ -1271,52 +1266,52 @@ function SubTable(props) {
         // without using refs we HAVE to re-create customBodyRender callback functions every render
         // or component state is stale
 
-        if (column.name === "_id" && column.options.isFiniteScroll) {
-          column.options = {
-            ...column.options,
+        // if (column.name === "_id" && column.options.isFiniteScroll) {
+        //   column.options = {
+        //     ...column.options,
 
-            setCellProps: () => ({
-              style: {
-                minWidth: "90px",
-                maxWidth: "90px",
-                position: "sticky",
-                left: "77px",
-                zIndex: 201,
-              }
-            }),
+        //     setCellProps: () => ({
+        //       style: {
+        //         minWidth: "90px",
+        //         maxWidth: "90px",
+        //         position: "sticky",
+        //         left: "77px",
+        //         zIndex: 201,
+        //       }
+        //     }),
 
-            setCellHeaderProps: () => ({
-              style: {
-                minWidth: "90px",
-                maxWidth: "90px",
-                position: "sticky",
-                paddingLeft: '70px',
-                zIndex: 201,
-                left: "77px",
-              },
-            }),
+        //     setCellHeaderProps: () => ({
+        //       style: {
+        //         minWidth: "90px",
+        //         maxWidth: "90px",
+        //         position: "sticky",
+        //         paddingLeft: '70px',
+        //         zIndex: 201,
+        //         left: "77px",
+        //       },
+        //     }),
 
-            customRender: (value, tableMeta) => {
-              const rowIndex = tableMeta.rowIndex;
-              return (
-                <>
-                  {rowIndex === props.rows.length - 5 && (<Waypoint
-                    onEnter={() => {
-                      if (props.onInfiniteScroll) props.onInfiniteScroll()
-                    }}
-                  />)}
+        //     customRender: (value, tableMeta) => {
+        //       const rowIndex = tableMeta.rowIndex;
+        //       return (
+        //         <>
+        //           {rowIndex === props.rows.length - 5 && (<Waypoint
+        //             onEnter={() => {
+        //               if (props.onInfiniteScroll) props.onInfiniteScroll()
+        //             }}
+        //           />)}
 
-                  <div
-                    id={`${rowIndex === props.rows.length - 5 ? `waypoint-${rowIndex}` : ''}`} z>
-                    {<span
-                      style={{ color: GlobalStyles.colors.mutedGrey }}
-                    >{tableMeta.rowIndex + 1}</span>}
-                  </div>
-                </>
-              );
-            },
-          }
-        }
+        //           <div
+        //             id={`${rowIndex === props.rows.length - 5 ? `waypoint-${rowIndex}` : ''}`} z>
+        //             {<span
+        //               style={{ color: GlobalStyles.colors.mutedGrey }}
+        //             >{tableMeta.rowIndex + 1}</span>}
+        //           </div>
+        //         </>
+        //       );
+        //     },
+        //   }
+        // }
 
         if (column?.options?.customRender) {
           column.options = {
@@ -1887,6 +1882,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customRender: (value, tableMeta) => {
+                  value = value?.toString();
                   const splitNumber = value?.split("_");
 
                   const styles = {
@@ -2537,13 +2533,13 @@ function SubTable(props) {
                         // paddingRight: '200px'
                       }}>
                         <Grid container spacing={0} direction="row" >
-                          {
+                          {/* {
                             props.parent === 'Documents' && <div style={{ position: 'relative', zIndex: 100 }}>
                               <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
                                 {tableMeta.rowIndex + 1}
                               </div>
                             </div>
-                          }
+                          } */}
                           <Grid
                             item
                             xs={1}

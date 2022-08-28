@@ -1,6 +1,3 @@
-import { IconButton } from "@material-ui/core";
-import MapFilledIcon from "components/Shared/svgIcons/MapFilled";
-import { history } from "store";
 import GlobalSettings from "..//..//..//GlobalSettings.js";
 
 const AgreementsHeadCells = (isSnapGrid = false) => [

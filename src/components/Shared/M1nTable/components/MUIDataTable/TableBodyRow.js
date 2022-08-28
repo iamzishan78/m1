@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useInView } from "react-intersection-observer";
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
@@ -65,7 +65,7 @@ const TableRowComponent = (props) => {
             )}
             selected={rowSelected}
             {...rest}>
-            {inView || !onInfiniteScroll ? props.children : <div style={{ height: '40px' }}></div>}
+            {inView || !onInfiniteScroll || totalRows < 150 ? props.children : <div style={{ height: '40px' }}></div>}
             {/* {} */}
         </TableRow>
     );

@@ -2,19 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 import MuiTableBody from '@material-ui/core/TableBody';
-import {
-    TableBodyCell,
-    // TableBodyRow,
-    TableSelectCell,
-} from "mui-datatables";
+import { TableBodyCell } from "mui-datatables";
 // import TableBodyCell from './TableBodyCell';
 import TableBodyRow from './TableBodyRow';
-// import TableSelectCell from './TableSelectCell';
+import TableSelectCell from './TableSelectCell';
 import { withStyles } from '@material-ui/core/styles';
 import cloneDeep from 'lodash.clonedeep';
 import { getPageValue } from './utils';
 import clsx from 'clsx';
 import { Waypoint } from 'react-waypoint';
+import GlobalStyles from 'GlobalStyles';
 
 const defaultBodyStyles = theme => ({
     root: {},
@@ -302,9 +299,11 @@ class TableBody extends React.Component {
                                         isRowExpanded={this.isRowExpanded(dataIndex)}
                                         isRowSelectable={isRowSelectable}
                                         dataIndex={dataIndex}
+                                        rowIndex={rowIndex}
                                         id={'MUIDataTableSelectCell-' + dataIndex}
                                         components={components}
                                     />
+
                                     {processedRow.map(
                                         column =>
                                             columns[column.index].display === 'true' && (

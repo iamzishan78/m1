@@ -323,11 +323,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             tableCols.forEach((column, index) => {
                 // Update global setting of sticky column in case of infinite scroll
                 const setCellProps = column.options?.setCellProps
-                if (isFiniteScroll && rows.length && setCellProps
-                    && findInFunction("sticky", setCellProps) && column.name !== '_id') {
-                    column.options.setCellProps = GlobalSettings.muiGridInfScrollOptions.setCellProps
-                    column.options.setCellHeaderProps = GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps
-                }
 
                 /// apply global settings unless ignored
                 if (column?.options?.ignoreGlobal) {
@@ -422,20 +417,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             let stickyColumns = tableCols.filter(cD => cD.name === '_id' || cD?.options?.stickyColumn)
             tableCols = tableCols.filter(cD => cD.name !== "_id" && !cD.options?.stickyColumn);
             tableCols.unshift(...stickyColumns);
-
-            if (isFiniteScroll && tableCols[0].name === "_id") {
-                const idOptions = {
-                    display: true,
-                    isFiniteScroll: true,
-                    ignoreGlobal: true,
-                    filter: false,
-                    sort: false,
-                    viewColumns: false
-                }
-
-                tableCols[0].label = " "
-                tableCols[0].options = { ...tableCols[0].options, ...idOptions }
-            }
 
             setColumns(tableCols);
         };
@@ -691,8 +672,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const updateGridViewRedux = (tableState) => {
             setTableMeta((tableMeta) => {
                 if (tableMeta?.selectedGridView) {
-                    if (isFiniteScroll)
-                        tableState.columns[0].display = false
 
                     dispatch(updateUserGridViewSettingAction.STARTED({
                         userGridViewSetting: {
