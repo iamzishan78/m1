@@ -344,6 +344,7 @@ function ContactsTable(props) {
             esIndex: esIndex,
             open: true
           }}
+          {...props.esHocProps}
         />
       </Container>
     </>

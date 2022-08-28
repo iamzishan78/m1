@@ -55,6 +55,7 @@ export const PAGINATEDCONTACTSQUERY = gql`
           AltPhone3
           email3
           status
+          ownerType
           hasAuthority
           doNotDisturb
           timeZone
