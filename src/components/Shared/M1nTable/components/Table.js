@@ -128,6 +128,7 @@ import { CONTACT } from "graphQL/useQueryContact";
 import { getIndexofColumn } from "utils/helper";
 import ReactSelectField from "./SubComponents/ReactSelectField";
 import { Waypoint } from "react-waypoint";
+import TableBody from "./TableBody";
 
 
 // suppress debug console logs
@@ -4173,7 +4174,10 @@ function SubTable(props) {
 
           columns={columns ? columns : []}
           components={{
+            TableBody: TableBody,
             TableViewCol: CustomTableViewCol,
+
+
             TableFilterList: (props.header === "Tax Roll Ownership" || props.parent === "potentialOwnersPerUnit") && !isSearchOpen ? TableFilterList : null,
             icons: {
               FilterIcon,
