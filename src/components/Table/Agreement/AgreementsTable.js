@@ -94,7 +94,6 @@ function AgreementsTable(props) {
     setSelectedGridView(GridViewModule || defaultView);
   }, [GridViewModule]);
 
-  console.log(props.landSearchQuery || 'empty', searchInput || 'empty')
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : []
     props.setInitialFilters(formatedFilter)

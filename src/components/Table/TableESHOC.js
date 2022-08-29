@@ -46,7 +46,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const [changePage, isPageChanged] = useState(false);
         const [page, setPage] = useState(0)
         const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
-        const [, setTotalLength] = useState(0);
+        const [currentRowsLength, setCurrentRowsLength] = useState(0);
 
         const [addToTable, setAddToTable] = useState('')
         const [openDialog, setOpenDialog] = useState(null);
@@ -157,12 +157,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                         if (view.columns) {
                             let viewColumns = view.columns.filter((col) => !actionColumns.find((aC) => aC.name === col.name));
                             let viewActionColumns = view.columns.filter((col) => actionColumns.find((aC) => aC.name === col.name));
-                            // if (viewActionColumns.length === 0) {
-                            //     actionColumns.forEach((aC) => {
-                            //         viewActionColumns.push({ name: aC.name, display: true })
-                            //     })
-                            // }
-                            // viewActionColumns.forEach((vAC) => (vAC.display = true))
                             view.columns = [...viewColumns, ...viewActionColumns]
                         }
                         if (!isEmpty(view)) {
@@ -173,10 +167,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                             columnsData = sortColumns(columnsData, view);
                         }
                         setColumnsData(columnsData)
-                        // clearInterval(interval);
-
                     }
-
                     return cols
                 })
             }
@@ -279,7 +270,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
         useEffect(() => {
             if (tableData?.hits?.length > 0) {
-                setTotalLength(tableData?.total)
+                currentRowsLength === 0 && setCurrentRowsLength(tableData?.total)
                 let { TableHeader, formatColumns, formatHits } = tableMeta
 
                 TableHeader = columns.length > 0 ? columns : TableHeader;
@@ -289,7 +280,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
                 if (isFiniteScroll && changePage) {
                     const rowIndex = rows.length - 5
-                    setRows(rows.concat(tableData?.hits));
+                    setRows(rows.concat(hits));
                     document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
                     isPageChanged(false)
                 }
@@ -321,10 +312,14 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             }
 
             tableCols.forEach((column, index) => {
-                // Update global setting of sticky column in case of infinite scroll
-                const setCellProps = column.options?.setCellProps
-
                 /// apply global settings unless ignored
+                const setCellProps = column.options?.setCellProps
+                if (isFiniteScroll && rows.length && setCellProps
+                    && findInFunction("sticky", setCellProps) && column.name !== '_id') {
+                    column.options.setCellProps = GlobalSettings.muiGridInfScrollOptions.setCellProps
+                    column.options.setCellHeaderProps = GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps
+                }
+
                 if (column?.options?.ignoreGlobal) {
                     column.options = {
                         ...column.options,
@@ -378,7 +373,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     }
                 }
             });
-
             const allFilters = (tableMeta.selectedGridView?.filters || []).concat(initialFilters)
             if (allFilters) {
                 tableCols.forEach((column, index) => {
@@ -672,7 +666,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const updateGridViewRedux = (tableState) => {
             setTableMeta((tableMeta) => {
                 if (tableMeta?.selectedGridView) {
-
                     dispatch(updateUserGridViewSettingAction.STARTED({
                         userGridViewSetting: {
                             module: tableMeta?.typeKeyword?.gridViewCategory,
@@ -685,19 +678,17 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                         }
                     }));
                 }
-                let filters = activeFiltersRef.current;
-                if (props.targetLabel === "well") {
-                    filters = filters.filter(f => f.type !== "geo_intersects");
-                }
-                dispatch(updateUserGridViewFiltersAction(filters));
-
+                // let filters = activeFiltersRef.current;
+                // if (props.targetLabel === "well") {
+                //     filters = filters.filter(f => f.type !== "geo_intersects");
+                // }
+                // dispatch(updateUserGridViewSettingAction(filters));
                 return tableMeta
             })
         }
 
         const viewColumnProps = {
             selectedGridView: tableMeta.selectedGridView,
-            // updateColumnSorting
             updateColumnSorting: (columns) => updateGridViewRedux({ columns }),
         };
 
@@ -748,34 +739,30 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     tableActions.changeESPage();
                     break;
                 case "viewColumnsChange":
-                    updateGridViewRedux(tableState)
-                    viewColumnsChange(tableState.columns);
+                    // updateGridViewRedux(tableState)
+                    // viewColumnsChange(tableState.columns);
                     break;
                 default:
             }
         }
 
-        const viewColumnsChange = (tableColumns) => {
-            for (let i = 0; i < tableColumns.length; i++) {
-
-                if (columns[i]) {
-                    if ((tableColumns[i].display === "true" || tableColumns[i].display === true) && tableColumns[i].display !== false) {
-                        columns[i].options.display = true;
-                        if (columns[i].esKey && !columns[i].noFilter) {
-                            columns[i].options.filter = true;
-                        }
-
-                    } else {
-                        columns[i].options.display = false;
-                        columns[i].options.filter = false;
-                        delete columns[i]?.options.filterOptions;
-
-                    }
-                }
-            }
-
-            setColumnsData(columns);
-        };
+        // const viewColumnsChange = (tableColumns) => {
+        //     for (let i = 0; i < tableColumns.length; i++) {
+        //         if (columns[i]) {
+        //             if ((tableColumns[i].display === "true" || tableColumns[i].display === true) && tableColumns[i].display !== false) {
+        //                 columns[i].options.display = true;
+        //                 if (columns[i].esKey && !columns[i].noFilter) {
+        //                     columns[i].options.filter = true;
+        //                 }
+        //             } else {
+        //                 columns[i].options.display = false;
+        //                 columns[i].options.filter = false;
+        //                 delete columns[i]?.options.filterOptions;
+        //             }
+        //         }
+        //     }
+        //     Columns(columns);
+        // };
 
         const count = tableData?.total || 0
 
@@ -841,18 +828,16 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         options.page = page
 
         const onInfiniteScroll = () => {
-            let finalLength
-
-            setTotalLength(length => {
-                finalLength = length
-                return length
-            })
-
-            setRows(state => {
-                if (state.length < finalLength)
-                    document.getElementById('pagination-next').click()
-
-                return state
+            setCurrentRowsLength(currentRowsLength => {
+                Loading((loading) => {
+                    setRows(rows => {
+                        if (rows.length < currentRowsLength && !loading)
+                            document.getElementById('pagination-next').click()
+                        return rows
+                    })
+                    return loading
+                })
+                return currentRowsLength
             })
         }
 

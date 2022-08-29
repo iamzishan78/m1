@@ -17,6 +17,7 @@ import {
   sortableHandle,
 } from "react-sortable-hoc";
 import { arrayMoveImmutable } from "array-move";
+import { findInFunction } from "utils/helper";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -47,7 +48,7 @@ const CustomerViewCol = (props) => {
   const classes = useStyles();
   const [, setStateApp] = useContext(AppContext);
   const [items, setItems] = useState([]);
-  const { updateColumns, columns, tableColumns, updateColumnSorting, selectedGridView } = props;
+  const { updateColumns, onColumnUpdate, columns, tableColumns, updateColumnSorting, selectedGridView } = props;
 
 
   const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
@@ -82,12 +83,14 @@ const CustomerViewCol = (props) => {
             selectedGridView={selectedGridView}
             tableColumns={tableColumns}
             updateColumns={updateColumns}
+            onColumnUpdate={onColumnUpdate}
             updateMetaData={updateMetaData}
             columns={columns}
             updateColumnSorting={updateColumnSorting}
             setItems={(value) => {
               setItems(value)
-              updateColumnSorting(value)
+              const stickyColumns = columns.filter(column => column.setCellProps && findInFunction("sticky", column.setCellProps))
+              updateColumnSorting(stickyColumns.concat(value))
             }}
           />
         </div>
@@ -117,6 +120,7 @@ const SortableComponent = ({
   selectedGridView,
   updateColumnSorting,
   updateColumns,
+  onColumnUpdate,
   updateMetaData,
   items,
 }) => {
@@ -133,6 +137,7 @@ const SortableComponent = ({
         selectedGridView={selectedGridView}
         updateColumnSorting={updateColumnSorting}
         tableColumns={tableColumns}
+        onColumnUpdate={onColumnUpdate}
         updateColumns={updateColumns}
         updateMetaData={updateMetaData}
         onSortEnd={onSortEnd}
@@ -150,6 +155,7 @@ const SortableList = SortableContainer(
     selectedGridView,
     updateColumnSorting,
     updateColumns,
+    onColumnUpdate,
     updateMetaData,
     setItems,
   }) => {
@@ -169,7 +175,7 @@ const SortableList = SortableContainer(
       <List style={{ margin: 0, padding: 0 }} component="div">
         {items.map((item, index) => (
           <SortableItem
-            key={`item-${item.value}`}
+            key={`item-${index}-${item.value}`}
             index={index}
             item={item}
             columns={columns}
@@ -178,6 +184,7 @@ const SortableList = SortableContainer(
             tableColumns={tableColumns}
             updateColumns={updateColumns}
             updateMetaData={updateMetaData}
+            onColumnUpdate={onColumnUpdate}
             removeIndex={removeIndex}
             updateIndex={updateIndex}
             itemIndex={index}
@@ -200,6 +207,7 @@ const SortableItem = SortableElement(
     tableColumns,
     columns,
     updateColumns,
+    onColumnUpdate,
     selectedGridView,
     updateColumnSorting,
     updateMetaData,
@@ -242,14 +250,13 @@ const SortableItem = SortableElement(
             )}
             <Checkbox
               style={{ padding: 3 }}
-              checked={item.display === "true"}
+              checked={item.display === "true" || item.display === true}
               onChange={(e) => {
                 const index = columns.findIndex((co) => co.name === item.name);
-                item.display === "false"
-                  ? (columns[index].display = "true")
-                  : (columns[index].display = "false");
-                updateColumnSorting(columns)
+                columns[index].display = e.target.checked.toString()
+                onColumnUpdate(index)
                 updateColumns(columns);
+                updateColumnSorting(columns)
               }}
               color="primary"
             />

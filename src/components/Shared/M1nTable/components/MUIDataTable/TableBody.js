@@ -299,7 +299,6 @@ class TableBody extends React.Component {
                                         isRowExpanded={this.isRowExpanded(dataIndex)}
                                         isRowSelectable={isRowSelectable}
                                         dataIndex={dataIndex}
-                                        rowIndex={rowIndex}
                                         id={'MUIDataTableSelectCell-' + dataIndex}
                                         components={components}
                                     />

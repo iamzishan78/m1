@@ -144,7 +144,7 @@ const TableSelectCell = ({
                 {
                     components.showRowNumber &&
                     <div style={{ fontWeight: 'bold' }}>
-                        {rowIndex + 1}
+                        {dataIndex + 1}
                     </div>
                 }
             </div>
