@@ -704,7 +704,7 @@ export default function DetailComponents(props) {
               ownerPlaceHolder='Assign Approver'
               ownerTitle="Approver"
               isApproval={true}
-              onUpdate={(data) => updateAgreement('approvalStatus', data.status)}
+              onUpdate={(data) => Object.keys(data).forEach(key => updateAgreement(key, data[key]))}
               isSource={false}
             />
           </div>
