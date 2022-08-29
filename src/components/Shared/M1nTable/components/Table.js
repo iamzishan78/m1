@@ -1913,6 +1913,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customRender: (value, tableMeta) => {
+                  value = value?.toString()
                   const splitNumber = value?.split("_");
 
                   const styles = {
