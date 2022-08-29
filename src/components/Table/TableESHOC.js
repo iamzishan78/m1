@@ -433,9 +433,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     viewColumns: false
                 }
 
-                if (!rows.length)
-                    idOptions.display = false
-
                 tableCols[0].label = " "
                 tableCols[0].options = { ...tableCols[0].options, ...idOptions }
             }
@@ -524,6 +521,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                         return newTags
                     })();
             }
+
 
             if (actions.includes('ifAreContacts')) {
                 const ifAreContacs = checkIfOwnersAreContactsDataRef?.current?.ifAreContacts || []

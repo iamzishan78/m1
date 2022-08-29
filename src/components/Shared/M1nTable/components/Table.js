@@ -1352,9 +1352,6 @@ function SubTable(props) {
           };
           return
         }
-
-        console.log('FISHBRAIN 5', column)
-
         switch (column.name) {
 
 
@@ -1467,15 +1464,15 @@ function SubTable(props) {
                           color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                           fgColor="#000"
                           name={
-                            valueFormatter(column, tableMeta.rowData[8]) ||
-                            valueFormatter(column,
-                              `${tableMeta.rowData[10]
-                                ? tableMeta.rowData[10]
-                                : tableMeta.rowData[8]
-                                  ? tableMeta.rowData[8].split(" ")[0]
-                                  : ""
-                              }`
-                            )
+                            (valueFormatter(column, tableMeta.rowData[8]) ||
+                              valueFormatter(column,
+                                `${tableMeta.rowData[10]
+                                  ? tableMeta.rowData[10]
+                                  : tableMeta.rowData[8]
+                                    ? tableMeta.rowData[8].split(" ")[0]
+                                    : ""
+                                }`
+                              )).split(' ').splice(0, 2).join(' ')
                           }
                           // name={valueFormatter(column, `${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
                           size="35"
