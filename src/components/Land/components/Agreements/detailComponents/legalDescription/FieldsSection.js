@@ -143,7 +143,6 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                         ),
                       }}
                       fullWidth
-                    // defaultValue={agreementDetails?.grossAcres ?? ""}
                     />
                   )}
                 />
