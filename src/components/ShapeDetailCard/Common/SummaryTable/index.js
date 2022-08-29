@@ -504,16 +504,18 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                       )}
                       {!data.nonEditable && data.key !== "campaignName" && (
                         <Grid item>
-                          <Tooltip title={"Edit"} placement="top">
-                            <IconButton
-                              size="small"
-                              onClick={() => {
-                                setTableDataState({ [data.key]: true });
-                              }}
-                            >
-                              <CreateTwoToneIcon id="contPencilIcon" />
-                            </IconButton>
-                          </Tooltip>
+                          {editIconState[data.key] && (
+                            <Tooltip title={"Edit"} placement="top">
+                              <IconButton
+                                size="small"
+                                onClick={() => {
+                                  setTableDataState({ [data.key]: true });
+                                }}
+                              >
+                                <CreateTwoToneIcon id="contPencilIcon" className={classes.pencilIcon} />
+                              </IconButton>
+                            </Tooltip>
+                          )}
                         </Grid>
                       )}
                     </Grid>
