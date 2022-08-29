@@ -289,7 +289,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
                 if (isFiniteScroll && changePage) {
                     const rowIndex = rows.length - 5
-                    setRows(rows.concat(tableData?.hits));
+                    setRows(rows.concat(hits));
                     document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
                     isPageChanged(false)
                 }
