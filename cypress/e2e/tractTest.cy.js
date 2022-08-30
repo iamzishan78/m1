@@ -9,12 +9,12 @@ describe('empty spec', () => {
     cy.wait(14000)
 
     cy.get('#data-name-select', { timeout: 14000 }).should('be.visible').click()
-    cy.wait(1000)
-    cy.get('.MuiList-root', { timeout: 10000 }).should('be.visible').contains('Units').click()
+    cy.wait(2000)
+    cy.get('.MuiList-root', { timeout: 10000 }).should('be.visible').contains('Tracts').click()
 
     cy.wait(2000)
 
-    cy.get('#cognitive-search-autocomplete', { timeout: 10000 }).should('be.visible').type('p-t').then((option) => {
+    cy.get('#cognitive-search-autocomplete', { timeout: 10000 }).should('be.visible').type('T&P').then((option) => {
       option[0].click();
     })
 
@@ -32,11 +32,10 @@ describe('empty spec', () => {
     });
 
     cy.wait(2000)
-    cy.contains('Unit Name').siblings('.MuiTableCell-root').children().children().children().eq(1).trigger('mouseover', { force: true }).children().click({ force: true })
+    cy.contains('Tract Name').siblings('.MuiTableCell-root').children().children().children().eq(1).trigger('mouseover', { force: true }).children().click({ force: true })
 
 
-    cy.contains('Unit Name').siblings().eq(0).children().children().children().eq(0).type('{backspace}{backspace}{backspace}PR{enter}')
-
+    cy.contains('Tract Name').siblings().eq(0).children().children().children().eq(0).type('{backspace}{backspace}{backspace}PR{enter}')
 
     cy.wait('@updateCustomLayerApiCheck', { timeout: 10000 }).then((interception) => {
       assert.isNotNull(interception.response.body, 'Update Custom Layer api call has data')

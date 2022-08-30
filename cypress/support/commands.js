@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /// <reference types="cypress" />
 // ***********************************************
 // This example commands.ts shows you how to
@@ -24,14 +25,21 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+
+
+Cypress.Commands.add("checkAndLogin", (selector) => {
+    //This command will logged in if it is not already logged in
+    cy.get('body').then(($body) => {
+        if ($body.find(selector).length) {
+            cy.get('input').type('localhost')
+            cy.get('.MuiButtonBase-root').click()
+
+            cy.wait(4000)
+
+            cy.get('#signInName', { timeout: 10000 }).should('be.visible').type('support@m1neral.com')
+            cy.get('#password').type('M1neral2022')
+            cy.wait(4000)
+            cy.get('#next').click()
+        }
+    })
+})
