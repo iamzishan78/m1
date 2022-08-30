@@ -140,7 +140,8 @@
     "uid": "^2.0.0",
     "universal-cookie": "^4.0.4",
     "validate-date": "^2.0.0",
-    "viewport-mercator-project": "^7.0.2"
+    "viewport-mercator-project": "^7.0.2",
+    "yarn": "^1.22.19"
   },
   "scripts": {
     "cypress:open": "cypress open",
