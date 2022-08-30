@@ -1,7 +1,4 @@
-import { IconButton } from "@material-ui/core";
-import MapFilledIcon from "components/Shared/svgIcons/MapFilled";
-import { history } from "store";
-import GlobalSettings from "..//..//..//GlobalSettings.js";
+import GlobalSettings from "GlobalSettings";
 
 const AgreementsHeadCells = (isSnapGrid = false) => [
   {
@@ -18,7 +15,19 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       ...GlobalSettings.muiGridInfScrollOptions,
       ignoreGlobal: true,
       dbName: "shapeJson.properties.agreementNumber",
-      isSnapGrid: isSnapGrid
+      isSnapGrid,
+      setCellProps: () => ({
+        style: {
+          ...GlobalSettings.muiGridInfScrollOptions.setCellProps().style,
+          left: isSnapGrid ? "77px" : "167px",
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          ...GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps().style,
+          left: isSnapGrid ? "77px" : "167px",
+        }
+      }),
     },
   },
   // //temp hide until we decide how we want this to work

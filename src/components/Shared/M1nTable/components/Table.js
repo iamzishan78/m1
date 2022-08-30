@@ -1859,7 +1859,6 @@ function SubTable(props) {
               };
             }
             break;
-
           case "isTracked":
             {
               column.options = {
@@ -1989,11 +1988,11 @@ function SubTable(props) {
                             onClick={(e) => {
                               e.stopPropagation();
 
-                              if (isSnapGrid)
-                                history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
+                              if (isSnapGrid && tableMeta.rowData[3])
+                                history.push(`/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}`,
                                   { showAgreementBreadcrumb: false }
                                 );
-                              else
+                              else if (!isSnapGrid)
                                 history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
                                   { showAgreementBreadcrumb: true }
                                 );
