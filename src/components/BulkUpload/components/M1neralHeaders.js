@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
@@ -11,7 +11,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { AppContext } from "../../../AppContext";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 // queries
-import { useApolloClient } from "@apollo/client";
+import { MenuItem, Select } from "@material-ui/core";
 // import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 // import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
@@ -57,6 +57,11 @@ const big_text = {
   fontWeight: "bold",
   color: "#101010",
 };
+const medium_text = {
+  fontSize: "20px",
+  fontWeight: "bold",
+  color: "#101010",
+};
 const padding_div_top = {
   paddingTop: "1.3vh",
 };
@@ -98,7 +103,6 @@ const StyledTableCell = withStyles((theme) => ({
 export default function M1neralHeaders(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
-  const client = useApolloClient();
 
   let columns = [
     { label: "Import" },
@@ -155,7 +159,7 @@ export default function M1neralHeaders(props) {
 
   const changeDataToSendState = async () => {
     let headers = stateApp.mappedHeadersFromCSV;
-    let arr_data = stateApp.csvContactsList;
+    let arr_data = stateApp.csvDataList;
     // let filtered_data_to_send = arr_data.map((obj) => {
     let filtered_data_to_send = [];
     for await (const obj of arr_data) {
@@ -169,12 +173,12 @@ export default function M1neralHeaders(props) {
           return_obj[header.actual_key] = obj.data[header.mapped_key];
         }
       }
-      if(['PROPERTIES'].includes(stateApp.jobType)) {
+      if (['PROPERTIES'].includes(stateApp.jobType)) {
         Object.keys(return_obj).forEach(key => {
-          if(return_obj[key] instanceof Date ){
+          if (return_obj[key] instanceof Date) {
             return_obj[key] = return_obj[key].toISOString()
           }
-          if(key === 'wellsApiNumbers' && typeof return_obj[key] === 'number' ){
+          if (key === 'wellsApiNumbers' && typeof return_obj[key] === 'number') {
             return_obj[key] = return_obj[key].toString()
           }
         })
@@ -228,136 +232,6 @@ export default function M1neralHeaders(props) {
         }
       }
 
-      // if (['TRACTS'].includes(stateApp.jobType) &&
-      //   (!return_obj["landgrid._id"] ||
-      //     !return_obj["landgrid.name"])) {
-      //   const { data: landGridGeoms } = await client.query({
-      //     query: GET_ES_SIMPLE_SEARCH,
-      //     variables: {
-      //       index: "platformData:landgrid",
-      //       filters: [
-      //         ...[
-      //           "landgrid.level1Type.State",
-      //           "landgrid.level2Type.County",
-      //           "landgrid.level3Type.Survey",
-      //           "landgrid.level4Type.Block",
-      //           "landgrid.level5Type.Section",
-      //           "landgrid.level6Type.Abstract",
-      //           "landgrid.level3Type.Meridian",
-      //           "landgrid.level5Type.TownshipRange",
-      //           "landgrid.level6Type.Section"
-      //         ].flatMap((key) => {
-      //           const keyParts = key.split(".");
-      //           return (return_obj[key]) ?
-      //             [
-      //               { field: `${keyParts[1]}.keyword`, value: keyParts[2] },
-      //               { field: `${keyParts[1].replace("Type", "Name")}.keyword`, value: return_obj[key] }
-      //             ] :
-      //             []
-      //         }),
-      //         { field: "level7Id.keyword", value: undefined },
-      //         { field: "level8Id.keyword", value: undefined },
-      //         { field: "level9Id.keyword", value: undefined },
-      //         { field: "level10Id.keyword", value: undefined }
-      //       ],
-      //       sort: [],
-      //     }
-      //   });
-
-      //   if (landGridGeoms?.getESSimpleSearch?.total > 0) {
-      //     return_obj["landgrid._id"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?._id;
-      //     return_obj["landgrid.name"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?.level6Name;
-      //   }
-
-      //   if (!return_obj["landgrid._id"] ||
-      //     !return_obj["landgrid.name"]) {
-      //     filtered_data_to_send.push(null)
-      //     continue;
-      //   }
-      // }
-
-
-      // if (['UNITS'].includes(stateApp.jobType) &&
-      //   (!return_obj["landgrid._id"] ||
-      //     !return_obj["landgrid.name"])) {
-      //   const { data: landGridGeoms } = await client.query({
-      //     query: GET_ES_PAGINATED_LIST,
-      //     variables: {
-      //       esIndex: "platformData:landgrid",
-      //       filters: [
-      //         ...[
-      //           "landgrid.level1Type.State",
-      //           "landgrid.level2Type.County",
-      //           "landgrid.level3Type.Survey",
-      //           "landgrid.level4Type.Block",
-      //           "landgrid.level5Type.Section",
-      //           "landgrid.level6Type.Abstract",
-      //           "landgrid.level3Type.Meridian",
-      //           "landgrid.level5Type.TownshipRange",
-      //           "landgrid.level6Type.Section"
-      //         ].flatMap((key) => {
-      //           const keyParts = key.split(".");
-      //           return (return_obj[key]) ?
-      //             [
-      //               { field: `${keyParts[1]}.keyword`, value: keyParts[2] },
-      //               { field: `${keyParts[1].replace("Type", "Name")}.keyword`, value: return_obj[key] }
-      //             ] :
-      //             []
-      //         }),
-      //         { field: "level7Id.keyword", value: undefined },
-      //         { field: "level8Id.keyword", value: undefined },
-      //         { field: "level9Id.keyword", value: undefined },
-      //         { field: "level10Id.keyword", value: undefined }
-      //       ],
-      //       pagination: {
-      //         first: 25,
-      //         keep_alive: "1micros"
-      //       },
-      //       sort: [],
-      //     }
-      //   });
-
-      //   if (landGridGeoms?.getESSimpleSearch?.total > 0) {
-      //     return_obj["landgrid._id"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?._id;
-      //     return_obj["landgrid.name"] = landGridGeoms?.getESSimpleSearch?.hits?.[0]?.level6Name;
-      //   }
-
-      //   if (!return_obj["landgrid._id"] ||
-      //     !return_obj["landgrid.name"]) {
-      //     filtered_data_to_send.push(null)
-      //     continue;
-      //   }
-      // }
-
-      // if ('CONTACTSWELLINTEREST' === stateApp.jobType &&
-      //   (return_obj["well.globalWell"] ||
-      //     return_obj["well.apiNumber"])) {
-      //   const query = {
-      //     fields:['name^4', '_all'],
-      //     query:return_obj["well.globalWell"] || return_obj["well.apiNumber"] ? return_obj["well.apiNumber"].toString() : return_obj["well.apiNumber"]
-      //   }
-      //   const { data: wellsGeoms } = await client.query({
-      //     query: GET_ES_SIMPLE_SEARCH,
-      //     variables: {
-      //       index: "platformData:wells",
-      //       search: query,
-      //       sort: [],
-      //     }
-      //   });
-
-      //   if (wellsGeoms?.getESSimpleSearch?.total > 0) {
-      //     return_obj["well.globalWell"] = return_obj["well.globalWell"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.id;
-      //     return_obj["well.apiNumber"] = return_obj["well.apiNumber"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.ApiNumber;
-      //     return_obj["well.wellName"] = return_obj["well.wellName"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.WellName;
-      //     return_obj["well.state"] = return_obj["well.state"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.State;
-      //     return_obj["well.county"] = return_obj["well.county"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.County;
-      //     return_obj["well.leaseId"] = return_obj["well.leaseId"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.LeaseId;
-      //     return_obj["well.lease"] = return_obj["well.lease"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.Lease;
-      //     return_obj["well.leaseAcres"] = return_obj["well.leaseAcres"] || wellsGeoms?.getESSimpleSearch?.hits?.[0]?.leaseAcres;
-      //   }
-      // }
-
-
       filtered_data_to_send.push(return_obj)
     };
     filtered_data_to_send = filtered_data_to_send.filter((obj) => {
@@ -369,13 +243,19 @@ export default function M1neralHeaders(props) {
 
     setStateApp((state) => ({
       ...state,
-      csvContactsListToSend: filtered_data_to_send,
+      csvDataToSend: filtered_data_to_send,
     }));
   };
 
   useEffect(() => {
     changeDataToSendState();
   }, []);
+
+  const shapeTransferOptions = [
+    { key: 'Both', label: 'Create new and update existing' },
+    { key: 'New', label: 'Only create new' },
+    { key: 'Existing', label: 'Only update existing' }
+  ]
 
   return (
     <div style={main_div}>
@@ -461,10 +341,36 @@ export default function M1neralHeaders(props) {
             </Table>
           </TableContainer>
         </Paper>
-        <div style={{ ...text_grey }}>
-          *First Name or Last Name is required to be mapped <br /> before
-          uploading contacts.
-        </div>
+
+        {['AGREEMENT_HEADER', 'SHAPE_TO_M1_LAYER'].includes(stateApp.jobType) ?
+          <>
+            <div style={{ ...medium_text, ...padding_div_top }}>
+              Select an import option for your data
+            </div>
+            <div >
+              <Select
+                variant='outlined'
+                style={{ width: '400px', marginTop: '10px', marginBottom: '10px', height: 40 }}
+                labelId="agreement-outlined-label"
+                id="agreement-outlined"
+                value={stateApp.selectedShapeLayerOption}
+                dense
+                fullWidth
+                onChange={(e) => { setStateApp((state) => ({ ...state, selectedShapeLayerOption: e.target.value })); }}
+              >
+                {shapeTransferOptions.map((option) => <MenuItem style={{ display: stateApp.selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option.key} >{option.label}</MenuItem>)}
+              </Select>
+            </div>
+
+            <div style={{ ...text_grey }}>
+              *Note: Existing agreements will be matched on M1neral ID or Agreement Number
+            </div>
+          </>
+          : <div style={{ ...text_grey }}>
+            *First Name or Last Name is required to be mapped <br /> before
+            uploading contacts.
+          </div>
+        }
       </div>
     </div>
   );
