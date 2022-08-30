@@ -1859,6 +1859,7 @@ function SubTable(props) {
               };
             }
             break;
+
           case "isTracked":
             {
               column.options = {
@@ -2975,8 +2976,6 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-
-                  console.log('FISHBRAIN 6', column)
 
                   if (column.isCustom && (column.type === "multiselect" || column.type === "dropdown")) {
                     let value = null;

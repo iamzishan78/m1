@@ -332,11 +332,12 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 }
 
                 /// apply global settings unless ignored
-                if (column?.options?.ignoreGlobal) {
+                if (column?.options?.ignoreGlobal || column?.label === " ") {
                     column.options = {
                         ...column.options,
                     };
-                } else {
+                }
+                else {
                     column.options = {
                         ...GlobalSettings.muiGridStandardOptions,
                         ...column.options,
