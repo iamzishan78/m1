@@ -14,9 +14,9 @@ describe('empty spec', () => {
     cy.wait(4000)
     cy.get('#next').click()
 
-    cy.wait(16000)
+    cy.wait(14000)
 
-    cy.get('#data-name-select', { timeout: 10000 }).should('be.visible').click()
+    cy.get('#data-name-select', { timeout: 14000 }).should('be.visible').click()
     cy.wait(1000)
     cy.get('.MuiList-root', { timeout: 10000 }).should('be.visible').contains('Units').click()
 
