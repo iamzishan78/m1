@@ -1,7 +1,8 @@
 /* eslint-disable no-undef */
 
-describe('empty spec', () => {
+describe('unit summary testing', () => {
   it('passes', () => {
+    cy.viewport(1400, 900)
     cy.visit('http://localhost:3000')
 
     cy.checkAndLogin('#workSpaceSignin')
@@ -35,11 +36,11 @@ describe('empty spec', () => {
     cy.contains('Unit Name').siblings('.MuiTableCell-root').children().children().children().eq(1).trigger('mouseover', { force: true }).children().click({ force: true })
 
 
-    cy.contains('Unit Name').siblings().eq(0).children().children().children().eq(0).type('{backspace}{backspace}{backspace}PR{enter}')
+    cy.contains('Unit Name').siblings().eq(0).children().children().children().eq(0).type('{backspace}{backspace}{backspace}TR{enter}')
 
 
     cy.wait('@updateCustomLayerApiCheck', { timeout: 10000 }).then((interception) => {
-      assert.isNotNull(interception.response.body, 'Update Custom Layer api call has data')
+      assert.isNotNull(interception.response.body, 'Update Custom Layer api called Successfully')
     })
     // cy.get('.MuiList-root', { timeout: 10000 }).should('be.visible').contains('Units').click()
 
