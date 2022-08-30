@@ -142,6 +142,7 @@
   },
   "scripts": {
     "cypress:open": "cypress open",
+    "cy:run": "cypress run",
     "legacy-start": "react-scripts start",
     "start": "craco start",
     "legacy-build": "react-scripts build",
