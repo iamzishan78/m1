@@ -73,9 +73,9 @@ export default function CustomDatesActivities({
 }) {
   const classes = useStyles();
   useEffect(() => {
-    handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+    if (minDate) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [minDate]);
 
   const getFlaggedMoment = (moment) => {
     return moment >= 10 ? moment : `0${moment}`;
@@ -84,7 +84,7 @@ export default function CustomDatesActivities({
   const handleDateTypeChange = (date) => {
     handleCustomDateTypeChange(date, null, CUSTOM_DATES, setFromDate, setToDate, minDate)
   }
-  
+
   return (
     <div style={{ display: "flex" }}>
       <Grid
@@ -268,7 +268,7 @@ const CampaignFilter = ({
     }
     const filters = [...rangeFilters, ...tableFilters]
     const index = filters.findIndex(f => f.field === 'contact.campaignName.keyword')
-    if(index > -1){
+    if (index > -1) {
       filters.splice(index, 1);
     }
     return filters;
@@ -354,7 +354,7 @@ const QualifierFilter = ({
     }
     const filters = [...rangeFilters, ...tableFilters]
     const index = filters.findIndex(f => f.field === 'ownerName.keyword')
-    if(index > -1){
+    if (index > -1) {
       filters.splice(index, 1);
     }
     return filters;
