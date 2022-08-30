@@ -1567,8 +1567,8 @@ function SubTable(props) {
                             props.showParcelDetails(selectedParcel);
                           } else {
                             let selectedWell = props.rows.find((row) => {
-                              if (row.id) return row.id == tableMeta.rowData[0];
-                              return row.Id == tableMeta.rowData[0];
+                              if (row.id) return row.id === tableMeta.rowData[0];
+                              return row.Id === tableMeta.rowData[0];
                             });
 
                             if (selectedWell) {
@@ -1839,9 +1839,9 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           // for unit wells we need to use globalWell instead of wellId
-                          if (props.parent === "UnitsTable") {
+                          if (props.parent === "UnitsTable" || props.parent === "search") {
                             const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
-                            history.push(`/map/units/${row_line._id}`)
+                            openUnitDetailCard(row_line._id);
                           }
                           if (props.targetLabel === "well") {
                             value.wellId = props.rows[tableMeta.rowIndex].globalWell;
@@ -1859,7 +1859,6 @@ function SubTable(props) {
               };
             }
             break;
-
           case "isTracked":
             {
               column.options = {
@@ -1989,11 +1988,11 @@ function SubTable(props) {
                             onClick={(e) => {
                               e.stopPropagation();
 
-                              if (isSnapGrid)
-                                history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
+                              if (isSnapGrid && tableMeta.rowData[3])
+                                history.push(`/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}`,
                                   { showAgreementBreadcrumb: false }
                                 );
-                              else
+                              else if (!isSnapGrid)
                                 history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
                                   { showAgreementBreadcrumb: true }
                                 );
@@ -3197,6 +3196,15 @@ function SubTable(props) {
       setViewColumns(props.addColumnFilter);
     }
   }, [props.columns, props.rows, rows, colInd, rowInd, m1nSelectedRowsTracks, m1nSelectedRowsIndexes, m1nSelectedRowsIds]);
+
+  const openUnitDetailCard = (unitId) => {
+    dispatch(
+      setMapGridCardState({
+        mapGridCardActivated: false,
+      })
+    );
+    history.push(`/map/units/${unitId}`);
+  }
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
