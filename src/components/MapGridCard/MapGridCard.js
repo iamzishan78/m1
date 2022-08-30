@@ -343,7 +343,7 @@ function MapGridCard(props) {
   const handleSearchPanelChange = (value) => {
     setSearchTapValue(value);
     if (searchTapValue.index !== value.index) {
-      dispatch(setMapGridCardState({ searchResultData: [], searchloading: true }));
+      dispatch(setMapGridCardState({ searchInputValue: "", searchResultData: [], searchloading: true }));
     }
   };
 

@@ -142,7 +142,6 @@ const wellsColumnHeaders = [
     name: "coordinates",
     label: " ",
     options: {
-      ignoreGlobal: true,
       filter: false,
       sort: false,
       searchable: false,
