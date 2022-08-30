@@ -177,13 +177,6 @@ function MapGridCardSearch(props) {
         })
       );
     }
-    return () => {
-      dispatch(
-        setMapGridCardState({
-          searchInputValue: '',
-        })
-      );
-    }
   }, [esSearchData])
 
 

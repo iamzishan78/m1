@@ -12,7 +12,26 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Agreement",
     esKey: "shapeJson.properties.agreementNumber.keyword",
     options: {
-      ...GlobalSettings.muiGridInfScrollOptions,
+      setCellProps: () => ({
+        style: {
+          minWidth: "300px",
+          maxWidth: "350px",
+          whiteSpace: "nowrap",
+          position: "sticky",
+          left: "77px",
+          zIndex: 200,
+          boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+          padding: '0px 25px 0px 0px',
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          position: "sticky",
+          zIndex: 201,
+          left: "77px",
+          paddingLeft: "0px"
+        }
+      }),
       ignoreGlobal: true,
       dbName: "shapeJson.properties.agreementNumber",
       isSnapGrid,
@@ -42,6 +61,17 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Agreement Name",
     esKey: "shapeJson.properties.agreementName.keyword",
     options: {
+      setCellProps: () => ({
+        style: {
+          minWidth: "300px",
+          maxWidth: "350px"
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          paddingLeft: "0px"
+        }
+      }),
       dbName: "shapeJson.properties.agreementName",
       // ignoreGlobal: true,
       display: false,
