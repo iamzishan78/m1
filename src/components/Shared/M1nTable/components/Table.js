@@ -672,16 +672,16 @@ function SubTable(props) {
   // handlers
   const handleWellFlyTo = (value) => {
     const shapeId = history.location.pathname.split("/");
-    const shapeType = stateApp.selectedShape.type;
+    const shapeType = stateApp?.selectedShape?.type;
     history.push(
-      `/map/wells/${value?.wellId.toUpperCase()}`,
-      {
+      `/map/wells/${value?.wellId}`,
+      shapeType ? {
         fromShapeDetail: true,
         shapeName: stateApp.selectedShape.shapeLabel,
         shapeId: shapeId[shapeId.length - 1],
         shapeType: shapeType === "agreement" ? "Agreements" : "Units",
         link: shapeType === "agreement" ? `/land/agreement/details/${stateApp.selectedShape.id}` : `/map/units/${shapeId[shapeId.length - 1]}`
-      }
+      }: null
     );
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -1859,6 +1859,7 @@ function SubTable(props) {
               };
             }
             break;
+
           case "isTracked":
             {
               column.options = {
@@ -2975,8 +2976,6 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-
-                  console.log('FISHBRAIN 6', column)
 
                   if (column.isCustom && (column.type === "multiselect" || column.type === "dropdown")) {
                     let value = null;
