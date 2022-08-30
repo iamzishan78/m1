@@ -83,6 +83,15 @@ const wellsColumnHeaders = [
       filter: true,
     }
   },
+  {
+    name: "globalWell",
+    label: "Global  Well",
+    esKey: "Id.keyword",
+    options: {
+      display: false,
+      filter: false,
+    }
+  },
   // {
   //   name: "tags",
   //   label: "Tags ",
