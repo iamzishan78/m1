@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
-import { Container } from "@material-ui/core";
+import { Container, Dialog } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import Agreements from "components/Shared/svgIcons/agreements";
@@ -30,7 +30,6 @@ import GridView from "components/Shared/GridView";
 // value formatters 
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 
-const genericDataActions = ['tags', 'comments', 'tracks']
 function AgreementsTable(props) {
   const defaultView = {
     name: `All Agreements`,
@@ -40,13 +39,14 @@ function AgreementsTable(props) {
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState(defaultView);
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   // queries
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
   const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
 
-  const classes = usetableStyles({ isFullHeight: true });
+  const classes = usetableStyles({ isFullHeight: true, isAgreementsTable: true });
+
 
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
@@ -86,10 +86,15 @@ function AgreementsTable(props) {
   }
 
   useEffect(() => {
+    if (props.landSearchQuery)
+      setStateApp((stateApp) => ({ ...stateApp, landSearchQuery: '' }))
+  }, [])
+
+  useEffect(() => {
     setSelectedGridView(GridViewModule || defaultView);
   }, [GridViewModule]);
 
-
+  console.log(props.landSearchQuery || 'empty', searchInput || 'empty')
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : []
     props.setInitialFilters(formatedFilter)
@@ -101,7 +106,7 @@ function AgreementsTable(props) {
       searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
-      startPaginationAt: 25,
+      startPaginationAt: 50,
       typeKeyword: { gridViewCategory: "Agreements", metaModule: "Agreement" },
       filters: [
         {
@@ -116,8 +121,6 @@ function AgreementsTable(props) {
         value: stateApp?.currentFeature?.geometry
       },
       formatHits,
-
-      modifySelectedGridView: modifySelectedGridView
     });
     // eslint-disable-next-line
   }, [searchInput, props.landSearchQuery, props.filterToggle]);
@@ -172,8 +175,6 @@ function AgreementsTable(props) {
     if (selectedGridView?.name === 'My Agreements' && selectedGridView?.filters?.length)
       selectedGridView.filters[0].value = stateApp.user._id;
   };
-
-
   const headerProps = {
     columns: props.columns,
     showViewModal,
@@ -192,6 +193,31 @@ function AgreementsTable(props) {
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
+      {/* <Dialog
+        open={props.openDialog ? true : false}
+        onClose={() => props.setOpenDialog(null)}
+        fullWidth={true}
+        maxWidth={"sm"}
+      >
+        {props.openDialog === "delete" && (
+          <DeleteConfirmationDialogContent
+            header={`Delete Revenue Statement(s)`}
+            onClose={() => props.setOpenDialog(null)}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={props.selectedRows.map(
+              (sR) => props.rows[sR.dataIndex]._id
+            )}
+            setM1nSelectedRowsIndexes={props.setSelectedRows}
+          >
+            {`Do you want to delete the selected revenue statement${props.selectedRows &&
+              props.selectedRows.length > 1 &&
+              props.selectedRows.length > 1
+              ? "s"
+              : ""
+              }?`}
+          </DeleteConfirmationDialogContent>
+        )}
+      </Dialog> */}
       {showViewModal && (
         <GridView
           columns={props.columns}
@@ -233,6 +259,7 @@ function AgreementsTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

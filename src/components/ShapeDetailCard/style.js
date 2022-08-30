@@ -331,9 +331,10 @@ export const summaryTableStyles = makeStyles((theme) => ({
   },
 
   select: {
-    "& .MuiOutlinedInput-root": {
-      height: "38px",
-    },
+    height: "38px",
+    // "& .MuiOutlinedInput-root": {
+    //   height: "38px",
+    // },
   },
   positionRenewIcon: {
     position: "absolute",
