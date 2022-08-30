@@ -2975,8 +2975,6 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
 
-                  console.log('FISHBRAIN 6', column)
-
                   if (column.isCustom && (column.type === "multiselect" || column.type === "dropdown")) {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
