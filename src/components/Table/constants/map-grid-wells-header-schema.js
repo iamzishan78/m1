@@ -69,7 +69,7 @@ const wellsColumnHeaders = [
     name: "operator",
     label: "Operator Name",
     esKey: "operator.keyword",
-    options:{
+    options: {
       display: true,
       filter: true,
     }
@@ -78,7 +78,7 @@ const wellsColumnHeaders = [
     name: "wellBoreProfile",
     label: "Well Profile",
     esKey: "wellBoreProfile.keyword",
-    options:{
+    options: {
       display: true,
       filter: true,
     }
@@ -142,6 +142,7 @@ const wellsColumnHeaders = [
     name: "coordinates",
     label: " ",
     options: {
+      ignoreGlobal: true,
       filter: false,
       sort: false,
       searchable: false,

@@ -1,5 +1,3 @@
-import React from "react";
-
 /* props is just a style object*/
 
 const TrackedOwnersHeadCells = [
@@ -145,6 +143,7 @@ const TrackedOwnersHeadCells = [
     name: "coordinates",
     label: " ",
     options: {
+      ignoreGlobal: true,
       filter: false,
       sort: false,
       searchable: false,
