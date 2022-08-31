@@ -2672,7 +2672,7 @@ function SubTable(props) {
 
                     <div
                       style={{
-                        width: '300px'
+                        width: '350px',
                       }}>
                       <CellContentEdition
                         id={tableMeta.rowData[0]}
