@@ -396,7 +396,7 @@ function Search() {
       },
       "units": {
         esIndex: "shapes_flat",
-        search: (request) => `${request.input}`,
+        search: (request) => request.input ? `*${request.input}*` : '',
         searchFields: ["name", "shapeJson.properties.uNumber", "shapeJson.properties.originalProperties.County", "data.shapeJson.properties.originalProperties.State"],
         filter: {
           field: "layer",
@@ -413,8 +413,8 @@ function Search() {
 
       "tracts": {
         esIndex: "shapes_flat",
-        search: (request) => `${request.input}`,
-        searchFields: ["name", "shapeJson.properties.originalProperties.County", "data.shapeJson.properties.originalProperties.State"],
+        search: (request) => request.input ? `*${request.input}*` : '',
+        searchFields: ['*'],
         filter: {
           field: "layer",
           value: "parcel"
@@ -428,8 +428,8 @@ function Search() {
       },
       "agreements": {
         esIndex: "shapes_flat",
-        search: (request) => `${request.input}`,
-        searchFields: ["shapeJson.properties.shapeLabel", "layer"],
+        search: (request) => request.input ? `*${request.input}*` : '',
+        searchFields: ['*'],
         filter: {
           field: "shapeJson.properties.type",
           value: "agreement"

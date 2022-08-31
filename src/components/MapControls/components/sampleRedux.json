@@ -3,6 +3,6 @@
     "jwt": "empty"
   },
   "spatialData": {
-    "features": FeatureCollection
+    "features": {}
   }
 }
