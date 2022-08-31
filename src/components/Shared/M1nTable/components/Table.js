@@ -800,43 +800,37 @@ function SubTable(props) {
   // Shows comments
   const GridComments = ({ value, targetSourceId, tableMeta }) => {
     const id = props.targetLabel + tableMeta.columnIndex;
-    if (value && value > 0) {
-      return (
-        <>
-          <Tooltip
-            title={!value || value === 0 ? "Add Comments" : "View Comments"}
-            placement="top"
-          // style={{ marginRight: "10px" }}
+    return (
+      <>
+        <Tooltip
+          title={!value || value === 0 ? "Add Comments" : "View Comments"}
+          placement="top"
+        // style={{ marginRight: "10px" }}
+        >
+          <Button
+            id={id + targetSourceId + tableMeta.rowIndex}
+            size='small'
+            startIcon={<ChatIcon />}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
+            }}
+            aria-label="show comments"
+            onMouseOver={() => {
+              if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                multiSelectMouseHoverColor(id, "#dadbde");
+            }}
+            onMouseOut={() => {
+              if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                multiSelectMouseHoverColor(id, "#efefef");
+            }}
           >
-            <Button
-              id={id + targetSourceId + tableMeta.rowIndex}
-              size='small'
-              startIcon={<ChatIcon />}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
-              }}
-              aria-label="show comments"
-              onMouseOver={() => {
-                if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                  multiSelectMouseHoverColor(id, "#dadbde");
-              }}
-              onMouseOut={() => {
-                if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                  multiSelectMouseHoverColor(id, "#efefef");
-              }}
-            >
-              {value}
-            </Button>
-          </Tooltip>
+            {value}
+          </Button>
+        </Tooltip>
 
-        </>
-      )
-    }
-    else {
-      return null
-    }
-
+      </>
+    )
   }
   //// save contact data chosen by action menu
   useEffect(() => {

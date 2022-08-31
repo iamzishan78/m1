@@ -207,7 +207,6 @@ const ContactsHeadCells = [
       filter: true,
     },
   },
-
   {
     name: "melissaRowsCount",
     options: {

@@ -108,7 +108,6 @@ const ContactsHeadCells = [
     name: "name",
     label: "Name",
     esKey: "name.keyword",
-    // editable: true,
     options: {
       ...GlobalSettings.muiGridControlOptions,
       sort: true,
@@ -122,9 +121,10 @@ const ContactsHeadCells = [
           >
             {value}
           </a>
-        )
+        );
       },
     },
+    style: { minWidth: 185 },
   },
   {
     name: "title",
@@ -186,6 +186,7 @@ const ContactsHeadCells = [
     label: "Company Name",
     esKey: "companyName.keyword",
     options: {
+      // display: true,
       display: false,
       filter: false,
       searchable: false,
@@ -198,7 +199,7 @@ const ContactsHeadCells = [
     esKey: "ownerType.keyword",
     options: {
       display: true,
-      filter: true,
+      filter: true, // i guess we cant dynamically remove the filter when hiding a column enabled by default
       searchable: false,
       sort: true,
     },
@@ -207,7 +208,7 @@ const ContactsHeadCells = [
     name: "fullContactAddress",
     label: "Primary Address",
     // editable: true,
-    esKey: ['address1.keyword', 'city.keyword', 'state.keyword', 'zip.keyword'],
+    esKey: ["address1.keyword", "city.keyword", "state.keyword", "zip.keyword"],
     options: {
       ignoreGlobal: true,
       dbName: "address1",
@@ -232,6 +233,7 @@ const ContactsHeadCells = [
     label: "Primary Home Phone",
     esKey: "homePhone.keyword",
     options: {
+      // display: true,
       filter: true,
       searchable: false,
       sort: true,
@@ -242,6 +244,7 @@ const ContactsHeadCells = [
     label: "Primary Mobile Phone",
     esKey: "mobilePhone.keyword",
     options: {
+      // display: true,
       filter: true,
       searchable: false,
       sort: true,
@@ -329,6 +332,7 @@ const ContactsHeadCells = [
     label: "Primary Email",
     esKey: "primaryEmail.keyword",
     options: {
+      // display: true,
       filter: true,
       searchable: false,
       sort: true,
@@ -340,6 +344,7 @@ const ContactsHeadCells = [
     esKey: "contactOwners.name.keyword",
     options: {
       dbName: "contactOwners.name",
+      // display: true,
       filter: true,
       filterOptions: {
         names: [],
@@ -470,11 +475,6 @@ const ContactsHeadCells = [
       filter: true,
       searchable: true,
       sort: true,
-      setCellProps: () => ({
-        style: {
-          minWidth: "180px"
-        }
-      }),
     },
   },
   {
@@ -623,6 +623,7 @@ const ContactsHeadCells = [
     label: "Updated By",
     esKey: "lastUpdateBy.name.keyword",
     options: {
+      ignoreGlobal: true,
       display: false,
       sort: true,
       filter: false,
@@ -637,6 +638,7 @@ const ContactsHeadCells = [
     esKey: "lastUpdateAt",
     noFilter: true,
     options: {
+      ignoreGlobal: true,
       filter: false,
       sort: true,
       sortDescFirst: true,
@@ -670,6 +672,7 @@ const ContactsHeadCells = [
     options: {
       dbName: "tags.tag",
       sort: true,
+      ignoreGlobal: true,
       download: false,
       print: false,
       filter: true,
@@ -683,6 +686,7 @@ const ContactsHeadCells = [
     label: " ",
     options: {
       dbName: "comments.comment",
+      ignoreGlobal: true,
       filter: false,
       searchable: false,
       sort: true,
@@ -719,7 +723,7 @@ const ContactsHeadCells = [
         },
       ],
     },
-  }
+  },
 ];
 
 export default ContactsHeadCells;
