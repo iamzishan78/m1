@@ -10,21 +10,17 @@ describe('Add Document Spec', () => {
         cy.get('#addDocument', { timeout: 50000 }).should('be.visible').click()
 
         cy.get('#filenumber', { timeout: 10000 }).type('99934033')
-
         cy.get('#filename').type('Cydoc et el')
 
         cy.get('#filetype', { timeout: 10000 }).type('L')
-
         cy.get("#filetype-popup").children('#filetype-option-1').click()
 
         cy.get('#filedate').type('2022-01-01')
 
         cy.get('#documentdetails').scrollTo('bottom')
 
-
         cy.get('#dropdown-3').children(1).children(0).type('924{enter}')
 
-        //cy.get('#multiselect-4').children(1).children(0).type('LA{enter}')
         cy.get('#multiselect-4').children(1).children(0).click()
         cy.get('.react-select__menu-list').children().eq(1).click()
         cy.get('.react-select__menu-list').children().eq(2).click()
