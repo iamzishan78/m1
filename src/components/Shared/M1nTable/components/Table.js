@@ -1270,8 +1270,8 @@ function SubTable(props) {
 
             setCellProps: () => ({
               style: {
-                minWidth: "90px",
-                maxWidth: "90px",
+                minWidth: "55px",
+                maxWidth: "55px",
                 position: "sticky",
                 left: "77px",
                 zIndex: 201,
@@ -1280,10 +1280,10 @@ function SubTable(props) {
 
             setCellHeaderProps: () => ({
               style: {
-                minWidth: "90px",
-                maxWidth: "90px",
+                minWidth: "55px",
+                maxWidth: "55px",
                 position: "sticky",
-                paddingLeft: '70px',
+                paddingLeft: '34px !important',
                 zIndex: 201,
                 left: "77px",
               },
