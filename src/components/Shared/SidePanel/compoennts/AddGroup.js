@@ -129,7 +129,7 @@ const WhiteOutlinedSearch = withStyles({
 
 export default function AddGroup({ userId, above, layerGroups }) {
   const classes = useStyles();
-  const [tabValue, setTabValue] = useState(1);
+  const [tabValue, setTabValue] = useState(0);
   const [createGroupInput, setValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
@@ -142,7 +142,7 @@ export default function AddGroup({ userId, above, layerGroups }) {
 
   useEffect(() => {
     // reset states when anchor is changed
-    setTabValue(1);
+    setTabValue(0);
     setValue("");
     setSearchValue("");
   }, [anchorEl]);
