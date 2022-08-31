@@ -4002,6 +4002,7 @@ function SubTable(props) {
             {props.header === "Documents" && (
               <ButtonGroup variant="contained" style={{ height: "40px" }} color="primary" aria-label="split button">
                 <Button
+                  id="addDocument"
                   color="primary"
                   size="small"
                   aria-label="select merge strategy"
