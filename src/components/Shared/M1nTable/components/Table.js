@@ -672,16 +672,16 @@ function SubTable(props) {
   // handlers
   const handleWellFlyTo = (value) => {
     const shapeId = history.location.pathname.split("/");
-    const shapeType = stateApp.selectedShape.type;
+    const shapeType = stateApp?.selectedShape?.type;
     history.push(
-      `/map/wells/${value?.wellId.toUpperCase()}`,
-      {
+      `/map/wells/${value?.wellId}`,
+      shapeType ? {
         fromShapeDetail: true,
         shapeName: stateApp.selectedShape.shapeLabel,
         shapeId: shapeId[shapeId.length - 1],
         shapeType: shapeType === "agreement" ? "Agreements" : "Units",
         link: shapeType === "agreement" ? `/land/agreement/details/${stateApp.selectedShape.id}` : `/map/units/${shapeId[shapeId.length - 1]}`
-      }
+      }: null
     );
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -1352,9 +1352,6 @@ function SubTable(props) {
           };
           return
         }
-
-        console.log('FISHBRAIN 5', column)
-
         switch (column.name) {
 
 
@@ -1467,15 +1464,15 @@ function SubTable(props) {
                           color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                           fgColor="#000"
                           name={
-                            valueFormatter(column, tableMeta.rowData[8]) ||
-                            valueFormatter(column,
-                              `${tableMeta.rowData[10]
-                                ? tableMeta.rowData[10]
-                                : tableMeta.rowData[8]
-                                  ? tableMeta.rowData[8].split(" ")[0]
-                                  : ""
-                              }`
-                            )
+                            (valueFormatter(column, tableMeta.rowData[8]) ||
+                              valueFormatter(column,
+                                `${tableMeta.rowData[10]
+                                  ? tableMeta.rowData[10]
+                                  : tableMeta.rowData[8]
+                                    ? tableMeta.rowData[8].split(" ")[0]
+                                    : ""
+                                }`
+                              )).split(' ').splice(0, 2).join(' ')
                           }
                           // name={valueFormatter(column, `${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
                           size="35"
@@ -1570,8 +1567,8 @@ function SubTable(props) {
                             props.showParcelDetails(selectedParcel);
                           } else {
                             let selectedWell = props.rows.find((row) => {
-                              if (row.id) return row.id == tableMeta.rowData[0];
-                              return row.Id == tableMeta.rowData[0];
+                              if (row.id) return row.id === tableMeta.rowData[0];
+                              return row.Id === tableMeta.rowData[0];
                             });
 
                             if (selectedWell) {
@@ -1842,9 +1839,9 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           // for unit wells we need to use globalWell instead of wellId
-                          if (props.parent === "UnitsTable") {
+                          if (props.parent === "UnitsTable" || props.parent === "search") {
                             const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
-                            history.push(`/map/units/${row_line._id}`)
+                            openUnitDetailCard(row_line._id);
                           }
                           if (props.targetLabel === "well") {
                             value.wellId = props.rows[tableMeta.rowIndex].globalWell;
@@ -1916,6 +1913,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customRender: (value, tableMeta) => {
+                  value = value?.toString()
                   const splitNumber = value?.split("_");
 
                   const styles = {
@@ -1990,11 +1988,11 @@ function SubTable(props) {
                             onClick={(e) => {
                               e.stopPropagation();
 
-                              if (isSnapGrid)
-                                history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
+                              if (isSnapGrid && tableMeta.rowData[3])
+                                history.push(`/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}`,
                                   { showAgreementBreadcrumb: false }
                                 );
-                              else
+                              else if (!isSnapGrid)
                                 history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
                                   { showAgreementBreadcrumb: true }
                                 );
@@ -2978,8 +2976,6 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
 
-                  console.log('FISHBRAIN 6', column)
-
                   if (column.isCustom && (column.type === "multiselect" || column.type === "dropdown")) {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
@@ -3200,6 +3196,15 @@ function SubTable(props) {
       setViewColumns(props.addColumnFilter);
     }
   }, [props.columns, props.rows, rows, colInd, rowInd, m1nSelectedRowsTracks, m1nSelectedRowsIndexes, m1nSelectedRowsIds]);
+
+  const openUnitDetailCard = (unitId) => {
+    dispatch(
+      setMapGridCardState({
+        mapGridCardActivated: false,
+      })
+    );
+    history.push(`/map/units/${unitId}`);
+  }
 
   const handleCloseDialog = () => {
     setOpenDialog(false);

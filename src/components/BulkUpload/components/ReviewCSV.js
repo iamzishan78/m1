@@ -83,7 +83,7 @@ export default function MaterialTableDemo() {
 
   useEffect(() => {
     let temp_state = [];
-    stateApp.csvContactsListToSend.forEach((element) => {
+    stateApp.csvDataToSend.forEach((element) => {
       let temp = { ...element };
       temp.leadSource = null;
       temp.tableData = null;
@@ -93,7 +93,7 @@ export default function MaterialTableDemo() {
     });
     setStateApp({
       ...stateApp,
-      csvContactsListToSend: temp_state,
+      csvDataToSend: temp_state,
     });
   }, []);
 
@@ -108,18 +108,18 @@ export default function MaterialTableDemo() {
           title="Contacts"
           icons={tableIcons}
           columns={columns()}
-          data={stateApp.csvContactsListToSend}
+          data={stateApp.csvDataToSend}
           editable={{
             onRowAdd: (newData) =>
               new Promise((resolve) => {
                 setTimeout(() => {
                   resolve();
                   setStateApp((prevState) => {
-                    const csvContactsListToSend = [
-                      ...prevState.csvContactsListToSend,
+                    const csvDataToSend = [
+                      ...prevState.csvDataToSend,
                     ];
-                    csvContactsListToSend.push(newData);
-                    return { ...prevState, csvContactsListToSend };
+                    csvDataToSend.push(newData);
+                    return { ...prevState, csvDataToSend };
                   });
                 }, 600);
               }),
@@ -129,13 +129,13 @@ export default function MaterialTableDemo() {
                   resolve();
                   if (oldData) {
                     setStateApp((prevState) => {
-                      const csvContactsListToSend = [
-                        ...prevState.csvContactsListToSend,
+                      const csvDataToSend = [
+                        ...prevState.csvDataToSend,
                       ];
-                      csvContactsListToSend[
-                        csvContactsListToSend.indexOf(oldData)
+                      csvDataToSend[
+                        csvDataToSend.indexOf(oldData)
                       ] = newData;
-                      return { ...prevState, csvContactsListToSend };
+                      return { ...prevState, csvDataToSend };
                     });
                   }
                 }, 600);
@@ -145,14 +145,14 @@ export default function MaterialTableDemo() {
                 setTimeout(() => {
                   resolve();
                   setStateApp((prevState) => {
-                    const csvContactsListToSend = [
-                      ...prevState.csvContactsListToSend,
+                    const csvDataToSend = [
+                      ...prevState.csvDataToSend,
                     ];
-                    csvContactsListToSend.splice(
-                      csvContactsListToSend.indexOf(oldData),
+                    csvDataToSend.splice(
+                      csvDataToSend.indexOf(oldData),
                       1
                     );
-                    return { ...prevState, csvContactsListToSend };
+                    return { ...prevState, csvDataToSend };
                   });
                 }, 600);
               }),
