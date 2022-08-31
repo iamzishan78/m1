@@ -198,13 +198,17 @@ const ContactsHeadCells = [
   {
     name: "fullContactAddress",
     label: "Primary Address",
-    // editable: true,
     esKey: ['address1.keyword', 'city.keyword', 'state.keyword', 'zip.keyword'],
     options: {
       ignoreGlobal: true,
       dbName: "address1",
       sort: true,
       filter: true,
+      setCellProps: () => ({
+        style: {
+          paddingLeft: '10px',
+        }
+      })
     },
   },
 
@@ -614,7 +618,7 @@ const ContactsHeadCells = [
     label: "Updated By",
     esKey: 'lastUpdateBy.name.keyword',
     options: {
-      ignoreGlobal: true, 
+      ignoreGlobal: true,
       display: false,
       sort: true,
       filter: false,
@@ -629,7 +633,7 @@ const ContactsHeadCells = [
     esKey: 'lastUpdateAt',
     noFilter: true,
     options: {
-      ignoreGlobal: true, 
+      ignoreGlobal: true,
       filter: false,
       sort: true,
       sortDescFirst: true,

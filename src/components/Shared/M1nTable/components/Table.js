@@ -681,7 +681,7 @@ function SubTable(props) {
         shapeId: shapeId[shapeId.length - 1],
         shapeType: shapeType === "agreement" ? "Agreements" : "Units",
         link: shapeType === "agreement" ? `/land/agreement/details/${stateApp.selectedShape.id}` : `/map/units/${shapeId[shapeId.length - 1]}`
-      }: null
+      } : null
     );
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -2689,7 +2689,7 @@ function SubTable(props) {
 
                     <div
                       style={{
-                        width: '300px'
+                        width: '350px',
                       }}>
                       <CellContentEdition
                         id={tableMeta.rowData[0]}
