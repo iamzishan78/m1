@@ -226,6 +226,7 @@ const unitsColumnHeaders = [
     label: "Tags ",
     esKey: "tags.tag.keyword",
     options: {
+      ignoreGlobal: true,
       dbName: "tags.tag",
       sort: true,
       download: false,
