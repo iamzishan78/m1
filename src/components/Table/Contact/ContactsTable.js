@@ -150,7 +150,7 @@ function ContactsTable(props) {
   useEffect(() => {
     props.setInitialFilters(uniqBy(props.customAppliedFilters, "field") || []);
 
-    let tableheaderCopy = copy(tableheader)
+    const tableheaderCopy = copy(tableheader)
     tableheaderCopy.map(thc => thc.options = tableheader.find(th => th.name === thc.name).options)
 
     props.setTableMeta({
