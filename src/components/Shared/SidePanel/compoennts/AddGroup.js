@@ -29,19 +29,19 @@ import { AppContext } from 'AppContext';
 const useStyles = makeStyles((theme) => ({
   popover: {
     "& .MuiPopover-paper": {
-      color: '#fff',
-      backgroundColor: '#1c2233',
-      marginTop: '110px',
-      maxHeight: theme.spacing(50)
+      color: "#fff",
+      backgroundColor: "#1c2233",
+      marginTop: "110px",
+      minWidth: theme.spacing(50),
       // left: '10% !important',
     },
     "& .MuiTabs-indicator": {
-      height: '4px',
+      height: "4px",
       backgroundColor: "rgba(23, 170, 221, 1)",
     },
 
     "& .MuiFilledInput-root": {
-      backgroundColor: '#252d40'
+      backgroundColor: "#252d40",
     },
     "& .Mui-disabled": {
       paddingBottom: "10px",
@@ -53,45 +53,55 @@ const useStyles = makeStyles((theme) => ({
       },
     },
 
-    '& .MuiCircularProgress-colorPrimary': {
+    "& .MuiCircularProgress-colorPrimary": {
       color: "rgba(23, 170, 221, 1)",
-    }
+    },
   },
   inputField: {
-    position: 'relative',
-    padding: '20px',
-    '& .MuiInputLabel-filled': {
-      color: 'lightgrey'
+    position: "relative",
+    padding: "20px",
+    "& .MuiInputLabel-filled": {
+      color: "lightgrey",
     },
-    '& .MuiFilledInput-input': {
-      color: '#fff'
+    "& .MuiFilledInput-input": {
+      color: "#fff",
     },
   },
   helperText: {
-    position: 'absolute',
+    position: "absolute",
     right: 30,
     bottom: 20,
-    color: 'gray',
-    fontSize: 12
+    color: "gray",
+    fontSize: 12,
   },
   searchInput: {
-    padding: '20px',
+    padding: "20px",
   },
   layerGroupListItem: {
     minHeight: 55,
+    marginTop: 10,
     "& .MuiIconButton-root": {
-      display: 'none',
-      color: '#FFF',
+      display: "none",
+      color: "lightgray",
     },
     "&:hover .MuiIconButton-root": {
-      display: 'inline'
-    }
+      display: "inline",
+    },
   },
   layerName: {
+    maxWidth: theme.spacing(40),
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    flex: "0 1 auto",
     fontSize: theme.spacing(2),
     padding: "5px 0",
-    display: 'inline-flex'
-  }
+    display: "inline-flex",
+  },
+  listContainer: {
+    maxHeight: theme.spacing(50),
+    overflowY: "scroll",
+  },
 }));
 
 const WhiteOutlinedSearch = withStyles({
@@ -119,7 +129,7 @@ const WhiteOutlinedSearch = withStyles({
 
 export default function AddGroup({ userId, above, layerGroups }) {
   const classes = useStyles();
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState(1);
   const [createGroupInput, setValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
@@ -132,7 +142,7 @@ export default function AddGroup({ userId, above, layerGroups }) {
 
   useEffect(() => {
     // reset states when anchor is changed
-    setTabValue(0);
+    setTabValue(1);
     setValue("");
     setSearchValue("");
   }, [anchorEl]);
@@ -221,11 +231,13 @@ export default function AddGroup({ userId, above, layerGroups }) {
                 InputProps={{
                   startAdornment: <SearchIcon />,
                 }} />
-              {
-                filterSearchedGroups.map(group =>
-                  <LayerGroupItem key={group.id} layerGroup={group} />
-                )
-              }
+                <div className={classes.listContainer}>
+                  {
+                    filterSearchedGroups.map(group =>
+                      <LayerGroupItem key={group.id} layerGroup={group} />
+                    )
+                  }
+              </div>
             </div>
           </div>
         </div>
@@ -277,9 +289,10 @@ const LayerGroupItem = ({ layerGroup }) => {
     <Grid
       container
       justifyContent="space-between"
+      alignItems="center"
       className={classes.layerGroupListItem}
     >
-      <Grid item xs>
+      <Grid item xs style={{ display: "flex", alignItems: "center" }}>
         {editing ? (
           <ClickAwayListener onClickAway={() => setEditing(false)}>
             <WhiteOutlinedSearch
@@ -306,7 +319,7 @@ const LayerGroupItem = ({ layerGroup }) => {
           </IconButton>
         )}
       </Grid>
-      <Grid item xs={2}>
+      <Grid item style={{ flexGrow: "0", flexShrink: "1" }}>
         {removing ? (
           <CircularProgress size={20} />
         ) : (
@@ -321,7 +334,7 @@ const LayerGroupItem = ({ layerGroup }) => {
           onClose={() => setOpenDialog(false)}
           deleteFunc={deleteGroup}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => { }}
+          setM1nSelectedRowsIndexes={() => {}}
         >
           Do you want to delete "{layerGroup.name}" layer group?
         </DeleteConfirmationDialogContent>
