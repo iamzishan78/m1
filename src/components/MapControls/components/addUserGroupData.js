@@ -27,21 +27,11 @@ import { uploadFileData } from "components/Shared/functions";
 import { BlockBlobClient } from "@azure/storage-blob";
 import { Box, Checkbox, FormControlLabel } from "@material-ui/core";
 import { ADD_DATASET } from "graphQL/useMutationDataset";
+import { ADD_LAYER_GROUP } from "graphQL/useMutationLayerGroup";
 
 const Alert = (props) => {
   return <MuiAlert elevation={5} variant="filled" {...props} />;
 };
-
-function makeid(length) {
-  var result = [];
-  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result.push(characters.charAt(Math.floor(Math.random() *
-      charactersLength)));
-  }
-  return result.join('');
-}
 
 const useStyles = makeStyles((theme) => ({
   loadButton: {
@@ -77,6 +67,10 @@ export default function AddUserGroupData(props) {
   const client = useApolloClient();
   const [addFile] = useMutation(ADDFILE);
   const [addDataset] = useMutation(ADD_DATASET, { refetchQueries: ["getDatasets"], awaitRefetchQueries: true });
+  const [addLayerGroup] = useMutation(ADD_LAYER_GROUP, {
+    refetchQueries: ["getLayerGroups"],
+    awaitRefetchQueries: true,
+  });
 
   const [addLayer] = useMutation(ADDLAYER);
 
@@ -186,7 +180,12 @@ export default function AddUserGroupData(props) {
         })
         .then(async () => {
           // if iscreate layer is selected only then create the layers 
-          if (isCreateLayers)
+
+          if (isCreateLayers) {
+            if (fileContent.featureTypes.length > 1) {
+              const layerGroup = { name: groupName, groupId: groupId, createBy: stateApp.user.mongoId }
+              addLayerGroup({ variables: { userId: stateApp.user.mongoId, layerGroup } })
+            }
             fileContent.featureTypes.forEach(async (type, index) => {
               const layerName = layerNames[index]
               const defaultSettings = getDefaultSettings(type, layerName, sourceProps)
@@ -217,6 +216,8 @@ export default function AddUserGroupData(props) {
                 handleClose();
               }
             })
+          }
+
           else {
             await SimpleOrShapeFileImport({ stateApp, setStateApp, client, file_id, sourceProps })
             setStateApp((stateApp) => ({
