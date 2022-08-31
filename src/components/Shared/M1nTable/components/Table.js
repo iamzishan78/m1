@@ -681,7 +681,7 @@ function SubTable(props) {
         shapeId: shapeId[shapeId.length - 1],
         shapeType: shapeType === "agreement" ? "Agreements" : "Units",
         link: shapeType === "agreement" ? `/land/agreement/details/${stateApp.selectedShape.id}` : `/map/units/${shapeId[shapeId.length - 1]}`
-      }: null
+      } : null
     );
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -1379,13 +1379,6 @@ function SubTable(props) {
                     };
                     const targetSourceId = tableMeta.rowData[1];
                     const commentValue = tableMeta.rowData[21]
-                    // const isSnapGrid = column.options.isSnapGrid || false
-
-                    // tableMeta.rowData[
-                    //   props.columns.findIndex(
-                    //     (val) => val.name === "isPurchased"
-                    //   )
-                    //   ]
 
                     return (
                       <div
@@ -1456,24 +1449,28 @@ function SubTable(props) {
                       <div
                         style={{
                           display: "flex",
-                          flexDirection: 'row',
+                          flexDirection: "row",
                           alignItems: "center",
                         }}
                       >
                         <Avatar
                           color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                           fgColor="#000"
-                          name={
-                            (valueFormatter(column, tableMeta.rowData[8]) ||
-                              valueFormatter(column,
-                                `${tableMeta.rowData[10]
-                                  ? tableMeta.rowData[10]
-                                  : tableMeta.rowData[8]
-                                    ? tableMeta.rowData[8].split(" ")[0]
-                                    : ""
-                                }`
-                              )).split(' ').splice(0, 2).join(' ')
-                          }
+                          name={(
+                            valueFormatter(column, tableMeta.rowData[8]) ||
+                            valueFormatter(
+                              column,
+                              `${tableMeta.rowData[10]
+                                ? tableMeta.rowData[10]
+                                : tableMeta.rowData[8]
+                                  ? tableMeta.rowData[8].split(" ")[0]
+                                  : ""
+                              }`
+                            )
+                          )
+                            .split(" ")
+                            .splice(0, 2)
+                            .join(" ")}
                           // name={valueFormatter(column, `${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
                           size="35"
                           round
@@ -1481,9 +1478,9 @@ function SubTable(props) {
                         <p
                           className={classes.clickableCell}
                           style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
                             minWidth: "300px",
                           }}
                           onClick={() => {
@@ -1500,19 +1497,11 @@ function SubTable(props) {
                             ? `${tableMeta.rowData[8] ? tableMeta.rowData[8] : ""}`
                             : `${tableMeta.rowData[10] ? tableMeta.rowData[10] : ""} ${tableMeta.rowData[12] ? tableMeta.rowData[12] : ""}`}
 
-                          {
-                            tableMeta.rowData[
-                            props.columns.findIndex(
-                              (val) => val.name === "isPurchased"
-                            )
-                            ] && (
-                              <FeatureFlag feature={FEATURES.IDICORE}>
-                                <MonetizationOnIcon
-                                  className={classes.monetizationIcon}
-
-                                />
-                              </FeatureFlag>
-                            )}
+                          {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased") - 2]) && (
+                            <FeatureFlag feature={FEATURES.IDICORE}>
+                              <MonetizationOnIcon className={classes.monetizationIcon} />
+                            </FeatureFlag>
+                          )}
                         </p>
                       </div>
                     );

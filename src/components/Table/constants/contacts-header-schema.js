@@ -614,7 +614,7 @@ const ContactsHeadCells = [
     label: "Updated By",
     esKey: 'lastUpdateBy.name.keyword',
     options: {
-      ignoreGlobal: true, 
+      ignoreGlobal: true,
       display: false,
       sort: true,
       filter: false,
@@ -629,7 +629,7 @@ const ContactsHeadCells = [
     esKey: 'lastUpdateAt',
     noFilter: true,
     options: {
-      ignoreGlobal: true, 
+      ignoreGlobal: true,
       filter: false,
       sort: true,
       sortDescFirst: true,
