@@ -156,6 +156,15 @@ const unitsColumnHeaders = [
     },
   },
   {
+    name: "uStatus",
+    label: "Status",
+    esKey: "shapeJson.properties.uStatus.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
     name: "ownersCount",
     label: "Owner Count",
     esKey: "interestSummary.unitInterestCount",
