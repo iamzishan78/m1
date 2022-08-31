@@ -206,16 +206,13 @@ const ContactsHeadCells = [
   {
     name: "fullContactAddress",
     label: "Primary Address",
-    esKey: ["address1.keyword", "city.keyword", "state.keyword", "zip.keyword"],
+    // editable: true,
+    esKey: ['address1.keyword', 'city.keyword', 'state.keyword', 'zip.keyword'],
     options: {
+      ignoreGlobal: true,
       dbName: "address1",
       sort: true,
       filter: true,
-      setCellProps: () => ({
-        style: {
-          minWidth: "300px"
-        }
-      }),
     },
   },
   {

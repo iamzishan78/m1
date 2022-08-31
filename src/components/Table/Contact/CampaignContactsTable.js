@@ -10,7 +10,7 @@ import TableESHOC from "../TableESHOC";
 import { useLazyQuery } from "@apollo/client";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 
-import { getContactsAddress } from "utils/helper";
+import { getContactsAddress, copy } from "utils/helper";
 
 import { deepEqualObjects } from "components/Shared/functions";
 import { featureFlagChanges } from "components/ContactDetailedInfo/helper";
@@ -68,7 +68,7 @@ function ContactsTable(props) {
       addableName: "Contact",
       extendSearchQuery: null,
       searchFields: ["name^4", "_all"],
-      TableHeader: tableheader,
+      TableHeader: copy(tableheader),
       esIndex,
       typeKeyword: { gridViewCategory: "Contacts" },
       startPaginationAt: 25,
