@@ -7,7 +7,7 @@ describe('Add Document Spec', () => {
 
         cy.checkAndLogin('#workSpaceSignin')
 
-        cy.get('#addDocument', { timeout: 30000 }).should('be.visible').click()
+        cy.get('#addDocument', { timeout: 50000 }).should('be.visible').click()
 
         cy.get('#filenumber', { timeout: 10000 }).type('99934033')
 
@@ -21,38 +21,34 @@ describe('Add Document Spec', () => {
 
         cy.get('#documentdetails').scrollTo('bottom')
 
-        cy.wait(2000)
-        cy.get('#listitem-3').children(1).click()
+
+        cy.get('#dropdown-3').children(1).children(0).type('924{enter}')
+
+        //cy.get('#multiselect-4').children(1).children(0).type('LA{enter}')
+        cy.get('#multiselect-4').children(1).children(0).click()
+        cy.get('.react-select__menu-list').children().eq(1).click()
+        cy.get('.react-select__menu-list').children().eq(2).click()
+
+        cy.contains('State').click({ force: true })
+
+        cy.get('input[type=file]', { force: true }).selectFile('cypress/files/documentSample.png', {
+            force: true
+        })
+
+        cy.wait(3000)
+        cy.intercept('POST', 'https://enerxgraphql.azurewebsites.net/api/m1graph?code=Rhr8LQFXNnl/TE26EVD296voKbGVWZQDupqWAAWMaZXjzvgdvktPqg==', req => {
+            if (req.body.operationName === 'updateDocument') {
+                req.alias = 'updateDocumentApi';
+            }
+        });
 
         cy.wait(2000)
+        cy.get("#documentSaveButton").trigger("click");
 
-        // cy.get('#cognitive-search-autocomplete', { timeout: 10000 }).should('be.visible').type('T&P').then((option) => {
-        //     option[0].click();
-        // })
+        cy.wait('@updateDocumentApi', { timeout: 10000 }).then((interception) => {
+            assert.isNotNull(interception.response.body, 'updateDocument api run succesfully')
+        })
 
-        // cy.wait(4000)
-
-        // cy.get('ul.MuiAutocomplete-listbox').children({ timeout: 8000 }).eq(1).children().eq(1).children().eq(1).click({ force: true })
-        // // cy.visit('http://localhost:3000/map/units/6297e022992e6a5c9b92e6d4')
-        // cy.wait(4000)
-        // cy.get('#expandIcon').click()
-
-        // cy.intercept('POST', 'http://localhost:7071/api/m1graph', req => {
-        //     if (req.body.operationName === 'updateCustomLayer') {
-        //         req.alias = 'updateCustomLayerApiCheck';
-        //     }
-        // });
-
-        // cy.wait(2000)
-        // cy.contains('Tract Name').siblings('.MuiTableCell-root').children().children().children().eq(1).trigger('mouseover', { force: true }).children().click({ force: true })
-
-
-        // cy.contains('Tract Name').siblings().eq(0).children().children().children().eq(0).type('{backspace}{backspace}{backspace}PR{enter}')
-
-        // cy.wait('@updateCustomLayerApiCheck', { timeout: 10000 }).then((interception) => {
-        //     assert.isNotNull(interception.response.body, 'Update Custom Layer api call has data')
-        // })
-        // cy.get('.MuiList-root', { timeout: 10000 }).should('be.visible').contains('Units').click()
 
     })
 

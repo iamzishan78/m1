@@ -607,7 +607,7 @@ export default function DocumentDetails(props) {
                   )}
                   {meta.type === "dropdown" && (
                     <ListItem
-                      id={`listitem-${index}`}
+                      id={`dropdown-${index}`}
                       style={{
                         flexDirection: "column",
                         justifyContent: "start",
@@ -637,6 +637,7 @@ export default function DocumentDetails(props) {
                   )}
                   {meta.type === "multiselect" && (
                     <ListItem
+                      id={`multiselect-${index}`}
                       style={{
                         flexDirection: "column",
                         justifyContent: "start",
@@ -870,6 +871,7 @@ export default function DocumentDetails(props) {
           </Button>
 
           <Button
+            id="documentSaveButton"
             variant="contained"
             color="secondary"
             size="medium"
