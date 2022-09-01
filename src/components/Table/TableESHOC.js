@@ -554,18 +554,19 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
         const handleMultiFieldFilter = (esFilter) => {
             const filters = []
-            const filterHistory = {}
+            // const filterHistory = {}
             if (esFilter) {
                 esFilter.forEach((filter) => {
+                    debugger
                     if (typeof filter?.field === 'string') {
-                        if (!filterHistory[filter.field])
+                        // if (!filterHistory[filter.field])
                             filters.push(filter)
-                        filterHistory[filter.field] = true
+                        // filterHistory[filter.field] = true
                     } else {
                         filter?.field?.forEach((_, index) => {
-                            if (!filterHistory[filter.field])
+                            // if (!filterHistory[filter.field])
                                 filters.push({ field: filter.field[index], value: filter.value })
-                            filterHistory[filter.field] = true
+                            // filterHistory[filter.field] = true
                         })
                     }
                 })
