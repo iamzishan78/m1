@@ -27,7 +27,7 @@ function ContactsTable(props) {
   const [getCheckPurchaseData, { data: ContactPurchaseData }] = useLazyQuery(GET_CHECK_PURCHASE_DATA);
 
   const addAble = { parent: false, type: "campaignContact" };
-  const targetLabel = "campaignContacts";
+  const targetLabel = "contact";
   const uploadIcon = true;
   const header = "Contacts";
   const total = false;

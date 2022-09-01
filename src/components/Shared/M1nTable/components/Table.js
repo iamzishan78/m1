@@ -2012,18 +2012,9 @@ function SubTable(props) {
 
                         </Grid>
 
-                        <Grid item>
+                        {/* <Grid item>
                           <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
                         </Grid>
-
-                        {/* 
-                        <Grid item
-                          // className={classes.actionButtons}
-                        >
-                          <Grid container spacing={0} direction="row">
-
-                            </Grid>
-                        </Grid> */}
 
 
                         <Grid item
@@ -2040,8 +2031,6 @@ function SubTable(props) {
                             >
                               <IconButton
                                 size="small"
-                                // color="primary"
-                                // style={{ backgroundColor: "#efefef", width: '45px', height: '45px' }}
                                 onClick={(e) => {
                                   history.push(
                                     `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
@@ -2053,55 +2042,9 @@ function SubTable(props) {
                                 <LocationOnIcon />
                               </IconButton>
                             </Grid>
-
-                            {/* <Grid item
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-start",
-                                alignItems: "center",
-                              }}
-                            >
-                              {value?.toLowerCase() === "approved" ? (
-                                <CheckCircleIcon style={{ color: "forestgreen" }} />
-                              ) : (
-                                <WarningIcon style={{ color: "orange" }} />
-                              )}
-                            </Grid> */}
-
-                            {/* <Grid item
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-start",
-                                alignItems: "center",
-                              }}
-                            >
-                                  <Button 
-                                      // id={id + targetSourceId + tableMeta.rowIndex}
-                                      // size='small' 
-                                      // startIcon={<ChatIcon />}
-                                      // onClick={(e) => {
-                                      //   e.stopPropagation();
-                                      //   handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
-                                      // }}
-                                      // aria-label="show comments"
-                                      // onMouseOver={() => {
-                                      //   if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                                      //     multiSelectMouseHoverColor(id, "#dadbde");
-                                      // }}
-                                      // onMouseOut={() => {
-                                      //   if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                                      //     multiSelectMouseHoverColor(id, "#efefef");
-                                      // }}
-                                      >
-                                        Details
-                                  </Button>
-                            </Grid> */}
-
-
-
                           </Grid>
 
-                        </Grid>
+                        </Grid> */}
                       </Grid>
                     </div>
 
