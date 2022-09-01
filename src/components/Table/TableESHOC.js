@@ -557,7 +557,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             // const filterHistory = {}
             if (esFilter) {
                 esFilter.forEach((filter) => {
-                    debugger
                     if (typeof filter?.field === 'string') {
                         // if (!filterHistory[filter.field])
                             filters.push(filter)
