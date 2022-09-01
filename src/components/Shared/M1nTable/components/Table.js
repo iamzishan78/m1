@@ -1351,62 +1351,35 @@ function SubTable(props) {
 
 
           case "name":
-
-
             {
               column.options = {
                 ...column.options,
                 customRender: (value, tableMeta) => {
-
-
                   if (props.targetLabel === "unit" && column.name === "name") {
-
-                    const splitNumber = value?.split("_");
-
-                    const styles = {
-                      cursor: GlobalStyles.hyperlink.cursor,
-                      //minWidth: "1400px"
-                      // position: 'relative',
-                      // left: '55px',
-                      minWidth: '300px',
-                      maxWidth: '300px'
-                    };
                     const targetSourceId = tableMeta.rowData[1];
                     const commentValue = tableMeta.rowData[21]
-
                     return (
                       <div
                         style={{
                           display: 'flex',
                           alignItems: 'center',
-                          // minWidth: '300px',
-                          // maxWidth: '300px'
                         }}
                       >
                         <Grid container spacing={0} direction="row"
-                          style={{
-                            position: 'absolute',
-                            // justifyContent: 'space-between'
-                          }}
+                          style={{ position: 'absolute' }}
                           className={classes.agreementNumber}
                         >
                           <Grid item
                             style={{
                               display: "flex",
                               justifyContent: "flex-start",
-                              // alignItems: "center",
-                              // paddingRight: "100px"
                             }}
                           >
-
                             <Box
-
                               onClick={(e) => {
                                 e.stopPropagation();
                                 history.push(`/map/units/${tableMeta.rowData[0]}`);
                               }}
-
-
                               sx={{
                                 color: GlobalStyles.colors.lightBlue,
                                 cursor: 'pointer',
@@ -1420,21 +1393,15 @@ function SubTable(props) {
                                 },
 
                               }}
-
                             >
-
-
                               {tableMeta?.rowData[2]}
                             </Box>
                           </Grid>
-
                           <Grid item>
                             <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
                           </Grid>
-
                         </Grid>
                       </div>
-
                     );
                   };
 
@@ -1465,7 +1432,6 @@ function SubTable(props) {
                             .split(" ")
                             .splice(0, 2)
                             .join(" ")}
-                          // name={valueFormatter(column, `${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
                           size="35"
                           round
                         />
@@ -1478,13 +1444,14 @@ function SubTable(props) {
                             minWidth: "300px",
                           }}
                           onClick={() => {
-                            setStateApp((stateApp) => ({
-                              ...stateApp,
-                              selectedContact: tableMeta.rowData[0],
-                            }));
-                            setTitle("Contact Details");
-                            setSubTitle(" ");
-                            handleOpenExpandableCard();
+                            history.push(`/contact/details/${tableMeta.rowData[0]}`);
+                            // setStateApp((stateApp) => ({
+                            //   ...stateApp,
+                            //   selectedContact: tableMeta.rowData[0],
+                            // }));
+                            // setTitle("Contact Details");
+                            // setSubTitle(" ");
+                            // handleOpenExpandableCard();
                           }}
                         >
                           {tableMeta.rowData[8] || (!tableMeta.rowData[10] && !tableMeta.rowData[12])
@@ -4041,16 +4008,16 @@ function SubTable(props) {
         }
       }
 
-      if (props.targetLabel === "contact") {
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          selectedContact: rows[dataIndex]._id,
-        }));
-        routeChange(`/contact/details/${rows[dataIndex]._id}`);
-        setTitle("Contact Details");
-        setSubTitle(" ");
-        handleOpenExpandableCard();
-      }
+      // if (props.targetLabel === "contact") {
+      //   setStateApp((stateApp) => ({
+      //     ...stateApp,
+      //     selectedContact: rows[dataIndex]._id,
+      //   }));
+      //   routeChange(`/contact/details/${rows[dataIndex]._id}`);
+      //   setTitle("Contact Details");
+      //   setSubTitle(" ");
+      //   handleOpenExpandableCard();
+      // }
 
       if (props.targetLabel === "documents") {
         setStateApp((stateApp) => ({
