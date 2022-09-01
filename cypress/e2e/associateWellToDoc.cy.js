@@ -29,6 +29,8 @@ describe('Associate Well Spec', () => {
         cy.verifyApiResponse('@getWellsFromDocumentApi')
 
         cy.get('#wellsList').children().eq(0).click()
+
+        cy.wait(40000)
         cy.get('.MuiBreadcrumbs-ol', { timeout: 50000 }).should('be.visible').children().eq(0).click()
 
     })

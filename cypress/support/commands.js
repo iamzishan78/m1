@@ -34,11 +34,9 @@ Cypress.Commands.add("checkAndLogin", (selector) => {
             cy.get('input').type('enerx')
             cy.get('.MuiButtonBase-root').click()
 
-            cy.wait(4000)
-
             cy.get('#signInName', { timeout: 10000 }).should('be.visible').type('support@m1neral.com')
             cy.get('#password').type('M1neral2022')
-            cy.wait(4000)
+
             cy.get('#next').click()
         }
     })
@@ -47,7 +45,7 @@ Cypress.Commands.add("checkAndLogin", (selector) => {
 // This command is to type  in autocomplete search bar and then select first matched option
 Cypress.Commands.add('typeAndSelect', (searchId, stringToType) => {
     cy.get(searchId).type(stringToType)
-    cy.wait(2000)
+    cy.get('#wellSearch-option-0', { timeout: 50000 }).should('be.visible')
     cy.get(searchId).type('{downArrow}{enter}')
 })
 
@@ -55,15 +53,15 @@ Cypress.Commands.add('typeAndSelect', (searchId, stringToType) => {
 Cypress.Commands.add('interceptApi', (operationName) => {
     cy.intercept('POST', 'https://enerxgraphql.azurewebsites.net/api/m1graph?code=Rhr8LQFXNnl/TE26EVD296voKbGVWZQDupqWAAWMaZXjzvgdvktPqg==', req => {
         if (req.body.operationName === operationName) {
-            // req.alias will use as api tag 
+            // req.alias will use as api title 
             req.alias = `${operationName}Api`;
         }
     });
 })
 
 // This command is to check api was successful or not
-Cypress.Commands.add('verifyApiResponse', (apiTag) => {
-    cy.wait(apiTag, { timeout: 10000 }).then((interception) => {
-        assert.isNotNull(interception.response.body, `${apiTag} run succesfully`)
+Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
+    cy.wait(apiTitle, { timeout: 10000 }).then((interception) => {
+        assert.isNotNull(interception.response.body, `${apiTitle} run succesfully`)
     })
 })
