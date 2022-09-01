@@ -72,6 +72,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
+  const [ownerTypeOfConctact, setOwnerTypeOfConctact] = useState();
 
   useEffect(() => {
     if (selectedRow) {
@@ -288,7 +289,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <h3>Name</h3>
-                <AutocompEntityNamesList userId={stateApp.user.mongoId} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
+                <AutocompEntityNamesList userId={stateApp.user.mongoId} setOwnerTypeOfConctact={setOwnerTypeOfConctact} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
               </Grid>
               <Grid item xs={12}>
                 <h3>Entity Type</h3>
@@ -306,7 +307,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         }
                         setValue('ownerType', val);
                       }}
-                      value={props.value ?? ""}
+                      value={ownerTypeOfConctact ?? ""}
                     />
                   )}
                 />
