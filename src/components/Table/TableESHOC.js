@@ -778,7 +778,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     tableActions.changeESPage();
                     break;
                 case "viewColumnsChange":
-                    debugger
                     // updateGridViewRedux(tableState)
                     viewColumnsChange(tableState.columns);
                     break;

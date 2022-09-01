@@ -42,7 +42,7 @@ export const rawJobs = [
   { name: 'Import Units', type: 'UNITS', featureFlag: "UNITIMPORT" },
   { name: 'Check Detail Upload', type: 'CHECKDETAILS' },
   { name: 'Property Upload', type: 'PROPERTIES' },
-  { name: 'Agreement Upload (Header)', type: 'AGREEMENT_HEADER' },
+  { name: 'Agreement Upload (Header)', type: 'AGREEMENT_HEADER', redirectTo: '/land/agreements' },
   { name: 'Transfer Shape to M1 Layer', type: 'SHAPE_TO_M1_LAYER', initialActiveStepNumber: 1, skipReview: true }
 ]
 
