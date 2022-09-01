@@ -412,9 +412,9 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                         }
                         filterList = [value];
                     }
-                    if (column?.options?.filter) {
+                    // if (column?.options?.filter) {
                         column.options.filterList = filterList;
-                    }
+                    // }
                 });
             }
             else {
@@ -425,7 +425,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     }
                 });
             }
-
             // shift _id and sticky Colums to the first Place
             let stickyColumns = tableCols.filter(cD => cD.name === '_id' || cD?.options?.stickyColumn)
             tableCols = tableCols.filter(cD => cD.name !== "_id" && !cD.options?.stickyColumn);
@@ -778,7 +777,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     tableActions.changeESPage();
                     break;
                 case "viewColumnsChange":
-                    debugger
                     // updateGridViewRedux(tableState)
                     viewColumnsChange(tableState.columns);
                     break;
