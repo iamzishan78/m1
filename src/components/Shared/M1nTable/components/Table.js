@@ -1445,13 +1445,6 @@ function SubTable(props) {
                           }}
                           onClick={() => {
                             history.push(`/contact/details/${tableMeta.rowData[0]}`);
-                            // setStateApp((stateApp) => ({
-                            //   ...stateApp,
-                            //   selectedContact: tableMeta.rowData[0],
-                            // }));
-                            // setTitle("Contact Details");
-                            // setSubTitle(" ");
-                            // handleOpenExpandableCard();
                           }}
                         >
                           {tableMeta.rowData[8] || (!tableMeta.rowData[10] && !tableMeta.rowData[12])
@@ -1467,16 +1460,9 @@ function SubTable(props) {
                       </div>
                     );
                   }
-
-
-
                 },
-
-
-
               }
               break;
-
             }
 
           case "detailCard":

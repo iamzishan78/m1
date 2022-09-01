@@ -58,6 +58,9 @@ function ContactsTable(props) {
   };
 
   useEffect(() => {
+    const tableheaderCopy = copy(tableheader);
+    tableheaderCopy.map(thc => thc.options = tableheader.find(th => th.name === thc.name).options);
+
     props.setInitialFilters([
       {
         field: "campaignName.keyword",
@@ -68,7 +71,7 @@ function ContactsTable(props) {
       addableName: "Contact",
       extendSearchQuery: null,
       searchFields: ["name^4", "_all"],
-      TableHeader: copy(tableheader),
+      TableHeader: tableheaderCopy,
       esIndex,
       typeKeyword: { gridViewCategory: "Contacts" },
       startPaginationAt: 25,
