@@ -43,3 +43,27 @@ Cypress.Commands.add("checkAndLogin", (selector) => {
         }
     })
 })
+
+// This command is to type  in autocomplete search bar and then select first matched option
+Cypress.Commands.add('typeAndSelect', (searchId, stringToType) => {
+    cy.get(searchId).type(stringToType)
+    cy.wait(2000)
+    cy.get(searchId).type('{downArrow}{enter}')
+})
+
+// This command is to intercept graphql api by operation name
+Cypress.Commands.add('interceptApi', (operationName) => {
+    cy.intercept('POST', 'https://enerxgraphql.azurewebsites.net/api/m1graph?code=Rhr8LQFXNnl/TE26EVD296voKbGVWZQDupqWAAWMaZXjzvgdvktPqg==', req => {
+        if (req.body.operationName === operationName) {
+            // req.alias will use as api tag 
+            req.alias = `${operationName}Api`;
+        }
+    });
+})
+
+// This command is to check api was successful or not
+Cypress.Commands.add('verifyApiResponse', (apiTag) => {
+    cy.wait(apiTag, { timeout: 10000 }).then((interception) => {
+        assert.isNotNull(interception.response.body, `${apiTag} run succesfully`)
+    })
+})
