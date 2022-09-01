@@ -1,6 +1,7 @@
 
 /* props is just a style object*/
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import GlobalSettings from "GlobalSettings";
 
 const ContactsHeadCells = [
   {
@@ -111,7 +112,7 @@ const ContactsHeadCells = [
     esKey: 'name.keyword',
     // editable: true,
     options: {
-      // ...GlobalSettings.muiGridInfScrollOptions,
+      ...GlobalSettings.muiGridInfScrollOptions,
       ignoreGlobal: true,
       // sort: true,
       // filter: true,
