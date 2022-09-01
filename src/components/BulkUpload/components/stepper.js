@@ -292,18 +292,18 @@ export default function CustomizedSteppers(props) {
           delete element.tableData;
         });
 
-        // getJobUploadUri({
-        //   variables: {
-        //     requestPayload: {
-        //       sampleCsv: jobHeaders[props.selectedJob.type],
-        //       uploadType: stateApp.selectedShapeLayerOption
-        //     },
-        //     jobName: props.selectedJob.name,
-        //     jobType: props.selectedJob.type,
-        //     userId: userID,
-        //   },
-        // });
-        // setContactList(JSON.stringify(data_to_send))
+        getJobUploadUri({
+          variables: {
+            requestPayload: {
+              sampleCsv: jobHeaders[props.selectedJob.type],
+              uploadType: stateApp.selectedShapeLayerOption
+            },
+            jobName: props.selectedJob.name,
+            jobType: props.selectedJob.type,
+            userId: userID,
+          },
+        });
+        setContactList(JSON.stringify(data_to_send))
 
         setStateApp((state) => ({
           ...state,
