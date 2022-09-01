@@ -137,6 +137,7 @@ function ContactsTable(props) {
     }))
   }, [showGenericPhones]);
 
+  console.log('Contacts',Contacts)
   useEffect(() => {
     setSelectedGridView(Contacts || defaultView);
   }, [Contacts]);
@@ -288,6 +289,7 @@ function ContactsTable(props) {
           <GridView
             module="Contacts"
             columns={props.columns}
+            defaultView={defaultView}
             handleDefaultView={handleDefaultView}
             handleClose={() => setShowViewModal(false)}
             setSelectedGridView={setSelectedGridView}
