@@ -1807,6 +1807,13 @@ function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
 
+                  let disabled = false;
+                  if (props.targetLabel === "well" && !props.rows[tableMeta.rowIndex]?.globalWell)
+                    disabled = true;
+                  if (props.targetLabel === "owner" && !props.rows[tableMeta.rowIndex]?.wellCount > 0)
+                    disabled = true;
+                  if (props.targetLabel === "operator" && !props.rows[tableMeta.rowIndex]?.totalWellCount > 0)
+                    disabled = true;
 
                   return (
                     // this whole implementation is a mesteban patch
@@ -1818,19 +1825,20 @@ function SubTable(props) {
                         size={props.dense ? "small" : "medium"}
                         color="secondary"
                         className={`${classes.icons}`}
-                        disabled={props.targetLabel === "well" && !props.rows[tableMeta.rowIndex]?.globalWell}
+                        disabled={disabled}
                         onClick={(e) => {
                           e.stopPropagation();
                           // for unit wells we need to use globalWell instead of wellId
-                          if (props.parent === "UnitsTable" || props.parent === "search") {
+                          if (props.targetLabel === 'owner' || props.targetLabel === 'operator' || props.rows[tableMeta.rowIndex].globalWell)
+                            handleClickFlyToIcon(props.targetLabel, value);
+
+                          else if (props.parent === "UnitsTable" || props.parent === "search") {
                             const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
                             openUnitDetailCard(row_line._id);
                           }
-                          if (props.targetLabel === "well") {
+                          else if (props.targetLabel === "well") {
                             value.wellId = props.rows[tableMeta.rowIndex].globalWell;
                           }
-                          if (props.rows[tableMeta.rowIndex].globalWell)
-                            handleClickFlyToIcon(props.targetLabel, value);
                         }}
                         aria-label="fly"
                       >
