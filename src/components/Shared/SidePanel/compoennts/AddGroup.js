@@ -27,12 +27,13 @@ import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/componen
 import { AppContext } from 'AppContext';
 
 const useStyles = makeStyles((theme) => ({
-  popover: {
+  popover: (props) => ({
     "& .MuiPopover-paper": {
       color: "#fff",
       backgroundColor: "#1c2233",
-      marginTop: "110px",
       minWidth: theme.spacing(50),
+      top: `${props.top + 30}px !important`,
+      left: `${props.left}px !important`
       // left: '10% !important',
     },
     "& .MuiTabs-indicator": {
@@ -56,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiCircularProgress-colorPrimary": {
       color: "rgba(23, 170, 221, 1)",
     },
-  },
+  }),
   inputField: {
     position: "relative",
     padding: "20px",
@@ -128,12 +129,13 @@ const WhiteOutlinedSearch = withStyles({
 
 
 export default function AddGroup({ userId, above, layerGroups }) {
-  const classes = useStyles();
+  const [menuPosition, setMenuPos] = useState({ top: 0, left: 0})
+  const classes = useStyles({ ...menuPosition });
   const [tabValue, setTabValue] = useState(0);
   const [createGroupInput, setValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [open, setMenuOpen] = useState(false);
 
   const [addLayerGroup, { loading }] = useMutation(ADD_LAYER_GROUP, {
     refetchQueries: ["getLayerGroups"],
@@ -145,7 +147,7 @@ export default function AddGroup({ userId, above, layerGroups }) {
     setTabValue(0);
     setValue("");
     setSearchValue("");
-  }, [anchorEl]);
+  }, [open]);
 
   useEffect(() => {
     setValue("");
@@ -153,11 +155,21 @@ export default function AddGroup({ userId, above, layerGroups }) {
   }, [tabValue])
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+    const ele = document.getElementById("layerGroupMenuBtn")?.getBoundingClientRect();
+
+    setMenuOpen(true);
+    setMenuPos({ top: ele.top, left: ele.left})
+  };
+
+  const handleTabChange = (_, newValue) => {
+    const ele = document.getElementById("layerGroupMenuBtn")?.getBoundingClientRect();
+
+    setTabValue(newValue);
+    setMenuPos({ top: ele.top, left: ele.left });
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setMenuOpen(false);
   };
 
   const handleSubmit = (event) => {
@@ -176,35 +188,35 @@ export default function AddGroup({ userId, above, layerGroups }) {
     const regexp = new RegExp(searchValue.trim(), "ig");
 
     return groups.filter((group) => group.name.search(regexp) > -1);
-  }, [searchValue, anchorEl, layerGroups]);
+  }, [searchValue, open, layerGroups]);
 
 
   return (
     <div>
-      <IconButton size='small' aria-controls="group-button" aria-haspopup="true" onClick={handleClick} >
-        <CreateNewFolderIcon style={{ fontSize: 20, color: 'lightgray', marginRight: '10px' }} />
+      <IconButton
+        size="small"
+        aria-controls="group-button"
+        aria-haspopup="true"
+        onClick={handleClick}
+        id="layerGroupMenuBtn"
+      >
+        <CreateNewFolderIcon
+          style={{ fontSize: 20, color: "lightgray", marginRight: "10px" }}
+        />
       </IconButton>
       <Menu
         id="group-button"
-        anchorEl={anchorEl}
         keepMounted
-        open={Boolean(anchorEl)}
+        anchorPosition={menuPosition}
+        open={open}
         onClose={handleClose}
         className={classes.popover}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
       >
-        <div className={'menu'}>
+        <div className={"menu"}>
           <Tabs
             value={tabValue}
             indicatorColor="primary"
-            onChange={(_, newValue) => setTabValue(newValue)}
+            onChange={handleTabChange}
             aria-label="disabled tabs example"
           >
             <Tab label="Create New" />
@@ -212,38 +224,53 @@ export default function AddGroup({ userId, above, layerGroups }) {
           </Tabs>
           <div role="tabPanel" hidden={tabValue !== 0}>
             <div className={classes.inputField}>
-              <TextField id="create-group-input" label="Group Name" variant="filled" fullWidth onKeyDown={handleSubmit}
+              <TextField
+                id="create-group-input"
+                label="Group Name"
+                variant="filled"
+                fullWidth
+                onKeyDown={handleSubmit}
                 value={createGroupInput}
                 onChange={({ target }) => setValue(target.value)}
                 InputProps={{
-                  endAdornment: loading ? <InputAdornment position="end">
-                    <CircularProgress size={30} />
-                  </InputAdornment> : <></>,
-                }} />
-              <Typography className={classes.helperText}>Enter to save</Typography>
+                  endAdornment: loading ? (
+                    <InputAdornment position="end">
+                      <CircularProgress size={30} />
+                    </InputAdornment>
+                  ) : (
+                    <></>
+                  ),
+                }}
+              />
+              <Typography className={classes.helperText}>
+                Enter to save
+              </Typography>
             </div>
           </div>
           <div role="tabPanel" hidden={tabValue !== 1}>
             <div className={classes.searchInput}>
-              <WhiteOutlinedSearch id="group-search-input" label="Search by group name" variant="outlined" color="white" fullWidth onKeyDown={handleSubmit}
+              <WhiteOutlinedSearch
+                id="group-search-input"
+                label="Search by group name"
+                variant="outlined"
+                color="white"
+                fullWidth
+                onKeyDown={handleSubmit}
                 value={searchValue}
                 onChange={({ target }) => setSearchValue(target.value)}
                 InputProps={{
                   startAdornment: <SearchIcon />,
-                }} />
-                <div className={classes.listContainer}>
-                  {
-                    filterSearchedGroups.map(group =>
-                      <LayerGroupItem key={group.id} layerGroup={group} />
-                    )
-                  }
+                }}
+              />
+              <div className={classes.listContainer}>
+                {filterSearchedGroups.map((group) => (
+                  <LayerGroupItem key={group.id} layerGroup={group} />
+                ))}
               </div>
             </div>
           </div>
         </div>
-
       </Menu>
-
     </div>
   );
 }
