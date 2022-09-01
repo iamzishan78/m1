@@ -3,6 +3,7 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { useMutation } from "@apollo/client";
 import { AppContext } from "AppContext";
 import { useDispatch } from "react-redux";
@@ -10,6 +11,8 @@ import { setMainMapState, showErrorMessage, showSuccessMessage } from "actions";
 import { MapControlsContext } from "../../MapControlsContext";
 import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 import { UPDATE_DATASET } from "graphQL/useMutationDataset";
+import { Modals } from "styles/Modal";
+import { DialogContent } from "@material-ui/core";
 
 export default function DeleteSourceAndCategoryConfirmationDialog(props) {
   const dispatch = useDispatch();
@@ -65,38 +68,37 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
     });
   };
 
-  return (
-    <div>
-      <Dialog
-        fullWidth
-        maxWidth="xs"
-        open={props.openDialog}
-        onClose={() => {
-          props.handleDialogClose(false);
-        }}
-        aria-labelledby="form-dialog-title"
-      >
-        <DialogTitle style={{ textAlign: "center", padding: "24px 24px 0 24px" }}>Do you want to permanently delete the selected {title}? This action will also delete all layers tied to selected {title}?</DialogTitle>
+  const modalClass = Modals();
 
-        <DialogActions>
-          <Button
-            onClick={() => {
-              props.handleDialogClose(false);
-            }}
-            color="primary"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              handleAccept();
-            }}
-            color="primary"
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+  return (
+    <Dialog style={{ zIndex: 9999999999 }} open={props.openDialog}
+      onClose={() => {
+        props.handleDialogClose(false);
+      }}>
+      <DialogTitle className={modalClass.title} id="customized-dialog-title">
+        Delete {title}(s)
+        <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose} />
+      </DialogTitle>
+      <DialogContent>
+        <h3 className={modalClass.inputLabel}>Do you want to permanently delete the selected {title}? This action will also delete all layers tied to selected {title}?</h3>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={() => { props.handleDialogClose(false); }}
+          color="primary"
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={() => {
+            handleAccept();
+          }}
+          color="secondary"
+        >
+          Delete
+        </Button>
+      </DialogActions>
+    </Dialog>
+
   );
 }
