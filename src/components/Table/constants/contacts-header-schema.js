@@ -613,7 +613,7 @@ const ContactsHeadCells = [
     },
   },
   {
-    name: "lastUpdateBy.name",
+    name: "lastUpdateBy",
     label: "Updated By",
     esKey: 'lastUpdateBy.name.keyword',
     options: {
@@ -624,6 +624,9 @@ const ContactsHeadCells = [
       filterOptions: {
         names: [],
       },
+      customRender: (value) => (
+        <p>{value?.name ?? ""}</p>
+      )
     },
   },
   {

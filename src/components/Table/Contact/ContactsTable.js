@@ -140,7 +140,10 @@ function ContactsTable(props) {
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
       hit = getContactsAddress(props.setGenricData(hit, hit._id, ["tracks"]));
-      hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
+      hit.tags =
+        hit?.tags?.length > 0
+          ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+          : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       return hit;
     });
