@@ -37,7 +37,6 @@ import ContactBulkProgress from "./components/BulkUpload/ContactBulkProgress";
 import RevenueProvider from "components/Revenue/RevenueProvider";
 import Land from "components/Land";
 import AgreementProvider from "./components/Land/components/Agreements/AgreementProvider";
-import AgreementDetailProvider from "./components/Land/components/AgreementDetail/AgreementDetailProvider";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 import { CircularProgress } from "@material-ui/core";
@@ -382,7 +381,6 @@ function App() {
                         <PrivateRoute title="Revenue Statements" path="/revenue" component={RevenueProvider} />
                         <PrivateRoute path="/land" component={Land} />
                         <PrivateRoute exact path="/agreements" component={AgreementProvider} />
-                        <PrivateRoute exact path="/agreement/details/:agreementId?" component={AgreementDetailProvider} />
                         {/* <Route component={NotFoundRedirect} /> */}
                       </NavigationProvider>
                     </Switch>
