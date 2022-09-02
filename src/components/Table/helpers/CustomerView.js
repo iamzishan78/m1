@@ -252,7 +252,6 @@ const SortableItem = SortableElement(
               style={{ padding: 3 }}
               checked={item.display === "true" || item.display === true}
               onChange={(e) => {
-                debugger
                 const index = columns.findIndex((co) => co.name === item.name);
                 columns[index].display = e.target.checked.toString()
                 onColumnUpdate(index)

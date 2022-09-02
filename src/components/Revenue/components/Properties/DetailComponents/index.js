@@ -11,6 +11,7 @@ import {
   MoreHoriz as MoreHorizIcon,
   Delete as DeleteIcon,
 } from "@material-ui/icons";
+import moment from "moment";
 
 import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
@@ -20,6 +21,7 @@ import { AppContext } from "AppContext";
 import { GET_ASSOCIATED_WELL_PRODUCTION_DATA } from "graphQL/useQueryAssociatedWellProductionData";
 
 import { WellCardContext, WellCardContextProvider } from "components/WellCard/WellCardContext";
+import { WellProdChartContext, WellProdChartContextProvider } from "components/WellProdChart/WellProdChartContext";
 
 // Components
 import Tags from "components/Shared/Tagger";
@@ -33,7 +35,7 @@ import { MultipleOwnerToContactDrawerContainer } from "store/containers";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import DocViewer from "components/Shared/DocViewer";
 import ValidationFilter from "./ValidationFilter";
-import WellProdChartProvider from "components/WellProdChart/WellProdChartProvider";
+import WellProdChart from "components/WellProdChart/WellProdChart";
 
 const temp = [
   {
@@ -2868,46 +2870,98 @@ export default function DetailComponents(props) {
 
 
 const Validation = ({ propertyId }) => {
-  const esIndex = "properties_flat";
   const [esFilters, setESFilters] = useState([]);
   const [filterToggle, setFilterToggle] = useState(false);
 
+  console.log('esFilters', esFilters)
 
   return (
     <div style={{ background: "white", padding: "10px" }}>
       <ValidationFilter
-        field={"lastCheck.checkDate"}
-        esIndex={esIndex}
+        field={"date"}
         setESFilters={setESFilters}
         setFilterToggle={setFilterToggle}
         filterToggle={filterToggle}
-        extraFitlers={["status", "propertyGroup"]}
       />
 
-      {/* <WellCardContextProvider>
-        <ValidationChart propertyId={propertyId} /> 
-      </WellCardContextProvider> */}
-
+        <WellCardContextProvider>
+        <WellProdChartContextProvider>
+          <ValidationChart filter={esFilters} propertyId={propertyId} />
+          </WellProdChartContextProvider>
+        </WellCardContextProvider>
+      
       
     </div>
   )
 }
 
-const ValidationChart = ({ propertyId }) => {
+const ValidationChart = ({ filter, propertyId }) => {
 
-  const [stateWellCard, setStateWellCard] = useContext(WellCardContext);
+  const [, setStateWellCard] = useContext(WellCardContext);
+  const [, setStateWellProdChart] = useContext(WellProdChartContext);
+  const [wellProductionData, setWellProductionData]= useState([])
   const [getAssociatedWellProductionData, { data: associatedWells }] = useLazyQuery(GET_ASSOCIATED_WELL_PRODUCTION_DATA);
 
   useEffect(() => {
     setStateWellCard((state) => {
       return {
         ...state,
-        wellProdHistory: temp,
+        wellProdHistory: JSON.parse(JSON.stringify(wellProductionData)),
       }
     });
-  },[temp])
+    setStateWellProdChart((state) => ({
+      ...state,
+      wellProdHistory: JSON.parse(JSON.stringify(wellProductionData)),
+    }));
+  },[wellProductionData])
 
-    // Fetching wells from descriptor
+  useEffect(() => {
+    if(associatedWells?.getAssociatedWellProductionData?.length > 0) {
+      const wellData  = JSON.parse(JSON.stringify(associatedWells.getAssociatedWellProductionData))
+      const productionData = []
+      wellData.forEach((data) => {
+        if (data.well.productionData.data.length > 0) {
+          let pData = data.well.productionData.data
+
+          if(filter[0].value.range.date.lte){
+            pData = pData.filter(d => moment(d.ReportDate) <= moment(filter[0].value.range.date.lte))
+          }
+
+          if(filter[0].value.range.date.gte){
+            pData = pData.filter(d => moment(d.ReportDate) >= moment(filter[0].value.range.date.gte))
+          }
+          
+          pData.forEach((production)=> {
+            const date = moment(production.ReportDate).format("MM/yyyy")
+            production.ReportDate = date
+            const index = productionData.findIndex(d => d.ReportDate === date)
+
+            if (index > -1) {
+              productionData[index].allocatedGas  = get(productionData[index],'allocatedGas', 0) + get(production, 'allocatedGas', 0)
+              productionData[index].allocatedOil  = get(productionData[index],'allocatedOil', 0) + get(production, 'allocatedOil', 0)
+              productionData[index].allocatedWater  = get(productionData[index],'allocatedWater', 0) + get(production, 'allocatedWater', 0)
+              productionData[index].gas  = get(productionData[index],'gas', 0) + get(production, 'gas', 0)
+              productionData[index].oil  = get(productionData[index],'oil', 0) + get(production, 'oil', 0)
+              productionData[index].water  = get(productionData[index],'water', 0) + get(production, 'water', 0)
+            } else {
+              production.allocatedGas  = production.allocatedGas ? production.allocatedGas : 0
+              production.allocatedOil  = production.allocatedOil ? production.allocatedOil : 0
+              production.allocatedWater  =  production.allocatedWater ? production.allocatedWater : 0
+              production.gas  = production.gas ? production.gas : 0
+              production.oil  = production.oil ? production.oil : 0
+              production.water  = production.water ? production.water : 0
+              productionData.push(production)
+            }
+          })
+        }
+      })
+      console.log('productionData',productionData)
+      setWellProductionData(JSON.parse(JSON.stringify(productionData)))
+    }
+  },[associatedWells, filter])
+
+  console.log('associatedWells', associatedWells)
+
     useEffect(() => {
       getAssociatedWellProductionData({
         variables: {
@@ -2918,6 +2972,6 @@ const ValidationChart = ({ propertyId }) => {
     }, []);
 
   return (
-      <WellProdChartProvider  />
+      <WellProdChart  />
   )
 }

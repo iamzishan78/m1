@@ -36,45 +36,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const ValidationFilter = ({ field, esIndex, setESFilters, filterToggle, setFilterToggle, extraFitlers= [] }) => {
+const ValidationFilter = ({ field, setESFilters, filterToggle, setFilterToggle }) => {
     const classes = useStyles();
 
     const [selectedFilter, setSelectedFilter] = useState('');
     const [fromDate, setFromDate] = React.useState(null);
     const [toDate, setToDate] = React.useState(null);
-    const [lastCheckMinDate, setLastCheckMinDate] = useState('');
     const [status, setStatus] = useState('ALL');
     const [propertyFilter, setPropertyFilter] = useState([]);
     
-    const propertiesReportGroup = useSelector(
-      ({ Revenue }) => Revenue.propertiesReportGroup
-    );
-
-    const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
-        fetchPolicy: "no-cache",
-        onCompleted: (data) => {
-            if (data?.getESMinValue) {
-                console.log(data?.getESMinValue);
-                setLastCheckMinDate(data?.getESMinValue);
-                // setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
-                // setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
-            }
-        },
-    });
     useEffect(() => {
         setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
         setToDate(moment().subtract(0, 'months').endOf('month').format('yyyy-MM-DD'));
     }, []);
-    useEffect(() => {
-        getESMinValue({
-            variables: {
-                esIndex,
-                field,
-                value_as_string: true
-            }
-        })
-    }, [getESMinValue])
-
 
     useEffect(() => {
       updateFilters();
@@ -116,7 +90,6 @@ const ValidationFilter = ({ field, esIndex, setESFilters, filterToggle, setFilte
         <Grid
           container
           alignItems="center"
-          // justifyContent="space-between"
           spacing={2}
           style={{ padding: "0px 36px 0px 45px" }}
         >
@@ -125,9 +98,7 @@ const ValidationFilter = ({ field, esIndex, setESFilters, filterToggle, setFilte
             setFromDate={setFromDate}
             toDate={toDate}
             setToDate={setToDate}
-            //label="Last Check"
-            isProperties
-            lastCheckMinDate={lastCheckMinDate}
+            lastCheckMinDate={''}
             onChange={setSelectedFilter}
           />
         </Grid>

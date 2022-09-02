@@ -58,7 +58,6 @@ const WellsFilters = ({ filters, setFilters }) => {
         }else{
             allFilters.push({ field: column.filterKey, value: column.filterList[0] })
         }
-        debugger
         setFilters(allFilters)
     }
 

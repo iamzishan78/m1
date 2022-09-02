@@ -443,7 +443,7 @@ export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFrom
       setToDate(`${currentYear - 1}-12-31`);
       break;
     case CUSTOM_DATES.ALL_DATES:
-      setFromDate(`${moment(minDate).startOf('month').format("yyyy-MM-DD")}`);
+      setFromDate(minDate ? `${moment(minDate).startOf('month').format("yyyy-MM-DD")}` : null);
       setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
       break;
     case CUSTOM_DATES.THIS_WEEK:

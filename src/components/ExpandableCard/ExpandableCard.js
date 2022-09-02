@@ -608,7 +608,6 @@ function ExpandableCard(props) {
 
   // BreadCrum for Document's well
   const DisplayBreadCrums = () => {
-    debugger
     return (
       <div className={classes.breadcrumContainer}>
         {history.location?.state?.fromShapeDetail && (
