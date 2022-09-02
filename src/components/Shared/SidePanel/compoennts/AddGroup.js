@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useContext } from 'react';
 import { v4 as uuid } from "uuid";
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 // components
 import SearchIcon from "@material-ui/icons/Search";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -25,6 +25,7 @@ import {
 import { ADD_LAYER_GROUP, REMOVE_LAYER_GROUP, UPDATE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import { AppContext } from 'AppContext';
+import { GET_LAYER_GROUPS } from 'graphQL/useQueryLayerGroup';
 
 const useStyles = makeStyles((theme) => ({
   popover: (props) => ({
@@ -131,16 +132,25 @@ const WhiteOutlinedSearch = withStyles({
 export default function AddGroup({ userId, above, layerGroups }) {
   const [menuPosition, setMenuPos] = useState({ top: 0, left: 0})
   const classes = useStyles({ ...menuPosition });
+
   const [tabValue, setTabValue] = useState(0);
   const [createGroupInput, setValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
   const [open, setMenuOpen] = useState(false);
 
+  const [getLayerGroups, { data: layerGroupData }] = useLazyQuery(GET_LAYER_GROUPS);
+  const layerGroups = layerGroupData?.getLayerGroups || []
+
   const [addLayerGroup, { loading }] = useMutation(ADD_LAYER_GROUP, {
     refetchQueries: ["getLayerGroups"],
     awaitRefetchQueries: true,
   });
+
+  useEffect(() => {
+    getLayerGroups({ variables: { userId } })
+  }, [getLayerGroups, userId])
+
 
   useEffect(() => {
     // reset states when anchor is changed
@@ -286,7 +296,7 @@ const LayerGroupItem = ({ layerGroup }) => {
     awaitRefetchQueries: true,
   });
   const [removeLayerGroup, { loading: removing }] = useMutation(REMOVE_LAYER_GROUP, {
-    refetchQueries: ["getLayerGroups"],
+    refetchQueries: ["getLayerGroups", "getAllLayerSettingsByUser"],
     awaitRefetchQueries: true,
   });
 
@@ -294,7 +304,7 @@ const LayerGroupItem = ({ layerGroup }) => {
     if (e.key === "Enter" && !updating)
       updateLayerGroup({
         variables: {
-          layerGroupId: layerGroup.id,
+          layerGroupId: layerGroup.groupId,
           layerGroupName: e.target.value,
         },
       }).then((res) => {
@@ -306,7 +316,7 @@ const LayerGroupItem = ({ layerGroup }) => {
     removeLayerGroup({
       variables: {
         userId: stateApp.user.mongoId,
-        layerGroupId: layerGroup.id,
+        layerGroupId: layerGroup.groupId,
       },
     });
 
