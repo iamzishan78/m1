@@ -260,8 +260,8 @@ function SuggestedShapeTaxOwnersTable(props) {
       case "changeRowsPerPage":
         // props.setLoading(true);
         // tableState.page = 0;
-        // meta.setPageInd(tableState.page);
-        // meta.setRowsPerPage(tableState.rowsPerPage);
+        meta.setPageInd(tableState.page);
+        meta.setRowsPerPage(tableState.rowsPerPage);
         // getPaginatedShapeWellOwners(pageVariables);
         break;
       case "changePage":
