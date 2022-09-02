@@ -24,6 +24,7 @@ import { getContactsAddress, copy } from "utils/helper";
 
 import { deepEqualObjects } from "components/Shared/functions";
 import { featureFlagChanges } from "components/ContactDetailedInfo/helper";
+import CustomerViewCol from "../helpers/CustomerView";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -135,6 +136,11 @@ function ContactsTable(props) {
       label: featureFlagChanges(showGenericPhones, header.label)
     }))
   }, [showGenericPhones]);
+
+  console.log('Contacts',Contacts)
+  useEffect(() => {
+    setSelectedGridView(Contacts || defaultView);
+  }, [Contacts]);
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
@@ -283,6 +289,7 @@ function ContactsTable(props) {
           <GridView
             module="Contacts"
             columns={props.columns}
+            defaultView={defaultView}
             handleDefaultView={handleDefaultView}
             handleClose={() => setShowViewModal(false)}
             setSelectedGridView={setSelectedGridView}
@@ -298,6 +305,8 @@ function ContactsTable(props) {
           style={{ backgroundColor: "#fff" }}
           header={header}
           headerComponent={HeaderComponent}
+          viewColumn={CustomerViewCol}
+          viewColumnProps={props.viewColumnProps}
           headerProps={headerProps}
           columns={props.columns}
           rows={props.rows}

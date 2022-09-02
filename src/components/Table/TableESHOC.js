@@ -412,9 +412,9 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                         }
                         filterList = [value];
                     }
-                    if (column?.options?.filter) {
+                    // if (column?.options?.filter) {
                         column.options.filterList = filterList;
-                    }
+                    // }
                 });
             }
             else {
@@ -425,7 +425,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     }
                 });
             }
-
             // shift _id and sticky Colums to the first Place
             let stickyColumns = tableCols.filter(cD => cD.name === '_id' || cD?.options?.stickyColumn)
             tableCols = tableCols.filter(cD => cD.name !== "_id" && !cD.options?.stickyColumn);
@@ -555,18 +554,18 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
         const handleMultiFieldFilter = (esFilter) => {
             const filters = []
-            const filterHistory = {}
+            // const filterHistory = {}
             if (esFilter) {
                 esFilter.forEach((filter) => {
                     if (typeof filter?.field === 'string') {
-                        if (!filterHistory[filter.field])
+                        // if (!filterHistory[filter.field])
                             filters.push(filter)
-                        filterHistory[filter.field] = true
+                        // filterHistory[filter.field] = true
                     } else {
                         filter?.field?.forEach((_, index) => {
-                            if (!filterHistory[filter.field])
+                            // if (!filterHistory[filter.field])
                                 filters.push({ field: filter.field[index], value: filter.value })
-                            filterHistory[filter.field] = true
+                            // filterHistory[filter.field] = true
                         })
                     }
                 })
@@ -778,7 +777,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     tableActions.changeESPage();
                     break;
                 case "viewColumnsChange":
-                    debugger
                     // updateGridViewRedux(tableState)
                     viewColumnsChange(tableState.columns);
                     break;
