@@ -65,7 +65,6 @@ export default function WellProdChart(props) {
 
   useEffect(() => {
     if (stateWellProdChart.wellProdHistory) {
-      debugger
       let chart = am4core.create("chartDiv", am4charts.XYChart);
 
       chart.dateFormatter.inputDateFormat = "MM/YYYY";
