@@ -41,7 +41,7 @@ const ButtonDropDown = ({ options, children, onClick, ...rest }) => {
   return (
     <>
       <ButtonGroup variant="contained" color="primary" ref={anchorRef} aria-label="split button" {...rest}>
-        <Button onClick={handleClick}>
+        <Button onClick={handleClick} id="addButton">
           <>{children}</>
           {options[selectedIndex].text}
         </Button>
