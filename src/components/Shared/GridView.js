@@ -20,6 +20,7 @@ import { ADD_GRID_VIEW } from "graphQL/useMutationAddGridView";
 import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 
 import { setCurrentUserGridViewAction } from "store/actions/sessionActions"
+import { de } from "date-fns/locale";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -101,6 +102,7 @@ function GridView({
   setShowSaveAsNew,
   selectedFilters,
   handleDefaultView,
+  defaultView,
   handleClose,
   columns,
   module,
@@ -311,6 +313,17 @@ function GridView({
                       />
                     ) : (
                       <View
+                        handleOnDelete={(viewId) =>  {
+                          if(viewId === selectedGridView._id && defaultView && defaultView?.name){
+                            const defautlGrid = allGridViews.find(grid  => grid.name === defaultView.name);
+                            if (selectedGridView._id === view._id){
+                              dispatch(setCurrentUserGridViewAction.STARTED({
+                                gridViewId: defautlGrid._id,
+                                userId: stateApp.user.mongoId
+                              }))
+                            }
+                          }
+                        }}
                         selectedGridView={selectedGridView}
                         view={view}
                         setEditGridView={setEditGridView}
@@ -432,7 +445,7 @@ const InputField = ({
   );
 };
 
-const View = ({ selectedGridView, onClick, view, setEditGridView, setViewName, updateFavouriteGridView, updateGridView, userId }) => {
+const View = ({ handleOnDelete, selectedGridView, onClick, view, setEditGridView, setViewName, updateFavouriteGridView, updateGridView, userId }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -553,11 +566,7 @@ const View = ({ selectedGridView, onClick, view, setEditGridView, setViewName, u
                 },
                 refetchQueries: ["getGridViews"],
               });
-              if (selectedGridView._id === view._id)
-                dispatch(setCurrentUserGridViewAction.STARTED({
-                  gridViewId: view._id,
-                  userId: userId
-                }))
+              handleOnDelete(view._id)
             }}
           >
             Delete view

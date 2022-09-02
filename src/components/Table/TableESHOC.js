@@ -40,7 +40,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         // const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, isHideFooter: isFiniteScroll && true })
         const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, infScrollHeight: loadMore?.height })
 
-
+        const [search, setSearch] = useState();
         const [columns, Columns] = useState([]);
         const [filters, setFilters] = useState([]);
         const [changePage, isPageChanged] = useState(false);
@@ -251,8 +251,9 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                             after: null
                         },
                         search: {
-                            query: tableMeta.extendSearchQuery,
-                            fields: tableMeta.searchFields
+                            query: tableMeta.extendSearchQuery || search,
+                            fields: tableMeta.searchFields,
+                            advanceSearch: tableMeta.advanceSearch,
                         },
                         sort: tableMeta.defaultSort,
                         filters: handleMultiFieldFilter([
@@ -267,7 +268,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     handleSelectedGridChange(tableMeta.TableHeader, { ...tableMeta.selectedGridView, filters: (tableMeta.selectedGridView.filters || []).concat(tableMeta.filters || []) }, columns, true)
             }
             // eslint-disable-next-line
-        }, [tableMeta]);
+        }, [tableMeta, search]);
 
 
         useEffect(() => {
@@ -296,9 +297,10 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 else
                     setRows(hits);
 
-                if (formatColumns)
+                if (formatColumns) {
                     TableHeader = formatColumns(TableHeader, hits)
-
+                    tableMeta.TableHeader = TableHeader
+                }
                 setColumnsData(copy(TableHeader));
                 setLoading(false);
             }
@@ -330,11 +332,12 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 }
 
                 /// apply global settings unless ignored
-                if (column?.options?.ignoreGlobal) {
+                if (column?.options?.ignoreGlobal || column?.label === " ") {
                     column.options = {
                         ...column.options,
                     };
-                } else {
+                }
+                else {
                     column.options = {
                         ...GlobalSettings.muiGridStandardOptions,
                         ...column.options,
@@ -354,10 +357,12 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                         },
                         filterOptions: {
                             display: (filterList, onChange, index, column) => {
-                                if (!TableHeader.find((el) => el.name === column.name)) {
+                                if (!TableHeader.find((el) => el.name === column.name) && tableMeta.customDataESKey) {
                                     column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
                                 } else
                                     column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
+
+                                if (!column.filterKey && column.esKey) column.filterKey = column.esKey
                                 return (
                                     <AutoCompleteFilter
                                         esIndex={esIndex}
@@ -387,7 +392,10 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             const allFilters = (tableMeta.selectedGridView?.filters || []).concat(initialFilters)
             if (allFilters) {
                 tableCols.forEach((column, index) => {
-                    setColumnDisplayAndFilter(TableHeader, tableMeta.selectedGridView, column);
+
+                    // only required if table have selectedGridView
+                    if (tableMeta.selectedGridView)
+                        setColumnDisplayAndFilter(TableHeader, tableMeta.selectedGridView, column);
                     let value
                     if (Array.isArray(column.esKey)) value = get(allFilters.find((filter) => { return column.esKey.includes(filter.field) }), "value", "");
                     else value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
@@ -404,9 +412,9 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                         }
                         filterList = [value];
                     }
-                    if (column?.options?.filter) {
+                    // if (column?.options?.filter) {
                         column.options.filterList = filterList;
-                    }
+                    // }
                 });
             }
             else {
@@ -417,7 +425,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     }
                 });
             }
-
             // shift _id and sticky Colums to the first Place
             let stickyColumns = tableCols.filter(cD => cD.name === '_id' || cD?.options?.stickyColumn)
             tableCols = tableCols.filter(cD => cD.name !== "_id" && !cD.options?.stickyColumn);
@@ -547,18 +554,18 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
         const handleMultiFieldFilter = (esFilter) => {
             const filters = []
-            const filterHistory = {}
+            // const filterHistory = {}
             if (esFilter) {
                 esFilter.forEach((filter) => {
                     if (typeof filter?.field === 'string') {
-                        if (!filterHistory[filter.field])
+                        // if (!filterHistory[filter.field])
                             filters.push(filter)
-                        filterHistory[filter.field] = true
+                        // filterHistory[filter.field] = true
                     } else {
                         filter?.field?.forEach((_, index) => {
-                            if (!filterHistory[filter.field])
+                            // if (!filterHistory[filter.field])
                                 filters.push({ field: filter.field[index], value: filter.value })
-                            filterHistory[filter.field] = true
+                            // filterHistory[filter.field] = true
                         })
                     }
                 })
@@ -572,7 +579,8 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     index: tableMeta.esIndex,
                     search: {
                         query: typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableState.searchText,
-                        fields: tableMeta.searchFields
+                        fields: tableMeta.searchFields,
+                        advanceSearch: tableMeta.advanceSearch,
                     },
                     pagination: {
                         // pit: tableData?.before_pit,
@@ -755,6 +763,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 case "resetFilters":
                 case "changeRowsPerPage":
                     // updateGridViewRedux(tableState)
+                    setSearch(tableState.searchText);
                     if (isFiniteScroll) {
                         const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]")
                         if (tableClass.length > 0) tableClass[0].scrollTop = 0;
@@ -769,7 +778,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     tableActions.changeESPage();
                     break;
                 case "viewColumnsChange":
-                    updateGridViewRedux(tableState)
                     viewColumnsChange(tableState.columns);
                     break;
                 default:

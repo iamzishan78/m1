@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 import { TextField, Grid } from "@material-ui/core";
@@ -38,9 +38,16 @@ const useStyles = makeStyles((theme) => ({
   textFieldLabel: {},
 }));
 
-function EditableTextField({ item, onChange, name, isEditable = true, showExpandIcon = false, openUd = false }) {
+function EditableTextField({ item, onChange, name, isEditable = true, showExpandIcon = false, openUd = false, openEditField }) {
   const [isEdit, setEdit] = useState({});
   const classes = useStyles({ isEdit, type: item.type });
+
+  useEffect(() => {
+    if (typeof openEditField !== 'undefined') {
+      setEdit({ ...isEdit, mode: openEditField })
+    }
+
+  }, [openEditField])
   return (
     <Grid
       container
@@ -79,7 +86,7 @@ function EditableTextField({ item, onChange, name, isEditable = true, showExpand
         )}
       </Grid>
       <Grid item className={classes.editIcon}>
-        {isEdit.able && isEditable && (
+        {typeof openEditField === 'undefined' && isEdit.able && isEditable && (
           <EditIcon
             fontSize="small"
             onClick={(e) => {
