@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
     height: "100%",
+
     "& .MuiToolbar-regular > div:nth-child(2)": {
       overflow: "hidden",
       display: "flex",
@@ -119,7 +120,7 @@ function ContactsTable(props) {
   const targetLabel = "contact";
   const uploadIcon = true;
   const header = "Contacts";
-  const dense = true;
+  const dense = false;
   const total = false;
   const orderByTracks = false;
   const startPaginationAt = 25;
@@ -145,7 +146,10 @@ function ContactsTable(props) {
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
       hit = getContactsAddress(props.setGenricData(hit, hit._id, ["tracks"]));
-      hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
+      hit.tags =
+        hit?.tags?.length > 0
+          ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+          : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       return hit;
     });
@@ -154,12 +158,16 @@ function ContactsTable(props) {
 
   useEffect(() => {
     props.setInitialFilters(uniqBy(props.customAppliedFilters, "field") || []);
+
+    const tableheaderCopy = copy(tableheader)
+    tableheaderCopy.map(thc => thc.options = tableheader.find(th => th.name === thc.name).options)
+
     props.setTableMeta({
       // filters: uniqBy(props.customAppliedFilters, "field") || [],
       addableName: "Contact",
       extendSearchQuery: props.contactSearchQuery ? props.contactSearchQuery : null,
       searchFields: ["name^4", "_all"],
-      TableHeader: copy(tableheader),
+      TableHeader: tableheaderCopy,
       esIndex,
       // filters: Contacts?.filters ? getFilters() : [],
       typeKeyword: { gridViewCategory: "Contacts" },
