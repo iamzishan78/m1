@@ -159,7 +159,12 @@ const useStyles = makeStyles((theme) => ({
     "& .MUIDataTableToolbar": {
       zIndex: "999999 !important",
     },
-
+    "& .MuiTableRow-head": {
+      backgroundColor: "#F2F2F2"
+    },
+    "& .MuiTableRow-root.MuiTableRow-hover:hover": {
+      backgroundColor: "rgb(223 223 223)"
+    },
     "& .MuiPaper-elevation1": {
       flexDirection: "row !important",
       height: "65px !important",
@@ -1408,7 +1413,7 @@ function SubTable(props) {
                         >
                           {tableMeta.rowData[nameIndex]}
 
-                          {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased") - 2]) && (
+                          {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
                             <FeatureFlag feature={FEATURES.IDICORE}>
                               <MonetizationOnIcon className={classes.monetizationIcon} />
                             </FeatureFlag>

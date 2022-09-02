@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useCallback, useRef, useMemo, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLazyQuery } from "@apollo/client";
+import { useApolloClient, useLazyQuery } from "@apollo/client";
 import { Button, Tooltip, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useHistory } from "react-router-dom";
@@ -8,7 +8,7 @@ import { isEmpty } from "lodash";
 
 import { AppContext } from "AppContext";
 
-import { copy, setStateIfDeepEqual } from "components/Shared/functions";
+import { copy, deepEqual, setStateIfDeepEqual } from "components/Shared/functions";
 import { TAGSAMPLES } from "graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "graphQL/useQueryCommentsCounter";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
@@ -34,6 +34,7 @@ export const TableESHOC = (Component) => {
     const HocWithDefaultProps = function HOC(props) {
         const { stateApp, setStateApp, loadMore } = props
         const dispatch = useDispatch();
+        const client = useApolloClient();
         const [tableMeta, setTableMeta] = useState([]);
         const isFiniteScroll = props?.loadMore?.type === "infiniteScroll"
         const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, infScrollHeight: loadMore?.height })
@@ -86,66 +87,69 @@ export const TableESHOC = (Component) => {
         const checkIfOwnersAreContactsDataRef = useRef();
         checkIfOwnersAreContactsDataRef.current = checkIfOwnersAreContactsData;
 
-        //Get Meta data to update Gridview for add custom fields
-        const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
-        const metaDatas = metaDataRes?.getMetaData?.metaData || []
-
         const activeSearchRef = useRef();
         const activeFiltersRef = useRef();
         const tableStateRef = useRef();
         const selectedFilters = useRef([]);
+        const metaDataRef = useRef();
 
         const [dependencyUpdate, SetDependencyUpdate] = useState(false);
 
         const history = useHistory();
 
         const tableData = elasticData?.getESSimpleSearch || {}
+
+        const updateColumnsOnGridViewChange = (metaDatas) => {
+            console.log('Outside Columns', columns)
+            Columns((cols) => {
+                if (cols?.length > 0) {
+                    console.log('Inside Columns', cols)
+                    const selectedData = JSON.parse(JSON.stringify(selectedGridView));
+                    setStateApp((state) => ({ ...state, selectedView: selectedData }));
+
+                    let filterColumns = cols.filter((col) => !col._id && !props.actionColumns.includes(col.label));
+                    let actionColumns = cols.filter((col) => props.actionColumns.includes(col.label));
+
+                    // Excluding actionColumns from veiw Columns 
+                    actionColumns = actionColumns.map(aC => ({ ...aC, options: { ...aC.options, viewColumns: false } }))
+
+                    let columnsData = [...filterColumns, ...copy(metaDatas), ...actionColumns]
+
+                    let view = JSON.parse(JSON.stringify(selectedData));
+                    if (view.columns) {
+                        let viewColumns = view.columns.filter((col) => !actionColumns.find((aC) => aC.name === col.name));
+                        let viewActionColumns = view.columns.filter((col) => actionColumns.find((aC) => aC.name === col.name));
+                        view.columns = [...viewColumns, ...viewActionColumns]
+                    }
+                    if (!isEmpty(view)) {
+                        view = formattingGridView(JSON.parse(JSON.stringify(view)));
+                        columnsData = handleSelectedGridChange(TableHeader(), view, columnsData);
+                    }
+                    columnsData = sortColumns(columnsData, view);
+                    setColumnsData(columnsData)
+                }
+                return cols
+            })
+        }
         useEffect(() => {
             if (selectedGridView) {
-                const category = tableMeta?.typeKeyword?.metaModule
-                getMetaData({
-                    variables: {
-                        user: stateApp.user?.mongoId,
-                        category,
-                    },
+                console.log('calling updateColumnsOnGridViewChange 1')
+                updateColumnsOnGridViewChange(metaDataRef.current || [])
+
+                client.query({
+                    query: GET_META_DATA, variables: { user: stateApp.user?.mongoId, category: tableMeta?.typeKeyword?.metaModule },
+                }).then(({ data: metaDataRes }) => {
+                    const metaDatas = metaDataRes?.getMetaData?.metaData || []
+                    if (!deepEqual(metaDatas, metaDataRef.current)) {
+                        metaDataRef.current = metaDatas
+
+                        console.log('calling updateColumnsOnGridViewChange 2')
+                        updateColumnsOnGridViewChange(metaDatas)
+                    }
                 });
             }
-        }, [getMetaData, selectedGridView]);
+        }, [selectedGridView]);
 
-        useEffect(() => {
-            if (selectedGridView && metaDatas) {
-                Columns((cols) => {
-                    if (cols?.length > 0) {
-                        const selectedData = JSON.parse(JSON.stringify(selectedGridView));
-                        setStateApp((state) => ({ ...state, selectedView: selectedData }));
-
-                        let filterColumns = cols.filter((col) => !col._id && !props.actionColumns.includes(col.label));
-                        let actionColumns = cols.filter((col) => props.actionColumns.includes(col.label));
-
-                        // Excluding actionColumns from veiw Columns 
-                        actionColumns = actionColumns.map(aC => ({ ...aC, options: { ...aC.options, viewColumns: false } }))
-
-                        let columnsData = [...filterColumns, ...copy(metaDatas), ...actionColumns]
-
-                        let view = JSON.parse(JSON.stringify(selectedData));
-                        if (view.columns) {
-                            let viewColumns = view.columns.filter((col) => !actionColumns.find((aC) => aC.name === col.name));
-                            let viewActionColumns = view.columns.filter((col) => actionColumns.find((aC) => aC.name === col.name));
-                            view.columns = [...viewColumns, ...viewActionColumns]
-                        }
-                        if (!isEmpty(view)) {
-                            view = formattingGridView(JSON.parse(JSON.stringify(view)));
-                            columnsData = handleSelectedGridChange(TableHeader(), view, columnsData);
-                        }
-                        // if (shouldGridViewSort) {
-                        columnsData = sortColumns(columnsData, view);
-                        // }
-                        setColumnsData(columnsData)
-                    }
-                    return cols
-                })
-            }
-        }, [selectedGridView, columns.length, metaDatas]);
 
         const updateColumnSorting = (value) => {
             dispatch(
@@ -645,7 +649,7 @@ export const TableESHOC = (Component) => {
             }
         }
 
-        const updateGridViewRedux = (tableState) => {
+        const updateGridViewRedux = useCallback((tableState) => {
             setTableMeta((tableMeta) => {
                 if (selectedGridView) {
                     dispatch(updateUserGridViewSettingAction.STARTED({
@@ -660,19 +664,14 @@ export const TableESHOC = (Component) => {
                         }
                     }));
                 }
-                // let filters = activeFiltersRef.current;
-                // if (props.targetLabel === "well") {
-                //     filters = filters.filter(f => f.type !== "geo_intersects");
-                // }
-                // dispatch(updateUserGridViewSettingAction(filters));
                 return tableMeta
             })
-        }
+        }, [setTableMeta, dispatch, selectedGridView, stateApp.user])
 
-        const viewColumnProps = {
+        const viewColumnProps = useMemo(() => ({
             selectedGridView,
             updateColumnSorting: (columns) => updateGridViewRedux({ columns }),
-        };
+        }), [selectedGridView, updateGridViewRedux])
 
         const onTableChange = (action, tableState, rows, meta) => {
             tableState.esIndex = tableMeta.esIndex;
@@ -890,7 +889,7 @@ export const TableESHOC = (Component) => {
 
     function HOCContainer(props) {
         const [stateApp, setStateApp] = useContext(AppContext);
-        const setStateAppCallback = useCallback(setStateApp, [])
+        const setStateAppCallback = useCallback(setStateApp, [setStateApp])
         const stateAppMemo = useMemo(() => ({ user: stateApp.user, filtersData: stateApp.filtersData }), [stateApp.filtersData, stateApp.user])
 
         return <HocWithDefaultProps {...props} stateApp={stateAppMemo} setStateApp={setStateAppCallback} />
