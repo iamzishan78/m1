@@ -674,7 +674,8 @@ const ShapeActionsPopup = (props) => {
       currentFeature.geometry = drawFeature.geometry;
     }
     const shapeJson = {
-      ...currentFeature,
+      ...featureToEdit,
+      geometry: currentFeature.geometry,
       shapeArea: calculateLandArea(currentFeature),
       shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates),
     };
