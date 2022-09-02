@@ -4,10 +4,12 @@ export const UPDATECUSTOMLAYER = gql`
   mutation updateCustomLayer(
     $customLayerId: ID
     $customLayer: CustomLayerInput
+    $userId: JSON
   ) {
     updateCustomLayer(
       customLayerId: $customLayerId
       customLayer: $customLayer
+      userId: $userId
     ) {
       success
       message

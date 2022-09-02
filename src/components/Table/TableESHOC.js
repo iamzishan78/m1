@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { useDispatch } from "react-redux";
+import React, { useContext, useState, useEffect, useCallback, useRef, useMemo, memo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import { Button, Tooltip, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -22,27 +22,24 @@ import TableHeader from "components/Table/constants/agreements-header-schema";
 import { get } from "lodash";
 
 import { usetableStyles } from "./Styles";
-import { updateUserGridViewSettingAction, updateUserGridViewFiltersAction } from "store/actions/sessionActions";
+import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
 import { handleSelectedGridChange, setColumnDisplayAndFilter } from "./helpers";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
-import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
 import { findInFunction, formattingGridView, sortColumns } from "utils/helper";
 import moment from "moment";
 
 import GlobalSettings from "..//..//GlobalSettings.js";
 
-export const TableESHOC = (Component, shouldGridViewSort = true) => {
-    const hocWithDefaultProps = function HOC(props) {
+export const TableESHOC = (Component) => {
+    const HocWithDefaultProps = function HOC(props) {
+        const { stateApp, setStateApp, loadMore } = props
         const dispatch = useDispatch();
-        const { loadMore } = props
         const [tableMeta, setTableMeta] = useState([]);
         const isFiniteScroll = props?.loadMore?.type === "infiniteScroll"
-        // const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, isHideFooter: isFiniteScroll && true })
         const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, infScrollHeight: loadMore?.height })
 
-
+        const [search, setSearch] = useState();
         const [columns, Columns] = useState([]);
-        const [filters, setFilters] = useState([]);
         const [changePage, isPageChanged] = useState(false);
         const [page, setPage] = useState(0)
         const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
@@ -52,21 +49,13 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         const [openDialog, setOpenDialog] = useState(null);
         const [clickedRow, setClickedRow] = useState();
 
-        const [gridViews, setGridViews] = useState(null);
-        const [metaDatas, setMetaDatas] = useState(null);
-        const [stateApp, setStateApp] = useContext(AppContext);
-
-        const selectedFilters = useRef([]);
-
         const [rows, setRows] = useState([]);
-        // const [rows, Rows] = useState([]);
-        // const setRows = (newState) => { 
-        //     setStateIfDeepEqual(Rows, newState) 
-        // };
         const [searchedRows, setSearchedRows] = useState([])
 
         const [selectedRows, setSelectedRows] = useState([]);
         const [initialFilters, setInitialFilters] = useState([]);
+
+        const [selectedGridView, setSelectedGridView] = useState();
 
         const [loading, Loading] = useState(true);
         const setLoading = (newState) => { setStateIfDeepEqual(Loading, newState) };
@@ -99,11 +88,12 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
         //Get Meta data to update Gridview for add custom fields
         const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
-        const [getGridViews, { data: gridViewsData }] = useLazyQuery(GET_GRID_VIEWS);
+        const metaDatas = metaDataRes?.getMetaData?.metaData || []
 
         const activeSearchRef = useRef();
         const activeFiltersRef = useRef();
         const tableStateRef = useRef();
+        const selectedFilters = useRef([]);
 
         const [dependencyUpdate, SetDependencyUpdate] = useState(false);
 
@@ -111,7 +101,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
         const tableData = elasticData?.getESSimpleSearch || {}
         useEffect(() => {
-            if (tableMeta?.selectedGridView) {
+            if (selectedGridView) {
                 const category = tableMeta?.typeKeyword?.metaModule
                 getMetaData({
                     variables: {
@@ -120,25 +110,9 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     },
                 });
             }
-        }, [getMetaData, getGridViews, tableMeta]);
+        }, [getMetaData, selectedGridView]);
 
         useEffect(() => {
-            if (gridViewsData?.getGridViews?.gridViews) {
-                setGridViews(gridViewsData.getGridViews.gridViews);
-
-            }
-        }, [gridViewsData]);
-
-        useEffect(() => {
-            if (metaDataRes?.getMetaData?.metaData) {
-                setMetaDatas(metaDataRes?.getMetaData?.metaData);
-
-            }
-        }, [metaDataRes]);
-
-        useEffect(() => {
-            const { selectedGridView } = tableMeta
-
             if (selectedGridView && metaDatas) {
                 Columns((cols) => {
                     if (cols?.length > 0) {
@@ -163,22 +137,22 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                             view = formattingGridView(JSON.parse(JSON.stringify(view)));
                             columnsData = handleSelectedGridChange(TableHeader(), view, columnsData);
                         }
-                        if (shouldGridViewSort) {
-                            columnsData = sortColumns(columnsData, view);
-                        }
+                        // if (shouldGridViewSort) {
+                        columnsData = sortColumns(columnsData, view);
+                        // }
                         setColumnsData(columnsData)
                     }
                     return cols
                 })
             }
-        }, [tableMeta.selectedGridView, columns.length, metaDatas]);
+        }, [selectedGridView, columns.length, metaDatas]);
 
         const updateColumnSorting = (value) => {
             dispatch(
                 updateUserGridViewSettingAction.STARTED({
                     userGridViewSetting: {
                         module: tableMeta?.typeKeyword?.gridViewCategory,
-                        gridView: tableMeta.selectedGridView._id,
+                        gridView: selectedGridView._id,
                         gridViewPatch: {
                             filters: selectedFilters.current,
                             columns: value.map((col) => ({ name: col.name, display: col.display === "true" })),
@@ -230,7 +204,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             if (tableMeta?.esIndex) {
 
                 if (tableMeta.modifySelectedGridView) {
-                    tableMeta.modifySelectedGridView(tableMeta.selectedGridView)
+                    tableMeta.modifySelectedGridView(selectedGridView)
                 }
                 setPage(0)
                 setLoading(true);
@@ -242,23 +216,24 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                             after: null
                         },
                         search: {
-                            query: tableMeta.extendSearchQuery,
-                            fields: tableMeta.searchFields
+                            query: tableMeta.extendSearchQuery || search,
+                            fields: tableMeta.searchFields,
+                            advanceSearch: tableMeta.advanceSearch,
                         },
                         sort: tableMeta.defaultSort,
                         filters: handleMultiFieldFilter([
                             ...(initialFilters ? initialFilters : []),
                             ...(tableMeta.filters ? tableMeta.filters : []),
-                            ...(tableMeta?.selectedGridView?.filters ? tableMeta?.selectedGridView?.filters : []),
+                            ...(selectedGridView?.filters ? selectedGridView?.filters : []),
                             ...(tableMeta.polygon) ? [tableMeta.polygon] : []
                         ])
                     }
                 });
-                if (tableMeta.selectedGridView)
-                    handleSelectedGridChange(tableMeta.TableHeader, { ...tableMeta.selectedGridView, filters: (tableMeta.selectedGridView.filters || []).concat(tableMeta.filters || []) }, columns, true)
+                if (selectedGridView)
+                    handleSelectedGridChange(tableMeta.TableHeader, { ...selectedGridView, filters: (selectedGridView.filters || []).concat(tableMeta.filters || []) }, columns, true)
             }
             // eslint-disable-next-line
-        }, [tableMeta]);
+        }, [tableMeta, search]);
 
 
         useEffect(() => {
@@ -287,9 +262,10 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 else
                     setRows(hits);
 
-                if (formatColumns)
+                if (formatColumns) {
                     TableHeader = formatColumns(TableHeader, hits)
-
+                    tableMeta.TableHeader = TableHeader
+                }
                 setColumnsData(copy(TableHeader));
                 setLoading(false);
             }
@@ -320,11 +296,13 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     column.options.setCellHeaderProps = GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps
                 }
 
-                if (column?.options?.ignoreGlobal) {
+                /// apply global settings unless ignored
+                if (column?.options?.ignoreGlobal || column?.label === " ") {
                     column.options = {
                         ...column.options,
                     };
-                } else {
+                }
+                else {
                     column.options = {
                         ...GlobalSettings.muiGridStandardOptions,
                         ...column.options,
@@ -344,14 +322,15 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                         },
                         filterOptions: {
                             display: (filterList, onChange, index, column) => {
-                                if (!TableHeader.find((el) => el.name === column.name)) {
+                                if (!TableHeader.find((el) => el.name === column.name) && tableMeta.customDataESKey) {
                                     column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
                                 } else
                                     column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
+
+                                if (!column.filterKey && column.esKey) column.filterKey = column.esKey
                                 return (
                                     <AutoCompleteFilter
                                         esIndex={esIndex}
-                                        setFilters={setFilters}
                                         filterList={filterList}
                                         column={column}
                                         index={index}
@@ -373,10 +352,13 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     }
                 }
             });
-            const allFilters = (tableMeta.selectedGridView?.filters || []).concat(initialFilters)
+            const allFilters = (selectedGridView?.filters || []).concat(initialFilters)
             if (allFilters) {
                 tableCols.forEach((column, index) => {
-                    setColumnDisplayAndFilter(TableHeader, tableMeta.selectedGridView, column);
+
+                    // only required if table have selectedGridView
+                    if (selectedGridView)
+                        setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
                     let value
                     if (Array.isArray(column.esKey)) value = get(allFilters.find((filter) => { return column.esKey.includes(filter.field) }), "value", "");
                     else value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
@@ -393,20 +375,19 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                         }
                         filterList = [value];
                     }
-                    if (column?.options?.filter) {
-                        column.options.filterList = filterList;
-                    }
+                    // if (column?.options?.filter) {
+                    column.options.filterList = filterList;
+                    // }
                 });
             }
             else {
                 tableCols.forEach((column, index) => {
-                    setColumnDisplayAndFilter(TableHeader, tableMeta.selectedGridView, column);
+                    setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
                     if (column.options) {
                         column.options.filterList = Array.isArray(column.esKey) ? undefined : [];
                     }
                 });
             }
-
             // shift _id and sticky Colums to the first Place
             let stickyColumns = tableCols.filter(cD => cD.name === '_id' || cD?.options?.stickyColumn)
             tableCols = tableCols.filter(cD => cD.name !== "_id" && !cD.options?.stickyColumn);
@@ -522,18 +503,18 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
         const handleMultiFieldFilter = (esFilter) => {
             const filters = []
-            const filterHistory = {}
+            // const filterHistory = {}
             if (esFilter) {
                 esFilter.forEach((filter) => {
                     if (typeof filter?.field === 'string') {
-                        if (!filterHistory[filter.field])
-                            filters.push(filter)
-                        filterHistory[filter.field] = true
+                        // if (!filterHistory[filter.field])
+                        filters.push(filter)
+                        // filterHistory[filter.field] = true
                     } else {
                         filter?.field?.forEach((_, index) => {
-                            if (!filterHistory[filter.field])
-                                filters.push({ field: filter.field[index], value: filter.value })
-                            filterHistory[filter.field] = true
+                            // if (!filterHistory[filter.field])
+                            filters.push({ field: filter.field[index], value: filter.value })
+                            // filterHistory[filter.field] = true
                         })
                     }
                 })
@@ -547,7 +528,8 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     index: tableMeta.esIndex,
                     search: {
                         query: typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableState.searchText,
-                        fields: tableMeta.searchFields
+                        fields: tableMeta.searchFields,
+                        advanceSearch: tableMeta.advanceSearch,
                     },
                     pagination: {
                         // pit: tableData?.before_pit,
@@ -665,11 +647,11 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
         const updateGridViewRedux = (tableState) => {
             setTableMeta((tableMeta) => {
-                if (tableMeta?.selectedGridView) {
+                if (selectedGridView) {
                     dispatch(updateUserGridViewSettingAction.STARTED({
                         userGridViewSetting: {
                             module: tableMeta?.typeKeyword?.gridViewCategory,
-                            gridView: tableMeta.selectedGridView._id,
+                            gridView: selectedGridView._id,
                             gridViewPatch: {
                                 filters: activeFiltersRef.current,
                                 columns: tableState.columns.map((col) => ({ name: col.name, display: col.display === 'true' })),
@@ -688,7 +670,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         }
 
         const viewColumnProps = {
-            selectedGridView: tableMeta.selectedGridView,
+            selectedGridView,
             updateColumnSorting: (columns) => updateGridViewRedux({ columns }),
         };
 
@@ -696,7 +678,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             tableState.esIndex = tableMeta.esIndex;
             // tableState.filters = tableMeta.filters ? tableMeta.filters : [];
             tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
-            const selectedGridView = tableMeta.selectedGridView
             const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch, selectedGridView)
             activeSearchRef.current = tableActions.pageESVariables.variables.search;
             activeFiltersRef.current = handleMultiFieldFilter(tableActions.pageESVariables.variables.filters.concat(tableMeta.filters));
@@ -725,6 +706,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 case "resetFilters":
                 case "changeRowsPerPage":
                     // updateGridViewRedux(tableState)
+                    setSearch(tableState.searchText);
                     if (isFiniteScroll) {
                         const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]")
                         if (tableClass.length > 0) tableClass[0].scrollTop = 0;
@@ -831,8 +813,9 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
             setCurrentRowsLength(currentRowsLength => {
                 Loading((loading) => {
                     setRows(rows => {
-                        if (rows.length < currentRowsLength && !loading)
+                        if (rows.length < currentRowsLength && !loading) {
                             document.getElementById('pagination-next').click()
+                        }
                         return rows
                     })
                     return loading
@@ -868,7 +851,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
                     tableMeta={tableMeta}
                     setTableMeta={setTableMeta}
-                    setFilters={setFilters}
                     options={options}
                     clickedRow={clickedRow}
 
@@ -894,15 +876,26 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
 
                     initialFilters={initialFilters}
                     setInitialFilters={setInitialFilters}
+
+                    selectedGridView={selectedGridView}
+                    setSelectedGridView={setSelectedGridView}
                     esHocProps={esHocProps}
                 />
             </span>
         );
     };
-    hocWithDefaultProps.defaultProps = {
-        actionColumns: [" ", "Tags", "Comments"]
+    HocWithDefaultProps.defaultProps = {
+        actionColumns: [" ", "Tags", "Comments", "isPurchased"]
     }
-    return hocWithDefaultProps
+
+    function HOCContainer(props) {
+        const [stateApp, setStateApp] = useContext(AppContext);
+        const setStateAppCallback = useCallback(setStateApp, [])
+        const stateAppMemo = useMemo(() => ({ user: stateApp.user, filtersData: stateApp.filtersData }), [stateApp.filtersData, stateApp.user])
+
+        return <HocWithDefaultProps {...props} stateApp={stateAppMemo} setStateApp={setStateAppCallback} />
+    }
+    return memo(HOCContainer)
 };
 
 export default TableESHOC;

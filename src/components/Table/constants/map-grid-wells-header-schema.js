@@ -69,7 +69,7 @@ const wellsColumnHeaders = [
     name: "operator",
     label: "Operator Name",
     esKey: "operator.keyword",
-    options:{
+    options: {
       display: true,
       filter: true,
     }
@@ -78,9 +78,18 @@ const wellsColumnHeaders = [
     name: "wellBoreProfile",
     label: "Well Profile",
     esKey: "wellBoreProfile.keyword",
-    options:{
+    options: {
       display: true,
       filter: true,
+    }
+  },
+  {
+    name: "globalWell",
+    label: "Global  Well",
+    esKey: "Id.keyword",
+    options: {
+      display: false,
+      filter: false,
     }
   },
   // {
@@ -117,27 +126,27 @@ const wellsColumnHeaders = [
       viewColumns: false,
     },
   },
-  {
-    name: "isTracked",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-      filterOptions: {
-        names: ["Tracked", "Untracked"],
-        logic(tracked, filterVal) {
-          return !(
-            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
-            (filterVal.indexOf("Untracked") >= 0 && !tracked)
-          );
-        },
-      },
-      filterType: "dropdown",
-    },
-  },
+  // {
+  //   name: "isTracked",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //     filterOptions: {
+  //       names: ["Tracked", "Untracked"],
+  //       logic(tracked, filterVal) {
+  //         return !(
+  //           (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+  //           (filterVal.indexOf("Untracked") >= 0 && !tracked)
+  //         );
+  //       },
+  //     },
+  //     filterType: "dropdown",
+  //   },
+  // },
   {
     name: "coordinates",
     label: " ",

@@ -16,8 +16,8 @@ import {
   SortableElement,
   sortableHandle,
 } from "react-sortable-hoc";
-import { arrayMoveImmutable } from "array-move";
 import { findInFunction } from "utils/helper";
+import { arrayMoveImmutable } from "array-move";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -52,7 +52,7 @@ const CustomerViewCol = (props) => {
 
 
   const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
-
+  console.log('columns', columns)
   useEffect(() => {
     setItems(columns.filter((col) => col.viewColumns))
   }, [columns])
@@ -88,6 +88,7 @@ const CustomerViewCol = (props) => {
             columns={columns}
             updateColumnSorting={updateColumnSorting}
             setItems={(value) => {
+              console.log('setItems', value)
               setItems(value)
               const stickyColumns = columns.filter(column => column.setCellProps && findInFunction("sticky", column.setCellProps))
               updateColumnSorting(stickyColumns.concat(value))
@@ -117,14 +118,15 @@ const SortableComponent = ({
   setItems,
   tableColumns,
   columns,
+  onColumnUpdate,
   selectedGridView,
   updateColumnSorting,
   updateColumns,
-  onColumnUpdate,
   updateMetaData,
   items,
 }) => {
   const onSortEnd = ({ oldIndex, newIndex }) => {
+    console.log('setItems SortableComponent', items)
     setItems(arrayMoveImmutable(items, oldIndex, newIndex));
   };
 
@@ -134,10 +136,10 @@ const SortableComponent = ({
         setItems={setItems}
         items={items}
         columns={columns}
+        onColumnUpdate={onColumnUpdate}
         selectedGridView={selectedGridView}
         updateColumnSorting={updateColumnSorting}
         tableColumns={tableColumns}
-        onColumnUpdate={onColumnUpdate}
         updateColumns={updateColumns}
         updateMetaData={updateMetaData}
         onSortEnd={onSortEnd}
@@ -152,22 +154,24 @@ const SortableList = SortableContainer(
     items,
     tableColumns,
     columns,
+    onColumnUpdate,
     selectedGridView,
     updateColumnSorting,
     updateColumns,
-    onColumnUpdate,
     updateMetaData,
     setItems,
   }) => {
     const removeIndex = (index) => {
       const newItems = JSON.parse(JSON.stringify(items));
       newItems.splice(index, 1);
+      console.log('setItems removeIndex', items)
       setItems(newItems);
     };
 
     const updateIndex = (index, data) => {
       const newItems = JSON.parse(JSON.stringify(items));
       newItems[index] = data;
+      console.log('setItems updateIndex', items)
       setItems(newItems);
     };
 
@@ -179,12 +183,12 @@ const SortableList = SortableContainer(
             index={index}
             item={item}
             columns={columns}
+            onColumnUpdate={onColumnUpdate}
             selectedGridView={selectedGridView}
             updateColumnSorting={updateColumnSorting}
             tableColumns={tableColumns}
             updateColumns={updateColumns}
             updateMetaData={updateMetaData}
-            onColumnUpdate={onColumnUpdate}
             removeIndex={removeIndex}
             updateIndex={updateIndex}
             itemIndex={index}

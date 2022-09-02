@@ -1,4 +1,4 @@
-import GlobalSettings from "..//..//..//GlobalSettings.js";
+import GlobalSettings from "GlobalSettings";
 
 const AgreementsHeadCells = (isSnapGrid = false) => [
   {
@@ -12,10 +12,21 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Agreement",
     esKey: "shapeJson.properties.agreementNumber.keyword",
     options: {
-      ...GlobalSettings.muiGridInfScrollOptions,
+      setCellProps: () => ({
+        style: {
+          ...GlobalSettings.muiGridInfScrollOptions.setCellProps().style,
+          left: isSnapGrid ? "77px" : "109px",
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          ...GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps().style,
+          left: isSnapGrid ? "77px" : "108.5px",
+        }
+      }),
       ignoreGlobal: true,
       dbName: "shapeJson.properties.agreementNumber",
-      isSnapGrid: isSnapGrid
+      isSnapGrid,
     },
   },
   // //temp hide until we decide how we want this to work
@@ -30,6 +41,17 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Agreement Name",
     esKey: "shapeJson.properties.agreementName.keyword",
     options: {
+      setCellProps: () => ({
+        style: {
+          minWidth: "300px",
+          maxWidth: "350px"
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          paddingLeft: "0px"
+        }
+      }),
       dbName: "shapeJson.properties.agreementName",
       // ignoreGlobal: true,
       display: false,

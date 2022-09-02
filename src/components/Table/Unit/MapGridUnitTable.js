@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useContext } from "react";
 import { Container } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import debounce from "lodash/debounce";
@@ -10,6 +10,7 @@ import moment from "moment";
 import { AppContext } from "AppContext";
 import TableESHOC from "components/Table/TableESHOC";
 import Table from "components/Shared/M1nTable/components/Table";
+import { setMapGridCardState } from "actions";
 
 // QUERIES
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
@@ -78,10 +79,6 @@ function MapGridUnitTable(props) {
     });
     return hits;
   };
-
-  // useEffect(() => {
-  //   setSelectedGridView(GridViewModule || defaultView);
-  // }, [GridViewModule]);
 
   useEffect(() => {
     setTableMeta({

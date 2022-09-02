@@ -661,12 +661,12 @@ function ExpandableCard(props) {
               </Typography>
             ))}
             <Typography
-              className={classes.prevlocation}
+              // className={classes.prevlocation}
               color="inherit"
-              onClick={() => {
-                setStateApp({ ...stateApp, DocumentDrawer: true });
-                history.push("/documents");
-              }}
+            // onClick={() => {
+            //   setStateApp({ ...stateApp, DocumentDrawer: true });
+            //   history.push("/documents");
+            // }}
             >
               Wells
             </Typography>
