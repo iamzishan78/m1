@@ -101,7 +101,7 @@ export default function Portfolio({
           <label className={classes.label}>{label}</label>
         </Grid>
       )}
-      <Grid item xs md style={{ marginTop: "2px", minWidth: "285px" }}>
+      <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "285px" }}>
         <Autocomplete
           size="small"
           onChange={(event, newValue) => {
@@ -123,7 +123,7 @@ export default function Portfolio({
           id="custom-date-dropdown"
         />
       </Grid>
-      <Grid item xs md>
+      <Grid item xs md={1}>
         <TextField
           size="small"
           margin="dense"
@@ -155,7 +155,7 @@ export default function Portfolio({
       <Grid>
         <label>to</label>
       </Grid>
-      <Grid item xs md>
+      <Grid item xs md={1}>
         <TextField
           size="small"
           margin="dense"
