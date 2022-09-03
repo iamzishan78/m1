@@ -31,7 +31,7 @@ describe('Document Grid Spec', () => {
 
         cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type('jacob')
 
-        cy.wait(10000)
+        cy.wait(5000)
 
         cy.get('.MuiTableCell-root.MuiTableCell-body').contains('SGF TRUST LEGAL').click();
 
@@ -48,7 +48,7 @@ describe('Document Grid Spec', () => {
 
         cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type('GoodwillDD')
 
-        cy.wait(10000)
+        cy.wait(1000)
 
         cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type('{backspace}{backspace}')
 
@@ -60,8 +60,10 @@ describe('Document Grid Spec', () => {
         cy.get('.MuiBreadcrumbs-li', { timeout: 10000 }).contains("Contacts").should('be.visible').click()
 
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
-
+        cy.wait(1000)
         cy.get("#viewColumnIcon").click()
+
+        cy.wait(1000)
 
     })
 
