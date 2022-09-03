@@ -309,7 +309,7 @@ const LayerGroupItem = ({ layerGroup }) => {
     removeLayerGroup({
       variables: {
         userId: stateApp.user.mongoId,
-        layerGroupId: layerGroup.groupId,
+        layerGroupId: layerGroup.id,
       },
     });
 
