@@ -139,18 +139,10 @@ export default function AddGroup({ userId, above, layerGroups }) {
 
   const [open, setMenuOpen] = useState(false);
 
-  const [getLayerGroups, { data: layerGroupData }] = useLazyQuery(GET_LAYER_GROUPS);
-  const layerGroups = layerGroupData?.getLayerGroups || []
-
   const [addLayerGroup, { loading }] = useMutation(ADD_LAYER_GROUP, {
     refetchQueries: ["getLayerGroups"],
     awaitRefetchQueries: true,
   });
-
-  useEffect(() => {
-    getLayerGroups({ variables: { userId } })
-  }, [getLayerGroups, userId])
-
 
   useEffect(() => {
     // reset states when anchor is changed
@@ -301,17 +293,18 @@ const LayerGroupItem = ({ layerGroup }) => {
   });
 
   const handleSubmit = (e) => {
-    if (e.key === "Enter" && !updating)
+    if (e.key === "Enter" && !updating){
       updateLayerGroup({
         variables: {
-          layerGroupId: layerGroup.groupId,
+          layerGroupId: layerGroup.id,
           layerGroupName: e.target.value,
         },
       }).then((res) => {
         setEditing(false);
       });
+    }
   }
-
+  
   const deleteGroup = () => {
     removeLayerGroup({
       variables: {
@@ -321,7 +314,6 @@ const LayerGroupItem = ({ layerGroup }) => {
     });
 
   }
-
   return (
     <Grid
       container
