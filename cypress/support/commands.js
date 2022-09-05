@@ -43,9 +43,9 @@ Cypress.Commands.add("checkAndLogin", (selector) => {
 })
 
 // This command is to type  in autocomplete search bar and then select first matched option
-Cypress.Commands.add('typeAndSelect', (searchId, stringToType) => {
+Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId) => {
     cy.get(searchId).type(stringToType)
-    cy.get('#wellSearch-option-0', { timeout: 50000 }).should('be.visible')
+    cy.get(`[id="${optionId}"]`, { timeout: 50000 }).should('be.visible')
     cy.get(searchId).type('{downArrow}{enter}')
 })
 
