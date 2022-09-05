@@ -26,7 +26,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-
+// Common Commands
 Cypress.Commands.add("checkAndLogin", (selector) => {
     //This command will logged in if it is not already logged in
     cy.get('body').then(($body) => {
@@ -49,12 +49,23 @@ Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId) => {
     cy.get(searchId).type('{downArrow}{enter}')
 })
 
-// This command is to intercept graphql api by operation name
-Cypress.Commands.add('interceptApi', (operationName) => {
+/*This command is to intercept graphql api by operation name and if searchString is passed it will only
+intercept if api payload has that string in search */
+Cypress.Commands.add('interceptApi', (operationName, searchString = null) => {
+
     cy.intercept('POST', 'https://enerxgraphql.azurewebsites.net/api/m1graph?code=Rhr8LQFXNnl/TE26EVD296voKbGVWZQDupqWAAWMaZXjzvgdvktPqg==', req => {
+
         if (req.body.operationName === operationName) {
-            // req.alias will use as api title 
-            req.alias = `${operationName}Api`;
+
+            if (searchString) {
+                if (req.body.variables?.search?.query === searchString) {
+                    req.alias = `${operationName}WithSearchStringApi`;
+                }
+            }
+            else {
+                // req.alias will use as api title 
+                req.alias = `${operationName}Api`;
+            }
         }
     });
 })
@@ -65,3 +76,29 @@ Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
         assert.isNotNull(interception.response.body, `${apiTitle} run succesfully`)
     })
 })
+
+/*This command will take css id and containing string to click on action
+command will then varify api response and if isFilter is passed it will verify
+filter was applied or not */
+Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = false) => {
+    cy.get(`[id="${actionId}"]`).trigger('click');
+    cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
+
+    if (isFilter)
+        cy.get('.MuiChip-label', { timeout: 10000 }).contains(containsString)
+    else
+        cy.get('.MuiTypography-root', { timeout: 10000 }).contains(containsString);
+})
+
+// ContactGrid Commands
+
+Cypress.Commands.add('gridSearch', (searchString) => {
+    cy.interceptApi('getESSimpleSearch', searchString)
+    cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type(searchString)
+    cy.verifyApiResponse('@getESSimpleSearchWithSearchStringApi', { responseTimeout: 30000 })
+})
+
+Cypress.Commands.add('sortColumn', (columnName) => {
+    cy.get('.MuiButton-label', { timeout: 10000 }).contains(columnName).click({ force: true })
+})
+

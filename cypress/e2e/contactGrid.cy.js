@@ -10,57 +10,44 @@ describe('Document Grid Spec', () => {
         cy.get('#addButton', { timeout: 50000 }).should('be.visible')
         cy.wait(3000)
 
-        // cy.interceptApi('getESSimpleSearch')
-        // cy.get('#Leads').trigger('click');
-        // cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
-        // cy.get('.MuiChip-label', { timeout: 10000 }).contains('Lead')
+        cy.interceptApi('getESSimpleSearch')
 
-        // cy.get('.MuiTableCell-root MuiTableCell-body').contains('Prospects').click();
-        // cy.get('.MuiTypography-root').contains('Prospects').click();
-        // cy.get('.MuiListItemText-primary').contains('Prospects').click();
-        // cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
-        // cy.get('.MuiChip-label', { timeout: 10000 }).contains('Prospect')
+        cy.selectQuickAction('Leads 101', 'Lead', true)
+        // cy.selectQuickAction('Prospects 101', 'Prospect', true)
+        cy.selectQuickAction('Contacts 101', 'Contact', true)
+        cy.selectQuickAction('All Entities 101', 'All Entities')
 
-        // cy.get('#Contacts').trigger('click');
-        // cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
-        // cy.get('.MuiChip-label', { timeout: 10000 }).contains('Contact')
+        cy.gridSearch('jacob')
 
-        // cy.get('[id="All Entities"]').trigger('click');
-        // cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
-        // cy.get('.MuiTypography-root', { timeout: 10000 }).contains('All Entities');
+        cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: 10000 }).contains('SGF TRUST LEGAL').click();
 
-        // cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type('jacob')
+        cy.interceptApi('getESSimpleSearch')
+        cy.get('.MuiBreadcrumbs-li', { timeout: 10000 }).contains("Contacts").should('be.visible').click()
 
-        // cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: 10000 }).contains('SGF TRUST LEGAL').click();
+        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
 
-        // cy.interceptApi('getESSimpleSearch')
-        // cy.get('.MuiBreadcrumbs-li', { timeout: 10000 }).contains("Contacts").should('be.visible').click()
+        cy.interceptApi('getESSimpleSearch')
 
-        // cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
+        cy.selectQuickAction('Leads 101', 'Lead', true)
 
-        // cy.interceptApi('getESSimpleSearch')
-        // cy.get('#Leads').trigger('click');
-        // cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
-        // cy.get('.MuiChip-label', { timeout: 10000 }).contains('Lead')
+        cy.gridSearch('GoodwillDD')
 
+        cy.wait(1000)
 
-        // cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type('GoodwillDD')
+        cy.interceptApi('getESSimpleSearch', 'Goodwill')
+        cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type('{backspace}{backspace}')
+        cy.verifyApiResponse('@getESSimpleSearchWithSearchStringApi', { responseTimeout: 30000 })
 
-        // cy.wait(1000)
+        cy.sortColumn('Contact Owner')
+        cy.wait(1000)
+        cy.sortColumn('Contact Owner')
 
-        // cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type('{backspace}{backspace}')
+        cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: 10000 }).contains('GOODWILL IND REVOC TR LEGAL').click();
+        cy.get('.MuiBreadcrumbs-li', { timeout: 10000 }).contains("Contacts").should('be.visible').click()
 
-        // cy.get('.MuiButton-label', { timeout: 10000 }).contains('Contact Owner').click({ force: true })
-        // cy.wait(1000)
-        // cy.get('.MuiButton-label', { timeout: 10000 }).contains('Contact Owner').click({ force: true })
+        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
+        cy.wait(1000)
 
-        // cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: 10000 }).contains('GOODWILL IND REVOC TR LEGAL').click();
-        // cy.get('.MuiBreadcrumbs-li', { timeout: 10000 }).contains("Contacts").should('be.visible').click()
-
-        // cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
-        // cy.wait(1000)
-
-        // view column half
         cy.get("#viewColumnIcon").click()
         cy.get('#customViewColumns').parent().scrollTo('center')
 
@@ -68,11 +55,9 @@ describe('Document Grid Spec', () => {
 
         cy.get("#age").check({ force: true })
         cy.get('body').type('{esc}');
-
-        cy.get('.MuiButton-label', { timeout: 10000 }).contains('Age').click({ force: true })
+        cy.sortColumn('Age')
 
         cy.get("#filterIcon").click()
-
         cy.typeAndSelect('[id="filter-autocomplete-Contact Owner"]', 'jacob', 'filter-autocomplete-Contact Owner-option-0')
         cy.get('.MuiTypography-root').contains("FILTERS").click()
         cy.get('body').type('{esc}');
