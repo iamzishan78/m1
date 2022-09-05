@@ -719,10 +719,9 @@ export const TableESHOC = (Component) => {
                     isPageChanged(true)
                     tableActions.changeESPage();
                     break;
-                case "viewColumnsChange":
-                    // updateGridViewRedux(tableState)
-                    // viewColumnsChange(tableState.columns);
-                    break;
+                // case "viewColumnsChange":
+                //     viewColumnsChange(tableState.columns);
+                //     break;
                 default:
             }
         }

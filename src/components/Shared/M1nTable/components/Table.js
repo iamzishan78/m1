@@ -1329,7 +1329,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customRender: (value, tableMeta) => {
-                  if (props.targetLabel === "unit" && column.name === "name") {
+                  if (props.targetLabel === "unit") {
                     const targetSourceId = tableMeta.rowData[1];
                     const commentValue = tableMeta.rowData[21]
                     return (
@@ -1377,9 +1377,7 @@ function SubTable(props) {
                         </Grid>
                       </div>
                     );
-                  };
-
-                  if (props.targetLabel === "contact" && column.name === "name") {
+                  } else if (props.targetLabel === "contact") {
                     const nameIndex = props.columns.findIndex((val) => val.name === "name")
                     return (
                       <div
@@ -1419,6 +1417,38 @@ function SubTable(props) {
                             </FeatureFlag>
                           )}
                         </p>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          minWidth: "250px",
+                        }}
+                      >
+                        <Grid container spacing={0} direction="row"
+                          style={{ position: 'absolute' }}
+                          className={classes.agreementNumber}
+                        >
+                          <Grid item
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-start",
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                maxWidth: '250px',
+                                overflow: 'hidden',
+                                wordWrap: "break-word",
+                              }}
+                            >
+                              {value}
+                            </Box>
+                          </Grid>
+                        </Grid>
                       </div>
                     );
                   }

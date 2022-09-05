@@ -34,7 +34,7 @@ function MapGridLayersTable(props) {
       },
       {
         name: 'geom', label: 'geom',
-        options: { customRender: (value) => { return <div>{value}</div>; } }
+        options: { ignoreGlobal: true, customRender: (value) => { return <div>{value}</div>; } }
       },
     ]
     if (stateApp.selectedLayer.layerGeometry === 'Point') {
