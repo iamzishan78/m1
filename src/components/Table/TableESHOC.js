@@ -778,6 +778,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                     tableActions.changeESPage();
                     break;
                 case "viewColumnsChange":
+
                     viewColumnsChange(tableState.columns);
                     break;
                 default:
