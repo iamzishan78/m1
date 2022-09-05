@@ -413,7 +413,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                         filterList = [value];
                     }
                     // if (column?.options?.filter) {
-                        column.options.filterList = filterList;
+                    column.options.filterList = filterList;
                     // }
                 });
             }
@@ -559,12 +559,12 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 esFilter.forEach((filter) => {
                     if (typeof filter?.field === 'string') {
                         // if (!filterHistory[filter.field])
-                            filters.push(filter)
+                        filters.push(filter)
                         // filterHistory[filter.field] = true
                     } else {
                         filter?.field?.forEach((_, index) => {
                             // if (!filterHistory[filter.field])
-                                filters.push({ field: filter.field[index], value: filter.value })
+                            filters.push({ field: filter.field[index], value: filter.value })
                             // filterHistory[filter.field] = true
                         })
                     }
@@ -945,7 +945,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         );
     };
     hocWithDefaultProps.defaultProps = {
-        actionColumns: [" ", "Tags", "Comments"]
+        actionColumns: [" ", "Tags", "Comments", "isPurchased"]
     }
     return hocWithDefaultProps
 };
