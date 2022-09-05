@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/styles";
 import { Typography, TextField, Grid, FormControl } from "@material-ui/core";
 
 import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
-import { AutoCompleteESField } from "components/Shared/Forms/Fields/AutoCompleteESField";
+import AutoCompleteESField from "components/Shared/Forms/Fields/AutoCompleteESField";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 const useStyles = makeStyles((theme) => ({

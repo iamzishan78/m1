@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 
+// QUERIES
 import { useLazyQuery } from "@apollo/client";
 import loadashFilter from "lodash/filter";
 
@@ -20,9 +21,10 @@ const PopperMy = function (props) {
   return <Popper {...props} style={styles.popper} placement="bottom-start" />;
 };
 
-export function AutoCompleteESField({ placeholder, value, onChange, column, query, extendSearchQuery, esIndex, filters }) {
+const AutoCompleteField = ({ placeholder, value, onChange, column, query, extendSearchQuery, esIndex, filters }) => {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
+  // const [value, setValue] = useState({ key: value });
   const [search, setSearch] = useState(value);
   const { label, filterKey, type } = column;
   const [getFilters, { data: filtersData, loading }] = useLazyQuery(query, { fetchPolicy: "no-cache" });
@@ -36,7 +38,14 @@ export function AutoCompleteESField({ placeholder, value, onChange, column, quer
   useEffect(() => {
     if (filtersData) {
       const keys = Object.keys(filtersData);
-      if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits) setOptions(filtersData[keys[0]].hits);
+      if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits)
+        setOptions(
+          filtersData[keys[0]].hits.map((hit) => ({
+            doc_count: hit.doc_count,
+            key: typeof hit.key === "string" ? [hit.key] : hit.key,
+            key_as_string: hit.key_as_string,
+          }))
+        );
     }
   }, [filtersData]);
 
@@ -52,6 +61,7 @@ export function AutoCompleteESField({ placeholder, value, onChange, column, quer
         esIndex,
         filters,
         filterKeys: filterKey,
+        // filterKey: typeof filterKey === 'string' ? filterKey : undefined,
         search,
         extendSearchQuery,
         size: 50,
@@ -73,7 +83,7 @@ export function AutoCompleteESField({ placeholder, value, onChange, column, quer
       value={value}
       inputValue={search}
       getOptionSelected={(option, value) => option?.key === value.key}
-      getOptionLabel={(option) => option?.key?.join(" - ")}
+      getOptionLabel={(option) => (typeof option.key === "string" ? option : option?.key?.join(" - "))}
       onChange={(e, value, reason) => {
         if (reason === "clear" || !value?.key) setSearch("");
         else {
@@ -156,4 +166,6 @@ export function AutoCompleteESField({ placeholder, value, onChange, column, quer
       )}
     />
   );
-}
+};
+
+export default AutoCompleteField;

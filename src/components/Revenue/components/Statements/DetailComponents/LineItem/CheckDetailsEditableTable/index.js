@@ -23,7 +23,7 @@ import get from "lodash/get";
 import set from "lodash/set";
 import { Grid as TableGrid, Input, Date } from "components/Shared/SpreadsheetGrid";
 import Typography from "@material-ui/core/Typography";
-import { AutoCompleteESField } from "components/Shared/Forms/Fields/AutoCompleteESField";
+import AutoCompleteESField from "components/Shared/Forms/Fields/AutoCompleteESField";
 import { ActionCell } from "./ActionCell";
 import { UPDATE_CHECK_DETAIL } from "graphQL/useMutationUpdateCheckDetail";
 import InfiniteScroll from "react-infinite-scroll-component";
