@@ -4,8 +4,8 @@ import { DropzoneAreaBase } from "material-ui-dropzone";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { CircularProgress } from "@material-ui/core";
-import { showErrorMessage } from "../../actions";
-import { ADDDESCRIPTORFILE } from "../../graphQL/useMutationAddDescriptorFile";
+import { showErrorMessage } from "actions";
+import { ADDDESCRIPTORFILE } from "graphQL/useMutationAddDescriptorFile";
 import { Container } from "@material-ui/core";
 import { BlockBlobClient } from "@azure/storage-blob";
 

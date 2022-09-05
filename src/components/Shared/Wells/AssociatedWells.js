@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   list: {
     overflowX: "hidden",
     overflowY: "auto",
-    maxHeight: "79vh",
+    height: "455px",
     "& .MuiList-padding": {
       padding: "23px 0px !important",
     },
