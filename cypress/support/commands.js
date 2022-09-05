@@ -51,15 +51,19 @@ Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId) => {
 
 /*This command is to intercept graphql api by operation name and if searchString is passed it will only
 intercept if api payload has that string in search */
-Cypress.Commands.add('interceptApi', (operationName, searchString = null) => {
+Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
 
     cy.intercept('POST', 'https://enerxgraphql.azurewebsites.net/api/m1graph?code=Rhr8LQFXNnl/TE26EVD296voKbGVWZQDupqWAAWMaZXjzvgdvktPqg==', req => {
 
         if (req.body.operationName === operationName) {
 
-            if (searchString) {
-                if (req.body.variables?.search?.query === searchString) {
+            if (payloadKey) {
+                const { variables } = req.body
+                if (payloadKey.searchString && variables?.search?.query === payloadKey.searchString) {
                     req.alias = `${operationName}WithSearchStringApi`;
+                }
+                if (payloadKey?.sortOrder && variables?.sort?.order === payloadKey.sortOrder) {
+                    req.alias = `${operationName}WithSortOrderApi`;
                 }
             }
             else {
@@ -93,12 +97,14 @@ Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = 
 // ContactGrid Commands
 
 Cypress.Commands.add('gridSearch', (searchString) => {
-    cy.interceptApi('getESSimpleSearch', searchString)
+    cy.interceptApi('getESSimpleSearch', { searchString: searchString })
     cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type(searchString)
     cy.verifyApiResponse('@getESSimpleSearchWithSearchStringApi', { responseTimeout: 30000 })
 })
 
-Cypress.Commands.add('sortColumn', (columnName) => {
+Cypress.Commands.add('sortColumn', (columnName, sortOrder) => {
+    cy.interceptApi('getESSimpleSearch', { sortOrder: sortOrder })
     cy.get('.MuiButton-label', { timeout: 10000 }).contains(columnName).click({ force: true })
+    cy.verifyApiResponse('@getESSimpleSearchWithSortOrderApi', { responseTimeout: 30000 })
 })
 

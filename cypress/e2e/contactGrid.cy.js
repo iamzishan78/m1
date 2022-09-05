@@ -34,13 +34,13 @@ describe('Document Grid Spec', () => {
 
         cy.wait(1000)
 
-        cy.interceptApi('getESSimpleSearch', 'Goodwill')
+        cy.interceptApi('getESSimpleSearch', { searchString: 'Goodwill' })
         cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type('{backspace}{backspace}')
         cy.verifyApiResponse('@getESSimpleSearchWithSearchStringApi', { responseTimeout: 30000 })
 
-        cy.sortColumn('Contact Owner')
+        cy.sortColumn('Contact Owner', 'desc')
         cy.wait(1000)
-        cy.sortColumn('Contact Owner')
+        cy.sortColumn('Contact Owner', 'asc')
 
         cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: 10000 }).contains('GOODWILL IND REVOC TR LEGAL').click();
         cy.get('.MuiBreadcrumbs-li', { timeout: 10000 }).contains("Contacts").should('be.visible').click()
@@ -55,7 +55,7 @@ describe('Document Grid Spec', () => {
 
         cy.get("#age").check({ force: true })
         cy.get('body').type('{esc}');
-        cy.sortColumn('Age')
+        cy.sortColumn('Age', 'asc')
 
         cy.get("#filterIcon").click()
         cy.typeAndSelect('[id="filter-autocomplete-Contact Owner"]', 'jacob', 'filter-autocomplete-Contact Owner-option-0')
