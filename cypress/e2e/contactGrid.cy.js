@@ -58,21 +58,29 @@ describe('Document Grid Spec', () => {
         cy.sortColumn('Age', 'asc')
 
         cy.get("#filterIcon").click()
+
+        cy.interceptApi('getESSimpleSearch', {
+            filter: {
+                field: "contactOwners.name.keyword",
+                value: "Jacob"
+            }
+        })
+
         cy.typeAndSelect('[id="filter-autocomplete-Contact Owner"]', 'jacob', 'filter-autocomplete-Contact Owner-option-0')
         cy.get('.MuiTypography-root').contains("FILTERS").click()
         cy.get('body').type('{esc}');
         cy.get('.MuiChip-label', { timeout: 10000 }).contains('Jacob')
+        cy.verifyApiResponse('@getESSimpleSearchWithFilterApi', { responseTimeout: 30000 })
 
         cy.get('.MuiTableCell-root.MuiTableCell-body').contains('CHEVRON USA INC').click();
 
         cy.interceptApi('getESSimpleSearch')
         cy.get('.MuiBreadcrumbs-li', { timeout: 10000 }).contains("Contacts").should('be.visible').click()
-
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
 
-        cy.get('.MuiChip-label', { timeout: 10000 }).contains('Jacob').siblings().click()
+        cy.removeFilter('Jacob')
 
-        cy.wait(1000)
+        cy.wait(3000)
 
     })
 

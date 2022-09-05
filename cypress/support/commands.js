@@ -26,6 +26,8 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+import { deepEqualObjects } from "../../src/components/Shared/functions";
+
 // Common Commands
 Cypress.Commands.add("checkAndLogin", (selector) => {
     //This command will logged in if it is not already logged in
@@ -62,8 +64,12 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
                 if (payloadKey.searchString && variables?.search?.query === payloadKey.searchString) {
                     req.alias = `${operationName}WithSearchStringApi`;
                 }
-                if (payloadKey?.sortOrder && variables?.sort?.order === payloadKey.sortOrder) {
+                else if (payloadKey?.sortOrder && variables?.sort?.order === payloadKey.sortOrder) {
                     req.alias = `${operationName}WithSortOrderApi`;
+                }
+                else if (payloadKey?.filter && variables?.filters.length &&
+                    deepEqualObjects(variables.filters[0], payloadKey.filter)) {
+                    req.alias = `${operationName}WithFilterApi`;
                 }
             }
             else {
@@ -107,4 +113,12 @@ Cypress.Commands.add('sortColumn', (columnName, sortOrder) => {
     cy.get('.MuiButton-label', { timeout: 10000 }).contains(columnName).click({ force: true })
     cy.verifyApiResponse('@getESSimpleSearchWithSortOrderApi', { responseTimeout: 30000 })
 })
+
+Cypress.Commands.add('removeFilter', (filterLabel) => {
+    cy.interceptApi('getESSimpleSearch')
+    cy.get('.MuiChip-label', { timeout: 10000 }).contains(filterLabel).siblings().click()
+    cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
+    cy.get('.MuiChip-label', { timeout: 30000 }).contains(filterLabel).should('not.exist');
+})
+
 
