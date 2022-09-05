@@ -1,5 +1,34 @@
 /* eslint-disable no-undef */
 
+/*CONTACTS GRID TEST CASE
+Launch contacts
+Click leads
+Click prospects
+Click Contacts
+Click All Entities
+Search jacob
+Click SGF TRUST LEGAL
+Click breadcrumb back
+Delete search
+Click leads
+Search GoodwillDD
+Remove DD in "GoodwillDD" to "Goodwill"
+Sort contact owner
+Reverse sort
+Click on GOODWILL IND REV TR.
+Click contacts breadcrumb
+Remove search
+Click columns
+Add Age
+Sort Age Column
+Open Filter
+Click contact owner
+Set as Jacob
+Click CHEVRON USA INC
+Click breadcrumb
+Remove filter tag*/
+
+
 describe('Document Grid Spec', () => {
     it('passes', () => {
         cy.viewport(1400, 900)
@@ -13,7 +42,7 @@ describe('Document Grid Spec', () => {
         cy.interceptApi('getESSimpleSearch')
 
         cy.selectQuickAction('Leads 101', 'Lead', true)
-        // cy.selectQuickAction('Prospects 101', 'Prospect', true)
+        cy.selectQuickAction('Prospects 101', 'Prospect', true)
         cy.selectQuickAction('Contacts 101', 'Contact', true)
         cy.selectQuickAction('All Entities 101', 'All Entities')
 
