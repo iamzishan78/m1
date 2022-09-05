@@ -72,7 +72,6 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
   // useEffect(() => {
   //   setStateApp((state) => {
   //     if (state.selectedLayer) {
-  //       debugger
   //       setStateApp((state) => ({
   //         ...state,
   //         selectedLayer: layer,
