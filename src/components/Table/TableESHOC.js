@@ -945,7 +945,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         );
     };
     hocWithDefaultProps.defaultProps = {
-        actionColumns: [" ", "Tags", "Comments"]
+        actionColumns: [" ", "Tags", "Comments", "isPurchased"]
     }
     return hocWithDefaultProps
 };
