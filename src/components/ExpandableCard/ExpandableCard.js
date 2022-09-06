@@ -853,6 +853,7 @@ function ExpandableCard(props) {
                       onClick={handleExpand}
                       aria-label="expand"
                       className={classes.icons}
+                      id="expandIcon"
                     >
                       <ExpandIcon viewBox="0 0 64 64" color="secondary" />
                     </IconButton>
