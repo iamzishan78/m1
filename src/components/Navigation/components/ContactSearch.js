@@ -142,6 +142,7 @@ const ContactSearch = () => {
                   <>
                     <Tooltip title="Clear">
                       <IconButton
+                        id="crossButton"
                         size="small"
                         htmlColor="#fff"
                         className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" &&

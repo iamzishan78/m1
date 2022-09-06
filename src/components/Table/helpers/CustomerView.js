@@ -59,7 +59,7 @@ const CustomerViewCol = (props) => {
 
   return (
     <>
-      <div className={classes.container}>
+      <div className={classes.container} id="customViewColumns">
         <div className={classes.columnLabel}>Columns</div>
         <div>
           <div
@@ -250,6 +250,7 @@ const SortableItem = SortableElement(
             )}
             <Checkbox
               style={{ padding: 3 }}
+              id={item?.name}
               checked={item.display === "true" || item.display === true}
               onChange={(e) => {
                 const index = columns.findIndex((co) => co.name === item.name);
