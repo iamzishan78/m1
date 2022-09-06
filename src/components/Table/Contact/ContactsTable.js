@@ -138,7 +138,6 @@ function ContactsTable(props) {
     }))
   }, [showGenericPhones]);
 
-  console.log('Contacts',Contacts)
   useEffect(() => {
     setSelectedGridView(Contacts || defaultView);
   }, [Contacts]);

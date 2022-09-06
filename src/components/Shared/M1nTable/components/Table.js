@@ -1355,7 +1355,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customRender: (value, tableMeta) => {
-                  if (props.targetLabel === "unit" && column.name === "name") {
+                  if (props.targetLabel === "unit") {
                     const targetSourceId = tableMeta.rowData[1];
                     const commentValue = tableMeta.rowData[21]
                     return (
@@ -1403,9 +1403,8 @@ function SubTable(props) {
                         </Grid>
                       </div>
                     );
-                  };
-
-                  if (props.targetLabel === "contact" && column.name === "name") {
+                  } else if (props.targetLabel === "contact") {
+                    const nameIndex = props.columns.findIndex((val) => val.name === "name")
                     return (
                       <div
                         style={{
@@ -1417,18 +1416,7 @@ function SubTable(props) {
                         <Avatar
                           color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                           fgColor="#000"
-                          name={(
-                            valueFormatter(column, tableMeta.rowData[8]) ||
-                            valueFormatter(
-                              column,
-                              `${tableMeta.rowData[10]
-                                ? tableMeta.rowData[10]
-                                : tableMeta.rowData[8]
-                                  ? tableMeta.rowData[8].split(" ")[0]
-                                  : ""
-                              }`
-                            )
-                          )
+                          name={(tableMeta.rowData[nameIndex])
                             .split(" ")
                             .splice(0, 2)
                             .join(" ")}
@@ -1447,16 +1435,46 @@ function SubTable(props) {
                             history.push(`/contact/details/${tableMeta.rowData[0]}`);
                           }}
                         >
-                          {tableMeta.rowData[8] || (!tableMeta.rowData[10] && !tableMeta.rowData[12])
-                            ? `${tableMeta.rowData[8] ? tableMeta.rowData[8] : ""}`
-                            : `${tableMeta.rowData[10] ? tableMeta.rowData[10] : ""} ${tableMeta.rowData[12] ? tableMeta.rowData[12] : ""}`}
+                          {tableMeta.rowData[nameIndex]}
 
-                          {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased") - 2]) && (
+                          {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
                             <FeatureFlag feature={FEATURES.IDICORE}>
                               <MonetizationOnIcon className={classes.monetizationIcon} />
                             </FeatureFlag>
                           )}
                         </p>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          minWidth: "250px",
+                        }}
+                      >
+                        <Grid container spacing={0} direction="row"
+                          style={{ position: 'absolute' }}
+                          className={classes.agreementNumber}
+                        >
+                          <Grid item
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-start",
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                maxWidth: '250px',
+                                overflow: 'hidden',
+                                wordWrap: "break-word",
+                              }}
+                            >
+                              {value}
+                            </Box>
+                          </Grid>
+                        </Grid>
                       </div>
                     );
                   }
@@ -2293,6 +2311,11 @@ function SubTable(props) {
 
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
+                  if (value[0]?.tag) {
+                    const length = value.length
+                    value[0] = value.map((tag) => tag.tag)
+                    value[1] = length
+                  }
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
@@ -3897,6 +3920,7 @@ function SubTable(props) {
             {props.header === "Documents" && (
               <ButtonGroup variant="contained" style={{ height: "40px" }} color="primary" aria-label="split button">
                 <Button
+                  id="addDocument"
                   color="primary"
                   size="small"
                   aria-label="select merge strategy"

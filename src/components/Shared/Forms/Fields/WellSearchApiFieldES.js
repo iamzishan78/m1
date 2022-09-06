@@ -112,6 +112,7 @@ function WellSearchApiField(props) {
                 getOptionLabel={(option, value) => option.wellName}
                 filterOptions={(x) => x}
                 loading
+                id="wellSearch"
                 loadingText={<div className={classes.alignCenter}><CircularProgress /></div>}
                 renderOption={(option) => {
                     return <div >
