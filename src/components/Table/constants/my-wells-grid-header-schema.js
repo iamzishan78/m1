@@ -1,15 +1,7 @@
 const wellsColumnHeaders = [
   {
-    name: "Id",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
+    name: "_id",
+    options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
     name: "api",
