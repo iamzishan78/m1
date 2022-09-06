@@ -284,8 +284,8 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               <ListItemSecondaryAction className={classes.sideNavAction}>
                 {/* <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
                   beta
-                </Button>
-              </ListItemSecondaryAction> */}
+                </Button>*/}
+              </ListItemSecondaryAction> 
             </div>
           </ListItem>
 
