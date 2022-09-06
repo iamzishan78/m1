@@ -10,10 +10,10 @@ import ClearSharpIcon from "@material-ui/icons/ClearSharp";
 import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 import Button from "@material-ui/core/Button";
 import { useMutation } from "@apollo/client";
-import { UPDATEPARCELOWNER } from "../../../../../graphQL/useMutationUpdateParcelOwner";
-import { UPDATECONTACT } from "../../../../../graphQL/useMutationUpdateContact";
+import { UPDATEPARCELOWNER } from "graphQL/useMutationUpdateParcelOwner";
+import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { AppContext } from "../../../../../AppContext";
+import { AppContext } from "AppContext";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import $ from "jquery";
 

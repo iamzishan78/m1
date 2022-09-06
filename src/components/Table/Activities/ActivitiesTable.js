@@ -110,7 +110,11 @@ function ActivitiesTable(props) {
 
   useEffect(() => {
     props.setTableMeta({
-      filters: getFilters(appliedFilters),
+      filters: [ 
+        ...getFilters(appliedFilters), 
+        { field:'type.keyword', value:'Expiration', notInclude: true },
+        { field:'type.keyword', value:'Option to Extend', notInclude: true }
+      ],
       extendSearchQuery: stateApp.activitySearchQuery,
       searchFields,
       TableHeader: copy(TableHeader),
@@ -258,6 +262,7 @@ function ActivitiesTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
       <ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} />
     </Container>

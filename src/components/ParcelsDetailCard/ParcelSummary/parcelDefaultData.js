@@ -55,28 +55,28 @@ const tableData = [
     {
         label: "Meridian",
         type: "text",
-        key: "meridian",
+        key: "originalProperties.Meridian",
         showStateTX: false,
         nonEditable: true,
     },
     {
         label: "Township",
         type: "autocomplete",
-        key: "township",
+        key: "originalProperties.Township",
         showStateTX: false,
         nonEditable: true,
     },
     {
         label: "Range",
         type: "number",
-        key: "range",
+        key: "originalProperties.Range",
         showStateTX: false,
         nonEditable: true,
     },
     {
         label: "Section",
         type: "text",
-        key: "section",
+        key: "originalProperties.Section",
         showStateTX: false,
         nonEditable: true,
     },
@@ -92,6 +92,24 @@ const tableData = [
         key: "shapeArea",
         nonEditable: true,
     },
+    // {
+    //     label: "Tract Status",
+    //     type: "autocomplete",
+    //     key: "tractStatus",
+    //     edit: true,
+    // },
+    {
+        label: "Department",
+        type: "autocomplete",
+        key: "department",
+        nonEditable: false,
+    },
+    {
+        label: "Map Status",
+        type: "autocomplete",
+        key: "mapStatus",
+        edit: true,
+    }
 ];
 
 export default tableData;

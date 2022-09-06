@@ -2,8 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
-import { Grid, Typography, Button } from "@material-ui/core";
-import { Add } from "@material-ui/icons";
+import { Grid, Typography } from "@material-ui/core";
 import { useMutation } from "@apollo/client";
 
 import RevenueSearch from "components/Navigation/components/RevenueSearch";
@@ -100,6 +99,20 @@ export default function RevenueAppBar(props) {
             activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title) && (
             <Grid item xs={5} style={{ marginLeft: "20px" }}>
               <RevenueSearch activeModule={activeModule} />
+            </Grid>
+          )}
+          {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PORTFOLIO.title && (
+            <Grid item xs={7} style={{ marginLeft: "20px" }}>
+              <ReportGroupHeader
+                type="Properties"
+                esFilters={propertiesReportGroup || []}
+                setESFilters={(filters) => dispatch(setRevenueKey("propertiesReportGroup", filters))}
+                setFilterToggle={() => {}}
+                isBackground={false}
+                noUpdate={true}
+                fullWidth
+                isShrink
+              />
             </Grid>
           )}
         </Grid>

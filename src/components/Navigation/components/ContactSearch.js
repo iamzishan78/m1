@@ -1,4 +1,5 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import {
   InputAdornment,
   TextField,
@@ -6,6 +7,7 @@ import {
   Tooltip,
   Grid,
   Typography,
+  Button
 } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
@@ -14,6 +16,7 @@ import { useSelector } from "react-redux";
 
 import { AppContext } from "AppContext";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
+import { Add } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   search: {
@@ -65,9 +68,22 @@ const useStyles = makeStyles((theme) => ({
 
 const ContactSearch = () => {
   const classes = useStyles();
+  const history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [search, setSearch] = useState(stateApp.contactSearchQuery);
   const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
+
+  useEffect(() => {
+    setSearch("");
+  }, [history.location.pathname]);
+
+  useEffect(() => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      contactSearchQuery: search,
+      isContactSearching: true,
+    }));
+  }, [search, setStateApp]);
 
   const isAllowed = stateApp?.user?.features?.find(
     (f) => f.name === FEATURES.CONTACTSUBMENU
@@ -105,16 +121,7 @@ const ContactSearch = () => {
           <Grid item md={6}>
             <TextField
               value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setTimeout(() => {
-                  setStateApp((stateApp) => ({
-                    ...stateApp,
-                    contactSearchQuery: e.target.value,
-                    isContactSearching: true,
-                  }));
-                }, 500);
-              }}
+              onChange={e => setSearch(e.target.value)}
               style={{
                 margin: 0,
                 width: "100%",
@@ -122,7 +129,7 @@ const ContactSearch = () => {
               className={classes.contactSearchField}
               margin="dense"
               variant="outlined"
-              placeholder={`Search for ${activeModule.title ? 'lead, contact or prospect' : 'contact'}`}
+              placeholder={activeModule.title === 'Campaigns' ? 'Search by campaign name or attribute' : `Search for ${activeModule.title ? 'lead, contact or prospect' : 'contact'}`}
               InputProps={{
                 startAdornment: (
                   <InputAdornment>
@@ -135,19 +142,13 @@ const ContactSearch = () => {
                   <>
                     <Tooltip title="Clear">
                       <IconButton
+                        id="crossButton"
                         size="small"
                         htmlColor="#fff"
                         className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" &&
                           classes.activeBtn
                           }`}
-                        onClick={() => {
-                          setSearch("");
-                          setStateApp((stateApp) => ({
-                            ...stateApp,
-                            contactSearchQuery: "",
-                            isContactSearching: true,
-                          }));
-                        }}
+                        onClick={() => setSearch("")}
                       >
                         <ClearIcon />
                       </IconButton>
@@ -159,12 +160,21 @@ const ContactSearch = () => {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item>
-        <div
-          className={classes.filterTabs}
-          style={{ paddingRight: "10px" }}
-        ></div>
-      </Grid>
+      {activeModule.title === 'Campaigns' && (
+        <Grid item md={4}>
+          <div className={classes.filterTabs} style={{ float: 'right' }}>
+            <Button
+              color="primary"
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => {
+                history.push("/contacts/campaign/details/new");
+              }} >
+              Add CAMPAIGN
+            </Button>
+          </div>
+        </Grid>)
+      }
     </Grid>
   );
 };

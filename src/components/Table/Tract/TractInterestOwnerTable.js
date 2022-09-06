@@ -38,6 +38,7 @@ const interestKeys = [
   "operating_rights",
   "nri",
   "net_acres",
+  "company_net_acres",
   "unknown_interest",
 ];
 const startPaginationAt = 25;
@@ -91,13 +92,13 @@ function TractInterestOwnerTable(props) {
           }
         }
       });
-      if(hit?.tags?.length > 0){
+      if (hit?.tags?.length > 0) {
         const tags = hit.tags.map((tag) => tag.tag)
-        if(tags[0]){
+        if (tags[0]) {
           hit.tags = [[tags], hit.tags.length]
         }
 
-      }else{
+      } else {
         hit.tags = [[], 0];
       }
       hit = props.setGenricData(
@@ -231,10 +232,10 @@ function TractInterestOwnerTable(props) {
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
           {`Do you want to permanently delete the tract owner${props.selectedRows &&
-              props.selectedRows.length > 1 &&
-              props.selectedRows.length > 1
-              ? "s"
-              : ""
+            props.selectedRows.length > 1 &&
+            props.selectedRows.length > 1
+            ? "s"
+            : ""
             }?`}
         </DeleteConfirmationDialogContent>
       )}
@@ -364,6 +365,7 @@ function TractInterestOwnerTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

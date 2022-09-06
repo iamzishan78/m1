@@ -79,9 +79,10 @@ export default function Navigation(props) {
   const mapGridCardActivated = useSelector(
     ({ MapGridCard }) => MapGridCard.mapGridCardActivated
   );
-   const { quickActionsPanelState } = useSelector(
-     ({ common }) => common
-   );
+
+  const { quickActionsPanelState } = useSelector(
+    ({ common }) => common
+  );
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -98,10 +99,11 @@ export default function Navigation(props) {
   const [matchFind, setMatchFind] = useState(false);
   const [matchDocument] = useState(false);
 
-  const classes = useStyles({ mapGridCardActivated, user: stateApp.user });
+
 
   let history = useHistory();
   let location = useLocation();
+  const classes = useStyles({ mapGridCardActivated, user: stateApp.user, isMap: location.pathname === "/" || location.pathname.startsWith("/map/") });
 
   useEffect(() => {
     if (location.pathname === "/" || location.pathname.startsWith("/map/")) {
@@ -384,10 +386,7 @@ export default function Navigation(props) {
   };
 
   const requestDemo = () => {
-    window.open(
-      "mailto:sales@m1neral.com?subject=Request for demo of premium features",
-      "_blank"
-    );
+    window.open("mailto:sales@m1neral.com?subject=Request for demo of premium features", "_blank");
   };
 
   const handleClickAddActivity = () => {
@@ -402,7 +401,8 @@ export default function Navigation(props) {
       location.pathname.startsWith("/revenue/statement/details") ||
       location.pathname.includes("/line-item") ||
       location.pathname.startsWith("/revenue/property/details") ||
-      location.pathname.startsWith("/land/agreement/details")
+      location.pathname.startsWith("/land/agreement/details") ||
+      location.pathname.startsWith("/contacts/campaign/details")
     ) {
       return true;
     }
@@ -436,7 +436,7 @@ export default function Navigation(props) {
           )}
           style={
             location.pathname === "/contacts/activityDashboard" ||
-            location.pathname.includes("revenue")
+              location.pathname.includes("revenue")
               ? { background: "white" }
               : null
           }
@@ -454,11 +454,7 @@ export default function Navigation(props) {
               )}
               {location.pathname === "/contacts/activityDashboard" && (
                 <>
-                  <ActivityDashboardSearch
-                    showLabel={
-                      location.pathname === "/contacts/activityDashboard"
-                    }
-                  />
+                  <ActivityDashboardSearch showLabel={location.pathname === "/contacts/activityDashboard"} />
                 </>
               )}
               {location.pathname === "/documents" && (
@@ -474,7 +470,7 @@ export default function Navigation(props) {
               {location.pathname.includes("/contact/details") && (
                 <ContactBreadcrumbs />
               )}
-
+              
               {(location.pathname === "/analytics" ||
                 Object.values(analyticsManagementRoutes).find(
                   (item) => item.link === location.pathname && item.search
@@ -505,7 +501,7 @@ export default function Navigation(props) {
                 </Typography>
               )}
               {location.pathname.startsWith("/land") && (
-                <LandAppBar classes={classes} />
+                <LandAppBar classes={classes} user={stateApp.user} />
               )}
               {location.pathname.startsWith("/revenue") && (
                 <RevenueAppBar classes={classes} />
@@ -522,16 +518,8 @@ export default function Navigation(props) {
 
               {matchActivities ? (
                 <div>
-                  <div
-                    className={classes.filterTabs}
-                    style={{ paddingRight: "10px" }}
-                  >
-                    <Button
-                      onClick={handleClickAddActivity}
-                      color="primary"
-                      variant="contained"
-                      startIcon={<Add />}
-                    >
+                  <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
+                    <Button onClick={handleClickAddActivity} color="primary" variant="contained" startIcon={<Add />}>
                       Add Activity
                     </Button>
                   </div>
@@ -585,17 +573,10 @@ export default function Navigation(props) {
       )}
 
       <ClickAwayListener onClickAway={() => setOpenSupportCenter(false)}>
-        <SupportCenterModal
-          open={openSupportCenter}
-          openContactForm={handleOpenContactForm}
-          onClose={() => setOpenSupportCenter(false)}
-        />
+        <SupportCenterModal open={openSupportCenter} openContactForm={handleOpenContactForm} onClose={() => setOpenSupportCenter(false)} />
       </ClickAwayListener>
 
-      <ContactFormModal
-        open={openContactForm}
-        onClose={() => setOpenContactForm(false)}
-      />
+      <ContactFormModal open={openContactForm} onClose={() => setOpenContactForm(false)} />
 
       <main className={classes.content}>
         <div className={classes.toolbar} />

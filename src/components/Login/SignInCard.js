@@ -202,6 +202,7 @@ const SignInCard = (props) => {
       variant="outlined"
       disableElevation
       type="submit"
+      id="workSpaceSignin"
       className={classes.aadButton}
       onClick={signInAAD}
       onKeyDown={(e) => onEnterKey(e)}

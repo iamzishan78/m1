@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { get } from "lodash";
 import { TransitionGroup } from "react-transition-group";
@@ -29,6 +29,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import FilterAltIcon from "components/Shared/svgIcons/FilterAltIcon";
 import SecondaryPanel from "components/Shared/SecondaryPanel";
+import Datasets from 'components/Shared/SidePanel/compoennts/Datasets'
 import LayerFilters from "components/Shared/SidePanel/compoennts/Filters/LayerFilters";
 import MapPositions from "components/Shared/SidePanel/compoennts/MapPositions";
 import { showErrorMessage, showSuccessMessage } from "actions";
@@ -52,6 +53,7 @@ import { CircularProgress } from "@material-ui/core";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 // Contexts
 import { NavigationContext } from "components/Navigation/NavigationContext";
+import AddGroup from "./AddGroup";
 
 function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems }) {
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
@@ -60,7 +62,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   const [totalFilterCount, setTotalFilterCount] = useState(null);
   const [totalHitMapCount, setTotalHitMapCount] = useState(null);
   const [updateUserMapSettings, { data: updatedMapSettings }] = useMutation(UPDATE_USER_MAP_SETTINGS);
-  
+
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -72,11 +74,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
   const [tab, setTab] = useState(0);
 
   useEffect(() => {
-    setTotalFilterCount(stateNav.totalFilterCount)
+    setTotalFilterCount(stateNav.totalFilterCount);
   }, [stateNav]);
 
-  useEffect(()=> {
-    setTotalHitMapCount(stateApp.checkedHeats.length)
+  useEffect(() => {
+    setTotalHitMapCount(stateApp.checkedHeats.length);
   }, [stateApp]);
 
   useEffect(() => {
@@ -148,6 +150,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
       ...stateMapControls,
       expandedPanel: !stateMapControls.expandedPanel,
       addLayer: false,
+      manageSourceLayer: false,
+      manageLayer: false,
     }));
   };
 
@@ -317,11 +321,16 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     setSearch(value);
     filterLayers(value);
   };
+
+  const layerGroups = useMemo(() => {
+    return panelItems.filter(item => item.type === "group");
+  }, [panelItems])
+
   const secondaryPanelState = React.useMemo(() => {
-    if (stateMapControls.addLayer || stateMapControls.selectedLayer) {
+    if (stateMapControls.addLayer || stateMapControls.selectedLayer || stateMapControls.manageTransferData || stateMapControls.manageSourceLayer || stateMapControls.manageLayer) {
       return true;
     } else return false;
-  }, [stateMapControls.addLayer, stateMapControls.selectedLayer]);
+  }, [stateMapControls.addLayer, stateMapControls.manageSourceLayer, stateMapControls.manageTransferData, stateMapControls.selectedLayer, stateMapControls.manageLayer]);
 
   return (
     <div>
@@ -360,10 +369,8 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
                         onClick={() => setStateMapControls((stateMapControls) => ({ ...stateMapControls, selectedControl: action.action }))}
                       />
                     ))}
-                    {totalHitMapCount != 0 && <Chip color="info" label={totalHitMapCount} className={classes.totalHitMap} />}
-                    {totalFilterCount != 0 &&
-                      <Chip color="info" label={totalFilterCount} className={classes.totalFilter}/>
-                    }
+                    {totalHitMapCount !== 0 && <Chip color="info" label={totalHitMapCount} className={classes.totalHitMap} />}
+                    {totalFilterCount !== 0 && <Chip color="info" label={totalFilterCount} className={classes.totalFilter} />}
                   </Tabs>
                 </Grid>
               )}
@@ -397,17 +404,30 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
               </Grid>
             </Grid>
           </StyledMenuHActionHeader>
+
+          {type === "layer" &&
+            <Datasets search={search} headerButton={headerButton} />
+          }
+
           <div className={classes.panelContent}>
+
             <StyledMenuSecondaryHeaderItem>
-              <ListItemText primary={title} />
+              <div>
+                <ListItemText primary={title} />
+                <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} layerGroups={layerGroups} />
+              </div>
               {headerButton && (
                 <StyledListItemSecondaryAction>
-                  <Button onClick={headerButton.fn} color="secondary" variant="outlined" startIcon={headerButton.icon}>
-                    {headerButton.text}
-                  </Button>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Button onClick={() => headerButton.fn()} color="secondary" variant="outlined" startIcon={headerButton.icon}>
+                      {headerButton.text}
+                    </Button>
+                  </div>
                 </StyledListItemSecondaryAction>
               )}
+
             </StyledMenuSecondaryHeaderItem>
+
             {/* base Stuff */}
             {type === "base" && getBasemapImageBox()}
 
@@ -420,7 +440,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
                 </Box>
               ))}
             {type === "base" && (
-              <>
+              <Box height="calc((100vh - 50px) - 631px)" overflow='hidden scroll' >
                 <Collapse in={true} timeout="auto" unmountOnExit>
                   {displayList}
                 </Collapse>
@@ -429,7 +449,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
                   defaultMapVars={stateApp.defaultMapVars}
                   mapVars={stateApp.mapVars}
                 />
-              </>
+              </Box>
             )}
             {type === "heatMaps" && displayList}
             {type === "filter" && <LayerFilters />}

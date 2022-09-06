@@ -12,6 +12,7 @@ import debounce from "lodash/debounce";
 // Queries 
 // import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
+import { useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
     secondaryText: {
@@ -26,10 +27,12 @@ const useStyles = makeStyles((theme) => ({
 
 function WellSearchApiField(props) {
     //Intials
+    const location = useLocation();
     const classes = useStyles();
     const startPaginationAt = 50;
     const [foundWells, setFoundWells] = useState([]);
     const [selectedWell, setSelectedWell] = useState(null);
+    const [focused, setFocused] = useState(false);
 
     // Queries
     // const [getESWellsPaginatedList, { data: constDataWells, loading }] = useLazyQuery(GET_ES_PAGINATED_LIST, { fetchPolicy: "no-cache" });
@@ -37,25 +40,25 @@ function WellSearchApiField(props) {
     const [getESSimpleSearch, { data: constDataWells }] = useLazyQuery(
         GET_ES_SIMPLE_SEARCH,
         { fetchPolicy: "no-cache" }
-      );
+    );
     // searching wells
     const callWellESSearch = React.useMemo(
         () =>
             debounce((request, callback) => {
                 getESSimpleSearch({
                     variables: {
-                      index: "platformData:wells",
-                      pagination: {
-                        first: request.searchTop ? request.searchTop : startPaginationAt,
-                        keep_alive: "1micros"
-                      },
-                      search: {
-                        query: request.input,
-                        fields: ["wellName", "api"],
-                      },
-                      sort: [],
+                        index: "platformData:wells",
+                        pagination: {
+                            first: request.searchTop ? request.searchTop : startPaginationAt,
+                            keep_alive: "1micros"
+                        },
+                        search: {
+                            query: request.input,
+                            fields: ["wellName", "api"],
+                        },
+                        sort: [],
                     }
-                  })
+                })
                 // getESWellsPaginatedList({
                 //     variables: {
                 //         // polygon: {},
@@ -69,7 +72,7 @@ function WellSearchApiField(props) {
                 //             if (request.input) {
                 //               searchString = request.input.replace(/([\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\"])/g, "\\$1").split(/\s+/)
                 //             }
-                        
+
                 //             return searchString
                 //               ? `(wellName:(${searchString.join('* AND ')}*) OR api:(${searchString.join('* AND ')}*))^2 OR (wellName:(${searchString.join('* ')}*) OR api:(${searchString.join('* ')}*))`
                 //               : ""
@@ -94,6 +97,12 @@ function WellSearchApiField(props) {
         setSelectedWell(well);
     }
 
+    useEffect(() => {
+        if (location.state?.focusOnWellSearch) {
+            setFocused(true);
+        }
+    }, [location.state]);
+
     return (
         <FormControl variant="outlined" fullWidth size="small">
             <Autocomplete
@@ -103,6 +112,7 @@ function WellSearchApiField(props) {
                 getOptionLabel={(option, value) => option.wellName}
                 filterOptions={(x) => x}
                 loading
+                id="wellSearch"
                 loadingText={<div className={classes.alignCenter}><CircularProgress /></div>}
                 renderOption={(option) => {
                     return <div >
@@ -115,12 +125,14 @@ function WellSearchApiField(props) {
                 renderInput={(params) => (
                     <TextField
                         margin="dense"
+                        focused={focused}
                         {...params}
                         required
                         variant="outlined"
                         label="Search for a well by name or API"
                         InputLabelProps={{ shrink: true }}
                         onChange={(event) => { callWellESSearch({ input: event.target.value }, (results) => null); }}
+                        onBlur={() => setFocused(false)}
                     />
                 )}
             />

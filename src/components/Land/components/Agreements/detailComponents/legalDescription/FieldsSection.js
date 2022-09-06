@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import _ from "underscore";
+import { get } from "lodash";
 import { Controller, useForm } from "react-hook-form";
 import { makeStyles } from "@material-ui/styles";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
@@ -39,23 +40,25 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
   const [keysSum, setKeysSum] = useState({})
 
   useEffect(() => {
-    if (!_.isEmpty(agreementDetails)) reset(agreementDetails);
+    reset(agreementDetails);
   }, [reset, agreementDetails]);
 
   useEffect(() => {
     if (tractOwners) {
       const sum = tractOwners.reduce((sum, tractOwner) => {
         if (tractOwner.sdGrossAcres)
-          sum.grossAcres += Number(tractOwner.sdGrossAcres)
+          sum.grossAcres += parseFloat(tractOwner.sdGrossAcres)
         if (tractOwner.net_acres)
-          sum.netAcres += Number(tractOwner.net_acres)
+          sum.netAcres += parseFloat(tractOwner.net_acres)
         if (tractOwner.nra)
-          sum.netRoyalty += Number(tractOwner.nra)
+          sum.netRoyalty += parseFloat(tractOwner.nra)
         return sum
       }, { grossAcres: 0, netAcres: 0, netRoyalty: 0 });
-      if (!agreementDetails.grossAcres) agreementDetails.grossAcres = sum.grossAcres
-      if (!agreementDetails.netAcres) agreementDetails.netAcres = sum.netAcres
-      if (!agreementDetails.netRoyalty) agreementDetails.netRoyalty = sum.netRoyalty
+      sum.grossAcres = addTrailingZeros(sum.grossAcres?.toFixed(8))
+      sum.netAcres = addTrailingZeros(sum.netAcres?.toFixed(8))
+      sum.netRoyalty = addTrailingZeros(sum.netRoyalty?.toFixed(8))
+
+      console.log(sum)
       reset(agreementDetails);
       setKeysSum(sum)
     }
@@ -63,8 +66,12 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
   }, [tractOwners])
 
   const offClickHandler = (key, value) => {
-
-    if (tractOwners) updateAgreement('value', value, key)
+    if (agreementDetails[key] === value) return
+    const fieldValue = {
+      overridden: parseFloat(value) !== parseFloat(keysSum[key]),
+      value
+    }
+    if (tractOwners) updateAgreement(key, fieldValue, key)
     else updateAgreement(key, value)
   };
 
@@ -109,19 +116,19 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                       type="number"
                       label="Gross"
                       variant="outlined"
-                      value={params.value}
-                      inputRef={params.ref}
+                      defaultValue={get(params, "value", 0)}
+                      value={get(params, "value", 0)}
                       onWheel={(e) => e.target.blur()}
                       onBlur={(event) => offClickHandler("grossAcres", event.target.value)}
                       onKeyDown={handleKeyDown}
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      className={params.value != keysSum.grossAcres ? classes.baseValueChanged : classes.numberField}
+                      className={(keysSum.grossAcres && params.value !== keysSum.grossAcres) ? classes.baseValueChanged : classes.numberField}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {params.value != keysSum.grossAcres && (
+                            {params.value !== keysSum.grossAcres && (
                               <IconButton
                                 aria-label="toggle grossAcres"
                                 onClick={() => {
@@ -129,14 +136,13 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                                   offClickHandler("grossAcres", keysSum.grossAcres)
                                 }}
                               >
-                                <AutorenewIcon />
+                                <AutorenewIcon fontSize="small" />
                               </IconButton>
                             )}
                           </InputAdornment>
                         ),
                       }}
                       fullWidth
-                      defaultValue={agreementDetails?.grossAcres ?? ""}
                     />
                   )}
                 />
@@ -150,19 +156,19 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                       type="number"
                       label="Net"
                       variant="outlined"
-                      value={params.value}
-                      inputRef={params.ref}
+                      value={get(params, "value", 0)}
+                      defaultValue={get(params, "value", 0)}
                       onWheel={(e) => e.target.blur()}
                       onBlur={(event) => offClickHandler("netAcres", event.target.value)}
                       onKeyDown={handleKeyDown}
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      className={params.value != keysSum.netAcres ? classes.baseValueChanged : classes.numberField}
+                      className={(keysSum.netAcres && params.value !== keysSum.netAcres) ? classes.baseValueChanged : classes.numberField}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {params.value != keysSum.netAcres && (
+                            {params.value !== keysSum.netAcres && (
                               <IconButton
                                 aria-label="toggle netAcres"
                                 onClick={() => {
@@ -170,14 +176,14 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                                   offClickHandler("netAcres", keysSum.netAcres)
                                 }}
                               >
-                                <AutorenewIcon />
+                                <AutorenewIcon fontSize="small" />
                               </IconButton>
                             )}
                           </InputAdornment>
                         ),
                       }}
                       fullWidth
-                      defaultValue={agreementDetails?.netAcres ?? ""}
+                    // defaultValue={agreementDetails?.netAcres ?? ""}
                     />
                   )}
                 />
@@ -189,10 +195,11 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                   control={control}
                   render={(params) => (
                     <TextField
-                      {...params}
                       label="Co. Net"
                       variant="outlined"
                       type="number"
+                      value={get(agreementDetails, "companyNetAcres", 0)}
+                      defaultValue={get(agreementDetails, "companyNetAcres", 0)}
                       className={classes.numberField}
                       onBlur={(event) => offClickHandler("companyNetAcres", event.target.value)}
                       onKeyDown={handleKeyDown}
@@ -256,19 +263,19 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                       type="number"
                       label="Net Royalty"
                       variant="outlined"
-                      value={params.value}
-                      inputRef={params.ref}
+                      value={get(params, "value", 0)}
+                      defaultValue={get(params, "value", 0)}
                       onWheel={(e) => e.target.blur()}
                       onBlur={(event) => offClickHandler("netRoyalty", event.target.value)}
                       onKeyDown={handleKeyDown}
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      className={params.value != keysSum.netRoyalty ? classes.baseValueChanged : classes.numberField}
+                      className={(keysSum.netRoyalty && params.value !== keysSum.netRoyalty) ? classes.baseValueChanged : classes.numberField}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {params.value != keysSum.netRoyalty && (
+                            {params.value !== keysSum.netRoyalty && (
                               <IconButton
                                 aria-label="toggle netRoyalty"
                                 onClick={() => {
@@ -276,14 +283,13 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                                   offClickHandler("netRoyalty", keysSum.netRoyalty)
                                 }}
                               >
-                                <AutorenewIcon />
+                                <AutorenewIcon fontSize="small" />
                               </IconButton>
                             )}
                           </InputAdornment>
                         ),
                       }}
                       fullWidth
-                      defaultValue=""
                     />
                   )}
                 />

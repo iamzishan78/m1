@@ -108,9 +108,10 @@ export const findBoundsMap = (shapes, map, padding) => {
             }
         });
     }
-    map?.fitBounds([[bound.minLong, bound.minLat], [bound.maxLong, bound.maxLat],],
-        padding || { padding: { top: 200, bottom: 200, left: 1200, right: 0 } }
-    );
+    if (bound)
+        map?.fitBounds([[bound.minLong, bound.minLat], [bound.maxLong, bound.maxLat],],
+            padding || { padding: { top: 200, bottom: 200, left: 1200, right: 0 } }
+        );
     return { ...bound };
 };
 
