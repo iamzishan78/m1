@@ -270,8 +270,21 @@ export default function ViewDocuments(props) {
           ?.map((doc) => {
             return (
               <li className={classes.document} key={doc.fileUrl}>
-                <div className={classes.documentLeft}>
-                  <div>
+                <div className={classes.documentLeft}
+                  onClick={() => {
+                    // TEMP COMMENT OUT UNTI QUERY URI IS FIXED
+                    if (ExtenstionGetter(doc.fileName) === 'pdf') {
+                      setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
+                    }
+                    else {
+                      handleViewFile(doc.fileId)
+                    }
+                  }}
+                >
+                  <div
+                    className={classes.forImageContainer}
+                  >
+                    {get_file_icon(ExtenstionGetter(doc.fileName))}
                     {/* TEMP COMMENT OUT UNTIL WE GET THE CORRECT URI IN THE QUERY	 */}
                     {/* {new RegExp(
 										["jpg", "jpeg", "png", "bmp"].join("|")
@@ -296,46 +309,16 @@ export default function ViewDocuments(props) {
 											{get_file_icon(ExtenstionGetter(doc.fileName))}
 										</div>
 									)} */}
-
-                    {
-                      <div
-                        className={classes.forImageContainer}
-                        onClick={() => {
-                          // TEMP COMMENT OUT UNTIL QUERY URI IS FIXED
-                          // if (ExtenstionGetter(doc.fileName) === 'pdf') {
-                          // 	setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
-                          // }
-                          // else {
-                          // 	handleViewFile(doc.fileId)
-                          // }
-
-                          handleViewFile(doc.fileId);
-                        }}
-                      >
-                        {get_file_icon(ExtenstionGetter(doc.fileName))}
-                      </div>
-                    }
                   </div>
 
                   <div
                     className={classes.fileText.concat(" DocumentTitle")}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      // TEMP COMMENT OUT UNTI QUERY URI IS FIXED
-                      if (ExtenstionGetter(doc.fileName) === 'pdf') {
-                        setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
-                      }
-                      else {
-                        handleViewFile(doc.fileId)
-                      }
-
-
-                    }}
-                  >
+                    style={{ cursor: "pointer" }}>
                     <h4 className={classes.uploadTitle}>{doc.fileName}</h4>
                     {/* <h5 className={classes.uploadSubtext}>{doc.userName}</h5> */}
                     <h5 className={classes.uploadSubtext}>{moment.unix(doc.dateTime / 1000).format("MMM DD, YYYY")}</h5>
                   </div>
+
                 </div>
                 <div className={classes.documentRight}>
                   <IconButton

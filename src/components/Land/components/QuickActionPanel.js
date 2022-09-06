@@ -66,7 +66,7 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
                         backgroundColor: activeModule.title === actions[key].title ? "#4B618F" : "",
                       }}
                     >
-                      <ListItemText>{actions[key].title}</ListItemText>
+                      <ListItemText id={`${actions[key].title} 101`}>{actions[key].title}</ListItemText>
                     </StyledMenuItem>
                   </FeatureFlag>
                 )

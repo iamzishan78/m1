@@ -194,7 +194,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                 }}
                                 InputProps={field.InputProps}
                                 onBlur={(event) => offClickHandler(field.key, event.target.value)}
-                                disabled={field.disabled}
                               />
                             )}
                             {field.type === "number" && (
@@ -269,10 +268,10 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     fullWidth
                     value={agreementDetailCopied?.[field.key] ? moment(agreementDetailCopied[field.key]).format("yyyy-MM-DD") : ""}
                     onChange={(event) => {
-                      setAgreementCopied({ ...agreementDetailCopied, [field.key]: event ? String(event?.target?.value) : null })
+                      setAgreementCopied({ ...agreementDetailCopied, [field.key]: event ? String(event?.target?.value) : "" })
                     }}
                     onBlur={(event) => {
-                      offClickHandler(field.key, event ? String(event?.target?.value) : null);
+                      offClickHandler(field.key, event ? String(event?.target?.value) : "");
                     }}
                     InputLabelProps={{
                       shrink: true,
@@ -283,7 +282,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     PopoverProps={{ disablePortal: false }}
                     InputProps={{
                       endAdornment: (
-                        <IconButton onClick={(event) => offClickHandler(field.key, null)}>
+                        <IconButton onClick={(event) => offClickHandler(field.key, "")}>
                           <Clear style={{ height: 22, width: 22 }} />
                         </IconButton>
                       ),
