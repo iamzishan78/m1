@@ -39,7 +39,7 @@ function AgreementsTable(props) {
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState(defaultView);
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   // queries
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
@@ -86,10 +86,15 @@ function AgreementsTable(props) {
   }
 
   useEffect(() => {
+    if (props.landSearchQuery)
+      setStateApp((stateApp) => ({ ...stateApp, landSearchQuery: '' }))
+  }, [])
+
+  useEffect(() => {
     setSelectedGridView(GridViewModule || defaultView);
   }, [GridViewModule]);
 
-
+  console.log(props.landSearchQuery || 'empty', searchInput || 'empty')
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : []
     props.setInitialFilters(formatedFilter)

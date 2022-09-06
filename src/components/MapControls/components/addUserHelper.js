@@ -81,7 +81,7 @@ export const SimpleOrShapeFileImport = async (params) => {
             mutation: CREATE_JOB,
             variables: {
                 jobId: jobInitialization?.data?.initializeExportJob?.job?._id,
-                sendEmail: false,
+                sendEmail: true,
             },
         });
         setStateApp((state) => ({
