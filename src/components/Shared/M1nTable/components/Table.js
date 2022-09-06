@@ -1464,15 +1464,22 @@ function SubTable(props) {
                               justifyContent: "flex-start",
                             }}
                           >
-                            <Box
-                              sx={{
-                                maxWidth: '250px',
-                                overflow: 'hidden',
-                                wordWrap: "break-word",
+                            <p
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                minWidth: "300px",
                               }}
                             >
                               {value}
-                            </Box>
+
+                              {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
+                                <FeatureFlag feature={FEATURES.IDICORE}>
+                                  <MonetizationOnIcon className={classes.monetizationIcon} />
+                                </FeatureFlag>
+                              )}
+                            </p>
                           </Grid>
                         </Grid>
                       </div>
@@ -3086,6 +3093,9 @@ function SubTable(props) {
 
                       {props.parent === "ownersPerParcel" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
+                          {console.log(tableMeta.rowData, tableMeta.rowData[props.columns.findIndex(
+                            (val) => val.name === "isPurchased"
+                          )])}
                           <span> {tableMeta.rowData[props.columns.findIndex(
                             (val) => val.name === "isPurchased"
                           )] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
