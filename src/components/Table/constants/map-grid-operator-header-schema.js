@@ -21,7 +21,7 @@ const operatorsColumnHeaders = [
       setCellHeaderProps: () => ({
         style: {
           position: "sticky",
-          paddingLeft: '35px',
+          paddingLeft: '27px',
           zIndex: 201,
           left: "77px",
         }
