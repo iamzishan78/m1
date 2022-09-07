@@ -36,7 +36,7 @@ Cypress.Commands.add("checkAndLogin", (selector) => {
             cy.get('input').type('enerx')
             cy.get('.MuiButtonBase-root').click()
 
-            cy.get('#signInName', { timeout: 10000 }).should('be.visible').type('support@m1neral.com')
+            cy.get('#signInName', { timeout: 30000 }).should('be.visible').type('support@m1neral.com')
             cy.get('#password').type('M1neral2022')
 
             cy.get('#next').click()
