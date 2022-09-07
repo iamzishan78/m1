@@ -205,6 +205,7 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiTableHead-root:nth-child(1) .MuiButton-label": { minWidth: '103px' },
     "& .MuiTableHead-root": {
+      backgroundColor: '#F2F2F2',
       "& th": {
         backgroundColor: "#F2F2F2",
         zIndex: "auto",
