@@ -628,7 +628,7 @@ export default function DetailComponents(props) {
                 isSource={false}
               />
             ) : (
-              <AddNewRelatedAgreementDialog />
+              <AddNewRelatedAgreementDialog customLayerId={get(dataCustomLayer, "customLayer._id")} setNewAgmtState={setNewAgmtState} />
             )}
           </div>
         )}

@@ -21,7 +21,7 @@ const PopperMy = function (props) {
   return <Popper {...props} style={styles.popper} placement="bottom-start" />;
 };
 
-const AutoCompleteField = ({ placeholder, value, onChange, column, query, extendSearchQuery, esIndex, filters }) => {
+const AutoCompleteField = ({ placeholder, value, onChange, column, query, extendSearchQuery, esIndex, filters, variant }) => {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   // const [value, setValue] = useState({ key: value });
@@ -71,7 +71,6 @@ const AutoCompleteField = ({ placeholder, value, onChange, column, query, extend
   return (
     <Autocomplete
       id={`filter-autocomplete-${label}`}
-      placeholder={placeholder}
       PopperComponent={PopperMy}
       open={open}
       onOpen={() => {
@@ -87,9 +86,17 @@ const AutoCompleteField = ({ placeholder, value, onChange, column, query, extend
       onChange={(e, value, reason) => {
         if (reason === "clear" || !value?.key) setSearch("");
         else {
-          const key = typeof value.key === "string" ? value.key : value.key[0];
-          setSearch(key);
-          onChange(key);
+          let key = "",
+            index = 0;
+          if (typeof value.key === "string") {
+            key = value.key;
+            setSearch(key);
+            onChange(key);
+          } else {
+            if (!value.key[0] && value.key[1]) index = 1;
+            setSearch(value.key[index]);
+            onChange(value.key[index], index);
+          }
         }
       }}
       fullWidth
@@ -137,6 +144,8 @@ const AutoCompleteField = ({ placeholder, value, onChange, column, query, extend
       renderInput={(params) => (
         <TextField
           {...params}
+          placeholder={placeholder}
+          variant={variant}
           autoFocus={true}
           label={label}
           onChange={(e) => {
@@ -166,6 +175,11 @@ const AutoCompleteField = ({ placeholder, value, onChange, column, query, extend
       )}
     />
   );
+};
+
+AutoCompleteField.defaultProps = {
+  variant: "standard",
+  placeholder: "",
 };
 
 export default AutoCompleteField;

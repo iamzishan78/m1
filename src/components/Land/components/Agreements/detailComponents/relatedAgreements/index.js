@@ -1,13 +1,10 @@
 import React from "react";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from "@material-ui/core";
-import { ExpandMore as ExpandMoreIcon, DescriptionOutlined as DescriptionOutlinedIcon } from "@material-ui/icons";
+import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import { useStyles as customStyles } from "../style";
 
 import RelatedAgreementsTable from "./RelatedAgreementsTable";
-
-import { useLazyQuery } from "@apollo/client";
-import { GET_PARCELS_FILES_COUNT } from "graphQL/useQueryGetParcelFiles";
 
 const useStyles = makeStyles((theme) => ({
   root: {

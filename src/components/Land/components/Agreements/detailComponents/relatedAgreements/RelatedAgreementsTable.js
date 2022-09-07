@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 // context
@@ -96,8 +96,8 @@ function AgreementOwnersTractsTable(props) {
         shapeType: props.shapeType,
         addableName: "Tract",
         searchFields: ["contact.entityDetail.name", "_all"],
-        filters: [{ field: "shape._id", value: props.customLayer._id }],
-        TableHeader: TableHeader(),
+        filters: [{ field: "relatedAgreements._id", value: props.customLayer._id }],
+        TableHeader: TableHeader(true),
         esIndex: "shapes_flat",
         startPaginationAt: 25,
         formatHits,
