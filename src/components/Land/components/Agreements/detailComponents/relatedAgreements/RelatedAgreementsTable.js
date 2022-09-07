@@ -14,7 +14,7 @@ import { deepEqualObjects } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 // Header Schemas
-import TableHeader from "components/Table/constants/agreements-header-schema";
+import TableHeader from "components/Table/constants/related-agreements-header-schema";
 
 // Utilities
 import { usetableStyles } from "./style";
@@ -97,7 +97,7 @@ function AgreementOwnersTractsTable(props) {
         addableName: "Tract",
         searchFields: ["contact.entityDetail.name", "_all"],
         filters: [{ field: "relatedAgreements._id", value: props.customLayer._id }],
-        TableHeader: TableHeader(true),
+        TableHeader: TableHeader,
         esIndex: "shapes_flat",
         startPaginationAt: 25,
         formatHits,
