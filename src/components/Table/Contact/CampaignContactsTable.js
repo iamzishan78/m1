@@ -10,7 +10,7 @@ import TableESHOC from "../TableESHOC";
 import { useLazyQuery } from "@apollo/client";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 
-import { getContactsAddress } from "utils/helper";
+import { getContactsAddress, copy } from "utils/helper";
 
 import { deepEqualObjects } from "components/Shared/functions";
 import { featureFlagChanges } from "components/ContactDetailedInfo/helper";
@@ -27,7 +27,7 @@ function ContactsTable(props) {
   const [getCheckPurchaseData, { data: ContactPurchaseData }] = useLazyQuery(GET_CHECK_PURCHASE_DATA);
 
   const addAble = { parent: false, type: "campaignContact" };
-  const targetLabel = "campaignContacts";
+  const targetLabel = "contact";
   const uploadIcon = true;
   const header = "Contacts";
   const total = false;
@@ -58,6 +58,9 @@ function ContactsTable(props) {
   };
 
   useEffect(() => {
+    const tableheaderCopy = copy(tableheader);
+    tableheaderCopy.map(thc => thc.options = tableheader.find(th => th.name === thc.name).options);
+
     props.setInitialFilters([
       {
         field: "campaignName.keyword",
@@ -68,7 +71,7 @@ function ContactsTable(props) {
       addableName: "Contact",
       extendSearchQuery: null,
       searchFields: ["name^4", "_all"],
-      TableHeader: tableheader,
+      TableHeader: tableheaderCopy,
       esIndex,
       typeKeyword: { gridViewCategory: "Contacts" },
       startPaginationAt: 25,

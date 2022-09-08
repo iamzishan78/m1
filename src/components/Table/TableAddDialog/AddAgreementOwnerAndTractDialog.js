@@ -290,7 +290,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             ...ownerToAdd,
           },
         },
-        refetchQueries: ["getESSimpleSearch"],
+        refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
         awaitRefetchQueries: true,
       });
     }

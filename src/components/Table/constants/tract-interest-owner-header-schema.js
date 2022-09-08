@@ -27,7 +27,7 @@ const TractInterestOwnerHeadCells = [
     name: "name",
     label: "Owner Name",
     esKey: "contact.entityDetail.name.keyword",
-    options: { display: true },
+    options: { display: true, ignoreGlobal: true },
     style: { minWidth: "320px" },
   },
   {
