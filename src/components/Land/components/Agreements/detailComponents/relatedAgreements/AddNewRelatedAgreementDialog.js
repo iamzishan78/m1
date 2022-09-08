@@ -9,7 +9,7 @@ import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import AutoCompleteESField from "components/Shared/Forms/Fields/AutoCompleteESField";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
-import { UPSERT_RELATED_AGREEMENT_DESSCRIPTOR } from "graphQL/useMutationUpsertRelatedAgreementDescriptor";
+import { UPSERT_RELATED_AGREEMENT_DESSCRIPTOR } from "graphQL/useMutationsRelatedAgreement";
 
 const agreementParams = [
   { key: "agreementNumber", label: "Agreement Number" },

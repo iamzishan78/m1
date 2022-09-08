@@ -5,3 +5,9 @@ export const UPSERT_RELATED_AGREEMENT_DESSCRIPTOR = gql`
     upsertRelatedAgreementDescriptor(descriptorObject: $descriptorObject, relatedObject: $relatedObject)
   }
 `;
+
+export const DELETE_RELATED_AGREEMENTS = gql`
+  mutation deleteRelatedAgreements($currentAgreementId: ID, $agreementIds: [ID]) {
+    deleteRelatedAgreements(currentAgreementId: $currentAgreementId, agreementIds: $agreementIds)
+  }
+`;

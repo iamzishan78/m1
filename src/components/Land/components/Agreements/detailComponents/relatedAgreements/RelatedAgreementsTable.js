@@ -1,5 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { useMutation } from "@apollo/client";
+import { useSelector } from "react-redux";
 
 // context
 import { Container, Dialog, Button, IconButton, Tooltip } from "@material-ui/core";
@@ -7,8 +9,7 @@ import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 
 // QUERIES
-import { useMutation } from "@apollo/client";
-import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
+import { DELETE_RELATED_AGREEMENTS } from "graphQL/useMutationsRelatedAgreement";
 
 import { deepEqualObjects } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
@@ -21,16 +22,10 @@ import { usetableStyles } from "./style";
 
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
+  const [isDeletePopup, setDeletePopup] = useState(false);
+  const customLayerId = useSelector(({ Land }) => Land.agreement?.activeAgreement)?._id;
 
-  const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
-    onCompleted: () => {
-      props.setLoading(false);
-      props.setSelectedRows([]);
-    },
-    onError: (err) => {},
-    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
-    awaitRefetchQueries: true,
-  });
+  const [deleteRelatedAgreements] = useMutation(DELETE_RELATED_AGREEMENTS);
 
   const options = {
     ...props.options,
@@ -53,7 +48,7 @@ function AgreementOwnersTractsTable(props) {
                 style={{ margin: "0 5px" }}
                 aria-label="delete"
                 onClick={(e) => {
-                  //   setOpenDialog("delete");
+                  setDeletePopup("delete");
                 }}
               >
                 <DeleteIcon />
@@ -79,12 +74,12 @@ function AgreementOwnersTractsTable(props) {
 
   const deleteFunc = (ids) => {
     if (ids.length > 0) {
-      props.setLoading(true);
-      updateShapeOwners({
+      deleteRelatedAgreements({
         variables: {
-          shapeOwners: ids.map((_id) => ({ _id, isDeleted: true })),
+          currentAgreementId: customLayerId,
+          agreementIds: ids,
         },
-        refetchQueries: ["getCustomLayer"],
+        refetchQueries: ["getESSimpleSearch"],
         awaitRefetchQueries: true,
       });
     }
@@ -104,28 +99,20 @@ function AgreementOwnersTractsTable(props) {
       });
   }, [props.customLayer]);
 
-  useEffect(() => {
-    if (props.setTractsNumber) props.setTractsNumber(props.rows.length);
-    if (props.setRecord) props.setRecord(props.rows);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.rows]);
-
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
-      <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
-        {props.openDialog === "delete" && (
-          <DeleteConfirmationDialogContent
-            header={`Delete Tract(s)`}
-            onClose={() => props.setOpenDialog(null)}
-            deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
-            setM1nSelectedRowsIndexes={props.setSelectedRows}
-          >
-            {`Do you want to delete the selected tract${
-              props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
-            } from  this ${props.shapeType}?`}
-          </DeleteConfirmationDialogContent>
-        )}
+      <Dialog open={isDeletePopup} onClose={() => setDeletePopup(false)} fullWidth={true} maxWidth={"sm"}>
+        <DeleteConfirmationDialogContent
+          header={`Delete Related Agreement(s)`}
+          onClose={() => setDeletePopup(false)}
+          deleteFunc={deleteFunc}
+          m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
+          setM1nSelectedRowsIndexes={props.setSelectedRows}
+        >
+          {`Do you want to delete the selected related agreement${
+            props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+          }?`}
+        </DeleteConfirmationDialogContent>
       </Dialog>
 
       <Table

@@ -127,10 +127,6 @@ function AgreementsTable(props) {
   }, [GridViewModule]);
 
   useEffect(() => {
-    props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);
-  }, [props?.options?.count]);
-
-  useEffect(() => {
     setESFilters && setESFilters(props.initialFilters);
     // eslint-disable-next-line
   }, [props.initialFilters]);
