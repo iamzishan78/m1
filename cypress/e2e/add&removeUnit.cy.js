@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-describe('Add Document Spec', () => {
+describe('Add and Remove Unit Spec', () => {
     it('passes', () => {
         cy.viewport(1400, 900)
         cy.visit('http://localhost:3000')
