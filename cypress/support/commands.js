@@ -33,7 +33,7 @@ Cypress.Commands.add("checkAndLogin", (selector) => {
     //This command will logged in if it is not already logged in
     cy.get('body').then(($body) => {
         if ($body.find(selector).length) {
-            cy.get('input').type('localhost')
+            cy.get('input').type('enerx')
             cy.get('.MuiButtonBase-root').click()
 
             cy.get('#signInName', { timeout: 30000 }).should('be.visible').type('support@m1neral.com')
