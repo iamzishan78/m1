@@ -7,18 +7,25 @@ describe('Add Document Spec', () => {
 
         cy.checkAndLogin('#workSpaceSignin')
 
+
+        cy.log('==== STEP: ADD DOCUMENT ====')
         cy.get('#addDocument', { timeout: 50000 }).should('be.visible').click()
 
-        cy.get('#filenumber', { timeout: 10000 }).type('99934033')
+        cy.log('==== STEP: ADD FILE NUMBER ====')
+        cy.get('#filenumber', { timeout: 50000 }).type('99934033').should('be.visible')
+        
+        cy.log('==== STEP: ADD FILE NAME ====')
         cy.get('#filename').type('Cydoc et el')
 
-        cy.get('#filetype', { timeout: 10000 }).type('L')
+        cy.log('==== STEP: ADD FILE TYPE ====')
+        cy.get('#filetype', { timeout: 50000 }).type('L')
         cy.get("#filetype-popup").children('#filetype-option-1').click()
 
+        cy.log('==== STEP: ADD FILE DATE  ====')
         cy.get('#filedate').type('2022-01-01')
-
         cy.get('#documentdetails').scrollTo('bottom')
 
+        cy.log('==== STEP: ADD COMPANY ID ====')
         cy.get('#dropdown-3').children(1).children(0).type('924{enter}')
 
         cy.get('#multiselect-4').children(1).children(0).click()
