@@ -2525,7 +2525,7 @@ function SubTable(props) {
                         <Grid container spacing={0} direction="row" >
                           {
                             props.parent === 'Documents' && <div style={{ position: 'relative', zIndex: 100 }}>
-                              <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
+                              <div style={{ position: 'absolute', left: '-30px', top: '15px', fontWeight: 'bold' }}>
                                 {tableMeta.rowIndex + 1}
                               </div>
                             </div>
