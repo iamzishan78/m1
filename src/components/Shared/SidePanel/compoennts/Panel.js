@@ -353,7 +353,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           open={Boolean(stateMapControls.selectedControl)}
         >
           <StyledMenuHeaderItem disableRipple key="subheader" role={undefined} dense className={classes.subHeaderItem}>
-            <ListItemText primary="Find Map" />
+            <ListItemText primary="Map" />
           </StyledMenuHeaderItem>
 
           {/* Layer Icons */}
