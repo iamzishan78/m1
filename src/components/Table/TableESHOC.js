@@ -107,8 +107,8 @@ export const TableESHOC = (Component) => {
                     const selectedData = JSON.parse(JSON.stringify(selectedGridView));
                     setStateApp((state) => ({ ...state, selectedView: selectedData }));
 
-                    let filterColumns = cols.filter((col) => !col._id && !props.actionColumns.includes(col.label));
-                    let actionColumns = cols.filter((col) => props.actionColumns.includes(col.label));
+                    let filterColumns = cols.filter((col) => !col._id && !props.actionColumns.includes(col.label) && !props.actionColumns.includes(col.name));
+                    let actionColumns = cols.filter((col) => props.actionColumns.includes(col.label) || props.actionColumns.includes(col.name));
 
                     // Excluding actionColumns from veiw Columns 
                     actionColumns = actionColumns.map(aC => ({ ...aC, options: { ...aC.options, viewColumns: false } }))
@@ -133,7 +133,6 @@ export const TableESHOC = (Component) => {
         }
         useEffect(() => {
             if (selectedGridView) {
-                console.log('calling updateColumnsOnGridViewChange 1')
                 updateColumnsOnGridViewChange(metaDataRef.current || [])
 
                 client.query({
@@ -142,8 +141,6 @@ export const TableESHOC = (Component) => {
                     const metaDatas = metaDataRes?.getMetaData?.metaData || []
                     if (!deepEqual(metaDatas, metaDataRef.current)) {
                         metaDataRef.current = metaDatas
-
-                        console.log('calling updateColumnsOnGridViewChange 2')
                         updateColumnsOnGridViewChange(metaDatas)
                     }
                 });
@@ -301,7 +298,7 @@ export const TableESHOC = (Component) => {
                 }
 
                 /// apply global settings unless ignored
-                if (column?.options?.ignoreGlobal || column?.label === " ") {
+                if (column?.options?.ignoreGlobal || props.actionColumns.includes(column.label) || props.actionColumns.includes(column.name)) {
                     column.options = {
                         ...column.options,
                     };
