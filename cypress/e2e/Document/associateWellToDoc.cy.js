@@ -5,7 +5,7 @@ describe('Associate Well Spec', () => {
         cy.viewport(1400, 900)
         cy.visit('http://localhost:3000/documents')
 
-        cy.checkAndLogin('#workSpaceSignin')
+        cy.checkAndLogin()
 
         cy.get('#addDocument', { timeout: 50000 }).should('be.visible')
 
@@ -18,13 +18,13 @@ describe('Associate Well Spec', () => {
         cy.interceptApi('getWellsFromDocument')
 
         cy.get("#addIcon").click()
-        cy.typeAndSelect('#wellSearch', 'anniemae', '#wellSearch-option-0')
+        cy.typeAndSelect('#wellSearch', 'anniemae', 'wellSearch-option-0')
         cy.verifyApiResponse('@addWellToFileDescriptorApi')
         cy.verifyApiResponse('@getWellsFromDocumentApi')
 
 
         cy.get("#addIcon").click()
-        cy.typeAndSelect('#wellSearch', 'silver dog', "#wellSearch-option-0")
+        cy.typeAndSelect('#wellSearch', 'silver dog', "wellSearch-option-0")
         cy.verifyApiResponse('@addWellToFileDescriptorApi')
         cy.verifyApiResponse('@getWellsFromDocumentApi')
 
