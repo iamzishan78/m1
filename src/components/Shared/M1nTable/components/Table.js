@@ -1800,6 +1800,7 @@ function SubTable(props) {
                           const coordinates = props.rows[tableMeta.rowIndex].coordinates
                           type = coordinates?.objToPopulateSearchLayer?.objectType || type
                           handleClickFlyToIcon(type, coordinates);
+                          dispatch(setMapGridCardState({ mapGridCardActivated: false }));
                         }
                       }}
                       sx={{
