@@ -539,7 +539,7 @@ const Validation = ({ propertyId }) => {
         </WellProdChartContextProvider>
       </WellCardContextProvider>
 
-      <ValidationGrids associatedWellIds={associatedWellIds} />
+      {/* <ValidationGrids associatedWellIds={associatedWellIds} /> */}
       
     </div>
   )

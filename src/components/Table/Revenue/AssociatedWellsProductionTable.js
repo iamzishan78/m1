@@ -12,7 +12,6 @@ import TableHeader from "components/Table/constants/property-interest-details-he
 
 // Utilities
 import { usetableStyles } from "../Styles";
-import { getFilters } from "../Contact/CampaignsTable";
 
 function AssociatedWellsProductionTable(props) {
   const classes = usetableStyles();
@@ -30,10 +29,7 @@ function AssociatedWellsProductionTable(props) {
   };
 
   const getFilters = () => {
-    return [
-        { field:'type.keyword', value:'Expiration' },
-        { field:'type.keyword', value:'Option to Extend' }
-      ]
+    return props.associatedWellIds.length > 0 ? [{ field:'well._id.keyword', value: props.associatedWellIds, onlyInclude: true }] : []
   }
 
   useEffect(() => {
