@@ -224,8 +224,9 @@ export default function MetadataDrawer(props) {
   }, [files, uploadedFiles, viewFiles]);
 
   useEffect(() => {
-    if (props.data?.metaOwner) {
-      setOwnerId(props.data.metaOwner._id);
+    const owner = props.data.metaOwner?._id ?? props.data.owner;
+    if (owner) {
+      setOwnerId(owner);
     }
   }, [props.data]);
 

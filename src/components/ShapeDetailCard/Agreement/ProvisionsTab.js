@@ -125,7 +125,7 @@ const styles = makeStyles(() => ({
 export default function ProvisionsTab({ provisions, standardProvisions, id }) {
   const classes = styles();
   let history = useHistory();
-  const [, setStateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateNav] = useContext(NavigationContext);
   const [selectionProvision, setSelectedProvision] = useState("");
   const [frequenciesList, setFrequenciesList] = useState([]);
@@ -170,7 +170,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
       setSelectedProvision(provision.type);
       let addProvision = { agreement: id, type: provision.type, isDeleted: false, startDate: undefined, endDate: undefined };
       if (provision._id) {
-        addProvision = { ...addProvision, isTemplate: false, applicable: true, templateRef: provision._id };
+        addProvision = { ...addProvision, isTemplate: false, applicable: true, templateRef: provision._id, user: stateApp.user.mongoId };
         upsertAgreementProvision({
           variables: { provision: addProvision },
           refetchQueries: ["getAgreementProvisions", "provisionAutoCompleteList"],
@@ -194,7 +194,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
       if (provision.type)
         upsertAgreementProvision({
           variables: {
-            provision: { agreement: id, ...formValues.provisions[index] },
+            provision: { agreement: id, ...formValues.provisions[index], user: stateApp.user.mongoId },
           },
         });
     }

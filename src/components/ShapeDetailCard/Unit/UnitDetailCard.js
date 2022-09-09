@@ -22,7 +22,7 @@ import AssociatedWellsShapeTable from "components/Table/Wells/AssociatedWellsSha
 import UnitTractsTable from "components/Table/Shape/UnitTractsTable";
 import AssociatedTractsShapeTable from "components/Table/Wells/AssociatedTractsShapeTable";
 import Tags from "components/Shared/Tagger";
-import { showSuccessMessage, showErrorMessage } from "actions";
+import { showSuccessMessage, showErrorMessage, setMapGridCardState } from "actions";
 import { AppContext } from "AppContext";
 
 import { copy } from "components/Shared/functions";
@@ -44,7 +44,15 @@ export default function UnitDetailCard(props) {
 
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
-  const contactsAdded = useSelector((state) => state?.common?.contactsAdded)
+  const contactsAdded = useSelector((state) => state?.common?.contactsAdded);
+
+  useEffect(() => {
+    dispatch(
+      setMapGridCardState({
+        mapGridCardActivated: false,
+      })
+    );
+  }, []);
 
   useEffect(() => {
     if (contactsAdded)

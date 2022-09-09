@@ -95,6 +95,14 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
 
   const [filteredTableData, setFilteredTableData] = useState(tableData);
 
+  // Data fix for tract
+  if (properties?.originalProperties?.StateAbbreviation)
+    properties.originalProperties.State = properties?.State || properties?.originalProperties?.StateAbbreviation;
+  if (properties?.originalProperties?.ShortName)
+    properties.originalProperties.Section = properties?.Section || properties?.originalProperties?.ShortName;
+  if (properties?.originalProperties?.PrincipalMeridian)
+    properties.originalProperties.Meridian = properties?.Meridian || properties?.originalProperties?.PrincipalMeridian
+  // Data fix for tract
   const [tableTempProperties, setTableTempProperties] = useState(properties);
 
   useEffect(() => {
@@ -456,7 +464,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                       {data.formatValue ? (
                         <Grid item>{data.formatValue(data.value || properties[data.key]) || "-"}</Grid>
                       ) : (
-                        <Grid item>
+                        <Grid item style={{ width: '100%' }}>
                           {data.type === "date" &&
                             (properties[data.key] ? moment.parseZone(new Date(properties[data.key])).format("MM/DD/yyyy") : "-")}
                           {data.type === "custom" && (

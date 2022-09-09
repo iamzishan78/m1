@@ -94,95 +94,92 @@ const LayerItem = React.memo((props) => {
   return (
     <Flipped flipId={id}>
       <div ref={(ref) => drop(preview(ref))} onMouseEnter={() => setHoverItem(id)} onMouseLeave={() => setHoverItem(null)}>
-        <Grid container className={classes.root} direction="row">
-          <Grid
-            item
-            xs={8}
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
-          >
+        {
+          props?.data?.emptyLayer === true ? <Box padding={props.data.collapsed ? '0px' : '20px'}></Box> : <Grid container className={classes.root} direction="row">
             <Grid
-              container
-              direction="row"
-              wrap="nowrap"
-              className={classes.subContainer}
+              item
+              xs={8}
               style={{
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "flex-start",
-                // marginLeft: '20px',
                 alignItems: "center",
               }}
             >
-              <Box borderColor={getLayerColor(data, "layer", colors)} borderLeft={4}>
-                {hoverItemIndex === id ? (
-                  <ListItemIcon ref={drag}>
-                    <DragIndicator style={{ cursor: "move", justifyContent: "center" }} />
-                  </ListItemIcon>
-                ) : (
-                  <ListItemIcon />
-                )}
-              </Box>
-
-
-
-              <Typography id={id} color="secondary" noWrap>
-                {name}
-              </Typography>
-              <Box paddingLeft={1} display="flex">
-                {type === "group" && !collapsed && (
-                  <ListItemIcon onClick={handleClick}>
-                    <ExpandLessIcon />
-                  </ListItemIcon>
-                )}
-                {type === "group" && collapsed && (
-                  <ListItemIcon onClick={handleClick}>
-                    <ExpandMoreIcon />
-                  </ListItemIcon>
-                )}
-              </Box>
-            </Grid>
-          </Grid>
-
-          <Grid
-            item
-            xs={4}
-            styles={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              flexGrow: 1,
-            }}
-          >
-            {type === "layer" && (
-              <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} isHover={hoverItemIndex === id} />
-            )}
-
-            {type === "group" && (
               <Grid
                 container
-                spacing={1}
+                direction="row"
+                wrap="nowrap"
+                className={classes.subContainer}
                 style={{
                   display: "flex",
                   flexDirection: "row",
-                  justifyContent: "flex-end",
+                  justifyContent: "flex-start",
+                  // marginLeft: '20px',
                   alignItems: "center",
                 }}
               >
-                <Grid item style={{ paddingRight: "40px", }}>
-                  <FormControlLabel control={<Switch checked={data.visiable} onChange={() => onToggleGroup(id)} size="small" />} />
-                </Grid>
+                <Box borderColor={getLayerColor(data, "layer", colors)} borderLeft={4}>
+                  {hoverItemIndex === id ? (
+                    <ListItemIcon ref={drag}>
+                      <DragIndicator style={{ cursor: "move", justifyContent: "center" }} />
+                    </ListItemIcon>
+                  ) : (
+                    <ListItemIcon />
+                  )}
+                </Box>
+
+
+
+                <Typography id={id} color="secondary" noWrap>
+                  {name}
+                </Typography>
+                <Box paddingLeft={1} display="flex">
+                  {type === "group" && (
+                    <ListItemIcon onClick={handleClick}>
+                      {!collapsed ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    </ListItemIcon>
+                  )}
+                </Box>
               </Grid>
-            )}
+            </Grid>
+
+            <Grid
+              item
+              xs={4}
+              styles={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                flexGrow: 1,
+              }}
+            >
+              {type === "layer" && (
+                <LayerControls type={"layer"} layer={data} labelId={id} updateLayer={updateLayer} isHover={hoverItemIndex === id} />
+              )}
+
+              {type === "group" && (
+                <Grid
+                  container
+                  spacing={1}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                  }}
+                >
+                  <Grid item style={{ paddingRight: "40px", }}>
+                    <FormControlLabel control={<Switch checked={data.visiable} onChange={() => onToggleGroup(id)} size="small" />} />
+                  </Grid>
+                </Grid>
+              )}
+            </Grid>
           </Grid>
-        </Grid>
-        {/* </Box> */}
+        }
+
       </div>
-    </Flipped>
+    </Flipped >
   );
 });
 

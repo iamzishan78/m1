@@ -36,7 +36,7 @@ import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsPa
 import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
 import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
 import TractInterestOwnerTable from "components/Table/Tract/TractInterestOwnerTable";
-import { showSuccessMessage, showErrorMessage } from "../../actions";
+import { showSuccessMessage, showErrorMessage, setMapGridCardState } from "actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
 import { AppContext } from "../../AppContext";
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
@@ -250,6 +250,14 @@ export default function ParcelsDetailCard(props) {
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(
     CUSTOMLAYER,
   );
+
+  useEffect(() => {
+    dispatch(
+      setMapGridCardState({
+        mapGridCardActivated: false,
+      })
+    );
+  }, []);
 
   useEffect(() => {
     if (contactsAdded)
