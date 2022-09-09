@@ -271,7 +271,7 @@ export default function AgreementDetailCard(props) {
                   <TabPanels
                     value={selectedTractTab}
                     panels={[
-                      <div className={showSummary ? classes.subContent : classes.subContent2}>
+                      <div className={showSummary ? classes.agreementSubContent : classes.subContent2}>
                         <AgreementOwnersTractsTable
                           setRecord={setTractOwners}
                           customLayer={uniObj}
