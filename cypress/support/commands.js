@@ -28,12 +28,19 @@
 
 import { deepEqualObjects } from "../../src/components/Shared/functions";
 
+// Constants
+const workSpace = Cypress.env('WORK_SPACE') || "enerx"
+const baseUrls = {
+    enerx: "https://enerxgraphql.azurewebsites.net/api/m1graph?code=Rhr8LQFXNnl/TE26EVD296voKbGVWZQDupqWAAWMaZXjzvgdvktPqg==",
+    localhost: "http://localhost:7071/api/m1graph"
+}
+
 // Common Commands
-Cypress.Commands.add("checkAndLogin", (selector) => {
+Cypress.Commands.add("checkAndLogin", () => {
     //This command will logged in if it is not already logged in
     cy.get('body').then(($body) => {
-        if ($body.find(selector).length) {
-            cy.get('input').type('enerx')
+        if ($body.find('#workSpaceSignin').length) {
+            cy.get('input').type(workSpace)
             cy.get('.MuiButtonBase-root').click()
 
             cy.get('#signInName', { timeout: 30000 }).should('be.visible').type('support@m1neral.com')
@@ -55,7 +62,7 @@ Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId) => {
 intercept if api payload has that string in search */
 Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
 
-    cy.intercept('POST', 'https://enerxgraphql.azurewebsites.net/api/m1graph?code=Rhr8LQFXNnl/TE26EVD296voKbGVWZQDupqWAAWMaZXjzvgdvktPqg==', req => {
+    cy.intercept('POST', baseUrls[workSpace], req => {
 
         if (req.body.operationName === operationName) {
 
