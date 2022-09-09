@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useMutation } from "@apollo/client";
-import { useSelector } from "react-redux";
 
 // context
 import { Container, Dialog, Button, IconButton, Tooltip } from "@material-ui/core";
@@ -23,7 +22,7 @@ import { usetableStyles } from "./style";
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
   const [isDeletePopup, setDeletePopup] = useState(false);
-  const customLayerId = useSelector(({ Land }) => Land.agreement?.activeAgreement)?._id;
+  const { moduleId } = props;
 
   const [deleteRelatedAgreements] = useMutation(DELETE_RELATED_AGREEMENTS);
 
@@ -32,7 +31,13 @@ function AgreementOwnersTractsTable(props) {
     customToolbar: () => {
       return (
         <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
-          <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={() => props.setNewAgmtState(true)}>
+          <Button
+            color="secondary"
+            className={classes.multiSelectionTopBarButtons}
+            onClick={() => {
+              if (props.setNewAgmtState) props.setNewAgmtState(true);
+            }}
+          >
             + ADD RELATED AGMT
           </Button>
         </div>
@@ -76,7 +81,7 @@ function AgreementOwnersTractsTable(props) {
     if (ids.length > 0) {
       deleteRelatedAgreements({
         variables: {
-          currentAgreementId: customLayerId,
+          currentAgreementId: moduleId,
           agreementIds: ids,
         },
         refetchQueries: ["getESSimpleSearch"],
@@ -86,18 +91,18 @@ function AgreementOwnersTractsTable(props) {
   };
 
   useEffect(() => {
-    if (props.customLayer?._id)
+    if (moduleId)
       props.setTableMeta({
         shapeType: props.shapeType,
         addableName: "Tract",
         searchFields: ["contact.entityDetail.name", "_all"],
-        filters: [{ field: "relatedAgreements._id", value: props.customLayer._id }],
+        filters: [{ field: "relatedAgreements._id", value: moduleId }],
         TableHeader: TableHeader,
         esIndex: "shapes_flat",
         startPaginationAt: 25,
         formatHits,
       });
-  }, [props.customLayer]);
+  }, [moduleId]);
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
@@ -109,9 +114,8 @@ function AgreementOwnersTractsTable(props) {
           m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
-          {`Do you want to delete the selected related agreement${
-            props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
-          }?`}
+          {`Do you want to delete the selected related agreement${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+            }?`}
         </DeleteConfirmationDialogContent>
       </Dialog>
 

@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import PropertyInterestDetailsTable from "components/Table/Revenue/PropertyInterestDetailsTable";
 import PropertyRevenueDetailsTable from "components/Table/Revenue/PropertyRevenueDetailsTable";
 import TabButtons from "components/Shared/TabPanels/TabButtons"
+import RelatedAgreementsTable from "components/Land/components/Agreements/detailComponents/relatedAgreements/RelatedAgreementsTable";
 
 const useStyles = makeStyles(() => ({
   sectionCard: {
@@ -32,6 +33,7 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
       labels={[
         "Interest Details",
         "Revenue Details",
+        "Related Agreements"
       ]}
       value={selectedTab}
       setValue={(n) => {
@@ -63,6 +65,13 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
           parent="PropertyInterestTable"
           header={<Header />}
           propertyId={propertyId}
+        />
+      )}
+      {selectedTab === 2 && (
+        <RelatedAgreementsTable
+          header={<Header />}
+          moduleId={"63178a23c4a102add2a388fc"}
+          dense
         />
       )}
     </div>
