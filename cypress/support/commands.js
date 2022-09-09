@@ -68,7 +68,9 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
 
             if (payloadKey) {
                 const { variables } = req.body
-                if (payloadKey.searchString && variables?.search?.query === payloadKey.searchString) {
+                if (payloadKey.searchString && (variables?.search?.query === payloadKey.searchString
+                    || variables?.search === `${payloadKey.searchString}*`)) {
+                    console.log("search opertaion api name : ", `${operationName}WithSearchStringApi`)
                     req.alias = `${operationName}WithSearchStringApi`;
                 }
                 else if (payloadKey?.sortOrder && variables?.sort?.order === payloadKey.sortOrder) {
@@ -89,8 +91,9 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
 
 // This command is to check api was successful or not
 Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
-    cy.wait(apiTitle, { timeout: 10000 }).then((interception) => {
+    cy.wait(apiTitle, { timeout: 30000 }).then((interception) => {
         assert.isNotNull(interception.response.body, `${apiTitle} run succesfully`)
+        return interception
     })
 })
 
@@ -109,10 +112,10 @@ Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = 
 
 // ContactGrid Commands
 
-Cypress.Commands.add('gridSearch', (searchString) => {
-    cy.interceptApi('getESSimpleSearch', { searchString: searchString })
+Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
+    cy.interceptApi(gridOperationName, { searchString: searchString })
     cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type(searchString)
-    cy.verifyApiResponse('@getESSimpleSearchWithSearchStringApi', { responseTimeout: 30000 })
+    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: 30000 })
 })
 
 Cypress.Commands.add('sortColumn', (columnName, sortOrder) => {
