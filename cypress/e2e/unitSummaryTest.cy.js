@@ -5,7 +5,7 @@ describe('unit summary testing', () => {
     cy.viewport(1400, 900)
     cy.visit('http://localhost:3000')
 
-    cy.checkAndLogin('#workSpaceSignin')
+    cy.checkAndLogin()
 
     cy.wait(14000)
 
