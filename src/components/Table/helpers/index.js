@@ -65,16 +65,18 @@ export const handleCustomFilterColumns = (TableHeader, filterObject) => {
 export const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column) => {
   if (selectedGridView?.columns) {
     const col = selectedGridView.columns.find(col => col.name === column.name)
-    if (col && col.display) {
-      column.options.display = true;
+    if (col && typeof col.display !== 'undefined') {
+      column.options.display = col.display;
       if (column.esKey && !column.noFilter) {
-        column.options.filter = true;
+        column.options.filter = col.display;
       }
     } else if (column.name !== ' ') {
       const tableHeaderCol = TableHeader.find(tH => tH.name === column.name)
       if (tableHeaderCol) {
-        column.options.display = tableHeaderCol.options.display;
-        column.options.filter = tableHeaderCol.options.filter;
+        if (typeof tableHeaderCol.options.display !== 'undefined')
+          column.options.display = tableHeaderCol.options.display;
+        if (typeof tableHeaderCol.options.filter !== 'undefined')
+          column.options.filter = tableHeaderCol.options.filter;
       }
       else {
         column.options.display = false;
@@ -115,14 +117,15 @@ export const setColumnsData = (
     const tableCol = TableHeader.find((el) => el.name === column.name)
     if (column?.options?.filter) {
       const custom = column.custom;
+      const multiple = column.type === 'multiselect' ? true : !!column?.options?.multiple
       column.options = {
         ...tableCol.options,
         ...column.options,
         filter: true,
         filterType: "custom",
-        filterList: filters[index],
+        filterList: undefined,
         customFilterListOptions: {
-          render: v => v.map(l => l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l),
+          render: v => v?.map(l => l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l),
         },
         filterOptions: {
           display: (filterList, onChange, index, column) => {
@@ -131,6 +134,7 @@ export const setColumnsData = (
             )?.esKey;
             return (
               <AutoCompleteFilter
+                multiple={multiple}
                 esIndex={esIndex}
                 setFilters={setFilters}
                 filterList={filterList}
@@ -176,16 +180,13 @@ export const handleSelectedGridChange = (
     columns.forEach((column, index) => {
       setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
       if (isGridChanged) {
-        const value = get(
-          selectedGridView?.filters?.find((filter) => {
-            return JSON.stringify(filter.field) === JSON.stringify(column.esKey);
-          }),
-          "value",
-          ""
-        );
+        const value = selectedGridView?.filters?.filter((filter) => {
+          return JSON.stringify(filter.field) === JSON.stringify(column.esKey);
+        })?.map(filter => filter.value) || [];
+
         let filterList = Array.isArray(column.esKey) ? undefined : [];
-        if (value && typeof value !== "object") {
-          filterList = [value];
+        if (value) {
+          filterList = value;
         }
         if (column?.options?.filter) {
           column.options.filterList = filterList;

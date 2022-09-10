@@ -1,29 +1,18 @@
 import React, { useState, useEffect, useContext } from "react";
 import moment from "moment";
 import { useHistory } from "react-router-dom";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/styles";
-import {
-  Typography,
-  TextField,
-  Grid,
-  Avatar,
-  FormControl,
-  InputAdornment,
-  Select,
-  MenuItem
-} from "@material-ui/core";
-import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
-import CommentComponent from "components/Shared/CommentComponent";
-import AddDialogeUploadZone from "components/ContactDetailCard/components/AddDialogUploadZone";
+import { Typography, TextField, Grid, FormControl, Select, MenuItem } from "@material-ui/core";
 import { useLazyQuery } from "@apollo/client";
 import { VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { GETRECENTCONTACTFILES } from "graphQL/useQueryGetContactFiles";
-import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
-import CustomAvatar from "components/Shared/ui/CustomAvatar";
 import { AppContext } from "AppContext";
 import { useForm, Controller } from "react-hook-form";
-import { getRandomColor } from "components/Shared/functions/ui";
+
+import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
+import CommentComponent from "components/Shared/CommentComponent";
+import AddDialogeUploadZone from "components/ContactDetailCard/components/AddDialogUploadZone";
+import UsersListWithIcon from "components/Shared/UsersListWithIcon";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -130,7 +119,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "space-between",
     width: "100%",
-    height: "100%"
+    height: "100%",
   },
 }));
 
@@ -144,75 +133,52 @@ export default function MetadataDrawer(props) {
   const [onFocusDescription, setFocusSate] = useState(false);
   const [fileRequestCounter, setFileRequestCounter] = useState(1);
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [users, setUsers] = useState([]);
   const [, setStateApp] = useContext(AppContext);
 
   // Props
-  const { setCollapse, targetSourceId, targetLabel, viewAllDocuments, ownerTitle, ownerPlaceHolder, isApproval, data } = props;
-  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-    fetchPolicy: "no-cache",
-  });
+  const { setCollapse, targetSourceId, targetLabel, viewAllDocuments, ownerTitle, ownerPlaceHolder, isApproval, isOwner, isSource, data } =
+    props;
 
   // Queries and Mutations
-  const [getRecentFiles, { data: files }] = useLazyQuery(
-    GETRECENTCONTACTFILES,
-    {
-      fetchPolicy: "cache-and-network",
-      onCompleted: ({ getFileDescriptors }) => {
-        let allActive = true;
+  const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
+    fetchPolicy: "cache-and-network",
+    onCompleted: ({ getFileDescriptors }) => {
+      let allActive = true;
 
-        if (getFileDescriptors)
-          for (let i = 0; i < getFileDescriptors.length; i++) {
-            if (getFileDescriptors[i].fileState !== "active") {
-              allActive = false;
-              break;
-            }
+      if (getFileDescriptors)
+        for (let i = 0; i < getFileDescriptors.length; i++) {
+          if (getFileDescriptors[i].fileState !== "active") {
+            allActive = false;
+            break;
           }
+        }
 
-        if (!allActive) {
-          if (fileRequestCounter <= 40) {
-            let waitBeforeRequestAgain = setTimeout(() => {
-              setFileRequestCounter(fileRequestCounter + 1);
-              getRecentFiles({
-                variables: {
-                  relatedObjectId: targetSourceId,
-                  relatedObjectType: targetLabel,
-                },
-              });
-              clearTimeout(waitBeforeRequestAgain);
-            }, 1000);
-          } else {
-            setFileRequestCounter(1);
-          }
-        } else setFileRequestCounter(1);
-      },
-    }
-  );
+      if (!allActive) {
+        if (fileRequestCounter <= 40) {
+          let waitBeforeRequestAgain = setTimeout(() => {
+            setFileRequestCounter(fileRequestCounter + 1);
+            getRecentFiles({
+              variables: {
+                relatedObjectId: targetSourceId,
+                relatedObjectType: targetLabel,
+              },
+            });
+            clearTimeout(waitBeforeRequestAgain);
+          }, 1000);
+        } else {
+          setFileRequestCounter(1);
+        }
+      } else setFileRequestCounter(1);
+    },
+  });
 
-  const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] =
-    useLazyQuery(VIEWFILESQUERY, {
-      fetchPolicy: "no-cache",
-    });
+  const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
+    fetchPolicy: "no-cache",
+  });
 
   useEffect(() => {
     setDescription(props?.data?.[props.descriptionKey]);
   }, [props.data, props.descriptionKey]);
-
-  useEffect(() => {
-    getAllMongoUsers();
-  }, [getAllMongoUsers]);
-
-  useEffect(() => {
-    if (userLists && userLists.allMongoUsers) {
-      setUsers(
-        userLists.allMongoUsers.map((user) => ({
-          value: user._id,
-          text: user.name,
-          email: user.email,
-        }))
-      );
-    }
-  }, [userLists]);
 
   useEffect(() => {
     if (targetSourceId) {
@@ -258,10 +224,11 @@ export default function MetadataDrawer(props) {
   }, [files, uploadedFiles, viewFiles]);
 
   useEffect(() => {
-    if (props.data?.metaOwner) {
-      setOwnerId(props.data.metaOwner._id)
+    const owner = props.data.metaOwner?._id ?? props.data.owner;
+    if (owner) {
+      setOwnerId(owner);
     }
-  }, [props.data])
+  }, [props.data]);
 
   const setUploadedFileData = (uploadedfile) => {
     setUploadedFiles([...uploadedFiles, uploadedfile]);
@@ -294,10 +261,7 @@ export default function MetadataDrawer(props) {
 
         <div className="flex alignCenter">
           {props.menuComponent}
-          <span
-            onClick={() => setCollapse(true)}
-            className={classes.metaPanelCloseIcon}
-          >
+          <span onClick={() => setCollapse(true)} className={classes.metaPanelCloseIcon}>
             <ArrowForwardIcon />
           </span>
         </div>
@@ -305,16 +269,15 @@ export default function MetadataDrawer(props) {
 
       <div className={classes.contentRoot}>
         <div>
-          <div style={{ marginTop: 10, marginLeft: 4 }}>
-            <FormControl variant="outlined" fullWidth size="small">
-              <Grid container className={classes.gridStyle}>
-                <Grid item xs={3}>
-                  <div>{ownerTitle}</div>
-                </Grid>
-                <Grid item xs={9}>
-                  <Autocomplete
-                    options={users.filter((u) => u.text)}
-                    onChange={(e, user) => {
+          {(isOwner || isApproval || isSource) && (
+            <div style={{ marginTop: 10, marginLeft: 4 }}>
+              <FormControl variant="outlined" fullWidth size="small">
+                {isOwner && (
+                  <UsersListWithIcon
+                    label={ownerTitle}
+                    placeholder={ownerPlaceHolder}
+                    selectedUserId={ownerId}
+                    onChangeUser={(user) => {
                       setOwnerId(user?.value);
                       if (props.onUpdate)
                         props.onUpdate({
@@ -322,154 +285,68 @@ export default function MetadataDrawer(props) {
                           ownerName: user?.text,
                         });
                     }}
-                    value={
-                      users.find((user) => user?.value === ownerId) || null
-                    }
-                    getOptionLabel={(option) => option.text}
-                    getOptionSelected={(option) => option.value === ownerId}
-                    classes={{
-                      inputRoot: classes.dealOwnerRoot,
-                      focused: classes.dealOwnerRootFocused,
-                      popupIndicator: classes.popupIndicator,
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        margin="dense"
-                        {...params}
-                        variant="outlined"
-                        className={classes.inputFieldOwner}
-                        InputLabelProps={{
-                          ...params.InputLabelProps,
-                          shrink: true,
-                          classes: {
-                            root: classes.dealOwnerLabel,
-                          },
-                        }}
-                        placeholder={ownerPlaceHolder}
-                        InputProps={{
-                          ...params.InputProps,
-                          startAdornment: (
-                            <>
-                              <InputAdornment position="start">
-                                <Avatar
-                                  style={{
-                                    backgroundColor: users.find(
-                                      (user) => user?.value === ownerId
-                                    )
-                                      ? getRandomColor(
-                                          users
-                                            .find(
-                                              (user) => user?.value === ownerId
-                                            )
-                                            .text.toString()
-                                        )
-                                      : "",
-                                  }}
-                                  className={classes.dealOwnerAvatar}
-                                >
-                                  {users.find(
-                                    (user) => user?.value === ownerId
-                                  ) ? (
-                                    <CustomAvatar
-                                      diglog={true}
-                                      email={
-                                        users.find(
-                                          (user) => user?.value === ownerId
-                                        ).email
-                                      }
-                                      text={
-                                        users
-                                          .find(
-                                            (user) => user?.value === ownerId
-                                          )
-                                          .text.toString()
-                                          .toUpperCase().length > 1
-                                          ? users
-                                              .find(
-                                                (user) =>
-                                                  user?.value === ownerId
-                                              )
-                                              .text.toString()
-                                          : "Add Owner"
-                                      }
-                                    />
-                                  ) : (
-                                    "AO"
-                                  )}
-                                </Avatar>
-                              </InputAdornment>
-                              {params.InputProps.startAdornment}
-                            </>
-                          ),
-                        }}
+                  />
+                )}
+                {isApproval && (
+                  <Grid container className={classes.gridStyle}>
+                    <Grid item xs={3}>
+                      <div>Approval Status</div>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Controller
+                        control={control}
+                        name="status"
+                        render={(params) => (
+                          <Select
+                            {...params}
+                            id="status-simple-select-outlined-label"
+                            variant="outlined"
+                            value={data.approvalStatus ? data.approvalStatus : data.status ? data.status : ""}
+                            fullWidth
+                            onChange={(e) => {
+                              props.onUpdate({ approvalStatus: e.target.value });
+                            }}
+                          >
+                            <MenuItem value="Approved">Approved</MenuItem>
+                            <MenuItem value="Unapproved">Unapproved</MenuItem>
+                          </Select>
+                        )}
                       />
-                    )}
-                  />
-                </Grid>
-              </Grid>
-              {isApproval && (
-                <Grid container className={classes.gridStyle}>
-                  <Grid item xs={3}>
-                    <div>Approval Status</div>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={9}>
-                    <Controller
-                      control={control}
-                      name="status"
-                      render={(params) => (
-                        <Select
-                          {...params}
-                          id="status-simple-select-outlined-label"
-                          variant="outlined"
-                          value={
-                            data.approvalStatus
-                              ? data.approvalStatus
-                              : data.status
-                              ? data.status
-                              : ""
-                          }
-                          fullWidth
-                          onChange={(e) => {
-                            props.onUpdate({ approvalStatus: e.target.value });
-                          }}
-                        >
-                          <MenuItem value="Approved">Approved</MenuItem>
-                          <MenuItem value="Unapproved">Unapproved</MenuItem>
-                        </Select>
-                      )}
-                    />
+                )}
+                {isSource && (
+                  <Grid container className={classes.gridStyle} style={{ marginTop: 10 }}>
+                    <Grid item xs={3}>
+                      <div>Source</div>
+                    </Grid>
+                    <Grid item xs={9}>
+                      <Controller
+                        control={control}
+                        name="status"
+                        render={(params) => (
+                          <Select
+                            {...params}
+                            id="source-simple-select-outlined-label"
+                            variant="outlined"
+                            value={data.source || ""}
+                            fullWidth
+                            onChange={(e) => {
+                              props.onUpdate({ source: e.target.value });
+                            }}
+                          >
+                            <MenuItem value="Manual Entry">Manual Entry</MenuItem>
+                            <MenuItem value="Imported">Imported</MenuItem>
+                          </Select>
+                        )}
+                      />
+                    </Grid>
                   </Grid>
-                </Grid>
-              )}
-              <Grid container className={classes.gridStyle} style={{ marginTop: 10}}>
-                <Grid item xs={3}>
-                  <div>Source</div>
-                </Grid>
-                <Grid item xs={9}>
-                  <Controller
-                    control={control}
-                    name="status"
-                    render={(params) => (
-                      <Select
-                        {...params}
-                        id="source-simple-select-outlined-label"
-                        variant="outlined"
-                        value={data.source || ""}
-                        fullWidth
-                        onChange={(e) => {
-                          props.onUpdate({ source: e.target.value });
-                        }}
-                      >
-                        <MenuItem value="Manual Entry">Manual Entry</MenuItem>
-                        <MenuItem value="Imported">Imported</MenuItem>
-                      </Select>
-                    )}
-                  />
-                </Grid>
-              </Grid>
-            </FormControl>
-          </div>
-          
+                )}
+              </FormControl>
+            </div>
+          )}
+
           {props.showDescription && (
             <Grid item className={classes.descriptionInput}>
               <TextField
@@ -520,13 +397,8 @@ export default function MetadataDrawer(props) {
           {` Add`}
         </div> */}
 
-          <div
-            className="flex justifyBetween alignCenter"
-            style={{ padding: "20px 16px", marginBottom: -56 }}
-          >
-            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>
-              {props.documentsTitle}
-            </h4>
+          <div className="flex justifyBetween alignCenter" style={{ padding: "20px 16px", marginBottom: -56 }}>
+            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>{props.documentsTitle}</h4>
             {viewAllDocuments && (
               <h4
                 className={classes.viewAll}
@@ -571,5 +443,7 @@ MetadataDrawer.defaultProps = {
   ownerPlaceHolder: "Assign Approver",
   descriptionKey: "metaDescription",
   isApproval: false,
-  data: {}
-}
+  isOwner: true,
+  isSource: true,
+  data: {},
+};

@@ -182,6 +182,12 @@ export default function AgreementDetailCard(props) {
     // } else {
     //   customRow.value = value;
     // }
+
+    // Used for Agreement nra, net_acres and grossAcres overidden
+    if (value?.overridden?.toString()) {
+      set(properties, `overridden.${key}`, value.overridden);
+      value = value.value
+    }
     set(properties, `${key}`, value);
     properties.custom_data_arr?.forEach((data) => {
       properties.custom_data[data.key] = data.value;
@@ -265,7 +271,7 @@ export default function AgreementDetailCard(props) {
                   <TabPanels
                     value={selectedTractTab}
                     panels={[
-                      <div className={showSummary ? classes.subContent : classes.subContent2}>
+                      <div className={showSummary ? classes.agreementSubContent : classes.subContent2}>
                         <AgreementOwnersTractsTable
                           setRecord={setTractOwners}
                           customLayer={uniObj}

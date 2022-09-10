@@ -24,7 +24,7 @@ import ContactParcelsInterestProvider from "./components/ParcelsDetailCard/Conta
 import ContactParcelsInterestDetailsProvider from "./components/ParcelsDetailCard/ContactParcelsInterestDetailsProvider";
 import ContactUnitsInterestDetailsProvider from "./components/ShapeDetailCard/Unit/ContactUnitsInterestDetailsProvider";
 import ContactWellInterestProvider from "./components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/ContactWellInterestProvider";
-// import ContactDocumentsProvider from "./components/ViewDocuments/ContactDocumentsProvider";
+import ContactDocumentsProvider from "./components/ViewDocuments/ContactDocumentsProvider";
 import ContactDetailedInfoProvider from "./components/ContactDetailedInfo/ContactDetailedInfoProvider";
 import ContactRecentActivitiesProvider from "./components/RecentActivities/ContactRecentActivitiesProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
@@ -37,15 +37,13 @@ import ContactBulkProgress from "./components/BulkUpload/ContactBulkProgress";
 import RevenueProvider from "components/Revenue/RevenueProvider";
 import Land from "components/Land";
 import AgreementProvider from "./components/Land/components/Agreements/AgreementProvider";
-import AgreementDetailProvider from "./components/Land/components/AgreementDetail/AgreementDetailProvider";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 import { CircularProgress } from "@material-ui/core";
-import { UsersnapProvider } from './UsersnapContext';
+import { UsersnapProvider } from "./UsersnapContext";
 
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
-
 
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
 import { ApolloProvider, ApolloClient, InMemoryCache, useApolloClient } from "@apollo/client";
@@ -216,7 +214,7 @@ function App() {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [apolloClient, setApolloClient] = useState(null);
   useEffect(() => {
-    new GlobalApolloClientProvider(apolloClient)
+    new GlobalApolloClientProvider(apolloClient);
   }, [apolloClient]);
   const [apolloClientToken, setApolloClientToken] = useState(null);
   const [apolloClientIdToken, setApolloIdClientToken] = useState(null);
@@ -235,12 +233,12 @@ function App() {
   const updateApolloClientToken = (token, idToken) => {
     setApolloClientToken(token);
     setApolloIdClientToken(idToken);
-    setApolloClientFetchOptions(setApolloHeaders(apolloClient.link.options, token, idToken))
+    setApolloClientFetchOptions(setApolloHeaders(apolloClient.link.options, token, idToken));
     updateApolloClient(apolloClientEndpoint, token, idToken);
   };
 
   const updateApolloClient = (endpoint, token, idToken) => {
-    let fetchOptions = {}
+    let fetchOptions = {};
     if (apolloClient && token) {
       fetchOptions = setApolloHeaders(apolloClient.link.options, token, idToken);
 
@@ -251,16 +249,17 @@ function App() {
     }
 
     if (!apolloClient) {
-      const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions })
-      const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { ...fetchOptions.headers, batch: "true" } })
+      const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions });
+      const httpBatchLink = new BatchHttpLink({
+        uri: endpoint,
+        headers: {},
+        ...fetchOptions,
+        headers: { ...fetchOptions.headers, batch: "true" },
+      });
 
       let client = new ApolloClient({
         // uri: endpoint,
-        link: split(
-          operation => operation.getContext().batch !== true,
-          httpLink,
-          httpBatchLink
-        ),
+        link: split((operation) => operation.getContext().batch !== true, httpLink, httpBatchLink),
         // fetchOptions: {
         //   mode: 'no-cors',
         // },
@@ -288,17 +287,18 @@ function App() {
 
     if (apolloClient && endpoint) {
       setApolloClient((state, props) => {
-        const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions })
-        const httpBatchLink = new BatchHttpLink({ uri: endpoint, headers: {}, ...fetchOptions, headers: { ...fetchOptions.headers, batch: "true" } })
+        const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions });
+        const httpBatchLink = new BatchHttpLink({
+          uri: endpoint,
+          headers: {},
+          ...fetchOptions,
+          headers: { ...fetchOptions.headers, batch: "true" },
+        });
 
         return new ApolloClient({
           // ...state.link.options,
           // uri: endpoint,
-          link: split(
-            operation => operation.getContext().batch !== true,
-            httpLink,
-            httpBatchLink
-          ),
+          link: split((operation) => operation.getContext().batch !== true, httpLink, httpBatchLink),
           cache: state.cache,
           defaultOptions: state.defaultOptions,
         });
@@ -317,11 +317,10 @@ function App() {
           setApolloClient={updateApolloClient}
           setApolloClientEndpoint={updateApolloClientEndpoint}
           setApolloClientToken={updateApolloClientToken}
-
         />
         {apolloClient ? (
           <ApolloProvider client={apolloClient}>
-            <FeatureFlag feature={FEATURES.USERSNAP} >
+            <FeatureFlag feature={FEATURES.USERSNAP}>
               <UsersnapProvider />
             </FeatureFlag>
             <MuiThemeProvider theme={theme}>
@@ -359,22 +358,29 @@ function App() {
                           path="/contact/details/:contactId/recentActivites"
                           component={ContactRecentActivitiesProvider}
                         />
-                        {/* <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} /> */}
+                        <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/wells" component={ContactWellInterestProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/parcels" component={ContactParcelsInterestProvider} />
-                        <PrivateRoute exact path="/contact/details/:contactId/parcels/:parcelId" component={ContactParcelsInterestDetailsProvider} />
+                        <PrivateRoute
+                          exact
+                          path="/contact/details/:contactId/parcels/:parcelId"
+                          component={ContactParcelsInterestDetailsProvider}
+                        />
                         <PrivateRoute exact path="/contact/details/:contactId/units" component={ContactParcelsInterestProvider} />
                         {/* <PrivateRoute exact path="/contact/details/:contactId/units/:unitId" component={ContactParcelsInterestProvider} /> */}
-                        <PrivateRoute exact path="/contact/details/:contactId/units/:unitId" component={ContactUnitsInterestDetailsProvider} />
+                        <PrivateRoute
+                          exact
+                          path="/contact/details/:contactId/units/:unitId"
+                          component={ContactUnitsInterestDetailsProvider}
+                        />
                         {/* <PrivateRoute exact path="/contact/details/:contactId/deals" component={ContactDealsProvider} /> */}
                         <PrivateRoute exact path="/dashboard" component={DashboardProvider} />
                         <PrivateRoute exact path="/studio" component={StudioProvider} />
                         <PrivateRoute title="Bulk Upload" exact path={["/bulkupload", "/bulkupload/:type"]} component={BulkUpload} />
                         <PrivateRoute exact path="/agreement" component={AgreementProvider} />
                         <PrivateRoute title="Revenue Statements" path="/revenue" component={RevenueProvider} />
-                        <PrivateRoute path="/land" component={Land} />
+                        <PrivateRoute title="Land Management" path="/land" component={Land} />
                         <PrivateRoute exact path="/agreements" component={AgreementProvider} />
-                        <PrivateRoute exact path="/agreement/details/:agreementId?" component={AgreementDetailProvider} />
                         {/* <Route component={NotFoundRedirect} /> */}
                       </NavigationProvider>
                     </Switch>

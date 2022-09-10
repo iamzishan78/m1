@@ -310,7 +310,8 @@ export default function DocumentDetails(props) {
         refetchQueries: ["getParcelFiles", "getParcelFilesCount"],
         awaitRefetchQueries: true,
       }).then(() => {
-        props.refetchData({ ...document })
+        if (props?.refetchData)
+          props.refetchData({ ...document })
         setFileData(null);
         setStateApp({
           ...stateApp,
@@ -345,6 +346,7 @@ export default function DocumentDetails(props) {
   return (
     <div>
       <div
+        id="documentdetails"
         style={{
           flexGrow: 1,
           overflow: "auto",
@@ -362,6 +364,7 @@ export default function DocumentDetails(props) {
           >
             <h4>File Number</h4>
             <TextField
+              id="filenumber"
               className={classes.maxWidth}
               multiline
               value={newDocument?.documentNumber}
@@ -382,6 +385,7 @@ export default function DocumentDetails(props) {
           >
             <h4>File Name</h4>
             <TextField
+              id="filename"
               className={classes.maxWidth}
               multiline
               value={newDocument?.documentName}
@@ -422,14 +426,24 @@ export default function DocumentDetails(props) {
           >
             <h4>File Date</h4>
             <TextField
-              autoOk
+              // autoOk
               type="date"
+              id="filedate"
               //variant="outlined"
+              defaultValue={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
               margin="normal"
               fullWidth
-              value={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
               onChange={(event) => {
-                setNewDocument({ ...newDocument, dateTime: event ? String(event?.target?.value) : null })
+                const splittedDate = event?.target?.value.split("-")
+                if (splittedDate.length === 3) {
+                  const newDate = new Date()
+                  newDate.setYear(Number(splittedDate[0]))
+                  newDate.setMonth(Number(splittedDate[1]) - 1)
+                  newDate.setDate(Number(splittedDate[2]))
+                  setNewDocument({ ...newDocument, dateTime: newDate })
+                } else {
+                  setNewDocument({ ...newDocument, dateTime: null })
+                }
               }}
 
               InputLabelProps={{
@@ -510,6 +524,7 @@ export default function DocumentDetails(props) {
             }}>
               <h4>Book</h4>
               <TextField
+                id="book"
                 className={classes.maxWidth}
                 multiline
                 value={newDocument?.book}
@@ -527,6 +542,7 @@ export default function DocumentDetails(props) {
             }}>
               <h4>Page</h4>
               <TextField
+                id="page"
                 className={classes.maxWidth}
                 multiline
                 value={newDocument?.page}
@@ -541,6 +557,7 @@ export default function DocumentDetails(props) {
             <div>
               <h4>Instrument #</h4>
               <TextField
+                id="instrument"
                 className={classes.maxWidth}
                 multiline
                 value={newDocument?.instrument}
@@ -590,6 +607,7 @@ export default function DocumentDetails(props) {
                   )}
                   {meta.type === "dropdown" && (
                     <ListItem
+                      id={`dropdown-${index}`}
                       style={{
                         flexDirection: "column",
                         justifyContent: "start",
@@ -619,6 +637,7 @@ export default function DocumentDetails(props) {
                   )}
                   {meta.type === "multiselect" && (
                     <ListItem
+                      id={`multiselect-${index}`}
                       style={{
                         flexDirection: "column",
                         justifyContent: "start",
@@ -852,6 +871,7 @@ export default function DocumentDetails(props) {
           </Button>
 
           <Button
+            id="documentSaveButton"
             variant="contained"
             color="secondary"
             size="medium"
@@ -894,6 +914,7 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
   };
   return (
     <Autocomplete
+      id="filetype"
       defaultValue={value}
       value={value}
       disableListWrap

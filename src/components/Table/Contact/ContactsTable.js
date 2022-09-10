@@ -24,11 +24,13 @@ import { getContactsAddress, copy } from "utils/helper";
 
 import { deepEqualObjects } from "components/Shared/functions";
 import { featureFlagChanges } from "components/ContactDetailedInfo/helper";
+import CustomerViewCol from "../helpers/CustomerView";
 
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
     height: "100%",
+
     "& .MuiToolbar-regular > div:nth-child(2)": {
       overflow: "hidden",
       display: "flex",
@@ -118,7 +120,7 @@ function ContactsTable(props) {
   const targetLabel = "contact";
   const uploadIcon = true;
   const header = "Contacts";
-  const dense = true;
+  const dense = false;
   const total = false;
   const orderByTracks = false;
   const startPaginationAt = 25;
@@ -136,10 +138,17 @@ function ContactsTable(props) {
     }))
   }, [showGenericPhones]);
 
+  useEffect(() => {
+    setSelectedGridView(Contacts || defaultView);
+  }, [Contacts]);
+
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
       hit = getContactsAddress(props.setGenricData(hit, hit._id, ["tracks"]));
-      hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
+      hit.tags =
+        hit?.tags?.length > 0
+          ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+          : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       return hit;
     });
@@ -148,12 +157,16 @@ function ContactsTable(props) {
 
   useEffect(() => {
     props.setInitialFilters(uniqBy(props.customAppliedFilters, "field") || []);
+
+    const tableheaderCopy = copy(tableheader)
+    tableheaderCopy.map(thc => thc.options = tableheader.find(th => th.name === thc.name).options)
+
     props.setTableMeta({
       // filters: uniqBy(props.customAppliedFilters, "field") || [],
       addableName: "Contact",
       extendSearchQuery: props.contactSearchQuery ? props.contactSearchQuery : null,
       searchFields: ["name^4", "_all"],
-      TableHeader: copy(tableheader),
+      TableHeader: tableheaderCopy,
       esIndex,
       // filters: Contacts?.filters ? getFilters() : [],
       typeKeyword: { gridViewCategory: "Contacts" },
@@ -199,7 +212,8 @@ function ContactsTable(props) {
       const rows = JSON.parse(JSON.stringify(props.rows));
       for (let i = 0; i < ContactPurchaseData?.getCheckPurchaseData.length; i++) {
         const index = rows.findIndex((row) => row._id === ContactPurchaseData.getCheckPurchaseData[i]);
-        rows[index].isPurchased = true;
+        if (index !== -1)
+          rows[index].isPurchased = true;
       }
       props.setRows(rows);
     }
@@ -282,6 +296,7 @@ function ContactsTable(props) {
           <GridView
             module="Contacts"
             columns={props.columns}
+            defaultView={defaultView}
             handleDefaultView={handleDefaultView}
             handleClose={() => setShowViewModal(false)}
             setSelectedGridView={setSelectedGridView}
@@ -297,6 +312,8 @@ function ContactsTable(props) {
           style={{ backgroundColor: "#fff" }}
           header={header}
           headerComponent={HeaderComponent}
+          viewColumn={CustomerViewCol}
+          viewColumnProps={props.viewColumnProps}
           headerProps={headerProps}
           columns={props.columns}
           rows={props.rows}
@@ -343,6 +360,7 @@ function ContactsTable(props) {
             esIndex: esIndex,
             open: true
           }}
+          {...props.esHocProps}
         />
       </Container>
     </>

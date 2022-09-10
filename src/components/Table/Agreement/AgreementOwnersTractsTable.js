@@ -27,7 +27,6 @@ function AgreementOwnersTractsTable(props) {
       props.setLoading(false);
       props.setSelectedRows([]);
     },
-
     onError: (err) => { },
     refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
@@ -53,6 +52,8 @@ function AgreementOwnersTractsTable(props) {
         variables: {
           shapeOwners: ids.map((_id) => ({ _id, isDeleted: true })),
         },
+        refetchQueries: ["getCustomLayer"],
+        awaitRefetchQueries: true
       });
     }
   };
@@ -122,6 +123,7 @@ function AgreementOwnersTractsTable(props) {
         options={props.options}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

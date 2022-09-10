@@ -30,7 +30,6 @@ import { AppContext } from "AppContext";
 import { sortColumns, formattingGridView, getAppliedFilters, getFilterList } from "utils/helper";
 
 import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
-import { groupBy } from "lodash";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -39,6 +38,9 @@ const useStyles = makeStyles((theme) => ({
   documentTable: {
     "& .MuiTableCell-paddingCheckbox": { position: 'sticky' },
     "& .MuiTableRow-hover": {
+      "& .MuiTableCell-root": {
+        backgroundColor: "white"
+      },
       "&:hover": {
         "& .MuiTableCell-root": {
           backgroundColor: "#dfdfdf"

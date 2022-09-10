@@ -5,6 +5,7 @@ import * as am4charts from "@amcharts/amcharts4/charts";
 
 import { Button, ButtonGroup, Grid, Table, TableHead, TableRow, Typography, TableCell, TableBody } from "@material-ui/core";
 import vf_number from "components/Shared/valueformatters/vf_number";
+import { removeCommasFromString } from "utils/helper";
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -29,6 +30,10 @@ const ProductChart = ({ productSummaryDetails }) => {
         return key === 'GAS' ? 'MCF' : key === 'OIL' ? 'BBL' : key.includes('NGL') ? 'GAL' : ''
     }
 
+    const valueFormatter = (value) => {
+        return isNaN(Number(removeCommasFromString(value))) ? "0" : value
+    }
+
     useEffect(() => {
         const donut = {
             production: {
@@ -40,18 +45,17 @@ const ProductChart = ({ productSummaryDetails }) => {
         productSummaryDetails.forEach((data) => {
             donut.revenue.push({
                 category: data.key.includes('NGL') ? 'NGL' : data.key,
-                value: vf_number(Number(data.netRevenue).toFixed(2)),
+                value: vf_number(Number(removeCommasFromString(data.netRevenue)).toFixed(2)),
             })
-
 
             donut.production.items.push({
                 category: data.key.includes('NGL') ? 'NGL' : data.key,
-                value: vf_number(Number(data.grsProd).toFixed(2)),
-                [data.key.includes('NGL') ? 'NGL' : data.key]: vf_number(Number(data.grsProd).toFixed(2)),
+                value: vf_number(Number(removeCommasFromString(data.grsProd)).toFixed(2)),
+                [data.key.includes('NGL') ? 'NGL' : data.key]: vf_number(Number(removeCommasFromString(data.grsProd)).toFixed(2)),
             })
             donut.production.table.push({
-                gross: vf_number((Number(data.grsProd) || 0).toFixed(2)),
-                net: vf_number((Number(data.netProd) || 0).toFixed(2)),
+                gross: vf_number(Number(removeCommasFromString(data.grsProd)).toFixed(2)),
+                net: vf_number(Number(removeCommasFromString(data.netProd)).toFixed(2)),
                 unit: getUnit(data.key)
             })
         })
@@ -214,13 +218,13 @@ const ProductChart = ({ productSummaryDetails }) => {
                             <TableBody>
                                 {data.production.table.map((item) => <TableRow style={{ height: '71px' }}>
                                     <TableCell scope="row" style={{ borderBottom: 'none' }}>
-                                        {item.gross} {item.unit}
+                                        {valueFormatter(item.gross)} {item.unit}
                                     </TableCell>
                                     <TableCell
                                         scope="row"
                                         style={{ borderBottom: 'none' }}
                                     >
-                                        {item.net} {item.unit}
+                                        {valueFormatter(item.net)} {item.unit}
                                     </TableCell>
                                 </TableRow>)}
 

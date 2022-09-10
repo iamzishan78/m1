@@ -30,6 +30,8 @@
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/pickers": "^3.3.10",
     "@material-ui/styles": "^4.11.4",
+    "@sentry/react": "^7.11.1",
+    "@sentry/tracing": "^7.11.1",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.0.2",
@@ -138,9 +140,12 @@
     "uid": "^2.0.0",
     "universal-cookie": "^4.0.4",
     "validate-date": "^2.0.0",
-    "viewport-mercator-project": "^7.0.2"
+    "viewport-mercator-project": "^7.0.2",
+    "yarn": "^1.22.19"
   },
   "scripts": {
+    "cypress:open": "cypress open",
+    "cy:run": "cypress run",
     "legacy-start": "react-scripts start",
     "start": "craco start",
     "legacy-build": "react-scripts build",
@@ -178,6 +183,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.3"
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "cypress": "^10.6.0"
   }
 }

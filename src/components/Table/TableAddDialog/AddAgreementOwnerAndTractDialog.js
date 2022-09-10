@@ -278,7 +278,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           ],
           shapeType: props.shapeType,
         },
-        refetchQueries: ["getESSimpleSearch"],
+        refetchQueries: ["getESSimpleSearch", 'getCustomLayer'],
         awaitRefetchQueries: true,
       });
     } else {
@@ -290,7 +290,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             ...ownerToAdd,
           },
         },
-        refetchQueries: ["getESSimpleSearch"],
+        refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
         awaitRefetchQueries: true,
       });
     }
@@ -594,6 +594,23 @@ function AddAgreementOwnerAndTractDialog(props) {
             /> */}
             <Controller
               control={control}
+              name={`tract.department`}
+              defaultValue={tract?.department || ''}
+              render={(props) => (
+                <AutoCompleteTypeComponent
+                  value={props.value}
+                  meta={{
+                    path: 'shapeJson.properties.department'
+                  }}
+                  label="Department"
+                  variant="outlined"
+                  onChange={(e, value) => { props.onChange(value?.name || '') }}
+                  autoFocus={false}
+                />
+              )}
+            />
+            <Controller
+              control={control}
               name={`tract.mapStatus`}
               defaultValue={tract?.mapStatus || ''}
               render={(props) => (
@@ -609,6 +626,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                 />
               )}
             />
+
           </div>
           <div>
             <List>
