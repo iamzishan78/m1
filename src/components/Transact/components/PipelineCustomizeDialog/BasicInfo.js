@@ -375,7 +375,7 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
 
         <Grid item xs={12}>
           <Typography variant="subtitle2" className={classes.titleText}>
-            Card Data Elements (Select upto 4)
+            Card Data Elements (Select up to 4)
           </Typography>
           <div className={classes.cardFieldController}>
             <DragDropContext onDragEnd={onDragEnd}>

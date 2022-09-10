@@ -1402,59 +1402,7 @@ function AddDealDialog(props) {
                       </Grid>
                     </FormControl>
                   </div>
-                  <FormControl variant="outlined" fullWidth size="small">
-                    <Grid container className={classes.gridStyle}>
-                      <Grid item xs={3}>
-                        <div>Flowline</div>
-                      </Grid>
 
-                      <Grid item xs={9}>
-                        <TextField
-                          variant="outlined"
-                          margin="dense"
-                          select
-                          SelectProps={{
-                            native: true,
-                            classes: {
-                              icon: classes.icon,
-                            },
-                          }}
-                          size="small"
-                          value={pipelineId}
-                          className={classes.inputFieldFlowline}
-                          onChange={(e) => {
-                            settingNewPipeWithDefaultStage(
-                              e.target.value,
-                              true
-                            );
-                          }}
-                          InputProps={{
-                            classes: {
-                              root: classes.flowlineRoot,
-                              notchedOutline: classes.notchedOutlineFlow,
-                              focused: classes.notchedOutlineFlowFocused,
-                            },
-                          }}
-                          fullWidth
-                        >
-                          {selectedPipe && (
-                            <option value={selectedPipe._id}>
-                              {selectedPipe.name}
-                            </option>
-                          )}
-                          {sortedPipelines
-                            .filter(
-                              (pipeline) => selectedPipe?._id !== pipeline?._id
-                            )
-                            .map((pipeline, i) => (
-                              <option value={pipeline._id} key={i}>
-                                {pipeline.name}
-                              </option>
-                            ))}
-                        </TextField>
-                      </Grid>
-                    </Grid>
-                  </FormControl>
 
                   {selectedPipe.flowLineType === "general" && (
                     <FormControl variant="outlined" fullWidth size="small">
@@ -1613,7 +1561,59 @@ function AddDealDialog(props) {
                       </FormControl>
                     </>
                   )}
+                  <FormControl variant="outlined" fullWidth size="small">
+                    <Grid container className={classes.gridStyle}>
+                      <Grid item xs={3}>
+                        <div>Flowline</div>
+                      </Grid>
 
+                      <Grid item xs={9}>
+                        <TextField
+                          variant="outlined"
+                          margin="dense"
+                          select
+                          SelectProps={{
+                            native: true,
+                            classes: {
+                              icon: classes.icon,
+                            },
+                          }}
+                          size="small"
+                          value={pipelineId}
+                          className={classes.inputFieldFlowline}
+                          onChange={(e) => {
+                            settingNewPipeWithDefaultStage(
+                              e.target.value,
+                              true
+                            );
+                          }}
+                          InputProps={{
+                            classes: {
+                              root: classes.flowlineRoot,
+                              notchedOutline: classes.notchedOutlineFlow,
+                              focused: classes.notchedOutlineFlowFocused,
+                            },
+                          }}
+                          fullWidth
+                        >
+                          {selectedPipe && (
+                            <option value={selectedPipe._id}>
+                              {selectedPipe.name}
+                            </option>
+                          )}
+                          {sortedPipelines
+                            .filter(
+                              (pipeline) => selectedPipe?._id !== pipeline?._id
+                            )
+                            .map((pipeline, i) => (
+                              <option value={pipeline._id} key={i}>
+                                {pipeline.name}
+                              </option>
+                            ))}
+                        </TextField>
+                      </Grid>
+                    </Grid>
+                  </FormControl>
                   <FormControl variant="outlined" fullWidth size="small">
                     <Grid container className={classes.gridStyle}>
                       <Grid item xs={3}>

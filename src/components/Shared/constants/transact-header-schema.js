@@ -28,11 +28,11 @@ const TransactDealsHeadCells = (flowLineType = 'deal') => {
     },
     {
       name: "status",
-      label: "Deal Status",
+      label: "Status",
     },
     {
       name: "ownerName",
-      label: "Deal Owner",
+      label: "Owner",
     },
     {
       name: "notes",
@@ -56,10 +56,10 @@ const TransactDealsHeadCells = (flowLineType = 'deal') => {
     TableHeads.splice(2, 0, { name: "dueDate", label: "Due Date"})
   } else {
     const dealFLowLineCols = [
-      {
-        name: "contactName",
-        label: "Contact Name",
-      },
+      // {
+      //   name: "contactName",
+      //   label: "Contact Name",
+      // },
       {
         name: "offerPrice",
         label: "Offer Price",
