@@ -137,8 +137,8 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
   };
 
   return (
-    <Grid container display="flex" direction="row" alignItems="center" justify="space-between">
-      <Grid item xs={6}>
+    <Grid container spacing={2} display="flex" direction="row" alignItems="center" justify="space-between">
+      <Grid item xs={5}>
         <Controller
           control={control}
           name="legalDesctiption"
@@ -157,7 +157,7 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
           )}
         />
       </Grid>
-      <Grid item xs={5}>
+      <Grid item xs={7}>
         <Grid container display="row" alignItems="center" justify="center" spacing={3}>
           <Grid item xs={12}>
             <Grid container display="row" alignItems="center" justify="space-between" spacing={3}>
