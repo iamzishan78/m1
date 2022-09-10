@@ -5,15 +5,14 @@ describe('Add Document Spec', () => {
         cy.viewport(1400, 900)
         cy.visit('http://localhost:3000/documents')
 
-        cy.checkAndLogin('#workSpaceSignin')
-
+        cy.checkAndLogin()
 
         cy.log('==== STEP: ADD DOCUMENT ====')
         cy.get('#addDocument', { timeout: 50000 }).should('be.visible').click()
 
         cy.log('==== STEP: ADD FILE NUMBER ====')
         cy.get('#filenumber', { timeout: 50000 }).type('99934033').should('be.visible')
-        
+
         cy.log('==== STEP: ADD FILE NAME ====')
         cy.get('#filename').type('Cydoc et el')
 

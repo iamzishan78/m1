@@ -4,7 +4,7 @@ describe('empty spec', () => {
   it('passes', () => {
     cy.visit('http://localhost:3000')
 
-    cy.checkAndLogin('#workSpaceSignin')
+    cy.checkAndLogin()
 
     cy.wait(14000)
 
