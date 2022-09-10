@@ -34,7 +34,7 @@ describe('Document Grid Spec', () => {
         cy.viewport(1400, 900)
         cy.visit('http://localhost:3000/contacts')
 
-        cy.checkAndLogin('#workSpaceSignin')
+        cy.checkAndLogin()
 
         cy.get('#addButton', { timeout: 50000 }).should('be.visible')
         cy.wait(3000)
