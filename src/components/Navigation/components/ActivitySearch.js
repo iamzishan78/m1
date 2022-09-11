@@ -111,9 +111,9 @@ const ActivitySearch = () => {
       case "Obligations":
         category = "Obligation";
         break;
-        case "Expirations":
-          category = "Expirations";
-          break;
+      case "Expirations":
+        category = "Expiration";
+        break;
       default:
     }
     getAllActivitiesForSearch({

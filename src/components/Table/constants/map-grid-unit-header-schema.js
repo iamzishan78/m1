@@ -1,5 +1,6 @@
 import GlobalSettings from "..//..//..//GlobalSettings.js";
 import vf_currency from "components/Shared/valueformatters/vf_currency";
+import { history } from "store";
 
 const unitsColumnHeaders = [
   {

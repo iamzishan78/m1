@@ -336,7 +336,7 @@ export default function CustomizedSteppers(props) {
     }
     if (stateApp.activeStepNumber === steps.length - 1) {
       handleReset();
-      routeChange(previousRoute[0]?.match?.url);
+      routeChange(props.selectedJob.redirectTo || previousRoute[0]?.match?.url);
     }
   };
 

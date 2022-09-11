@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useContext } from 'react';
 import { v4 as uuid } from "uuid";
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 // components
 import SearchIcon from "@material-ui/icons/Search";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -25,73 +25,85 @@ import {
 import { ADD_LAYER_GROUP, REMOVE_LAYER_GROUP, UPDATE_LAYER_GROUP } from 'graphQL/useMutationLayerGroup';
 import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import { AppContext } from 'AppContext';
+import { GET_LAYER_GROUPS } from 'graphQL/useQueryLayerGroup';
 
 const useStyles = makeStyles((theme) => ({
-    popover: {
-        "& .MuiPopover-paper": {
-            color: '#fff',
-            backgroundColor: '#1c2233',
-            marginTop: '110px',
-            maxHeight: theme.spacing(50)
-            // left: '10% !important',
-        },
-        "& .MuiTabs-indicator": {
-            height: '4px',
-            backgroundColor: "rgba(23, 170, 221, 1)",
-        },
+  popover: (props) => ({
+    "& .MuiPopover-paper": {
+      color: "#fff",
+      backgroundColor: "#1c2233",
+      minWidth: theme.spacing(50),
+      top: `${props.top + 30}px !important`,
+      left: `${props.left}px !important`
+      // left: '10% !important',
+    },
+    "& .MuiTabs-indicator": {
+      height: "4px",
+      backgroundColor: "rgba(23, 170, 221, 1)",
+    },
 
-        "& .MuiFilledInput-root": {
-            backgroundColor: '#252d40'
-        },
-        "& .Mui-disabled": {
-            paddingBottom: "10px",
-            borderBottom: "1px solid lightgrey",
-        },
-        "& .MuiMenuItem-root": {
-            "&:hover": {
-                color: "rgba(23, 170, 221, 1)",
-            },
-        },
+    "& .MuiFilledInput-root": {
+      backgroundColor: "#252d40",
+    },
+    "& .Mui-disabled": {
+      paddingBottom: "10px",
+      borderBottom: "1px solid lightgrey",
+    },
+    "& .MuiMenuItem-root": {
+      "&:hover": {
+        color: "rgba(23, 170, 221, 1)",
+      },
+    },
 
-        '& .MuiCircularProgress-colorPrimary': {
-            color: "rgba(23, 170, 221, 1)",
-        }
+    "& .MuiCircularProgress-colorPrimary": {
+      color: "rgba(23, 170, 221, 1)",
     },
-    inputField: {
-        position:'relative',
-        padding: '20px',
-        '& .MuiInputLabel-filled': {
-            color: 'lightgrey'
-        },
-        '& .MuiFilledInput-input': {
-            color: '#fff'
-        },
+  }),
+  inputField: {
+    position: "relative",
+    padding: "20px",
+    "& .MuiInputLabel-filled": {
+      color: "lightgrey",
     },
-    helperText: {
-        position: 'absolute',
-        right: 30,
-        bottom: 20,
-        color: 'gray',
-        fontSize: 12
+    "& .MuiFilledInput-input": {
+      color: "#fff",
     },
-    searchInput: {
-        padding: '20px',
+  },
+  helperText: {
+    position: "absolute",
+    right: 30,
+    bottom: 20,
+    color: "gray",
+    fontSize: 12,
+  },
+  searchInput: {
+    padding: "20px",
+  },
+  layerGroupListItem: {
+    minHeight: 55,
+    marginTop: 10,
+    "& .MuiIconButton-root": {
+      display: "none",
+      color: "lightgray",
     },
-    layerGroupListItem: {
-        minHeight: 55,
-        "& .MuiIconButton-root": {
-            display: 'none',
-            color: '#FFF',
-        },
-        "&:hover .MuiIconButton-root": {
-            display: 'inline'
-        }
+    "&:hover .MuiIconButton-root": {
+      display: "inline",
     },
-    layerName: {
-        fontSize: theme.spacing(2),
-        padding: "5px 0",
-        display: 'inline-flex'
-    }
+  },
+  layerName: {
+    maxWidth: theme.spacing(40),
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    flex: "0 1 auto",
+    fontSize: theme.spacing(2),
+    padding: "5px 0",
+    display: "inline-flex",
+  },
+  listContainer: {
+    maxHeight: theme.spacing(50),
+    overflowY: "scroll",
+  },
 }));
 
 const WhiteOutlinedSearch = withStyles({
@@ -118,213 +130,244 @@ const WhiteOutlinedSearch = withStyles({
 
 
 export default function AddGroup({ userId, above, layerGroups }) {
-    const classes = useStyles();
-    const [tabValue, setTabValue] = useState(0);
-    const [createGroupInput, setValue] = useState("");
-    const [searchValue, setSearchValue] = useState("");
+  const [menuPosition, setMenuPos] = useState({ top: 0, left: 0})
+  const classes = useStyles({ ...menuPosition });
 
-    const [anchorEl, setAnchorEl] = useState(null);
+  const [tabValue, setTabValue] = useState(0);
+  const [createGroupInput, setValue] = useState("");
+  const [searchValue, setSearchValue] = useState("");
 
-    const [addLayerGroup, { loading }] = useMutation(ADD_LAYER_GROUP, {
-        refetchQueries: ["getLayerGroups"],
-        awaitRefetchQueries: true,
-    });
+  const [open, setMenuOpen] = useState(false);
 
-    useEffect(() => {
-        // reset states when anchor is changed
-        setTabValue(0);
+  const [addLayerGroup, { loading }] = useMutation(ADD_LAYER_GROUP, {
+    refetchQueries: ["getLayerGroups"],
+    awaitRefetchQueries: true,
+  });
+
+  useEffect(() => {
+    // reset states when anchor is changed
+    setTabValue(0);
+    setValue("");
+    setSearchValue("");
+  }, [open]);
+
+  useEffect(() => {
+    setValue("");
+    setSearchValue("");
+  }, [tabValue])
+
+  const handleClick = (event) => {
+    const ele = document.getElementById("layerGroupMenuBtn")?.getBoundingClientRect();
+
+    setMenuOpen(true);
+    setMenuPos({ top: ele.top, left: ele.left})
+  };
+
+  const handleTabChange = (_, newValue) => {
+    const ele = document.getElementById("layerGroupMenuBtn")?.getBoundingClientRect();
+
+    setTabValue(newValue);
+    setMenuPos({ top: ele.top, left: ele.left });
+  };
+
+  const handleClose = () => {
+    setMenuOpen(false);
+  };
+
+  const handleSubmit = (event) => {
+    if (event.key === "Enter" && !loading) {
+      const layerGroup = { name: event.target.value, groupId: uuid(), above, createBy: userId }
+      addLayerGroup({ variables: { userId, layerGroup } }).then(() => {
+        handleClose();
         setValue("");
-        setSearchValue("");
-    }, [anchorEl]);
-
-    useEffect(() => {
-        setValue("");
-        setSearchValue("");
-    }, [tabValue])
-
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleSubmit = (event) => {
-        if (event.key === "Enter" && !loading) {
-            const layerGroup = { name: event.target.value, groupId: uuid(), above, createBy: userId }
-            addLayerGroup({ variables: { userId, layerGroup } }).then(() => {
-                handleClose();
-                setValue("");
-            })
-        }
+      })
     }
+  }
 
-    const filterSearchedGroups = useMemo(() => {
-      if (!searchValue) return layerGroups;
-      const regexp = new RegExp(searchValue.trim(), "ig");
+  const filterSearchedGroups = useMemo(() => {
+    const groups = layerGroups.filter((layerGroup) => layerGroup.name !== 'Agreements');
+    if (!searchValue) return groups;
+    const regexp = new RegExp(searchValue.trim(), "ig");
 
-      return layerGroups.filter((group) => group.name.search(regexp) > -1);
-    }, [searchValue, anchorEl, layerGroups]);
+    return groups.filter((group) => group.name.search(regexp) > -1);
+  }, [searchValue, open, layerGroups]);
 
 
-    return (
-        <div>
-            <IconButton size='small' aria-controls="group-button" aria-haspopup="true" onClick={handleClick} >
-                <CreateNewFolderIcon style={{ fontSize: 20, color: 'lightgray',  marginRight: '10px' }} />
-            </IconButton>
-            <Menu
-                id="group-button"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-                className={classes.popover}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                }}
-            >
-                <div className={'menu'}>
-                    <Tabs
-                        value={tabValue}
-                        indicatorColor="primary"
-                        onChange={(_, newValue) => setTabValue(newValue)}
-                        aria-label="disabled tabs example"
-                    >
-                        <Tab label="Create New" />
-                        <Tab label="Edit Existing" />
-                    </Tabs>
-                    <div role="tabPanel" hidden={tabValue !== 0}>
-                        <div className={classes.inputField}>
-                            <TextField id="create-group-input" label="Group Name" variant="filled" fullWidth onKeyDown={handleSubmit}
-                                value={createGroupInput}
-                                onChange={({target}) => setValue(target.value)}
-                                InputProps={{
-                                    endAdornment: loading ? <InputAdornment position="end">
-                                        <CircularProgress size={30} />
-                                    </InputAdornment> : <></>,
-                                }} />
-                            <Typography className={classes.helperText}>Enter to save</Typography>
-                        </div> 
-                    </div>
-                    <div role="tabPanel" hidden={tabValue !== 1}>
-                        <div className={classes.searchInput}>
-                            <WhiteOutlinedSearch id="group-search-input" label="Search by group name" variant="outlined" color="white" fullWidth onKeyDown={handleSubmit}
-                                value={searchValue}
-                                onChange={({target}) => setSearchValue(target.value)}
-                                InputProps={{
-                                    startAdornment: <SearchIcon />,
-                                }} />
-                                {
-                                    filterSearchedGroups.map(group => 
-                                        <LayerGroupItem key={group.id} layerGroup={group} />
-                                    )
-                                }
-                        </div>
-                    </div>
-                </div>
-
-            </Menu>
-           
-        </div>
-    );
-}
-
-const LayerGroupItem = ({ layerGroup }) => {
-    const classes = useStyles();
-    const [editing, setEditing] = useState(false);
-    const [openDialog, setOpenDialog] = useState(false);
-    const [stateApp] = useContext(AppContext);
-    
-    const [updateLayerGroup, { loading: updating }] = useMutation(UPDATE_LAYER_GROUP, {
-      refetchQueries: ["getLayerGroups"],
-      awaitRefetchQueries: true,
-    });
-    const [removeLayerGroup, { loading: removing }] = useMutation(REMOVE_LAYER_GROUP, {
-      refetchQueries: ["getLayerGroups"],
-      awaitRefetchQueries: true,
-    });
-    
-    const handleSubmit = (e) => {
-        if (e.key === "Enter" && !updating)
-          updateLayerGroup({
-            variables: {
-              layerGroupId: layerGroup.id,
-              layerGroupName: e.target.value,
-            },
-          }).then((res) => {
-            setEditing(false);
-          });
-    }
-
-    const deleteGroup = () => {
-        removeLayerGroup({
-          variables: {
-            userId: stateApp.user.mongoId,
-            layerGroupId: layerGroup.id,
-          },
-        });
-
-    }
-
-    return (
-      <Grid
-        container
-        justifyContent="space-between"
-        className={classes.layerGroupListItem}
+  return (
+    <div>
+      <IconButton
+        size="small"
+        aria-controls="group-button"
+        aria-haspopup="true"
+        onClick={handleClick}
+        id="layerGroupMenuBtn"
       >
-        <Grid item xs>
-          {editing ? (
-            <ClickAwayListener onClickAway={() => setEditing(false)}>
+        <CreateNewFolderIcon
+          style={{ fontSize: 20, color: "lightgray", marginRight: "10px" }}
+        />
+      </IconButton>
+      <Menu
+        id="group-button"
+        keepMounted
+        anchorPosition={menuPosition}
+        open={open}
+        onClose={handleClose}
+        className={classes.popover}
+      >
+        <div className={"menu"}>
+          <Tabs
+            value={tabValue}
+            indicatorColor="primary"
+            onChange={handleTabChange}
+            aria-label="disabled tabs example"
+          >
+            <Tab label="Create New" />
+            <Tab label="Edit Existing" />
+          </Tabs>
+          <div role="tabPanel" hidden={tabValue !== 0}>
+            <div className={classes.inputField}>
+              <TextField
+                id="create-group-input"
+                label="Group Name"
+                variant="filled"
+                fullWidth
+                onKeyDown={handleSubmit}
+                value={createGroupInput}
+                onChange={({ target }) => setValue(target.value)}
+                InputProps={{
+                  endAdornment: loading ? (
+                    <InputAdornment position="end">
+                      <CircularProgress size={30} />
+                    </InputAdornment>
+                  ) : (
+                    <></>
+                  ),
+                }}
+              />
+              <Typography className={classes.helperText}>
+                Enter to save
+              </Typography>
+            </div>
+          </div>
+          <div role="tabPanel" hidden={tabValue !== 1}>
+            <div className={classes.searchInput}>
               <WhiteOutlinedSearch
-                id={"inline-edit-input" + layerGroup.id}
+                id="group-search-input"
+                label="Search by group name"
                 variant="outlined"
                 color="white"
                 fullWidth
-                size="small"
-                defaultValue={layerGroup.name}
                 onKeyDown={handleSubmit}
+                value={searchValue}
+                onChange={({ target }) => setSearchValue(target.value)}
                 InputProps={{
-                  endAdornment: updating ? <CircularProgress size={20} /> : null,
+                  startAdornment: <SearchIcon />,
                 }}
               />
-            </ClickAwayListener>
-          ) : (
-            <Typography className={classes.layerName} variant="subtitle2">
-              {layerGroup.name}
-            </Typography>
-          )}
-          {!editing && (
-            <IconButton size="small" onClick={() => setEditing(true)}>
-              <CreateIcon />
-            </IconButton>
-          )}
-        </Grid>
-        <Grid item xs={2}>
-          {removing ? (
-            <CircularProgress size={20} />
-          ) : (
-            <IconButton size="small" onClick={() => setOpenDialog(true)}>
-              <DeleteIcon />
-            </IconButton>
-          )}
-        </Grid>
-        {openDialog && (
-          <DeleteConfirmationDialogContent
-            header={`Delete Layer Group`}
-            onClose={() => setOpenDialog(false)}
-            deleteFunc={deleteGroup}
-            m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
-          >
-            Do you want to delete "{layerGroup.name}" layer group?
-          </DeleteConfirmationDialogContent>
+              <div className={classes.listContainer}>
+                {filterSearchedGroups.map((group) => (
+                  <LayerGroupItem key={group.id} layerGroup={group} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </Menu>
+    </div>
+  );
+}
+
+const LayerGroupItem = ({ layerGroup }) => {
+  const classes = useStyles();
+  const [editing, setEditing] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [stateApp] = useContext(AppContext);
+
+  const [updateLayerGroup, { loading: updating }] = useMutation(UPDATE_LAYER_GROUP, {
+    refetchQueries: ["getLayerGroups"],
+    awaitRefetchQueries: true,
+  });
+  const [removeLayerGroup, { loading: removing }] = useMutation(REMOVE_LAYER_GROUP, {
+    refetchQueries: ["getLayerGroups", "getAllLayerSettingsByUser"],
+    awaitRefetchQueries: true,
+  });
+
+  const handleSubmit = (e) => {
+    if (e.key === "Enter" && !updating){
+      updateLayerGroup({
+        variables: {
+          layerGroupId: layerGroup.id,
+          layerGroupName: e.target.value,
+        },
+      }).then((res) => {
+        setEditing(false);
+      });
+    }
+  }
+  
+  const deleteGroup = () => {
+    removeLayerGroup({
+      variables: {
+        userId: stateApp.user.mongoId,
+        layerGroupId: layerGroup.id,
+      },
+    });
+
+  }
+  return (
+    <Grid
+      container
+      justifyContent="space-between"
+      alignItems="center"
+      className={classes.layerGroupListItem}
+    >
+      <Grid item xs style={{ display: "flex", alignItems: "center" }}>
+        {editing ? (
+          <ClickAwayListener onClickAway={() => setEditing(false)}>
+            <WhiteOutlinedSearch
+              id={"inline-edit-input" + layerGroup.id}
+              variant="outlined"
+              color="white"
+              fullWidth
+              size="small"
+              defaultValue={layerGroup.name}
+              onKeyDown={handleSubmit}
+              InputProps={{
+                endAdornment: updating ? <CircularProgress size={20} /> : null,
+              }}
+            />
+          </ClickAwayListener>
+        ) : (
+          <Typography className={classes.layerName} variant="subtitle2">
+            {layerGroup.name}
+          </Typography>
+        )}
+        {!editing && (
+          <IconButton size="small" onClick={() => setEditing(true)}>
+            <CreateIcon />
+          </IconButton>
         )}
       </Grid>
-    );
+      <Grid item style={{ flexGrow: "0", flexShrink: "1" }}>
+        {removing ? (
+          <CircularProgress size={20} />
+        ) : (
+          <IconButton size="small" onClick={() => setOpenDialog(true)}>
+            <DeleteIcon />
+          </IconButton>
+        )}
+      </Grid>
+      {openDialog && (
+        <DeleteConfirmationDialogContent
+          header={`Delete Layer Group`}
+          onClose={() => setOpenDialog(false)}
+          deleteFunc={deleteGroup}
+          m1nSelectedRowsIds={null}
+          setM1nSelectedRowsIndexes={() => {}}
+        >
+          Do you want to delete "{layerGroup.name}" layer group?
+        </DeleteConfirmationDialogContent>
+      )}
+    </Grid>
+  );
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import _ from "underscore";
+import { get } from "lodash";
 import { Controller, useForm } from "react-hook-form";
 import { makeStyles } from "@material-ui/styles";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
@@ -65,12 +66,12 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
   }, [tractOwners])
 
   const offClickHandler = (key, value) => {
-    if (agreementDetails[key] == value) return
+    if (agreementDetails[key] === value) return
     const fieldValue = {
       overridden: parseFloat(value) !== parseFloat(keysSum[key]),
       value
     }
-    if (tractOwners) updateAgreement('value', fieldValue, key)
+    if (tractOwners) updateAgreement(key, fieldValue, key)
     else updateAgreement(key, value)
   };
 
@@ -82,8 +83,8 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
   };
 
   return (
-    <Grid container display="flex" direction="row" alignItems="center" justify="space-between">
-      <Grid item xs={6}>
+    <Grid container spacing={2} display="flex" direction="row" alignItems="center" justify="space-between">
+      <Grid item xs={5}>
         <Controller
           control={control}
           name="legalDesctiption"
@@ -102,7 +103,7 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
           )}
         />
       </Grid>
-      <Grid item xs={5}>
+      <Grid item xs={7}>
         <Grid container display="row" alignItems="center" justify="center" spacing={3}>
           <Grid item xs={12}>
             <Grid container display="row" alignItems="center" justify="space-between" spacing={3}>
@@ -115,19 +116,19 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                       type="number"
                       label="Gross"
                       variant="outlined"
-                      value={params.value}
-                      inputRef={params.ref}
+                      defaultValue={get(params, "value", 0)}
+                      value={get(params, "value", 0)}
                       onWheel={(e) => e.target.blur()}
                       onBlur={(event) => offClickHandler("grossAcres", event.target.value)}
                       onKeyDown={handleKeyDown}
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      className={params.value != keysSum.grossAcres ? classes.baseValueChanged : classes.numberField}
+                      className={(keysSum.grossAcres && params.value !== keysSum.grossAcres) ? classes.baseValueChanged : classes.numberField}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {params.value != keysSum.grossAcres && (
+                            {params.value !== keysSum.grossAcres && (
                               <IconButton
                                 aria-label="toggle grossAcres"
                                 onClick={() => {
@@ -135,14 +136,13 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                                   offClickHandler("grossAcres", keysSum.grossAcres)
                                 }}
                               >
-                                <AutorenewIcon />
+                                <AutorenewIcon fontSize="small" />
                               </IconButton>
                             )}
                           </InputAdornment>
                         ),
                       }}
                       fullWidth
-                      defaultValue={agreementDetails?.grossAcres ?? ""}
                     />
                   )}
                 />
@@ -156,19 +156,19 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                       type="number"
                       label="Net"
                       variant="outlined"
-                      value={params.value}
-                      inputRef={params.ref}
+                      value={get(params, "value", 0)}
+                      defaultValue={get(params, "value", 0)}
                       onWheel={(e) => e.target.blur()}
                       onBlur={(event) => offClickHandler("netAcres", event.target.value)}
                       onKeyDown={handleKeyDown}
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      className={params.value != keysSum.netAcres ? classes.baseValueChanged : classes.numberField}
+                      className={(keysSum.netAcres && params.value !== keysSum.netAcres) ? classes.baseValueChanged : classes.numberField}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {params.value != keysSum.netAcres && (
+                            {params.value !== keysSum.netAcres && (
                               <IconButton
                                 aria-label="toggle netAcres"
                                 onClick={() => {
@@ -176,14 +176,14 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                                   offClickHandler("netAcres", keysSum.netAcres)
                                 }}
                               >
-                                <AutorenewIcon />
+                                <AutorenewIcon fontSize="small" />
                               </IconButton>
                             )}
                           </InputAdornment>
                         ),
                       }}
                       fullWidth
-                      defaultValue={agreementDetails?.netAcres ?? ""}
+                    // defaultValue={agreementDetails?.netAcres ?? ""}
                     />
                   )}
                 />
@@ -195,10 +195,11 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                   control={control}
                   render={(params) => (
                     <TextField
-                      {...params}
                       label="Co. Net"
                       variant="outlined"
                       type="number"
+                      value={get(agreementDetails, "companyNetAcres", 0)}
+                      defaultValue={get(agreementDetails, "companyNetAcres", 0)}
                       className={classes.numberField}
                       onBlur={(event) => offClickHandler("companyNetAcres", event.target.value)}
                       onKeyDown={handleKeyDown}
@@ -262,19 +263,19 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                       type="number"
                       label="Net Royalty"
                       variant="outlined"
-                      value={params.value}
-                      inputRef={params.ref}
+                      value={get(params, "value", 0)}
+                      defaultValue={get(params, "value", 0)}
                       onWheel={(e) => e.target.blur()}
                       onBlur={(event) => offClickHandler("netRoyalty", event.target.value)}
                       onKeyDown={handleKeyDown}
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      className={params.value != keysSum.netRoyalty ? classes.baseValueChanged : classes.numberField}
+                      className={(keysSum.netRoyalty && params.value !== keysSum.netRoyalty) ? classes.baseValueChanged : classes.numberField}
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            {params.value != keysSum.netRoyalty && (
+                            {params.value !== keysSum.netRoyalty && (
                               <IconButton
                                 aria-label="toggle netRoyalty"
                                 onClick={() => {
@@ -282,14 +283,13 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                                   offClickHandler("netRoyalty", keysSum.netRoyalty)
                                 }}
                               >
-                                <AutorenewIcon />
+                                <AutorenewIcon fontSize="small" />
                               </IconButton>
                             )}
                           </InputAdornment>
                         ),
                       }}
                       fullWidth
-                      defaultValue=""
                     />
                   )}
                 />
