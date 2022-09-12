@@ -117,9 +117,9 @@ Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
     cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').focus().clear().type(searchString)
 
     cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: 30000 }).then((apiResponse) => {
-        let hits = apiResponse.response.body.data.getESSimpleSearch.hits
+        let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
 
-        if (operationName === 'getESDocuments')
+        if (gridOperationName === 'getESDocuments')
             hits = apiResponse.response.body.data.getESFiles.hits
 
         const unmatchedHit = hits.find(hit => !findInObject(hit, searchString.toLowerCase()))
