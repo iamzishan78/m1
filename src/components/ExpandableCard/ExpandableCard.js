@@ -905,7 +905,7 @@ function ExpandableCard(props) {
                           component="span"
                           onClick={handleMenuClick}
                         >
-                          <MoreVertIcon size="medium" />
+                          <MoreVertIcon id="expandCardVertIcon" size="medium" />
                         </IconButton>
                           <Menu
                             id="dealMenu"
