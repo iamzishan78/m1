@@ -9,11 +9,14 @@ describe('Document Grid Spec', () => {
 
         cy.get('#addDocument', { timeout: 50000 }).should('be.visible')
 
-
-        cy.gridSearch('black dog', 'getESDocuments')
+        cy.log('==== STEP: SEARCH 2342 in DOCUMENT ====')
         cy.gridSearch('2342', 'getESDocuments')
-        cy.gridSearch('Division Order', 'getESDocuments')
 
+        cy.log('==== STEP: SEARCH black dog in DOCUMENT ====')
+        cy.gridSearch('black dog', 'getESDocuments')
+
+        cy.log('==== STEP: SEARCH Division Order in DOCUMENT ====')
+        cy.gridSearch('Division Order', 'getESDocuments')
     })
 
 })
