@@ -13,13 +13,14 @@ const RellatedAgreementsHeadCells = [
       setCellProps: () => ({
         style: {
           ...GlobalSettings.muiGridInfScrollOptions.setCellProps().style,
-          left: "45px",
+          left: "77px",
         },
       }),
       setCellHeaderProps: () => ({
         style: {
           ...GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps().style,
-          left: "45px",
+          left: "77px",
+          padding: "0px 18px"
         },
       }),
       ignoreGlobal: true,
