@@ -6,9 +6,7 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
-import Autocomplete, {
-  createFilterOptions,
-} from "@material-ui/lab/Autocomplete";
+import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 
 const filter = createFilterOptions();
 
@@ -29,7 +27,7 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant })
   const classes = useStyles();
 
   const onInputChange = (event, value) => {
-    onSearch(value);
+    if (onSearch) onSearch(value);
   };
 
   return (
@@ -47,15 +45,10 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant })
         else return "";
       }}
       getOptionSelected={(option, value) => {
-        return option?._id === value;
+        return option?.name === value;
       }}
       renderOption={(option) => {
-        if (option._id === "newEntity")
-          return (
-            <Typography style={{ color: "midnightblue" }}>
-              Add '{option.name}'
-            </Typography>
-          );
+        if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
 
         return (
           <Grid container spacing={0}>
@@ -69,7 +62,7 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant })
       }}
       onInputChange={onInputChange}
       filterOptions={(options, params) => {
-        let inputValue = value ? JSON.parse(JSON.stringify(value)) : '';
+        let inputValue = value ? JSON.parse(JSON.stringify(value)) : "";
         // if (typeof inputValue.name === "string") {
         //   inputValue = inputValue.name;
         // }
@@ -95,7 +88,7 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant })
       renderInput={(params) => (
         <TextField
           margin="dense"
-          variant={variant? variant :'standard'}
+          variant={variant ? variant : "standard"}
           {...params}
           InputProps={{
             ...params.InputProps,
