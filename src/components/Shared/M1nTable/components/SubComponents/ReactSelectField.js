@@ -446,11 +446,14 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
       (pallete) => pallete.id === opt?.palleteId
     );
     return {
-      whiteSpace: "nowrap",
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      maxWidth: '150px',
       backgroundColor: pallete?.color,
       color: pallete?.textColor,
-      display: "flex",
-      margin: '0px 2px'
+      // display: "flex",
+      margin: '0px 2px',
     }
   }
 

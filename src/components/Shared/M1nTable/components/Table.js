@@ -209,7 +209,7 @@ const useStyles = makeStyles((theme) => ({
       "& th": {
         backgroundColor: "#F2F2F2",
         zIndex: "auto",
-        padding: (props) => (props.dense ? "10px 10px 10px 0px" : null),
+        padding: (props) => (props.dense ? "10px 10px 10px 25px" : null),
         "& button": {
           minWidth: 'max-content',
           "& .MuiButton-label": {
