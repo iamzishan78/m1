@@ -27,6 +27,7 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 import { deepEqualObjects } from "../../src/components/Shared/functions";
+import { findInObject } from "../cypresshelpers";
 
 // Constants
 const workSpace = Cypress.env('WORK_SPACE') || "enerx"
@@ -70,7 +71,6 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
                 const { variables } = req.body
                 if (payloadKey.searchString && (variables?.search?.query === payloadKey.searchString
                     || variables?.search === `${payloadKey.searchString}*`)) {
-                    console.log("search opertaion api name : ", `${operationName}WithSearchStringApi`)
                     req.alias = `${operationName}WithSearchStringApi`;
                 }
                 else if (payloadKey?.sortOrder && variables?.sort?.order === payloadKey.sortOrder) {
@@ -114,8 +114,16 @@ Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = 
 
 Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
     cy.interceptApi(gridOperationName, { searchString: searchString })
-    cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type(searchString)
-    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: 30000 })
+    cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').focus().clear().type(searchString)
+
+    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: 30000 }).then((apiResponse) => {
+        const hits = apiResponse.response.body.data.getESFiles.hits
+        const unmatchedHit = hits.find(hit => !findInObject(hit, searchString))
+
+        if (unmatchedHit) {
+            throw new Error(`Record with _id:${unmatchedHit._id} does not contains searched String`)
+        }
+    })
 })
 
 Cypress.Commands.add('sortColumn', (columnName, sortOrder) => {

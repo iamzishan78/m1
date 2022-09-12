@@ -9,13 +9,11 @@ describe('Document Grid Spec', () => {
 
         cy.get('#addDocument', { timeout: 50000 }).should('be.visible')
 
-        cy.gridSearch('view_week_black', 'getESDocuments').then((apiResponse) => {
-            console.log(apiResponse.response.body.data.getESFiles.hits)
-            console.log(JSON.stringify(apiResponse.response.body.data.getESFiles.hits))
-            cy.log(apiResponse)
 
+        cy.gridSearch('black dog', 'getESDocuments')
+        cy.gridSearch('2342', 'getESDocuments')
+        cy.gridSearch('Division Order', 'getESDocuments')
 
-        })
     })
 
 })
