@@ -187,8 +187,6 @@ export default function CustomizedSteppers(props) {
   const [jobId, setJobId] = useState(null);
   const [processing, setProcessing] = useState(false);
 
-  const { type } = useParams();
-
   const steps = getSteps(stateApp.job);
   const dispatch = useDispatch();
   const [getJobUploadUri, { data: contactUploadUri }] = useLazyQuery(GET_JOB_UPLOAD_URI, {
@@ -394,7 +392,7 @@ export default function CustomizedSteppers(props) {
           <div>
             {steps[stateApp.activeStepNumber] === 'Select' ? (
               <>
-                {type === "checkdetails" && (
+                {props.selectedJob.type === "CHECKDETAILS" && (
                   <RevenueStatementInfoForm
                     statementInfo={statementInfo}
                     setStatementsInfo={setStatementsInfo}
@@ -404,7 +402,7 @@ export default function CustomizedSteppers(props) {
                     reset={reset}
                   />
                 )}
-                <CSVFileReader disabled={type === "checkdetails" && !(get(payor, "_id", "") && checkNumber && checkAmount)} />
+                <CSVFileReader disabled={props.selectedJob.type === "CHECKDETAILS" && !(get(payor, "_id", "") && checkNumber && checkAmount)} />
               </>
             ) : null}
             {steps[stateApp.activeStepNumber] === 'Match' ? <M1neralHeaders /> : null}
