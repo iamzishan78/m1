@@ -126,7 +126,7 @@ const CodeMapping = () => {
 
   useEffect(() => {
     if (uniqueType?.getESSimpleFilter) {
-      const data = uniqueType.getESSimpleFilter.hits.map((hit) => hit.key);
+      const data = uniqueType?.getESSimpleFilter?.hits?.map((hit) => hit.key);
       setCodes(data);
     }
   }, [uniqueType]);
@@ -217,7 +217,7 @@ const CodeMapping = () => {
               </div>
             </Grid>
           </Grid>
-          {codes.length > 0 && (
+          {codes?.length > 0 && (
             <>
               {codes.map((code, index) => {
                 const selectedMeta =

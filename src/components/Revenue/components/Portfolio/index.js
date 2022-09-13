@@ -112,6 +112,7 @@ export default function Portfolio() {
                 setToDate={setToDate}
                 isProperties={true}
                 lastCheckMinDate={lastCheckMinDate}
+                datesInputWidth={3}
               />
             </Grid>
           </Grid>
