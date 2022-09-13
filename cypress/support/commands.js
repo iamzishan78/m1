@@ -27,7 +27,7 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 import { deepEqualObjects } from "../../src/components/Shared/functions";
-
+import { findInObject } from "../cypresshelpers";
 // Constants
 const workSpace = Cypress.env('WORK_SPACE') || "enerx"
 const baseUrls = {
