@@ -109,7 +109,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   tabsSectionDetails: {
-    maxHeight: "calc(100vh - 365px)",
+    maxHeight: "calc(100vh - 280px)",
     overflow: "overlay",
     backgroundColor: "#f3f3f3",
   },
@@ -670,7 +670,7 @@ export default function DetailComponents(props) {
           onClose={() => setOpenDialog(false)}
           deleteFunc={handleDeleteAgreement}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={() => { }}
         >
           Are you sure you want to delete this agreement?
         </DeleteConfirmationDialogContent>

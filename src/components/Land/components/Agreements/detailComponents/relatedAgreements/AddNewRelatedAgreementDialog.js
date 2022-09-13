@@ -161,6 +161,18 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "transparent",
     },
   },
+  dialogHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    padding: "0px 20px",
+    "& svg": {
+      fontSize: 18,
+      cursor: "pointer",
+      fill: "#808080 !important",
+    },
+  }
 }));
 
 const AddNewRelatedAgreementDialog = (props) => {
@@ -204,7 +216,7 @@ const AddNewRelatedAgreementDialog = (props) => {
         width: "100%",
       }}
     >
-      <div className="flex justifyBetween alignCenter w-100">
+      <div className={classes.dialogHeader}>
         <Typography
           varient="h5"
           className={classes.titleText}
