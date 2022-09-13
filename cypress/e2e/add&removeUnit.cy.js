@@ -46,8 +46,9 @@ describe('Add and Remove Unit Spec', () => {
         cy.get('.MuiBox-root', { timeout: 30000 }).should('be.visible')
 
         cy.get("#expandCardVertIcon").click()
-        cy.get(".MuiTypography-root").contains('Delete').click()
-        cy.get(".MuiButton-label").contains('Delete', { timeout: 30000 }).should('be.visible').click()
+
+        cy.deleteConfirmation()
+
         cy.verifyApiResponse('@updateCustomLayerApi', { responseTimeout: 5000 })
 
         cy.wait(5000)
