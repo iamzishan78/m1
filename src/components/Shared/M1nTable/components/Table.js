@@ -3695,7 +3695,7 @@ function SubTable(props) {
                                 props.rows[props.selectedRows[i].dataIndex]
                               );
                             }
-                            props.setSelectedRows(owners);
+                            props.setSelectedRows && props.setSelectedRows(owners);
                             // props.setOpenCustomDialog("exportContacts");
                             handleExpandClick(null, null, getSelectedRows(), "exportContacts");
                           }}
