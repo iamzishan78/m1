@@ -171,7 +171,7 @@ export default function HeaderSection(props) {
       if (!number && !name){
         dispatch(
           showInfoMessage(
-            "Operator Prop # or Property Name is required."
+            "Operator Prop # or Internal Prop # is required."
           )
         );
         history.goBack();
