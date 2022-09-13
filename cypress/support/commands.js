@@ -68,7 +68,8 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
 
             if (payloadKey) {
                 const { variables } = req.body
-                if (payloadKey.searchString && variables?.search?.query === payloadKey.searchString) {
+                if (payloadKey.searchString && (variables?.search?.query === payloadKey.searchString
+                    || variables?.search === `${payloadKey.searchString}*`)) {
                     req.alias = `${operationName}WithSearchStringApi`;
                 }
                 else if (payloadKey?.sortOrder && variables?.sort?.order === payloadKey.sortOrder) {
