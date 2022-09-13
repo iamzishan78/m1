@@ -689,7 +689,7 @@ export default function DocumentDetails(props) {
       <div style={{ flexShrink: 0 }}>
         {(stateApp.selectedDocument?.fileId || fileData) && replaceFile !== 'IN_PROGRESS' ? (
           <ListItem>
-            <div style={{ display: "flex", justifyContent: "start" }}>
+            <div style={{ display: "flex", justifyContent: "start" }} id="attachedDocument">
               {viewFileSResult?.viewFiles?.map((value, key) => {
                 let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
                 if (key <= 1) {
@@ -708,7 +708,7 @@ export default function DocumentDetails(props) {
                                 // setFileData(null)
                               }}
                             >
-                              <DeleteIcon />
+                              <DeleteIcon id="documentDeleteIcon" />
                             </IconButton>
 
                             <IconButton
