@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import { set, get } from "lodash";
 import { useForm } from "react-hook-form";
@@ -391,15 +392,17 @@ export default function CustomizedSteppers(props) {
           <div>
             {steps[stateApp.activeStepNumber] === 'Select' ? (
               <>
-                <RevenueStatementInfoForm
-                  statementInfo={statementInfo}
-                  setStatementsInfo={setStatementsInfo}
-                  control={control}
-                  watch={watch}
-                  getValues={getValues}
-                  reset={reset}
-                />
-                <CSVFileReader disabled={!(get(payor, "_id", "") && checkNumber && checkAmount)} />
+                {props.selectedJob.type === "CHECKDETAILS" && (
+                  <RevenueStatementInfoForm
+                    statementInfo={statementInfo}
+                    setStatementsInfo={setStatementsInfo}
+                    control={control}
+                    watch={watch}
+                    getValues={getValues}
+                    reset={reset}
+                  />
+                )}
+                <CSVFileReader disabled={props.selectedJob.type === "CHECKDETAILS" && !(get(payor, "_id", "") && checkNumber && checkAmount)} />
               </>
             ) : null}
             {steps[stateApp.activeStepNumber] === 'Match' ? <M1neralHeaders /> : null}
