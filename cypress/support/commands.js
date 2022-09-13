@@ -97,6 +97,14 @@ Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
     })
 })
 
+Cypress.Commands.add('deleteConfirmation', () => {
+    cy.log('==== STEP: CLICKING ON HORIZON ICON ====')
+    cy.get(".MuiTypography-root").contains('Delete').click()
+
+    cy.log('==== STEP: CLICKING ON DELETE FROM CONFIRMATION DIALOGUE BOX  ====')
+    cy.get(".MuiButton-label").contains('Delete', { timeout: 30000 }).should('be.visible').click()
+})
+
 /*This command will take css id and containing string to click on action
 command will then varify api response and if isFilter is passed it will verify
 filter was applied or not */
