@@ -13,9 +13,14 @@ describe('Verify Well Spec', () => {
         cy.get('#addDocument', { timeout: 50000 }).should('be.visible')
 
         cy.verifyApiResponse('@getESDocumentsApi').then((response) => {
-            const hits = response.response.body.data.getESFiles.hits
+            const firstRecord = response.response.body.data.getESFiles.hits[0]
+            const { name } = firstRecord;
 
-            console.log("hits : ", hits)
+            cy.log('==== STEP: OPENING FILE DETAIL DRAWER ====')
+            cy.get('table').contains('td', name).next().click();
+
+            cy.log('==== STEP: ADD WELL ====')
+            cy.addWell('silver dog')
 
             // cy.get('tbody>tr', { timeout: 5000 }).eq(2).children().eq(3).children().eq(1).click({ force: true })
 

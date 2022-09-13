@@ -14,19 +14,9 @@ describe('Associate Well Spec', () => {
 
         cy.get("#wellIcon").click()
 
-        cy.interceptApi('addWellToFileDescriptor')
-        cy.interceptApi('getWellsFromDocument')
+        cy.addWell('anniemae')
+        cy.addWell('silver dog')
 
-        cy.get("#addIcon").click()
-        cy.typeAndSelect('#wellSearch', 'anniemae', 'wellSearch-option-0')
-        cy.verifyApiResponse('@addWellToFileDescriptorApi')
-        cy.verifyApiResponse('@getWellsFromDocumentApi')
-
-
-        cy.get("#addIcon").click()
-        cy.typeAndSelect('#wellSearch', 'silver dog', "wellSearch-option-0")
-        cy.verifyApiResponse('@addWellToFileDescriptorApi')
-        cy.verifyApiResponse('@getWellsFromDocumentApi')
 
         cy.get('#wellsList').children().eq(0).click()
 

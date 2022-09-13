@@ -108,6 +108,17 @@ Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = 
         cy.get('.MuiTypography-root', { timeout: 10000 }).contains(containsString);
 })
 
+//DocumentGrid Commands
+Cypress.Commands.add('addWell', (wellName) => {
+    cy.interceptApi('addWellToFileDescriptor')
+    cy.interceptApi('getWellsFromDocument')
+
+    cy.get("#addIcon").click()
+    cy.typeAndSelect('#wellSearch', wellName, 'wellSearch-option-0')
+    cy.verifyApiResponse('@addWellToFileDescriptorApi')
+    cy.verifyApiResponse('@getWellsFromDocumentApi')
+})
+
 // ContactGrid Commands
 
 Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
