@@ -109,12 +109,23 @@ Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = 
 
 // ContactGrid Commands
 
-Cypress.Commands.add('gridSearch', (searchString) => {
-    cy.interceptApi('getESSimpleSearch', { searchString: searchString })
-    cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type(searchString)
-    cy.verifyApiResponse('@getESSimpleSearchWithSearchStringApi', { responseTimeout: 30000 })
-})
+Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
+    cy.interceptApi(gridOperationName, { searchString: searchString })
+    cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').focus().clear().type(searchString)
 
+    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: 30000 }).then((apiResponse) => {
+        let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
+
+        if (gridOperationName === 'getESDocuments')
+            hits = apiResponse.response.body.data.getESFiles.hits
+
+        const unmatchedHit = hits.find(hit => !findInObject(hit, searchString.toLowerCase()))
+
+        if (unmatchedHit) {
+            throw new Error(`Record with _id:${unmatchedHit._id} does not contains searched String`)
+        }
+    })
+})
 Cypress.Commands.add('sortColumn', (columnName, sortOrder) => {
     cy.interceptApi('getESSimpleSearch', { sortOrder: sortOrder })
     cy.get('.MuiButton-label', { timeout: 10000 }).contains(columnName).click({ force: true })
