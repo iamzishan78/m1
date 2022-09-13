@@ -847,7 +847,7 @@ export default function DocumentDetails(props) {
               }}
               userId={stateApp.user.mongoId}
               setFileData={setFileData}
-              fileId={replaceFile ? null : stateApp.selectedDocument?._id}
+              fileId={stateApp.selectedDocument?._id}
               onFileUpload={onFileUpload}
             />
           </div>
