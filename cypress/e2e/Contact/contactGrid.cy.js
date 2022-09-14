@@ -46,10 +46,7 @@ describe('Document Grid Spec', () => {
         cy.selectQuickAction('Contacts 101', 'Contact', true)
         cy.selectQuickAction('All Entities 101', 'All Entities')
 
-<<<<<<< HEAD
-=======
         cy.log('==== STEP: SEARCH jacob in CONTACT ====')
->>>>>>> 21ac4245de4b3282cb1165f81546da52cda3e82b
         cy.gridSearch('jacob', 'getESSimpleSearch')
 
         cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: 10000 }).contains('SGF TRUST LEGAL').click();
@@ -63,10 +60,7 @@ describe('Document Grid Spec', () => {
 
         cy.selectQuickAction('Leads 101', 'Lead', true)
 
-<<<<<<< HEAD
-=======
         cy.log('==== STEP: SEARCH GoodwillDD in CONTACT ====')
->>>>>>> 21ac4245de4b3282cb1165f81546da52cda3e82b
         cy.gridSearch('GoodwillDD', 'getESSimpleSearch')
 
         cy.wait(1000)
