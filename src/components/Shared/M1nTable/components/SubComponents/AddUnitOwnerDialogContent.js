@@ -65,11 +65,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, ...props }) {
+export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, ...props }) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
   const { control, reset, setValue, getValues } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
+  const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false)
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [ownerTypeOfConctact, setOwnerTypeOfConctact] = useState();
@@ -108,8 +109,12 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         campaignName: contact.campaignName
       }
       let calculatedNRA = calculateNRA(royalty_interest, orri);
+      let calculatedOfferPrice = parseFloat(nra) * parseFloat(uUnitPricing)
       if (!isNaN(parseFloat(calculatedNRA)))
         setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)))
+
+      if (!isNaN(parseFloat(calculatedOfferPrice)))
+        setIsOfferPriceOverridden(calculatedOfferPrice !== offer_price && !isNaN(parseFloat(offer_price)))
 
       reset(owner);
     }
@@ -225,10 +230,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       Object.keys(ownerToAdd).forEach((key) => {
         if (["working_interest", "royalty_interest", "orri", "nri", "nra"].includes(key))
           ownerToAdd[key] = addTrailingZeros(ownerToAdd[key]);
-        if(key === "offer_price"){
-          ownerToAdd.offer_price = ownerToAdd[key];
-          ownerToAdd.maualOverrides = { offer_price: true };
-        }
       });
       if (nameAutValue._id && nameAutValue.name) {
         // now that we are using descriptors we ONLY want the contact _id
