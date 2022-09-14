@@ -4972,7 +4972,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         newMap.dragPan.enable();
         newMap.dragRotate.enable();
         newMap.keyboard.enable();
-        newMap.doubleClickZoom.disable();
+        // newMap.doubleClickZoom.disable();
         newMap.boxZoom.enable();
         newMap.touchZoomRotate.enable();
 
