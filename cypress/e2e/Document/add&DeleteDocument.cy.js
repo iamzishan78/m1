@@ -1,5 +1,7 @@
 /* eslint-disable no-undef */
 
+import { documentObj } from "../../cypressUtils/data"
+
 describe('Add & Delete Document Spec', () => {
     it('passes', () => {
         cy.viewport(1400, 900)
@@ -11,10 +13,10 @@ describe('Add & Delete Document Spec', () => {
         cy.get('#addDocument', { timeout: 50000 }).should('be.visible').click()
 
         cy.log('==== STEP: ADD FILE NUMBER ====')
-        cy.get('#filenumber', { timeout: 50000 }).type('99934034').should('be.visible')
+        cy.get('#filenumber', { timeout: 50000 }).type(documentObj.fileNumber).should('be.visible')
 
         cy.log('==== STEP: ADD FILE NAME ====')
-        cy.get('#filename').type('Cydoc et el')
+        cy.get('#filename').type(documentObj.fileName)
 
         cy.log('==== STEP: ADD FILE TYPE ====')
         cy.get('#filetype', { timeout: 50000 }).type('L')
@@ -35,7 +37,7 @@ describe('Add & Delete Document Spec', () => {
 
         cy.log('==== STEP: ADD DOCUMENT ====')
         cy.interceptApi('AddDescriptorFile')
-        cy.get('input[type=file]', { force: true }).selectFile('cypress/files/documentSample.png', {
+        cy.get('input[type=file]', { force: true }).selectFile(documentObj.fileAddress, {
             force: true
         })
         cy.verifyApiResponse('@AddDescriptorFileApi')
@@ -51,7 +53,7 @@ describe('Add & Delete Document Spec', () => {
         cy.log('==== STEP: DELETING RECENTLY ADDED DOCUMENT ====')
 
         cy.log('==== STEP: OPENING FILE DETAIL DRAWER ====')
-        cy.get('table').contains('td', '99934034').click();
+        cy.get('table').contains('td', documentObj.fileNumber).click();
 
         cy.log('==== STEP: CLICKING ON HORIZON ICON ====')
         cy.get("#fileDetailHorzIcon").click()
