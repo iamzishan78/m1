@@ -122,12 +122,12 @@ Cypress.Commands.add('addWell', (wellName) => {
     cy.interceptApi('addWellToFileDescriptor')
     cy.interceptApi('getWellsFromDocument')
 
-<<<<<<< HEAD
     cy.get("#addIcon").click()
     cy.typeAndSelect('#wellSearch', wellName, 'wellSearch-option-0')
     cy.verifyApiResponse('@addWellToFileDescriptorApi')
     cy.verifyApiResponse('@getWellsFromDocumentApi')
-=======
+})
+
 Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
     cy.interceptApi(gridOperationName, { searchString: searchString })
     cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').focus().clear().type(searchString)
@@ -144,7 +144,6 @@ Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
             throw new Error(`Record with _id:${unmatchedHit._id} does not contains searched String`)
         }
     })
->>>>>>> 21ac4245de4b3282cb1165f81546da52cda3e82b
 })
 
 // ContactGrid Commands
