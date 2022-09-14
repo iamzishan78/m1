@@ -34,6 +34,52 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const ChangeDetectionNumberField = ({ name, label, control, offClickHandler, handleKeyDown, keysSum }) => {
+  const classes = useStyles();
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={(params) => {
+        return (
+          <TextField
+            type="number"
+            label={label}
+            variant="outlined"
+            defaultValue={get(params, "value", 0)}
+            value={get(params, "value", 0)}
+            onWheel={(e) => e.target.blur()}
+            onBlur={(event) => offClickHandler(name, event.target.value)}
+            onKeyDown={handleKeyDown}
+            onChange={(e) => {
+              params.onChange(e.target.value);
+            }}
+            className={(keysSum[name] && params.value && params.value !== keysSum[name]) ? classes.baseValueChanged : classes.numberField}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  {params.value && params.value !== keysSum[name] && (
+                    <IconButton
+                      aria-label={`toggle ${name}`}
+                      onClick={() => {
+                        params.onChange(keysSum[name]);
+                        offClickHandler(name, keysSum[name])
+                      }}
+                    >
+                      <AutorenewIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                </InputAdornment>
+              ),
+            }}
+            fullWidth
+          />
+        )
+      }}
+    />
+  );
+}
+
 export default function LagalDescription({ agreementDetails = {}, updateAgreement, tractOwners }) {
   const classes = useStyles();
   const { reset, control } = useForm();
@@ -47,23 +93,31 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
     if (tractOwners) {
       const sum = tractOwners.reduce((sum, tractOwner) => {
         if (tractOwner.sdGrossAcres)
-          sum.grossAcres += parseFloat(tractOwner.sdGrossAcres)
+          sum.grossAcres += parseFloat(tractOwner.sdGrossAcres);
         if (tractOwner.net_acres)
-          sum.netAcres += parseFloat(tractOwner.net_acres)
+          sum.netAcres += parseFloat(tractOwner.net_acres);
         if (tractOwner.nra)
-          sum.netRoyalty += parseFloat(tractOwner.nra)
-        return sum
-      }, { grossAcres: 0, netAcres: 0, netRoyalty: 0 });
-      sum.grossAcres = addTrailingZeros(sum.grossAcres?.toFixed(8))
-      sum.netAcres = addTrailingZeros(sum.netAcres?.toFixed(8))
-      sum.netRoyalty = addTrailingZeros(sum.netRoyalty?.toFixed(8))
+          sum.netRoyalty += parseFloat(tractOwner.nra);
+        if (tractOwner.company_net_acres)
+          sum.companyNetAcres += parseFloat(tractOwner.company_net_acres);
+        if (tractOwner.sdGrossAcres && tractOwner.countAcres === "Yes")
+          sum.reportGrossAcres += parseFloat(tractOwner.sdGrossAcres);
+        if (tractOwner.net_acres && tractOwner.countAcres === "Yes")
+          sum.reportNet += parseFloat(tractOwner.net_acres);
+        return sum;
+      }, { grossAcres: 0, netAcres: 0, netRoyalty: 0, companyNetAcres: 0, reportGrossAcres: 0, reportNet: 0 });
+      sum.grossAcres = addTrailingZeros(sum.grossAcres?.toFixed(8));
+      sum.netAcres = addTrailingZeros(sum.netAcres?.toFixed(8));
+      sum.netRoyalty = addTrailingZeros(sum.netRoyalty?.toFixed(8));
+      sum.companyNetAcres = addTrailingZeros(sum.companyNetAcres?.toFixed(8));
+      sum.reportGrossAcres = addTrailingZeros(sum.reportGrossAcres?.toFixed(8));
+      sum.reportNet = addTrailingZeros(sum.reportNet?.toFixed(8));
 
-      console.log(sum)
       reset(agreementDetails);
       setKeysSum(sum)
     }
 
-  }, [tractOwners])
+  }, [tractOwners]);
 
   const offClickHandler = (key, value) => {
     if (agreementDetails[key] === value) return
@@ -83,8 +137,8 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
   };
 
   return (
-    <Grid container display="flex" direction="row" alignItems="center" justify="space-between">
-      <Grid item xs={6}>
+    <Grid container spacing={2} display="flex" direction="row" alignItems="center" justify="space-between">
+      <Grid item xs={5}>
         <Controller
           control={control}
           name="legalDesctiption"
@@ -103,110 +157,38 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
           )}
         />
       </Grid>
-      <Grid item xs={5}>
+      <Grid item xs={7}>
         <Grid container display="row" alignItems="center" justify="center" spacing={3}>
           <Grid item xs={12}>
             <Grid container display="row" alignItems="center" justify="space-between" spacing={3}>
               <Grid item xs={4}>
-                <Controller
-                  control={control}
+                <ChangeDetectionNumberField
+                  label="Gross"
                   name="grossAcres"
-                  render={(params) => (
-                    <TextField
-                      type="number"
-                      label="Gross"
-                      variant="outlined"
-                      defaultValue={get(params, "value", 0)}
-                      value={get(params, "value", 0)}
-                      onWheel={(e) => e.target.blur()}
-                      onBlur={(event) => offClickHandler("grossAcres", event.target.value)}
-                      onKeyDown={handleKeyDown}
-                      onChange={(e) => {
-                        params.onChange(e.target.value);
-                      }}
-                      className={(keysSum.grossAcres && params.value !== keysSum.grossAcres) ? classes.baseValueChanged : classes.numberField}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            {params.value !== keysSum.grossAcres && (
-                              <IconButton
-                                aria-label="toggle grossAcres"
-                                onClick={() => {
-                                  params.onChange(keysSum.grossAcres);
-                                  offClickHandler("grossAcres", keysSum.grossAcres)
-                                }}
-                              >
-                                <AutorenewIcon fontSize="small" />
-                              </IconButton>
-                            )}
-                          </InputAdornment>
-                        ),
-                      }}
-                      fullWidth
-                    />
-                  )}
+                  control={control}
+                  offClickHandler={offClickHandler}
+                  handleKeyDown={handleKeyDown}
+                  keysSum={keysSum}
                 />
               </Grid>
               <Grid item xs={4}>
-                <Controller
-                  control={control}
+                <ChangeDetectionNumberField
+                  label="Net"
                   name="netAcres"
-                  render={(params) => (
-                    <TextField
-                      type="number"
-                      label="Net"
-                      variant="outlined"
-                      value={get(params, "value", 0)}
-                      defaultValue={get(params, "value", 0)}
-                      onWheel={(e) => e.target.blur()}
-                      onBlur={(event) => offClickHandler("netAcres", event.target.value)}
-                      onKeyDown={handleKeyDown}
-                      onChange={(e) => {
-                        params.onChange(e.target.value);
-                      }}
-                      className={(keysSum.netAcres && params.value !== keysSum.netAcres) ? classes.baseValueChanged : classes.numberField}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            {params.value !== keysSum.netAcres && (
-                              <IconButton
-                                aria-label="toggle netAcres"
-                                onClick={() => {
-                                  params.onChange(keysSum.netAcres);
-                                  offClickHandler("netAcres", keysSum.netAcres)
-                                }}
-                              >
-                                <AutorenewIcon fontSize="small" />
-                              </IconButton>
-                            )}
-                          </InputAdornment>
-                        ),
-                      }}
-                      fullWidth
-                    // defaultValue={agreementDetails?.netAcres ?? ""}
-                    />
-                  )}
+                  control={control}
+                  offClickHandler={offClickHandler}
+                  handleKeyDown={handleKeyDown}
+                  keysSum={keysSum}
                 />
               </Grid>
               <Grid item xs={4}>
-                <Controller
+                <ChangeDetectionNumberField
+                  label="Co. Net"
                   name="companyNetAcres"
-                  defaultValue={agreementDetails?.companyNetAcres ?? ""}
                   control={control}
-                  render={(params) => (
-                    <TextField
-                      label="Co. Net"
-                      variant="outlined"
-                      type="number"
-                      value={get(agreementDetails, "companyNetAcres", 0)}
-                      defaultValue={get(agreementDetails, "companyNetAcres", 0)}
-                      className={classes.numberField}
-                      onBlur={(event) => offClickHandler("companyNetAcres", event.target.value)}
-                      onKeyDown={handleKeyDown}
-                      fullWidth
-                      onWheel={(e) => e.target.blur()}
-                    />
-                  )}
+                  offClickHandler={offClickHandler}
+                  handleKeyDown={handleKeyDown}
+                  keysSum={keysSum}
                 />
               </Grid>
             </Grid>
@@ -215,83 +197,33 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
           <Grid item xs={12}>
             <Grid container display="row" alignItems="center" justify="space-between" spacing={3}>
               <Grid item xs={4}>
-                <Controller
+                <ChangeDetectionNumberField
+                  label="Report Gross"
                   name="reportGrossAcres"
-                  defaultValue={agreementDetails?.reportGrossAcres ?? ""}
                   control={control}
-                  render={(params) => (
-                    <TextField
-                      {...params}
-                      label="Report Gross"
-                      variant="outlined"
-                      type="number"
-                      className={classes.numberField}
-                      onBlur={(event) => offClickHandler("reportGrossAcres", event.target.value)}
-                      onKeyDown={handleKeyDown}
-                      fullWidth
-                      onWheel={(e) => e.target.blur()}
-                    />
-                  )}
+                  offClickHandler={offClickHandler}
+                  handleKeyDown={handleKeyDown}
+                  keysSum={keysSum}
                 />
               </Grid>
               <Grid item xs={4}>
-                <Controller
+                <ChangeDetectionNumberField
+                  label="Report Net"
                   name="reportNet"
-                  defaultValue={agreementDetails?.reportNet ?? ""}
                   control={control}
-                  render={(params) => (
-                    <TextField
-                      {...params}
-                      label="Report Net"
-                      variant="outlined"
-                      type="number"
-                      className={classes.numberField}
-                      onBlur={(event) => offClickHandler("reportNet", event.target.value)}
-                      onKeyDown={handleKeyDown}
-                      fullWidth
-                      onWheel={(e) => e.target.blur()}
-                    />
-                  )}
+                  offClickHandler={offClickHandler}
+                  handleKeyDown={handleKeyDown}
+                  keysSum={keysSum}
                 />
               </Grid>
               <Grid item xs={4}>
-                <Controller
-                  control={control}
+                <ChangeDetectionNumberField
+                  label="Net Royalty"
                   name="netRoyalty"
-                  render={(params) => (
-                    <TextField
-                      type="number"
-                      label="Net Royalty"
-                      variant="outlined"
-                      value={get(params, "value", 0)}
-                      defaultValue={get(params, "value", 0)}
-                      onWheel={(e) => e.target.blur()}
-                      onBlur={(event) => offClickHandler("netRoyalty", event.target.value)}
-                      onKeyDown={handleKeyDown}
-                      onChange={(e) => {
-                        params.onChange(e.target.value);
-                      }}
-                      className={(keysSum.netRoyalty && params.value !== keysSum.netRoyalty) ? classes.baseValueChanged : classes.numberField}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            {params.value !== keysSum.netRoyalty && (
-                              <IconButton
-                                aria-label="toggle netRoyalty"
-                                onClick={() => {
-                                  params.onChange(keysSum.netRoyalty);
-                                  offClickHandler("netRoyalty", keysSum.netRoyalty)
-                                }}
-                              >
-                                <AutorenewIcon fontSize="small" />
-                              </IconButton>
-                            )}
-                          </InputAdornment>
-                        ),
-                      }}
-                      fullWidth
-                    />
-                  )}
+                  control={control}
+                  offClickHandler={offClickHandler}
+                  handleKeyDown={handleKeyDown}
+                  keysSum={keysSum}
                 />
               </Grid>
             </Grid>
