@@ -128,6 +128,12 @@ Cypress.Commands.add('addWell', (wellName) => {
     cy.verifyApiResponse('@getWellsFromDocumentApi')
 })
 
+Cypress.Commands.add('clickWellIcon', (wellName) => {
+    cy.log('==== STEP: CLICK ON WELL ICON ====')
+    cy.interceptApi('getWellsFromDocument')
+    cy.get("#wellIcon").click()
+})
+
 Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
     cy.interceptApi(gridOperationName, { searchString: searchString })
     cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').focus().clear().type(searchString)
