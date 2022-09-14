@@ -90,9 +90,18 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
 
 // This command is to check api was successful or not
 Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
-    cy.wait(apiTitle, { timeout: 10000 }).then((interception) => {
+    cy.wait(apiTitle, { timeout: 30000 }).then((interception) => {
         assert.isNotNull(interception.response.body, `${apiTitle} run succesfully`)
+        return interception
     })
+})
+
+Cypress.Commands.add('deleteConfirmation', () => {
+    cy.log('==== STEP: CLICKING ON HORIZON ICON ====')
+    cy.get(".MuiTypography-root").contains('Delete').click()
+
+    cy.log('==== STEP: CLICKING ON DELETE FROM CONFIRMATION DIALOGUE BOX  ====')
+    cy.get(".MuiButton-label").contains('Delete', { timeout: 30000 }).should('be.visible').click()
 })
 
 /*This command will take css id and containing string to click on action
@@ -113,10 +122,29 @@ Cypress.Commands.add('addWell', (wellName) => {
     cy.interceptApi('addWellToFileDescriptor')
     cy.interceptApi('getWellsFromDocument')
 
+<<<<<<< HEAD
     cy.get("#addIcon").click()
     cy.typeAndSelect('#wellSearch', wellName, 'wellSearch-option-0')
     cy.verifyApiResponse('@addWellToFileDescriptorApi')
     cy.verifyApiResponse('@getWellsFromDocumentApi')
+=======
+Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
+    cy.interceptApi(gridOperationName, { searchString: searchString })
+    cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').focus().clear().type(searchString)
+
+    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: 30000 }).then((apiResponse) => {
+        let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
+
+        if (gridOperationName === 'getESDocuments')
+            hits = apiResponse.response.body.data.getESFiles.hits
+
+        const unmatchedHit = hits.find(hit => !findInObject(hit, searchString.toLowerCase()))
+
+        if (unmatchedHit) {
+            throw new Error(`Record with _id:${unmatchedHit._id} does not contains searched String`)
+        }
+    })
+>>>>>>> 21ac4245de4b3282cb1165f81546da52cda3e82b
 })
 
 // ContactGrid Commands
