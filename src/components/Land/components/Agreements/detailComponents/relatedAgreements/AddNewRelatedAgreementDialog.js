@@ -4,6 +4,8 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/styles";
 import { Button, DialogContent, DialogActions } from "@material-ui/core";
 import { Typography, TextField, Grid, FormControl } from "@material-ui/core";
+import FolderIcon from "@material-ui/icons/Folder";
+import parse from "autosuggest-highlight/parse";
 
 import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import AutoCompleteESField from "components/Shared/Forms/Fields/AutoCompleteESField";
@@ -253,6 +255,55 @@ const AddNewRelatedAgreementDialog = (props) => {
                   esIndex="shapes_flat"
                   extendSearchQuery="*"
                   variant="outlined"
+                  renderOption={(option) => {
+                    if (option.Source === "header" || option.group === "loader") return null;
+                    const parts = parse(option.Primary, Array());
+
+                    return (
+                      <Grid container spacing={0}>
+                        <Grid container item xs={11} alignItems="center">
+                          <Grid item>
+                            <FolderIcon className={classes.icon} color={"#757575"} />
+                          </Grid>
+                          <Grid item xs>
+                            {parts.map((part, index) => (
+                              <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                                {part.text}
+                              </span>
+                            ))}
+
+                            {option && option.Secondary && (
+                              <Typography variant="body2" color="textSecondary">
+                                {option.Secondary}
+                              </Typography>
+                            )}
+                          </Grid>
+                        </Grid>
+                        <Grid container item xs={1} alignItems="center">
+                          <Grid item style={{ position: "relative" }}>
+                            <div
+                              className={classes.score}
+                              style={{
+                                zIndex: "1300",
+                                backgroundColor: "#12ABE0",
+                              }}
+                            />
+                            <div
+                              className={classes.score}
+                              style={{
+                                zIndex: "1301",
+                                backgroundImage: "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
+                                // opacity: calcScoreOpacity(
+                                //   [0, 0],
+                                //   option.Score
+                                // ).toString(),
+                              }}
+                            />
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    );
+                  }}
                 />
               </Grid>
               {agreementParams.map((params, index) => (
