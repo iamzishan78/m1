@@ -12,7 +12,7 @@ describe('Associate Well Spec', () => {
         cy.wait(10000)
         cy.get('tbody>tr', { timeout: 50000 }).eq(2).children().eq(3).children().eq(1).click()
 
-        cy.get("#wellIcon").click()
+        cy.get("#wellIcon", { timeout: 50000 }).click()
 
         cy.addWell('anniemae')
         cy.addWell('silver')
@@ -23,7 +23,7 @@ describe('Associate Well Spec', () => {
         cy.verifyApiResponse('@getWellsFromDocumentApi')
 
 
-        cy.get('#wellsList').children().eq(0).click()
+        cy.get('#wellsList', { timeout: 50000 }).children().eq(0).click()
 
         cy.wait(40000)
         cy.get('.MuiBreadcrumbs-ol', { timeout: 50000 }).should('be.visible').children().eq(0).click()
