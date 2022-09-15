@@ -3,7 +3,11 @@
 describe('Document Grid Spec', () => {
     it('passes', () => {
         cy.viewport(1400, 900)
+
+        cy.interceptApi('getESDocuments')
         cy.visit('http://localhost:3000/documents')
+
+        cy.verifyApiResponse('@getESDocumentsApi', { responseTimeout: 30000 }).then((response) => { })
 
         cy.checkAndLogin()
 
@@ -13,9 +17,10 @@ describe('Document Grid Spec', () => {
         cy.get('#Documents').children().children().children().children().eq(2).scrollTo('right')
         cy.wait(1000)
 
+
         cy.interceptApi('updateDocument')
 
-        cy.get('.MuiTableBody-root').children().eq(1).children().eq(9).trigger("click").type('924{enter}{esc}{esc}')
+        cy.get('.MuiTableBody-root').children().eq(1).children().eq(9).trigger("click").type('924{enter}{esc}{esc}', { force: true })
 
         cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: 30000 })
         cy.get('#Documents').children().children().children().children().eq(2).scrollTo('right')

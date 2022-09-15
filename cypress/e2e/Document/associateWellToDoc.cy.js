@@ -24,7 +24,7 @@ describe('Associate Well Spec', () => {
 
 
         cy.get("#addIcon").click()
-        cy.typeAndSelect('#wellSearch', 'silver dog', "wellSearch-option-0")
+        cy.typeAndSelect('#wellSearch', 'silver do', "wellSearch-option-0")
         cy.verifyApiResponse('@addWellToFileDescriptorApi')
         cy.verifyApiResponse('@getWellsFromDocumentApi')
 
