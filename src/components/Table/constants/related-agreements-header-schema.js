@@ -28,6 +28,28 @@ const RellatedAgreementsHeadCells = [
     },
   },
   {
+    name: "agreementName",
+    label: "Agreement Name",
+    esKey: "shapeJson.properties.agreementName.keyword",
+    options: {
+      setCellProps: () => ({
+        style: {
+          minWidth: "300px",
+          maxWidth: "350px"
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          paddingLeft: "0px"
+        }
+      }),
+      dbName: "shapeJson.properties.agreementName",
+      // ignoreGlobal: true,
+      display: false,
+      viewColumns: true,
+    },
+  },
+  {
     name: "agreementType",
     label: "Type",
     esKey: "shapeJson.properties.agreementType.keyword",
