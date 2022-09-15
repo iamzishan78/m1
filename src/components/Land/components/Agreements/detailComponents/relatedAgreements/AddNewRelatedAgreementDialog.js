@@ -6,7 +6,9 @@ import { Button, DialogContent, DialogActions } from "@material-ui/core";
 import { Typography, TextField, Grid, FormControl } from "@material-ui/core";
 import FolderIcon from "@material-ui/icons/Folder";
 import parse from "autosuggest-highlight/parse";
+import debounce from "lodash/debounce";
 
+import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
 import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import AutoCompleteESField from "components/Shared/Forms/Fields/AutoCompleteESField";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
@@ -26,7 +28,7 @@ const agreementParams = [
   { key: "agreementStatus", label: "Status" },
 ];
 
-const filterKey = ["shapeJson.properties.agreementName.keyword", "shapeJson.properties.agreementNumber.keyword"];
+const filterKey = ["shapeJson.properties.agreementName.keyword", "shapeJson.properties.agreementNumber.keyword", "shapeJson.properties.layerSubType.keyword"];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,101 +39,14 @@ const useStyles = makeStyles((theme) => ({
   titleText: {
     marginLeft: 16,
   },
-  metaPanelCloseIcon: {
-    "& svg": {
-      fontSize: 18,
-      cursor: "pointer",
-      fill: "#808080 !important",
-    },
-  },
   gridStyle: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     padding: "10px",
-  },
-  dealOwnerRoot: {
-    border: "1px solid #EBEBEB",
-    '&[class*="MuiOutlinedInput-root"] .MuiAutocomplete-input:first-child': {
-      paddingLeft: 26,
-    },
-
-    "& .MuiOutlinedInput-notchedOutline": {
-      border: 0,
-    },
-    "&:hover.MuiOutlinedInput-root": {
-      backgroundColor: "#EBEBEB",
-    },
-    "&:hover .MuiAutocomplete-popupIndicator": {
-      visibility: "visible",
-      padding: "2px",
-      marginRight: "-2px",
-    },
-  },
-  dealOwnerRootFocused: {
-    "& .MuiOutlinedInput-notchedOutline": {
-      border: "1px solid black",
-    },
-  },
-  popupIndicator: {
-    visibility: "hidden",
-    padding: "2px",
-    marginRight: "-2px",
-    "&:hover": {
-      visibility: "visible",
-    },
-  },
-  inputFieldOwner: {
-    marginBottom: "7px",
-  },
-  dealOwnerAvatar: {
-    width: theme.spacing(3),
-    height: theme.spacing(3),
-    color: "#fff",
-    fontSize: "0.6rem",
-    backgroundColor: "#4880F6",
-    padding: "0.5em",
-  },
-  dealOwnerLabel: {
-    marginLeft: 4,
-  },
-  descriptionInput: {
-    width: "100%",
-    margin: "20px 0 0",
-    "& .MuiTextField-root": {
-      backgroundColor: "#fffcdc",
-      borderRadius: 4,
-    },
-    "& .MuiOutlinedInput-notchedOutline": {
-      border: "none",
-    },
-    "& textarea": {
-      height: "323px",
-    },
-  },
-  foodText: {
-    position: "absolute",
-    bottom: "20px",
-    right: "0px",
-    fontSize: "10px",
-    color: "#6e6e6e",
-    margin: "0 !important",
-    textAlign: "right",
-    height: "0",
-    paddingRight: "10px",
-    "& span": {
-      fontWeight: "bold",
-    },
-  },
-  viewAll: {
-    textDecoration: "underline",
-    margin: "0 0 8px 0",
-    float: "right",
-    color: theme.palette.secondary.main,
-    cursor: "pointer",
-    fontWeight: "normal",
-    "&:hover": { color: "#757575" },
-    transition: "color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+    "& .MuiAutocomplete-popper": {
+      width: "560px !important",
+    }
   },
   contentRoot: {
     overflow: "overlay",
@@ -174,8 +89,27 @@ const useStyles = makeStyles((theme) => ({
       cursor: "pointer",
       fill: "#808080 !important",
     },
-  }
+  },
+  score: {
+    position: "absolute",
+    top: "-8px",
+    width: "17px",
+    height: "16px",
+    borderRadius: "50%",
+    marginLeft: "10px",
+  },
+  icon: {
+    color: theme.palette.text.secondary,
+    marginRight: theme.spacing(2),
+  },
 }));
+
+const calcScoreOpacity = (maxMin, score) => {
+  if (maxMin[0] === maxMin[1]) return 0;
+  if (score === maxMin[1]) return 1;
+
+  return 1 - (score - maxMin[1]) / (maxMin[0] - maxMin[1]);
+};
 
 const AddNewRelatedAgreementDialog = (props) => {
   const classes = useStyles();
@@ -255,9 +189,9 @@ const AddNewRelatedAgreementDialog = (props) => {
                   esIndex="shapes_flat"
                   extendSearchQuery="*"
                   variant="outlined"
+                  // open={true}
                   renderOption={(option) => {
-                    if (option.Source === "header" || option.group === "loader") return null;
-                    const parts = parse(option.Primary, Array());
+                    const parts = parse([option.key[0], option.key[1]], Array());
 
                     return (
                       <Grid container spacing={0}>
@@ -272,9 +206,9 @@ const AddNewRelatedAgreementDialog = (props) => {
                               </span>
                             ))}
 
-                            {option && option.Secondary && (
+                            {option && option.key[2] && (
                               <Typography variant="body2" color="textSecondary">
-                                {option.Secondary}
+                                {option.key[2]}
                               </Typography>
                             )}
                           </Grid>
@@ -293,10 +227,10 @@ const AddNewRelatedAgreementDialog = (props) => {
                               style={{
                                 zIndex: "1301",
                                 backgroundImage: "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
-                                // opacity: calcScoreOpacity(
-                                //   [0, 0],
-                                //   option.Score
-                                // ).toString(),
+                                opacity: calcScoreOpacity(
+                                  [0, 0],
+                                  0
+                                ).toString(),
                               }}
                             />
                           </Grid>

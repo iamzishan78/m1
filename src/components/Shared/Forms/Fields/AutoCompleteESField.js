@@ -13,7 +13,8 @@ import { Popper, Typography } from "@material-ui/core";
 
 const styles = (theme) => ({
   popper: {
-    maxWidth: "fit-content",
+    width: "100%"
+    // maxWidth: "fit-content",
   },
 });
 
@@ -21,7 +22,7 @@ const PopperMy = function (props) {
   return <Popper {...props} style={styles.popper} placement="bottom-start" />;
 };
 
-const AutoCompleteField = ({ placeholder, value, onChange, column, query, extendSearchQuery, esIndex, filters, variant }) => {
+const AutoCompleteField = ({ placeholder, value, onChange, column, query, extendSearchQuery, esIndex, filters, variant, ...rest }) => {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   // const [value, setValue] = useState({ key: value });
@@ -173,6 +174,7 @@ const AutoCompleteField = ({ placeholder, value, onChange, column, query, extend
           }}
         />
       )}
+      {...rest}
     />
   );
 };
