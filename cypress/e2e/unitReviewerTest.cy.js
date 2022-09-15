@@ -67,19 +67,22 @@ describe("[Unit Summary] test 'Reviewer' Field", () => {
       .eq(0)
       .get("#reviewerInput", { timeout: 5000 })
       .should("be.visible")
-      .type("jacob")
-      .then((option) => {
-        option[0].click();
-      });
+      .type("jacob");
 
-    // cy.wait("@updateCustomLayerApiCheck", { timeout: 10000 }).then(
-    //   (interception) => {
-    //     assert.isNotNull(
-    //       interception.response.body,
-    //       "Update Custom Layer api called Successfully"
-    //     );
-    //   }
-    // );
+    cy.get(".MuiAutocomplete-popper li[data-option-index=\"0\"]")
+      .should("be.visible")
+      .click();
+
+
+    cy.wait("@updateCustomLayerApiCheck", { timeout: 10000 }).then(
+      (interception) => {
+        cy.log("Intercepted Log");
+        assert.isNotNull(
+          interception.response.body,
+          "Update Custom Layer api called Successfully"
+        );
+      }
+    );
     // cy.get('.MuiList-root', { timeout: 10000 }).should('be.visible').contains('Units').click()
   });
 });
