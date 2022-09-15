@@ -420,6 +420,7 @@ export default function DetailComponents(props) {
       if (getRelativePosition("legal-description-div") < 30) activeTab = 3;
       if (getRelativePosition("related-wells-div") < 30) activeTab = 4;
       if (getRelativePosition("related-docs-div") < 300) activeTab = 5;
+      if (getRelativePosition("related-agrmt-div") < 400) activeTab = 6;
 
       if (tab !== activeTab) setTab(activeTab);
     }
@@ -599,7 +600,7 @@ export default function DetailComponents(props) {
                 <Documents uniObj={uniObj} />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
-              <div id="related-docs-div" className={classes.tabDetailSection} ref={tab === 5 ? selectedTabRef : null}>
+              <div id="related-agrmt-div" className={classes.tabDetailSection} ref={tab === 6 ? selectedTabRef : null}>
                 <RelatedAgreementsTable uniObj={uniObj} setNewAgmtState={setNewAgmtState} />
               </div>
             </div>
