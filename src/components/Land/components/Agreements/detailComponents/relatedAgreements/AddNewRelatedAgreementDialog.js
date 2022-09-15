@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { get } from "lodash";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/styles";
-import { Button, DialogContent, DialogActions } from "@material-ui/core";
+import { Button, DialogContent, DialogActions, CircularProgress } from "@material-ui/core";
 import { Typography, TextField, Grid, FormControl } from "@material-ui/core";
 import FolderIcon from "@material-ui/icons/Folder";
 import parse from "autosuggest-highlight/parse";
@@ -115,7 +115,14 @@ const calcScoreOpacity = (maxMin, score) => {
 const AddNewRelatedAgreementDialog = (props) => {
   const classes = useStyles();
   const [getCustomLayer, { data: agreement }] = useLazyQuery(CUSTOMLAYER);
-  const [upsertRelatedAgreementDescriptor, { loading: upsertLoading }] = useMutation(UPSERT_RELATED_AGREEMENT_DESSCRIPTOR);
+  const [upsertRelatedAgreementDescriptor, { loading: upsertLoading }] = useMutation(UPSERT_RELATED_AGREEMENT_DESSCRIPTOR, {
+    fetchPolicy: "no-cache",
+    onCompleted: (data) => {
+      if (data.upsertRelatedAgreementDescriptor.success) {
+        setNewAgmtState(false);
+      }
+    }
+  });
 
   const { customLayerId, setNewAgmtState } = props;
 
@@ -268,7 +275,7 @@ const AddNewRelatedAgreementDialog = (props) => {
           onClick={addNewRelatedAgreement}
           disabled={!!upsertLoading}
         >
-          Add
+          {upsertLoading ? <CircularProgress size={14} /> : "Add"}
         </Button>
       </DialogActions>
     </div>
