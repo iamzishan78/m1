@@ -131,7 +131,7 @@ Cypress.Commands.add('addWell', (wellName) => {
 Cypress.Commands.add('clickWellIcon', (wellName) => {
     cy.log('==== STEP: CLICK ON WELL ICON ====')
     cy.interceptApi('getWellsFromDocument')
-    cy.get("#wellIcon").click()
+    cy.get("#wellIcon", { timeout: 3000 }).click()
 })
 
 Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
