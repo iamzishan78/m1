@@ -2,7 +2,6 @@
 
 describe('Verify Well Spec', () => {
     it('passes', () => {
-
         cy.viewport(1400, 900)
 
         cy.interceptApi('getESDocuments')
