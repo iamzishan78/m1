@@ -18,8 +18,8 @@ import { UPSERT_RELATED_AGREEMENT_DESSCRIPTOR } from "graphQL/useMutationsRelate
 const agreementParams = [
   { key: "agreementNumber", label: "Agreement Number" },
   { key: "agreementName", label: "Agreement Name" },
-  { key: "type", label: "Type" },
-  { key: "layerSubType", label: "Subtype" },
+  { key: "agreementType", label: "Type" },
+  { key: "agreementSubtype", label: "Subtype" },
   { key: "grantor", label: "Grantor" },
   { key: "grantee", label: "Grantee" },
   { key: "agreementDate", label: "Agreement Date" },
