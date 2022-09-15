@@ -22,7 +22,7 @@ import { usetableStyles } from "./style";
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
   const [isDeletePopup, setDeletePopup] = useState(false);
-  const { moduleId, setCounter } = props;
+  const { moduleId } = props;
 
   const [deleteRelatedAgreements] = useMutation(DELETE_RELATED_AGREEMENTS);
 
