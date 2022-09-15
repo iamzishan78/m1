@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from "@material-ui/core";
@@ -68,6 +68,8 @@ const RelatedAgreements = (props) => {
   const classes = useStyles();
   const customClasses = customStyles();
 
+  const [counter, setCounter] = useState(0);
+
   const customLayerId = useSelector(({ Land }) => Land.agreement?.activeAgreement)?._id;
 
   return (
@@ -86,7 +88,7 @@ const RelatedAgreements = (props) => {
               <Typography variant="h5" className={customClasses.titleText}>
                 Related Agreements
               </Typography>
-              <Chip color="info" label={0} />
+              <Chip color="info" label={counter} />
             </Grid>
           </Grid>
         </AccordionSummary>
@@ -98,6 +100,7 @@ const RelatedAgreements = (props) => {
                   dense
                   moduleId={customLayerId}
                   setNewAgmtState={props.setNewAgmtState}
+                  setCounter={setCounter}
                 />
               </Grid>
             )}

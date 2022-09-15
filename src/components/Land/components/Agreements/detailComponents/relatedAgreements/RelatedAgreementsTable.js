@@ -22,7 +22,7 @@ import { usetableStyles } from "./style";
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
   const [isDeletePopup, setDeletePopup] = useState(false);
-  const { moduleId } = props;
+  const { moduleId, setCounter } = props;
 
   const [deleteRelatedAgreements] = useMutation(DELETE_RELATED_AGREEMENTS);
 
@@ -104,6 +104,11 @@ function AgreementOwnersTractsTable(props) {
       });
   }, [moduleId]);
 
+  useEffect(() => {
+    if (props.setCounter) props.setCounter(props.rows.length);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.rows]);
+
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       <Dialog open={isDeletePopup} onClose={() => setDeletePopup(false)} fullWidth={true} maxWidth={"sm"}>
@@ -111,7 +116,7 @@ function AgreementOwnersTractsTable(props) {
           header={`Delete Related Agreement(s)`}
           onClose={() => setDeletePopup(false)}
           deleteFunc={deleteFunc}
-          m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
+          m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
           {`Do you want to delete the selected related agreement${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
