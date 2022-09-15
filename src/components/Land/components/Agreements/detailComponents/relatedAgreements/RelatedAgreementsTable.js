@@ -18,6 +18,7 @@ import TableHeader from "components/Table/constants/related-agreements-header-sc
 
 // Utilities
 import { usetableStyles } from "./style";
+import convert_date from "components/Shared/valueformatters/convert_date";
 
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
@@ -73,6 +74,10 @@ function AgreementOwnersTractsTable(props) {
       hit.BlockTownship = isTX ? hit.block : hit.township;
       hit.SectionRange = isTX ? hit.section : hit.range;
       hit.AbstractSection = isTX ? hit.abstract : hit.section;
+      hit.agreementDate = hit.agreementDate ? convert_date(hit.agreementDate) : null;
+      hit.effectiveDate = hit.effectiveDate ? convert_date(hit.effectiveDate) : null;
+      hit.expirationDate = hit.expirationDate ? convert_date(hit.expirationDate) : null;
+      hit.extensionDate = hit.extensionDate ? convert_date(hit.extensionDate) : null;
       return hit;
     });
   };
