@@ -1,6 +1,7 @@
-import './addDocument.cy'
+import './add&DeleteDocument.cy'
 import './associateWellToDoc.cy'
 import './documentGrid.cy'
 import './searchDocument.cy'
 import './deleteDocument.cy'
 import './verifyWells.cy'
+import './documentGrid.cy'

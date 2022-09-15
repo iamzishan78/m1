@@ -27,13 +27,11 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 import { deepEqualObjects } from "../../src/components/Shared/functions";
-import { findInObject } from "../cypresshelpers";
+import { baseUrls, loginCredential } from "../cypressUtils/data";
+import { findInObject } from "../cypressUtils/helper";
+
 // Constants
 const workSpace = Cypress.env('WORK_SPACE') || "enerx"
-const baseUrls = {
-    enerx: "https://enerxgraphql.azurewebsites.net/api/m1graph?code=Rhr8LQFXNnl/TE26EVD296voKbGVWZQDupqWAAWMaZXjzvgdvktPqg==",
-    localhost: "http://localhost:7071/api/m1graph"
-}
 
 // Common Commands
 Cypress.Commands.add("checkAndLogin", () => {
@@ -43,8 +41,8 @@ Cypress.Commands.add("checkAndLogin", () => {
             cy.get('input').type(workSpace)
             cy.get('.MuiButtonBase-root').click()
 
-            cy.get('#signInName', { timeout: 30000 }).should('be.visible').type('support@m1neral.com')
-            cy.get('#password').type('M1neral2022')
+            cy.get('#signInName', { timeout: 30000 }).should('be.visible').type(loginCredential.email)
+            cy.get('#password').type(loginCredential.passsword)
 
             cy.get('#next').click()
         }
@@ -151,6 +149,19 @@ Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
         }
     })
 })
+Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
+    cy.contains('th', columnName)
+        .invoke('index')
+        .then(colIndex => {
+            cy.get('tr')
+                .eq(rowIndex)
+                .within((row) => {
+                    cy.get('td').eq(colIndex).as('cell')
+                })
+            cy.get('@cell')   // last command, it's result will be returned
+        });
+}
+)
 
 // ContactGrid Commands
 

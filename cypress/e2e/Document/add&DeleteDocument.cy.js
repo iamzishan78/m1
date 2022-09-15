@@ -1,6 +1,8 @@
 /* eslint-disable no-undef */
 
-describe('Add Document Spec', () => {
+import { documentObj } from "../../cypressUtils/data"
+
+describe('Add & Delete Document Spec', () => {
     it('passes', () => {
         cy.viewport(1400, 900)
         cy.visit('http://localhost:3000/documents')
@@ -11,10 +13,10 @@ describe('Add Document Spec', () => {
         cy.get('#addDocument', { timeout: 50000 }).should('be.visible').click()
 
         cy.log('==== STEP: ADD FILE NUMBER ====')
-        cy.get('#filenumber', { timeout: 50000 }).type('99934033').should('be.visible')
+        cy.get('#filenumber', { timeout: 50000 }).type(documentObj.fileNumber).should('be.visible')
 
         cy.log('==== STEP: ADD FILE NAME ====')
-        cy.get('#filename').type('Cydoc et el')
+        cy.get('#filename').type(documentObj.fileName)
 
         cy.log('==== STEP: ADD FILE TYPE ====')
         cy.get('#filetype', { timeout: 50000 }).type('L')
@@ -33,24 +35,32 @@ describe('Add Document Spec', () => {
 
         cy.contains('State').click({ force: true })
 
-        cy.get('input[type=file]', { force: true }).selectFile('cypress/files/documentSample.png', {
+        cy.log('==== STEP: ADD DOCUMENT ====')
+        cy.interceptApi('AddDescriptorFile')
+        cy.get('input[type=file]', { force: true }).selectFile(documentObj.fileAddress, {
             force: true
         })
+        cy.verifyApiResponse('@AddDescriptorFileApi')
 
         cy.wait(3000)
-        cy.intercept('POST', 'https://enerxgraphql.azurewebsites.net/api/m1graph?code=Rhr8LQFXNnl/TE26EVD296voKbGVWZQDupqWAAWMaZXjzvgdvktPqg==', req => {
-            if (req.body.operationName === 'updateDocument') {
-                req.alias = 'updateDocumentApi';
-            }
-        });
 
-        cy.wait(2000)
-        cy.get("#documentSaveButton").trigger("click");
+        cy.interceptApi('updateDocument')
+        cy.interceptApi('getESDocuments')
 
-        cy.wait('@updateDocumentApi', { timeout: 10000 }).then((interception) => {
-            assert.isNotNull(interception.response.body, 'updateDocument api run succesfully')
-        })
+        cy.get("#documentSaveButton", { timeout: 5000 }).should('be.visible').trigger("click");
+        cy.verifyApiResponse('@updateDocumentApi')
 
+        cy.log('==== STEP: DELETING RECENTLY ADDED DOCUMENT ====')
+
+        cy.log('==== STEP: OPENING FILE DETAIL DRAWER ====')
+        cy.get('table').contains('td', documentObj.fileNumber).click();
+
+        cy.log('==== STEP: CLICKING ON HORIZON ICON ====')
+        cy.get("#fileDetailHorzIcon").click()
+
+        cy.interceptApi('updateDocument')
+        cy.deleteConfirmation()
+        cy.verifyApiResponse('@updateDocumentApi')
 
     })
 
