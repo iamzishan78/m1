@@ -379,7 +379,7 @@ const ReactSelectField = ({
                 justifyContent: "space-between",
               }}
             >
-              <span class="colorText">
+              <span class="colorText" id="selectedValues">
                 <MultSelectValues
                   tooltipView={tooltipView}
                   value={value}
@@ -410,6 +410,7 @@ const ReactSelectField = ({
             controlShouldRenderValue={false}
             hideSelectedOptions={false}
             isClearable={false}
+            id="searchForValue"
             menuIsOpen
             onKeyDown={handleKeyDown}
             onChange={(e) => onSelectChange(e)}
@@ -458,7 +459,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
     class="colorText"
     style={getCss(badgeValue)}
   >
-    <span>{badgeValue}</span>
+    <span id="badgeValue">{badgeValue}</span>
     {isSingleSelect || (
       <CloseIcon
         style={{ fontSize: 13, marginLeft: 10 }}

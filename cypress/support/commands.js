@@ -115,6 +115,20 @@ Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = 
         cy.get('.MuiTypography-root', { timeout: 10000 }).contains(containsString);
 })
 
+Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
+    cy.contains('th', columnName)
+        .invoke('index')
+        .then(colIndex => {
+            cy.get('tr')
+                .eq(rowIndex)
+                .within((row) => {
+                    cy.get('td').eq(colIndex).as('cell')
+                })
+            cy.get('@cell')   // last command, it's result will be returned
+        });
+}
+)
+
 // ContactGrid Commands
 
 Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
