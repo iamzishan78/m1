@@ -138,6 +138,7 @@ const AddNewRelatedAgreementDialog = (props) => {
   };
 
   const addNewRelatedAgreement = () => {
+    if (!!upsertLoading) return;
     upsertRelatedAgreementDescriptor({
       variables: {
         descriptorObject: customLayerId,
@@ -273,9 +274,8 @@ const AddNewRelatedAgreementDialog = (props) => {
           color="secondary"
           style={{ marginBottom: "40px", marginRight: "20px" }}
           onClick={addNewRelatedAgreement}
-          disabled={!!upsertLoading}
         >
-          {upsertLoading ? <CircularProgress size={14} /> : "Add"}
+          {upsertLoading ? <CircularProgress size={22} /> : "Add"}
         </Button>
       </DialogActions>
     </div>
