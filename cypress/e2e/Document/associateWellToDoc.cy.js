@@ -15,7 +15,7 @@ describe('Associate Well Spec', () => {
         cy.get("#wellIcon").click()
 
         cy.addWell('anniemae')
-        cy.addWell('silver dog')
+        cy.addWell('silver')
 
         cy.get("#addIcon").click()
         cy.typeAndSelect('#wellSearch', 'silver do', "wellSearch-option-0")
