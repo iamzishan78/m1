@@ -248,6 +248,7 @@ const AddNewRelatedAgreementDialog = (props) => {
                     value={get(selectedAgreement, params.key, "")}
                     fullWidth
                     disabled
+                    variant="outlined"
                   />
                 </Grid>
               ))}
