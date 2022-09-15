@@ -265,6 +265,11 @@ export default function DetailComponents(props) {
   }, [dispatch]);
 
   useEffect(() => {
+    setButtonScroll(true);
+    setTab(0);
+  }, [agreementId]);
+
+  useEffect(() => {
     if (agreementId) {
       getAgreementProvisions({ variables: { agreementId: agreementId } });
     }
