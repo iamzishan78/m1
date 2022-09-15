@@ -22,6 +22,13 @@ import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEnti
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import { showInfoMessage } from "actions";
+import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+
+const formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -441,7 +448,7 @@ function HeaderFunction(props) {
                     variant="outlined"
                     onChange={(e) => {
                       params.onChange(e.target.value);
-                      handleUpdateCheck({ checkAmount: e.target.value });
+                      handleUpdateCheck({ checkAmount: parseFloat(e.target.value) });
                     }}
                     InputProps={{
                       startAdornment: (
