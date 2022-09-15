@@ -126,14 +126,12 @@ const RellatedAgreementsHeadCells = [
       filter: true,
     },
   },
-
   {
     name: "commentsCounter",
     label: " ",
     options: {
       ignoreGlobal: true,
       dbName: "comments.comment",
-      display: false,
       searchable: false,
       download: false,
       print: false,
