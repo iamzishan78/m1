@@ -14,6 +14,7 @@ import AutoCompleteESField from "components/Shared/Forms/Fields/AutoCompleteESFi
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 import { UPSERT_RELATED_AGREEMENT_DESSCRIPTOR } from "graphQL/useMutationsRelatedAgreement";
+import moment from "moment";
 
 const agreementParams = [
   { key: "agreementNumber", label: "Agreement Number" },
@@ -22,10 +23,10 @@ const agreementParams = [
   { key: "agreementSubtype", label: "Subtype" },
   { key: "grantor", label: "Grantor" },
   { key: "grantee", label: "Grantee" },
-  { key: "agreementDate", label: "Agreement Date" },
-  { key: "effectiveDate", label: "Effective Date" },
-  { key: "expirationDate", label: "Expiration Date" },
-  { key: "agreementStatus", label: "Status" },
+  { key: "agreementDate", label: "Agreement Date", type: "date" },
+  { key: "effectiveDate", label: "Effective Date", type: "date" },
+  { key: "expirationDate", label: "Expiration Date", type: "date" },
+  { key: "agreementStatus", label: "Status", type: "date" },
 ];
 
 const filterKey = ["shapeJson.properties.agreementName.keyword", "shapeJson.properties.agreementNumber.keyword", "shapeJson.properties.layerSubType.keyword"];
@@ -240,12 +241,12 @@ const AddNewRelatedAgreementDialog = (props) => {
                   }}
                 />
               </Grid>
-              {agreementParams.map((params, index) => (
+              {agreementParams.map((param, index) => (
                 <Grid key={index} container className={classes.gridStyle}>
                   <TextField
                     id={`outlined-multiline-static-${index}`}
-                    label={params.label}
-                    value={get(selectedAgreement, params.key, "")}
+                    label={param.label}
+                    value={param.type !== "date" ? get(selectedAgreement, param.key, "") : moment().format("MM/DD/YYYY")}
                     fullWidth
                     disabled
                     variant="outlined"
