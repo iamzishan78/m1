@@ -88,7 +88,7 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
 
 // This command is to check api was successful or not
 Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
-    cy.wait(apiTitle, { timeout: 30000 }).then((interception) => {
+    cy.wait(apiTitle, { timeout: 300000 }).then((interception) => {
         assert.isNotNull(interception.response.body, `${apiTitle} run succesfully`)
         return interception
     })
@@ -129,7 +129,7 @@ Cypress.Commands.add('addWell', (wellName) => {
 Cypress.Commands.add('clickWellIcon', (wellName) => {
     cy.log('==== STEP: CLICK ON WELL ICON ====')
     cy.interceptApi('getWellsFromDocument')
-    cy.get("#wellIcon", { timeout: 3000 }).click()
+    cy.get("#wellIcon", { timeout: 30000 }).click()
 })
 
 Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {

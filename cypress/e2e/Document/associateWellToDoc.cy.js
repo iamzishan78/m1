@@ -9,8 +9,8 @@ describe('Associate Well Spec', () => {
 
         cy.get('#addDocument', { timeout: 50000 }).should('be.visible')
 
-        cy.wait(1000)
-        cy.get('tbody>tr').eq(2).children().eq(3).children().eq(1).click()
+        cy.wait(10000)
+        cy.get('tbody>tr', { timeout: 50000 }).eq(2).children().eq(3).children().eq(1).click()
 
         cy.get("#wellIcon").click()
 

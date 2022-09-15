@@ -11,7 +11,7 @@ describe('Verify Well Spec', () => {
 
         cy.get('#addDocument', { timeout: 50000 }).should('be.visible')
 
-        cy.verifyApiResponse('@getESDocumentsApi', { responseTimeout: 5000 }).then((esDocumentResponse) => {
+        cy.verifyApiResponse('@getESDocumentsApi', { responseTimeout: 50000 }).then((esDocumentResponse) => {
             const documentName = esDocumentResponse.response.body.data.getESFiles.hits[0]?.name
 
             cy.log('==== STEP: OPENING FILE DETAIL DRAWER ====')
@@ -26,7 +26,7 @@ describe('Verify Well Spec', () => {
 
             cy.clickWellIcon()
 
-            cy.verifyApiResponse('@getWellsFromDocumentApi', { responseTimeout: 5000 }).then((wellsResponse) => {
+            cy.verifyApiResponse('@getWellsFromDocumentApi', { responseTimeout: 50000 }).then((wellsResponse) => {
                 const wellsBeforeDocDelete = wellsResponse.response.body.data.getWellDescriptors[0].wells
 
                 cy.log('==== STEP: CLICK ON HOME ICON ====')
@@ -37,26 +37,26 @@ describe('Verify Well Spec', () => {
                 cy.get('#documentDeleteIcon').click({ force: true })
                 cy.interceptApi('updateDocument')
                 cy.get(".MuiButton-label").contains('Delete').click()
-                cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: 5000 })
+                cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: 50000 })
 
                 cy.log('==== STEP: UPLOAD NEW DOCUMENT ====')
                 cy.interceptApi('AddDescriptorFile')
                 cy.get('input[type=file]', { force: true }).selectFile('cypress/files/documentSample.png', {
                     force: true
                 })
-                cy.verifyApiResponse('@AddDescriptorFileApi', { responseTimeout: 5000 })
+                cy.verifyApiResponse('@AddDescriptorFileApi', { responseTimeout: 50000 })
 
                 cy.log('==== STEP: CLICK ON SAVE BUTTON ====')
                 cy.interceptApi('updateDocument')
                 cy.get(".MuiButton-label").contains('Save').click()
-                cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: 5000 })
+                cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: 50000 })
 
                 cy.log('==== STEP: OPENING SAME FILE DETAIL DRAWER ====')
-                cy.get('table', { responseTimeout: 5000 }).contains('td', documentName).next().click({ force: true });
+                cy.get('table', { responseTimeout: 50000 }).contains('td', documentName).next().click({ force: true });
 
                 cy.clickWellIcon()
 
-                cy.verifyApiResponse('@getWellsFromDocumentApi', { responseTimeout: 5000 }).then((wellsResponse2) => {
+                cy.verifyApiResponse('@getWellsFromDocumentApi', { responseTimeout: 50000 }).then((wellsResponse2) => {
                     const wellsAfterDocDelete = wellsResponse2.response.body?.data?.getWellDescriptors[0]?.wells
 
                     if (wellsAfterDocDelete && wellsAfterDocDelete.length !== wellsBeforeDocDelete.length)
