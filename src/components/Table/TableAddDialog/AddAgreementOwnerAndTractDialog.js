@@ -156,14 +156,6 @@ function AddAgreementOwnerAndTractDialog(props) {
     awaitRefetchQueries: true,
   });
 
-  // const setShapeLayer = (layer) => {
-  //   const _layer = copy(layer);
-  //   if (_layer) {
-  //     _layer.qtr1 = _layer.
-  //   }
-  //   setSelectedShapeLayer(layer);
-  // }
-
   useEffect(() => {
     if (props.seletedOwner) {
       props.seletedOwner.realtedObject = props.seletedOwner?.contact?._id;
@@ -192,6 +184,8 @@ function AddAgreementOwnerAndTractDialog(props) {
 
       setIsNewTract(false)
       // reset(pick(props.seletedOwner, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'sdGrossAcres', 'uAcres', 'legalDescription']))
+    } else {
+      reset({ countAcres: "Yes" });
     }
   }, [props.seletedOwner]);
 
@@ -298,9 +292,6 @@ function AddAgreementOwnerAndTractDialog(props) {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const openConfirmationDialog = () => {
-    setDeleteDialogOpen(true);
-  };
   const handleCloseDialog = () => {
     setDeleteDialogOpen(false);
   };
@@ -321,21 +312,6 @@ function AddAgreementOwnerAndTractDialog(props) {
     } catch {
       setLoading(false);
     }
-  };
-
-  const calculateRoyaltyNetAcres = () => {
-    const values = getValues()
-    if (!values.royalty_interest && !values.orri) return null;
-    let netAcres = calculateNetAcres(),
-      nra = netAcres * (parseFloat(values.royalty_interest || 0) + parseFloat(values.orri || 0)) * 8;
-    nra = addTrailingZeros(nra.toFixed(8));
-    return nra;
-  };
-
-  const checkIfNotEqual = (type, value) => {
-    const acres = type === 'net_acres' ? calculateNetAcres() : calculateRoyaltyNetAcres();
-    if (!value || !acres) return false;
-    return value && Number(value) !== Number(acres);
   };
 
   const calculateNetAcres = (mineral_interest) => {

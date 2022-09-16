@@ -346,6 +346,7 @@ export default function DocumentDetails(props) {
   return (
     <div>
       <div
+        id="documentdetails"
         style={{
           flexGrow: 1,
           overflow: "auto",
@@ -363,6 +364,7 @@ export default function DocumentDetails(props) {
           >
             <h4>File Number</h4>
             <TextField
+              id="filenumber"
               className={classes.maxWidth}
               multiline
               value={newDocument?.documentNumber}
@@ -383,6 +385,7 @@ export default function DocumentDetails(props) {
           >
             <h4>File Name</h4>
             <TextField
+              id="filename"
               className={classes.maxWidth}
               multiline
               value={newDocument?.documentName}
@@ -425,6 +428,7 @@ export default function DocumentDetails(props) {
             <TextField
               // autoOk
               type="date"
+              id="filedate"
               //variant="outlined"
               defaultValue={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
               margin="normal"
@@ -520,6 +524,7 @@ export default function DocumentDetails(props) {
             }}>
               <h4>Book</h4>
               <TextField
+                id="book"
                 className={classes.maxWidth}
                 multiline
                 value={newDocument?.book}
@@ -537,6 +542,7 @@ export default function DocumentDetails(props) {
             }}>
               <h4>Page</h4>
               <TextField
+                id="page"
                 className={classes.maxWidth}
                 multiline
                 value={newDocument?.page}
@@ -551,6 +557,7 @@ export default function DocumentDetails(props) {
             <div>
               <h4>Instrument #</h4>
               <TextField
+                id="instrument"
                 className={classes.maxWidth}
                 multiline
                 value={newDocument?.instrument}
@@ -600,6 +607,7 @@ export default function DocumentDetails(props) {
                   )}
                   {meta.type === "dropdown" && (
                     <ListItem
+                      id={`dropdown-${index}`}
                       style={{
                         flexDirection: "column",
                         justifyContent: "start",
@@ -629,6 +637,7 @@ export default function DocumentDetails(props) {
                   )}
                   {meta.type === "multiselect" && (
                     <ListItem
+                      id={`multiselect-${index}`}
                       style={{
                         flexDirection: "column",
                         justifyContent: "start",
@@ -680,7 +689,7 @@ export default function DocumentDetails(props) {
       <div style={{ flexShrink: 0 }}>
         {(stateApp.selectedDocument?.fileId || fileData) && replaceFile !== 'IN_PROGRESS' ? (
           <ListItem>
-            <div style={{ display: "flex", justifyContent: "start" }}>
+            <div style={{ display: "flex", justifyContent: "start" }} id="attachedDocument">
               {viewFileSResult?.viewFiles?.map((value, key) => {
                 let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
                 if (key <= 1) {
@@ -699,7 +708,7 @@ export default function DocumentDetails(props) {
                                 // setFileData(null)
                               }}
                             >
-                              <DeleteIcon />
+                              <DeleteIcon id="documentDeleteIcon" />
                             </IconButton>
 
                             <IconButton
@@ -838,7 +847,7 @@ export default function DocumentDetails(props) {
               }}
               userId={stateApp.user.mongoId}
               setFileData={setFileData}
-              fileId={replaceFile ? null : stateApp.selectedDocument?._id}
+              fileId={stateApp.selectedDocument?._id}
               onFileUpload={onFileUpload}
             />
           </div>
@@ -862,6 +871,7 @@ export default function DocumentDetails(props) {
           </Button>
 
           <Button
+            id="documentSaveButton"
             variant="contained"
             color="secondary"
             size="medium"
@@ -904,6 +914,7 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
   };
   return (
     <Autocomplete
+      id="filetype"
       defaultValue={value}
       value={value}
       disableListWrap
