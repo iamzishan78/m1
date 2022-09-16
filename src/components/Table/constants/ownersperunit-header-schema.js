@@ -34,8 +34,8 @@ const OwnersPerUnitHeadCells = [
       filter: true,
       setCellProps: () => ({
         style: {
-          minWidth: "200px",
-          maxWidth: "200px",
+          minWidth: "300px",
+          maxWidth: "300px",
           whiteSpace: "nowrap",
           position: "sticky",
           left: "77px",
