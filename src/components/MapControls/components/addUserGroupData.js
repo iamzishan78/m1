@@ -57,7 +57,7 @@ export default function AddUserGroupData(props) {
   const [inputOriginalFile, setInputOriginalFile] = useState(stateMapControls.fileUploadedOriginalContent);
   const [layerNames, setLayerNames] = useState([]);
   const [groupName, setGroupName] = useState("");
-  const [isCreateLayers, setIsCreateLayers] = useState(false);
+  const [isCreateLayers, setIsCreateLayers] = useState(true);
   const [error, setErrorr] = useState(false);
   const [notReturn, setNotReturn] = useState(false);
   const [uploadFailed, setUploadFailed] = useState("");
