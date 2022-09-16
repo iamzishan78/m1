@@ -11,16 +11,22 @@ import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 import { Popper, Typography } from "@material-ui/core";
 
-const styles = (theme) => ({
-  popper: {
-    width: "100%"
-    // maxWidth: "fit-content",
-  },
-});
+// const styles = (theme) => ({
+//   popper: {
+//     width: "560px"
+//     // maxWidth: "fit-content",
+//   },
+// });
 
-const PopperMy = function (props) {
-  return <Popper {...props} style={styles.popper} placement="bottom-start" />;
-};
+// const PopperMy = (props) => {
+//   return (
+//     <Popper
+//       style={{ maxWidth: "fit-content" }}
+//       placement="bottom-start"
+//       {...props}
+//     />
+//   );
+// };
 
 const AutoCompleteField = ({ placeholder, value, onChange, column, query, extendSearchQuery, esIndex, filters, variant, ...rest }) => {
   const [open, setOpen] = useState(false);
@@ -69,6 +75,17 @@ const AutoCompleteField = ({ placeholder, value, onChange, column, query, extend
       },
     });
   };
+
+  const PopperMy = (props) => {
+    return (
+      <Popper
+        {...props}
+        style={{ maxWidth: "fit-content", ...rest.style }}
+        placement="bottom-start"
+      />
+    );
+  };
+
   return (
     <Autocomplete
       id={`filter-autocomplete-${label}`}

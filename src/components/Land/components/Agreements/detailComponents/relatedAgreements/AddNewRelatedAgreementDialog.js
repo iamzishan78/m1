@@ -188,7 +188,6 @@ const AddNewRelatedAgreementDialog = (props) => {
               <Grid container className={classes.gridStyle}>
                 <AutoCompleteESField
                   placeholder="Search for agreement by name or number"
-                  value=""
                   column={{
                     label: "",
                     filterKey,
@@ -198,8 +197,12 @@ const AddNewRelatedAgreementDialog = (props) => {
                   esIndex="shapes_flat"
                   extendSearchQuery="*"
                   variant="outlined"
-                  // open={true}
+                  style={{ maxWidth: "560px", width: "560px" }}
+                  filterOptions={(options, params) => {
+                    return options;
+                  }}
                   renderOption={(option) => {
+                    if (option.id === "newEntity") return;
                     const parts = parse([option.key[0], option.key[1]], Array());
 
                     return (
