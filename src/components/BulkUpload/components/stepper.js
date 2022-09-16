@@ -258,7 +258,6 @@ export default function CustomizedSteppers(props) {
   const handleNext = async () => {
     if (stateApp.activeStepNumber === steps.length - 2) {
       if (stateApp.jobType === 'SHAPE_TO_M1_LAYER') {
-        console.log(stateApp)
         const jobInitialization = await client.mutate({
           mutation: INITIALIZE_EXPORT_JOB,
           variables: {
@@ -306,12 +305,19 @@ export default function CustomizedSteppers(props) {
           delete element.tableData;
         });
 
+        const requestPayload = {
+          sampleCsv: jobHeaders[props.selectedJob.type],
+          uploadType: stateApp.selectedShapeLayerOption
+        }
+
+        if (stateApp.jobType === 'UNITS') {
+          const autoCalculateOfferPrice = !!stateApp?.user?.features?.find(f => f.name === 'autoCalculateOfferPrice')
+          requestPayload['autoCalculateOfferPrice'] = autoCalculateOfferPrice
+        }
+
         getJobUploadUri({
           variables: {
-            requestPayload: {
-              sampleCsv: jobHeaders[props.selectedJob.type],
-              uploadType: stateApp.selectedShapeLayerOption
-            },
+            requestPayload,
             jobName: props.selectedJob.name,
             jobType: props.selectedJob.type,
             userId: userID,
