@@ -42,7 +42,7 @@ describe('Add and Remove Tract Spec', () => {
         cy.interceptApi('updateCustomLayer')
         cy.get('.mapboxgl-canvas').click()
         cy.get('#parcel-button', { timeout: 30000 }).should('be.visible').click()
-        cy.get(".MuiListItem-root").contains("Tract").click()
+        cy.get(".MuiListItem-root", { timeout: 30000 }).contains("Tract").click()
         cy.get('.MuiBox-root', { timeout: 30000 }).should('be.visible')
 
         cy.get("#expandCardVertIcon").click()
