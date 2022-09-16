@@ -98,7 +98,7 @@ const OwnersPerUnitHeadCells = [
     type: "number",
     options: {
       filter: true,
-      customRender: (value) => vf_currency(value),
+      // customRender: (value) => vf_currency(value),
     },
   },
   {
@@ -230,19 +230,6 @@ const OwnersPerUnitHeadCells = [
           value: "false",
         },
       ],
-    },
-  },
-  {
-    name: "actionMenu",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: true,
-      download: false,
-      print: false,
-      viewColumns: false,
-      parent: "Unit detail"
     },
   },
   {
