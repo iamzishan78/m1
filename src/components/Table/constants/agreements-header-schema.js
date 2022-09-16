@@ -223,7 +223,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
   {
     name: "acquisitionDate",
     label: "Acquisition Date",
-    esKey: "shapeJson.properties.agreementDate",
+    esKey: "shapeJson.properties.acquisitionDate",
     options: {
       setCellProps: () => ({ style: { minWidth: "175px" } }),
       dbName: "shapeJson.properties.acquisitionDate",
