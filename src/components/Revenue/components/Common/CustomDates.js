@@ -62,6 +62,7 @@ export default function Portfolio({
   isProperties,
   lastCheckMinDate,
   onChange,
+  defaultRange
 }) {
   const classes = useStyles();
   useEffect(() => {
@@ -118,7 +119,7 @@ export default function Portfolio({
           renderInput={(params) => (
             <TextField {...params} label="Check Date Range" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
           )}
-          defaultValue={CUSTOM_DATES.THIS_YEAR_TO_DATE}
+          defaultValue={defaultRange ? defaultRange : CUSTOM_DATES.THIS_YEAR_TO_DATE}
           disableListWrap
           id="custom-date-dropdown"
         />

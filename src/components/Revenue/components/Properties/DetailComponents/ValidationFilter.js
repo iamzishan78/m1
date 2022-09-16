@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const ValidationFilter = ({ field, setESFilters, filterToggle, setFilterToggle }) => {
+const ValidationFilter = ({ field, defaultStartDate, setESFilters, filterToggle, setFilterToggle }) => {
     const classes = useStyles();
 
     const [selectedFilter, setSelectedFilter] = useState('');
@@ -46,9 +46,9 @@ const ValidationFilter = ({ field, setESFilters, filterToggle, setFilterToggle }
     const [propertyFilter, setPropertyFilter] = useState([]);
     
     useEffect(() => {
-        setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
+        setFromDate(moment(defaultStartDate? defaultStartDate : new Date()).startOf('year').format('yyyy-MM-DD'));
         setToDate(moment().subtract(0, 'months').endOf('month').format('yyyy-MM-DD'));
-    }, []);
+    }, [defaultStartDate]);
 
     useEffect(() => {
       updateFilters();
@@ -100,6 +100,7 @@ const ValidationFilter = ({ field, setESFilters, filterToggle, setFilterToggle }
             setToDate={setToDate}
             lastCheckMinDate={''}
             onChange={setSelectedFilter}
+            defaultRange="Custom"
           />
         </Grid>
       </div>

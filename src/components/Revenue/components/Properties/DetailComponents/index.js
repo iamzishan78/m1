@@ -521,13 +521,15 @@ export default function DetailComponents(props) {
 const Validation = ({ propertyId }) => {
   const [esFilters, setESFilters] = useState([]);
   const [filterToggle, setFilterToggle] = useState(false);
-  const [associatedWellIds, setAssociatedWellIds] = useState([])
+  const [associatedWellIds, setAssociatedWellIds] = useState([]);
+  const [startDate, setStartDate] = useState(null)
   console.log('esFilters', esFilters)
 
   return (
     <div style={{ background: "white", padding: "10px" }}>
       <ValidationFilter
         field={"date"}
+        defaultStartDate={startDate}
         setESFilters={setESFilters}
         setFilterToggle={setFilterToggle}
         filterToggle={filterToggle}
@@ -535,7 +537,7 @@ const Validation = ({ propertyId }) => {
 
       <WellCardContextProvider>
         <WellProdChartContextProvider>
-          <ValidationChart filter={esFilters} propertyId={propertyId} setAssociatedWellIds={setAssociatedWellIds} />
+          <ValidationChart filter={esFilters} propertyId={propertyId} setStartDate={setStartDate} setAssociatedWellIds={setAssociatedWellIds} />
         </WellProdChartContextProvider>
       </WellCardContextProvider>
 
@@ -545,7 +547,7 @@ const Validation = ({ propertyId }) => {
   )
 }
 
-const ValidationChart = ({ filter, propertyId, setAssociatedWellIds }) => {
+const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellIds }) => {
 
   const [, setStateWellCard] = useContext(WellCardContext);
   const [, setStateWellProdChart] = useContext(WellProdChartContext);
@@ -567,7 +569,7 @@ const ValidationChart = ({ filter, propertyId, setAssociatedWellIds }) => {
 
   useEffect(() => {
     if(associatedWells?.getAssociatedWellProductionData?.length > 0) {
-      const wellData  = JSON.parse(JSON.stringify(associatedWells.getAssociatedWellProductionData))
+      const wellData = JSON.parse(JSON.stringify(associatedWells.getAssociatedWellProductionData))
       const productionData = []
       const wellIds = []
       wellData.forEach((data) => {
@@ -612,6 +614,28 @@ const ValidationChart = ({ filter, propertyId, setAssociatedWellIds }) => {
       setWellProductionData(JSON.parse(JSON.stringify(productionData)))
     }
   },[associatedWells, filter])
+
+  useEffect(() => {
+    if(associatedWells?.getAssociatedWellProductionData) {
+      let minDate = new Date();
+      const wellData = JSON.parse(JSON.stringify(associatedWells.getAssociatedWellProductionData))
+
+      wellData.forEach((data) => {
+        let pData = data.well.productionData.data
+        const newMinDate = new Date(
+          Math.min(
+            ...pData.map(element => {
+              return new Date(element.ReportDate);
+            }),
+          ),
+        );
+        if( newMinDate < minDate) {
+          minDate = newMinDate
+        }
+      })
+      setStartDate(minDate)
+    }
+  },[associatedWells])
 
   console.log('associatedWells', associatedWells)
 
