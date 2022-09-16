@@ -1,10 +1,8 @@
 import React, { useEffect, useContext, useState } from "react";
-import { Container } from "@material-ui/core";
+import { Container, Dialog } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
-import moment from "moment";
 import Agreements from "components/Shared/svgIcons/agreements";
-
 
 import { deepEqualObjects, copy } from "components/Shared/functions";
 import { HeaderComponent } from "components/Table/helpers";
@@ -19,7 +17,6 @@ import { useSelector } from "react-redux";
 
 import { useMutation } from "@apollo/client";
 
-
 import debounce from "lodash/debounce";
 import { AppContext } from "AppContext";
 
@@ -30,13 +27,9 @@ import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import GridView from "components/Shared/GridView";
 
-
 // value formatters 
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 
-
-
-const genericDataActions = ['tags', 'comments', 'tracks']
 function AgreementsTable(props) {
   const defaultView = {
     name: `All Agreements`,
@@ -46,17 +39,18 @@ function AgreementsTable(props) {
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedGridView, setSelectedGridView] = useState(defaultView);
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   // queries
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
   const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
 
-  const classes = usetableStyles({ isFullHeight: true });
+  const classes = usetableStyles({ isFullHeight: true, isAgreementsTable: true });
+
 
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
-  const GridViewModule = userGridViewSettings[`Agreements`]
+  const GridViewModule = userGridViewSettings[`Agreements`];
 
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
@@ -75,6 +69,7 @@ function AgreementsTable(props) {
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
+      hit.agreementId = hit._id
       hit.agreementType = agreementTypes.find((type) => type.value === hit.agreementType || type.label === hit.agreementType)?.label;
       hit.agreementDate = hit.agreementDate ? convert_date(hit.agreementDate) : null;
       hit.effectiveDate = hit.effectiveDate ? convert_date(hit.effectiveDate) : null;
@@ -84,17 +79,22 @@ function AgreementsTable(props) {
       hit.County = hit?.originalProperties?.County;
       hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
-      hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
+      // hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
       return hit;
     });
     return hits
   }
 
   useEffect(() => {
+    if (props.landSearchQuery)
+      setStateApp((stateApp) => ({ ...stateApp, landSearchQuery: '' }))
+  }, [])
+
+  useEffect(() => {
     setSelectedGridView(GridViewModule || defaultView);
   }, [GridViewModule]);
 
-
+  console.log(props.landSearchQuery || 'empty', searchInput || 'empty')
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : []
     props.setInitialFilters(formatedFilter)
@@ -106,7 +106,7 @@ function AgreementsTable(props) {
       searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
-      startPaginationAt: 10,
+      startPaginationAt: 50,
       typeKeyword: { gridViewCategory: "Agreements", metaModule: "Agreement" },
       filters: [
         {
@@ -121,8 +121,6 @@ function AgreementsTable(props) {
         value: stateApp?.currentFeature?.geometry
       },
       formatHits,
-
-      modifySelectedGridView: modifySelectedGridView
     });
     // eslint-disable-next-line
   }, [searchInput, props.landSearchQuery, props.filterToggle]);
@@ -177,8 +175,6 @@ function AgreementsTable(props) {
     if (selectedGridView?.name === 'My Agreements' && selectedGridView?.filters?.length)
       selectedGridView.filters[0].value = stateApp.user._id;
   };
-
-
   const headerProps = {
     columns: props.columns,
     showViewModal,
@@ -197,6 +193,31 @@ function AgreementsTable(props) {
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
+      {/* <Dialog
+        open={props.openDialog ? true : false}
+        onClose={() => props.setOpenDialog(null)}
+        fullWidth={true}
+        maxWidth={"sm"}
+      >
+        {props.openDialog === "delete" && (
+          <DeleteConfirmationDialogContent
+            header={`Delete Revenue Statement(s)`}
+            onClose={() => props.setOpenDialog(null)}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={props.selectedRows.map(
+              (sR) => props.rows[sR.dataIndex]._id
+            )}
+            setM1nSelectedRowsIndexes={props.setSelectedRows}
+          >
+            {`Do you want to delete the selected revenue statement${props.selectedRows &&
+              props.selectedRows.length > 1 &&
+              props.selectedRows.length > 1
+              ? "s"
+              : ""
+              }?`}
+          </DeleteConfirmationDialogContent>
+        )}
+      </Dialog> */}
       {showViewModal && (
         <GridView
           columns={props.columns}
@@ -238,6 +259,7 @@ function AgreementsTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

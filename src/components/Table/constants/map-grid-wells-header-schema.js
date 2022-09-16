@@ -16,6 +16,29 @@ const wellsColumnHeaders = [
     label: "API",
     esKey: "api.keyword",
     options: {
+      setCellProps: () => ({
+        style: {
+          minWidth: "200px",
+          maxWidth: "200px",
+          whiteSpace: "nowrap",
+          position: "sticky",
+          left: "77px",
+          zIndex: 200,
+          boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+          padding: '0px 25px 0px 0px',
+        }
+      }),
+
+      // styling props applied to the column header cell
+      setCellHeaderProps: () => ({
+        style: {
+          position: "sticky",
+          paddingLeft: '35px',
+          zIndex: 201,
+          left: "77px",
+        }
+      }),
+      ignoreGlobal: true,
       sort: true,
       filter: true,
     },
@@ -25,6 +48,7 @@ const wellsColumnHeaders = [
     label: "Well Name",
     esKey: "wellName.keyword",
     options: {
+
       sort: true,
       filter: true,
     },
@@ -69,7 +93,7 @@ const wellsColumnHeaders = [
     name: "operator",
     label: "Operator Name",
     esKey: "operator.keyword",
-    options:{
+    options: {
       display: true,
       filter: true,
     }
@@ -78,9 +102,18 @@ const wellsColumnHeaders = [
     name: "wellBoreProfile",
     label: "Well Profile",
     esKey: "wellBoreProfile.keyword",
-    options:{
+    options: {
       display: true,
       filter: true,
+    }
+  },
+  {
+    name: "globalWell",
+    label: "Global  Well",
+    esKey: "Id.keyword",
+    options: {
+      display: false,
+      filter: false,
     }
   },
   // {
@@ -117,27 +150,27 @@ const wellsColumnHeaders = [
       viewColumns: false,
     },
   },
-  {
-    name: "isTracked",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-      filterOptions: {
-        names: ["Tracked", "Untracked"],
-        logic(tracked, filterVal) {
-          return !(
-            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
-            (filterVal.indexOf("Untracked") >= 0 && !tracked)
-          );
-        },
-      },
-      filterType: "dropdown",
-    },
-  },
+  // {
+  //   name: "isTracked",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //     filterOptions: {
+  //       names: ["Tracked", "Untracked"],
+  //       logic(tracked, filterVal) {
+  //         return !(
+  //           (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+  //           (filterVal.indexOf("Untracked") >= 0 && !tracked)
+  //         );
+  //       },
+  //     },
+  //     filterType: "dropdown",
+  //   },
+  // },
   {
     name: "coordinates",
     label: " ",

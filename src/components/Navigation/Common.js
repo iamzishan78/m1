@@ -24,6 +24,20 @@ export const useStyles = makeStyles((theme) => ({
       marginLeft: "52px",
     },
   },
+  appBarWhite: {
+    height: "64px",
+    background: "#ffff",
+    zIndex: 1000,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    paddingRight: "0 !important",
+    boxShadow: "none",
+    "& .MuiToolbar-root": {
+      marginLeft: "52px",
+    },
+  },
   appBarShift: {
     marginLeft: `${drawerWidth}px`,
     transition: theme.transitions.create(["width", "margin"], {
@@ -103,6 +117,7 @@ export const useStyles = makeStyles((theme) => ({
     position: "absolute",
     left: props.user ? "60px" : "0px",
     height: "100%",
+    overflow: props.isMap ? "hidden" : 'auto'
   }),
   grow1: {
     flexGrow: 1,

@@ -35,6 +35,7 @@ export default function AgreementDetailCard(props) {
   const [selectedWellTab, setWellSelectedTab] = useState(0);
   const [selectedTractTab, setTractSelectedTab] = useState(0);
   const [uniObj, setUniObj] = useState();
+  const [tractOwners, setTractOwners] = useState();
   const [infoMessage, setInfoMessage] = useState(false);
   const [properties, setProperties] = useState();
   const [_, setStateApp] = useContext(AppContext);
@@ -135,9 +136,9 @@ export default function AgreementDetailCard(props) {
       history.location.pathname !== newPath && history.replace(newPath);
     }
 
-    
-    if (field ==='agreementTerm' || field ==='effectiveDate') {
-      if (field ==='agreementTerm') {
+
+    if (field === 'agreementTerm' || field === 'effectiveDate') {
+      if (field === 'agreementTerm') {
         shape.properties.expirationDate = moment(shape.properties.effectiveDate).add(parseInt(value), 'months').toDate();
       } else {
         shape.properties.expirationDate = moment(value).add(parseInt(shape.properties.agreementTerm), 'months').toDate();
@@ -181,6 +182,12 @@ export default function AgreementDetailCard(props) {
     // } else {
     //   customRow.value = value;
     // }
+
+    // Used for Agreement nra, net_acres and grossAcres overidden
+    if (value?.overridden?.toString()) {
+      set(properties, `overridden.${key}`, value.overridden);
+      value = value.value
+    }
     set(properties, `${key}`, value);
     properties.custom_data_arr?.forEach((data) => {
       properties.custom_data[data.key] = data.value;
@@ -257,15 +264,16 @@ export default function AgreementDetailCard(props) {
             />,
             <Grid container direction="column" alignItems="center" style={{ display: "block", padding: "20px 20px 0px 20px" }}>
               <Grid item xs={12} style={{ padding: "15px 5px 25px 0px" }}>
-                <AgreementLegalDescriptionFields agreementDetails={uniObj?.shape?.properties} updateAgreement={updateCustomProperties} />
+                <AgreementLegalDescriptionFields tractOwners={tractOwners} agreementDetails={uniObj?.shape?.properties} updateAgreement={updateCustomProperties} />
               </Grid>
               {uniObj && (
                 <Grid item xs={12}>
                   <TabPanels
                     value={selectedTractTab}
                     panels={[
-                      <div className={showSummary ? classes.subContent : classes.subContent2}>
+                      <div className={showSummary ? classes.agreementSubContent : classes.subContent2}>
                         <AgreementOwnersTractsTable
+                          setRecord={setTractOwners}
                           customLayer={uniObj}
                           shapeType="Agreement"
                           header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}

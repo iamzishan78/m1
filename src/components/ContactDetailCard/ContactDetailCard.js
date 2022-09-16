@@ -4,20 +4,17 @@ import React, { useContext, useState, useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 // mui core components
-import { Grid, IconButton, Tabs, Tab } from "@material-ui/core";
+import { Grid, IconButton, Tabs, Tab, Menu, MenuItem, Badge, CircularProgress } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import AddIcCallIcon from "@material-ui/icons/AddIcCall";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import { useHistory } from "react-router-dom";
-import Divider from '@material-ui/core/Divider';
-
 
 // internal components
 import Comments from "../Shared/Comments";
 import Tags from "../Shared/Tagger";
 import Avatar from "react-avatar";
-import Badge from "@material-ui/core/Badge";
 import FacebookIcon from "@material-ui/icons/Facebook";
 import TwitterIcon from "@material-ui/icons/Twitter";
 import LinkedInIcon from "@material-ui/icons/LinkedIn";
@@ -26,29 +23,19 @@ import RequestPageIcon from "components/Shared/svgIcons/request_page";
 import FieldContent from "./components/FieldContent";
 import { CONTACT } from "../../graphQL/useQueryContact";
 import { CONTACT_PURCHASE_DATA } from "graphQL/useQueryContactPurchaseData";
-import { TRANSACTIONDATA } from "../../graphQL/useQueryTransactionData";
-import { LASTMELISSARECORD } from "../../graphQL/useQueryGetMelissaRecords";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { TRANSACTIONDATA } from "graphQL/useQueryTransactionData";
+import { LASTMELISSARECORD } from "graphQL/useQueryGetMelissaRecords";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import BuyContactsInfoDialogContent from "../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 import AddDealDialog from "components/Transact/components/DealDialog/AddDealDialog";
-import ParcelsCard from "./components/ParcelsCard";
-import ShapeOwnershipCard from "./components/ShapeOwnershipCard";
-import LeadStage from "../Shared/LeadStage";
 import RightDialog from "./components/RightDialog";
 import Dialog from "@material-ui/core/Dialog";
 import Toolbar from "@material-ui/core/Toolbar";
 import { useSelector, useDispatch } from "react-redux";
-import Card from "@material-ui/core/Card";
-import DealsNew from "./components/DealsNew";
-import WellsCard from "./components/WellsCard";
-import RecentActivities from "../RecentActivities/RecentActivities";
-import ContactDetailedInfo from "../ContactDetailedInfo/ContactDetailedInfo";
 import ContactDataMissingDialog from "./components/ContactDataMissingDialog";
-import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
-import { UPDATECONTACT } from "../../graphQL/useMutationUpdateContact";
-import DocViewer from "../Shared/DocViewer";
+import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
+import DocViewer from "components/Shared/DocViewer";
 import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer";
 import AddActivityDialog from "../ContactDetailCard/components/AddActivityDialog";
 import SummaryFields from "../ContactDetailedInfo/components/SummaryFields";
@@ -59,13 +46,15 @@ import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import Link from "@material-ui/core/Link";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Typography from "@material-ui/core/Typography";
-import { debounce, get } from "lodash";
+import { get } from "lodash";
 
 // contexts
-import { AppContext } from "../../AppContext";
+import { AppContext } from "AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { toggleRightColumn } from "actions/ContactDetailCard";
 import { getAddressUrl } from "utils/helper";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const useStyles = makeStyles((theme) => ({
   Contacts: {
@@ -331,7 +320,7 @@ const useStyles = makeStyles((theme) => ({
   },
   detailHeader: {
     backgroundColor: "#fff",
-    padding: "20px 27px 0px 45px",
+    padding: "20px",
     marginTop: "8px",
   },
   title: {
@@ -374,15 +363,9 @@ const useStyles = makeStyles((theme) => ({
     },
     width: "calc(100vw - 785px)",
   },
-  actionsContainer: {
-    display: "flex",
-    direction: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-  },
   metaActions: {
-    float: "right",
+    position: "absolute",
+    right: "15px",
     "& button": {
       margin: "0px 5px",
       color: "grey",
@@ -480,9 +463,10 @@ function ContactDetailCard(props) {
   });
   const [updateContact] = useMutation(UPDATECONTACT);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+
+  const handleClose = event => setAnchorEl(null);
+
   const handleClickRightDialogClose = (e) => {
     e.preventDefault();
     setRightDialogOpen(false);
@@ -495,11 +479,7 @@ function ContactDetailCard(props) {
       contactUpdated: null,
     }));
   };
-  const handleOpenExpandableCard = (subComponent, subComponentTitle) => {
-    setExpCardSubComponent(subComponent);
-    setExpCardSubComponentTitle(subComponentTitle);
-    setShowExpandableCard(true);
-  };
+
   const handleExpandClick = async (type) => {
     setOpenDialog(type);
   };
@@ -632,14 +612,19 @@ function ContactDetailCard(props) {
           <div className={classes.title}>
             <StyleBadge>
               <Avatar
-                className={classes.grey}
-                name={
+                color={Avatar.getRandomColor(
                   contactData.name ||
-                  `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`
+                  `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`, 
+                  ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
+                // className={classes.grey}
+                name={
+                  (contactData.name ||
+                  `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`).split(' ').splice(0, 2).join(' ')
                 }
                 size="93"
                 round
               />
+         
             </StyleBadge>
             <div className={classes.titleText}>
               <div className={classes.userName}>
@@ -767,22 +752,23 @@ function ContactDetailCard(props) {
           ) : (
             <>
               <div className={classes.summarySection}>
-                <Grid item xs={12} container spacing={0} style={{ padding: "5px 20px", height: "550px", textAlign: "center" }}>
+                <Grid item xs={12} container spacing={0} style={{ 
+                  padding: "5px 20px", 
+                  height: "550px", 
+                  // marginBottom: "-100px",
+                  // marginTop: "20px",
+                  textAlign: "center" }}>
                   <SummaryFields contactData={contactData} />
                 </Grid>
               </div>
-
-              
-              {/*/////////// section 3 //////////// */}
-              {/* this is the descriptor grid on the contact detail */}
               <div className={classes.detailCardSection}>
+                {/* <Divider sx={{backgroundColor: '#F2F2F2', borderBottomWidth: 5}}/> */}
 
-              {/* <Divider sx={{backgroundColor: '#F2F2F2', borderBottomWidth: 5}}/> */}
-
-                <Grid item xs={12} container className={classes.border} spacing={0} 
-                    style={{ padding: "0px 0px",
-                            //  height: '100vh'
-                    }}>
+                <Grid item xs={12} container className={classes.border} spacing={0}
+                  style={{
+                    padding: "0px 0px",
+                    //  height: '100vh'
+                  }}>
                   <ContactDetailedSelector
                     purchaseData={purchaseData}
                     contactData={contactData}
@@ -790,72 +776,6 @@ function ContactDetailCard(props) {
                   />
                 </Grid>
               </div>
-
-
-              {/*/////////// new section - lead stage //////////// */}
-              {/* <Grid item xs={12} className={`${classes.border}`}>
-                <div className={classes.SectMargin}>
-                  <Grid item xs={12} style={{ minHeight: "33px" }}>
-                    <h4 style={{ margin: "0 0 13px 0", float: "left" }}>
-                      Lead Stage changed:{" "}
-                      <span style={{ fontWeight: "normal" }}>
-                        {anyToDate(
-                          contactData.lastUpdateLeadStageAt ? contactData.lastUpdateLeadStageAt : contactData.lastUpdateAt
-                        ).toLocaleString()}
-                      </span>
-                    </h4>
-                  </Grid>
-
-                  <Grid item xs={12} style={{ minHeight: "35px", backgroundColor: "#E2E9F0" }}>
-                    <LeadStage leadStage={contactData.leadStage ? contactData.leadStage : "New"} id={contactData._id} />
-                  </Grid>
-                </div>
-              </Grid> */}
-
-              {/*/////////// new section -associated interests and deals //////////// */}
-              {/* <Grid container item xs={12} className={`${classes.border}`} style={{ padding: "23px 28px" }} spacing={0}>
-                <Grid item xs={12}>
-                  <h4 style={{ margin: "0 0 13px 0", float: "left" }}>Entity Associations</h4>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={3} style={{ minWidth: "250px" }}>
-                      <Card raised style={{ minHeight: "165px", height: "100%" }}>
-                        <WellsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
-                      </Card>
-                    </Grid>
-                    <Grid item xs={3} style={{ minWidth: "250px" }}>
-                      <Card raised style={{ minHeight: "35px", height: "100%" }}>
-                        <ShapeOwnershipCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
-                      </Card>
-                    </Grid>
-                    <Grid item xs={3} style={{ minWidth: "250px" }}>
-                      <Card raised style={{ minHeight: "35px", height: "100%" }}>
-                        <ParcelsCard handleOpenExpandableCard={handleOpenExpandableCard} contactData={contactData} />
-                      </Card>
-                    </Grid>
-                    <Grid item xs={3} style={{ minWidth: "250px" }}>
-                      <Card raised style={{ minHeight: "165px", height: "100%" }}>
-                        <DealsNew contact={contactData} transactData={transactData} transactId={transactId} />
-                      </Card>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid> */}
-
-              {/*/////////// Recent Activities. //////////// */}
-              {/* <Grid item xs={12} className={`${classes.border}`}>
-                <div className={classes.SectMargin}>
-                  <RecentActivities
-                    header={"Recent Activities"}
-                    id={contactData._id}
-                    user_id={stateApp.user.email}
-                    contactData={contactData}
-                    activityLog={contactData.activityLog}
-                  />
-                </div>
-              </Grid> */}
             </>
           )}
         </Grid>
@@ -899,7 +819,50 @@ function ContactDetailCard(props) {
                     awaitRefetchQueries: false,
                   });
                 }}
+                activityLog={contactData.activityLog}
+                isSource={false}
               />
+
+              <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "center",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "center",
+                }}
+              >
+                <FeatureFlag feature={FEATURES.IDICORE}>
+                  <MenuItem
+                    className={classes.userMenuItem}
+                    onClick={(e) => {
+                      if (!contactData.firstName || !contactData.lastName || !contactData.address1) {
+                        handleExpandClick("contactDataMissing");
+                      } else {
+                        handleExpandClick("buyContactsInfo");
+                      }
+                      handleClose();
+                    }}
+                  >
+                    Purchase contact data
+                  </MenuItem>
+                </FeatureFlag>
+                <MenuItem
+                  className={classes.userMenuItem}
+                  onClick={(e) => {
+                    handleClose();
+                    handleExpandClick("deleteConfirmation");
+                  }}
+                >
+                  Delete contact
+                </MenuItem>
+              </Menu>
             </div>
           )}
         </div>

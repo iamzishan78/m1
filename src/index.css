@@ -33,12 +33,6 @@ body {
   text-transform: uppercase !important;
 }
 
-.lightblueBtn {
-  text-transform: capitalize !important;
-  background-color: rgba(23, 170, 221, 1) !important;
-  color: #fff !important;
-}
-
 .MuiAutocomplete-popper,
 .MuiTooltip-popper {
   z-index: 9999999999 !important;
@@ -252,4 +246,8 @@ body {
 
 .react-select__option:hover, .react-select__option--is-focused{
   background-color:rgba(0, 0, 0, 0.08) !important
+}
+
+.summary-div-small-map .mapboxgl-map {
+  height: auto !important;
 }

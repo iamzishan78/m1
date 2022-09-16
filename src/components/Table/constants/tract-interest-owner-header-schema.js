@@ -27,7 +27,7 @@ const TractInterestOwnerHeadCells = [
     name: "name",
     label: "Owner Name",
     esKey: "contact.entityDetail.name.keyword",
-    options: { display: true },
+    options: { display: true, ignoreGlobal: true },
     style: { minWidth: "320px" },
   },
   {
@@ -105,6 +105,14 @@ const TractInterestOwnerHeadCells = [
     name: "net_acres",
     label: "Net Acres",
     esKey: "net_acres",
+    options: {
+      display: true,
+    },
+  },
+  {
+    name: "company_net_acres",
+    label: "Co Net Acres",
+    esKey: "company_net_acres",
     options: {
       display: true,
     },

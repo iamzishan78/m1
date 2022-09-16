@@ -22,110 +22,113 @@ import { contactDetailInitialData } from "./data";
 
 import { CONTACT_SUMMARY } from "graphQL/useQueryContactSummary";
 
-const useStyles = makeStyles((theme) => {
-  return {
-    card: {
-      width: "100%",
-      "& .MuiInput-inputTypeSearch": {
-        width: "96%",
-      },
+const useStyles = makeStyles((theme) => ({
+  card: {
+    width: "100%",
+    "& .MuiInput-inputTypeSearch": {
+      width: "96%",
     },
-    rootList: {
-      width: ({ mapGridCardActivated }) => (mapGridCardActivated === "min" ? "57vw" : mapGridCardActivated === "exp" ? "96vw" : "57vw"),
-      height: ({ mapGridCardActivated }) => (mapGridCardActivated === "min" ? "60vh" : mapGridCardActivated === "exp" ? "91vh" : "60vh"),
-      left: ({ mapGridCardActivated, expandGrid }) => (mapGridCardActivated === "exp" ? "2vw" : "2vw"),
-      top: ({ mapGridCardActivated }) => (mapGridCardActivated === "exp" ? "5vh" : "12vh"),
-      zIndex: "1300",
-      position: "fixed",
+  },
+  rootList: {
+    width: ({ mapGridCardActivated }) => (mapGridCardActivated === "min" ? "57vw" : mapGridCardActivated === "exp" ? "96vw" : "57vw"),
+    height: ({ mapGridCardActivated }) => (mapGridCardActivated === "min" ? "60vh" : mapGridCardActivated === "exp" ? "91vh" : "60vh"),
+    left: ({ mapGridCardActivated, expandGrid }) => (mapGridCardActivated === "exp" ? "2vw" : "2vw"),
+    top: ({ mapGridCardActivated }) => (mapGridCardActivated === "exp" ? "5vh" : "12vh"),
+    zIndex: "1300",
+    position: "fixed",
+  },
+  dockMenu: {
+    width: "100%",
+    height: "50vh",
+  },
+  tapsRoot: {
+    // flexGrow: 1,
+    "& .MuiTab-root": {
+      textTransform: "none",
     },
-    dockMenu: {
-      width: "100%",
-      height: "50vh",
+  },
+  appBar: {
+    backgroundColor: "#F2F2F2",
+    borderBottom: "1px solid rgba(224, 224, 224, 1)",
+    boxShadow: "none",
+    color: "#757575",
+    cursor: "context-menu",
+    "& .MuiIconButton-root:hover": {
+      backgroundColor: "rgba(255, 255, 255, 0.08)",
     },
-    tapsRoot: {
-      // flexGrow: 1,
-      "& .MuiTab-root": {
-        textTransform: "none",
-      },
+    "& button": {
+      cursor: "pointer",
     },
-    appBar: {
-      backgroundColor: "#F2F2F2",
-      borderBottom: "1px solid rgba(224, 224, 224, 1)",
-      boxShadow: "none",
-      color: "#757575",
-      cursor: "context-menu",
-      "& .MuiIconButton-root:hover": {
-        backgroundColor: "rgba(255, 255, 255, 0.08)",
-      },
-      "& button": {
-        cursor: "pointer",
-      },
+  },
+  tapsPanels: {
+    "& .MuiBox-root": { padding: "0" },
+  },
+  tapsPanelsPadding: {
+    "& .MuiBox-root": { padding: "0", height: "100%" },
+  },
+  mainPanelsDiv: {
+    height: "100%",
+    maxHeight: "100vh",
+    position: "relative",
+    "&::-webkit-scrollbar": {
+      width: "0.75em",
+      height: "0.75em",
     },
-    tapsPanels: {
-      "& .MuiBox-root": { padding: "0" },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: "#929292",
+      borderRadius: 10,
     },
-    tapsPanelsPadding: {
-      "& .MuiBox-root": { padding: "0", height: "100%" },
-    },
-    mainPanelsDiv: {
-      height: "100%",
-      maxHeight: "100vh",
-      position: "relative",
-      "&::-webkit-scrollbar": {
-        width: "0.75em",
-        height: "0.75em",
-      },
-      "&::-webkit-scrollbar-thumb": {
-        backgroundColor: "#929292",
-        borderRadius: 10,
-      },
-      "& div": {
-        "&>.MuiPaper-root": {
-          "&>:nth-child(3)": {
-            height: "calc(50vh - 128px) !important"
-          },
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": {
+          height: "calc(50vh - 128px) !important",
         },
       },
     },
-    tapsLabelsButtons: {
-      boxShadow: "none",
-      backgroundColor: "#fff",
-      color: "#757575",
-      "&:hover": { boxShadow: "none !important" },
+  },
+  tapsLabelsButtons: {
+    boxShadow: "none",
+    backgroundColor: "#fff",
+    color: "#757575",
+    "&:hover": { boxShadow: "none !important" },
+  },
+  tapsLabelsButtonsSelected: {
+    boxShadow: "none",
+    color: "#fff",
+    backgroundColor: theme.palette.secondary.main,
+    "&:hover": { color: "#757575", boxShadow: "none !important" },
+  },
+  viewportWells: {
+    textAlign: ({ viewportWells }) => (viewportWells ? "inherit" : "center"),
+    "& #minimumZoomRequired": {
+      margin: "30px",
+      fontSize: "1.25rem",
+      fontFamily: "Poppins",
+      fontWeight: "500",
+      lineHeight: "1.6",
+      display: ({ viewportWells }) => (viewportWells ? "none" : "block"),
     },
-    tapsLabelsButtonsSelected: {
-      boxShadow: "none",
-      color: "#fff",
-      backgroundColor: theme.palette.secondary.main,
-      "&:hover": { color: "#757575", boxShadow: "none !important" },
+    "& #viewportWellsTable": {
+      display: ({ viewportWells }) => (viewportWells ? "block" : "none"),
     },
-    viewportWells: {
-      textAlign: ({ viewportWells }) => (viewportWells ? "inherit" : "center"),
-      "& #minimumZoomRequired": {
-        margin: "30px",
-        fontSize: "1.25rem",
-        fontFamily: "Poppins",
-        fontWeight: "500",
-        lineHeight: "1.6",
-        display: ({ viewportWells }) => (viewportWells ? "none" : "block"),
-      },
-      "& #viewportWellsTable": {
-        display: ({ viewportWells }) => (viewportWells ? "block" : "none"),
-      },
+  },
+  selectBoundary: {
+    background: "white",
+    width: "180px",
+    height: "35px",
+    marginTop: "6px",
+    marginBottom: "6px",
+    marginLeft: "10px",
+    "& .MuiSelect-select.MuiSelect-select": {
+      paddingLeft: "10px",
     },
-    selectBoundary: {
-      background: "white",
-      width: "180px",
-      height: "35px",
-      marginTop: "6px",
-      marginBottom: "6px",
-      marginLeft: "10px",
-      "& .MuiSelect-select.MuiSelect-select": {
-        paddingLeft: "10px",
-      },
-    },
-  };
-});
+  },
+  selectorOptions: {
+    backgroundColor: "#F2F2F2",
+    maxHeight: "49.25vh",
+    overflow: "overlay",
+  },
+}));
 
 function MapGridCard(props) {
   // contexts
@@ -147,9 +150,9 @@ function MapGridCard(props) {
     if (props.contactData._id)
       getContactSummary({
         variables: {
-          contactId: props.contactData._id
-        }
-      })
+          contactId: props.contactData._id,
+        },
+      });
   }, [getContactSummary, props.contactData]);
 
   const setSearchTapValue = (state) => {
@@ -190,9 +193,9 @@ function MapGridCard(props) {
               style={{ width: "100%", height: "100%" }}
             >
               <Grid container direction="row" style={{ height: "100%", marginBottom: "20px" }}>
-                <Grid item md={2} style={{ backgroundColor: "#F2F2F2" }}>
+                <Grid item md={2} className={classes.selectorOptions}>
                   <Typography variant="h6" component="h1" style={{ fontWeight: "bold", padding: "10px 0px 0px 20px" }}>
-                    M1 Platform
+                    Associated Data
                   </Typography>
 
                   <List component="nav" aria-label="main mailbox folders">
@@ -213,73 +216,71 @@ function MapGridCard(props) {
                   </List>
                 </Grid>
 
-                <Grid item md={10} style={{ padding: "0px 0px", maxHeight: "49.25vh", overflow: "overlay" }}>
+                <Grid item md={10} style={{ padding: "0px" }}>
                   <div style={{ position: "relative" }} classes={classes.gridTables}>
-                    <Fragment>
-                      {searchTapValue.value === "contactInformation" && (
-                        <ContactDetailedInfo user={stateApp.user} purchaseData={props.purchaseData} contactData={props.contactData} />
-                      )}
-                      {searchTapValue.value === "activities" && (
-                        <ActivitiesTable
-                          esIndex={"activities_flat"}
-                          searchFields={["name", "_all"]}
-                          filtersChange={() => { }}
-                          appliedFilters={[
-                            {
-                              field: "contactName.keyword",
-                              value: props.contactData?.name,
-                            },
-                          ]}
-                          filterToggle={() => { }}
-                          targetLabel={"activitiesDashboard"}
-                          header="Activities"
-                          addAble={{ type: "contactActivity" }}
-                          onAddActivity={props.onAddActivity}
-                          dialogType="activitySideDialog"
-                          applyCustomClasses
-                        />
-                      )}
-                      {searchTapValue.value === "taxRollInterests" && (
-                        <ContactTaxRollInterestTable
-                          parent="assocTaxRollInterests"
-                          header={"Tax Roll Interests"}
-                          targetLabel="well"
-                          contactId={props.contactData._id}
-                          showTracks
-                        />
-                      )}
-                      {searchTapValue.value === "wellInterests" && (
-                        <ContactWellInterestTable
-                          parent="assocTaxRollInterests"
-                          header={"Well Interests"}
-                          targetLabel="well"
-                          contactId={props.contactData._id}
-                          showTracks
-                        />
-                      )}
-                      {searchTapValue.value === "unitInterests" && (
-                        <UnitInterestsTable
-                          parent="assocTaxRollInterests"
-                          header={"Unit Interests"}
-                          targetLabel="unit"
-                          esFilters={[{ field: "contact._id.keyword", value: props.contactData._id }]}
-                          esIndex="shapeowners_flat"
-                          setESFilters={() => { }}
-                          onTractCount={() => { }}
-                        />
-                      )}
-                      {searchTapValue.value === "parcelInterests" && (
-                        <ContactParcelInterestTable
-                          parent="assocTaxRollInterests"
-                          header={"Tract Interests"}
-                          targetLabel="parcel"
-                          contactId={props.contactData._id}
-                          showTracks
-                        />
-                      )}
-                      {searchTapValue.value === "deals" && <ContactDealsProvider />}
-                      {searchTapValue.value === "documents" && <ContactDocumentsProvider />}
-                    </Fragment>
+                    {searchTapValue.value === "contactInformation" && (
+                      <ContactDetailedInfo user={stateApp.user} purchaseData={props.purchaseData} contactData={props.contactData} />
+                    )}
+                    {searchTapValue.value === "activities" && (
+                      <ActivitiesTable
+                        esIndex={"activities_flat"}
+                        searchFields={["name", "_all"]}
+                        filtersChange={() => { }}
+                        appliedFilters={[
+                          {
+                            field: "contactName.keyword",
+                            value: props.contactData?.name,
+                          },
+                        ]}
+                        filterToggle={() => { }}
+                        targetLabel={"activitiesDashboard"}
+                        header="Activities"
+                        addAble={{ type: "contactActivity" }}
+                        onAddActivity={props.onAddActivity}
+                        dialogType="activitySideDialog"
+                        applyCustomClasses
+                      />
+                    )}
+                    {searchTapValue.value === "taxRollInterests" && (
+                      <ContactTaxRollInterestTable
+                        parent="assocTaxRollInterests"
+                        header={"Tax Roll Interests"}
+                        targetLabel="well"
+                        contactId={props.contactData._id}
+                        showTracks
+                      />
+                    )}
+                    {searchTapValue.value === "wellInterests" && (
+                      <ContactWellInterestTable
+                        parent="assocTaxRollInterests"
+                        header={"Well Interests"}
+                        targetLabel="well"
+                        contactId={props.contactData._id}
+                        showTracks
+                      />
+                    )}
+                    {searchTapValue.value === "unitInterests" && (
+                      <UnitInterestsTable
+                        parent="assocTaxRollInterests"
+                        header={"Unit Interests"}
+                        targetLabel="contactUnits"
+                        esFilters={[{ field: "contact._id.keyword", value: props.contactData._id }]}
+                        esIndex="shapeowners_flat"
+                        setESFilters={() => { }}
+                        onTractCount={() => { }}
+                      />
+                    )}
+                    {searchTapValue.value === "parcelInterests" && (
+                      <ContactParcelInterestTable
+                        parent="contactAssocTaxRollInterests"
+                        header={"Tract Interests"}
+                        targetLabel="parcel"
+                        contactId={props.contactData._id}
+                        showTracks
+                      />
+                    )}
+                    {searchTapValue.value === "deals" && <ContactDealsProvider />}
+                    {searchTapValue.value === "documents" && <ContactDocumentsProvider />}
                   </div>
                 </Grid>
               </Grid>

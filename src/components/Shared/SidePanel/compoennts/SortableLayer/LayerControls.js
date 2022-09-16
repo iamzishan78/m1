@@ -11,14 +11,14 @@ import { ifLayerHaveData } from "../common.js";
 import { AppContext } from "AppContext.js";
 
 import { Grid } from "@material-ui/core";
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import GridOnIcon from "@material-ui/icons/GridOn";
-import { setMapGridCardState } from "actions";
+// import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+// import GridOnIcon from "@material-ui/icons/GridOn";
+// import { setMapGridCardState } from "actions";
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 
 import { IconButton } from '@material-ui/core';
-import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent.js";
-import { FEATURES } from "components/Shared/FeatureFlag/common";
+// import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent.js";
+// import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const useStyles = makeStyles(() => ({
   disabledLayerTitle: {
@@ -69,17 +69,17 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
     updateLayer(updatedLayer);
   };
 
-  useEffect(() => {
-    setStateApp((state) => {
-      if (state.selectedLayer) {
-        setStateApp((state) => ({
-          ...state,
-          selectedLayer: layer,
-        }))
-      }
-      return state
-    });
-  }, [layer.fileName])
+  // useEffect(() => {
+  //   setStateApp((state) => {
+  //     if (state.selectedLayer) {
+  //       setStateApp((state) => ({
+  //         ...state,
+  //         selectedLayer: layer,
+  //       }))
+  //     }
+  //     return state
+  //   });
+  // }, [layer.fileName])
 
   const handleColorPicker = (layer) => {
     setTimeout(() => {
@@ -91,7 +91,9 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
         ...stateMapControls,
         selectedLayer: layer,
         map: stateApp.map,
-        addLayer: false
+        addLayer: false,
+        manageSourceLayer: false,
+        manageLayer: false,
       }));
     }, 0)
   };
@@ -174,7 +176,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
         {/* {layerClickabilityControl} */}
         {/* </Grid> */}
 
-        <Grid item xs={4}>
+        {/* <Grid item xs={4}>
           <FeatureFlag feature={FEATURES.SHAPEELASTIC}>
             {layer.file && <Tooltip title="Grid">
               <IconButton size="small" aria-label="Grid" style={{ color: '#ffff' }} onClick={() => {
@@ -189,7 +191,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
               </IconButton>
             </Tooltip>}
           </FeatureFlag>
-        </Grid>
+        </Grid> */}
         <Grid item xs={4} className={classes.formControl}>
           <FormControlLabel
             control={

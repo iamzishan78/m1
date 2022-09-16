@@ -3,7 +3,20 @@ import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "lodash";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { CircularProgress, Dialog, DialogTitle, Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import {
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  Typography,
+  IconButton,
+  Tabs,
+  Tab,
+  Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@material-ui/core";
 import {
   LocalAtm as CurrencyIcon,
   InfoOutlined as InfoOutlinedIcon,
@@ -43,12 +56,13 @@ const useStyles = makeStyles((theme) => ({
   },
   titleText: {
     marginLeft: 16,
+    width: "calc(65vw - 10px)",
   },
   highlighter: {
     background: "#263451",
     padding: "5px 16px",
     borderRadius: 16,
-    width: "max-content",
+    width: "160px",
     transform: "translateX(5px) translateY(11px)",
     height: "32px",
   },
@@ -93,6 +107,7 @@ const useStyles = makeStyles((theme) => ({
     "& fieldset": {
       border: "none",
     },
+    width: "100%",
   },
   tabsSectionDetails: {
     maxHeight: "calc(100vh - 280px)",
@@ -206,8 +221,10 @@ export default function DetailComponents(props) {
 
   const history = useHistory();
   const previousRoute = history.pathHistory[1];
-  const isLineItem = history.location.pathname.includes('/line-item')
-  const checkId = history.location.pathname.replace('/line-item', '').split("/")[history.location.pathname.replace('/line-item', '').split("/").length - 1];
+  const isLineItem = history.location.pathname.includes("/line-item");
+  const checkId = history.location.pathname.replace("/line-item", "").split("/")[
+    history.location.pathname.replace("/line-item", "").split("/").length - 1
+  ];
 
   const classes = useStyles({ ...props, collapse });
   // queries
@@ -225,14 +242,13 @@ export default function DetailComponents(props) {
   });
 
   useEffect(() => {
-    if (getCheckResult?.getCheck?.check)
-      setChecksFlatData(getCheckResult.getCheck.check)
-  }, [getCheckResult])
+    if (getCheckResult?.getCheck?.check) setChecksFlatData(getCheckResult.getCheck.check);
+  }, [getCheckResult]);
 
   const handleDeleteCancel = () => {
     setCheckIdToDelete(null);
     setOpenDeleteConfirmDialog(false);
-    setAnchorEl(false)
+    setAnchorEl(false);
   };
 
   const handleDeleteAccept = () => {
@@ -241,12 +257,12 @@ export default function DetailComponents(props) {
       setLoader(true);
       removeChecks({
         variables: {
-          checkIds: [checkIdToDelete]
-        }
+          checkIds: [checkIdToDelete],
+        },
       }).then(() => {
         setLoader(false);
         history.push(previousRoute || "/revenue/statements");
-      })
+      });
     }
   };
 
@@ -276,8 +292,8 @@ export default function DetailComponents(props) {
 
   useEffect(() => {
     return () => {
-      setStateApp({ ...stateApp, viewDoc: null })
-    }
+      setStateApp({ ...stateApp, viewDoc: null });
+    };
   }, []);
 
   const handleScroll = (e) => {
@@ -301,19 +317,19 @@ export default function DetailComponents(props) {
           descriptorObject: data.owner,
           userId: stateApp.user.mongoId,
           relatedObject: checksFlatData._id,
-          relatedObjectType: 'Check'
-        }
+          relatedObjectType: "Check",
+        },
       });
     else {
       updateCheck({
         variables: {
-          check: { _id: checksFlatData._id, ...data }
+          check: { _id: checksFlatData._id, ...data },
         },
         refetchQueries: ["getCheck"],
-        awaitRefetchQueries: true
+        awaitRefetchQueries: true,
       });
     }
-  }
+  };
 
   return (
     <>
@@ -323,7 +339,7 @@ export default function DetailComponents(props) {
           onClose={handleDeleteCancel}
           deleteFunc={handleDeleteAccept}
           m1nSelectedRowsIds={[document._id]}
-          setM1nSelectedRowsIndexes={() => { }}
+          setM1nSelectedRowsIndexes={() => {}}
         >
           Do you want to delete the selected statement?
         </DeleteConfirmationDialogContent>
@@ -334,11 +350,10 @@ export default function DetailComponents(props) {
         </DialogTitle>
       </Dialog>
 
-
-
       <NavHeader title={`${checksFlatData?.checkNumber} - ${checksFlatData?.payor?.["name"]}`}>
-
-        {isLineItem ? <LineItem checkId={checkId} /> :
+        {isLineItem ? (
+          <LineItem checkId={checkId} />
+        ) : (
           <>
             <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
               <div className="flex column alignStart justifyStart w-100">
@@ -348,9 +363,9 @@ export default function DetailComponents(props) {
                   </IconButton>
                   <div className={classes.titleText}>
                     {checksFlatData && (
-                      <Typography
-                        style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}
-                      >{`${checksFlatData?.checkNumber || ''} - ${checksFlatData?.payor?.name || ''}`}</Typography>
+                      <Typography style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}>{`${
+                        checksFlatData?.checkNumber || ""
+                      } - ${checksFlatData?.payor?.name || ""}`}</Typography>
                     )}
                     <div className={classes.tagsContainer}>
                       <div className={classes.highlighter}>
@@ -397,8 +412,8 @@ export default function DetailComponents(props) {
                 {/*** Component for viewing selected pdf file*/}
 
                 {/**
-                  * Detail tabs section
-                  */}
+                 * Detail tabs section
+                 */}
                 <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
                   <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
                     <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
@@ -414,7 +429,6 @@ export default function DetailComponents(props) {
                     </div>
                   </div>
                 </div>
-
 
                 <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
               </div>
@@ -432,7 +446,7 @@ export default function DetailComponents(props) {
                   <MetadataDrawer
                     data={checksFlatData}
                     onUpdate={onUpdateMetaData}
-                    targetLabel='Check'
+                    targetLabel="Check"
                     setCollapse={setCollapse}
                     targetSourceId={checkId}
                     setStateApp={setStateApp}
@@ -446,8 +460,8 @@ export default function DetailComponents(props) {
             {stateApp.showFieldModal && <MetaField columns={[]} category="Check" />}
 
             {/**
-              * Menu for meta data
-              */}
+             * Menu for meta data
+             */}
             <Menu
               id="revStatementMenu"
               anchorEl={anchorEl}
@@ -472,7 +486,7 @@ export default function DetailComponents(props) {
               </MenuItem>
             </Menu>
           </>
-        }
+        )}
       </NavHeader>
     </>
   );

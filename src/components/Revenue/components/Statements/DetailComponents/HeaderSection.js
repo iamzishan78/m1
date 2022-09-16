@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from "react";
+import { get } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Grid,
@@ -14,12 +15,14 @@ import { KeyboardDatePicker } from "@material-ui/pickers";
 import debounce from "lodash/debounce";
 
 import { Controller, useForm } from "react-hook-form";
-import { useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_CHECK_DATA } from "graphQL/useMutationUpdateCheck";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import { showInfoMessage } from "actions";
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -60,13 +63,14 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function HeaderFunction(props) {
+function HeaderFunction(props) {
   const classes = useStyles();
   // const [check, setCheck] = useState({});
   const { check, setCheck } = props
   const [updateCheck] = useMutation(UPDATE_CHECK_DATA);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [getPayorList, { data: payorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   const { control, reset, watch } = useForm();
 
@@ -74,19 +78,35 @@ export default function HeaderFunction(props) {
   useEffect(() => {
     return () => {
       const watchCheckNumber = watch("checkNumber")
-      const watchCheckDate = watch("checkDate")
-      if (!watchCheckNumber || watchCheckNumber === '') {
-        dispatch(showInfoMessage("Check Number is required"));
+      const watchCheckDate = watch("checkDate");
+      if (((!watchCheckDate || watchCheckDate === '') || (watchCheckDate === 'Invalid date')) && (!watchCheckNumber || watchCheckNumber === '')) {
+        dispatch(showInfoMessage("Check Number and Check Date  is required"));
         history.goBack();
-      }
-      if (!watchCheckDate || watchCheckDate === '') {
-        dispatch(showInfoMessage("Check Date is required"));
-        history.goBack();
+      } else {
+        if (!watchCheckNumber || watchCheckNumber === '') {
+          dispatch(showInfoMessage("Check Number is required"));
+          history.goBack();
+        }
+        if ((!watchCheckDate || watchCheckDate === '') || (watchCheckDate === 'Invalid date')) {
+          dispatch(showInfoMessage("Check Date is required"));
+          history.goBack();
+        }
       }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history]);
+  }, []);
+
+  useEffect(() => {
+    getPayorList({
+      variables: {
+        search: "*",
+        filterKey: "payor.name.keyword",
+        esIndex: "checks_flat",
+        size: 50,
+      }
+    })
+  }, [getPayorList])
 
   useEffect(() => {
     if (check) {
@@ -164,18 +184,15 @@ export default function HeaderFunction(props) {
               <Controller
                 control={control}
                 name="payor"
-                defaultValue={check?.payor || {}}
-                render={({ onChange, value, ref }) => (
-                  <AutocompEntityNamesList
+                render={(params) => (
+                  <AutoCompleteWithAddNew
+                    {...params}
+                    value={get(params, "value.name", "")}
                     variant="outlined"
-                    margin=""
-                    size=""
-                    nameAutValue={value}
-                    withContactCard={true}
-                    setNameAutValue={(value) => {
+                    setValue={(value) => {
                       if (value?._id)
-                        onChange({ _id: value._id, name: value.name });
-                      else onChange({});
+                        params.onChange({ _id: value._id, name: value.name });
+                      else params.onChange({});
                       handleUpdateCheck({
                         payor: {
                           ...check.payor,
@@ -184,6 +201,14 @@ export default function HeaderFunction(props) {
                         },
                       });
                     }}
+                    options={get(
+                      payorList,
+                      "getESFilterList.hits",
+                      []
+                    )?.map((payor) => ({
+                      _id: get(payor, `original.hits.hits.${0}._id`),
+                      name: payor.key,
+                    }))}
                   />
                 )}
               />
@@ -464,3 +489,5 @@ export default function HeaderFunction(props) {
     </div>
   );
 }
+
+export default memo(HeaderFunction);

@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import EditIcon from "@material-ui/icons/Edit";
 import { Container, Button, Tooltip, IconButton } from "@material-ui/core";
 import { useMutation } from "@apollo/client";
 
@@ -19,6 +20,7 @@ import ExportOwnersAndContacts from "components/Shared/ExportOwnerAndContacts";
 import AddUnitOwnerDialogContent from "components/Shared/M1nTable/components/SubComponents/AddUnitOwnerDialogContent";
 import BuyContactsInfoDialogContent from "components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { AssignOwnerToContactDrawerContainer } from 'store/containers';
 
 import TableHeader from "components/Table/constants/ownersperunit-header-schema";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
@@ -150,7 +152,9 @@ function UnitInterestOwnerTable(props) {
         variables: {
           shapeType: props.shapeType,
           shapeOwners: ids.map((_id) => ({ _id, isDeleted: true })),
-        }
+        },
+        refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
+        awaitRefetchQueries: true,
       });
     }
     setResetSelectedRow(!resetSelectedRow)
@@ -209,6 +213,24 @@ function UnitInterestOwnerTable(props) {
               display: "flex",
             }}
           >
+            <Button
+              color="secondary"
+              startIcon={<EditIcon color="white" />}
+              className={classes.multiSelectionTopBarButtons}
+              onClick={() => {
+                let owners = [];
+                for (let i in props.selectedRows) {
+                  owners.push({
+                    ...props.rows[props.selectedRows[i].dataIndex],
+                    _id: props.rows[props.selectedRows[i].dataIndex].contact._id
+                  });
+                }
+                setSelectedRows(owners);
+                setOpenCustomDialog("bulkUpdate");
+              }}
+            >
+              Bulk Update
+            </Button>
             <Button
               color="secondary"
               startIcon={<CloudDownloadIcon color="white" />}
@@ -304,6 +326,13 @@ function UnitInterestOwnerTable(props) {
           }}
         />
       )}
+      {openCustomDialog === "bulkUpdate" && (
+        <AssignOwnerToContactDrawerContainer
+          onClose={() => setOpenCustomDialog("")}
+          rows={selectedRows}
+          setRows={setSelectedRows}
+        />
+      )}
       {openCustomDialog === "deleteOwner" && (
         <DeleteConfirmationDialogContent
           header="Delete Unit Owner(s)"
@@ -356,6 +385,7 @@ function UnitInterestOwnerTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

@@ -51,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
   titleText: {
     marginLeft: 16,
+    width: "calc(65vw - 10px)",
   },
   tagsContainer: {
     display: "flex",
@@ -118,6 +119,7 @@ const useStyles = makeStyles((theme) => ({
     "& fieldset": {
       border: "none",
     },
+    width: "100%",
   },
   actionsContainer: {
     display: "flex",

@@ -53,8 +53,8 @@ const tableData = [
   },
   {
     label: "Net Royalty Acres (NRA)",
-    type: "number",
-    key: "uNetRoyalityAcres",
+    type: "calculation",
+    key: "netRoyalityAcres",
   },
   {
     label: "Unit Pricing (per NRA)",
@@ -70,7 +70,6 @@ const tableData = [
     label: "Campaign Name",
     type: "custom",
     key: "campaignName",
-    nonEditable: true,
   },
 ];
 export default tableData;

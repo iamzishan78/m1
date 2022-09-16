@@ -41,8 +41,12 @@ export const contactStatusOptions = [
 
 export const contactNewStatusOptions = [
   {
-    label: "Good Call",
-    value: "Good Call",
+    label: "Circle Back",
+    value: "Circle Back",
+  },
+  {
+    label: "Good Phone#",
+    value: "Good Phone#",
   },
   {
     label: "Negative",
@@ -64,10 +68,7 @@ export const contactNewStatusOptions = [
     label: "Unsure",
     value: "Unsure",
   },
-  {
-    label: "Circle Back",
-    value: "Circle Back",
-  },
+
 ];
 
 const getCreateByRow = (contactData) => {
@@ -197,9 +198,9 @@ export const getBasicInfoExpContent = (contactData) => {
     }
   }
 
-  let campaignName = [];
+  let campaignName;
   if (typeof contactData?.campaignName === "string") {
-    campaignName = [contactData?.campaignName];
+    campaignName = contactData?.campaignName;
   } else if (Array.isArray(contactData?.campaignName)) {
     campaignName = contactData.campaignName;
   }

@@ -110,7 +110,11 @@ function ActivitiesTable(props) {
 
   useEffect(() => {
     props.setTableMeta({
-      filters: getFilters(appliedFilters),
+      filters: [ 
+        ...getFilters(appliedFilters), 
+        { field:'type.keyword', value:'Expiration', notInclude: true },
+        { field:'type.keyword', value:'Option to Extend', notInclude: true }
+      ],
       extendSearchQuery: stateApp.activitySearchQuery,
       searchFields,
       TableHeader: copy(TableHeader),
@@ -235,7 +239,7 @@ function ActivitiesTable(props) {
                   float: "left",
                 }}
               >
-                {props.addAble.type === "contactActivity" && (
+                {props.addable && props.addAble.type === "contactActivity" && (
                   <ButtonGroup variant="contained" style={{ height: "40px", margin: "4px" }} color="primary" aria-label="split button">
                     <Button
                       color="primary"
@@ -258,6 +262,7 @@ function ActivitiesTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
       <ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} />
     </Container>

@@ -21,10 +21,12 @@ import FieldBulkAutoComplete from "components/Shared/FieldBulkAutoComplete";
 import Loader from "components/Loaders";
 import TextField from "@material-ui/core/TextField";
 import { UPDATEBULKCONTACT } from "graphQL/useMutationUpdateBulkContact";
-import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 import { timeZoneOptions } from "components/ContactDetailCard/components/FieldContent/timeZoneList";
 import { PUBLICTAGSQUERY } from "graphQL/useQueryPublicTags";
 import { BULKUPSERTTAG } from "graphQL/useMutationBulkUpsertTagOnContacts";
+import { UPSERT_CAMPAIGN_DESCRIPTORS } from "graphQL/useMutationCampaign";
+import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 const styles = () => ({
   topHeading: { fontWeight: "bold" },
@@ -85,7 +87,7 @@ const styles = () => ({
 
 const useStyles = makeStyles(styles);
 
-export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, setM1nSelectedRowsIndexes, showSuccessMessage, getContactCampaignAction, campaignList }) {
+export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, showSuccessMessage, getContactCampaignAction, campaignList }) {
   const [stateApp] = React.useContext(AppContext);
   const classes = useStyles();
   const modalClass = Modals();
@@ -94,6 +96,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const [fieldKey, setFieldKey] = useState();
   const [loading, setLoading] = useState(false);
   const [inputFocused, _setFocused] = useState(false);
+  const [campaigns, setCampaigns] = useState([]);
   const { laoding, error, data: publicTags } = useQuery(
     PUBLICTAGSQUERY,
     {
@@ -136,6 +139,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT);
   const [updateBulkContact] = useMutation(UPDATEBULKCONTACT);
   const [updateBulkTags] = useMutation(BULKUPSERTTAG);
+  const [upsertCampaignDescriptors] = useMutation(UPSERT_CAMPAIGN_DESCRIPTORS);
 
   const onDelete = (row) => {
     setRows(rows.filter((r) => r._id !== row._id));
@@ -208,7 +212,25 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     }
     else {
       const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
-
+      if (field === "Campaign Name") {
+        const campaignDescriptors = [];
+        contactIds.forEach(contactId => {
+          campaigns.forEach(campaignId => {
+            campaignDescriptors.push({
+              isDeleted: false,
+              relatedObjectType: "Contact",
+              relatedObject: contactId,
+              descriptorType: "Campaign",
+              descriptorObject: campaignId
+            })
+          });
+        });
+        upsertCampaignDescriptors({
+          variables: {
+            descriptors: campaignDescriptors
+          }
+        });
+      }
       updateBulkContact({
         variables: {
           contactIds: contactIds,
@@ -234,9 +256,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
         err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });
     }
 
-
-
-
     onClose();
     setLoading(false);
   };
@@ -250,23 +269,25 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           <ContactAutoComplete
             value={contactOwner}
             onChange={(e, user) => {
-              setContactOwner(user.value);
+              const value = user && user.value ? user.value : '';
+              setFieldKey(value);
+              setContactOwner(value);
             }}
           />
         );
       case "Campaign Name":
         // filterKey = 'campaignName.keyword'
         return (
-          <AutoCompleteWithAddNew
+          <CampaignNameField
             value={fieldKey}
-            onSearch={(value) => {
-              setFieldKey(value);
+            className={classes.maxWidth}
+            onChange={(values, id) => {
+              setFieldKey(values);
+              setCampaigns([...campaigns, id])
             }}
-            setValue={(value) => { }}
-            options={campaignList.map((campaign) => ({
-              _id: campaign,
-              name: campaign,
-            }))}
+            fullWidth
+            targetLabel="Contact"
+            simpleChips
           />
         );
       case "Stage":
@@ -275,8 +296,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       case "Status":
         filterKey = "contactStatus.keyword";
         break;
-      case "Entity Type":
-        filterKey = "ownerType.keyword";
       case "Industry Type":
       case "Lead Source":
       case "Territory":
@@ -333,6 +352,16 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           />
         );
       // .. etc
+      case "Entity Type":
+        filterKey = "ownerType.keyword";
+        return (
+          <EntityType
+            setDocumentType={(value) => {
+              setFieldKey(value._id)
+            }}
+            value={fieldKey}
+          />
+        );
       default:
     }
 

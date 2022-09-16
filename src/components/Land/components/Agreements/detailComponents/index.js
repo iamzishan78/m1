@@ -38,8 +38,15 @@ import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import moment from "moment";
 import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
+import MapImgViewIcon from "components/Shared/svgIcons/MapImgViewIcon";
+import MapProvider from "components/Map/MapProvider";
 
 const useStyles = makeStyles((theme) => ({
+  mapProvider: {
+    position: "relative",
+    zIndex: "9999",
+    height: "calc(100vw - 63vw)",
+  },
   detailHeader: {
     backgroundColor: "#fff",
     padding: "20px 27px 0px 45px",
@@ -125,6 +132,12 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: !metaCollapse ? "#eceded" : "#fff",
     "&:hover": {
       backgroundColor: !metaCollapse ? "#eceded" : "#fff",
+    },
+  }),
+  mapButton: ({ mapCollapse }) => ({
+    backgroundColor: !mapCollapse ? "#eceded" : "#fff",
+    "&:hover": {
+      backgroundColor: !mapCollapse ? "#eceded" : "#fff",
     },
   }),
   validationButton: ({ validationCollapse }) => ({
@@ -222,13 +235,14 @@ export default function DetailComponents(props) {
   const selectedTabRef = useRef(null);
   const [isButtonScroll, setButtonScroll] = useState(false);
   const [metaCollapse, setMetaCollapse] = useState(true);
+  const [mapCollapse, setMapCollapse] = useState(true);
   const [validationCollapse, setValidationCollapse] = useState(true);
   const [flowlineCollapse, setFlowlineCollapse] = useState(true);
   const [anchorEl, setAnchorEl] = useState();
   const [uniObj, setUniObj] = useState();
   const [openDialog, setOpenDialog] = useState(false);
 
-  const classes = useStyles({ ...props, metaCollapse, validationCollapse, flowlineCollapse });
+  const classes = useStyles({ ...props, metaCollapse, validationCollapse, flowlineCollapse, mapCollapse });
   // queries
 
 
@@ -321,20 +335,32 @@ export default function DetailComponents(props) {
   }, [activeAgreement, getShapeSummaryDetails]);
 
   useEffect(() => {
+    const escapeFunc = (e) => {
+      if (e.key === 'Escape') {
+        setMapCollapse(true);
+      }
+    }
+    document.addEventListener('keyup', escapeFunc);
     return () => {
       setStateApp({ ...stateApp, viewDoc: null })
+      document.removeEventListener('keyup', escapeFunc);
     }
-  }, [])
+  }, []);
 
   const updateAgreement = (field, value, isCustom) => {
     if (agreementDetails[field] === value) return;
     const shape = activeAgreement.shape;
-    if (field ==='agreementTerm' || field ==='effectiveDate') {
-      if (field ==='agreementTerm') {
+    if (field === 'agreementTerm' || field === 'effectiveDate') {
+      if (field === 'agreementTerm') {
         shape.properties.expirationDate = moment(shape.properties.effectiveDate, 'YYYY-MM-DD').add(parseInt(value), 'months').format('YYYY-MM-DD');
       } else {
         shape.properties.expirationDate = moment(value, 'YYYY-MM-DD').add(parseInt(shape.properties.agreementTerm), 'months').format('YYYY-MM-DD');
       }
+    }
+    // Used for Agreement nra, net_acres and grossAcres overidden
+    if (value?.overridden?.toString()) {
+      set(shape, `properties.overridden.${field}`, value.overridden);
+      value = value.value
     }
     set(shape, `properties.${field}`, value);
     const customLayer = {};
@@ -353,11 +379,11 @@ export default function DetailComponents(props) {
     customLayer.shape = JSON.stringify(shape);
     customLayer.shapeJson = shape;
 
-    console.log("-*-* called updateCustomLayer *-*-*", customLayer);
     updateCustomLayer({
       variables: {
         customLayerId: activeAgreement._id,
         customLayer,
+        userId: stateApp.user.mongoId
       },
       refetchQueries: ["customLayer"],
     });
@@ -485,6 +511,13 @@ export default function DetailComponents(props) {
                 Flowline
               </Button> */}
               <Button
+                startIcon={<MapImgViewIcon />}
+                className={classes.mapButton}
+                onClick={() => { setMapCollapse(o => !o) }}
+              >
+                Map View
+              </Button>
+              <Button
                 startIcon={<InfoOutlinedIcon />}
                 className={classes.metaButton}
                 onClick={() => setMetaCollapse(!metaCollapse)}
@@ -519,31 +552,51 @@ export default function DetailComponents(props) {
               className={classes.tabsSectionDetails}
               onScroll={handleScroll}
             >
-              <div
-                id="summary-div"
-                className={classes.tabDetailSection}
-                ref={tab === 0 ? selectedTabRef : null}
-                style={{ backgroundColor: "#fff" }}
-              >
-                <Summary
-                  agreementDetails={agreementDetails}
-                  activeAgreement={activeAgreement}
-                  agreementProvisions={get(
-                    agreementProvisions,
-                    "getAgreementProvisions",
-                    []
-                  )}
-                  standardProvisions={get(
-                    standardProvisions,
-                    "getStandardProvisions",
-                    []
-                  )}
-                  updateAgreement={updateAgreement}
-                  shapeSummaryDetails={
-                    dataShapeSummaryDetails?.shapeSummaryDetails
-                  }
-                />
-              </div>
+              {
+                mapCollapse ?
+                  <div
+                    id="summary-div"
+                    className={classes.tabDetailSection}
+                    ref={tab === 0 ? selectedTabRef : null}
+                    style={{ backgroundColor: "#fff" }}
+                  >
+                    <Summary
+                      agreementDetails={agreementDetails}
+                      activeAgreement={activeAgreement}
+                      agreementProvisions={get(
+                        agreementProvisions,
+                        "getAgreementProvisions",
+                        []
+                      )}
+                      standardProvisions={get(
+                        standardProvisions,
+                        "getStandardProvisions",
+                        []
+                      )}
+                      updateAgreement={updateAgreement}
+                      shapeSummaryDetails={
+                        dataShapeSummaryDetails?.shapeSummaryDetails
+                      }
+                    />
+                  </div>
+                  : <div
+                    id="summary-div"
+                    ref={tab === 0 ? selectedTabRef : null}
+                    className={`${classes.mapProvider}  summary-div-small-map`}
+                  >
+                    <MapProvider
+                      match={{
+                        params: {
+                          expandedPanel: false,
+                          openSpeedDial: false,
+                          hideShape: true,
+                          paramId: agreementId,
+                          layerPadding: { padding: { top: 50, bottom: 50, left: !metaCollapse ? 300 : 700, right: 20 } }
+                        },
+                      }}
+                    ></MapProvider>
+                  </div>
+              }
               <div
                 style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
               />
@@ -651,7 +704,8 @@ export default function DetailComponents(props) {
               ownerPlaceHolder='Assign Approver'
               ownerTitle="Approver"
               isApproval={true}
-              onUpdate={(data) => updateAgreement('approvalStatus', data.status)}
+              onUpdate={(data) => Object.keys(data).forEach(key => updateAgreement(key, data[key]))}
+              isSource={false}
             />
           </div>
         )}
@@ -687,17 +741,19 @@ export default function DetailComponents(props) {
       {/**
        * Delete Custom Layer confirmation dialog
        * */}
-      {openDialog && (
-        <DeleteConfirmationDialogContent
-          header="Delete Agreement"
-          onClose={() => setOpenDialog(false)}
-          deleteFunc={handleDeleteAgreement}
-          m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => { }}
-        >
-          Are you sure you want to delete this agreement?
-        </DeleteConfirmationDialogContent>
-      )}
-    </NavHeader>
+      {
+        openDialog && (
+          <DeleteConfirmationDialogContent
+            header="Delete Agreement"
+            onClose={() => setOpenDialog(false)}
+            deleteFunc={handleDeleteAgreement}
+            m1nSelectedRowsIds={null}
+            setM1nSelectedRowsIndexes={() => { }}
+          >
+            Are you sure you want to delete this agreement?
+          </DeleteConfirmationDialogContent>
+        )
+      }
+    </NavHeader >
   );
 }

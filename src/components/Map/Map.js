@@ -134,7 +134,7 @@ const random_hex_color_code = () => {
 };
 let hoveredAbstractId = null;
 
-function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial = true, width }) {
+function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial = true, width, hideShape = false, layerPadding = null }) {
   // context states
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -442,9 +442,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       if (currentFeature?.Id) currentFeature.id = currentFeature.Id;
       setStateApp({ ...stateApp, selectedWell: currentFeature, selectedWellId: paramId.toLowerCase(), popupOpen: false, expandedCard: true });
       setShowExpandableCard(true);
-      if (map) {
+      if (map && currentFeature) {
         findBoundsMap([currentFeature.geoJSON], map);
-        drawWellBoundary(map, [currentFeature.Longitude, currentFeature.Latitude]);
+        if (currentFeature.Longitude)
+          drawWellBoundary(map, [currentFeature.Longitude, currentFeature.Latitude]);
       }
       return;
     }
@@ -463,7 +464,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       jsonLayer.id = layer.customLayer._id;
 
       if (!loading) {
-        findBoundsMap([jsonLayer], map);
+        findBoundsMap([jsonLayer], map, layerPadding);
 
         drawBoundary(map, jsonLayer);
       }
@@ -4971,7 +4972,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         newMap.dragPan.enable();
         newMap.dragRotate.enable();
         newMap.keyboard.enable();
-        newMap.doubleClickZoom.disable();
+        // newMap.doubleClickZoom.disable();
         newMap.boxZoom.enable();
         newMap.touchZoomRotate.enable();
 
@@ -5522,11 +5523,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       stateApp.fitBounds.minLong
     ) {
       let bounds = fitOverBounds();
-
-      map.fitBounds([
-        [bounds.minLong, bounds.minLat],
-        [bounds.maxLong, bounds.maxLat],
-      ]);
+      if (typeof bounds?.minLong !== "undefined")
+        map.fitBounds([
+          [bounds.minLong, bounds.minLat],
+          [bounds.maxLong, bounds.maxLat],
+        ]);
     }
   }, [map, stateApp.fitBounds]);
 
@@ -6049,17 +6050,18 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
       // mathematical formula for screen fit
       const alpha = 0.01;
-      const bbox = [
-        [stateApp?.selectedWell?.longitude - 1.5 * alpha, stateApp?.selectedWell?.latitude],
-        [stateApp?.selectedWell?.longitude + 0.5 * alpha, stateApp?.selectedWell?.latitude],
-      ];
+      if (typeof stateApp?.selectedWell?.longitude !== "undefined") {
+        const bbox = [
+          [stateApp?.selectedWell?.longitude - 1.5 * alpha, stateApp?.selectedWell?.latitude],
+          [stateApp?.selectedWell?.longitude + 0.5 * alpha, stateApp?.selectedWell?.latitude],
+        ];
 
-      // map may be null when wellDetailCard is launched from somewhere else
-      map?.fitBounds(bbox, {
-        speed: 0.75,
-        linear: true,
-      });
-
+        // map may be null when wellDetailCard is launched from somewhere else
+        map?.fitBounds(bbox, {
+          speed: 0.75,
+          linear: true,
+        });
+      }
       // setStateApp((state) => ({
       //   ...state,
       //   wellDetailCardOpen: false
@@ -6216,7 +6218,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           />
         </div>
       )}
-      {stateApp.selectedShape?.shapeLabel && stateApp.expandedCard && (
+      {stateApp.selectedShape?.shapeLabel && stateApp.expandedCard && !hideShape && (
         <div className={classes.draggable}>
           <ExpandableCardProvider
             expanded={true}

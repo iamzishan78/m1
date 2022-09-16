@@ -10,6 +10,7 @@ import moment from "moment";
 import { AppContext } from "AppContext";
 import TableESHOC from "components/Table/TableESHOC";
 import Table from "components/Shared/M1nTable/components/Table";
+import { setMapGridCardState } from "actions";
 
 // QUERIES
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
@@ -23,11 +24,21 @@ import TableHeader from "components/Table/constants/map-grid-unit-header-schema"
 import { usetableStyles } from "../Styles";
 
 function MapGridUnitTable(props) {
+  // const defaultView = {
+  //   name: `All Units`,
+  //   type: "Default",
+  // };
+
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
   );
+  // const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
+
+  // const GridViewModule = userGridViewSettings[`Agreements`];
+
+  // const [selectedGridView, setSelectedGridView] = useState(defaultView);
 
   const [getShapeOwnerDataById, { data: owners }] = useLazyQuery(
     GET_SHAPE_OWNERS_DATA_BY_ID,
@@ -72,10 +83,12 @@ function MapGridUnitTable(props) {
   useEffect(() => {
     setTableMeta({
       extendSearchQuery: searchInput || stateApp.landSearchQuery,
+      // selectedGridView: GridViewModule || defaultView,
       searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
-      startPaginationAt: 25,
+      startPaginationAt: 50,
+      // typeKeyword: { gridViewCategory: "Units", metaModule: "Unit" },
       filters: [
         {
           field: "layer.keyword",
@@ -134,6 +147,8 @@ function MapGridUnitTable(props) {
     });
   }, []);
 
+  // console.log('FISHBRAIN -1', props)
+
   return (
     <Container
       maxWidth={false}
@@ -159,6 +174,7 @@ function MapGridUnitTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

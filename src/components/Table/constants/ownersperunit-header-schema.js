@@ -1,4 +1,5 @@
 import vf_currency from "components/Shared/valueformatters/vf_currency";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 const OwnersPerUnitHeadCells = [
   {
@@ -109,6 +110,30 @@ const OwnersPerUnitHeadCells = [
     },
   },
   {
+    name: "contact",
+    label: "Campaign Name",
+    esKey: "contact.campaignName.keyword",
+    options: {
+      customRender: (value) => {
+        return (
+          <CampaignNameField
+            value={value.campaignName}
+            fullWidth
+            disabled
+          />
+        )
+        // if (typeof value.campaignName === "string") {
+        //   return value.campaignName;
+        // } else {
+        //   return value.campaignName?.map((v, index) => `${v}${index < value?.length - 1 ? ", " : ""}`);
+        // }
+      },
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      sort: true,
+      filter: true,
+    },
+  },
+  {
     name: "tags",
     label: "Tags ",
     esKey: "tags.tag.keyword",
@@ -205,6 +230,19 @@ const OwnersPerUnitHeadCells = [
           value: "false",
         },
       ],
+    },
+  },
+  {
+    name: "actionMenu",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+      parent: "Unit detail"
     },
   },
   {
