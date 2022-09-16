@@ -27,13 +27,11 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 import { deepEqualObjects } from "../../src/components/Shared/functions";
+import { baseUrls, loginCredential } from "../cypressUtils/data";
+import { findInObject } from "../cypressUtils/helper";
 
 // Constants
 const workSpace = Cypress.env('WORK_SPACE') || "enerx"
-const baseUrls = {
-    enerx: "https://enerxgraphql.azurewebsites.net/api/m1graph?code=Rhr8LQFXNnl/TE26EVD296voKbGVWZQDupqWAAWMaZXjzvgdvktPqg==",
-    localhost: "http://localhost:7071/api/m1graph"
-}
 
 // Common Commands
 Cypress.Commands.add("checkAndLogin", () => {
@@ -43,8 +41,8 @@ Cypress.Commands.add("checkAndLogin", () => {
             cy.get('input').type(workSpace)
             cy.get('.MuiButtonBase-root').click()
 
-            cy.get('#signInName', { timeout: 30000 }).should('be.visible').type('support@m1neral.com')
-            cy.get('#password').type('M1neral2022')
+            cy.get('#signInName', { timeout: 30000 }).should('be.visible').type(loginCredential.email)
+            cy.get('#password').type(loginCredential.passsword)
 
             cy.get('#next').click()
         }
@@ -68,7 +66,8 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
 
             if (payloadKey) {
                 const { variables } = req.body
-                if (payloadKey.searchString && variables?.search?.query === payloadKey.searchString) {
+                if (payloadKey.searchString && (variables?.search?.query === payloadKey.searchString
+                    || variables?.search === `${payloadKey.searchString}*`)) {
                     req.alias = `${operationName}WithSearchStringApi`;
                 }
                 else if (payloadKey?.sortOrder && variables?.sort?.order === payloadKey.sortOrder) {
@@ -89,9 +88,18 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
 
 // This command is to check api was successful or not
 Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
-    cy.wait(apiTitle, { timeout: 10000 }).then((interception) => {
-        assert.isNotNull(interception.response.body, `${apiTitle} run succesfully`)
+    cy.wait(apiTitle, { timeout: 300000 }).then((interception) => {
+        assert.isNotNull(interception.response.body, `${apiTitle} run succesfully`, { timeout: 300000 })
+        return interception
     })
+})
+
+Cypress.Commands.add('deleteConfirmation', () => {
+    cy.log('==== STEP: CLICKING ON HORIZON ICON ====')
+    cy.get(".MuiTypography-root").contains('Delete').click()
+
+    cy.log('==== STEP: CLICKING ON DELETE FROM CONFIRMATION DIALOGUE BOX  ====')
+    cy.get(".MuiButton-label").contains('Delete', { timeout: 30000 }).should('be.visible').click()
 })
 
 /*This command will take css id and containing string to click on action
@@ -107,12 +115,72 @@ Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = 
         cy.get('.MuiTypography-root', { timeout: 10000 }).contains(containsString);
 })
 
+//DocumentGrid Commands
+Cypress.Commands.add('addWell', (wellName) => {
+    cy.interceptApi('addWellToFileDescriptor')
+    cy.interceptApi('getWellsFromDocument')
+
+    cy.get("#addIcon").click()
+    cy.typeAndSelect('#wellSearch', wellName, 'wellSearch-option-0')
+    cy.verifyApiResponse('@addWellToFileDescriptorApi')
+    cy.verifyApiResponse('@getWellsFromDocumentApi')
+})
+
+Cypress.Commands.add('clickWellIcon', (wellName) => {
+    cy.log('==== STEP: CLICK ON WELL ICON ====')
+    cy.interceptApi('getWellsFromDocument')
+    cy.get("#wellIcon", { timeout: 30000 }).click({force: true}, { timeout: 30000 })
+})
+
+Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
+    cy.interceptApi(gridOperationName, { searchString: searchString })
+    cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').focus().clear().type(searchString)
+
+    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: 30000 }).then((apiResponse) => {
+        let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
+
+        if (gridOperationName === 'getESDocuments')
+            hits = apiResponse.response.body.data.getESFiles.hits
+
+        const unmatchedHit = hits.find(hit => !findInObject(hit, searchString.toLowerCase()))
+
+        if (unmatchedHit) {
+            throw new Error(`Record with _id:${unmatchedHit._id} does not contains searched String`)
+        }
+    })
+})
+Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
+    cy.contains('th', columnName)
+        .invoke('index')
+        .then(colIndex => {
+            cy.get('tr')
+                .eq(rowIndex)
+                .within((row) => {
+                    cy.get('td').eq(colIndex).as('cell')
+                })
+            cy.get('@cell')   // last command, it's result will be returned
+        });
+}
+)
+
 // ContactGrid Commands
 
-Cypress.Commands.add('gridSearch', (searchString) => {
-    cy.interceptApi('getESSimpleSearch', { searchString: searchString })
-    cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type(searchString)
-    cy.verifyApiResponse('@getESSimpleSearchWithSearchStringApi', { responseTimeout: 30000 })
+Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
+    cy.interceptApi(gridOperationName, { searchString: searchString })
+    cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').focus().clear().type(searchString)
+
+    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: 30000 }).then((apiResponse) => {
+        let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
+
+        if (gridOperationName === 'getESDocuments')
+            hits = apiResponse.response.body.data.getESFiles.hits
+
+        const unmatchedHit = hits.find(hit => !findInObject(hit, searchString.toLowerCase()))
+
+        if (unmatchedHit) {
+            throw new Error(`Record with _id:${unmatchedHit._id} does not contains searched String`)
+        }
+    })
 })
 
 Cypress.Commands.add('sortColumn', (columnName, sortOrder) => {
