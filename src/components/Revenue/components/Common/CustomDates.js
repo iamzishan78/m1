@@ -62,6 +62,7 @@ export default function Portfolio({
   isProperties,
   lastCheckMinDate,
   onChange,
+  datesInputWidth = 1
 }) {
   const classes = useStyles();
   useEffect(() => {
@@ -101,7 +102,7 @@ export default function Portfolio({
           <label className={classes.label}>{label}</label>
         </Grid>
       )}
-      <Grid item xs md style={{ marginTop: "2px", minWidth: "285px" }}>
+      <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "285px" }}>
         <Autocomplete
           size="small"
           onChange={(event, newValue) => {
@@ -116,14 +117,20 @@ export default function Portfolio({
             else return true;
           })}
           renderInput={(params) => (
-            <TextField {...params} label="Check Date Range" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
+            <TextField
+              {...params}
+              label="Check Date Range"
+              variant="outlined"
+              placeholder=""
+              style={{ backgroundColor: "white" }}
+            />
           )}
           defaultValue={CUSTOM_DATES.THIS_YEAR_TO_DATE}
           disableListWrap
           id="custom-date-dropdown"
         />
       </Grid>
-      <Grid item xs md>
+      <Grid item xs md={datesInputWidth}>
         <TextField
           size="small"
           margin="dense"
@@ -145,7 +152,11 @@ export default function Portfolio({
           }}
           onChange={(event) => {
             if (event.target.value == "") {
-              setFromDate(`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`);
+              setFromDate(
+                `${Math.round(new Date().getFullYear())}-${getFlaggedMoment(
+                  Math.ceil(new Date().getMonth()) + 1
+                )}`
+              );
             } else {
               setFromDate(event.target.value);
             }
@@ -155,7 +166,7 @@ export default function Portfolio({
       <Grid>
         <label>to</label>
       </Grid>
-      <Grid item xs md>
+      <Grid item xs md={datesInputWidth}>
         <TextField
           size="small"
           margin="dense"
@@ -167,7 +178,11 @@ export default function Portfolio({
           className={classes.inputFieldDate}
           onChange={(event) => {
             if (event.target.value == "") {
-              setToDate(`${Math.round(new Date().getFullYear())}-${getFlaggedMoment(Math.ceil(new Date().getMonth()) + 1)}`);
+              setToDate(
+                `${Math.round(new Date().getFullYear())}-${getFlaggedMoment(
+                  Math.ceil(new Date().getMonth()) + 1
+                )}`
+              );
             } else {
               setToDate(event.target.value);
             }
