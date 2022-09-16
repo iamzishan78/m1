@@ -135,7 +135,7 @@ const OwnersPerUnitHeadCells = [
   },
   {
     name: "tags",
-    label: "Tags ",
+    label: "Tags",
     esKey: "tags.tag.keyword",
     options: {
       filter: true,
@@ -230,6 +230,19 @@ const OwnersPerUnitHeadCells = [
           value: "false",
         },
       ],
+    },
+  },
+  {
+    name: "actionMenu",
+    label: " ",
+    options: {
+      filter: false,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+      parent: "Unit detail"
     },
   },
   {

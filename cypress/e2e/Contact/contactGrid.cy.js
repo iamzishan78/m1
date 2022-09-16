@@ -34,7 +34,7 @@ describe('Document Grid Spec', () => {
         cy.viewport(1400, 900)
         cy.visit('http://localhost:3000/contacts')
 
-        cy.checkAndLogin('#workSpaceSignin')
+        cy.checkAndLogin()
 
         cy.get('#addButton', { timeout: 50000 }).should('be.visible')
         cy.wait(3000)
@@ -46,7 +46,8 @@ describe('Document Grid Spec', () => {
         cy.selectQuickAction('Contacts 101', 'Contact', true)
         cy.selectQuickAction('All Entities 101', 'All Entities')
 
-        cy.gridSearch('jacob')
+        cy.log('==== STEP: SEARCH jacob in CONTACT ====')
+        cy.gridSearch('jacob', 'getESSimpleSearch')
 
         cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: 10000 }).contains('SGF TRUST LEGAL').click();
 
@@ -59,7 +60,8 @@ describe('Document Grid Spec', () => {
 
         cy.selectQuickAction('Leads 101', 'Lead', true)
 
-        cy.gridSearch('GoodwillDD')
+        cy.log('==== STEP: SEARCH GoodwillDD in CONTACT ====')
+        cy.gridSearch('GoodwillDD', 'getESSimpleSearch')
 
         cy.wait(1000)
 
