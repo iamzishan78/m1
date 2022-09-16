@@ -209,7 +209,7 @@ const useStyles = makeStyles((theme) => ({
       "& th": {
         backgroundColor: "#F2F2F2",
         zIndex: "auto",
-        padding: (props) => (props.dense ? "10px 10px 10px 0px" : null),
+        padding: (props) => (props.dense ? "10px 10px 10px 25px" : null),
         "& button": {
           minWidth: 'max-content',
           "& .MuiButton-label": {
@@ -2360,6 +2360,7 @@ function SubTable(props) {
                 ...column.options,
 
                 customBodyRender: (value, tableMeta, updateValue) => {
+
                   let id = props.targetLabel + tableMeta.columnIndex;
                   if (value[0]?.tag) {
                     const length = value.length
@@ -2394,7 +2395,7 @@ function SubTable(props) {
                           id={id + targetSourceId + tableMeta.rowIndex}
                           className={`${classes.TagSample} ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex ? classes.iconSelected : ""
                             }`}
-                          badgeContent={value ? value[1] : 0}
+                          badgeContent={value && value[0] && value[0].length > 0 ? value[1] : 0}
                           color="secondary"
                           onClick={(e) => {
                             e.preventDefault();
@@ -3695,7 +3696,7 @@ function SubTable(props) {
                                 props.rows[props.selectedRows[i].dataIndex]
                               );
                             }
-                            props.setSelectedRows(owners);
+                            props.setSelectedRows && props.setSelectedRows(owners);
                             // props.setOpenCustomDialog("exportContacts");
                             handleExpandClick(null, null, getSelectedRows(), "exportContacts");
                           }}

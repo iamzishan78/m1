@@ -1,4 +1,5 @@
 import React, { memo, useEffect } from "react";
+import { get } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Grid,
@@ -14,12 +15,14 @@ import { KeyboardDatePicker } from "@material-ui/pickers";
 import debounce from "lodash/debounce";
 
 import { Controller, useForm } from "react-hook-form";
-import { useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_CHECK_DATA } from "graphQL/useMutationUpdateCheck";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import { showInfoMessage } from "actions";
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -67,6 +70,7 @@ function HeaderFunction(props) {
   const [updateCheck] = useMutation(UPDATE_CHECK_DATA);
   const history = useHistory();
   const dispatch = useDispatch();
+  const [getPayorList, { data: payorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   const { control, reset, watch } = useForm();
 
@@ -92,6 +96,17 @@ function HeaderFunction(props) {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    getPayorList({
+      variables: {
+        search: "*",
+        filterKey: "payor.name.keyword",
+        esIndex: "checks_flat",
+        size: 50,
+      }
+    })
+  }, [getPayorList])
 
   useEffect(() => {
     if (check) {
@@ -169,18 +184,15 @@ function HeaderFunction(props) {
               <Controller
                 control={control}
                 name="payor"
-                defaultValue={check?.payor || {}}
-                render={({ onChange, value, ref }) => (
-                  <AutocompEntityNamesList
+                render={(params) => (
+                  <AutoCompleteWithAddNew
+                    {...params}
+                    value={get(params, "value.name", "")}
                     variant="outlined"
-                    margin=""
-                    size=""
-                    nameAutValue={value}
-                    withContactCard={true}
-                    setNameAutValue={(value) => {
+                    setValue={(value) => {
                       if (value?._id)
-                        onChange({ _id: value._id, name: value.name });
-                      else onChange({});
+                        params.onChange({ _id: value._id, name: value.name });
+                      else params.onChange({});
                       handleUpdateCheck({
                         payor: {
                           ...check.payor,
@@ -189,6 +201,14 @@ function HeaderFunction(props) {
                         },
                       });
                     }}
+                    options={get(
+                      payorList,
+                      "getESFilterList.hits",
+                      []
+                    )?.map((payor) => ({
+                      _id: get(payor, `original.hits.hits.${0}._id`),
+                      name: payor.key,
+                    }))}
                   />
                 )}
               />

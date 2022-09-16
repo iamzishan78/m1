@@ -376,30 +376,35 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
               )}
               <Grid item xs={searchState ? 12 : 1}>
                 <div className={classes.search}>
-                  <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput").focus()}>
-                    <SearchIcon />
-                  </Tooltip>
-                  <InputBase
-                    id="searchInput"
-                    fullWidth
-                    placeholder="Search by Layer Name"
-                    value={search}
-                    classes={{
-                      root: classes.inputRoot,
-                      input: classes.inputInput,
-                    }}
-                    autoComplete="off"
-                    inputProps={{ "aria-label": "search" }}
-                    onFocus={() => setSearchState(true)}
-                    onChange={(evt) => setSearchValue(evt.target.value)}
-                  />
-                  {searchState && (
-                    <Tooltip title="Clear" className={classes.iconClear}>
-                      <IconButton size="small" htmlColor="white" onClick={clearSearch}>
-                        <ClearIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
+                  {
+                    type === "layer" &&
+                    <>
+                      <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput").focus()}>
+                        <SearchIcon />
+                      </Tooltip>
+                      <InputBase
+                        id="searchInput"
+                        fullWidth
+                        placeholder="Search by Layer Name"
+                        value={search}
+                        classes={{
+                          root: classes.inputRoot,
+                          input: classes.inputInput,
+                        }}
+                        autoComplete="off"
+                        inputProps={{ "aria-label": "search" }}
+                        onFocus={() => setSearchState(true)}
+                        onChange={(evt) => setSearchValue(evt.target.value)}
+                      />
+                      {searchState && (
+                        <Tooltip title="Clear" className={classes.iconClear}>
+                          <IconButton size="small" htmlColor="white" onClick={clearSearch}>
+                            <ClearIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </>
+                  }
                 </div>
               </Grid>
             </Grid>
@@ -414,7 +419,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
             <StyledMenuSecondaryHeaderItem>
               <div>
                 <ListItemText primary={title} />
-                <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} layerGroups={layerGroups} />
+                {
+                  type === "layer" &&
+                    <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} layerGroups={layerGroups} />
+                }
               </div>
               {headerButton && (
                 <StyledListItemSecondaryAction>

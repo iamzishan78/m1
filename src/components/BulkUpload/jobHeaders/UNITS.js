@@ -47,6 +47,13 @@ addAfterLabel(unit, 'Unit Number', {
 })
 
 addAfterLabel(unit, 'Unit Acres', {
+    label: "Current Operator",
+    mapped_key: "",
+    required: true,
+    actual_key: "shape.uPrimaryOperator",
+})
+
+addAfterLabel(unit, 'Unit Acres', {
     label: "Unit Pricing",
     mapped_key: "",
     required: true,
