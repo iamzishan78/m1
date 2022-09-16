@@ -58,7 +58,7 @@ export default function Drawer(props) {
   const drawerIcons = {
     Home: (props) => (
       <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary">
-        <HomeIcon {...props} />
+        <HomeIcon id="wellHomeIcon" {...props} />
       </Badge>
     ),
     Wells: (props) => (
@@ -70,8 +70,8 @@ export default function Drawer(props) {
       <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary" >
         <InfoOutlined {...props} />
       </Badge>
-    ),    
-    
+    ),
+
   };
 
   return (
