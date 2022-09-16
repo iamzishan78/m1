@@ -21,8 +21,6 @@ const PopperMy = function (props) {
     return <Popper {...props} style={styles.popper} placement="bottom-start" />;
 };
 
-
-
 export function AutoCompleteField({ value, onChange, index, column, query, extendSearchQuery, esIndex, filters }) {
     const [open, setOpen] = useState(false);
     const [options, setOptions] = useState([]);
@@ -31,12 +29,6 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
     const { label, filterKey, type } = column
     const [getFilters, { data: filtersData, loading }] = useLazyQuery(query, { fetchPolicy: "no-cache" });
 
-    // useEffect(() => {
-    //     setSearch(filterList[index][0])
-    //     if (!filterList[index][0]) {
-    //         setValue(null)
-    //     }
-    // }, [filterList[index][0]]);
     const filter = createFilterOptions();
 
     useEffect(() => {
@@ -47,7 +39,11 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
         if (filtersData) {
             const keys = Object.keys(filtersData)
             if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits)
-                setOptions(filtersData[keys[0]].hits)
+                setOptions(filtersData[keys[0]].hits.map(hit => ({
+                    doc_count: hit.doc_count,
+                    key: typeof hit.key === "string" ? [hit.key] : hit.key,
+                    key_as_string: hit.key_as_string
+                })))
         }
 
     }, [filtersData]);
@@ -65,7 +61,7 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
             variables: {
                 esIndex,
                 filters,
-                filterKeys: typeof filterKey !== 'string' ? filterKey : undefined,
+                filterKeys: filterKey,
                 // filterKey: typeof filterKey === 'string' ? filterKey : undefined,
                 search,
                 extendSearchQuery,
@@ -83,7 +79,7 @@ export function AutoCompleteField({ value, onChange, index, column, query, exten
             value={value}
             inputValue={search}
             getOptionSelected={(option, value) => option?.key === value.key}
-            getOptionLabel={(option) => option?.key?.join(' - ')}
+            getOptionLabel={(option) => typeof option.key === "string" ? option : option?.key?.join(' - ')}
             onChange={(e, value, reason) => {
                 if (reason === 'clear' || !value?.key) setSearch('')
                 else {

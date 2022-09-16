@@ -9,26 +9,21 @@ describe('Associate Well Spec', () => {
 
         cy.get('#addDocument', { timeout: 50000 }).should('be.visible')
 
-        cy.wait(1000)
-        cy.get('tbody>tr').eq(2).children().eq(3).children().eq(1).click()
+        cy.wait(10000)
+        cy.get('tbody>tr', { timeout: 50000 }).eq(2).children().eq(3).children().eq(1).click()
 
-        cy.get("#wellIcon").click()
+        cy.get("#wellIcon", { timeout: 50000 }).click()
 
-        cy.interceptApi('addWellToFileDescriptor')
-        cy.interceptApi('getWellsFromDocument')
+        cy.addWell('anniemae')
+        cy.addWell('silver')
 
         cy.get("#addIcon").click()
-        cy.typeAndSelect('#wellSearch', 'anniemae', 'wellSearch-option-0')
+        cy.typeAndSelect('#wellSearch', 'silver do', "wellSearch-option-0")
         cy.verifyApiResponse('@addWellToFileDescriptorApi')
         cy.verifyApiResponse('@getWellsFromDocumentApi')
 
 
-        cy.get("#addIcon").click()
-        cy.typeAndSelect('#wellSearch', 'silver dog', "wellSearch-option-0")
-        cy.verifyApiResponse('@addWellToFileDescriptorApi')
-        cy.verifyApiResponse('@getWellsFromDocumentApi')
-
-        cy.get('#wellsList').children().eq(0).click()
+        cy.get('#wellsList', { timeout: 50000 }).children().eq(0).click()
 
         cy.wait(40000)
         cy.get('.MuiBreadcrumbs-ol', { timeout: 50000 }).should('be.visible').children().eq(0).click()

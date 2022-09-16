@@ -466,7 +466,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           </TransitionGroup>
         </StyledMenu>
         <div className={classes.pulloutBox} onClick={togglePullout}>
-          {stateMapControls.expandedPanel ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
+          {stateMapControls.expandedPanel ? <ArrowBackIosIcon id="arrowBackIcon" /> : <ArrowForwardIosIcon />}
         </div>
       </div>
     </div>
