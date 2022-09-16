@@ -414,7 +414,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
             <StyledMenuSecondaryHeaderItem>
               <div>
                 <ListItemText primary={title} />
-                <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} layerGroups={layerGroups} />
+                {
+                  type === "layer" &&
+                    <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} layerGroups={layerGroups} />
+                }
               </div>
               {headerButton && (
                 <StyledListItemSecondaryAction>
