@@ -153,7 +153,7 @@ const OwnersPerUnitHeadCells = [
   },
   {
     name: "tags",
-    label: "Tags ",
+    label: "Tags",
     esKey: "tags.tag.keyword",
     options: {
       filter: true,

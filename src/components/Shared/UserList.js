@@ -6,7 +6,7 @@ import { useLazyQuery } from "@apollo/client";
 
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 
-const UserList = ({setValue, value}) => {
+const UserList = ({setValue, value, ...rest}) => {
   const [users, setUsers] = useState([]);
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
@@ -31,6 +31,7 @@ const UserList = ({setValue, value}) => {
 
   return (
     <Autocomplete
+      {...rest}
       options={users.filter((u) => u.text)}
       onChange={(e, user) => {
         setValue(user);

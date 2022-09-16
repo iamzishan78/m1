@@ -60,12 +60,21 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
       category.IsDeleted = true
     }
     updateDataset({ variables: { dataset: props.actionItem.dataset } })
-    updateManyLayer({
-      variables: {
-        layers: layers.map((layer) => ({ _id: layer.layerId, IsDeleted: true })),
-      },
-      refetchQueries: ["getAllLayerSettingsByUser"],
-    });
+    if (layers.length > 0) {
+      updateManyLayer({
+        variables: {
+          layers: layers.map((layer) => ({ _id: layer.layerId, IsDeleted: true })),
+        },
+        refetchQueries: ["getAllLayerSettingsByUser"],
+      });
+    } else {
+      setStateApp((state) => ({
+        ...state,
+        universalCircularLoaderAct: false,
+      }));
+      props.handleDialogClose(false);
+    }
+
   };
 
   const modalClass = Modals();

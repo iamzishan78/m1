@@ -15,14 +15,14 @@ describe('Verify Well Spec', () => {
             const documentName = esDocumentResponse.response.body.data.getESFiles.hits[0]?.name
 
             cy.log('==== STEP: OPENING FILE DETAIL DRAWER ====')
-            cy.get('table').contains('td', documentName).next().click();
+            cy.get('table', { timeout: 300000 }).contains('td', documentName).next().click({ timeout: 300000 });
 
             cy.log('==== STEP: ADD WELL ====')
-            cy.get("#wellIcon").click()
+            cy.get("#wellIcon", { timeout: 300000 }).click({ timeout: 300000 })
             cy.addWell('black dog')
 
             cy.log('==== STEP: CLICK ON HOME ICON ====')
-            cy.get('#wellHomeIcon').click()
+            cy.get('#wellHomeIcon', { timeout: 300000 }).click({ timeout: 300000 })
 
             cy.clickWellIcon()
 

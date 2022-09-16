@@ -68,6 +68,7 @@ function MapGridUnitTable(props) {
       };
       hit.ownersCount = get(hit, "interestSummary.unitInterestCount", "");
       hit.qualifier = get(hit, "qualifier.name", "");
+      hit.reviewer = get(hit, "reviewer.name", "");
       hit.lastUpdated = moment(hit._ts).format('MM/DD/YYYY');
       hit = props.setGenricData(hit, hit._id, [], []);
       hit.tags =
