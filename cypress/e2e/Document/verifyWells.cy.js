@@ -58,6 +58,13 @@ describe('Verify Well Spec', () => {
                 cy.log('==== STEP: OPENING SAME FILE DETAIL DRAWER ====')
                 cy.get('table', { responseTimeout: longTimeout }).contains('td', documentName).next().click();
 
+                cy.get('#documentSaveButton', { responseTimeout: longTimeout }).then($button => {
+                    if (!$button.is(':visible')) {
+                        cy.wait(1000)
+                        cy.get('table', { responseTimeout: longTimeout }).contains('td', documentName).next().click();
+                    }
+                })
+
                 cy.clickWellIcon()
 
                 cy.verifyApiResponse('@getWellsFromDocumentApi', { responseTimeout: longTimeout }).then((wellsResponse2) => {
