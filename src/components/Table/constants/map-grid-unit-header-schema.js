@@ -174,6 +174,16 @@ const unitsColumnHeaders = [
       setCellProps: () => ({ style: { minWidth: "125px" } }),
     },
   },
+  {
+    name: "reviewer",
+    label: "Reviewer",
+    esKey: "shapeJson.properties.reviewer.name.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "125px" } }),
+    },
+  },
   //hiding temporarily until we get the chart fixed -kc 20220327
   // {
   //   name: "unitStatus",

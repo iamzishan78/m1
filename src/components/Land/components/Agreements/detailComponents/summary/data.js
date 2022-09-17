@@ -99,6 +99,11 @@ const fieldsList = (activeUser) => {
       key: "acquisitionID",
     },
     {
+      label: "Acquisition Date",
+      type: "date",
+      key: "acquisitionDate",
+    },
+    {
       label: "Prospect",
       type: "autocomplete",
       key: "prospectID",

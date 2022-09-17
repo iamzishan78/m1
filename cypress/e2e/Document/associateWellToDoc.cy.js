@@ -21,15 +21,15 @@ describe('Associate Well Spec', () => {
         cy.addWell('anniemae')
         cy.addWell('silver')
 
-        cy.get("#addIcon").click()
+        cy.get("#addIcon", { timeout: 50000 }).click({ timeout: 50000 })
         cy.typeAndSelect('#wellSearch', 'silver do', "wellSearch-option-0")
         cy.verifyApiResponse('@addWellToFileDescriptorApi')
         cy.verifyApiResponse('@getWellsFromDocumentApi')
 
-        cy.get('#wellsList', { timeout: longTimeout }).children().eq(0).click()
+        cy.get('#wellsList', { timeout: 50000 }).children().eq(0).click({ timeout: 50000 })
 
         cy.wait(40000)
-        cy.get('.MuiBreadcrumbs-ol', { timeout: longTimeout }).should('be.visible').children().eq(0).click()
+        cy.get('.MuiBreadcrumbs-ol', { timeout: 50000 }).should('be.visible').children().eq(0).click({ force: true }, { timeout: 50000 })
 
     })
 
