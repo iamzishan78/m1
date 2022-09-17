@@ -2543,16 +2543,26 @@ function SubTable(props) {
                             <div
                               style={{
                                 // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                                cursor: 'pointer'
                               }}
 
-                              onClick={() => {
-                                if (file.state !== "active") return;
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (row_line.state !== "active") return;
 
                                 if (fileExtension === "pdf") {
-                                  setStateApp({
-                                    ...stateApp,
-                                    viewDoc: { uri: uri, name: file },
-                                  });
+                                  if (props.addAble.type === "document") {
+                                    window.history.pushState("", "", `/documents/${row_line._id}/view`);
+                                  }
+                                  // const selectedRow = rows.find((row) => row._id === row_line._id);
+                                  setStateApp((state) => ({
+                                    ...state,
+                                    pdfView: row_line,
+                                    viewDoc: {
+                                      uri: row_line.viewToken,
+                                      name: row_line.fileName,
+                                    },
+                                  }));
                                 }
                               }}
                             >
@@ -2575,30 +2585,7 @@ function SubTable(props) {
                                 justifyContent: "flex-start",
 
                               }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
-                                if (type === "pdf") {
-                                  if (props.addAble.type === "document") {
-                                    window.history.pushState("", "", `/documents/${row_line._id}/view`);
-                                  }
-                                  // const selectedRow = rows.find((row) => row._id === row_line._id);
-                                  setStateApp((state) => ({
-                                    ...state,
-                                    pdfView: row_line,
-                                    viewDoc: {
-                                      uri: row_line.viewToken,
-                                      name: row_line.fileName,
-                                    },
-                                  }));
-                                } else {
-                                  handleViewFile(row_line._id);
-                                }
-                              }}
                             >
-
-
-
                               <p
                                 style={{
                                   display: "flex",
@@ -2613,6 +2600,27 @@ function SubTable(props) {
                                   fontWeight: "bold",
                                   justifyContent: "flex-start",
                                   paddingRight: '40px',
+                                }}
+                                
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
+                                  if (type === "pdf") {
+                                    if (props.addAble.type === "document") {
+                                      window.history.pushState("", "", `/documents/${row_line._id}/view`);
+                                    }
+                                    // const selectedRow = rows.find((row) => row._id === row_line._id);
+                                    setStateApp((state) => ({
+                                      ...state,
+                                      pdfView: row_line,
+                                      viewDoc: {
+                                        uri: row_line.viewToken,
+                                        name: row_line.fileName,
+                                      },
+                                    }));
+                                  } else {
+                                    handleViewFile(row_line._id);
+                                  }
                                 }}>
 
                                 <Typography
