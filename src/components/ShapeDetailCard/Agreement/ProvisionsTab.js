@@ -122,7 +122,7 @@ const styles = makeStyles(() => ({
   },
 }));
 
-export default function ProvisionsTab({ provisions, standardProvisions, id }) {
+export default function ProvisionsTab({ provisions, standardProvisions, id, setPCounts }) {
   const classes = styles();
   let history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -164,6 +164,10 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
       });
     }
   }, [dataProvisionAutoCompleteList]);
+
+  useEffect(() => {
+    setPCounts(fields.length)
+  }, [fields.length])
 
   const addRemoveProvision = (addProvision, provision) => {
     if (addProvision) {
