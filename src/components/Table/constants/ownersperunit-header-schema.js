@@ -32,7 +32,28 @@ const OwnersPerUnitHeadCells = [
     esKey: "contact.entityDetail.name.keyword",
     options: {
       filter: true,
-      setCellProps: () => ({ style: { minWidth: "270px" } }),
+      setCellProps: () => ({
+        style: {
+          minWidth: "300px",
+          maxWidth: "300px",
+          whiteSpace: "nowrap",
+          position: "sticky",
+          left: "77px",
+          zIndex: 200,
+          boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+          padding: '0px 25px 0px 0px',
+        }
+      }),
+
+      // styling props applied to the column header cell
+      setCellHeaderProps: () => ({
+        style: {
+          position: "sticky",
+          paddingLeft: '35px',
+          zIndex: 201,
+          left: "77px",
+        }
+      }),
     },
   },
   {
@@ -96,10 +117,7 @@ const OwnersPerUnitHeadCells = [
     esKey: "offer_price",
     label: "Offer Price",
     type: "number",
-    options: {
-      filter: true,
-      customRender: (value) => vf_currency(value),
-    },
+    options: { filter: true, customRender: (value) => vf_currency(value) },
   },
   {
     name: "contactStatus",
@@ -230,19 +248,6 @@ const OwnersPerUnitHeadCells = [
           value: "false",
         },
       ],
-    },
-  },
-  {
-    name: "actionMenu",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: true,
-      download: false,
-      print: false,
-      viewColumns: false,
-      parent: "Unit detail"
     },
   },
   {
