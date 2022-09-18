@@ -1,5 +1,7 @@
 /* eslint-disable no-undef */
 
+import { basic_timeouts } from "../../cypressUtils/data"
+
 /*CONTACTS GRID TEST CASE
 Launch contacts
 Click leads
@@ -31,13 +33,21 @@ Remove filter tag*/
 
 describe('Document Grid Spec', () => {
     it('passes', () => {
+        // Constants 
+        const { longTimeout, extraTimeout } = basic_timeouts
+
         cy.viewport(1400, 900)
         cy.visit('http://localhost:3000/contacts')
 
         cy.checkAndLogin()
 
-        cy.get('#addButton', { timeout: 50000 }).should('be.visible')
+        cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
         cy.wait(3000)
+
+        cy.log('==== STEP: Remove IF PREVIOUSLY FILTERS ARE APPLIED ====')
+        cy.removeFilter('Jacob')
+        cy.removeFilter('Lead')
+        cy.removeFilter('Prospect')
 
         cy.interceptApi('getESSimpleSearch')
 
@@ -49,12 +59,12 @@ describe('Document Grid Spec', () => {
         cy.log('==== STEP: SEARCH jacob in CONTACT ====')
         cy.gridSearch('jacob', 'getESSimpleSearch')
 
-        cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: 10000 }).contains('SGF TRUST LEGAL').click();
+        cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: longTimeout }).contains('SGF TRUST LEGAL').click();
 
         cy.interceptApi('getESSimpleSearch')
-        cy.get('.MuiBreadcrumbs-li', { timeout: 10000 }).contains("Contacts").should('be.visible').click()
+        cy.get('.MuiBreadcrumbs-li', { timeout: longTimeout }).contains("Contacts").should('be.visible').click()
 
-        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
+        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
 
         cy.interceptApi('getESSimpleSearch')
 
@@ -67,16 +77,16 @@ describe('Document Grid Spec', () => {
 
         cy.interceptApi('getESSimpleSearch', { searchString: 'Goodwill' })
         cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').type('{backspace}{backspace}')
-        cy.verifyApiResponse('@getESSimpleSearchWithSearchStringApi', { responseTimeout: 30000 })
+        cy.verifyApiResponse('@getESSimpleSearchWithSearchStringApi', { responseTimeout: longTimeout })
 
         cy.sortColumn('Contact Owner', 'desc')
         cy.wait(1000)
         cy.sortColumn('Contact Owner', 'asc')
 
-        cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: 10000 }).contains('GOODWILL IND REVOC TR LEGAL').click();
-        cy.get('.MuiBreadcrumbs-li', { timeout: 10000 }).contains("Contacts").should('be.visible').click()
+        cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: longTimeout }).contains('GOODWILL IND REVOC TR LEGAL').click();
+        cy.get('.MuiBreadcrumbs-li', { timeout: longTimeout }).contains("Contacts").should('be.visible').click()
 
-        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
+        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
         cy.wait(1000)
 
         cy.get("#viewColumnIcon").click()
@@ -100,14 +110,14 @@ describe('Document Grid Spec', () => {
         cy.typeAndSelect('[id="filter-autocomplete-Contact Owner"]', 'jacob', 'filter-autocomplete-Contact Owner-option-0')
         cy.get('.MuiTypography-root').contains("FILTERS").click()
         cy.get('body').type('{esc}');
-        cy.get('.MuiChip-label', { timeout: 10000 }).contains('Jacob')
-        cy.verifyApiResponse('@getESSimpleSearchWithFilterApi', { responseTimeout: 30000 })
+        cy.get('.MuiChip-label', { timeout: longTimeout }).contains('Jacob')
+        cy.verifyApiResponse('@getESSimpleSearchWithFilterApi', { responseTimeout: longTimeout })
 
         cy.get('.MuiTableCell-root.MuiTableCell-body').contains('CHEVRON USA INC').click();
 
         cy.interceptApi('getESSimpleSearch')
-        cy.get('.MuiBreadcrumbs-li', { timeout: 10000 }).contains("Contacts").should('be.visible').click()
-        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
+        cy.get('.MuiBreadcrumbs-li', { timeout: longTimeout }).contains("Contacts").should('be.visible').click()
+        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
 
         cy.removeFilter('Jacob')
 

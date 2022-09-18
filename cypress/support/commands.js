@@ -111,9 +111,9 @@ Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = 
     cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
 
     if (isFilter)
-        cy.get('.MuiChip-label', { timeout: shorTimeout }).contains(containsString)
+        cy.get('.MuiChip-label', { timeout: extraTimeout }).contains(containsString)
     else
-        cy.get('.MuiTypography-root', { timeout: shorTimeout }).contains(containsString);
+        cy.get('.MuiTypography-root', { timeout: extraTimeout }).contains(containsString);
 })
 
 //DocumentGrid Commands
@@ -192,9 +192,15 @@ Cypress.Commands.add('sortColumn', (columnName, sortOrder) => {
 
 Cypress.Commands.add('removeFilter', (filterLabel) => {
     cy.interceptApi('getESSimpleSearch')
-    cy.get('.MuiChip-label', { timeout: longTimeout }).contains(filterLabel).siblings().click()
-    cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
-    cy.get('.MuiChip-label', { timeout: longTimeout }).contains(filterLabel).should('not.exist');
+
+    cy.get('body').then((body) => {
+        if (body.find('.MuiChip-label').length > 0) {
+            cy.get('.MuiChip-label', { timeout: shorTimeout }).contains(filterLabel).siblings().click()
+            cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
+            cy.get('.MuiChip-label', { timeout: shorTimeout }).contains(filterLabel).should('not.exist');
+        }
+    });
+
 })
 
 
