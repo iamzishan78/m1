@@ -31,7 +31,7 @@ Click breadcrumb
 Remove filter tag*/
 
 
-describe('Document Grid Spec', () => {
+describe('Contact Grid Spec', () => {
     it('passes', () => {
         // Constants 
         const { longTimeout, extraTimeout } = basic_timeouts
