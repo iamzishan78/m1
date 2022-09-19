@@ -1,25 +1,27 @@
 /* eslint-disable no-undef */
 
-import { documentObj } from "../../cypressUtils/data"
+import { basic_timeouts, documentObj } from "../../cypressUtils/data"
 
 describe('Add & Delete Document Spec', () => {
     it('passes', () => {
+        const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
+
         cy.viewport(1400, 900)
         cy.visit('http://localhost:3000/documents')
 
         cy.checkAndLogin()
 
         cy.log('==== STEP: ADD DOCUMENT ====')
-        cy.get('#addDocument', { timeout: 50000 }).should('be.visible').click()
+        cy.get('#addDocument', { timeout: longTimeout }).should('be.visible').click()
 
         cy.log('==== STEP: ADD FILE NUMBER ====')
-        cy.get('#filenumber', { timeout: 500000 }).type(documentObj.fileNumber, { timeout: 500000 }).should('be.visible')
+        cy.get('#filenumber', { timeout: extraTimeout }).type(documentObj.fileNumber, { timeout: extraTimeout }).should('be.visible')
 
         cy.log('==== STEP: ADD FILE NAME ====')
         cy.get('#filename').type(documentObj.fileName)
 
         cy.log('==== STEP: ADD FILE TYPE ====')
-        cy.get('#filetype', { timeout: 50000 }).type('L')
+        cy.get('#filetype', { timeout: longTimeout }).type('L')
         cy.get("#filetype-popup").children('#filetype-option-1').click()
 
         cy.log('==== STEP: ADD FILE DATE  ====')
@@ -42,25 +44,34 @@ describe('Add & Delete Document Spec', () => {
         })
         cy.verifyApiResponse('@AddDescriptorFileApi')
 
-        cy.wait(3000)
-
         cy.interceptApi('updateDocument')
         cy.interceptApi('getESDocuments')
 
-        cy.get("#documentSaveButton", { timeout: 5000 }).should('be.visible').trigger("click");
-        cy.verifyApiResponse('@updateDocumentApi')
+        cy.wait(4000)
+        cy.get("#documentSaveButton", { timeout: shorTimeout }).should('be.visible').trigger("click");
 
-        cy.log('==== STEP: DELETING RECENTLY ADDED DOCUMENT ====')
+        cy.get('#documentSaveButton')
+            .then($button => {
+                if ($button.is(':visible')) {
+                    $button.click()
+                } else {
+                    cy.verifyApiResponse('@updateDocumentApi')
 
-        cy.log('==== STEP: OPENING FILE DETAIL DRAWER ====')
-        cy.get('table').contains('td', documentObj.fileNumber, { timeout: 500000 }).click();
+                    cy.log('==== STEP: DELETING RECENTLY ADDED DOCUMENT ====')
 
-        cy.log('==== STEP: CLICKING ON HORIZON ICON ====')
-        cy.get("#fileDetailHorzIcon").click()
+                    cy.log('==== STEP: OPENING FILE DETAIL DRAWER ====')
+                    cy.get('table').contains('td', documentObj.fileNumber, { timeout: extraTimeout }).click();
 
-        cy.interceptApi('updateDocument')
-        cy.deleteConfirmation()
-        cy.verifyApiResponse('@updateDocumentApi')
+                    cy.log('==== STEP: CLICKING ON HORIZON ICON ====')
+                    cy.get("#fileDetailHorzIcon").click()
+
+                    cy.interceptApi('updateDocument')
+                    cy.deleteConfirmation()
+                    cy.verifyApiResponse('@updateDocumentApi')
+                }
+            })
+
+
 
     })
 
