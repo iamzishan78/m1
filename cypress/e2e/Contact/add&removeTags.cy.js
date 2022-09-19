@@ -28,7 +28,7 @@ describe('Add and Remove Tags Grid Spec', () => {
 
         cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
 
-        cy.getTableCell('Tags', 1).then(($tagger) => {
+        cy.getTableCell('Tags', 2).then(($tagger) => {
             let tagName = "Test Tag1"
 
             cy.log('==== STEP: SCROLL TO TOP RIGHT ====')
@@ -39,11 +39,11 @@ describe('Add and Remove Tags Grid Spec', () => {
 
             cy.log('==== STEP: SELECT AND ENTER TAG ====')
             cy.get('#tags-outlined', { timeout: longTimeout }).click().wait(1000).type(tagName).type('{downArrow}{enter}')
-            cy.wait(2000)
+            cy.wait(3000)
 
             cy.log('==== STEP: VERIFY ADDED TAG ====')
-            cy.get('.MuiChip-label', { timeout: shorTimeout }).contains(tagName).should('be.visible')
-            cy.wait(2000)
+            cy.get('.MuiChip-label', { timeout: longTimeout }).contains(tagName).should('be.visible')
+            cy.wait(3000)
             cy.get('body').type('{esc}{esc}')
 
             cy.log('==== STEP: OPEN CONTACT DETAIL ====')
@@ -51,7 +51,7 @@ describe('Add and Remove Tags Grid Spec', () => {
 
             cy.log('==== STEP: REMOVE TAG ====')
             cy.get('.MuiGrid-root', { timeout: longTimeout }).contains('Total Offer Price').should('be.visible')
-            cy.wait(2000)
+            cy.wait(3000)
             cy.get('.MuiChip-label', { timeout: longTimeout }).contains(tagName).siblings().click()
 
             cy.log('==== STEP: CLICK ON A BREADCRUM ====')
@@ -79,7 +79,7 @@ describe('Add and Remove Tags Grid Spec', () => {
                 cy.log('==== STEP: OPEN TAGGER ====')
                 cy.wrap($tagger).click()
 
-                cy.wait(2000)
+                cy.wait(3000)
                 cy.log('==== STEP: REMOVE TAG ====')
                 cy.get('.MuiChip-label', { timeout: longTimeout }).contains(tagName).siblings().click()
 
