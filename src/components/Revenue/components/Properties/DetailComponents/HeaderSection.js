@@ -166,13 +166,11 @@ export default function HeaderSection(props) {
   useEffect(() => {
     return () => {
       const number = watch("number");
-      const name = watch("name");
+      const internalID = watch("internalID");
 
-      if (!number && !name){
+      if (!number && !internalID) {
         dispatch(
-          showInfoMessage(
-            "Operator Prop # or Internal Prop # is required."
-          )
+          showInfoMessage("Internal Prop # or Operator Prop # is required.")
         );
         history.goBack();
       }
