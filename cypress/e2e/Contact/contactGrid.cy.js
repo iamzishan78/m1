@@ -113,6 +113,10 @@ describe('Contact Grid Spec', () => {
         cy.get('.MuiChip-label', { timeout: longTimeout }).contains('Jacob')
         cy.verifyApiResponse('@getESSimpleSearchWithFilterApi', { responseTimeout: longTimeout })
 
+        cy.reload()
+        cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
+
+        cy.wait(4000)
         cy.get('.MuiTableCell-root.MuiTableCell-body').contains('CHEVRON USA INC').click();
 
         cy.interceptApi('getESSimpleSearch')
