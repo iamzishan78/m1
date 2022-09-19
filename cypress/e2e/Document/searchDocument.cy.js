@@ -1,13 +1,17 @@
 /* eslint-disable no-undef */
 
+import { basic_timeouts } from "../../cypressUtils/data"
+
 describe('Search Grid Spec', () => {
         it('passes', () => {
+                const { longTimeout } = basic_timeouts
+
                 cy.viewport(1400, 900)
                 cy.visit('http://localhost:3000/documents')
 
                 cy.checkAndLogin()
 
-                cy.get('#addDocument', { timeout: 50000 }).should('be.visible')
+                cy.get('#addDocument', { timeout: longTimeout }).should('be.visible')
 
                 cy.log('==== STEP: SEARCH 2342 in DOCUMENT ====')
 
