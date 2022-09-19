@@ -116,6 +116,11 @@ Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = 
         cy.get('.MuiTypography-root', { timeout: extraTimeout }).contains(containsString);
 })
 
+//Scroll grid by using id of the container 
+Cypress.Commands.add('scrollGridTo', (direction, containerId) => {
+    cy.get(containerId).children().children().children().children().eq(2).scrollTo(direction)
+})
+
 //DocumentGrid Commands
 Cypress.Commands.add('addWell', (wellName) => {
     cy.interceptApi('addWellToFileDescriptor')
