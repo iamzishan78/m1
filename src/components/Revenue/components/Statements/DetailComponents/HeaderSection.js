@@ -20,7 +20,7 @@ import { UPDATE_CHECK_DATA } from "graphQL/useMutationUpdateCheck";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router";
+import { useHistory, useParams } from "react-router-dom";
 import { showInfoMessage } from "actions";
 import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
@@ -71,7 +71,7 @@ const useStyles = makeStyles(() => ({
 
 function HeaderFunction(props) {
   const classes = useStyles();
-  // const [check, setCheck] = useState({});
+  const params = useParams();
   const { check, setCheck } = props
   const [updateCheck] = useMutation(UPDATE_CHECK_DATA);
   const { data: elasticData } = useQuery(GET_ES_AGGS_LIST, {
@@ -80,7 +80,7 @@ function HeaderFunction(props) {
       filters: [
         {
           field: "check._id.keyword",
-          value: "6283b27b8ff6f3f1f27b506f",
+          value: params.id,
         },
       ],
       search: "",
