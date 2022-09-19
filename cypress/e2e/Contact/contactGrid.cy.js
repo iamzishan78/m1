@@ -44,6 +44,7 @@ describe('Contact Grid Spec', () => {
         cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
         cy.wait(3000)
 
+
         cy.log('==== STEP: Remove IF PREVIOUSLY FILTERS ARE APPLIED ====')
         cy.removeFilter('Jacob')
         cy.removeFilter('Lead')
@@ -90,7 +91,7 @@ describe('Contact Grid Spec', () => {
         cy.wait(1000)
 
         cy.get("#viewColumnIcon").click()
-        cy.get('#customViewColumns').parent().scrollTo('center')
+        cy.get('#customViewColumns').parent().wait(3000).scrollTo('center')
 
         cy.wait(1000)
 
