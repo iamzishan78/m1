@@ -45,6 +45,7 @@ describe('Quick Actions And Searching Spec', () => {
 
         const contactName = 'SGF TRUST LEGAL'
         cy.log('==== STEP: SEARCH jacob in CONTACT ====')
+
         cy.gridSearch('jacob', 'getESSimpleSearch').then(response => {
             // const hits = response.response.body.data.getESSimpleSearch.hits
 
@@ -57,6 +58,7 @@ describe('Quick Actions And Searching Spec', () => {
 
             // cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: longTimeout }).contains(contactName).should('be.visible').click();
 
+            cy.wait(2000)
             cy.getTableCell("Name", 3).click()
 
             cy.wait(5000)
