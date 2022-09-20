@@ -3,7 +3,6 @@ import { Grid, Button, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { useSelector } from "react-redux";
 
-import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import DetailTabsSection from "components/Revenue/components/Portfolio/DetailTabsSection";
 import { useLazyQuery } from "@apollo/client";
@@ -113,6 +112,7 @@ export default function Portfolio() {
                 setToDate={setToDate}
                 isProperties={true}
                 lastCheckMinDate={lastCheckMinDate}
+                datesInputWidth={3}
               />
             </Grid>
           </Grid>

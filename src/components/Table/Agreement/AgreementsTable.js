@@ -69,6 +69,7 @@ function AgreementsTable(props) {
       hit.agreementId = hit._id;
       hit.agreementType = agreementTypes.find((type) => type.value === hit.agreementType || type.label === hit.agreementType)?.label;
       hit.agreementDate = hit.agreementDate ? convert_date(hit.agreementDate) : null;
+      hit.acquisitionDate = hit.acquisitionDate ? convert_date(hit.acquisitionDate) : null;
       hit.effectiveDate = hit.effectiveDate ? convert_date(hit.effectiveDate) : null;
       hit.expirationDate = hit.expirationDate ? convert_date(hit.expirationDate) : null;
       hit.extensionDate = hit.extensionDate ? convert_date(hit.extensionDate) : null;

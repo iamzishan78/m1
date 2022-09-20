@@ -369,13 +369,13 @@ export default function DetailComponents(props) {
               <StyledTabs
                 value={tab}
                 onChange={(event, tab) => {
-                  setButtonScroll(true);
+                  // setButtonScroll(true);
                   setTab(tab);
                 }}
                 aria-label="ant example"
               >
-                <StyledTab label="Header" />
                 <StyledTab label="Details" />
+                <StyledTab label="Validation" />
               </StyledTabs>
             </div>
             <div className={classes.metaActions}>
