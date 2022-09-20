@@ -166,8 +166,7 @@ Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
                 })
             cy.get('@cell')   // last command, it's result will be returned
         });
-}
-)
+})
 
 // ContactGrid Commands
 
