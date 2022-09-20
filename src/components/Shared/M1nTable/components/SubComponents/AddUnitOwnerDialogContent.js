@@ -68,12 +68,14 @@ const useStyles = makeStyles((theme) => ({
 export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, ...props }) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const { control, reset, setValue, getValues } = useForm();
+  const { control, reset, setValue, getValues, watch } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
   const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false)
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [ownerTypeOfConctact, setOwnerTypeOfConctact] = useState();
+
+  const watchedNra = watch('nra')
 
   useEffect(() => {
     if (selectedRow) {
@@ -165,6 +167,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       }
     }
   }, [nameAutValue])
+
+  useEffect(() => {
+    if (!isOfferPriceOverridden && getValues().nra) setValue("offer_price", parseFloat(getValues().nra) * parseFloat(uUnitPricing));
+  }, [watchedNra])
 
   const emptyStates = () => {
     setNameAutValue(null);
@@ -524,10 +530,29 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
+                        const value = e.target.value
+                        const calculatedOfferPrice = parseFloat(getValues().nra) * parseFloat(uUnitPricing)
+                        setIsOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice))
                         props.onChange(e.target.value);
                       }}
+                      className={isOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
                       InputProps={{
                         inputComponent: CurrencyFormatCustom,
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            {isOfferPriceOverridden && (
+                              <IconButton
+                                aria-label="toggle offer_price"
+                                onClick={() => {
+                                  setIsOfferPriceOverridden(false)
+                                  setValue("offer_price", parseFloat(getValues().nra) * parseFloat(uUnitPricing));
+                                }}
+                              >
+                                <AutorenewIcon />
+                              </IconButton>
+                            )}
+                          </InputAdornment>
+                        ),
                       }}
                       fullWidth
                       defaultValue=""
