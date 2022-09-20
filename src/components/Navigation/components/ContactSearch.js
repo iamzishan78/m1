@@ -164,6 +164,7 @@ const ContactSearch = () => {
         <Grid item md={4}>
           <div className={classes.filterTabs} style={{ float: 'right' }}>
             <Button
+              id="addCampaignButton"
               color="primary"
               variant="contained"
               startIcon={<Add />}

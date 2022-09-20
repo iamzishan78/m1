@@ -73,7 +73,7 @@ const CamapignRelatedGrids = ({ campaign }) => {
                       <ListItemIcon style={{ minWidth: "40px" }}>
                         <Icon />
                       </ListItemIcon>
-                      <ListItemText primary={row.label} />
+                      <ListItemText id={row.label} primary={row.label} />
                     </ListItem>
                   );
                 })}
