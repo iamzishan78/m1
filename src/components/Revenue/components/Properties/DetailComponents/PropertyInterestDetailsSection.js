@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDetails, setSelectedInterest }) => {
+const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDetails, setSelectedInterest, setNewAgmtState }) => {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState(0)
 
@@ -70,8 +70,9 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
       {selectedTab === 2 && (
         <RelatedAgreementsTable
           header={<Header />}
-          moduleId={"63178a23c4a102add2a388fc"}
+          moduleId={propertyId}
           dense
+          setNewAgmtState={setNewAgmtState}
         />
       )}
     </div>

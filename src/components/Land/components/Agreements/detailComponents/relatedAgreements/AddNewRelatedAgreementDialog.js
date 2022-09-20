@@ -6,9 +6,7 @@ import { Button, DialogContent, DialogActions, CircularProgress } from "@materia
 import { Typography, TextField, Grid, FormControl } from "@material-ui/core";
 import FolderIcon from "@material-ui/icons/Folder";
 import parse from "autosuggest-highlight/parse";
-import debounce from "lodash/debounce";
 
-import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
 import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import AutoCompleteESField from "components/Shared/Forms/Fields/AutoCompleteESField";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
@@ -124,7 +122,7 @@ const AddNewRelatedAgreementDialog = (props) => {
     }
   });
 
-  const { customLayerId, setNewAgmtState } = props;
+  const { customLayerId, setNewAgmtState, parentType } = props;
 
   const selectedAgreement = useMemo(() => get(agreement, "customLayer.shapeJson.properties"), [agreement]);
 
@@ -143,6 +141,8 @@ const AddNewRelatedAgreementDialog = (props) => {
       variables: {
         descriptorObject: customLayerId,
         relatedObject: get(agreement, "customLayer._id"),
+        descriptorType: parentType,
+        relatedObjectType: "Agreement"
       },
       refetchQueries: ["getESSimpleSearch"],
       awaitRefetchQueries: true,

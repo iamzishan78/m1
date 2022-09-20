@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const UPSERT_RELATED_AGREEMENT_DESSCRIPTOR = gql`
-  mutation upsertRelatedAgreementDescriptor($descriptorObject: ID, $relatedObject: ID) {
-    upsertRelatedAgreementDescriptor(descriptorObject: $descriptorObject, relatedObject: $relatedObject)
+  mutation upsertRelatedAgreementDescriptor($descriptorObject: ID, $relatedObject: ID, $descriptorType: String, $relatedObjectType: String) {
+    upsertRelatedAgreementDescriptor(descriptorObject: $descriptorObject, relatedObject: $relatedObject, descriptorType: $descriptorType, relatedObjectType: $relatedObjectType)
   }
 `;
 

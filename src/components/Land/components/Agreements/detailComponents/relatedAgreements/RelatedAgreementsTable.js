@@ -131,7 +131,7 @@ function AgreementOwnersTractsTable(props) {
 
       <Table
         style={{ backgroundColor: "#fff" }}
-        header={"Related Agreements"}
+        header={props.header ?? "Related Agreements"}
         columns={props.columns}
         rows={props.rows}
         total={false}
