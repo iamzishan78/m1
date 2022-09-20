@@ -39,9 +39,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-
-
 function MapGridCardSearch(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -177,13 +174,6 @@ function MapGridCardSearch(props) {
         setMapGridCardState({
           searchResultData: [...newOptions],
           searchloading: false,
-        })
-      );
-    }
-    return () => {
-      dispatch(
-        setMapGridCardState({
-          searchInputValue: '',
         })
       );
     }

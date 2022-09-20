@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Container } from "@material-ui/core";
 import get from "lodash/get";
@@ -10,11 +10,12 @@ import TableESHOC from "../TableESHOC";
 import { useLazyQuery } from "@apollo/client";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 
-import { getContactsAddress } from "utils/helper";
+import { getContactsAddress, copy } from "utils/helper";
 
 import { deepEqualObjects } from "components/Shared/functions";
 import { featureFlagChanges } from "components/ContactDetailedInfo/helper";
 import { usetableStyles } from "components/Table/Styles";
+import { uniqBy } from "lodash";
 
 function ContactsTable(props) {
   const classes = usetableStyles();
@@ -22,12 +23,14 @@ function ContactsTable(props) {
   // function states
   const tableRef = useRef();
   const { user } = useSelector((state) => state.app);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [isSelectAll, setIsSelectAll] = useState(false);
 
   // queries
   const [getCheckPurchaseData, { data: ContactPurchaseData }] = useLazyQuery(GET_CHECK_PURCHASE_DATA);
 
   const addAble = { parent: false, type: "campaignContact" };
-  const targetLabel = "campaignContacts";
+  const targetLabel = "contact";
   const uploadIcon = true;
   const header = "Contacts";
   const total = false;
@@ -58,6 +61,9 @@ function ContactsTable(props) {
   };
 
   useEffect(() => {
+    const tableheaderCopy = copy(tableheader);
+    tableheaderCopy.map(thc => thc.options = tableheader.find(th => th.name === thc.name).options);
+
     props.setInitialFilters([
       {
         field: "campaignName.keyword",
@@ -68,7 +74,7 @@ function ContactsTable(props) {
       addableName: "Contact",
       extendSearchQuery: null,
       searchFields: ["name^4", "_all"],
-      TableHeader: tableheader,
+      TableHeader: tableheaderCopy,
       esIndex,
       typeKeyword: { gridViewCategory: "Contacts" },
       startPaginationAt: 25,
@@ -132,6 +138,32 @@ function ContactsTable(props) {
           parent={props.parent}
           setColumnsBase={[]}
           onTableChange={props.onTableChange}
+          selectedRows={props.selectedRows}
+          setSelectedRows={setSelectedRows}
+          onRowSelectionChange={(
+            currentRowsSelected,
+            allRowsSelected,
+            rowsSelected
+          ) => {
+            if (
+              allRowsSelected.length === startPaginationAt ||
+              allRowsSelected.length === props.options.count
+            ) {
+              setIsSelectAll(true);
+            } else {
+              setIsSelectAll(false);
+            }
+          }
+          }
+          exportContactsProps={{
+            search: props.activeSearchRef.current,
+            filters: [...props.initialFilters, ...uniqBy(props.customAppliedFilters, "field") || []],
+            total: props.options.count,
+            isSelectAll: isSelectAll,
+            rows: selectedRows,
+            esIndex: esIndex,
+            open: true
+          }}
         />
       </Container>
     </>

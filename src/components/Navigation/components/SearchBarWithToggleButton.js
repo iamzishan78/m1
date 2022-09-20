@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function GridIcon() {
+function GridIcon({ setStateApp }) {
   const dispatch = useDispatch();
   const classes = useStyles();
   const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
@@ -70,6 +70,7 @@ function GridIcon() {
       <Button
         className={mapGridCardActivated ? classes.selected : classes.gridOnIcon}
         onClick={() => {
+          setStateApp((stateApp) => ({ ...stateApp, selectedDataset: { name: 'M1 Platform' } }))
           dispatch(toggleMapGridCardAtived());
         }}
       >
@@ -104,7 +105,7 @@ export default function SearchBarWithToggleButton() {
               </Button>
             </Tooltip>
           ) : (
-            <GridIcon />
+            <GridIcon setStateApp={setStateApp} />
           )}
         </ButtonGroup>
       )}

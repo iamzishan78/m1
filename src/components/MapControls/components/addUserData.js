@@ -99,6 +99,8 @@ export default function AddUserData(props) {
       fileUploadedOriginalContent: null,
       // selectedControl: 'layer',
       addLayer: false,
+      manageSourceLayer: false,
+      manageLayer: false,
     }));
     setNotReturn(false);
   };
@@ -188,40 +190,6 @@ export default function AddUserData(props) {
               });
 
               await SimpleOrShapeFileImport({ stateApp, setStateApp, client, file_id, sourceProps })
-              // const isShapeFileImport = stateApp?.user?.features?.find(f => f.name === 'ShapeFileImport')
-              // if (isShapeFileImport) {
-              //   const jobInitialization = await client.mutate({
-              //     mutation: INITIALIZE_EXPORT_JOB,
-              //     variables: {
-              //       jobName: "Shape File Import",
-              //       jobType: "SHAPEFILEIMPORT",
-              //       requestPayload: {
-              //         fileId: file_id,
-              //       },
-              //       userId: stateApp.user.mongoId,
-              //     },
-              //   });
-
-              //   await client.mutate({
-              //     mutation: CREATE_JOB,
-              //     variables: {
-              //       jobId: jobInitialization?.data?.initializeExportJob?.job?._id,
-              //       sendEmail: false,
-              //     },
-              //   });
-              //   setStateApp((state) => ({
-              //     ...state,
-              //     bulkUpload: !state.bulkUpload,
-              //   }));
-              // } else {
-              //   Loader.createToast('layer-creation', 'Layer creation in progress')
-              //   const interval = setInterval(() => {
-              //     if (stateApp.map.isSourceLoaded(sourceProps)) {
-              //       Loader.successToast('layer-creation', 'Layer created')
-              //       clearInterval(interval);
-              //     }
-              //   }, 1000);
-              // }
               handleClose();
             })
             .catch((error) => {
@@ -280,6 +248,8 @@ export default function AddUserData(props) {
         setStateMapControls((stateMapControls) => ({
           ...stateMapControls,
           addLayer: false,
+          manageSourceLayer: false,
+          manageLayer: false,
         }));
         handleClose();
       }
@@ -336,7 +306,7 @@ export default function AddUserData(props) {
   if (notReturn) return null;
   return (
     <Dialog maxWidth='xs' fullWidth open={isOpen} onClose={handleCancel}>
-      <DialogTitle>Create a new Layer</DialogTitle>
+      <DialogTitle>Create a new Source</DialogTitle>
       <DialogContent dividers>
         <TextField
           defaultValue={stateMapControls.fileUploadedContent.groupName}
@@ -344,7 +314,7 @@ export default function AddUserData(props) {
           required
           margin="dense"
           id="layerName"
-          label="Layer Name"
+          label="Source Name"
           fullWidth
           error={error}
           onChange={handleLayerNameChanges}
@@ -419,7 +389,7 @@ export default function AddUserData(props) {
           onClick={handleApplyChanges}
           color="primary"
         >
-          Create Layer
+          Create Source
         </Button>
       </DialogActions>
     </Dialog>

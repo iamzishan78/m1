@@ -377,25 +377,26 @@ function Search() {
           // "level6Name"
         ],
         filter: [
-          {field: "level7Id.keyword", value: undefined},
-          {field: "level8Id.keyword", value: undefined},
-          {field: "level9Id.keyword", value: undefined},
-          {field: "level10Id.keyword", value: undefined}
+          { field: "level7Id.keyword", value: undefined },
+          { field: "level8Id.keyword", value: undefined },
+          { field: "level9Id.keyword", value: undefined },
+          { field: "level10Id.keyword", value: undefined }
         ],
         formatOptions: (data) => {
-          return { ...data, Source: landGridIndexName, 
-            Primary: [`${ data.level1Type ? `${data.level1Type}: ${data.level1Name}` : '' }`, 
-              `${ data.level2Type ? `${data.level2Type}: ${data.level2Name}` : '' }`].join(' '),
-            Secondary: [`${ data.level3Type ? `${data.level3Type}: ${data.level3Name}` : '' }`,
-              `${ data.level4Type ? `${data.level4Type}: ${data.level4Name}` : '' }`,
-              `${ data.level5Type ? `${data.level5Type}: ${data.level5Name}` : '' }`,
-              `${ data.level6Type ? `${data.level6Type}: ${data.level6Name}` : '' }`].join(' ')
+          return {
+            ...data, Source: landGridIndexName,
+            Primary: [`${data.level1Type ? `${data.level1Type}: ${data.level1Name}` : ''}`,
+            `${data.level2Type ? `${data.level2Type}: ${data.level2Name}` : ''}`].join(' '),
+            Secondary: [`${data.level3Type ? `${data.level3Type}: ${data.level3Name}` : ''}`,
+            `${data.level4Type ? `${data.level4Type}: ${data.level4Name}` : ''}`,
+            `${data.level5Type ? `${data.level5Type}: ${data.level5Name}` : ''}`,
+            `${data.level6Type ? `${data.level6Type}: ${data.level6Name}` : ''}`].join(' ')
           }
         }
       },
       "units": {
         esIndex: "shapes_flat",
-        search: (request) => `${request.input}`,
+        search: (request) => request.input ? `*${request.input}*` : '',
         searchFields: ["name", "shapeJson.properties.uNumber", "shapeJson.properties.originalProperties.County", "data.shapeJson.properties.originalProperties.State"],
         filter: {
           field: "layer",
@@ -412,8 +413,8 @@ function Search() {
 
       "tracts": {
         esIndex: "shapes_flat",
-        search: (request) => `${request.input}`,
-        searchFields: ["name", "shapeJson.properties.originalProperties.County", "data.shapeJson.properties.originalProperties.State"],
+        search: (request) => request.input ? `*${request.input}*` : '',
+        searchFields: ['*'],
         filter: {
           field: "layer",
           value: "parcel"
@@ -427,8 +428,8 @@ function Search() {
       },
       "agreements": {
         esIndex: "shapes_flat",
-        search: (request) => `${request.input}`,
-        searchFields: ["shapeJson.properties.shapeLabel", "layer"],
+        search: (request) => request.input ? `*${request.input}*` : '',
+        searchFields: ['*'],
         filter: {
           field: "shapeJson.properties.type",
           value: "agreement"
@@ -444,7 +445,7 @@ function Search() {
   const callESSearch = React.useMemo(
     () =>
       debounce((request) => {
-        const { esIndex, search, searchFields, filter } = ( esCallData[searchOption] || { search: () => {} } )
+        const { esIndex, search, searchFields, filter } = (esCallData[searchOption] || { search: () => { } })
         getESSimpleSearch({
           variables: {
             index: esIndex,
@@ -456,7 +457,7 @@ function Search() {
               query: search(request),
               fields: searchFields
             },
-            ...(filter) && { filters: !Array.isArray(filter) ? [ filter ] : filter },
+            ...(filter) && { filters: !Array.isArray(filter) ? [filter] : filter },
             sort: [],
           }
         })
@@ -837,9 +838,9 @@ function Search() {
           },
         });
 
-      //when uncommented this takes you from map search bar directly to contact detail card for selected contact 
+        //when uncommented this takes you from map search bar directly to contact detail card for selected contact 
         //const newPath = `/contact/details/${newValue._id}`;
-       // history.location.pathname !== newPath && history.replace(newPath);
+        // history.location.pathname !== newPath && history.replace(newPath);
       }
 
       //// if mapboxSearch

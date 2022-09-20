@@ -1,5 +1,6 @@
 import GlobalSettings from "..//..//..//GlobalSettings.js";
 import vf_currency from "components/Shared/valueformatters/vf_currency";
+import { history } from "store";
 
 const unitsColumnHeaders = [
   {
@@ -167,6 +168,16 @@ const unitsColumnHeaders = [
     name: "qualifier",
     label: "Qualifier",
     esKey: "shapeJson.properties.qualifier.name.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "125px" } }),
+    },
+  },
+  {
+    name: "reviewer",
+    label: "Reviewer",
+    esKey: "shapeJson.properties.reviewer.name.keyword",
     options: {
       sort: true,
       filter: true,
