@@ -19,15 +19,15 @@ describe('Document Grid Spec', () => {
         cy.log('==== STEP: UPDATE INTERNAL COMPANY ====')
         cy.interceptApi('updateDocument')
         cy.getTableCell('Internal Company', 1).then(($internalCompany) => {
-            cy.get('#Documents').children().children().children().children().eq(2).scrollTo('right')
+            cy.scrollGridTo('right', '#Documents')
             cy.wrap($internalCompany).get("#selectedValues").click()
-            cy.get('#Documents').children().children().children().children().eq(2).scrollTo('right')
+            cy.scrollGridTo('right', '#Documents')
             cy.wrap($internalCompany).get("#searchForValue").type('924{enter}{esc}{esc}')
             cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: longTimeout })
         })
 
 
-        cy.get('#Documents').children().children().children().children().eq(2).scrollTo('right')
+        cy.scrollGridTo('right', '#Documents')
         cy.log('==== STEP: UPDATE STATE ====')
         cy.interceptApi('updateDocument')
         cy.getTableCell('State', 1).then(($state) => {
@@ -37,7 +37,7 @@ describe('Document Grid Spec', () => {
             cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: shorTimeout })
 
             cy.get('.react-select__menu-list').children().eq(3).trigger("click", { force: true })
-            cy.get('#Documents').children().children().children().children().eq(2).scrollTo('right')
+            cy.scrollGridTo('right', '#Documents')
             cy.wrap($state).get("#badgeValue").click()
             cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: shorTimeout })
         })

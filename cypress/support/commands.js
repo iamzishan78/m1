@@ -116,6 +116,11 @@ Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = 
         cy.get('.MuiTypography-root', { timeout: extraTimeout }).contains(containsString);
 })
 
+//Scroll grid by using id of the container 
+Cypress.Commands.add('scrollGridTo', (direction, containerId) => {
+    cy.get(containerId).children().children().children().children().eq(2).scrollTo(direction)
+})
+
 //DocumentGrid Commands
 Cypress.Commands.add('addWell', (wellName) => {
     cy.interceptApi('addWellToFileDescriptor')
@@ -161,8 +166,7 @@ Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
                 })
             cy.get('@cell')   // last command, it's result will be returned
         });
-}
-)
+})
 
 // ContactGrid Commands
 
@@ -186,7 +190,7 @@ Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
 
 Cypress.Commands.add('sortColumn', (columnName, sortOrder) => {
     cy.interceptApi('getESSimpleSearch', { sortOrder: sortOrder })
-    cy.get('.MuiButton-label', { timeout: longTimeout }).contains(columnName).click({ force: true })
+    cy.get('.MuiButton-label', { timeout: longTimeout }).contains(columnName).scrollIntoView().wait(2000).click({ force: true })
     cy.verifyApiResponse('@getESSimpleSearchWithSortOrderApi', { responseTimeout: longTimeout })
 })
 
@@ -195,9 +199,10 @@ Cypress.Commands.add('removeFilter', (filterLabel) => {
 
     cy.get('body').then((body) => {
         if (body.find('.MuiChip-label').length > 0) {
-            cy.get('.MuiChip-label', { timeout: shorTimeout }).contains(filterLabel).siblings().click()
+            cy.get('.MuiChip-label', { timeout: longTimeout }).contains(filterLabel).siblings().click()
             cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
-            cy.get('.MuiChip-label', { timeout: shorTimeout }).contains(filterLabel).should('not.exist');
+            cy.wait(1000)
+            cy.get('.MuiChip-label', { timeout: longTimeout }).contains(filterLabel).should('not.exist');
         }
     });
 
