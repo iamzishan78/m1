@@ -191,7 +191,7 @@ Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
 
 Cypress.Commands.add('sortColumn', (columnName, sortOrder) => {
     cy.interceptApi('getESSimpleSearch', { sortOrder: sortOrder })
-    cy.get('.MuiButton-label', { timeout: longTimeout }).contains(columnName).click({ force: true })
+    cy.get('.MuiButton-label', { timeout: longTimeout }).contains(columnName).scrollIntoView().wait(500).click()
     cy.verifyApiResponse('@getESSimpleSearchWithSortOrderApi', { responseTimeout: longTimeout })
 })
 
