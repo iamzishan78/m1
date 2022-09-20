@@ -8,7 +8,7 @@ import TableESHOC from "components/Table/TableESHOC";
 import { deepEqualObjects, copy } from "components/Shared/functions";
 
 // Header Schemas
-import TableHeader from "components/Table/constants/property-interest-details-header-schema";
+import TableHeader from "components/Table/constants/production-detail-header-schema";
 
 // Utilities
 import { usetableStyles } from "../Styles";
@@ -18,13 +18,7 @@ function AssociatedWellsProductionTable(props) {
 
   const formatHits = (hits) => {
     return hits.map((hit) => {
-      hit.effectiveDate = hit.effectiveDate ? moment(hit.effectiveDate).format("MM/DD/YYYY") : null;
-      hit.tags =
-        hit?.tags?.length > 0
-          ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
-          : [[], 0];
-      hit.commentsCounter = hit.comments ? hit.comments.length : 0;
-      return hit;
+      return {...hit.data, ReportDate: moment(hit.data.ReportDate).format('MM/YYYY'), sort: hit.sort };
     });
   };
 
@@ -33,14 +27,17 @@ function AssociatedWellsProductionTable(props) {
   }
 
   useEffect(() => {
-    props.setTableMeta({
-      searchFields: ["owner.entityDetail.name", "_all"],
-      filters: getFilters(),
-      TableHeader: copy(TableHeader),
-      esIndex: "mywellproduction_flats",
-      startPaginationAt: 25,
-      formatHits,
-    });
+    if(props.associatedWellIds.length > 0){
+      props.setTableMeta({
+        searchFields: ["_all"],
+        filters: getFilters(),
+        TableHeader: copy(TableHeader),
+        esIndex: "mywellproduction_flats",
+        startPaginationAt: 25,
+        defaultSort: { field: "data.ReportDate", order: "desc" },
+        formatHits,
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.associatedWellIds]);
 

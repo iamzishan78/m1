@@ -541,7 +541,7 @@ const Validation = ({ propertyId }) => {
         </WellProdChartContextProvider>
       </WellCardContextProvider>
 
-      {/* <ValidationGrids associatedWellIds={associatedWellIds} /> */}
+      <ValidationGrids associatedWellIds={associatedWellIds} />
       
     </div>
   )
@@ -573,9 +573,9 @@ const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellId
       const productionData = []
       const wellIds = []
       wellData.forEach((data) => {
-        wellIds.push(data._id)
-        if (data.well.productionData.data.length > 0) {
-          let pData = data.well.productionData.data
+        wellIds.push(data.well._id)
+        if (data.well.productionData.length > 0) {
+          let pData = data.well.productionData
 
           if(filter[0].value.range.date.lte){
             pData = pData.filter(d => moment(d.ReportDate) <= moment(filter[0].value.range.date.lte))
@@ -586,6 +586,7 @@ const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellId
           }
           
           pData.forEach((production)=> {
+            production = production.data
             const date = moment(production.ReportDate).format("MM/yyyy")
             production.ReportDate = date
             const index = productionData.findIndex(d => d.ReportDate === date)
@@ -609,7 +610,8 @@ const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellId
           })
         }
       })
-      console.log('productionData',productionData)
+
+      // console.log('productionData',productionData)
       setAssociatedWellIds(wellIds)
       setWellProductionData(JSON.parse(JSON.stringify(productionData)))
     }
@@ -621,11 +623,11 @@ const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellId
       const wellData = JSON.parse(JSON.stringify(associatedWells.getAssociatedWellProductionData))
 
       wellData.forEach((data) => {
-        let pData = data.well.productionData.data
+        let pData = data.well.productionData
         const newMinDate = new Date(
           Math.min(
             ...pData.map(element => {
-              return new Date(element.ReportDate);
+              return new Date(element.data.ReportDate);
             }),
           ),
         );
