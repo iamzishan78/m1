@@ -22,7 +22,7 @@ click add
 Then verify if the appear on grid
 */
 
-import { addContactObj, basic_timeouts } from "../../cypressUtils/data"
+import { contactObj, basic_timeouts } from "../../../cypressUtils/data"
 
 describe('Add Contact Spec', () => {
     it('passes', () => {
@@ -44,46 +44,46 @@ describe('Add Contact Spec', () => {
         cy.get('#addContactHeading', { timeout: longTimeout }).should('be.visible')
 
         cy.log('==== STEP: ENTER FIRST NAME ====')
-        cy.get("#firstName").type(addContactObj.firstName)
+        cy.get("#firstName").type(contactObj.firstName)
 
         cy.log('==== STEP: ENTER MIDDLE NAME ====')
-        cy.get("#middleName").type(addContactObj.middleName)
+        cy.get("#middleName").type(contactObj.middleName)
 
         cy.log('==== STEP: ENTER LAST NAME ====')
-        cy.get("#lastName").type(addContactObj.lastName)
+        cy.get("#lastName").type(contactObj.lastName)
 
         cy.log('==== STEP: SELECT ENTITY TYPE ====')
-        cy.get("#entityType").type(addContactObj.enityType).wait(1000).type("{downArrow}{downArrow}{enter}")
+        cy.get("#entityType").type(contactObj.enityType).wait(1000).type("{downArrow}{downArrow}{enter}")
 
         cy.log('==== STEP: ENTER MOBILE PHONE NUMBER ====')
-        cy.get("#mobilePhone").type(addContactObj.mobilePhone)
+        cy.get("#mobilePhone").type(contactObj.mobilePhone)
 
         cy.log('==== STEP: ENTER HOME PHONE NUMBER ====')
-        cy.get("#homePhone").type(addContactObj.homePhone)
+        cy.get("#homePhone").type(contactObj.homePhone)
 
         cy.log('==== STEP: ENTER EMAIL ====')
-        cy.get("#email").type(addContactObj.email)
+        cy.get("#email").type(contactObj.email)
 
         cy.log('==== STEP: ENTER ADDRESS 1 ====')
-        cy.get("#address1").type(addContactObj.address1)
+        cy.get("#address1").type(contactObj.address1)
 
         cy.log('==== STEP: ENTER ADDRESS 2 ====')
-        cy.get("#address2").type(addContactObj.address2)
+        cy.get("#address2").type(contactObj.address2)
 
         cy.log('==== STEP: ENTER CITY ====')
-        cy.get("#city").type(addContactObj.city)
+        cy.get("#city").type(contactObj.city)
 
         cy.log('==== STEP: ENTER STATE ====')
-        cy.get("#state").type(addContactObj.state)
+        cy.get("#state").type(contactObj.state)
 
         cy.log('==== STEP: ZIP CODE ====')
-        cy.get("#zipCode").type(addContactObj.zipCode)
+        cy.get("#zipCode").type(contactObj.zipCode)
 
         cy.log('==== STEP: ENTER COUNTRY ====')
-        cy.get("#country").type(addContactObj.country)
+        cy.get("#country").type(contactObj.country)
 
         cy.log('==== STEP: SELECT CONTACT OWNER ====')
-        cy.get("#contactOwner").type(addContactObj.contactOwner).wait(1000).type("{downArrow}{enter}")
+        cy.get("#contactOwner").type(contactObj.contactOwner).wait(1000).type("{downArrow}{enter}")
 
         cy.interceptApi('AddContact')
         cy.interceptApi('getESSimpleSearch')
@@ -94,7 +94,7 @@ describe('Add Contact Spec', () => {
         cy.verifyApiResponse('@AddContactApi', { responseTimeout: longTimeout })
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
             const hits = response.response.body.data.getESSimpleSearch.hits
-            const recentlyAdded = hits.find(hit => hit.primaryEmail === addContactObj.email)
+            const recentlyAdded = hits.find(hit => hit.primaryEmail === contactObj.email)
 
             console.log(hits)
             console.log(recentlyAdded)

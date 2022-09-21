@@ -21,7 +21,7 @@ export const documentObj = {
     fileAddress: "cypress/files/documentSample.png"
 }
 
-export const addContactObj = {
+export const contactObj = {
     firstName: "Jacob",
     middleName: "Steave",
     lastName: "Kyle",
