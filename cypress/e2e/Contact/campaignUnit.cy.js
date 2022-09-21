@@ -19,7 +19,7 @@ describe('Campaign Unit Grid Spec', () => {
         cy.log('==== STEP: CLICK ON UNIT BY NAME ====')
         const unitName = "T2 - Loving - Reeves" //GEP - Tate Locklear
         cy.gridSearch(unitName, 'getESSimpleSearch')
-        cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: longTimeout }).contains(unitName).click();
+        cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: longTimeout }).contains(unitName, { timeout: longTimeout }).should('be.visible').click({ force: true });
 
         cy.interceptApi('getESSimpleSearch')
         cy.log('==== STEP: CLICK ON UNITS ====')
