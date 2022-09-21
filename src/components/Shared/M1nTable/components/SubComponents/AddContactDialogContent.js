@@ -574,6 +574,7 @@ export default function AddContactDialogContent(props) {
       >
         <Grid item xs={12} style={{ maxHeight: "60px", padding: 22 }}>
           <h4
+            id="addContactHeading"
             style={{
               margin: "0 0 15px 0",
               float: "left",
@@ -619,6 +620,7 @@ export default function AddContactDialogContent(props) {
             Cancel
           </Button>
           <Button
+            id="addContactButton"
             disabled={!validated}
             onClick={handleClickAdd}
             variant="contained"

@@ -20,3 +20,20 @@ export const documentObj = {
     fileName: "Cydoc et el",
     fileAddress: "cypress/files/documentSample.png"
 }
+
+export const addContactObj = {
+    firstName: "Jacob",
+    middleName: "Steave",
+    lastName: "Kyle",
+    enityType: "individual",
+    mobilePhone: "083822883392",
+    homePhone: "084933994403",
+    email: "cyp@m1neral.com",
+    address1: "minCity, address 1",
+    address2: "minCity, address 2",
+    city: "Ytic",
+    state: "La",
+    zipCode: "7323",
+    country: "Yrtnuoc",
+    contactOwner: "Jacob",
+}
