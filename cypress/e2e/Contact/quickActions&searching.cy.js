@@ -39,9 +39,13 @@ describe('Quick Actions And Searching Spec', () => {
         cy.interceptApi('getESSimpleSearch')
 
         cy.selectQuickAction('Leads 101', 'Lead', true)
+        cy.wait(10000)
         cy.selectQuickAction('Prospects 101', 'Prospect', true)
+        cy.wait(10000)
         cy.selectQuickAction('Contacts 101', 'Contact', true)
+        cy.wait(10000)
         cy.selectQuickAction('All Entities 101', 'All Entities')
+        cy.wait(10000)
 
         const contactName = 'SGF TRUST LEGAL'
         cy.log('==== STEP: SEARCH jacob in CONTACT ====')
