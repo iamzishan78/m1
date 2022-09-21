@@ -161,6 +161,15 @@ const useStyles = makeStyles({
   contentRoot: {
     maxHeight: "calc(100vh - 310px)",
   },
+  listItem: {
+    flexDirection: "column",
+    justifyContent: "start",
+    alignItems: "start",
+
+    "& h4": {
+      marginBottom: 0
+    }
+  }
 });
 
 const LightTooltip = withStyles((theme) => ({
@@ -356,11 +365,7 @@ export default function DocumentDetails(props) {
       >
         <List>
           <ListItem
-            style={{
-              flexDirection: "column",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
           >
             <h4>File Number</h4>
             <TextField
@@ -377,11 +382,7 @@ export default function DocumentDetails(props) {
             />
           </ListItem>
           <ListItem
-            style={{
-              flexDirection: "column",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
           >
             <h4>File Name</h4>
             <TextField
@@ -398,11 +399,7 @@ export default function DocumentDetails(props) {
             />
           </ListItem>
           <ListItem
-            style={{
-              flexDirection: "column",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
           >
             <h4>File Type</h4>
             <DocumentType
@@ -418,11 +415,7 @@ export default function DocumentDetails(props) {
             />
           </ListItem>
           <ListItem
-            style={{
-              flexDirection: "column",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
           >
             <h4>File Date</h4>
             <TextField
@@ -431,7 +424,7 @@ export default function DocumentDetails(props) {
               id="filedate"
               //variant="outlined"
               defaultValue={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
-              margin="normal"
+              margin="none"
               fullWidth
               onChange={(event) => {
                 const splittedDate = event?.target?.value.split("-")
@@ -513,11 +506,8 @@ export default function DocumentDetails(props) {
           </ListItem> */}
 
           <ListItem
-            style={{
-              flexDirection: "row",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
+            style={{ flexDirection: 'row'}}
           >
             <div style={{
               marginRight: "15px",
@@ -584,11 +574,7 @@ export default function DocumentDetails(props) {
                 <Fragment key={meta.name}>
                   {meta.type === "text" && (
                     <ListItem
-                      style={{
-                        flexDirection: "column",
-                        justifyContent: "start",
-                        alignItems: "start",
-                      }}
+                      className={classes.listItem}
                     >
                       <h4>{meta.label}</h4>
                       <TextField
@@ -608,11 +594,7 @@ export default function DocumentDetails(props) {
                   {meta.type === "dropdown" && (
                     <ListItem
                       id={`dropdown-${index}`}
-                      style={{
-                        flexDirection: "column",
-                        justifyContent: "start",
-                        alignItems: "start",
-                      }}
+                      className={classes.listItem}
                     >
                       <h4>{meta.label}</h4>
                       <ReactSelectField
@@ -638,11 +620,7 @@ export default function DocumentDetails(props) {
                   {meta.type === "multiselect" && (
                     <ListItem
                       id={`multiselect-${index}`}
-                      style={{
-                        flexDirection: "column",
-                        justifyContent: "start",
-                        alignItems: "start",
-                      }}
+                      className={classes.listItem}
                     >
                       <h4>{meta.label}</h4>
                       {/* <CustomFieldMultiSelect
