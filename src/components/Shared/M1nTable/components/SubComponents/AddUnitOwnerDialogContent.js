@@ -104,19 +104,19 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         nra: nra || null,
         seller_asking_price: seller_asking_price || null,
         competitor_offer_price: competitor_offer_price || null,
-        offer_price: offer_price || null,
+        offer_price: parseFloat(parseFloat(offer_price).toFixed(2)) || null,
         contactStatus: contactStatus || contact.contactStatus,
         ownerType,
         customLayer,
         campaignName: contact.campaignName
       }
       let calculatedNRA = calculateNRA(royalty_interest, orri);
-      let calculatedOfferPrice = parseFloat(nra) * parseFloat(uUnitPricing)
+      let calculatedOfferPrice = calculateOfferPrice(nra)
       if (!isNaN(parseFloat(calculatedNRA)))
         setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)))
 
       if (!isNaN(parseFloat(calculatedOfferPrice)))
-        setIsOfferPriceOverridden(calculatedOfferPrice !== offer_price && !isNaN(parseFloat(offer_price)))
+        setIsOfferPriceOverridden(calculatedOfferPrice !== owner.offer_price && !isNaN(parseFloat(offer_price)))
 
       reset(owner);
     }
@@ -169,7 +169,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   }, [nameAutValue])
 
   useEffect(() => {
-    if (!isOfferPriceOverridden && getValues().nra) setValue("offer_price", parseFloat(getValues().nra) * parseFloat(uUnitPricing));
+    if (!isOfferPriceOverridden && getValues().nra) setValue("offer_price", calculateOfferPrice(getValues().nra));
   }, [watchedNra])
 
   const emptyStates = () => {
@@ -268,6 +268,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     let nra = parseFloat(unitAcres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0));
     nra = addTrailingZeros(nra.toFixed(8));
     return nra;
+  };
+
+  const calculateOfferPrice = (nra) => {
+    return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
   };
 
   const classes = useStyles();
@@ -530,10 +534,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        const value = e.target.value
-                        const calculatedOfferPrice = parseFloat(getValues().nra) * parseFloat(uUnitPricing)
+                        const value = parseFloat(e.target.value).toFixed(2)
+                        const calculatedOfferPrice = calculateOfferPrice(getValues().nra)
                         setIsOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice))
-                        props.onChange(e.target.value);
+                        props.onChange(value);
                       }}
                       className={isOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
                       InputProps={{
@@ -545,7 +549,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                                 aria-label="toggle offer_price"
                                 onClick={() => {
                                   setIsOfferPriceOverridden(false)
-                                  setValue("offer_price", parseFloat(getValues().nra) * parseFloat(uUnitPricing));
+                                  setValue("offer_price", calculateOfferPrice(getValues().nra));
                                 }}
                               >
                                 <AutorenewIcon />
