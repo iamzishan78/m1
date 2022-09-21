@@ -64,6 +64,7 @@ export default function EntityType({ setDocumentType, value, ...other }) {
 
   return (
     <Autocomplete
+      id="entityType"
       defaultValue={search}
       value={search}
       disableListWrap
