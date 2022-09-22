@@ -24,17 +24,31 @@ describe('Add Contact Spec', () => {
 
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
             const hits = response.response.body.data.getESSimpleSearch.hits
-            const sampleContact = hits.find(hit => hit.primaryEmail === contactObj.email)
+            const contactToUpdate = hits.find(hit => hit.name === contactObj.name.value)
 
-            if (!sampleContact)
+            if (!contactToUpdate)
                 throw new Error('Sample contact not found, Run addContact spec first!!!');
 
-            const indexOfSampleContact = hits.findIndex(hit => hit._id === sampleContact._id) + 1
+            const indexOfSampleContact = hits.findIndex(hit => hit._id === contactToUpdate._id) + 1
 
             cy.getTableCell("Name", indexOfSampleContact).then(($name) => {
-                const fullName = `${sampleContact.firstName} ${sampleContact.middleName} ${sampleContact.lastName}`
+                const fullName = `${contactToUpdate.name}`
                 cy.wrap($name).contains(fullName).should('exist').click()
             })
+
+            cy.interceptApi('UpdateContact')
+            cy.interceptApi('getContact')
+
+            const notToUpdate = ['name', 'country', 'enityType', 'contactOwner']
+            for (const key in contactObj) {
+                if (!notToUpdate.includes(key)) {
+                    cy.log(`==== STEP: UPDATE ${key.toUpperCase()} ====`)
+
+                    cy.updateAndVerifyContact(contactObj[key].id, key, contactToUpdate)
+                }
+
+            }
+
         })
 
     })

@@ -31,7 +31,6 @@ describe('Add Contact Spec', () => {
 
         cy.viewport(1400, 900)
 
-        cy.interceptApi('getESSimpleSearch')
         cy.visit('http://localhost:3000/contacts')
         cy.reload()
         cy.checkAndLogin()
@@ -44,57 +43,57 @@ describe('Add Contact Spec', () => {
         cy.get('#addContactHeading', { timeout: longTimeout }).should('be.visible')
 
         cy.log('==== STEP: ENTER FIRST NAME ====')
-        cy.get("#firstName").type(contactObj.firstName)
+        cy.get("#firstName").type(contactObj.firstName.value)
 
         cy.log('==== STEP: ENTER MIDDLE NAME ====')
-        cy.get("#middleName").type(contactObj.middleName)
+        cy.get("#middleName").type(contactObj.middleName.value)
 
         cy.log('==== STEP: ENTER LAST NAME ====')
-        cy.get("#lastName").type(contactObj.lastName)
+        cy.get("#lastName").type(contactObj.lastName.value)
 
         cy.log('==== STEP: SELECT ENTITY TYPE ====')
-        cy.get("#entityType").type(contactObj.enityType).wait(1000).type("{downArrow}{downArrow}{enter}")
+        cy.get("#entityType").type(contactObj.enityType.value).wait(1000).type("{downArrow}{downArrow}{enter}")
 
         cy.log('==== STEP: ENTER MOBILE PHONE NUMBER ====')
-        cy.get("#mobilePhone").type(contactObj.mobilePhone)
+        cy.get("#mobilePhone").type(contactObj.mobilePhone.value)
 
         cy.log('==== STEP: ENTER HOME PHONE NUMBER ====')
-        cy.get("#homePhone").type(contactObj.homePhone)
+        cy.get("#homePhone").type(contactObj.homePhone.value)
 
         cy.log('==== STEP: ENTER EMAIL ====')
-        cy.get("#email").type(contactObj.email)
+        cy.get("#email").type(contactObj.primaryEmail.value)
 
         cy.log('==== STEP: ENTER ADDRESS 1 ====')
-        cy.get("#address1").type(contactObj.address1)
+        cy.get("#address1").type(contactObj.address1.value)
 
         cy.log('==== STEP: ENTER ADDRESS 2 ====')
-        cy.get("#address2").type(contactObj.address2)
+        cy.get("#address2").type(contactObj.address2.value)
 
         cy.log('==== STEP: ENTER CITY ====')
-        cy.get("#city").type(contactObj.city)
+        cy.get("#city").type(contactObj.city.value)
 
         cy.log('==== STEP: ENTER STATE ====')
-        cy.get("#state").type(contactObj.state)
+        cy.get("#state").type(contactObj.state.value)
 
         cy.log('==== STEP: ZIP CODE ====')
-        cy.get("#zipCode").type(contactObj.zipCode)
+        cy.get("#zipCode").type(contactObj.zip.value)
 
         cy.log('==== STEP: ENTER COUNTRY ====')
-        cy.get("#country").type(contactObj.country)
+        cy.get("#country").type(contactObj.country.value)
 
         cy.log('==== STEP: SELECT CONTACT OWNER ====')
-        cy.get("#contactOwner").type(contactObj.contactOwner).wait(1000).type("{downArrow}{enter}")
+        cy.get("#contactOwner").type(contactObj.contactOwner.value).wait(1000).type("{downArrow}{enter}")
 
         cy.interceptApi('AddContact')
-        cy.interceptApi('getESSimpleSearch')
 
         cy.log('==== STEP: CLICK ON ADD BUTTON ====')
+        cy.interceptApi('getESSimpleSearch')
         cy.get("#addContactButton").click()
 
         cy.verifyApiResponse('@AddContactApi', { responseTimeout: longTimeout })
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
             const hits = response.response.body.data.getESSimpleSearch.hits
-            const recentlyAdded = hits.find(hit => hit.primaryEmail === contactObj.email)
+            const recentlyAdded = hits.find(hit => hit.primaryEmail === contactObj.primaryEmail.value)
 
             console.log(hits)
             console.log(recentlyAdded)

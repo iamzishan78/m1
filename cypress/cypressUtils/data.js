@@ -22,18 +22,25 @@ export const documentObj = {
 }
 
 export const contactObj = {
-    firstName: "Jacob",
-    middleName: "Steave",
-    lastName: "Kyle",
-    enityType: "individual",
-    mobilePhone: "083822883392",
-    homePhone: "084933994403",
-    email: "cyp@m1neral.com",
-    address1: "minCity, address 1",
-    address2: "minCity, address 2",
-    city: "Ytic",
-    state: "La",
-    zipCode: "7323",
-    country: "Yrtnuoc",
-    contactOwner: "Jacob",
+    name: { value: "Jacob Steave Kyle", id: "" },
+    firstName: { value: "Jacob", id: "#field-1" },
+    middleName: { value: "Steave", id: "#field-2" },
+    lastName: { value: "Kyle", id: "#field-3" },
+
+    enityType: { value: "individual", id: "#field-1" },
+
+    mobilePhone: { value: "083822883392", id: "#field-12" },
+    homePhone: { value: "084933994403", id: "#field-11" },
+
+    primaryEmail: { value: "cyp@m1neral.com", id: "#field-15" },
+
+    address1: { value: "minCity, address 1", id: "#field-4" },
+    address2: { value: "minCity, address 2", id: "#field-5" },
+
+    city: { value: "Ytic", id: "#field-6" },
+    state: { value: "La", id: "#field-7" },
+    zip: { value: "7323", id: "#field-8" },
+    country: { value: "Yrtnuoc", id: "" },
+
+    contactOwner: { value: "Jacob", id: "" }
 }

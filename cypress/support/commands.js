@@ -208,4 +208,16 @@ Cypress.Commands.add('removeFilter', (filterLabel) => {
 
 })
 
+Cypress.Commands.add('updateAndVerifyContact', (fieldId, keyName, contactToUpdate) => {
+    cy.get(fieldId).type('2')
+    cy.get("[id='Full Name']").click()
 
+    cy.verifyApiResponse('@UpdateContactApi', { responseTimeout: longTimeout })
+    cy.verifyApiResponse('@getContactApi', { responseTimeout: longTimeout }).then(response => {
+        const updatedContact = response.response.body.data.contact
+
+        if (updatedContact[keyName] !== `${contactToUpdate[keyName]}2`) {
+            throw new Error(`${keyName} not updated successfully`);
+        }
+    })
+})
