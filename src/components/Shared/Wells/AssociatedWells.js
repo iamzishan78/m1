@@ -31,7 +31,8 @@ const useStyles = makeStyles((theme) => ({
   list: {
     overflowX: "hidden",
     overflowY: "auto",
-    maxHeight: "79vh",
+    height: '100%',
+    maxHeight: 465,
     "& .MuiList-padding": {
       padding: "23px 0px !important",
     },
@@ -109,6 +110,12 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: 4,
     marginTop: -8,
   },
+  wellList: {
+    height: '100%',
+    width: '100%',
+    overflowY: 'auto',
+    overflowX: 'hidden'
+  }
 }));
 
 const AssociatedWellsList = ({
@@ -295,9 +302,9 @@ const AssociatedWellsList = ({
           </Grid>
         )}
 
-        <List aria-label="wells list">
+        <List aria-label="wells list" className={classes.wellList}>
           {wells && wells.length > 0 ? (
-            wells.map((well, index) => (
+            [...wells, ...wells].map((well, index) => (
               <div style={{ padding: "0px 0px 0px" }}>
                 <ListItem key={index}>
                   <Link className={classes.wellLink} color="primary" onClick={() => goToWell(well.descriptorObject)}>
