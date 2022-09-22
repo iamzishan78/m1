@@ -48,6 +48,7 @@ import { GET_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetAutoCompleteList";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import AutoCompleteParcelOwners from "components/Shared/Forms/Fields/AutoCompleteParcelOwners";
 import { useDispatch } from "react-redux";
+import { getQtrQtrFromQtr, handleLayerChangeOnQtr } from "components/ParcelsDetailCard/ParcelSummary/helper";
 
 const useStyles = makeStyles((theme) => ({
   dialogFooter: {
@@ -366,7 +367,9 @@ function AddAgreementOwnerAndTractDialog(props) {
   const handleChangeQtr = (value, index) => {
     const qtr = tract?.qtrQtrSelection?.selectedQtr ? JSON.parse(JSON.stringify(tract.qtrQtrSelection.selectedQtr)) : ["", "", "", ""];
     qtr[index] = value ?? "";
-    const newTract = { ...tract, qtrQtrSelection: { ...tract.qtrQtrSelection, selectedQtr: qtr } };
+    const qtrQtr = getQtrQtrFromQtr(qtr, {})
+
+    const newTract = { ...tract, qtrQtrSelection: { ...tract.qtrQtrSelection, selectedQtr: qtr, qtrQtr } };
     reset({ ...getValues(), tract: newTract });
   }
 

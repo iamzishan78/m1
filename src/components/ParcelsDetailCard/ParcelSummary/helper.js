@@ -1,3 +1,8 @@
+import * as turf from "@turf/turf";
+import { getDrawAdustedShape, getNewShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers"
+import { copy } from "components/Shared/functions"
+import { calculateLandArea } from "components/Shared/functions/shapeLayer";
+
 const quaterLookup = [
     {
         "quater": [],
@@ -215,3 +220,47 @@ export const getQtrFilterData = (qtr) => {
     }
     return qtrFilterData
 }
+
+export const getQtrQtrFromQtr = (qtr, qtrQtr) => {
+    const values = getQtrFilterData(qtr)
+    if (values) {
+        Object.keys(qtrQtr).forEach((key) => {
+            qtrQtr[key] = false
+        })
+        values.forEach((value) => {
+            qtrQtr[value.toLowerCase()] = true
+        })
+    }
+    return qtrQtr
+}
+
+export const handleLayerChangeOnQtr = (stateApp, layerData, qtrQtr, qtr) => {
+    const values = Object.keys(qtrQtr).filter((key) => qtrQtr[key]).map((key) => key.toUpperCase())
+    const feature = copy(layerData.shape)
+    let layerDataCopy = copy(layerData)
+
+    let newShape = {}
+    const drawFeature = stateApp?.draw?.getAll()?.features[0]
+    if (drawFeature) {
+        feature.geometry = drawFeature.geometry
+        newShape = getDrawAdustedShape(feature, values)
+    } else {
+        if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
+            feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
+        }
+        newShape = getNewShapeFromSelectedQuarters(feature, values)
+    }
+
+    if (!layerDataCopy.qtrQtrSelection) layerDataCopy.qtrQtrSelection = {}
+    if (!layerDataCopy?.qtrQtrSelection?.originalGeometry) {
+        layerDataCopy.qtrQtrSelection.originalGeometry = layerDataCopy.shape.geometry
+    }
+    layerDataCopy.qtrQtrSelection.qtrQtr = qtrQtr;
+    layerDataCopy.qtrQtrSelection.selectedQtr = qtr;
+    newShape = turf.intersect(layerDataCopy.shape.geometry, newShape.geometry);
+    if (newShape) {
+        layerDataCopy.shape.geometry = newShape.geometry;
+        layerDataCopy.shape.properties.shapeArea = calculateLandArea(newShape);
+    }
+    return layerDataCopy
+};
