@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { get } from "lodash";
+import moment from "moment";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/styles";
 import { Button, DialogContent, DialogActions, CircularProgress } from "@material-ui/core";
@@ -9,18 +10,21 @@ import parse from "autosuggest-highlight/parse";
 
 import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import AutoCompleteESField from "components/Shared/Forms/Fields/AutoCompleteESField";
+import { agreementTypes } from "components/Land/components/Agreements/detailComponents/summary/data";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 import { UPSERT_RELATED_AGREEMENT_DESSCRIPTOR } from "graphQL/useMutationsRelatedAgreement";
-import moment from "moment";
 
 const agreementParams = [
-  { key: "agreementNumber", label: "Agreement Number" },
-  { key: "agreementName", label: "Agreement Name" },
-  { key: "agreementType", label: "Type" },
-  { key: "agreementSubtype", label: "Subtype" },
-  { key: "grantor", label: "Grantor" },
-  { key: "grantee", label: "Grantee" },
+  { key: "agreementNumber", label: "Agreement Number", type: "text" },
+  { key: "agreementName", label: "Agreement Name", type: "text" },
+  {
+    key: "agreementType", label: "Type", type: "select", options: agreementTypes,
+    formatValue: (value) => agreementTypes.find((at) => at.value === value)?.label || ""
+  },
+  { key: "agreementSubtype", label: "Subtype", type: "text" },
+  { key: "grantor", label: "Grantor", type: "text" },
+  { key: "grantee", label: "Grantee", type: "text" },
   { key: "agreementDate", label: "Agreement Date", type: "date" },
   { key: "effectiveDate", label: "Effective Date", type: "date" },
   { key: "expirationDate", label: "Expiration Date", type: "date" },
@@ -239,10 +243,7 @@ const AddNewRelatedAgreementDialog = (props) => {
                               style={{
                                 zIndex: "1301",
                                 backgroundImage: "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
-                                opacity: calcScoreOpacity(
-                                  [0, 0],
-                                  0
-                                ).toString(),
+                                opacity: calcScoreOpacity([0, 0], 0).toString(),
                               }}
                             />
                           </Grid>
@@ -257,7 +258,13 @@ const AddNewRelatedAgreementDialog = (props) => {
                   <TextField
                     id={`outlined-multiline-static-${index}`}
                     label={param.label}
-                    value={param.type !== "date" ? get(selectedAgreement, param.key, "") : moment().format("MM/DD/YYYY")}
+                    value={
+                      param.type === "date"
+                        ? moment().format("MM/DD/YYYY")
+                        : param.formatValue
+                          ? param.formatValue(get(selectedAgreement, param.key, ""))
+                          : get(selectedAgreement, param.key, "")
+                    }
                     fullWidth
                     disabled
                     variant="outlined"
