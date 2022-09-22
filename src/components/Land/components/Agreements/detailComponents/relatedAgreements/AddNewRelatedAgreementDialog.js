@@ -207,7 +207,7 @@ const AddNewRelatedAgreementDialog = (props) => {
                   }}
                   renderOption={(option) => {
                     if (option.id === "newEntity") return;
-                    const parts = parse([option.key[0], option.key[1]], Array());
+                    let parts = parse([option.key[1], option.key[0]], Array());
 
                     return (
                       <Grid container spacing={0}>
@@ -216,11 +216,14 @@ const AddNewRelatedAgreementDialog = (props) => {
                             <FolderIcon className={classes.icon} color={"#757575"} />
                           </Grid>
                           <Grid item xs>
-                            {parts.map((part, index) => (
-                              <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-                                {part.text}
-                              </span>
-                            ))}
+                            {parts.map((part, index) => {
+                              part.text = part.text.join("-");
+                              return (
+                                <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                                  {part.text}
+                                </span>
+                              )
+                            })}
 
                             {option && option.key[2] && (
                               <Typography variant="body2" color="textSecondary">
