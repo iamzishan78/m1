@@ -13,7 +13,7 @@ describe('Contact Functional Updates Spec', () => {
         const { longTimeout } = basic_timeouts
 
         cy.viewport(1400, 900)
-
+        cy.log('[green](http://example.com)')
         cy.interceptApi('getESSimpleSearch')
         cy.visit('http://localhost:3000/contacts')
         cy.reload()
@@ -33,31 +33,46 @@ describe('Contact Functional Updates Spec', () => {
 
             cy.getTableCell("Name", indexOfSampleContact).then(($name) => {
                 const fullName = `${contactToUpdate.name}`
+
+                cy.log('==== STEP: OPEN CONTACT DETAIL ====')
                 cy.wrap($name).contains(fullName).should('exist').click()
             })
 
-            cy.interceptApi('UpdateContact')
-            cy.interceptApi('getContact')
+            // cy.log('==== STEP: TYPE IN COMMENT BOX ====')
+            // cy.get("#txtArea").type("Test Comment")
 
-            const notToUpdate = ['name', 'country', 'enityType', 'contactOwner']
-            for (const key in contactObj) {
-                if (!notToUpdate.includes(key)) {
-                    cy.log(`==== STEP: UPDATE ${key.toUpperCase()} ====`)
+            // cy.interceptApi('UpsertComment')
+            // cy.interceptApi('getCommentsByObjectId')
 
-                    cy.updateAndVerifyContact(contactObj[key].id, key, contactToUpdate)
-                }
+            // cy.log('==== STEP: CLICK ON COMMENT BUTTON ====')
+            // cy.get(".MuiButton-label").contains("Comment").click()
 
-            }
+            // cy.log('==== STEP: VERIFY COMMENT IS ADDED ====')
+            // cy.verifyApiResponse('@getCommentsByObjectIdApi', { responseTimeout: longTimeout })
 
-            // cy.log('==== STEP: UPDATE CONTACT OWNER ====')
-            // const searchContact = "Kyle"
-            // cy.get("#userList").clear().type(searchContact)
+            // cy.verifyApiResponse('@UpsertCommentApi', { responseTimeout: longTimeout }).then(response => {
+            //     const comment = response.response.body.data.upsertComment.comment
 
-            // cy.get("#userList-option-0").invoke('text').then((contact) => {
-            //     if (searchContact === contact)
-            //         cy.get("#userList-option-0").click()
-            //     else throw new Error(`User list searching is not working as expected`)
-            // });
+            //     cy.get(`#${comment._id}`).should('be.visible')
+
+            //     cy.interceptApi('removeComment')
+            //     cy.interceptApi('getCommentsByObjectId')
+
+            //     cy.get("#commentsArea").trigger('mouseover')
+
+            //     cy.log('==== STEP: CLICK ON EXPAND ICON FOR COMMENT ====')
+            //     cy.get("#expandIcon").click({ force: true })
+
+            //     cy.log('==== STEP:CLICK ON DELTE COMMENT====')
+            //     cy.get("#deleteComment", { timeout: longTimeout }).click()
+
+            //     cy.log('==== STEP: VERIFY COMMENT IS DELETED ====')
+            //     cy.verifyApiResponse('@getCommentsByObjectIdApi', { responseTimeout: longTimeout })
+            //     cy.verifyApiResponse('@removeCommentApi', { responseTimeout: longTimeout })
+
+            //     cy.get(`#${comment._id}`).should('not.exist');
+
+            // })
 
         })
 

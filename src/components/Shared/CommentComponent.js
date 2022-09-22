@@ -427,6 +427,7 @@ export default function CommentComponent(props) {
                   <Fragment key={index}>
                     {(showAllComments || index >= indexToShow) && (
                       <Grid
+                        id="commentsArea"
                         container
                         className={classes.gridStyle}
                         onMouseOver={() =>
@@ -640,6 +641,7 @@ const ActionMenu = ({
   return (
     <>
       <ExpandMoreIcon
+        id="expandIcon"
         aria-controls={eachComment._id}
         aria-haspopup="true"
         onClick={handleClick}
@@ -667,6 +669,7 @@ const ActionMenu = ({
         <MenuItem
           textcolor="red"
           onClick={() => deleteComment(eachComment._id)}
+          id="deleteComment"
         >
           Delete Comment
         </MenuItem>
