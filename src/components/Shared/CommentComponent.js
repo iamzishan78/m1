@@ -98,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const CommonCommentText = ({ eachComment, users }) => {
   const classes = useStyles();
-  let formatComment = (eachComment?.comment|| '').split(" ")
+  let formatComment = (eachComment?.comment || '').split(" ")
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
@@ -369,7 +369,7 @@ export default function CommentComponent(props) {
       }
       state.push(newComment)
       return state;
-    })
+    });
 
     upsertComment({
       variables: {

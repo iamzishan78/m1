@@ -196,7 +196,6 @@ export default function DealComment({
   fieldWidth,
   setShowActions,
 }) {
-  const params = useParams();
   const classes = useStyles({ fieldWidth });
   const dispatch = useDispatch();
   const [filterValue, setFilterValue] = useState("");
@@ -210,9 +209,9 @@ export default function DealComment({
   const [commentTypeData, setCommentTypeData] = useState({
     commentType: '',
     category: '',
-  })
+  });
   const { data } = useQuery(GET_COMMENT_TYPES);
-  const [upsertCommentType, { data: newlyAddedCommentType }] = useMutation(UPSERTCOMMENTTYPE);
+  const [upsertCommentType] = useMutation(UPSERTCOMMENTTYPE);
   const [commentTypes, setCommentTypes] = useState([]);
 
   (function () {
@@ -277,10 +276,6 @@ export default function DealComment({
     }
     document.getElementById("colorText").innerHTML = value;
   }, [comment, users]);
-
-  // useEffect(() => {
-  //   setShowCommentType(params && params.type && ['leases', 'parcels', 'deeds'].includes(params.type));
-  // }, [params]);
 
   const replaceAllWith = (_string, replaceFrom, replaceWith) => {
     return _string.replace(/{{([^{{]+)}}/g, (match, key) => {
@@ -560,17 +555,21 @@ export default function DealComment({
                 setSelectedTab('Existing')
               }
             }}>
-            <div style={{
-              padding: '0px 10px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              color: '#949494',
-            }} onClick={() => setShowCommentTypeDialog(o => !o)}>
-              {showCommentType && <>
-                <EditNoteIcon fill={showCommentTypeDialog ? 'black' : ''} />
-                <span style={{ marginLeft: '1px' }}>{selectedCommentType}</span>
-              </>}
+            <div
+              style={{
+                padding: '0px 10px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: '#949494',
+              }}
+              onClick={() => setShowCommentTypeDialog(o => !o)}>
+              {showCommentType && (
+                <>
+                  <EditNoteIcon fill={showCommentTypeDialog ? 'black' : ''} />
+                  <span style={{ marginLeft: '1px' }}>{selectedCommentType}</span>
+                </>
+              )}
             </div>
             {showActions && (
               <Button
