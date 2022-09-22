@@ -39,7 +39,7 @@ describe('Contact Data Updates Spec', () => {
             cy.interceptApi('UpdateContact')
             cy.interceptApi('getContact')
 
-            const notToUpdate = ['name', 'country', 'enityType', 'contactOwner']
+            const notToUpdate = ['name', 'country', 'enityType', 'contactOwner', 'fileAddress']
             for (const key in contactObj) {
                 if (!notToUpdate.includes(key)) {
                     cy.log(`==== STEP: UPDATE ${key.toUpperCase()} ====`)

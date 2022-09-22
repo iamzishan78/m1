@@ -42,5 +42,7 @@ export const contactObj = {
     zip: { value: "7323", id: "#field-8" },
     country: { value: "Yrtnuoc", id: "" },
 
-    contactOwner: { value: "Jacob", id: "" }
+    contactOwner: { value: "Jacob", id: "" },
+
+    fileAddress: "cypress/files/documentSample.png"
 }

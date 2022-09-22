@@ -74,6 +74,12 @@ describe('Contact Functional Updates Spec', () => {
 
             // })
 
+            cy.interceptApi('AddDescriptorFile')
+            cy.get('input[type=file]', { force: true }).selectFile(contactObj.fileAddress, {
+                force: true
+            })
+            cy.verifyApiResponse('@AddDescriptorFileApi')
+
         })
 
     })
