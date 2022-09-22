@@ -27,7 +27,7 @@ export const contactObj = {
     middleName: { value: "Steave", id: "#field-2" },
     lastName: { value: "Kyle", id: "#field-3" },
 
-    enityType: { value: "individual", id: "#field-1" },
+    enityType: { value: "individual", id: "" },
 
     mobilePhone: { value: "083822883392", id: "#field-12" },
     homePhone: { value: "084933994403", id: "#field-11" },

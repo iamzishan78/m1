@@ -7,7 +7,7 @@ Then verify if the appear on grid
 
 import { contactObj, basic_timeouts } from "../../../cypressUtils/data"
 
-describe('Add Contact Spec', () => {
+describe('Contact Functional Updates Spec', () => {
     it('passes', () => {
         // Constants 
         const { longTimeout } = basic_timeouts
@@ -48,6 +48,16 @@ describe('Add Contact Spec', () => {
                 }
 
             }
+
+            // cy.log('==== STEP: UPDATE CONTACT OWNER ====')
+            // const searchContact = "Kyle"
+            // cy.get("#userList").clear().type(searchContact)
+
+            // cy.get("#userList-option-0").invoke('text').then((contact) => {
+            //     if (searchContact === contact)
+            //         cy.get("#userList-option-0").click()
+            //     else throw new Error(`User list searching is not working as expected`)
+            // });
 
         })
 
