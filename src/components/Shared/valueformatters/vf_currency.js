@@ -14,3 +14,17 @@ export default function vf_currency(value) {
 
   return valueFormatter(value)
 }
+
+export function vf_currency_to_fixed(value, toFixed) {
+  var formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumSignificantDigits: 21,
+  });
+
+  const valueFormatter = (v) => {
+    if (v) return formatter.format(parseFloat(v).toFixed(toFixed));
+  };
+
+  return valueFormatter(value)
+}
