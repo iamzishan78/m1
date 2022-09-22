@@ -16,19 +16,19 @@ import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 import { UPSERT_RELATED_AGREEMENT_DESSCRIPTOR } from "graphQL/useMutationsRelatedAgreement";
 
 const agreementParams = [
-  { key: "agreementNumber", label: "Agreement Number", type: "text" },
-  { key: "agreementName", label: "Agreement Name", type: "text" },
+  { key: "agreementNumber", label: "Agreement Number" },
+  { key: "agreementName", label: "Agreement Name" },
   {
-    key: "agreementType", label: "Type", type: "select", options: agreementTypes,
+    key: "agreementType", label: "Type", options: agreementTypes,
     formatValue: (value) => agreementTypes.find((at) => at.value === value)?.label || ""
   },
-  { key: "agreementSubtype", label: "Subtype", type: "text" },
-  { key: "grantor", label: "Grantor", type: "text" },
-  { key: "grantee", label: "Grantee", type: "text" },
+  { key: "agreementSubtype", label: "Subtype" },
+  { key: "grantor", label: "Grantor" },
+  { key: "grantee", label: "Grantee" },
   { key: "agreementDate", label: "Agreement Date", type: "date" },
   { key: "effectiveDate", label: "Effective Date", type: "date" },
   { key: "expirationDate", label: "Expiration Date", type: "date" },
-  { key: "agreementStatus", label: "Status", type: "date" },
+  { key: "agreementStatus", label: "Status" },
 ];
 
 const filterKey = ["shapeJson.properties.agreementName.keyword", "shapeJson.properties.agreementNumber.keyword", "shapeJson.properties.layerSubType.keyword"];
@@ -260,7 +260,9 @@ const AddNewRelatedAgreementDialog = (props) => {
                     label={param.label}
                     value={
                       param.type === "date"
-                        ? moment().format("MM/DD/YYYY")
+                        ? get(selectedAgreement, param.key)
+                          ? moment(get(selectedAgreement, param.key)).format("DD/MM/YYYY")
+                          : ""
                         : param.formatValue
                           ? param.formatValue(get(selectedAgreement, param.key, ""))
                           : get(selectedAgreement, param.key, "")
