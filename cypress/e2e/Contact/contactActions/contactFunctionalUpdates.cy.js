@@ -119,9 +119,12 @@ describe('Contact Functional Updates Spec', () => {
 
             cy.interceptApi('UpdateContact')
             cy.log('==== STEP: DELETE CONTACT ====')
+            cy.get("#MoreHorizIcon").click()
             cy.get(".MuiButtonBase-root").contains('Delete contact').click()
             cy.get(".MuiButton-label").contains('Delete').click()
             cy.verifyApiResponse('@UpdateContactApi')
+
+            cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
         })
 
     })
