@@ -82,7 +82,6 @@ describe('Contact Functional Updates Spec', () => {
             })
             cy.verifyApiResponse('@AddDescriptorFileApi')
 
-            cy.reload()
             cy.get("[id='Full Name']", { timeout: longTimeout }).should('be.visible')
 
             cy.get("#closeIcon").click()
