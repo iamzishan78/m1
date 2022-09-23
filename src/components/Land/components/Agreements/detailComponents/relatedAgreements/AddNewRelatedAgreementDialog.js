@@ -208,6 +208,7 @@ const AddNewRelatedAgreementDialog = (props) => {
                   renderOption={(option) => {
                     if (option.id === "newEntity") return;
                     let parts = parse([option.key[1], option.key[0]], Array());
+                    const type = get(option, `key[${2}]`) && agreementTypes.find(type => type.value === option.key[2]);
 
                     return (
                       <Grid container spacing={0}>
@@ -225,9 +226,9 @@ const AddNewRelatedAgreementDialog = (props) => {
                               )
                             })}
 
-                            {option && option.key[2] && (
+                            {type && (
                               <Typography variant="body2" color="textSecondary">
-                                {option.key[2]}
+                                {type.label}
                               </Typography>
                             )}
                           </Grid>
