@@ -45,7 +45,7 @@ describe('Verify Well Spec', () => {
 
                 cy.log('==== STEP: UPLOAD NEW DOCUMENT ====')
                 cy.interceptApi('AddDescriptorFile')
-                cy.get('input[type=file]', { force: true }).selectFile('cypress/files/documentSample.png', {
+                cy.get('input[type=file]', { force: true }).selectFile('cypress/files/sample.pdf', {
                     force: true
                 })
                 cy.verifyApiResponse('@AddDescriptorFileApi', { responseTimeout: longTimeout })

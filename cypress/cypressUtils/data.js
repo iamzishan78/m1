@@ -18,9 +18,10 @@ export const basic_timeouts = {
 export const documentObj = {
     fileNumber: "99934034",
     fileName: "Cydoc et el",
-    fileAddress: "cypress/files/documentSample.png"
+    fileAddress: "cypress/files/sample.pdf"
 }
 
+// Contact Grid Cypress Data
 export const contactObj = {
     name: { value: "Jacob Steave Kyle", id: "" },
     firstName: { value: "Jacob", id: "#field-1" },
@@ -44,5 +45,15 @@ export const contactObj = {
 
     contactOwner: { value: "Jacob", id: "" },
 
-    fileAddress: "cypress/files/documentSample.png"
+    fileAddress: "cypress/files/sample.pdf"
 }
+
+export const associatedDataList = [
+    { name: 'Unit Interests', operationName: "getESPaginatedList", verifyElementId: "unitInterestTable" },
+    { name: 'Well Interests', operationName: "getPaginatedContactWellInterests", verifyElementId: "wellInterestsTable" },
+    { name: 'Tract Interests', operationName: "getContactParcelInterest", verifyElementId: "tractInterestTable" },
+    { name: 'Tax Roll Interests', operationName: "getContactTaxRollInterests", verifyElementId: "taxInterestsTable" },
+    { name: 'Activities', operationName: "getESSimpleSearch", verifyElementId: "activitiesInterestsTable" },
+    { name: 'Documents', operationName: "viewFiles", verifyElementId: "viewDocuments" }
+]
+
