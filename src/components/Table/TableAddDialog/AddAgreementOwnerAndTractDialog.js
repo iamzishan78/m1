@@ -476,6 +476,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                     onClick={() => {
                       setIsNewTract(false);
                     }}
+                    id="existingTractTab"
                     className={!isNewTract ? classes.selectedType : classes.unSelectedType}
                     style={{ marginLeft: "20px" }}
                   >
