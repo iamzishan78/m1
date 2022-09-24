@@ -2566,9 +2566,8 @@ function SubTable(props) {
 
                               onClick={(e) => {
                                 e.stopPropagation();
-                                if (row_line.state !== "active") return;
-
-                                if (fileExtension === "pdf") {
+                                const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
+                                if (type === "pdf") {
                                   if (props.addAble.type === "document") {
                                     window.history.pushState("", "", `/documents/${row_line._id}/view`);
                                   }
@@ -2581,6 +2580,8 @@ function SubTable(props) {
                                       name: row_line.fileName,
                                     },
                                   }));
+                                } else {
+                                  handleViewFile(row_line._id);
                                 }
                               }}
                             >
