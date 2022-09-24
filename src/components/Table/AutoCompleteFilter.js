@@ -52,6 +52,10 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
                     setStateApp((state, props) => {
                         return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
                     });
+                } else if (custom?.toFixed) {
+                    filtersData[keys[0]].hits = filtersData[keys[0]]?.hits.filter((hit) => hit.key)
+                    const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key: parseFloat(hit.key.toFixed(custom?.toFixed)) }))
+                    setOptions(hits)
                 } else if (custom?.formatedFilterOptions) {
                     const hits = filtersData[keys[0]].hits
                     for (let i = 0; i < custom.formatedFilterOptions.length; i++) {

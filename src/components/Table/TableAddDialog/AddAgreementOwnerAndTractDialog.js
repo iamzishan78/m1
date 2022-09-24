@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-end",
     paddingTop: "10px",
+    paddingBottom: "15px",
   },
   footerButton: {
     letterSpacing: "1px",

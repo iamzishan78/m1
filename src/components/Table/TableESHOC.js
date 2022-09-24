@@ -40,7 +40,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         // const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, isHideFooter: isFiniteScroll && true })
         const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, infScrollHeight: loadMore?.height })
 
-        const [search, setSearch] = useState();
+        const [search, setSearch] = useState(null);
         const [columns, Columns] = useState([]);
         const [filters, setFilters] = useState([]);
         const [changePage, isPageChanged] = useState(false);
@@ -674,7 +674,6 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
                 },
                 changeESPage: () => {
                     setLoading(true);
-
                     let afterSort = rows && tableState.page > page ? rows[rows.length - 1]?.sort : null
                     let beforeSort = tableState.page === 0 ? null : rows && tableState.page < page ? rows[0]?.sort : null
 
@@ -945,7 +944,7 @@ export const TableESHOC = (Component, shouldGridViewSort = true) => {
         );
     };
     hocWithDefaultProps.defaultProps = {
-        actionColumns: [" ", "Tags", "Comments", "isPurchased"]
+        actionColumns: [" ", "Tags", "Tags ", "Comments", "isPurchased"]
     }
     return hocWithDefaultProps
 };

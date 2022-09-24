@@ -1,22 +1,28 @@
 /* eslint-disable no-undef */
 
-describe('Document Grid Spec', () => {
-    it('passes', () => {
-        cy.viewport(1400, 900)
-        cy.visit('http://localhost:3000/documents')
+import { basic_timeouts } from "../../cypressUtils/data"
 
-        cy.checkAndLogin()
+describe('Search Grid Spec', () => {
+        it('passes', () => {
+                const { longTimeout } = basic_timeouts
 
-        cy.get('#addDocument', { timeout: 50000 }).should('be.visible')
+                cy.viewport(1400, 900)
+                cy.visit('http://localhost:3000/documents')
 
-        cy.log('==== STEP: SEARCH 2342 in DOCUMENT ====')
-        cy.gridSearch('2342', 'getESDocuments')
+                cy.checkAndLogin()
 
-        cy.log('==== STEP: SEARCH black dog in DOCUMENT ====')
-        cy.gridSearch('black dog', 'getESDocuments')
+                cy.get('#addDocument', { timeout: longTimeout }).should('be.visible')
 
-        cy.log('==== STEP: SEARCH Division Order in DOCUMENT ====')
-        cy.gridSearch('Division Order', 'getESDocuments')
-    })
+                cy.log('==== STEP: SEARCH 2342 in DOCUMENT ====')
+
+                cy.gridSearch('2342', 'getESDocuments')
+
+                cy.log('==== STEP: SEARCH black dog in DOCUMENT ====')
+                cy.gridSearch('black dog', 'getESDocuments')
+
+
+                cy.log('==== STEP: SEARCH Division Order in DOCUMENT ====')
+                cy.gridSearch('Division Order', 'getESDocuments')
+        })
 
 })
