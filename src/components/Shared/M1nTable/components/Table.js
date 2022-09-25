@@ -648,7 +648,7 @@ function SubTable(props) {
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContact, { data: contactData }] = useLazyQuery(CONTACT);
-  const [autoCalculateOfferPrice, { data: autoCalculateOfferPriceData,  }] = useMutation(
+  const [autoCalculateOfferPrice, { data: autoCalculateOfferPriceData, }] = useMutation(
     AUTO_CALCULATE_OFFER_PRICE,
     {
       refetchQueries: [
@@ -2764,8 +2764,8 @@ function SubTable(props) {
           //     },
           //   };
           //   break;
-          case "offer_price": 
-            if(props.targetLabel === "Unit Ownership" || props.parent === "ownersPerUnit"){
+          case "offer_price":
+            if (props.targetLabel === "Unit Ownership" || props.parent === "ownersPerUnit") {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta) => {
@@ -4925,6 +4925,7 @@ function SubTable(props) {
                   focus
                   targetSourceId={expandedObject}
                   targetLabel={trueTargetLabel ? trueTargetLabel : props.targetLabel}
+                  commentType={props.commentType}
                   multipleIds={
                     m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 && m1nSelectedRowsIndexes.length > 1
                       ? removeDuplicatesIds(m1nSelectedRowsIds)

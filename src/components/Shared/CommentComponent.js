@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, Fragment } from "react";
-
+import { get } from "lodash";
 import Avatar from "react-avatar";
 import Grid from "@material-ui/core/Grid";
 import { CircularProgress, Menu, MenuItem } from "@material-ui/core";
@@ -93,6 +93,12 @@ const useStyles = makeStyles((theme) => ({
   commentContent: {
     width: "84%",
     paddingRight: "10px"
+  },
+  commentTypeSection: {
+    fontWeight: "bold",
+    fontSize: "16px",
+    display: "flex",
+    marginBottom: "5px"
   }
 }));
 
@@ -102,6 +108,11 @@ export const CommonCommentText = ({ eachComment, users }) => {
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
+      {get(eachComment, "commentType.commentType") && (
+        <span className={classes.commentTypeSection}>
+          {eachComment.commentType.commentType}
+        </span>
+      )}
       {formatComment.map((word, index) => {
         if (word.includes("{{") && word.includes("}}")) {
           const splittedWord = word.split(/\r?\n/);

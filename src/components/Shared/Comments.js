@@ -331,6 +331,7 @@ export default function Comments(props) {
           user: stateApp.user.mongoId,
           commentedOn,
           objectType: props.targetLabel,
+          commentType: props.commentType
         },
       },
       refetchQueries: [
@@ -546,7 +547,7 @@ export default function Comments(props) {
             {commentsArray.map((comment, index) =>
               props.detailCard
                 ? ((publicComment && comment.public) ||
-                  (!publicComment && stateApp?.user?.email === comment?.user?.email && !comment.public)) &&
+                  (!publicComment && !comment.public && stateApp?.user?.email === comment?.user?.email)) &&
                 (commentsDisplayedCount += 1) &&
                 (props.top && props.top < commentsDisplayedCount ? null : (
                   //// ListItem ////
@@ -617,9 +618,7 @@ export default function Comments(props) {
                         //   }}>{comment?.commentType || 'General'}</div>
                         //   <CommentText users={userLists?.allMongoUsers} eachComment={comment} />
                         // </div>
-                        <React.Fragment>
-                          <CommonCommentText users={userLists?.allMongoUsers} eachComment={comment} />
-                        </React.Fragment>
+                        <CommonCommentText users={userLists?.allMongoUsers} eachComment={comment} />
                       }
                       secondary={
                         `${comment?.user?.name}` +
