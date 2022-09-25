@@ -706,6 +706,7 @@ export default function DetailComponents(props) {
               isApproval={true}
               onUpdate={(data) => Object.keys(data).forEach(key => updateAgreement(key, data[key]))}
               isSource={false}
+              showCommentType
             />
           </div>
         )}

@@ -175,13 +175,13 @@ const useStyles = makeStyles((theme) => ({
 
 const CategoryList = [
   "All",
-  "Agreements",
-  "Contacts",
-  "Documents",
+  "Agreement",
+  "Contact",
+  "Document",
   "Flow",
   "Revenue",
-  "Tracts",
-  "Units",
+  "Tract",
+  "Unit",
 ]
 
 export default function DealComment({
@@ -195,6 +195,7 @@ export default function DealComment({
   setEditCommentId,
   fieldWidth,
   setShowActions,
+  ...props
 }) {
   const classes = useStyles({ fieldWidth });
   const dispatch = useDispatch();
@@ -202,7 +203,7 @@ export default function DealComment({
   const [showOptions, setShowOptions] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const [nameAutValue, setNameAutValue] = useState({});
-  const [showCommentType, setShowCommentType] = useState(true);
+  const [showCommentType, setShowCommentType] = useState(props.showCommentType);
   const [showCommentTypeDialog, setShowCommentTypeDialog] = useState(false);
   const [selectedTab, setSelectedTab] = useState('Existing');
   const [selectedCommentType, setSelectedCommentType] = useState('General');
@@ -451,13 +452,6 @@ export default function DealComment({
       >
         <Grid item className={classes.headerActions}>
           <div>
-            {/* {tabs.map((tab) => {
-              return (
-                <span className={`${classes.tab} ${selectedTab === tab ? classes.selectedTab : ""}`} onClick={() => {}}>
-                  {tab}
-                </span>
-              );
-            })} */}
             <span className={`${classes.tab} ${selectedTab === 'Existing' ? classes.selectedTab : ''}`} onClick={() => setSelectedTab('Existing')}>
               Existing
             </span>
@@ -465,11 +459,8 @@ export default function DealComment({
               New Comment Type
             </span>
           </div>
-          {/* className={classes.viewSwitcher}  */}
         </Grid>
-        <Grid style={{
-          marginTop: '25px'
-        }}>
+        <Grid style={{ marginTop: '25px' }}>
           {
             selectedTab === 'Existing' &&
             <Select className={classes.selectCommentType} variant="outlined" value={selectedCommentType} onChange={(e) => {
@@ -619,4 +610,8 @@ export default function DealComment({
       }
     </>
   );
+}
+
+DealComment.defaultProps = {
+  showCommentType: false
 }

@@ -108,9 +108,9 @@ export const CommonCommentText = ({ eachComment, users }) => {
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
-      {get(eachComment, "commentType.commentType") && (
+      {get(eachComment, "commentType") && (
         <span className={classes.commentTypeSection}>
-          {eachComment.commentType.commentType}
+          {get(eachComment, "commentType.commentType", get(eachComment, "commentType"))}
         </span>
       )}
       {formatComment.map((word, index) => {
@@ -443,58 +443,31 @@ export default function CommentComponent(props) {
                       <Grid
                         container
                         className={classes.gridStyle}
-                        onMouseOver={() =>
-                          setShowCommentActionId(eachComment?._id)
-                        }
+                        onMouseOver={() => setShowCommentActionId(eachComment?._id)}
                         onMouseLeave={() => setShowCommentActionId(null)}
                       >
                         <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
                           <IconButton>
-                            {profilesInfo[eachComment?.user?.email]?.profileImage ||
-                              eachComment.isNew ? (
+                            {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
                               <Avatar
-                                src={
-                                  eachComment.isNew
-                                    ? profileImage
-                                    : profilesInfo[eachComment?.user?.email]
-                                      .profileImage
-                                }
+                                src={eachComment.isNew ? profileImage : profilesInfo[eachComment?.user?.email].profileImage}
                                 size="38"
                                 round
                               />
                             ) : (
-                              <Avatar
-                                name={eachComment?.user?.name}
-                                size="38"
-                                round
-                              />
+                              <Avatar name={eachComment?.user?.name} size="38" round />
                             )}
                           </IconButton>
                         </Grid>
                         <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
                           <div>
-                            <span className={classes.bold}>
-                              {eachComment?.user?.name}
-                            </span>
-                            {
-                              <ReactTimeAgo
-                                className={classes.commentTime}
-                                date={new Date(Number(eachComment.ts))}
-                                locale="en-US"
-                              />
-                            }
-                            {eachComment.isEdited && (
-                              <span className={classes.commentTime}>
-                                (Edited)
-                              </span>
-                            )}
-                            {
-                              eachComment?.user?.email === stateApp.user.email &&
+                            <span className={classes.bold}>{eachComment?.user?.name}</span>
+                            {<ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />}
+                            {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+                            {eachComment?.user?.email === stateApp.user.email &&
                               showCommentActionId === eachComment._id &&
                               editCommentId !== eachComment._id && (
-                                <div
-                                  className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}
-                                >
+                                <div className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}>
                                   <ActionMenu
                                     eachComment={eachComment}
                                     setEditCommentId={setEditCommentId}
@@ -504,27 +477,19 @@ export default function CommentComponent(props) {
                                 </div>
                               )}
                           </div>
-                          {eachComment?.commentType &&
-                            <div style={{
-                              color: 'rgb(90 90 90)',
-                              fontSize: '15px',
-                              marginBottom: '15px',
-                            }}>{eachComment?.commentType}</div>
-                          }
-                          {eachComment.isActivity === true &&
+                          {eachComment.isActivity === true && (
                             <>
                               <div className={`${classes.whiteSpace}`}>
-                                {eachComment.activityData.type.replace(/_/g, ' ').toUpperCase()} - {eachComment.activityData.name}
+                                {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
                               </div>
                               <div className={`${classes.whiteSpace}`}>
-                                START DATE: {moment(eachComment.activityData.dateTime).format('MM/DD/YYYY hh:mm A')}
+                                START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
                               </div>
                               <div className={`${classes.whiteSpace}`}>
-                                END DATE: {moment(eachComment.activityData.endDateTime).format('MM/DD/YYYY hh:mm A')}
+                                END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
                               </div>
                             </>
-
-                          }
+                          )}
                           {editCommentId !== eachComment._id ? (
                             <CommonCommentText users={users} eachComment={eachComment} />
                           ) : (
@@ -543,8 +508,7 @@ export default function CommentComponent(props) {
                           )}
                         </Grid>
                       </Grid>
-                    )
-                    }
+                    )}
                   </Fragment>
                 );
               })}
@@ -591,6 +555,7 @@ export default function CommentComponent(props) {
                       showActions={showActions}
                       setComment={setComment}
                       upsertComment={addNewComment}
+                      showCommentType={props.showCommentType}
                     // fieldWidth={`${size - 23}px`}
                     />
 

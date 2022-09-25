@@ -422,7 +422,7 @@ export default function ParcelSummary(props) {
                             />
                         </Grid>
                         <Grid item md={12}>
-                            <CommentComponent targetLabel={'parcel'} targetSourceId={props.id} />
+                            <CommentComponent targetLabel={'parcel'} targetSourceId={props.id} showCommentType />
                         </Grid>
                     </Grid>
                 </Grid>
