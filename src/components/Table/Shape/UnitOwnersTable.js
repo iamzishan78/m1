@@ -182,10 +182,10 @@ function UnitOwnersTable(props) {
   const onTableChange = (action, tableState, rows, meta) => {
     tableState.esIndex = esIndex
     const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
-    if(action === 'filterChange'){
-      if(tableActions?.pageESVariables?.variables?.filters?.length > 0){
+    if (action === 'filterChange') {
+      if (tableActions?.pageESVariables?.variables?.filters?.length > 0) {
         props.setIsFiltered(true)
-      }else{
+      } else {
         props.setIsFiltered(false)
       }
     }
@@ -342,6 +342,7 @@ function UnitOwnersTable(props) {
         width="450px"
         shapeId={props.customLayer._id}
         uAcres={props.customLayer?.shapeJson?.properties?.uAcres}
+        uUnitPricing={props.customLayer?.shapeJson?.properties?.uUnitPricing}
         shapeType={props.shapeType}
         selectedRow={selectedRow}
         onClose={() =>
