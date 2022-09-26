@@ -20,6 +20,9 @@ const RevenueStatementHeadCells = [
     label: "Interest Amount",
     esKey: "interestAmount",
     options: { sort: true, filter: true },
+    custom: {
+      toFixed: 8,
+    },
   },
   {
     name: "effectiveDate",

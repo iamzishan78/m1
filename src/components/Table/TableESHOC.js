@@ -39,7 +39,7 @@ export const TableESHOC = (Component) => {
         const isFiniteScroll = props?.loadMore?.type === "infiniteScroll"
         const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, infScrollHeight: loadMore?.height })
 
-        const [search, setSearch] = useState();
+        const [search, setSearch] = useState(null);
         const [columns, Columns] = useState([]);
         const [changePage, isPageChanged] = useState(false);
         const [page, setPage] = useState(0)
@@ -624,7 +624,6 @@ export const TableESHOC = (Component) => {
                 },
                 changeESPage: () => {
                     setLoading(true);
-
                     let afterSort = rows && tableState.page > page ? rows[rows.length - 1]?.sort : null
                     let beforeSort = tableState.page === 0 ? null : rows && tableState.page < page ? rows[0]?.sort : null
 
@@ -880,7 +879,7 @@ export const TableESHOC = (Component) => {
         );
     };
     HocWithDefaultProps.defaultProps = {
-        actionColumns: [" ", "Tags", "Comments", "isPurchased"]
+        actionColumns: [" ", "Tags", "Tags ", "Comments", "isPurchased"]
     }
 
     function HOCContainer(props) {

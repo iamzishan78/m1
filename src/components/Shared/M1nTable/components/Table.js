@@ -16,6 +16,7 @@ import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
 import ChatIcon from "@material-ui/icons/Chat";
+import CachedIcon from '@material-ui/icons/Cached';
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
 
 import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
@@ -61,7 +62,7 @@ import debounce from "lodash/debounce";
 import isEmpty from "lodash/isEmpty";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { WELLQUERY } from "graphQL/useQueryWell";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import WellTableStyles from "../customStyles/WellTableStyle";
 import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
 import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
@@ -128,6 +129,7 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
 import ReactSelectField from "./SubComponents/ReactSelectField";
 import TableBody from "./MUIDataTable/TableBody";
+import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOfferPrice";
 
 
 import Checkbox from '@material-ui/core/Checkbox';
@@ -210,7 +212,7 @@ const useStyles = makeStyles((theme) => ({
       "& th": {
         backgroundColor: "#F2F2F2",
         zIndex: "auto",
-        padding: (props) => (props.dense ? "10px 10px 10px 0px" : null),
+        padding: (props) => (props.dense ? "10px 10px 10px 25px" : null),
         "& button": {
           minWidth: 'max-content',
           "& .MuiButton-label": {
@@ -647,7 +649,14 @@ function SubTable(props) {
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContact, { data: contactData }] = useLazyQuery(CONTACT);
-
+  const [autoCalculateOfferPrice, { data: autoCalculateOfferPriceData, }] = useMutation(
+    AUTO_CALCULATE_OFFER_PRICE,
+    {
+      refetchQueries: [
+        "getESSimpleSearch",
+      ],
+    }
+  );
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
@@ -754,6 +763,14 @@ function SubTable(props) {
       },
     });
   };
+
+  const handleAutoCalculateClick = (shapeOwnerId) => {
+    autoCalculateOfferPrice({
+      variables: {
+        shapeOwnerId,
+      },
+    });
+  }
 
   const handleClickFlyToIcon = (entityType, searchTarget) => {
     if (!searchTarget) return;
@@ -2334,6 +2351,7 @@ function SubTable(props) {
                 ...column.options,
 
                 customBodyRender: (value, tableMeta, updateValue) => {
+
                   let id = props.targetLabel + tableMeta.columnIndex;
                   if (value[0]?.tag) {
                     const length = value.length
@@ -2368,7 +2386,7 @@ function SubTable(props) {
                           id={id + targetSourceId + tableMeta.rowIndex}
                           className={`${classes.TagSample} ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex ? classes.iconSelected : ""
                             }`}
-                          badgeContent={value ? value[1] : 0}
+                          badgeContent={value && value[0] && value[0].length > 0 ? value[1] : 0}
                           color="secondary"
                           onClick={(e) => {
                             e.preventDefault();
@@ -2720,6 +2738,34 @@ function SubTable(props) {
           //     },
           //   };
           //   break;
+          case "offer_price":
+            if (props.targetLabel === "Unit Ownership" || props.parent === "ownersPerUnit") {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta) => {
+                  const { columnIndex, rowData, rowIndex } = tableMeta;
+                  const row = props?.rows?.[rowIndex];
+                  const isManual = !!row?.maualOverrides?.offer_price;
+                  return (
+                    <>
+                      <span style={{ padding: 10 }}>{vf_currency(value)}</span>
+                      {isManual && (
+                        <IconButton
+                          aria-label="cached"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleAutoCalculateClick(row._id);
+                          }}
+                        >
+                          <CachedIcon />
+                        </IconButton>
+                      )}
+                    </>
+                  );
+                },
+              };
+            }
+            break;
           case "checkAmount":
             column.options = {
               ...column.options,
@@ -3669,7 +3715,7 @@ function SubTable(props) {
                                 props.rows[props.selectedRows[i].dataIndex]
                               );
                             }
-                            props.setSelectedRows(owners);
+                            props.setSelectedRows && props.setSelectedRows(owners);
                             // props.setOpenCustomDialog("exportContacts");
                             handleExpandClick(null, null, getSelectedRows(), "exportContacts");
                           }}
