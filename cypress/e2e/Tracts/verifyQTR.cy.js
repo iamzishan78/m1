@@ -22,7 +22,7 @@ describe('Verify QTR Calls Spec', () => {
         cy.interceptApi('getESSimpleSearch')
 
         cy.log('==== STEP: OPEN AGREEMENT DETAIL ====')
-        cy.getTableCell('Agreement', 2).scrollIntoView().trigger("click")
+        cy.getTableCell('Agreement', 5).scrollIntoView().trigger("click")
 
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
             const hits = response.response.body.data.getESSimpleSearch.hits
