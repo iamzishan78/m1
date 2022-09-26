@@ -74,6 +74,7 @@ const AutoCompleteShapeLayer = ({ value, shapeType, setSelectedShapeLayer }) => 
     return (
         <Autocomplete
             // defaultValue={{ _id: value, name: value }}
+            id="autucompleteShapeLayer"
             value={value}
             disableListWrap
             classes={classes}

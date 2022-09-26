@@ -19,7 +19,7 @@ describe('Verify QTR Calls Spec', () => {
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
 
         cy.interceptApi('getESSimpleSearch')
-        cy.getTableCell('Agreement', 1).click()
+        cy.getTableCell('Agreement', 2).trigger("click")
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
             const hits = response.response.body.data.getESSimpleSearch.hits
             const tractToTest = hits.find(hit => hit?.shapeLabel === tractName)
@@ -30,13 +30,21 @@ describe('Verify QTR Calls Spec', () => {
             if (!tractToTest) {
                 cy.get(".MuiButtonBase-root").contains('+ ADD Tract To AGREEMENT').click({ force: true })
                 cy.get("#existingTractTab").click()
+
+                cy.typeAndSelect("#autucompleteShapeLayer", tractName, "autucompleteShapeLayer-option-0")
+
+                cy.get("#saveButton").scrollIntoView()
+
+                cy.get("#AutocompEntityNamesList").click().type("mike jones")
+                cy.get("[id='AutocompEntityNamesList-option-0']")
+                cy.get("#AutocompEntityNamesList").click().type("{downArrow}{downArrow}{enter}")
+
+                cy.interceptApi('addOwnerToAShape')
+                cy.get("#saveButton").click()
+                cy.verifyApiResponse('@addOwnerToAShapeApi', { responseTimeout: longTimeout })
             }
 
-            console.log("hits : ", hits)
         })
-
-
-
 
 
         cy.wait(1000)

@@ -659,6 +659,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             />
           ) : (
             <AutocompEntityNamesList
+              id="AutocompEntityNamesList"
               variant="outlined"
               placeholder="Search for owner by name"
               nameAutValue={nameAutValue}
@@ -960,6 +961,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             </Button>
 
             <Button
+              id="saveButton"
               variant="contained"
               color="secondary"
               size="medium"
