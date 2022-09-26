@@ -81,6 +81,14 @@ function ShapeWellInterestTable(props) {
   }, [tableData]);
 
   useEffect(() => {
+    if (props.shapeType === 'Agreement') {
+      const indexOfTrack = TableHeader.findIndex((column) => column.name === "isTracked");
+      TableHeader[indexOfTrack].options.display = false
+      TableHeader[indexOfTrack].options.viewColumns = false
+    }
+  }, [props.shapeType]);
+
+  useEffect(() => {
     if (tableData?.hits?.length > 0) {
       let hits = tableData?.hits;
       hits = hits.map((hit) => {
