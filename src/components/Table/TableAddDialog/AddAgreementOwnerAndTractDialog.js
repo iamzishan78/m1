@@ -522,6 +522,7 @@ function AddAgreementOwnerAndTractDialog(props) {
               </Grid>
               <Grid item xs={3}>
                 <Autocomplete
+                  id="autocompleteQTR2"
                   options={qtrOptions}
                   getOptionLabel={(option) => option}
                   value={tract?.qtrQtrSelection?.selectedQtr?.[1] ?? ""}

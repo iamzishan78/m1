@@ -121,6 +121,15 @@ Cypress.Commands.add('scrollGridTo', (direction, containerId) => {
     cy.get(containerId).children().children().children().children().eq(2).scrollTo(direction)
 })
 
+//Search from map like wells ,tract etc....
+Cypress.Commands.add('searchOnMap', (data, value) => {
+    cy.get('#dataNameSelect', { timeout: 14000 }).should('be.visible').click()
+    cy.get('.MuiList-root', { timeout: 10000 }).should('be.visible').contains(data).click()
+
+    // cy.get('#cognitive-search-autocomplete', { timeout: 10000 }).should('be.visible').type(value)
+    cy.typeAndSelect("#cognitive-search-autocomplete", value, "cognitive-search-autocomplete-option-1")
+})
+
 //DocumentGrid Commands
 Cypress.Commands.add('addWell', (wellName) => {
     cy.interceptApi('addWellToFileDescriptor')

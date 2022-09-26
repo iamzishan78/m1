@@ -9,7 +9,7 @@ describe('unit summary testing', () => {
 
     cy.wait(14000)
 
-    cy.get('#data-name-select', { timeout: 14000 }).should('be.visible').click()
+    cy.get('#dataNameSelect', { timeout: 14000 }).should('be.visible').click()
     cy.wait(1000)
     cy.get('.MuiList-root', { timeout: 10000 }).should('be.visible').contains('Units').click()
 

@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 
 import { basic_timeouts } from "../../cypressUtils/data"
+import { isArraysEqual } from "../../cypressUtils/helper"
 
 describe('Verify QTR Calls Spec', () => {
     it('passes', () => {
@@ -19,7 +20,10 @@ describe('Verify QTR Calls Spec', () => {
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
 
         cy.interceptApi('getESSimpleSearch')
-        cy.getTableCell('Agreement', 2).trigger("click")
+
+        cy.log('==== STEP: OPEN AGREEMENT DETAIL ====')
+        cy.getTableCell('Agreement', 2).scrollIntoView().trigger("click")
+
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
             const hits = response.response.body.data.getESSimpleSearch.hits
             const tractToTest = hits.find(hit => hit?.shapeLabel === tractName)
@@ -27,28 +31,59 @@ describe('Verify QTR Calls Spec', () => {
             cy.get('#documentIcon', { timeout: longTimeout }).should('be.visible')
             cy.get("#AgreementOwnersTractsTable").scrollIntoView().click()
 
+            cy.log(`==== STEP: ADD ${tractName} IF NOT EXIST ====`)
             if (!tractToTest) {
+                cy.log(`==== STEP: CLICK ON ADD TRACT BUTTON ====`)
                 cy.get(".MuiButtonBase-root").contains('+ ADD Tract To AGREEMENT').click({ force: true })
+
+                cy.log(`==== STEP: CLICK ON EXISTING TRACT TAB ====`)
                 cy.get("#existingTractTab").click()
 
+                cy.log(`==== STEP: SELECT TRACT FROM DROP DOWN ====`)
                 cy.typeAndSelect("#autucompleteShapeLayer", tractName, "autucompleteShapeLayer-option-0")
 
-                cy.get("#saveButton").scrollIntoView()
-
+                cy.log(`==== STEP: SELECT ENTITY NAME ====`)
                 cy.get("#AutocompEntityNamesList").click().type("mike jones")
                 cy.get("[id='AutocompEntityNamesList-option-0']")
                 cy.get("#AutocompEntityNamesList").click().type("{downArrow}{downArrow}{enter}")
 
+                cy.log(`==== STEP: CLICK ON SAVE BUTTON ====`)
                 cy.interceptApi('addOwnerToAShape')
                 cy.get("#saveButton").click()
                 cy.verifyApiResponse('@addOwnerToAShapeApi', { responseTimeout: longTimeout })
             }
 
+            cy.log(`==== STEP: OPEN ${tractName} TRACT EDIT DRAWER ====`)
+            cy.get(".MuiTableCell-body").contains(tractName).click({ force: true })
+
+            cy.log('==== STEP: OPEN SELECT QTR 2  ====')
+            cy.interceptApi('getESSimpleSearch')
+            cy.get("#autocompleteQTR2").click({ force: true }).wait(500).type("{downArrow}{downArrow}{enter}", { force: true })
+            cy.get("#saveButton").scrollIntoView()
+
+            cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
+                const hits = response.response.body.data.getESSimpleSearch.hits
+                const updatedTract = hits.find(hit => hit?.shapeLabel === tractName)
+                const selectedQTR = updatedTract.qtrQtrSelection?.selectedQtr
+
+                cy.log('==== STEP: VISIT MAP PAGE  ====')
+                cy.interceptApi('getCustomLayer')
+                cy.visit('http://localhost:3000')
+
+                cy.log(`==== STEP: SELECT AND OPEN TRACT ${tractName} ====`)
+                cy.searchOnMap('Tracts', 'FRASER')
+
+                cy.verifyApiResponse('@getCustomLayerApi', { responseTimeout: longTimeout }).then(response => {
+                    const customLayerQtr = response.response.body.data.customLayer.qtrQtrSelection?.selectedQtr
+
+                    cy.log(`==== STEP: MATCHING PREVIOUSLY ADDED QTR ====`)
+                    if (!isArraysEqual(selectedQTR, customLayerQtr))
+                        throw new Error(`Something is wrong with QTR `)
+
+                })
+            })
+
         })
-
-
-        cy.wait(1000)
-
     })
 
 })

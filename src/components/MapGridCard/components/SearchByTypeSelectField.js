@@ -132,7 +132,7 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
         startIcon={<SelectedIcon color={color ? color : '#757575'} opacity={1} />}
         endIcon={<ArrowDropDownIcon style={{ color: color ? color : '#757575' }} />}
         onClick={handleClick}
-        id="data-name-select"
+        id="dataNameSelect"
       >
         <span style={{ color: color ? color : '#757575' }}>
           {value.label}
