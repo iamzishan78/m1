@@ -108,6 +108,12 @@ const Agreement = [
         actual_key: "acquisitionID",
     },
     {
+        label: "Acquisition Date",
+        mapped_key: "",
+        required: true,
+        actual_key: "acquisitionDate",
+    },
+    {
         label: "Prospect",
         mapped_key: "",
         required: true,
