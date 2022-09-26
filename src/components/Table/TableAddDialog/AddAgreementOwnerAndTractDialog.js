@@ -43,11 +43,12 @@ import TractForm from "components/Table/TableAddDialog/Common/TractForm";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import AutoCompleteWithNewOption from "components/Shared/Forms/Fields/AutoCompleteWithNewOption";
 import { addTrailingZeros } from "components/Shared/functions";
-import { showErrorMessage } from "actions";
+// import { showErrorMessage } from "actions";
 import { GET_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetAutoCompleteList";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import AutoCompleteParcelOwners from "components/Shared/Forms/Fields/AutoCompleteParcelOwners";
 import { useDispatch } from "react-redux";
+import Loaders from "components/Loaders";
 
 const useStyles = makeStyles((theme) => ({
   dialogFooter: {
@@ -102,7 +103,7 @@ const qtrOptions = ["E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
 
 function AddAgreementOwnerAndTractDialog(props) {
   const classes = useStyles();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const { control, reset, register, getValues, watch, setValue } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
   const [anchorEl, setAnchorEl] = useState();
@@ -129,9 +130,11 @@ function AddAgreementOwnerAndTractDialog(props) {
     onCompleted: (data) => {
       setLoading(false);
       if (data.addOwnerToAShape.success) {
-        handleClose();
+        Loaders.successToast('ageement-tract-creation', 'Agreement Tract created Successfully')
+        // handleClose();
       } else {
-        dispatch(showErrorMessage(data.addOwnerToAShape.message));
+        Loaders.successToast('ageement-tract-creation', data.addOwnerToAShape.message)
+        // dispatch(showErrorMessage(data.addOwnerToAShape.message));
       }
     },
     refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
@@ -141,7 +144,8 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
       setLoading(false);
-      handleClose();
+      Loaders.successToast('ageement-tract-creation', 'Agreement Tract updated Successfully')
+      // handleClose();
     },
     refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
@@ -276,6 +280,7 @@ function AddAgreementOwnerAndTractDialog(props) {
         refetchQueries: ["getESSimpleSearch", 'getCustomLayer'],
         awaitRefetchQueries: true,
       });
+      Loaders.createToast('ageement-tract-creation', 'Agreement Tract updation in progress')
     } else {
       addOwnerToAShape({
         variables: {
@@ -288,7 +293,9 @@ function AddAgreementOwnerAndTractDialog(props) {
         refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
         awaitRefetchQueries: true,
       });
+      Loaders.createToast('ageement-tract-creation', 'Agreement Tract creation in progress')
     }
+    handleClose();
   };
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
