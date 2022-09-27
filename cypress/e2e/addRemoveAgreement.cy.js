@@ -17,7 +17,7 @@ describe('Add And Remove Agreement Spec', () => {
 
         cy.drawMapShape()
 
-        cy.createShapeLayer("Agreement", "#agreementItem")
+        cy.createShapeLayer("#agreementItem")
 
         cy.get('#expandIcon').click()
 

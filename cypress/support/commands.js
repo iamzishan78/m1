@@ -245,13 +245,13 @@ Cypress.Commands.add('drawMapShape', () => {
         .trigger("mouseup", 446, 612, { force: true })
 })
 
-Cypress.Commands.add('createShapeLayer', (shapeLayerType, itemId) => {
+Cypress.Commands.add('createShapeLayer', (shapeLayerItemId) => {
     cy.interceptApi('UpsertCustomLayer')
     cy.get('.mapboxgl-canvas').click()
     cy.get('#parcel-button', { timeout: longTimeout }).should('be.visible').click()
     cy.wait(3000)
-    cy.get(itemId).wait(1000).click()
-    if (shapeLayerType === "Agreement")
+    cy.get(shapeLayerItemId).wait(1000).click()
+    if (shapeLayerItemId === "#agreementItem")
         cy.get('#addShapeButton').click()
 
     cy.get('.MuiBox-root', { timeout: longTimeout }).should('be.visible')
