@@ -17,21 +17,21 @@ describe('Verify QTR Calls Spec', () => {
 
         cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
 
-        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
+        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: shorTimeout })
 
         cy.interceptApi('getESSimpleSearch')
 
         cy.log('==== STEP: OPEN AGREEMENT DETAIL ====')
         cy.getTableCell('Agreement', 5).scrollIntoView().trigger("click")
 
-        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
+        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: shorTimeout }).then(response => {
             const hits = response.response.body.data.getESSimpleSearch.hits
             const tractToTest = hits.find(hit => hit?.shapeLabel === tractName)
 
             const selectedQTR = tractToTest.qtrQtrSelection?.selectedQtr
             console.log("selectedQTR : ", selectedQTR)
 
-            cy.get('#documentIcon', { timeout: longTimeout }).should('be.visible')
+            cy.get('#documentIcon', { timeout: shorTimeout }).should('be.visible')
             cy.get("#AgreementOwnersTractsTable").scrollIntoView().click()
 
             cy.log(`==== STEP: ADD ${tractName} IF NOT EXIST ====`)
