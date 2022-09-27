@@ -25,7 +25,7 @@ const UnitOwnersTractHeadCells = [
       setCellHeaderProps: () => ({
         style: {
           position: "sticky",
-          paddingLeft: '35px',
+          paddingLeft: '24px',
           zIndex: 201,
           left: "77px",
         }
