@@ -84,6 +84,7 @@ function ShapeWellInterestTable(props) {
     if (tableData?.hits?.length > 0) {
       let hits = tableData?.hits;
       hits = hits.map((hit) => {
+        hit.Well = `${hit.apiNumber} - ${hit.wellName}`
         hit = props.setGenricData(hit, hit._id, ["comments", "tracks", "tags"]);
         return hit;
       });
