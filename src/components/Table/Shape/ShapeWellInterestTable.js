@@ -7,7 +7,7 @@ import TableHOC from "components/Table/TableHOC";
 
 // QUERIES
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
+// import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
 import { UPDATE_SHAPE_WELL_INTEREST } from "graphQL/useMutationUpdateShapeWellInterest";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
