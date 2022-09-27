@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-describe('Add and Remove Tract Spec', () => {
+describe('Add and Remove Unit Spec', () => {
     it('passes', () => {
         cy.viewport(1400, 900)
         cy.visit('http://localhost:3000')
@@ -11,7 +11,7 @@ describe('Add and Remove Tract Spec', () => {
 
         cy.get("#arrowBackIcon").click()
 
-        cy.get('.mapboxgl-canvas').dblclick(663, 770, { force: true })
+        cy.get('.mapboxgl-canvas').dblclick(653, 770, { force: true })
             .dblclick(663, 770, { force: true })
             .dblclick(663, 770, { force: true })
             .dblclick(663, 770, { force: true })
@@ -23,7 +23,6 @@ describe('Add and Remove Tract Spec', () => {
 
         // cy.get('body').type('{ctrl}', { release: false })
         // cy.get('.mapboxgl-canvas').click(746, 712, { force: true })
-
         cy.get("#mapEditIcon", { timeout: 30000 }).should('be.visible').click()
         cy.wait(5000)
         cy.get("#mapRectangle").click()
@@ -42,7 +41,7 @@ describe('Add and Remove Tract Spec', () => {
         cy.interceptApi('updateCustomLayer')
         cy.get('.mapboxgl-canvas').click()
         cy.get('#parcel-button', { timeout: 30000 }).should('be.visible').click()
-        cy.get(".MuiListItem-root", { timeout: 30000 }).contains("Tract").click()
+        cy.get(".MuiListItem-root").contains("Unit Boundary").click()
         cy.get('.MuiBox-root', { timeout: 30000 }).should('be.visible')
 
         cy.get("#expandCardVertIcon").click()
