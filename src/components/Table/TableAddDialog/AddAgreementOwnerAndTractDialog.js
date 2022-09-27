@@ -130,7 +130,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     onCompleted: (data) => {
       setLoading(false);
       if (data.addOwnerToAShape.success) {
-        Loaders.successToast('ageement-tract-creation', 'Agreement Tract created Successfully')
+        Loaders.successToast('ageement-tract-creation', 'Agreement tract created Successfully')
         // handleClose();
       } else {
         Loaders.successToast('ageement-tract-creation', data.addOwnerToAShape.message)
@@ -144,7 +144,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
       setLoading(false);
-      Loaders.successToast('ageement-tract-creation', 'Agreement Tract updated Successfully')
+      Loaders.successToast('ageement-tract-creation', 'Agreement tract updated Successfully')
       // handleClose();
     },
     refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
@@ -280,7 +280,7 @@ function AddAgreementOwnerAndTractDialog(props) {
         refetchQueries: ["getESSimpleSearch", 'getCustomLayer'],
         awaitRefetchQueries: true,
       });
-      Loaders.createToast('ageement-tract-creation', 'Agreement Tract updation in progress')
+      Loaders.createToast('ageement-tract-creation', 'Agreement tract update in progress')
     } else {
       addOwnerToAShape({
         variables: {
@@ -293,7 +293,7 @@ function AddAgreementOwnerAndTractDialog(props) {
         refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
         awaitRefetchQueries: true,
       });
-      Loaders.createToast('ageement-tract-creation', 'Agreement Tract creation in progress')
+      Loaders.createToast('ageement-tract-creation', 'Agreement tract creation in progress')
     }
     handleClose();
   };
