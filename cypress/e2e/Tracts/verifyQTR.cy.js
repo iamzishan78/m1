@@ -22,13 +22,16 @@ describe('Verify QTR Calls Spec', () => {
         cy.interceptApi('getESSimpleSearch')
 
         cy.log('==== STEP: OPEN AGREEMENT DETAIL ====')
-        cy.getTableCell('Agreement', 5).scrollIntoView().trigger("click")
+
+        cy.getTableCell('Agreement', 7).then($element => {
+            cy.wrap($element).get('.MuiBox-root').eq(9).click()
+        })
 
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
             const hits = response.response.body.data.getESSimpleSearch.hits
             const tractToTest = hits.find(hit => hit?.shapeLabel === tractName)
 
-            const selectedQTR = tractToTest.qtrQtrSelection?.selectedQtr
+            const selectedQTR = tractToTest?.qtrQtrSelection?.selectedQtr
             console.log("selectedQTR : ", selectedQTR)
 
             cy.get('#documentIcon', { timeout: longTimeout }).should('be.visible')
