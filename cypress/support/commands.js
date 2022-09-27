@@ -27,11 +27,12 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 import { deepEqualObjects } from "../../src/components/Shared/functions";
-import { baseUrls, loginCredential } from "../cypressUtils/data";
+import { baseUrls, basic_timeouts, loginCredential } from "../cypressUtils/data";
 import { findInObject } from "../cypressUtils/helper";
 
 // Constants
 const workSpace = Cypress.env('WORK_SPACE') || "enerx"
+const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
 
 // Common Commands
 Cypress.Commands.add("checkAndLogin", () => {
@@ -41,7 +42,7 @@ Cypress.Commands.add("checkAndLogin", () => {
             cy.get('input').type(workSpace)
             cy.get('.MuiButtonBase-root').click()
 
-            cy.get('#signInName', { timeout: 30000 }).should('be.visible').type(loginCredential.email)
+            cy.get('#signInName', { timeout: longTimeout }).should('be.visible').type(loginCredential.email)
             cy.get('#password').type(loginCredential.passsword)
 
             cy.get('#next').click()
@@ -52,7 +53,7 @@ Cypress.Commands.add("checkAndLogin", () => {
 // This command is to type  in autocomplete search bar and then select first matched option
 Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId) => {
     cy.get(searchId).type(stringToType)
-    cy.get(`[id="${optionId}"]`, { timeout: 50000 }).should('be.visible')
+    cy.get(`[id="${optionId}"]`, { timeout: longTimeout }).should('be.visible')
     cy.get(searchId).type('{downArrow}{enter}')
 })
 
@@ -88,7 +89,7 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
 
 // This command is to check api was successful or not
 Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
-    cy.wait(apiTitle, { timeout: 300000 }).then((interception) => {
+    cy.wait(apiTitle, { timeout: extraTimeout }).then((interception) => {
         assert.isNotNull(interception.response.body, `${apiTitle} run succesfully`)
         return interception
     })
@@ -99,7 +100,7 @@ Cypress.Commands.add('deleteConfirmation', () => {
     cy.get(".MuiTypography-root").contains('Delete').click()
 
     cy.log('==== STEP: CLICKING ON DELETE FROM CONFIRMATION DIALOGUE BOX  ====')
-    cy.get(".MuiButton-label").contains('Delete', { timeout: 30000 }).should('be.visible').click()
+    cy.get(".MuiButton-label").contains('Delete', { timeout: longTimeout }).should('be.visible').click()
 })
 
 /*This command will take css id and containing string to click on action
@@ -107,12 +108,17 @@ command will then varify api response and if isFilter is passed it will verify
 filter was applied or not */
 Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = false) => {
     cy.get(`[id="${actionId}"]`).trigger('click');
-    cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
+    cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
 
     if (isFilter)
-        cy.get('.MuiChip-label', { timeout: 10000 }).contains(containsString)
+        cy.get('.MuiChip-label', { timeout: extraTimeout }).contains(containsString)
     else
-        cy.get('.MuiTypography-root', { timeout: 10000 }).contains(containsString);
+        cy.get('.MuiTypography-root', { timeout: extraTimeout }).contains(containsString);
+})
+
+//Scroll grid by using id of the container 
+Cypress.Commands.add('scrollGridTo', (direction, containerId) => {
+    cy.get(containerId).children().children().children().children().eq(2).scrollTo(direction)
 })
 
 //DocumentGrid Commands
@@ -129,14 +135,14 @@ Cypress.Commands.add('addWell', (wellName) => {
 Cypress.Commands.add('clickWellIcon', (wellName) => {
     cy.log('==== STEP: CLICK ON WELL ICON ====')
     cy.interceptApi('getWellsFromDocument')
-    cy.get("#wellIcon", { timeout: 30000 }).click()
+    cy.get("#wellIcon", { timeout: longTimeout }).click()
 })
 
 Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
     cy.interceptApi(gridOperationName, { searchString: searchString })
     cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').focus().clear().type(searchString)
 
-    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: 30000 }).then((apiResponse) => {
+    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: longTimeout }).then((apiResponse) => {
         let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
 
         if (gridOperationName === 'getESDocuments')
@@ -160,8 +166,7 @@ Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
                 })
             cy.get('@cell')   // last command, it's result will be returned
         });
-}
-)
+})
 
 // ContactGrid Commands
 
@@ -169,7 +174,7 @@ Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
     cy.interceptApi(gridOperationName, { searchString: searchString })
     cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').focus().clear().type(searchString)
 
-    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: 30000 }).then((apiResponse) => {
+    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: longTimeout }).then((apiResponse) => {
         let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
 
         if (gridOperationName === 'getESDocuments')
@@ -185,15 +190,22 @@ Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
 
 Cypress.Commands.add('sortColumn', (columnName, sortOrder) => {
     cy.interceptApi('getESSimpleSearch', { sortOrder: sortOrder })
-    cy.get('.MuiButton-label', { timeout: 10000 }).contains(columnName).click({ force: true })
-    cy.verifyApiResponse('@getESSimpleSearchWithSortOrderApi', { responseTimeout: 30000 })
+    cy.get('.MuiButton-label', { timeout: longTimeout }).contains(columnName).scrollIntoView().wait(2000).click({ force: true })
+    cy.verifyApiResponse('@getESSimpleSearchWithSortOrderApi', { responseTimeout: longTimeout })
 })
 
 Cypress.Commands.add('removeFilter', (filterLabel) => {
     cy.interceptApi('getESSimpleSearch')
-    cy.get('.MuiChip-label', { timeout: 10000 }).contains(filterLabel).siblings().click()
-    cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: 30000 })
-    cy.get('.MuiChip-label', { timeout: 30000 }).contains(filterLabel).should('not.exist');
+
+    cy.get('body').then((body) => {
+        if (body.find('.MuiChip-label').length > 0) {
+            cy.get('.MuiChip-label', { timeout: longTimeout }).contains(filterLabel).siblings().click()
+            cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
+            cy.wait(1000)
+            cy.get('.MuiChip-label', { timeout: longTimeout }).contains(filterLabel).should('not.exist');
+        }
+    });
+
 })
 
 

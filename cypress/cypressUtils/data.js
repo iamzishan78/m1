@@ -8,6 +8,13 @@ export const baseUrls = {
     localhost: "http://localhost:7071/api/m1graph"
 }
 
+
+export const basic_timeouts = {
+    shorTimeout: 5000,
+    longTimeout: 50000,
+    extraTimeout: 500000
+}
+
 export const documentObj = {
     fileNumber: "99934034",
     fileName: "Cydoc et el",

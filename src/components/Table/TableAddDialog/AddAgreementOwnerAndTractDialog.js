@@ -54,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-end",
     paddingTop: "10px",
+    paddingBottom: "15px",
   },
   footerButton: {
     letterSpacing: "1px",
@@ -248,7 +249,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     ownerToAdd.isTractOwner = isTractOwner;
     ownerToAdd.tract = tract;
     Object.keys(ownerToAdd).forEach((key) => {
-      if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'company_net_acres'].includes(key)) ownerToAdd[key] = addTrailingZeros(ownerToAdd[key]);
+      if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'nra', 'company_net_acres'].includes(key) && ownerToAdd[key]) ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(8));
     });
 
     if (ownerToAdd.parcelOwnersRadioBValue === "true") {
