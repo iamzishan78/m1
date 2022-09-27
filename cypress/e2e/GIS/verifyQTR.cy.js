@@ -24,7 +24,7 @@ describe('Verify QTR Calls Spec', () => {
         cy.log('==== STEP: OPEN AGREEMENT DETAIL ====')
 
         cy.getTableCell('Agreement', 7).then($element => {
-            cy.wrap($element).get('.MuiBox-root').eq(9).click()
+            cy.wrap($element).get('.MuiBox-root').eq(5).click()
         })
 
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: shorTimeout }).then(response => {
