@@ -219,7 +219,7 @@ Cypress.Commands.add('removeFilter', (filterLabel) => {
 // Map Commands
 
 Cypress.Commands.add('drawMapShape', () => {
-    cy.get('.mapboxgl-canvas').dblclick(643, 770, { force: true })
+    cy.get('.mapboxgl-canvas').dblclick(643, 766, { force: true })
         .dblclick(663, 770, { force: true })
         .dblclick(663, 770, { force: true })
         .dblclick(663, 770, { force: true })
@@ -245,12 +245,12 @@ Cypress.Commands.add('drawMapShape', () => {
         .trigger("mouseup", 446, 612, { force: true })
 })
 
-Cypress.Commands.add('createShapeLayer', (shapeLayerType) => {
+Cypress.Commands.add('createShapeLayer', (shapeLayerType, itemId) => {
     cy.interceptApi('UpsertCustomLayer')
     cy.get('.mapboxgl-canvas').click()
     cy.get('#parcel-button', { timeout: longTimeout }).should('be.visible').click()
     cy.wait(3000)
-    cy.get("#agreementItem").wait(1000).click()
+    cy.get(itemId).wait(1000).click()
     if (shapeLayerType === "Agreement")
         cy.get('#addShapeButton').click()
 
