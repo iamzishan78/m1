@@ -1793,6 +1793,7 @@ function SubTable(props) {
 
           // Used for snapgrid tables
           case 'ApiNumber':
+          case 'Well':
           case 'Operator':
           case 'OwnerName':
             {
@@ -1801,6 +1802,7 @@ function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let disabled = false;
                   let type = 'well'
+                  if (column.name === 'Well' && !props.rows[tableMeta.rowIndex]?.well.globalWell) disabled = true;
                   if (column.name === 'ApiNumber' && !props.rows[tableMeta.rowIndex]?.globalWell) disabled = true;
                   if (column.name === 'OwnerName' && !props.rows[tableMeta.rowIndex]?.wellCount > 0) disabled = true;
                   if (column.name === 'Operator' && !props.rows[tableMeta.rowIndex]?.totalWellCount > 0) disabled = true;
@@ -1811,6 +1813,7 @@ function SubTable(props) {
                         if (!disabled) {
                           const coordinates = props.rows[tableMeta.rowIndex].coordinates
                           type = coordinates?.objToPopulateSearchLayer?.objectType || type
+                          if (column.name === 'Well') coordinates.wellId = props.rows[tableMeta.rowIndex]?.well.globalWell;
                           handleClickFlyToIcon(type, coordinates);
                           dispatch(setMapGridCardState({ mapGridCardActivated: false }));
                         }
