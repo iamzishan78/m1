@@ -12,7 +12,7 @@ import DeleteConfirmationDialogContent from "components/Shared/M1nTable/componen
 
 const useStyles = makeStyles((theme) => ({
   actionBar: ({ isBackground, noPadding }) => ({
-    padding: noPadding ? 0 :"10px 40px",
+    padding: noPadding ? 0 : "10px 40px",
     display: "flex",
     alignItems: "center",
     backgroundColor: isBackground ? "#f7f7f7" : "transparent",
@@ -238,7 +238,7 @@ export default function ReportGroupHeader({
                   }
                 }}
               >
-                <MenuItem value={All_TYPE}>{All_TYPE}</MenuItem>
+                {!gridViews?.getGridViews?.gridViews.find((gridView) => gridView?.name === All_TYPE) && <MenuItem value={All_TYPE}>{All_TYPE}</MenuItem>}
                 {gridViews?.getGridViews?.gridViews.map((view) => (
                   <MenuItem value={view.name}>{view.name}</MenuItem>
                 ))}
@@ -299,7 +299,7 @@ export default function ReportGroupHeader({
               handleAddUpdateDelete({ type: "delete", name: reportingGroup })
             }
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Do you want to delete this report group?
           </DeleteConfirmationDialogContent>
