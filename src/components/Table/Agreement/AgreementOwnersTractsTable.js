@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 // context
 
-import { Container, Dialog } from "@material-ui/core";
+import { Button, Container, Dialog } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 
@@ -18,9 +18,11 @@ import TableHeader from "components/Table/constants/unit-owners-tracts-header-sc
 // Utilities
 import { usetableStyles } from "../Styles";
 import AddAgreementOwnerAndTractDialog from "components/Table/TableAddDialog/AddAgreementOwnerAndTractDialog";
+import { DrawerContext } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
+  const [drawer, setDrawer] = useContext(DrawerContext);
 
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
@@ -78,6 +80,24 @@ function AgreementOwnersTractsTable(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.rows]);
 
+  const tableOptions = {
+    ...props.options,
+    customToolbar: () => {
+
+      return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
+        <Button
+          color="secondary"
+          variant="contained"
+          className={classes.multiSelectionTopBarButtons}
+          // disabled={true}
+        onClick={() => setDrawer("tract")}
+        >
+          + ADD TRACT TO AGREEMENT
+        </Button>
+      </div>
+    },
+  }
+
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       {props.addToTable && (
@@ -120,7 +140,7 @@ function AgreementOwnersTractsTable(props) {
         orderByTracks={false}
         startPaginationAt={null}
         onTableChange={props.onTableChange}
-        options={props.options}
+        options={tableOptions}
         parent={props.parent}
         setColumnsBase={[]}
         {...props.esHocProps}

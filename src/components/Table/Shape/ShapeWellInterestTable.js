@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 // context
 
 import { Container, Button } from "@material-ui/core";
@@ -21,9 +21,11 @@ import AddUnitInterestDialog from "components/Shared/M1nTable/components/SubComp
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { DrawerContext } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 
 function ShapeWellInterestTable(props) {
   const classes = usetableStyles();
+  const [drawer, setDrawer] = useContext(DrawerContext);
   const [addToTable, setAddToTable] = useState(false);
 
   // function states
@@ -158,8 +160,9 @@ function ShapeWellInterestTable(props) {
             color="secondary"
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {
-              setAddToTable(true);
+              // setAddToTable(true);
               selectRow(null);
+              setDrawer("wells");
             }}
           >
             + ADD Well To {props.shapeType?.toUpperCase()}
