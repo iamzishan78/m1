@@ -30,7 +30,7 @@ function MyWellsGridTable(props) {
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
-      hit = { ...hit.wellData, sort: hit.sort }
+      hit = { ...hit.wellData, sort: hit.sort };
       return hit;
     });
     return hits;
@@ -39,24 +39,20 @@ function MyWellsGridTable(props) {
   useEffect(() => {
     setTableMeta({
       filters: props.filters,
-      addBtnText:'WELLS',
+      addBtnText: "WELLS",
       extendSearchQuery: stateApp.landSearchQuery,
       searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "mywells_flat",
-      startPaginationAt: 25,
-      defaultSort: { field: 'lastUpdateAt', order: 'desc' },
+      startPaginationAt: 50,
+      defaultSort: { field: "lastUpdateAt", order: "desc" },
       formatHits,
     });
     // eslint-disable-next-line
   }, [stateApp.landSearchQuery, props.filters]);
 
   return (
-    <Container
-      maxWidth={false}
-      className={classes.container}
-      id={props.id ? props.id : props.parent}
-    >
+    <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
