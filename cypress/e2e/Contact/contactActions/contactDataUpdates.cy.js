@@ -1,7 +1,21 @@
 /* eslint-disable no-undef */
 
 /* 
-
+click jacob steve kyle in grid ==
+change first name to jacob2 ==
+change middle name to steve2 ==
+change last name to kyle2 ==
+update primary address ==
+update primary address 2 ==
+update city ==
+update state ==
+update zip ==
+update phone ==
+update phone 2 ==
+add phone 3
+add phone 4
+update email ==
+change contact owner to kyle ==
 Then verify if the appear on grid
 */
 
@@ -48,6 +62,16 @@ describe('Contact Data Updates Spec', () => {
                 }
 
             }
+
+            cy.log('==== STEP: UPDATE PHONE 3 ====')
+            cy.get('#field-13').type('084933994503')
+            cy.get("[id='Full Name']").click()
+            cy.verifyApiResponse('@UpdateContactApi', { responseTimeout: longTimeout })
+
+            cy.log('==== STEP: UPDATE PHONE 4 ====')
+            cy.get('#field-14').type('08493399345')
+            cy.get("[id='Full Name']").click()
+            cy.verifyApiResponse('@UpdateContactApi', { responseTimeout: longTimeout })
 
             cy.log('==== STEP: UPDATE CONTACT OWNER ====')
             const searchContact = "Kyle"
