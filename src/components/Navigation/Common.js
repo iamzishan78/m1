@@ -21,7 +21,7 @@ export const useStyles = makeStyles((theme) => ({
     paddingRight: "0 !important",
     boxShadow: "none",
     "& .MuiToolbar-root": {
-      marginLeft: "52px",
+      marginLeft: "60px",
     },
   },
   appBarWhite: {
@@ -35,7 +35,7 @@ export const useStyles = makeStyles((theme) => ({
     paddingRight: "0 !important",
     boxShadow: "none",
     "& .MuiToolbar-root": {
-      marginLeft: "52px",
+      marginLeft: "60px",
     },
   },
   appBarShift: {
