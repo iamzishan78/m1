@@ -75,7 +75,7 @@ import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
 import StackedBarChart from "components/Shared/Charts/StackedBarChart";
 import ButtonDropDown from "./ButtonGroup";
 // auto complete for well API#
-import SearchWells from "components/Shared/Wells/WellsAutoCompleteFilter";
+// import SearchWells from "components/Shared/Wells/WellsAutoCompleteFilter";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 
@@ -98,8 +98,8 @@ import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 import CustomFieldText from "components/Shared/M1nTable/components/SubComponents/CustomFieldText";
-import CustomFieldSelectV2 from "./SubComponents/CustomFieldSelectV2";
-import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
+// import CustomFieldSelectV2 from "./SubComponents/CustomFieldSelectV2";
+// import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 // queries
 import { OWNERSLATSLONS } from "graphQL/useQueryOwnerLatsLonsArray";
@@ -111,7 +111,7 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 //icons
 import GetAppIcon from "@material-ui/icons/GetApp";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
-import LocationOnIcon from '@material-ui/icons/LocationOn';
+// import LocationOnIcon from '@material-ui/icons/LocationOn';
 // import { ReactComponent as RequestPageIcon } from 'components/Shared/svgIcons/request_page_icon.svg';
 import RequestPageIcon from "components/Shared/svgIcons/request_page";
 // import RequestPageIcon from 'components/Shared/svgIcons/request_page_icon';
@@ -121,21 +121,17 @@ import PostAddIcon from "@material-ui/icons/PostAdd";
 import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import MapFilledIcon from "components/Shared/svgIcons/MapFilled";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
-import { getIndexofColumn } from "utils/helper";
 import ReactSelectField from "./SubComponents/ReactSelectField";
 import { Waypoint } from "react-waypoint";
 import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOfferPrice";
 
 
-import Radio from '@material-ui/core/Radio';
 import Checkbox from '@material-ui/core/Checkbox';
 import GlobalStyles from "GlobalStyles";
 
@@ -555,7 +551,6 @@ function SubTable(props) {
   const [isSearchOpen, openSearch] = useState(false);
   const [handleSearch, setHandleSearch] = useState(() => () => { });
   const [dataWell, setDataWell] = useState();
-  const [activeRowIndex, setActiveRowIndex] = useState("null");
   const [defaultActivityType, setDefaultAcitivityType] = useState("call");
   const [contact, setContact] = useState(null);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
@@ -648,7 +643,7 @@ function SubTable(props) {
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContact, { data: contactData }] = useLazyQuery(CONTACT);
-  const [autoCalculateOfferPrice, { data: autoCalculateOfferPriceData,  }] = useMutation(
+  const [autoCalculateOfferPrice, { data: autoCalculateOfferPriceData, }] = useMutation(
     AUTO_CALCULATE_OFFER_PRICE,
     {
       refetchQueries: [
@@ -1798,6 +1793,7 @@ function SubTable(props) {
 
           // Used for snapgrid tables
           case 'ApiNumber':
+          case 'Well':
           case 'Operator':
           case 'OwnerName':
             {
@@ -1806,6 +1802,7 @@ function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let disabled = false;
                   let type = 'well'
+                  if (column.name === 'Well' && !props.rows[tableMeta.rowIndex]?.well.globalWell) disabled = true;
                   if (column.name === 'ApiNumber' && !props.rows[tableMeta.rowIndex]?.globalWell) disabled = true;
                   if (column.name === 'OwnerName' && !props.rows[tableMeta.rowIndex]?.wellCount > 0) disabled = true;
                   if (column.name === 'Operator' && !props.rows[tableMeta.rowIndex]?.totalWellCount > 0) disabled = true;
@@ -1816,6 +1813,7 @@ function SubTable(props) {
                         if (!disabled) {
                           const coordinates = props.rows[tableMeta.rowIndex].coordinates
                           type = coordinates?.objToPopulateSearchLayer?.objectType || type
+                          if (column.name === 'Well') coordinates.wellId = props.rows[tableMeta.rowIndex]?.well.globalWell;
                           handleClickFlyToIcon(type, coordinates);
                           dispatch(setMapGridCardState({ mapGridCardActivated: false }));
                         }
@@ -2764,8 +2762,8 @@ function SubTable(props) {
           //     },
           //   };
           //   break;
-          case "offer_price": 
-            if(props.targetLabel === "Unit Ownership" || props.parent === "ownersPerUnit"){
+          case "offer_price":
+            if (props.targetLabel === "Unit Ownership" || props.parent === "ownersPerUnit") {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta) => {

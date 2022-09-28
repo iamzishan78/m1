@@ -722,10 +722,10 @@ const ShapeActionsPopup = (props) => {
       >
         <MenuItem disabled>Shape Layer Type</MenuItem>
         <FeatureFlag feature={FEATURES.AGREEMENT_LAYER}>
-          <MenuItem onClick={(event) => setAgreementAnchorEl(event.currentTarget)}>Agreement</MenuItem>
+          <MenuItem id="agreementItem" onClick={(event) => setAgreementAnchorEl(event.currentTarget)}>Agreement</MenuItem>
         </FeatureFlag>
-        <MenuItem onClick={saveAndOpenParcelDetail}>Tract</MenuItem>
-        <MenuItem onClick={() => saveAndOpenShapeDetail("unit")}>Unit Boundary</MenuItem>
+        <MenuItem id="tractItem" onClick={saveAndOpenParcelDetail}>Tract</MenuItem>
+        <MenuItem id="unitBoundaryItem" onClick={() => saveAndOpenShapeDetail("unit")}>Unit Boundary</MenuItem>
       </Menu>
       <Menu
         id="convert-button"
