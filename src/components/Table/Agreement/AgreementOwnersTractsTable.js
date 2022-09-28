@@ -30,8 +30,6 @@ function AgreementOwnersTractsTable(props) {
       props.setSelectedRows([]);
     },
     onError: (err) => { },
-    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
-    awaitRefetchQueries: true,
   });
 
   const formatHits = (hits) => {
@@ -46,15 +44,14 @@ function AgreementOwnersTractsTable(props) {
     });
   };
 
-
   const deleteFunc = (ids) => {
     if (ids.length > 0) {
       props.setLoading(true);
       updateShapeOwners({
         variables: {
-          shapeOwners: ids.map((_id) => ({ _id, isDeleted: true })),
+          shapeOwners: ids.map((_id) => ({ _id, isDeleted: true, shapeId: props.customLayer?._id })),
         },
-        refetchQueries: ["getCustomLayer"],
+        refetchQueries: ["getCustomLayer", "getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
         awaitRefetchQueries: true
       });
     }
