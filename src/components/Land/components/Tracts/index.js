@@ -162,7 +162,7 @@ function Tracts(props) {
         // className={classes.gridRoot}
         style={{
           marginTop: "40px",
-          marginLeft: "-10px",
+          // marginLeft: "-10px",
         }}
       >
         <TabPanels

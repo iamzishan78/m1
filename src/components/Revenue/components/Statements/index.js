@@ -92,7 +92,7 @@ export default function RevenueStatements() {
         <div
           classes={classes.revenueContainer}
           style={{
-            marginLeft: "-10px"
+            // marginLeft: "-10px"
           }}
         >
           <RevenueStatementTable

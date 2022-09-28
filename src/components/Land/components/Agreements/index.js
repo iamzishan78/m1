@@ -55,7 +55,7 @@ function Agreements(props) {
       // className={classes.root}
       style={{
         marginTop: "65px",
-        marginLeft: "-10px"
+        // marginLeft: "-10px"
       }}
     >
       {/* <AnalyticsCards

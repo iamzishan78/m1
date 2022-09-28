@@ -10,7 +10,7 @@ function Units(props) {
   return (
     <div style={{
       marginTop: "65px",
-      marginLeft: '-10px'
+      // marginLeft: '-10px'
     }}>
       <LandUnitsTable
         parent="UnitsTable"
