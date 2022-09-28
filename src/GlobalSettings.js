@@ -108,7 +108,7 @@ const GlobalSettings = {
       style: {
         minWidth: "250px",
         maxWidth: "250px",
-        padding: '0px 25px 0px 25px',
+        padding: '0px 25px',
         // background: "white",
         // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
       }
@@ -117,7 +117,7 @@ const GlobalSettings = {
     // styling props applied to the column header cell
     setCellHeaderProps: () => ({
       style: {
-        padding: '0px 25px 0px 25px',
+        padding: '0px 25px',
       }
     }),
 
