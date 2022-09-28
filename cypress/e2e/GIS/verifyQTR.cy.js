@@ -57,6 +57,8 @@ describe('Verify QTR Calls Spec', () => {
                 cy.interceptApi('addOwnerToAShape')
                 cy.get("#saveButton").click()
                 cy.verifyApiResponse('@addOwnerToAShapeApi', { responseTimeout: longTimeout })
+
+                cy.wait(4000)
             }
 
             cy.log(`==== STEP: OPEN ${tractName} TRACT EDIT DRAWER ====`)
@@ -89,10 +91,12 @@ describe('Verify QTR Calls Spec', () => {
                     if (!isArraysEqual(updatedSelectedQTR, customLayerQtr))
                         throw new Error(`Something is wrong with QTR `)
 
+                    cy.log(`==== STEP: QTR VERIFIED ====`)
                 })
             })
 
         })
+
     })
 
 })
