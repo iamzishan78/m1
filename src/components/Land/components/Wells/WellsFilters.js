@@ -80,7 +80,7 @@ const WellsFilters = ({ filters, setFilters }) => {
   // }
 
   return (
-    <Grid container direction="row" display="flex" justify="space-between" className={classes.actionBar}>
+    <Grid container direction="row" display="flex" className={classes.actionBar} spacing={2}>
       <Grid item xs md style={{ minWidth: "150px", maxWidth: "250px" }}>
         <Autocomplete
           multiple={false}
