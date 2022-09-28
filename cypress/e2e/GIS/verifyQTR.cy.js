@@ -39,25 +39,7 @@ describe('Verify QTR Calls Spec', () => {
 
             cy.log(`==== STEP: ADD ${tractName} IF NOT EXIST ====`)
             if (!tractToTest) {
-                cy.log(`==== STEP: CLICK ON ADD TRACT BUTTON ====`)
-                cy.get(".MuiButtonBase-root").contains('+ ADD Tract To AGREEMENT').click({ force: true })
-
-                cy.log(`==== STEP: CLICK ON EXISTING TRACT TAB ====`)
-                cy.get("#existingTractTab").click()
-
-                cy.log(`==== STEP: SELECT TRACT FROM DROP DOWN ====`)
-                cy.typeAndSelect("#autucompleteShapeLayer", tractName, "autucompleteShapeLayer-option-0")
-
-                cy.log(`==== STEP: SELECT ENTITY NAME ====`)
-                cy.get("#AutocompEntityNamesList").click().type("mike jones")
-                cy.get("[id='AutocompEntityNamesList-option-0']")
-                cy.get("#AutocompEntityNamesList").click().type("{downArrow}{downArrow}{enter}")
-
-                cy.log(`==== STEP: CLICK ON SAVE BUTTON ====`)
-                cy.interceptApi('addOwnerToAShape')
-                cy.get("#saveButton").click()
-                cy.verifyApiResponse('@addOwnerToAShapeApi', { responseTimeout: longTimeout })
-
+                cy.addTract(tractName)
                 cy.wait(4000)
             }
 
