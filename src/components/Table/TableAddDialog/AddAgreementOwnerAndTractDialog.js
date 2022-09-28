@@ -131,13 +131,11 @@ function AddAgreementOwnerAndTractDialog(props) {
       setLoading(false);
       if (data.addOwnerToAShape.success) {
         Loaders.successToast('ageement-tract-creation', 'Agreement tract created Successfully')
-        // handleClose();
       } else {
-        Loaders.successToast('ageement-tract-creation', data.addOwnerToAShape.message)
-        // dispatch(showErrorMessage(data.addOwnerToAShape.message));
+        Loaders.errorToast('ageement-tract-creation', data.addOwnerToAShape.message)
       }
     },
-    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
+    refetchQueries: ["getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
   });
 
@@ -145,9 +143,8 @@ function AddAgreementOwnerAndTractDialog(props) {
     onCompleted: () => {
       setLoading(false);
       Loaders.successToast('ageement-tract-creation', 'Agreement tract updated Successfully')
-      // handleClose();
     },
-    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
+    refetchQueries: ["getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
   });
 
@@ -157,7 +154,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       handleClose();
     },
     onError: (err) => { },
-    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
+    refetchQueries: ["getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
   });
 
