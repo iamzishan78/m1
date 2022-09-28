@@ -27,24 +27,25 @@ describe('Verify QTR Calls Spec', () => {
             cy.wrap($element).get('.MuiBox-root').eq(5).click()
         })
 
-        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: shorTimeout }).then(response => {
+        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
             const hits = response.response.body.data.getESSimpleSearch.hits
             const tractToTest = hits.find(hit => hit?.shapeLabel === tractName)
 
             const selectedQTR = tractToTest?.qtrQtrSelection?.selectedQtr
             console.log("selectedQTR : ", selectedQTR)
 
-            cy.get('#documentIcon', { timeout: shorTimeout }).should('be.visible')
+            cy.get('#documentIcon', { timeout: longTimeout }).should('be.visible')
             cy.get("#AgreementOwnersTractsTable").scrollIntoView().click()
 
             cy.log(`==== STEP: ADD ${tractName} IF NOT EXIST ====`)
             if (!tractToTest) {
                 cy.addTract(tractName)
-                cy.wait(4000)
             }
 
+            cy.log('==== STEP: MAKING IT WAIT ====')
+            cy.wait(15000)
             cy.log(`==== STEP: OPEN ${tractName} TRACT EDIT DRAWER ====`)
-            cy.get(".MuiTableCell-body").contains(tractName).click({ force: true })
+            cy.get(".MuiTableCell-body", { timeout: longTimeout }).contains(tractName, { timeout: longTimeout }).click({ force: true })
 
             cy.log('==== STEP: OPEN SELECT QTR 2  ====')
             cy.interceptApi('updateShapeOwners')
@@ -64,7 +65,7 @@ describe('Verify QTR Calls Spec', () => {
                 cy.visit('http://localhost:3000')
 
                 cy.log(`==== STEP: SELECT AND OPEN TRACT ${tractName} ====`)
-                cy.searchOnMap('Tracts', 'FRASEr')
+                cy.searchOnMap('Tracts', tractName)
 
                 cy.verifyApiResponse('@getCustomLayerApi', { responseTimeout: longTimeout }).then(response => {
                     const customLayerQtr = response.response.body.data.customLayer.qtrQtrSelection?.selectedQtr
