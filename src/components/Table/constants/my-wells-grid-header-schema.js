@@ -1,21 +1,24 @@
+import globalSettings from "GlobalSettings";
+
 const wellsColumnHeaders = [
   {
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-    name: "api",
-    label: "API",
-    esKey: "wellData.api.keyword",
+    name: "wellName",
+    label: "Well Name",
+    esKey: "wellData.wellName.keyword",
     options: {
+      ...globalSettings.muiGridInfScrollOptions,
       sort: true,
       filter: true,
     },
   },
   {
-    name: "wellName",
-    label: "Well Name",
-    esKey: "wellData.wellName.keyword",
+    name: "api",
+    label: "API",
+    esKey: "wellData.api.keyword",
     options: {
       sort: true,
       filter: true,
@@ -61,19 +64,19 @@ const wellsColumnHeaders = [
     name: "operator",
     label: "Operator Name",
     esKey: "wellData.operator.keyword",
-    options:{
+    options: {
       display: true,
       filter: true,
-    }
+    },
   },
   {
     name: "wellBoreProfile",
     label: "Well Profile",
     esKey: "wellData.wellBoreProfile.keyword",
-    options:{
+    options: {
       display: true,
       filter: true,
-    }
+    },
   },
   {
     name: "commentsCounter",

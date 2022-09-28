@@ -16,19 +16,19 @@ const UnitOwnersTractHeadCells = [
           position: "sticky",
           left: "77px",
           zIndex: 200,
-          boxShadow: 'inset -1px 0px 0px 0px lightgrey',
-          padding: '0px 25px 0px 0px',
-        }
+          boxShadow: "inset -1px 0px 0px 0px lightgrey",
+          padding: "0px 25px 0px 0px",
+        },
       }),
 
       // styling props applied to the column header cell
       setCellHeaderProps: () => ({
         style: {
           position: "sticky",
-          paddingLeft: '35px',
+          paddingLeft: "25px",
           zIndex: 201,
           left: "77px",
-        }
+        },
       }),
       ignoreGlobal: true,
       sort: true,
@@ -53,15 +53,14 @@ const UnitOwnersTractHeadCells = [
     options: { sort: true, filter: true },
   },
   {
-    name: "SurveyMeridian", label: "Survey/ Meridian", esKey: [
-      'tract.rurvey.keyword',
-      'tract.meridian.keyword'
-    ],
+    name: "SurveyMeridian",
+    label: "Survey/ Meridian",
+    esKey: ["tract.rurvey.keyword", "tract.meridian.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
       sort: true,
-      filter: true
-    }
+      filter: true,
+    },
   },
   // {
   //   name: "meridian",
@@ -71,15 +70,14 @@ const UnitOwnersTractHeadCells = [
   // },
 
   {
-    name: "BlockTownship", label: "Block/ Township", esKey: [
-      'tract.block.keyword',
-      'tract.township.keyword'
-    ],
+    name: "BlockTownship",
+    label: "Block/ Township",
+    esKey: ["tract.block.keyword", "tract.township.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Block?.Township?",
       sort: true,
-      filter: true
-    }
+      filter: true,
+    },
   },
 
   // {
@@ -90,15 +88,14 @@ const UnitOwnersTractHeadCells = [
   // },
 
   {
-    name: "SectionRange", label: "Section/ Range", esKey: [
-      'tract.section.keyword',
-      'tract.range.keyword'
-    ],
+    name: "SectionRange",
+    label: "Section/ Range",
+    esKey: ["tract.section.keyword", "tract.range.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
       sort: true,
-      filter: true
-    }
+      filter: true,
+    },
   },
 
   // {
@@ -109,15 +106,14 @@ const UnitOwnersTractHeadCells = [
   // },
 
   {
-    name: "AbstractSection", label: "Abstract/ Section", esKey: [
-      'tract.abstract.keyword',
-      'tract.section.keyword'
-    ],
+    name: "AbstractSection",
+    label: "Abstract/ Section",
+    esKey: ["tract.abstract.keyword", "tract.section.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
       sort: true,
-      filter: true
-    }
+      filter: true,
+    },
   },
 
   // {

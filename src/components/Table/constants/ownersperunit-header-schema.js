@@ -40,27 +40,27 @@ const OwnersPerUnitHeadCells = [
           position: "sticky",
           left: "77px",
           zIndex: 200,
-          boxShadow: 'inset -1px 0px 0px 0px lightgrey',
-          padding: '0px 25px 0px 0px',
-        }
+          boxShadow: "inset -1px 0px 0px 0px lightgrey",
+          padding: "0px 25px 0px 0px",
+        },
       }),
 
       // styling props applied to the column header cell
       setCellHeaderProps: () => ({
         style: {
           position: "sticky",
-          paddingLeft: '35px',
+          paddingLeft: "25px",
           zIndex: 201,
           left: "77px",
-        }
+        },
       }),
     },
   },
   {
     name: "ownerType",
-    esKey: 'contact.ownerType.keyword',
+    esKey: "contact.ownerType.keyword",
     label: "Entity Type",
-    options: { filter: true }
+    options: { filter: true },
   },
   {
     name: "working_interest",
@@ -133,13 +133,7 @@ const OwnersPerUnitHeadCells = [
     esKey: "contact.campaignName.keyword",
     options: {
       customRender: (value) => {
-        return (
-          <CampaignNameField
-            value={value.campaignName}
-            fullWidth
-            disabled
-          />
-        )
+        return <CampaignNameField value={value.campaignName} fullWidth disabled />;
         // if (typeof value.campaignName === "string") {
         //   return value.campaignName;
         // } else {
@@ -260,7 +254,7 @@ const OwnersPerUnitHeadCells = [
       download: false,
       print: false,
       viewColumns: false,
-      parent: "Unit detail"
+      parent: "Unit detail",
     },
   },
 ];
