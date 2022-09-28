@@ -10,8 +10,8 @@ const UnitOwnersTractHeadCells = [
     options: {
       setCellProps: () => ({
         style: {
-          minWidth: "200px",
-          maxWidth: "200px",
+          minWidth: "250px",
+          maxWidth: "250px",
           whiteSpace: "nowrap",
           position: "sticky",
           left: "77px",
