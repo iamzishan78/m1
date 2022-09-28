@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useApolloClient, useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -48,6 +48,7 @@ import { GET_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetAutoCompleteList";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import AutoCompleteParcelOwners from "components/Shared/Forms/Fields/AutoCompleteParcelOwners";
 import { useDispatch } from "react-redux";
+import { GET_TRACT_ABSTRACT_SHAPE } from "graphQL/useQueryGetTractAbstractShape";
 
 const useStyles = makeStyles((theme) => ({
   dialogFooter: {
@@ -103,6 +104,7 @@ const qtrOptions = ["E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
 function AddAgreementOwnerAndTractDialog(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const client = useApolloClient();
   const { control, reset, register, getValues, watch, setValue } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
   const [anchorEl, setAnchorEl] = useState();
@@ -121,6 +123,22 @@ function AddAgreementOwnerAndTractDialog(props) {
 
   useEffect(() => {
     register("tract.qtrQtrSelection");
+  }, [tract]);
+
+  useEffect(() => {
+    if (tract.state) {
+      (async () => {
+        const { data: tractShape } = await client.query({
+          query: GET_TRACT_ABSTRACT_SHAPE,
+          variables: {
+            tract
+          }
+        });
+        if (tractShape?.getTractAbstractShape?.data.properties?.shapeArea) {
+          setValue('tract.shapeArea', tractShape?.getTractAbstractShape?.data.properties?.shapeArea)
+        }
+      })()
+    }
   }, [tract]);
 
   const parcelOwnersRadioBValue = watch("parcelOwnersRadioBValue", "true");
@@ -249,7 +267,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     ownerToAdd.isTractOwner = isTractOwner;
     ownerToAdd.tract = tract;
     Object.keys(ownerToAdd).forEach((key) => {
-      if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'company_net_acres'].includes(key)) ownerToAdd[key] = addTrailingZeros(ownerToAdd[key]);
+      if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'nra', 'company_net_acres'].includes(key) && ownerToAdd[key]) ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(8));
     });
 
     if (ownerToAdd.parcelOwnersRadioBValue === "true") {
