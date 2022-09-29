@@ -286,11 +286,7 @@ const InterestDetailForm = (props) => {
           />
         </Grid>
         <Grid item xs={12} className={classes.fieldset}>
-          <div
-            style={{
-              borderTop: "1px solid #EEF1F4",
-            }}
-          >
+          <div>
             <div style={{ float: "right" }}>
               <Button style={{ margin: "25px 5px 25px 0px" }} variant="outlined">
                 Cancel

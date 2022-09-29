@@ -23,7 +23,7 @@ const DocumentsHeadCells = [
       setCellProps: () => ({
         style: {
           minWidth: "150px",
-          whiteSpace: "nowrap",
+          whiteSpace: "pre-wrap",
           position: "sticky",
           left: "77px",
           zIndex: 200

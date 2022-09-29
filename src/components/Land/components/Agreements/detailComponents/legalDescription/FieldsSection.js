@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import _ from "underscore";
 import { get } from "lodash";
 import { Controller, useForm } from "react-hook-form";
 import { makeStyles } from "@material-ui/styles";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 import { Grid, IconButton, InputAdornment, TextField } from "@material-ui/core";
-import { addTrailingZeros } from "components/Shared/functions";
 
 // Components
 const useStyles = makeStyles((theme) => ({
@@ -34,13 +33,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ChangeDetectionNumberField = ({ name, label, control, offClickHandler, handleKeyDown, keysSum }) => {
+const ChangeDetectionNumberField = ({ name, label, control, offClickHandler, handleKeyDown, calculatedValues, isOverridden }) => {
   const classes = useStyles();
   return (
     <Controller
       control={control}
       name={name}
       render={(params) => {
+        const isChanged = (calculatedValues[name] && params.value && parseFloat(params.value) !== parseFloat(calculatedValues[name])) || isOverridden
         return (
           <TextField
             type="number"
@@ -54,16 +54,16 @@ const ChangeDetectionNumberField = ({ name, label, control, offClickHandler, han
             onChange={(e) => {
               params.onChange(e.target.value);
             }}
-            className={(keysSum[name] && params.value && params.value !== keysSum[name]) ? classes.baseValueChanged : classes.numberField}
+            className={isChanged ? classes.baseValueChanged : classes.numberField}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  {params.value && params.value !== keysSum[name] && (
+                  {isChanged && (
                     <IconButton
                       aria-label={`toggle ${name}`}
                       onClick={() => {
-                        params.onChange(keysSum[name]);
-                        offClickHandler(name, keysSum[name])
+                        params.onChange(calculatedValues[name]);
+                        offClickHandler(name, calculatedValues[name])
                       }}
                     >
                       <AutorenewIcon fontSize="small" />
@@ -83,46 +83,17 @@ const ChangeDetectionNumberField = ({ name, label, control, offClickHandler, han
 export default function LagalDescription({ agreementDetails = {}, updateAgreement, tractOwners }) {
   const classes = useStyles();
   const { reset, control } = useForm();
-  const [keysSum, setKeysSum] = useState({})
+
+  const calculatedValues = useMemo(() => agreementDetails.calculated ? agreementDetails.calculated : agreementDetails, [agreementDetails])
 
   useEffect(() => {
     reset(agreementDetails);
   }, [reset, agreementDetails]);
 
-  useEffect(() => {
-    if (tractOwners) {
-      const sum = tractOwners.reduce((sum, tractOwner) => {
-        if (tractOwner.sdGrossAcres)
-          sum.grossAcres += parseFloat(tractOwner.sdGrossAcres);
-        if (tractOwner.net_acres)
-          sum.netAcres += parseFloat(tractOwner.net_acres);
-        if (tractOwner.nra)
-          sum.netRoyalty += parseFloat(tractOwner.nra);
-        if (tractOwner.company_net_acres)
-          sum.companyNetAcres += parseFloat(tractOwner.company_net_acres);
-        if (tractOwner.sdGrossAcres && tractOwner.countAcres === "Yes")
-          sum.reportGrossAcres += parseFloat(tractOwner.sdGrossAcres);
-        if (tractOwner.net_acres && tractOwner.countAcres === "Yes")
-          sum.reportNet += parseFloat(tractOwner.net_acres);
-        return sum;
-      }, { grossAcres: 0, netAcres: 0, netRoyalty: 0, companyNetAcres: 0, reportGrossAcres: 0, reportNet: 0 });
-      sum.grossAcres = addTrailingZeros(sum.grossAcres?.toFixed(8));
-      sum.netAcres = addTrailingZeros(sum.netAcres?.toFixed(8));
-      sum.netRoyalty = addTrailingZeros(sum.netRoyalty?.toFixed(8));
-      sum.companyNetAcres = addTrailingZeros(sum.companyNetAcres?.toFixed(8));
-      sum.reportGrossAcres = addTrailingZeros(sum.reportGrossAcres?.toFixed(8));
-      sum.reportNet = addTrailingZeros(sum.reportNet?.toFixed(8));
-
-      reset(agreementDetails);
-      setKeysSum(sum)
-    }
-
-  }, [tractOwners]);
-
   const offClickHandler = (key, value) => {
     if (agreementDetails[key] === value) return
     const fieldValue = {
-      overridden: parseFloat(value) !== parseFloat(keysSum[key]),
+      overridden: parseFloat(value) !== parseFloat(calculatedValues[key]),
       value
     }
     if (tractOwners) updateAgreement(key, fieldValue, key)
@@ -130,7 +101,6 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
   };
 
   const handleKeyDown = (e) => {
-    console.log(e.keyCode);
     if (e.keyCode === 38 || e.keyCode === 40) {
       e.preventDefault();
     }
@@ -168,7 +138,8 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                   control={control}
                   offClickHandler={offClickHandler}
                   handleKeyDown={handleKeyDown}
-                  keysSum={keysSum}
+                  isOverridden={agreementDetails?.overridden?.grossAcres}
+                  calculatedValues={calculatedValues}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -178,7 +149,8 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                   control={control}
                   offClickHandler={offClickHandler}
                   handleKeyDown={handleKeyDown}
-                  keysSum={keysSum}
+                  isOverridden={agreementDetails?.overridden?.netAcres}
+                  calculatedValues={calculatedValues}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -188,7 +160,8 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                   control={control}
                   offClickHandler={offClickHandler}
                   handleKeyDown={handleKeyDown}
-                  keysSum={keysSum}
+                  isOverridden={agreementDetails?.overridden?.companyNetAcres}
+                  calculatedValues={calculatedValues}
                 />
               </Grid>
             </Grid>
@@ -203,7 +176,8 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                   control={control}
                   offClickHandler={offClickHandler}
                   handleKeyDown={handleKeyDown}
-                  keysSum={keysSum}
+                  isOverridden={agreementDetails?.overridden?.reportGrossAcres}
+                  calculatedValues={calculatedValues}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -213,7 +187,8 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                   control={control}
                   offClickHandler={offClickHandler}
                   handleKeyDown={handleKeyDown}
-                  keysSum={keysSum}
+                  isOverridden={agreementDetails?.overridden?.reportNet}
+                  calculatedValues={calculatedValues}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -223,7 +198,8 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
                   control={control}
                   offClickHandler={offClickHandler}
                   handleKeyDown={handleKeyDown}
-                  keysSum={keysSum}
+                  isOverridden={agreementDetails?.overridden?.netRoyalty}
+                  calculatedValues={calculatedValues}
                 />
               </Grid>
             </Grid>
