@@ -10,8 +10,8 @@ const UnitOwnersTractHeadCells = [
     options: {
       setCellProps: () => ({
         style: {
-          minWidth: "200px",
-          maxWidth: "200px",
+          minWidth: "250px",
+          maxWidth: "250px",
           whiteSpace: "nowrap",
           position: "sticky",
           left: "77px",
@@ -25,7 +25,7 @@ const UnitOwnersTractHeadCells = [
       setCellHeaderProps: () => ({
         style: {
           position: "sticky",
-          paddingLeft: '35px',
+          paddingLeft: '24px',
           zIndex: 201,
           left: "77px",
         }
