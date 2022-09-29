@@ -212,8 +212,14 @@ Cypress.Commands.add('removeFilter', (filterLabel) => {
         if (body.find('.MuiChip-label').length > 0) {
             cy.get('.MuiChip-label', { timeout: longTimeout }).contains(filterLabel).siblings().click()
             cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
-            cy.wait(1000)
-            cy.get('.MuiChip-label', { timeout: longTimeout }).contains(filterLabel).should('not.exist');
+            cy.get('.MuiTableBody-root', { timeout: longTimeout }).should('be.visible')
+
+            cy.get("body").then($body => {
+                if ($body.find(".MuiChip-label").length > 0) {
+                    cy.get('.MuiChip-label', { timeout: longTimeout }).contains(filterLabel).should('not.exist');
+                }
+            });
+
         }
     });
 
