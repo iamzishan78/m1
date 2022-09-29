@@ -113,9 +113,9 @@ const unitsColumnHeaders = [
     }
   },
   {
-    name: "uAcres",
+    name: "shapeArea",
     label: "Unit Acres",
-    esKey: "shapeJson.properties.uAcres.keyword",
+    esKey: "shapeJson.properties.shapeArea.keyword",
     options: {
       sort: true,
       filter: true,
