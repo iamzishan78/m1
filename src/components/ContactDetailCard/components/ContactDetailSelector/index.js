@@ -269,7 +269,7 @@ function MapGridCard(props) {
                         header={"Unit Interests"}
                         targetLabel="contactUnits"
                         id="unitInterestTable"
-                        esFilters={[{ field: "contact._id.keyword", value: props.contactData._id }]}
+                        esFilters={[{ field: "contact._id", value: props.contactData._id }]}
                         esIndex="shapeowners_flat"
                         setESFilters={() => { }}
                         onTractCount={() => { }}

@@ -16,18 +16,41 @@ const UnitWellHeadCells = [
     },
   },
   {
-    name: "apiNumber", label: "Api Number", options: {
+    name: "Well", label: "Well", options: {
       dbName: "well.apiNumber",
       sort: true,
       filter: false,
+      setCellProps: () => ({
+        style: {
+          minWidth: "350px",
+          maxWidth: "350px",
+          whiteSpace: "nowrap",
+          position: "sticky",
+          left: "77px",
+          zIndex: 200,
+          boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+          padding: '0px 25px 0px 0px',
+        }
+      }),
+
+      // styling props applied to the column header cell
+      setCellHeaderProps: () => ({
+        style: {
+          position: "sticky",
+          paddingLeft: '37px',
+          zIndex: 201,
+          left: "77px",
+        }
+      }),
+      ignoreGlobal: true,
     }
   },
-  {
-    name: "wellName", label: "Well", esKey: 'well.wellName.keyword', options: {
-      sort: true,
-      filter: true,
-    }
-  },
+  // {
+  //   name: "wellName", label: "Well", esKey: 'well.wellName.keyword', options: {
+  //     sort: true,
+  //     filter: true,
+  //   }
+  // },
 
   {
     name: "leaseId", label: "Lease Number", esKey: 'leaseId.keyword', options: {
