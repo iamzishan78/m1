@@ -1,3 +1,5 @@
+import { GlobalStickyStyles } from "GlobalSettings";
+
 const wellsColumnHeaders = [
   {
     name: "Id",
@@ -16,29 +18,14 @@ const wellsColumnHeaders = [
     label: "API",
     esKey: "api.keyword",
     options: {
-      setCellProps: () => ({
-        style: {
-          minWidth: "200px",
+      ...GlobalStickyStyles({
+        setCellProps: {
           maxWidth: "200px",
-          whiteSpace: "nowrap",
-          position: "sticky",
-          left: "77px",
-          zIndex: 200,
-          boxShadow: 'inset -1px 0px 0px 0px lightgrey',
-          padding: '0px 25px 0px 0px',
-        }
-      }),
-
-      // styling props applied to the column header cell
-      setCellHeaderProps: () => ({
-        style: {
-          position: "sticky",
+        },
+        setCellHeaderProps: {
           paddingLeft: '35px',
-          zIndex: 201,
-          left: "77px",
         }
       }),
-      ignoreGlobal: true,
       sort: true,
       filter: true,
     },
