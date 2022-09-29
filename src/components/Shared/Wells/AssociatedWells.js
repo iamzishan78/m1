@@ -33,6 +33,8 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "auto",
     height: '100%',
     maxHeight: 465,
+    flex: '1 1 auto',
+    // maxHeight: "79vh",
     "& .MuiList-padding": {
       padding: "23px 0px !important",
     },
