@@ -43,12 +43,13 @@ import TractForm from "components/Table/TableAddDialog/Common/TractForm";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import AutoCompleteWithNewOption from "components/Shared/Forms/Fields/AutoCompleteWithNewOption";
 import { addTrailingZeros } from "components/Shared/functions";
-// import { showErrorMessage } from "actions";
+import { showErrorMessage } from "actions";
 import { GET_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetAutoCompleteList";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import AutoCompleteParcelOwners from "components/Shared/Forms/Fields/AutoCompleteParcelOwners";
 import Loaders from "components/Loaders";
 import { GET_TRACT_ABSTRACT_SHAPE } from "graphQL/useQueryGetTractAbstractShape";
+import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   dialogFooter: {
@@ -104,6 +105,7 @@ const qtrOptions = ["E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
 function AddAgreementOwnerAndTractDialog(props) {
   const classes = useStyles();
   const client = useApolloClient();
+  const dispatch = useDispatch();
   const { control, reset, register, getValues, watch, setValue } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
   const [anchorEl, setAnchorEl] = useState();
@@ -112,6 +114,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [loading, setLoading] = useState(false);
   const [isTractOwner, setIsTractOwner] = useState(false);
   const [isNewTract, setIsNewTract] = useState(true);
+  const [newTractError, setNewTractError] = useState();
   const [totalOwners, setTotalOwners] = useState(0);
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [tractValue, setTractValue] = useState({ name: "", _id: null });
@@ -119,13 +122,22 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
 
   const tract = watch("tract", {});
+  const state = watch("tract.state", '');
+
+  useEffect(() => {
+    if (isNewTract) {
+      const form = getValues();
+      form.tract = { state }
+      reset(form)
+    }
+  }, [state]);
 
   useEffect(() => {
     register("tract.qtrQtrSelection");
   }, [tract]);
 
   useEffect(() => {
-    if (tract.state) {
+    if (tract.state && isNewTract) {
       (async () => {
         const { data: tractShape } = await client.query({
           query: GET_TRACT_ABSTRACT_SHAPE,
@@ -133,10 +145,15 @@ function AddAgreementOwnerAndTractDialog(props) {
             tract
           }
         });
-        if (tractShape?.getTractAbstractShape?.data.properties?.shapeArea) {
+        if (tractShape?.getTractAbstractShape?.data?.properties?.shapeArea) {
           setValue('tract.shapeArea', tractShape?.getTractAbstractShape?.data.properties?.shapeArea)
+          if (newTractError) { setNewTractError(null) }
+        } else {
+          setNewTractError(tractShape?.getTractAbstractShape)
         }
       })()
+    } else {
+      if (newTractError) { setNewTractError(null) }
     }
   }, [tract]);
 
@@ -262,6 +279,10 @@ function AddAgreementOwnerAndTractDialog(props) {
   };
 
   const handleSave = () => {
+    if (newTractError) {
+      dispatch(showErrorMessage(newTractError.message))
+      return;
+    }
     const ownerToAdd = getValues();
     ownerToAdd.isTractOwner = isTractOwner;
     ownerToAdd.tract = tract;
