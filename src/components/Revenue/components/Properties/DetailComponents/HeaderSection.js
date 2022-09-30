@@ -240,7 +240,7 @@ export default function HeaderSection(props) {
   const getMappedOptions = (strArray) => strArray?.map(option => ({ name: option, value: option })) || [];
 
   return (
-    <Grid container direction="row" justify="space-between" alignItems="center">
+    <Grid container direction="row" justify="space-between">
       <Grid item className={classes.infoSection}>
         <Grid
           container
