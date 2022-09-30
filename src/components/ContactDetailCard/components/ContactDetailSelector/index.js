@@ -264,7 +264,7 @@ function MapGridCard(props) {
                         parent="assocTaxRollInterests"
                         header={"Unit Interests"}
                         targetLabel="contactUnits"
-                        esFilters={[{ field: "contact._id.keyword", value: props.contactData._id }]}
+                        esFilters={[{ field: "contact._id", value: props.contactData._id }]}
                         esIndex="shapeowners_flat"
                         setESFilters={() => { }}
                         onTractCount={() => { }}
