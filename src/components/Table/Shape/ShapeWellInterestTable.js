@@ -7,7 +7,7 @@ import TableHOC from "components/Table/TableHOC";
 
 // QUERIES
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
+// import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
 import { UPDATE_SHAPE_WELL_INTEREST } from "graphQL/useMutationUpdateShapeWellInterest";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
@@ -81,9 +81,18 @@ function ShapeWellInterestTable(props) {
   }, [tableData]);
 
   useEffect(() => {
+    if (props.shapeType === 'Agreement') {
+      const indexOfTrack = TableHeader.findIndex((column) => column.name === "isTracked");
+      TableHeader[indexOfTrack].options.display = false
+      TableHeader[indexOfTrack].options.viewColumns = false
+    }
+  }, [props.shapeType]);
+
+  useEffect(() => {
     if (tableData?.hits?.length > 0) {
       let hits = tableData?.hits;
       hits = hits.map((hit) => {
+        hit.Well = `${hit.apiNumber} - ${hit.wellName}`
         hit = props.setGenricData(hit, hit._id, ["comments", "tracks", "tags"]);
         return hit;
       });
