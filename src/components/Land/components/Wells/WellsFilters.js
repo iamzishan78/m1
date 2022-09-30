@@ -75,10 +75,6 @@ const WellsFilters = ({ filters, setFilters }) => {
     });
   }, []);
 
-  // const handleChange = (value) =>  {
-  //     setReportingFilter(value)
-  // }
-
   return (
     <Grid container direction="row" display="flex" className={classes.actionBar} spacing={2}>
       <Grid item xs md style={{ minWidth: "150px", maxWidth: "250px" }}>
