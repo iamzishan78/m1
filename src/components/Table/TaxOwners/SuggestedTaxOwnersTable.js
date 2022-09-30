@@ -236,7 +236,7 @@ function SuggestedOwnerTable(props) {
           disabled={true}
         // onClick={addAction}
         >
-          + ADD TO PARCEL
+          + ADD TO TRACT
         </Button>
       </div>
     },
@@ -252,7 +252,7 @@ function SuggestedOwnerTable(props) {
               setShowConvertDialog(true);
             }}
           >
-            + ADD TO PARCEL
+            + ADD TO TRACT
           </Button>
         </div>
       </div>
