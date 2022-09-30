@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { Container } from "@material-ui/core";
-import debounce from "lodash/debounce";
+import { debounce, get } from "lodash";
 
 // context
 import { AppContext } from "AppContext";
@@ -30,7 +30,20 @@ function MyWellsGridTable(props) {
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
-      hit = { ...hit.wellData, sort: hit.sort };
+      const properties = get(hit, "properties", []);
+      const propertiesKeys = { internalID: [], propertiesNames: [], prospectID: [], internalCompany: [], divOrderStatus: [] };
+      properties.forEach(property => {
+        propertiesKeys.internalID.push(property.internalID);
+        propertiesKeys.propertiesNames.push(property.name);
+        propertiesKeys.prospectID.push(property.prospectID);
+        propertiesKeys.internalCompany.push(property.internalCompany);
+        propertiesKeys.divOrderStatus.push(property.divOrderStatus);
+      });
+      hit = {
+        ...hit.wellData,
+        sort: hit.sort,
+        ...propertiesKeys
+      };
       return hit;
     });
     return hits;

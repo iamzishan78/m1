@@ -25,6 +25,147 @@ const wellsColumnHeaders = [
     },
   },
   {
+    name: "internalID",
+    label: "Internal ID",
+    esKey: "properties.internalID.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      customRender: (value) => (
+        <p>{value?.length ? value.join(", ") : null}</p>
+      )
+    },
+  },
+  {
+    name: "operator",
+    label: "Operator",
+    esKey: "wellData.operator.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "basin",
+    label: "Basin",
+    esKey: "wellData.basin.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "field",
+    label: "Field",
+    esKey: "wellData.field.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "permitApprovedDate",
+    label: "Permit Date",
+    esKey: "wellData.permitApprovedDate.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "spudDate",
+    label: "Spud Date",
+    esKey: "wellData.spudDate.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "completionDate",
+    label: "Completion Date",
+    esKey: "wellData.completionDate.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "measuredDepth",
+    label: "Measured Depth",
+    esKey: "wellData.measuredDepth.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "trueVerticalDepth",
+    label: "TVD",
+    esKey: "wellData.trueVerticalDepth.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "lateralLength",
+    label: "Lateral Length",
+    esKey: "wellData.lateralLength.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "primaryFormation",
+    label: "Formation",
+    esKey: "wellData.primaryFormation.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "propertiesNames",
+    label: "Revenue Properties",
+    esKey: "properties.name.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      customRender: (value) => (
+        <p>{value?.length ? value.join(", ") : null}</p>
+      )
+    },
+  },
+  {
+    name: "divOrderStatus",
+    label: "DO Status",
+    esKey: "properties.divOrderStatus.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "internalCompany",
+    label: "Internal Company",
+    esKey: "properties.internalCompany.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "prospectID",
+    label: "Prospect",
+    esKey: "properties.prospectID.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
     name: "state",
     label: "State",
     esKey: "wellData.state.keyword",
