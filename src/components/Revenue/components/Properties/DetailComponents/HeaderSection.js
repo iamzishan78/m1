@@ -80,6 +80,8 @@ const useStyles = makeStyles((theme) => ({
   associatedWell: {
     border: "2px solid #d5d5d5",
     height: "525px",
+    display: 'flex',
+    flexDirection: 'column',
     borderRadius: "15px",
     maxWidth: "30%",
     width: "30%",
@@ -255,7 +257,7 @@ export default function HeaderSection(props) {
   const getMappedOptions = (strArray) => strArray?.map(option => ({ name: option, value: option })) || [];
 
   return (
-    <Grid container direction="row" justify="space-between" alignItems="center">
+    <Grid container direction="row" justify="space-between">
       <Grid item className={classes.infoSection}>
         <Grid
           container

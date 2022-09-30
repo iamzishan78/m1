@@ -268,10 +268,10 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     fullWidth
                     value={agreementDetailCopied?.[field.key] ? moment(agreementDetailCopied[field.key]).format("yyyy-MM-DD") : ""}
                     onChange={(event) => {
-                      setAgreementCopied({ ...agreementDetailCopied, [field.key]: event ? String(event?.target?.value) : "" })
+                      setAgreementCopied({ ...agreementDetailCopied, [field.key]: event ? event?.target?.value : "" })
                     }}
                     onBlur={(event) => {
-                      offClickHandler(field.key, event ? String(event?.target?.value) : "");
+                      offClickHandler(field.key, event ? event?.target?.value : "");
                     }}
                     InputLabelProps={{
                       shrink: true,
