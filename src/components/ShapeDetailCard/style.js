@@ -70,13 +70,22 @@ export const detailCardStyles = makeStyles((theme) => ({
       borderRadius: 5,
     },
   },
+  agreementSubContent: {
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": {
+          height: "calc(100vh - 675px) !important",
+        },
+      },
+    },
+  },
   subContent: {
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
           height: "calc(100vh - 443px) !important",
           "& .MuiTableCell-paddingCheckbox": {
-            position: "unset",
+            // position: "unset",
           },
         },
       },
@@ -331,9 +340,10 @@ export const summaryTableStyles = makeStyles((theme) => ({
   },
 
   select: {
-    "& .MuiOutlinedInput-root": {
-      height: "38px",
-    },
+    height: "38px",
+    // "& .MuiOutlinedInput-root": {
+    //   height: "38px",
+    // },
   },
   positionRenewIcon: {
     position: "absolute",

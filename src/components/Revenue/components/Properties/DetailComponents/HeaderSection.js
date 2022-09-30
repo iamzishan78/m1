@@ -80,6 +80,8 @@ const useStyles = makeStyles((theme) => ({
   associatedWell: {
     border: "2px solid #d5d5d5",
     height: "525px",
+    display: 'flex',
+    flexDirection: 'column',
     borderRadius: "15px",
     maxWidth: "30%",
     width: "30%",
@@ -166,13 +168,12 @@ export default function HeaderSection(props) {
   useEffect(() => {
     return () => {
       const number = watch("number");
-      const name = watch("name");
+      const internalID = watch("internalID");
 
-      if (!number){
-        dispatch(showInfoMessage("Property Number is required"));
-        history.goBack();
-      } else if (!name){
-        dispatch(showInfoMessage("Property Name is required"));
+      if (!number && !internalID) {
+        dispatch(
+          showInfoMessage("Internal Prop # or Operator Prop # is required.")
+        );
         history.goBack();
       }
     }
@@ -256,7 +257,7 @@ export default function HeaderSection(props) {
   const getMappedOptions = (strArray) => strArray?.map(option => ({ name: option, value: option })) || [];
 
   return (
-    <Grid container direction="row" justify="space-between" alignItems="center">
+    <Grid container direction="row" justify="space-between">
       <Grid item className={classes.infoSection}>
         <Grid
           container
@@ -486,24 +487,6 @@ export default function HeaderSection(props) {
               <Grid item xs={9}>
                 <Controller
                   control={control}
-                  name="internalCompany"
-                  render={(params) => {
-                    return (
-                      <AutoCompleteTypeComponent
-                        {...params}
-                        autoFocus={false}
-                        shapeType={"Unit"}
-                        typeKey={"internalCompany"}
-                        variant="outlined"
-                        onChange={(e, value) => {
-                          params.onChange(value?.name || "");
-                        }}
-                        onBlur={(e) => {
-                          handleUpdate("internalCompany", e.target.value || "");
-                        }}
-                      />
-                    );
-                  }}
                   name="owner"
                   render={(params) => (
                     <ContactPaginatedAutocomplete

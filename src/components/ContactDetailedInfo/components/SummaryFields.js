@@ -13,6 +13,7 @@ import vf_number from "components/Shared/valueformatters/vf_number";
 import ContactStatus from 'components/ContactDetailCard/components/ContactStatus'
 import { SUMMARY_FIELDS, featureFlagChanges } from "components/ContactDetailedInfo/helper";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
+import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -129,7 +130,7 @@ export default function SummaryFields({ contactData }) {
     if (key.includes("nraSum")) {
       return get(contactData, "evaluatedContactInterests.nraSum") !== _value;
     } else if (key.includes("offerPriceSum")) {
-      return get(contactData, "evaluatedContactInterests.offerPriceSum") !== _value;
+      return get(contactData, "evaluatedContactInterests.offerPriceSum").toFixed(2) !== _value.toFixed(2);
     }
     return false;
   }
@@ -163,9 +164,12 @@ export default function SummaryFields({ contactData }) {
                           }}
                           onBlur={(event) => updateFieldData(field.key, event.target.value)}
                           onChange={({ target }) => {
-                            if (field.key.includes('nraSum') || field.key.includes('offerPriceSum')) {
+                            if (field.key.includes('nraSum')) {
                               params.onChange(getCommaValue(target.value));
-                            } else {
+                            } else if (field.key.includes('offerPriceSum')) {
+                              params.onChange(parseFloat(target.value).toFixed(2));
+                            }
+                            else {
                               params.onChange(target.value);
                             }
                           }}
@@ -176,7 +180,7 @@ export default function SummaryFields({ contactData }) {
                           // If field info is updating, show loading as adornment
                           // else show nothing
                           InputProps={{
-                            startAdornment: field.type === "number" && <InputAdornment position="start"> $</InputAdornment>,
+                            inputComponent: field.type === "currency" ? CurrencyFormatCustom : undefined,
                             endAdornment:
                               field.type === "email" && contactData[field.key] ? (
                                 <a href={"mailto:" + contactData.primaryEmail} className={classes.emailAdornment}>

@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 
 // context
 import { AppContext } from "AppContext";
@@ -21,8 +20,6 @@ import {
   setStateIfDeepEqual,
 } from "components/Shared/functions";
 
-import { addTrailingZeros } from "components/Shared/functions";
-
 // Header Schemas
 import TableHeader from "components/Table/constants/potential-parcel-owners-header-schema";
 import { handleTagColumn } from "../helpers";
@@ -34,18 +31,12 @@ import { usetableStyles } from "../Styles";
 
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    padding: "0 !important",
-  },
-}));
-
 function SuggestedOwnerTable(props) {
   const classes = usetableStyles();
   const { jobType, jobName } = props;
 
   // contexts
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
 
   const client = useApolloClient();
 
@@ -245,7 +236,7 @@ function SuggestedOwnerTable(props) {
           disabled={true}
         // onClick={addAction}
         >
-          + ADD TO PARCEL
+          + ADD TO TRACT
         </Button>
       </div>
     },
@@ -261,7 +252,7 @@ function SuggestedOwnerTable(props) {
               setShowConvertDialog(true);
             }}
           >
-            + ADD TO PARCEL
+            + ADD TO TRACT
           </Button>
         </div>
       </div>

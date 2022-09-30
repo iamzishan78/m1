@@ -287,6 +287,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             }}
             fullWidth
             targetLabel="Contact"
+            simpleChips
           />
         );
       case "Stage":

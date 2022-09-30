@@ -27,6 +27,9 @@ export default function RevenueStatements() {
   const [esFilters, ESFilters] = useState([]);
   const [filterToggle, setFilterToggle] = React.useState(false);
 
+  // waypointKey should any key of Table Header which do not have customRender in schema file
+  const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 381px)' }
+
   useEffect(() => {
     return () => {
       setStateApp((state, props) => {
@@ -35,17 +38,18 @@ export default function RevenueStatements() {
     }
   }, []);
 
-   const setESFilters = (newFilter) => {
+  const setESFilters = (newFilter) => {
     ESFilters(newFilter);
-   };
+  };
 
   const onGettingStatements = useCallback((statementsList) => {
     if (statementsList.statementCount) {
       const checks = statementsList.statementCount;
-      const approved = statementsList?.approvedCount
+      const approved = statementsList?.approvedCount;
+      const unApprovedCount = statementsList.unApprovedCount;
       setApprovedCount(approved);
       setStatementCount(checks)
-      setUnapprovedCount(Number(checks) - Number(approved));
+      setUnapprovedCount(unApprovedCount);
     } else {
       setStatementCount(0)
       setApprovedCount(0);
@@ -67,29 +71,29 @@ export default function RevenueStatements() {
         filterToggle={filterToggle}
       />
 
-      <div 
+      <div
       // style={{ padding: 40 }}
       >
 
-      <div 
-      style={{ padding: 40 }}
-      >
+        <div
+          style={{ padding: 40 }}
+        >
 
-        <AnalyticsCards
-          checks={statementCount}
-          approvedCount={approvedCount}
-          unapprovedCount={unapprovedCount}
-          potentialIssues={potentialIssuesList}
-          revenueSearchQuery={stateApp.revenueSearchQuery}
-        />
+          <AnalyticsCards
+            checks={statementCount}
+            approvedCount={approvedCount}
+            unapprovedCount={unapprovedCount}
+            potentialIssues={potentialIssuesList}
+            revenueSearchQuery={stateApp.revenueSearchQuery}
+          />
 
         </div>
 
-        <div 
-        classes={classes.revenueContainer} 
-        style={{ 
-          marginLeft: "-10px" 
-        }}
+        <div
+          classes={classes.revenueContainer}
+          style={{
+            marginLeft: "-10px"
+          }}
         >
           <RevenueStatementTable
             header="Revenue Statements"
@@ -100,6 +104,7 @@ export default function RevenueStatements() {
             filterToggle={filterToggle}
             parent="RevenueStatementTable"
             revenueSearchQuery={stateApp.revenueSearchQuery}
+            loadMore={loadMore}
           />
         </div>
       </div>

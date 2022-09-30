@@ -7,6 +7,7 @@ import { useLazyQuery } from "@apollo/client";
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { capitalizeFirstLetter } from "components/Shared/functions";
 
 export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filterList, onChange, index, column, query, extendSearchQuery, searchFields, esIndex, filters, custom, setFilters, multiple, ...others }) {
     const filterValue = multiple ? filterList[index].map((key) => ({ key })) : { key: filterList[index][0] }
@@ -18,7 +19,6 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
     const { label, filterKey, type } = column
     const [getFilters, { data: filtersData, loading }] = useLazyQuery(query, { fetchPolicy: "no-cache" });
     const getFiltersType = query?.definitions?.[0]?.name?.value
-
     useEffect(() => {
         setSearch(filterList[index][0])
         if (!filterList[index][0]) {
@@ -52,6 +52,10 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
                     setStateApp((state, props) => {
                         return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
                     });
+                } else if (custom?.toFixed) {
+                    filtersData[keys[0]].hits = filtersData[keys[0]]?.hits.filter((hit) => hit.key)
+                    const hits = filtersData[keys[0]].hits.map(hit => ({ ...hit, key: parseFloat(hit.key.toFixed(custom?.toFixed)) }))
+                    setOptions(hits)
                 } else if (custom?.formatedFilterOptions) {
                     const hits = filtersData[keys[0]].hits
                     for (let i = 0; i < custom.formatedFilterOptions.length; i++) {
@@ -118,7 +122,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({ filte
             value={multiple && !value ? [] : value}
             inputValue={search?.toString()}
             getOptionSelected={(option, value) => option.key === value.key}
-            getOptionLabel={(option) => option?.key?.toString().replace(/^\,|\,$/gm, "")}
+            getOptionLabel={(option) => capitalizeFirstLetter(option?.key?.toString().replace(/^\,|\,$/gm, ""))}
             onChange={(e, value2, reason) => {
                 if (reason === 'clear' || (multiple && value2.length === 0) || (!multiple && !value2?.key)) {
                     filterList[index].pop()

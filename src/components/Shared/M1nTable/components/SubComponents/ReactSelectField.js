@@ -70,6 +70,9 @@ const ReactSelectField = ({
   variant,
   tooltipView
 }) => {
+  if (!isSingleSelect && !Array.isArray(value) && value) {
+    value = [value]
+  }
   const classes = useStyles({ showUnderline, showChevron });
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef(null);
@@ -376,7 +379,7 @@ const ReactSelectField = ({
                 justifyContent: "space-between",
               }}
             >
-              <span class="colorText">
+              <span class="colorText" id="selectedValues">
                 <MultSelectValues
                   tooltipView={tooltipView}
                   value={value}
@@ -407,6 +410,7 @@ const ReactSelectField = ({
             controlShouldRenderValue={false}
             hideSelectedOptions={false}
             isClearable={false}
+            id="searchForValue"
             menuIsOpen
             onKeyDown={handleKeyDown}
             onChange={(e) => onSelectChange(e)}
@@ -443,11 +447,14 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
       (pallete) => pallete.id === opt?.palleteId
     );
     return {
-      whiteSpace: "nowrap",
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      maxWidth: '150px',
       backgroundColor: pallete?.color,
       color: pallete?.textColor,
-      display: "flex",
-      margin: '0px 2px'
+      // display: "flex",
+      margin: '0px 2px',
     }
   }
 
@@ -455,7 +462,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
     class="colorText"
     style={getCss(badgeValue)}
   >
-    <span>{badgeValue}</span>
+    <span id="badgeValue">{badgeValue}</span>
     {isSingleSelect || (
       <CloseIcon
         style={{ fontSize: 13, marginLeft: 10 }}

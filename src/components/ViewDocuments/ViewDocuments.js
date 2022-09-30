@@ -2,16 +2,6 @@ import React, { useEffect, useState } from "react";
 // import MUIDataTable from "mui-datatables";
 import { makeStyles } from "@material-ui/core/styles";
 import {
-  MenuItem,
-  Checkbox,
-  Select,
-  InputLabel,
-  Grid,
-  Button,
-  FormControl,
-  Icon,
-  Typography,
-  OutlinedInput,
   TextField,
   InputAdornment,
   IconButton,
@@ -20,7 +10,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import SearchIcon from "@material-ui/icons/Search";
 import DeleteIcon from "@material-ui/icons/Delete";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import DeleteDocumentConfirmation from "../Shared/DeleteDocumentConfirmation";
 
 import { GETCONTACTFILES } from "../../graphQL/useQueryGetContactFiles";
 import { AppContext } from "../../AppContext";
@@ -28,6 +17,7 @@ import moment from "moment";
 import { useLazyQuery } from "@apollo/client";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "../../graphQL/useQueryViewFile";
 import DocViewer from "../Shared/DocViewer";
+import { isEmpty } from "lodash";
 
 // functions / value formatters
 import get_file_icon from "../Shared/functions/get_file_icon.js";
@@ -168,6 +158,10 @@ export default function ViewDocuments(props) {
     fetchPolicy: "no-cache",
   });
 
+  const [viewFiles, { data: viewFilesResult }] = useLazyQuery(VIEWFILESQUERY, {
+    fetchPolicy: "no-cache",
+  });
+
   useEffect(() => {
     if (viewFileResult?.viewFile?.uri) {
       let a = document.createElement("a");
@@ -178,9 +172,7 @@ export default function ViewDocuments(props) {
       a.click();
     }
   }, [viewFileResult]);
-  const [viewFiles, { data: viewFileResultt, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
-    fetchPolicy: "no-cache",
-  });
+
   useEffect(() => {
     let ID = [];
     for (let i = 0; i < files?.getFileDescriptors.length; i++) {
@@ -193,6 +185,21 @@ export default function ViewDocuments(props) {
       setAllDocuments(files?.getFileDescriptors);
     }
   }, [files]);
+
+  useEffect(() => {
+    if (viewFilesResult && allDocuments) {
+      setAllDocuments(
+        allDocuments.map((document) => {
+          const fileUrl = viewFilesResult.viewFiles.find(result => result.id === document.fileId).uri
+          return {
+            ...document,
+            fileUrl: fileUrl
+          };
+        })
+      );
+    }
+  }, [viewFilesResult]);
+
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
   };
@@ -220,7 +227,7 @@ export default function ViewDocuments(props) {
 
   return (
     <div className={classes.viewAllCard}>
-      <DocViewer
+      {!isEmpty(stateApp?.viewDoc) && <DocViewer
         divCondition={false}
         DocStyle={{
           top: "56% ",
@@ -228,7 +235,8 @@ export default function ViewDocuments(props) {
           width: "98vw ",
           transform: `translate(1%, -101%)`,
         }}
-      ></DocViewer>
+      ></DocViewer>}
+
 
       <div className={classes.header}>
         <div className={classes.headerLeft}>
@@ -251,7 +259,7 @@ export default function ViewDocuments(props) {
       </div>
       <div className={classes.divider} />
 
-      <ul className={classes.documentsList}>
+      <ul id="contactDocumentsList" className={classes.documentsList}>
         {!!filesLoading && (
           <div style={{ display: "flex", justifyContent: "center" }}>
             <CircularProgress size="20px" />
@@ -262,8 +270,21 @@ export default function ViewDocuments(props) {
           ?.map((doc) => {
             return (
               <li className={classes.document} key={doc.fileUrl}>
-                <div className={classes.documentLeft}>
-                  <div>
+                <div className={classes.documentLeft}
+                  onClick={() => {
+                    // TEMP COMMENT OUT UNTI QUERY URI IS FIXED
+                    if (ExtenstionGetter(doc.fileName) === 'pdf') {
+                      setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
+                    }
+                    else {
+                      handleViewFile(doc.fileId)
+                    }
+                  }}
+                >
+                  <div
+                    className={classes.forImageContainer}
+                  >
+                    {get_file_icon(ExtenstionGetter(doc.fileName))}
                     {/* TEMP COMMENT OUT UNTIL WE GET THE CORRECT URI IN THE QUERY	 */}
                     {/* {new RegExp(
 										["jpg", "jpeg", "png", "bmp"].join("|")
@@ -288,46 +309,16 @@ export default function ViewDocuments(props) {
 											{get_file_icon(ExtenstionGetter(doc.fileName))}
 										</div>
 									)} */}
-
-                    {
-                      <div
-                        className={classes.forImageContainer}
-                        onClick={() => {
-                          // TEMP COMMENT OUT UNTIL QUERY URI IS FIXED
-                          // if (ExtenstionGetter(doc.fileName) === 'pdf') {
-                          // 	setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
-                          // }
-                          // else {
-                          // 	handleViewFile(doc.fileId)
-                          // }
-
-                          handleViewFile(doc.fileId);
-                        }}
-                      >
-                        {get_file_icon(ExtenstionGetter(doc.fileName))}
-                      </div>
-                    }
                   </div>
 
                   <div
                     className={classes.fileText.concat(" DocumentTitle")}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      // TEMP COMMENT OUT UNTI QUERY URI IS FIXED
-                      // if (ExtenstionGetter(doc.fileName) === 'pdf') {
-                      // 	setStateApp({ ...stateApp, viewDoc: { uri: doc.fileUrl, name: doc.fileName } })
-                      // }
-                      // else {
-                      // 	handleViewFile(doc.fileId)
-                      // }
-
-                      handleViewFile(doc.fileId);
-                    }}
-                  >
+                    style={{ cursor: "pointer" }}>
                     <h4 className={classes.uploadTitle}>{doc.fileName}</h4>
                     {/* <h5 className={classes.uploadSubtext}>{doc.userName}</h5> */}
                     <h5 className={classes.uploadSubtext}>{moment.unix(doc.dateTime / 1000).format("MMM DD, YYYY")}</h5>
                   </div>
+
                 </div>
                 <div className={classes.documentRight}>
                   <IconButton

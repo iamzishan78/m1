@@ -161,6 +161,15 @@ const useStyles = makeStyles({
   contentRoot: {
     maxHeight: "calc(100vh - 310px)",
   },
+  listItem: {
+    flexDirection: "column",
+    justifyContent: "start",
+    alignItems: "start",
+
+    "& h4": {
+      marginBottom: 0
+    }
+  }
 });
 
 const LightTooltip = withStyles((theme) => ({
@@ -310,7 +319,8 @@ export default function DocumentDetails(props) {
         refetchQueries: ["getParcelFiles", "getParcelFilesCount"],
         awaitRefetchQueries: true,
       }).then(() => {
-        props.refetchData({ ...document })
+        if (props?.refetchData)
+          props.refetchData({ ...document })
         setFileData(null);
         setStateApp({
           ...stateApp,
@@ -345,6 +355,7 @@ export default function DocumentDetails(props) {
   return (
     <div>
       <div
+        id="documentdetails"
         style={{
           flexGrow: 1,
           overflow: "auto",
@@ -354,14 +365,11 @@ export default function DocumentDetails(props) {
       >
         <List>
           <ListItem
-            style={{
-              flexDirection: "column",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
           >
             <h4>File Number</h4>
             <TextField
+              id="filenumber"
               className={classes.maxWidth}
               multiline
               value={newDocument?.documentNumber}
@@ -374,14 +382,11 @@ export default function DocumentDetails(props) {
             />
           </ListItem>
           <ListItem
-            style={{
-              flexDirection: "column",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
           >
             <h4>File Name</h4>
             <TextField
+              id="filename"
               className={classes.maxWidth}
               multiline
               value={newDocument?.documentName}
@@ -394,11 +399,7 @@ export default function DocumentDetails(props) {
             />
           </ListItem>
           <ListItem
-            style={{
-              flexDirection: "column",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
           >
             <h4>File Type</h4>
             <DocumentType
@@ -414,32 +415,28 @@ export default function DocumentDetails(props) {
             />
           </ListItem>
           <ListItem
-            style={{
-              flexDirection: "column",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
           >
             <h4>File Date</h4>
             <TextField
-              autoOk
+              // autoOk
               type="date"
+              id="filedate"
               //variant="outlined"
-              margin="normal"
+              defaultValue={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
+              margin="none"
               fullWidth
-              value={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
               onChange={(event) => {
                 const splittedDate = event?.target?.value.split("-")
                 if (splittedDate.length === 3) {
                   const newDate = new Date()
-                  newDate.setYear(splittedDate[0])
+                  newDate.setYear(Number(splittedDate[0]))
                   newDate.setMonth(Number(splittedDate[1]) - 1)
-                  newDate.setDate(splittedDate[2])
+                  newDate.setDate(Number(splittedDate[2]))
                   setNewDocument({ ...newDocument, dateTime: newDate })
                 } else {
                   setNewDocument({ ...newDocument, dateTime: null })
                 }
-
               }}
 
               InputLabelProps={{
@@ -509,17 +506,15 @@ export default function DocumentDetails(props) {
           </ListItem> */}
 
           <ListItem
-            style={{
-              flexDirection: "row",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
+            style={{ flexDirection: 'row'}}
           >
             <div style={{
               marginRight: "15px",
             }}>
               <h4>Book</h4>
               <TextField
+                id="book"
                 className={classes.maxWidth}
                 multiline
                 value={newDocument?.book}
@@ -537,6 +532,7 @@ export default function DocumentDetails(props) {
             }}>
               <h4>Page</h4>
               <TextField
+                id="page"
                 className={classes.maxWidth}
                 multiline
                 value={newDocument?.page}
@@ -551,6 +547,7 @@ export default function DocumentDetails(props) {
             <div>
               <h4>Instrument #</h4>
               <TextField
+                id="instrument"
                 className={classes.maxWidth}
                 multiline
                 value={newDocument?.instrument}
@@ -577,11 +574,7 @@ export default function DocumentDetails(props) {
                 <Fragment key={meta.name}>
                   {meta.type === "text" && (
                     <ListItem
-                      style={{
-                        flexDirection: "column",
-                        justifyContent: "start",
-                        alignItems: "start",
-                      }}
+                      className={classes.listItem}
                     >
                       <h4>{meta.label}</h4>
                       <TextField
@@ -600,11 +593,8 @@ export default function DocumentDetails(props) {
                   )}
                   {meta.type === "dropdown" && (
                     <ListItem
-                      style={{
-                        flexDirection: "column",
-                        justifyContent: "start",
-                        alignItems: "start",
-                      }}
+                      id={`dropdown-${index}`}
+                      className={classes.listItem}
                     >
                       <h4>{meta.label}</h4>
                       <ReactSelectField
@@ -629,11 +619,8 @@ export default function DocumentDetails(props) {
                   )}
                   {meta.type === "multiselect" && (
                     <ListItem
-                      style={{
-                        flexDirection: "column",
-                        justifyContent: "start",
-                        alignItems: "start",
-                      }}
+                      id={`multiselect-${index}`}
+                      className={classes.listItem}
                     >
                       <h4>{meta.label}</h4>
                       {/* <CustomFieldMultiSelect
@@ -680,7 +667,7 @@ export default function DocumentDetails(props) {
       <div style={{ flexShrink: 0 }}>
         {(stateApp.selectedDocument?.fileId || fileData) && replaceFile !== 'IN_PROGRESS' ? (
           <ListItem>
-            <div style={{ display: "flex", justifyContent: "start" }}>
+            <div style={{ display: "flex", justifyContent: "start" }} id="attachedDocument">
               {viewFileSResult?.viewFiles?.map((value, key) => {
                 let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
                 if (key <= 1) {
@@ -699,7 +686,7 @@ export default function DocumentDetails(props) {
                                 // setFileData(null)
                               }}
                             >
-                              <DeleteIcon />
+                              <DeleteIcon id="documentDeleteIcon" />
                             </IconButton>
 
                             <IconButton
@@ -838,7 +825,7 @@ export default function DocumentDetails(props) {
               }}
               userId={stateApp.user.mongoId}
               setFileData={setFileData}
-              fileId={replaceFile ? null : stateApp.selectedDocument?._id}
+              fileId={stateApp.selectedDocument?._id}
               onFileUpload={onFileUpload}
             />
           </div>
@@ -862,6 +849,7 @@ export default function DocumentDetails(props) {
           </Button>
 
           <Button
+            id="documentSaveButton"
             variant="contained"
             color="secondary"
             size="medium"
@@ -904,6 +892,7 @@ const DocumentType = ({ setDocumentType, value, documentTypes, ...other }) => {
   };
   return (
     <Autocomplete
+      id="filetype"
       defaultValue={value}
       value={value}
       disableListWrap

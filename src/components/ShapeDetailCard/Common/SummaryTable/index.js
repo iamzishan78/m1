@@ -12,7 +12,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { showErrorMessage } from "actions";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
-import { KeyboardDatePicker } from "@material-ui/pickers";
 import { summaryTableStyles } from "components/ShapeDetailCard/style";
 import UserList from "components/Shared/UserList";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
@@ -23,10 +22,11 @@ import { getRoundedNra } from "utils/helper";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
 import { copy } from "components/Shared/functions";
 import { AppContext } from "AppContext";
+import { Clear } from "@material-ui/icons";
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
-  // match unit nra value with system generated nra 
+  // match unit nra value with system generated nra
   const getNraClass = () => {
     if (value.unitNra === value.calculatedNra)
       return ''
@@ -95,6 +95,14 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
 
   const [filteredTableData, setFilteredTableData] = useState(tableData);
 
+  // Data fix for tract
+  if (properties?.originalProperties?.StateAbbreviation)
+    properties.originalProperties.State = properties?.State || properties?.originalProperties?.StateAbbreviation;
+  if (properties?.originalProperties?.ShortName)
+    properties.originalProperties.Section = properties?.Section || properties?.originalProperties?.ShortName;
+  if (properties?.originalProperties?.PrincipalMeridian)
+    properties.originalProperties.Meridian = properties?.Meridian || properties?.originalProperties?.PrincipalMeridian
+  // Data fix for tract
   const [tableTempProperties, setTableTempProperties] = useState(properties);
 
   useEffect(() => {
@@ -363,31 +371,29 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                       />
                     )}
                     {data.type === "date" && (
-                      <KeyboardDatePicker
-                        autoFocus
-                        className={classes.select}
-                        disableToolbar
-                        variant="inline"
-                        fullWidth
-                        inputVariant="outlined"
-                        format="MM/DD/YYYY"
+                      <TextField
+                        autoOk
+                        type="date"
+                        variant="outlined"
                         margin="normal"
-                        id="date-picker-inline"
-                        value={tableTempProperties[data.key] || null}
-                        onOpen={() => {
-                          tableDataState[`${data.key}date`] = true;
-                        }}
-                        onClose={() => {
-                          tableDataState[`${data.key}date`] = false;
-                          setTableDataState({});
-                          setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] });
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.keyCode === 13) {
-                            e.stopPropagation();
-                            onKeyDown(e, data, "value");
+                        fullWidth
+                        value={tableTempProperties?.[data.key] ? moment(tableTempProperties[data.key]).format("yyyy-MM-DD") : ""}
+                        onChange={(event) => {
+
+                          const date = String(event?.target?.value) || null
+                          if (date === null) {
+                            setTableTempProperties({ ...tableTempProperties, [`${data.key}`]: date });
                           }
+                          if (date) {
+                            tableTempProperties[`${data.key}`] = date ? date : null;
+                            setTableTempProperties({ ...tableTempProperties });
+                            if (date?._pf?.overflow === -2 || !date?._strict) {
+                              onKeyDown(null, data, "value");
+                            }
+                          }
+
                         }}
+
                         onBlur={() => {
                           setTimeout(() => {
                             if (!tableDataState[`${data.key}date`]) {
@@ -396,19 +402,23 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             }
                           }, 100);
                         }}
-                        onChange={(date) => {
-                          if (date === null) {
-                            setTableTempProperties({ ...tableTempProperties, [`${data.key}`]: date });
-                          }
-                          if (date && date?._d?.toString() !== "Invalid Date") {
-                            tableTempProperties[`${data.key}`] = date ? String(date["_d"]) : null;
-                            setTableTempProperties({ ...tableTempProperties });
-                            if (date?._pf?.overflow === -2 || !date?._strict) {
-                              onKeyDown(null, data, "value");
-                            }
-                          }
+                        InputLabelProps={{
+                          shrink: true,
                         }}
+                        disableToolbar
                         KeyboardButtonProps={{ "aria-label": "change date" }}
+                        format="MM/DD/YYYY"
+                        PopoverProps={{ disablePortal: false }}
+                        InputProps={{
+                          endAdornment: (
+                            <IconButton >
+                              <Clear style={{ height: 22, width: 22 }} />
+                            </IconButton>
+                          ),
+                          classes: {
+                            root: classes.select
+                          },
+                        }}
                       />
                     )}
                     {data.type === "autocomplete" && (
@@ -431,24 +441,13 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                     )}
                     {data.type === "custom" && (
                       <>
-                        {data.key === "qualifier" && (
+                        {["qualifier", "reviewer"].includes(data.key) && (
                           <UserList
+                            id={data.key+"Input"}
                             value={properties[data.key]}
                             setValue={(user) => {
                               updateProperties(null, data.key, user);
                             }}
-                          />
-                        )}
-                        {data.key === "campaignName" && (
-                          <CampaignNameField
-                            className={classes.maxWidth}
-                            onChange={(value) => {
-                              updateProperties(null, data.key, value);
-                            }}
-                            value={properties[data.key] ? properties[data.key] : []}
-                            fullWidth
-                            targetLabel="Shape"
-                            targetLabelId={id}
                           />
                         )}
                       </>
@@ -466,13 +465,12 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                       {data.formatValue ? (
                         <Grid item>{data.formatValue(data.value || properties[data.key]) || "-"}</Grid>
                       ) : (
-                        <Grid item>
+                        <Grid item style={{ width: '100%' }}>
                           {data.type === "date" &&
                             (properties[data.key] ? moment.parseZone(new Date(properties[data.key])).format("MM/DD/yyyy") : "-")}
                           {data.type === "custom" && (
                             <>
-                              {data.key === "qualifier" && (properties[data.key]?.name || "-")}
-                              {data.key === "campaignName" && (properties[data.key] || "-")}
+                              {["qualifier", "reviewer"].includes(data.key) && (properties[data.key]?.name || "-")}
                             </>
                           )}
                           {data.type !== "date" &&
@@ -491,9 +489,21 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             </Typography>
 
                           </> || 0)}
+                          {data.key === "campaignName" && (
+                            <CampaignNameField
+                              className={classes.maxWidth}
+                              onChange={(value) => {
+                                updateProperties(null, data.key, value);
+                              }}
+                              value={properties[data.key] ? properties[data.key] : []}
+                              fullWidth
+                              targetLabel="Shape"
+                              targetLabelId={id}
+                            />
+                          )}
                         </Grid>
                       )}
-                      {!data.nonEditable && (
+                      {!data.nonEditable && data.key !== "campaignName" && (
                         <Grid item>
                           {editIconState[data.key] && (
                             <Tooltip title={"Edit"} placement="top">

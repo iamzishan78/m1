@@ -136,7 +136,7 @@ const unitsColumnHeaders = [
   // },
   {
     name: "shapeArea",
-    label: "Gross Acres",
+    label: "Unit Acres",
     esKey: "shapeJson.properties.shapeArea.keyword",
     options: {
       sort: true,
@@ -156,12 +156,33 @@ const unitsColumnHeaders = [
     },
   },
   {
+    name: "uStatus",
+    label: "Status",
+    esKey: "shapeJson.properties.uStatus.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
     name: "ownersCount",
     label: "Owner Count",
     esKey: "interestSummary.unitInterestCount",
     options: {
       sort: true,
       filter: true,
+    },
+  },
+  {
+    name: "netRoyalityAcres",
+    label: "Unit NRA",
+    esKey: "shapeJson.properties.netRoyalityAcres.unitNra",
+    options: {
+      sort: true,
+      filter: true,
+      customRender: (value) => {
+        return value?.unitNra;
+      },
     },
   },
   {
@@ -214,6 +235,7 @@ const unitsColumnHeaders = [
     label: "Tags ",
     esKey: "tags.tag.keyword",
     options: {
+      ignoreGlobal: true,
       dbName: "tags.tag",
       sort: true,
       download: false,

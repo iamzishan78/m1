@@ -112,10 +112,10 @@ function PropertyInterestDetailsTable(props) {
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
             {`Do you want to delete the selected interest${props.selectedRows &&
-                props.selectedRows.length > 1 &&
-                props.selectedRows.length > 1
-                ? "s"
-                : ""
+              props.selectedRows.length > 1 &&
+              props.selectedRows.length > 1
+              ? "s"
+              : ""
               }?`}
           </DeleteConfirmationDialogContent>
         )}
@@ -137,6 +137,7 @@ function PropertyInterestDetailsTable(props) {
         options={props.options}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

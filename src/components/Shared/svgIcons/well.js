@@ -7,6 +7,7 @@ export default function Well(props) {
       width={props.small ? "23" : props.size ? props.size : "24"}
       height={props.small ? "23" : props.size ? props.size : "24"}
       fill="none"
+      id="wellIcon"
       viewBox="0 0 30 29"
       className={props.className}
     >

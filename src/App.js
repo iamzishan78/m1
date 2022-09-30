@@ -24,7 +24,7 @@ import ContactParcelsInterestProvider from "./components/ParcelsDetailCard/Conta
 import ContactParcelsInterestDetailsProvider from "./components/ParcelsDetailCard/ContactParcelsInterestDetailsProvider";
 import ContactUnitsInterestDetailsProvider from "./components/ShapeDetailCard/Unit/ContactUnitsInterestDetailsProvider";
 import ContactWellInterestProvider from "./components/ContactDetailCard/components/ContactsWellInterestsParcelInterests/ContactWellInterestProvider";
-// import ContactDocumentsProvider from "./components/ViewDocuments/ContactDocumentsProvider";
+import ContactDocumentsProvider from "./components/ViewDocuments/ContactDocumentsProvider";
 import ContactDetailedInfoProvider from "./components/ContactDetailedInfo/ContactDetailedInfoProvider";
 import ContactRecentActivitiesProvider from "./components/RecentActivities/ContactRecentActivitiesProvider";
 import AlertsProvider from "./components/Alerts/AlertsProvider";
@@ -37,7 +37,6 @@ import ContactBulkProgress from "./components/BulkUpload/ContactBulkProgress";
 import RevenueProvider from "components/Revenue/RevenueProvider";
 import Land from "components/Land";
 import AgreementProvider from "./components/Land/components/Agreements/AgreementProvider";
-import AgreementDetailProvider from "./components/Land/components/AgreementDetail/AgreementDetailProvider";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 import { CircularProgress } from "@material-ui/core";
@@ -321,9 +320,9 @@ function App() {
         />
         {apolloClient ? (
           <ApolloProvider client={apolloClient}>
-            <FeatureFlag feature={FEATURES.USERSNAP}>
+            {/* <FeatureFlag feature={FEATURES.USERSNAP}>
               <UsersnapProvider />
-            </FeatureFlag>
+            </FeatureFlag> */}
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
                 <ContactBulkProgress />
@@ -359,7 +358,7 @@ function App() {
                           path="/contact/details/:contactId/recentActivites"
                           component={ContactRecentActivitiesProvider}
                         />
-                        {/* <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} /> */}
+                        <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/wells" component={ContactWellInterestProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/parcels" component={ContactParcelsInterestProvider} />
                         <PrivateRoute
@@ -380,9 +379,8 @@ function App() {
                         <PrivateRoute title="Bulk Upload" exact path={["/bulkupload", "/bulkupload/:type"]} component={BulkUpload} />
                         <PrivateRoute exact path="/agreement" component={AgreementProvider} />
                         <PrivateRoute title="Revenue Statements" path="/revenue" component={RevenueProvider} />
-                        <PrivateRoute path="/land" component={Land} />
+                        <PrivateRoute title="Land Management" path="/land" component={Land} />
                         <PrivateRoute exact path="/agreements" component={AgreementProvider} />
-                        <PrivateRoute exact path="/agreement/details/:agreementId?" component={AgreementDetailProvider} />
                         {/* <Route component={NotFoundRedirect} /> */}
                       </NavigationProvider>
                     </Switch>

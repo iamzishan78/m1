@@ -1,4 +1,6 @@
 import vf_currency from "components/Shared/valueformatters/vf_currency";
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
+import { GlobalStickyStyles } from "GlobalSettings";
 
 const OwnersPerUnitHeadCells = [
   {
@@ -31,7 +33,14 @@ const OwnersPerUnitHeadCells = [
     esKey: "contact.entityDetail.name.keyword",
     options: {
       filter: true,
-      setCellProps: () => ({ style: { minWidth: "270px" } }),
+      ...GlobalStickyStyles({
+        setCellProps: {
+          maxWidth: "300px",
+        },
+        setCellHeaderProps: {
+          paddingLeft: '35px',
+        }
+      })
     },
   },
   {
@@ -95,10 +104,7 @@ const OwnersPerUnitHeadCells = [
     esKey: "offer_price",
     label: "Offer Price",
     type: "number",
-    options: {
-      filter: true,
-      customRender: (value) => vf_currency(value),
-    },
+    options: { filter: true, customRender: (value) => vf_currency(value) },
   },
   {
     name: "contactStatus",
@@ -114,11 +120,18 @@ const OwnersPerUnitHeadCells = [
     esKey: "contact.campaignName.keyword",
     options: {
       customRender: (value) => {
-        if (typeof value.campaignName === "string") {
-          return value.campaignName;
-        } else {
-          return value.campaignName?.map((v, index) => `${v}${index < value?.length - 1 ? ", " : ""}`);
-        }
+        return (
+          <CampaignNameField
+            value={value.campaignName}
+            fullWidth
+            disabled
+          />
+        )
+        // if (typeof value.campaignName === "string") {
+        //   return value.campaignName;
+        // } else {
+        //   return value.campaignName?.map((v, index) => `${v}${index < value?.length - 1 ? ", " : ""}`);
+        // }
       },
       setCellProps: () => ({ style: { minWidth: "200px" } }),
       sort: true,
@@ -127,7 +140,7 @@ const OwnersPerUnitHeadCells = [
   },
   {
     name: "tags",
-    label: "Tags ",
+    label: "Tags",
     esKey: "tags.tag.keyword",
     options: {
       filter: true,

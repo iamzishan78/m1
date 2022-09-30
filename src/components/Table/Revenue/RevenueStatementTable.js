@@ -34,6 +34,8 @@ function RevenueStatementTable(props) {
     filterToggle
   } = props;
 
+  const [approvedCount, setApprovedCount] = useState(0);
+  const [unApprovedCount, setUnApprovedCount] = useState(0);
   const [removeChecks] = useMutation(REMOVE_CHECKS, {
     refetchQueries: ["getESSimpleSearch"],
     awaitRefetchQueries: true,
@@ -47,10 +49,10 @@ function RevenueStatementTable(props) {
     }
   );
 
-  const [getESSimpleCount, { data: approvedCount }] = useLazyQuery(
+  const [getESSimpleCount] = useLazyQuery(
     GET_ES_SIMPLE_COUNT,
     {
-      context: { batch: true },
+      // context: { batch: true },
       fetchPolicy: "no-cache",
     }
   );
@@ -88,7 +90,7 @@ function RevenueStatementTable(props) {
     fixedFilters.push(formatedFilter[0])
   }
 
-  useEffect(() => { 
+  useEffect(() => {
     setTableMeta({
       TableHeader: copy(TableHeader),
       esIndex: "checks_flat",
@@ -103,46 +105,38 @@ function RevenueStatementTable(props) {
   }, [setTableMeta, formatHits, revenueSearchQuery, filterToggle]);
 
   useEffect(() => {
-    if(fixedFilters.length > 0){
-      getESSimpleCount({
-        variables: {
-          index: 'checks_flat',
-          filters: [ 
-            ...fixedFilters,  
-            {field: "approvalStatus.keyword", value: "Approved" },
-            ...props.selectedFilters.current
-          ],
-          search: {
-            query: revenueSearchQuery,
-            fields: ["checkNumber", "_all"]
-        },
-        }
-      })
+    if (fixedFilters.length > 0) {
+        getCounts();
+     
       getPotentialIssues({
         variables: {
-          filters: [ 
-            ...fixedFilters,  
+          filters: [
+            ...fixedFilters,
             ...props.selectedFilters.current
           ],
           search: {
             query: revenueSearchQuery,
             fields: ["checkNumber", "_all"]
-        },
-        sort: { field: "checkDate", order: "desc" },
+          },
+          sort: { field: "checkDate", order: "desc" },
           pagination: {
             first: props.total,
             after: null
-        },
+          },
         }
       })
     }
-  },[props.rows])
+  }, [props.rows])
 
   useEffect(() => {
-    if(approvedCount?.getESSimpleCount && props.total > 0 ){
-      onGettingStatements({ approvedCount: approvedCount.getESSimpleCount.total, statementCount: props.total })
+    if (props.total > 0) {
+      onGettingStatements({
+        approvedCount: approvedCount,
+        unApprovedCount: unApprovedCount,
+        statementCount: props.total,
+      });
     }
-  },[approvedCount, props.total])
+  }, [approvedCount, unApprovedCount, props.total]);
 
   //  Potential issues
   useEffect(() => {
@@ -173,6 +167,40 @@ function RevenueStatementTable(props) {
         props.setLoading(false);
       });
     }
+  };
+
+  const getCounts = async () => {
+    const approvedCounts = await getESCounts("Approved");
+    const unApprovedCounts = await getESCounts("UnApproved");
+    
+    setApprovedCount(approvedCounts);
+    setUnApprovedCount(unApprovedCounts);
+  }
+
+  const getESCounts = (key) => {
+    return new Promise((resolve, reject) => {
+      getESSimpleCount({
+        variables: {
+          index: "checks_flat",
+          filters: [
+            ...fixedFilters,
+            { field: "approvalStatus.keyword", value: key },
+            ...props.selectedFilters.current,
+          ],
+          search: {
+            query: revenueSearchQuery,
+            fields: ["checkNumber", "_all"],
+          },
+        },
+        onCompleted: (res) => {
+          resolve(res.getESSimpleCount.total);
+        },
+        onError: (error) => {
+          console.log(error);
+          reject(0);
+        },
+      });
+    });
   };
 
   return (
@@ -223,7 +251,7 @@ function RevenueStatementTable(props) {
         options={props.options}
         parent={props.parent}
         setColumnsBase={[]}
-        headerZIndex={0}
+        {...props.esHocProps}
       />
     </Container>
   );

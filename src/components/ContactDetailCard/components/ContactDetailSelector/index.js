@@ -207,9 +207,8 @@ function MapGridCard(props) {
                             <Icon />
                           </ListItemIcon>
                           <ListItemText
-                            primary={`${row.label} ${
-                              row.label !== "Contact Info" ? `(${get(contactSummaryData, `contactSummary.${row.value}`, 0)})` : ""
-                            }`}
+                            primary={`${row.label} ${row.label !== "Contact Info" ? `(${get(contactSummaryData, `contactSummary.${row.value}`, 0)})` : ""
+                              }`}
                           />
                         </ListItem>
                       );
@@ -226,14 +225,14 @@ function MapGridCard(props) {
                       <ActivitiesTable
                         esIndex={"activities_flat"}
                         searchFields={["name", "_all"]}
-                        filtersChange={() => {}}
+                        filtersChange={() => { }}
                         appliedFilters={[
                           {
                             field: "contactName.keyword",
                             value: props.contactData?.name,
                           },
                         ]}
-                        filterToggle={() => {}}
+                        filterToggle={() => { }}
                         targetLabel={"activitiesDashboard"}
                         header="Activities"
                         addAble={{ type: "contactActivity" }}
@@ -264,16 +263,16 @@ function MapGridCard(props) {
                       <UnitInterestsTable
                         parent="assocTaxRollInterests"
                         header={"Unit Interests"}
-                        targetLabel="unit"
-                        esFilters={[{ field: "contact._id.keyword", value: props.contactData._id }]}
+                        targetLabel="contactUnits"
+                        esFilters={[{ field: "contact._id", value: props.contactData._id }]}
                         esIndex="shapeowners_flat"
-                        setESFilters={() => {}}
-                        onTractCount={() => {}}
+                        setESFilters={() => { }}
+                        onTractCount={() => { }}
                       />
                     )}
                     {searchTapValue.value === "parcelInterests" && (
                       <ContactParcelInterestTable
-                        parent="assocTaxRollInterests"
+                        parent="contactAssocTaxRollInterests"
                         header={"Tract Interests"}
                         targetLabel="parcel"
                         contactId={props.contactData._id}
