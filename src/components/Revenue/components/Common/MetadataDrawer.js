@@ -401,6 +401,7 @@ export default function MetadataDrawer(props) {
             <h4 style={{ margin: "0 0 8px 0", float: "left" }}>{props.documentsTitle}</h4>
             {viewAllDocuments && (
               <h4
+                id="viewAllDocuments"
                 className={classes.viewAll}
                 onClick={() => {
                   history.push(`/contact/details/${targetSourceId}/documents`);
