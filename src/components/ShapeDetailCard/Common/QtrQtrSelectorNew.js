@@ -6,7 +6,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { Box, FormControlLabel, Switch, Typography } from "@material-ui/core";
-import { getQtrFilterData } from "../../ParcelsDetailCard/ParcelSummary/helper";
+import { getQtrFilterData, getQtrQtrFromQtr, handleLayerChangeOnQtr } from "../../ParcelsDetailCard/ParcelSummary/helper";
 import { copy } from 'utils/helper';
 import SmallTXQtr from "components/Shared/M1nTable/components/SubComponents/AddParcelToEntityDialogContent/ParcelStep/components/SmallTXQtr";
 import { changeModeToScaleRotate, drawBoundary, getDrawAdustedShape, getNewShapeFromSelectedQuarters, getRotateAbleShapeFromSelectedQuarters } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
@@ -134,16 +134,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
 
   useEffect(() => {
     if (!layerData?.qtrQtrSelection?.qtrQtr) {
-      const values = getQtrFilterData(qtr)
-      if (values) {
-        Object.keys(qtrQtr).forEach((key) => {
-          qtrQtr[key] = false
-        })
-        values.forEach((value) => {
-          qtrQtr[value.toLowerCase()] = true
-        })
-        setQtrQtr(qtrQtr)
-      }
+      setQtrQtr(getQtrQtrFromQtr(qtr, qtrQtr))
     }
   }, [])
 
@@ -185,33 +176,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
   }, [showAdjustGrid]);
 
   const updateLayerQtr = () => {
-    const values = Object.keys(qtrQtr).filter((key) => qtrQtr[key]).map((key) => key.toUpperCase())
-    const feature = copy(layerData.shape)
-    let layerDataCopy = copy(layerData)
-
-    let newShape = {}
-    const drawFeature = stateApp.draw.getAll().features[0]
-    if (drawFeature) {
-      feature.geometry = drawFeature.geometry
-      newShape = getDrawAdustedShape(feature, values)
-    } else {
-      if (layerDataCopy?.qtrQtrSelection?.originalGeometry) {
-        feature.geometry = layerDataCopy.qtrQtrSelection.originalGeometry
-      }
-      newShape = getNewShapeFromSelectedQuarters(feature, values)
-    }
-
-    if (!layerDataCopy.qtrQtrSelection) layerDataCopy.qtrQtrSelection = {}
-    if (!layerDataCopy?.qtrQtrSelection?.originalGeometry) {
-      layerDataCopy.qtrQtrSelection.originalGeometry = layerDataCopy.shape.geometry
-    }
-    layerDataCopy.qtrQtrSelection.qtrQtr = qtrQtr;
-    layerDataCopy.qtrQtrSelection.selectedQtr = qtr;
-    newShape = turf.intersect(layerDataCopy.shape.geometry, newShape.geometry);
-    if (newShape) {
-      layerDataCopy.shape.geometry = newShape.geometry;
-      layerDataCopy.shape.properties.shapeArea = calculateLandArea(newShape);
-    }
+    const layerDataCopy = handleLayerChangeOnQtr(stateApp, layerData, qtrQtr, qtr)
     const customLayer = {
       shapeJson: layerDataCopy.shape,
       qtrQtrSelection: layerDataCopy.qtrQtrSelection,

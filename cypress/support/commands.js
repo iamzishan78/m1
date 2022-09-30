@@ -129,6 +129,15 @@ Cypress.Commands.add('updateSummaryField', (fieldName, value) => {
     cy.contains(fieldName).siblings().eq(0).children().children().children().eq(0).type(`${value}{enter}`)
 })
 
+//Search from map like wells ,tract etc....
+Cypress.Commands.add('searchOnMap', (data, value) => {
+    cy.get('#dataNameSelect', { timeout: longTimeout }).should('be.visible').click()
+    cy.get('.MuiList-root', { timeout: longTimeout }).should('be.visible').contains(data).click()
+
+    // cy.get('#cognitive-search-autocomplete', { timeout: 10000 }).should('be.visible').type(value)
+    cy.typeAndSelect("#cognitive-search-autocomplete", value, "cognitive-search-autocomplete-option-1")
+})
+
 //DocumentGrid Commands
 Cypress.Commands.add('addWell', (wellName) => {
     cy.interceptApi('addWellToFileDescriptor')
@@ -259,3 +268,23 @@ Cypress.Commands.add('createShapeLayer', (shapeLayerItemId) => {
     cy.verifyApiResponse('@UpsertCustomLayerApi', { responseTimeout: longTimeout })
 })
 
+Cypress.Commands.add('addTract', (tractName) => {
+    cy.log(`==== STEP: CLICK ON ADD TRACT BUTTON ====`)
+    cy.get(".MuiButtonBase-root").contains('+ ADD Tract To AGREEMENT').click({ force: true })
+
+    cy.log(`==== STEP: CLICK ON EXISTING TRACT TAB ====`)
+    cy.get("#existingTractTab").click()
+
+    cy.log(`==== STEP: SELECT TRACT FROM DROP DOWN ====`)
+    cy.typeAndSelect("#autucompleteShapeLayer", tractName, "autucompleteShapeLayer-option-0")
+
+    cy.log(`==== STEP: SELECT ENTITY NAME ====`)
+    cy.get("#AutocompEntityNamesList").click().type("mike jones")
+    cy.get("[id='AutocompEntityNamesList-option-0']")
+    cy.get("#AutocompEntityNamesList").click().type("{downArrow}{downArrow}{enter}")
+
+    cy.log(`==== STEP: CLICK ON SAVE BUTTON ====`)
+    cy.interceptApi('addOwnerToAShape')
+    cy.get("#saveButton").click()
+    cy.verifyApiResponse('@addOwnerToAShapeApi', { responseTimeout: longTimeout })
+})

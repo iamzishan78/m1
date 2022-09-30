@@ -48,6 +48,7 @@ import { GET_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetAutoCompleteList";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import AutoCompleteParcelOwners from "components/Shared/Forms/Fields/AutoCompleteParcelOwners";
 import { useDispatch } from "react-redux";
+import { getQtrQtrFromQtr, handleLayerChangeOnQtr } from "components/ParcelsDetailCard/ParcelSummary/helper";
 import { GET_TRACT_ABSTRACT_SHAPE } from "graphQL/useQueryGetTractAbstractShape";
 
 const useStyles = makeStyles((theme) => ({
@@ -384,7 +385,9 @@ function AddAgreementOwnerAndTractDialog(props) {
   const handleChangeQtr = (value, index) => {
     const qtr = tract?.qtrQtrSelection?.selectedQtr ? JSON.parse(JSON.stringify(tract.qtrQtrSelection.selectedQtr)) : ["", "", "", ""];
     qtr[index] = value ?? "";
-    const newTract = { ...tract, qtrQtrSelection: { ...tract.qtrQtrSelection, selectedQtr: qtr } };
+    const qtrQtr = getQtrQtrFromQtr(qtr, {})
+
+    const newTract = { ...tract, qtrQtrSelection: { ...tract.qtrQtrSelection, selectedQtr: qtr, qtrQtr } };
     reset({ ...getValues(), tract: newTract });
   }
 
@@ -491,6 +494,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                     onClick={() => {
                       setIsNewTract(false);
                     }}
+                    id="existingTractTab"
                     className={!isNewTract ? classes.selectedType : classes.unSelectedType}
                     style={{ marginLeft: "20px" }}
                   >
@@ -536,6 +540,7 @@ function AddAgreementOwnerAndTractDialog(props) {
               </Grid>
               <Grid item xs={3}>
                 <Autocomplete
+                  id="autocompleteQTR2"
                   options={qtrOptions}
                   getOptionLabel={(option) => option}
                   value={tract?.qtrQtrSelection?.selectedQtr?.[1] ?? ""}
@@ -673,6 +678,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             />
           ) : (
             <AutocompEntityNamesList
+              id="AutocompEntityNamesList"
               variant="outlined"
               placeholder="Search for owner by name"
               nameAutValue={nameAutValue}
@@ -974,6 +980,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             </Button>
 
             <Button
+              id="saveButton"
               variant="contained"
               color="secondary"
               size="medium"
