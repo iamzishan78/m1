@@ -75,7 +75,7 @@ import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
 import StackedBarChart from "components/Shared/Charts/StackedBarChart";
 import ButtonDropDown from "./ButtonGroup";
 // auto complete for well API#
-import SearchWells from "components/Shared/Wells/WellsAutoCompleteFilter";
+// import SearchWells from "components/Shared/Wells/WellsAutoCompleteFilter";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 
@@ -98,8 +98,8 @@ import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 import CustomFieldText from "components/Shared/M1nTable/components/SubComponents/CustomFieldText";
-import CustomFieldSelectV2 from "./SubComponents/CustomFieldSelectV2";
-import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
+// import CustomFieldSelectV2 from "./SubComponents/CustomFieldSelectV2";
+// import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 // queries
 import { OWNERSLATSLONS } from "graphQL/useQueryOwnerLatsLonsArray";
@@ -111,7 +111,7 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 //icons
 import GetAppIcon from "@material-ui/icons/GetApp";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
-import LocationOnIcon from '@material-ui/icons/LocationOn';
+// import LocationOnIcon from '@material-ui/icons/LocationOn';
 // import { ReactComponent as RequestPageIcon } from 'components/Shared/svgIcons/request_page_icon.svg';
 import RequestPageIcon from "components/Shared/svgIcons/request_page";
 // import RequestPageIcon from 'components/Shared/svgIcons/request_page_icon';
@@ -556,7 +556,6 @@ function SubTable(props) {
   const [isSearchOpen, openSearch] = useState(false);
   const [handleSearch, setHandleSearch] = useState(() => () => { });
   const [dataWell, setDataWell] = useState();
-  const [activeRowIndex, setActiveRowIndex] = useState("null");
   const [defaultActivityType, setDefaultAcitivityType] = useState("call");
   const [contact, setContact] = useState(null);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
@@ -2538,16 +2537,27 @@ function SubTable(props) {
                             <div
                               style={{
                                 // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                                cursor: 'pointer'
                               }}
 
-                              onClick={() => {
-                                if (file.state !== "active") return;
-
-                                if (fileExtension === "pdf") {
-                                  setStateApp({
-                                    ...stateApp,
-                                    viewDoc: { uri: uri, name: file },
-                                  });
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
+                                if (type === "pdf") {
+                                  if (props.addAble.type === "document") {
+                                    window.history.pushState("", "", `/documents/${row_line._id}/view`);
+                                  }
+                                  // const selectedRow = rows.find((row) => row._id === row_line._id);
+                                  setStateApp((state) => ({
+                                    ...state,
+                                    pdfView: row_line,
+                                    viewDoc: {
+                                      uri: row_line.viewToken,
+                                      name: row_line.fileName,
+                                    },
+                                  }));
+                                } else {
+                                  handleViewFile(row_line._id);
                                 }
                               }}
                             >
@@ -2570,30 +2580,7 @@ function SubTable(props) {
                                 justifyContent: "flex-start",
 
                               }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
-                                if (type === "pdf") {
-                                  if (props.addAble.type === "document") {
-                                    window.history.pushState("", "", `/documents/${row_line._id}/view`);
-                                  }
-                                  // const selectedRow = rows.find((row) => row._id === row_line._id);
-                                  setStateApp((state) => ({
-                                    ...state,
-                                    pdfView: row_line,
-                                    viewDoc: {
-                                      uri: row_line.viewToken,
-                                      name: row_line.fileName,
-                                    },
-                                  }));
-                                } else {
-                                  handleViewFile(row_line._id);
-                                }
-                              }}
                             >
-
-
-
                               <p
                                 style={{
                                   display: "flex",
@@ -2608,6 +2595,27 @@ function SubTable(props) {
                                   fontWeight: "bold",
                                   justifyContent: "flex-start",
                                   paddingRight: '40px',
+                                }}
+                                
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
+                                  if (type === "pdf") {
+                                    if (props.addAble.type === "document") {
+                                      window.history.pushState("", "", `/documents/${row_line._id}/view`);
+                                    }
+                                    // const selectedRow = rows.find((row) => row._id === row_line._id);
+                                    setStateApp((state) => ({
+                                      ...state,
+                                      pdfView: row_line,
+                                      viewDoc: {
+                                        uri: row_line.viewToken,
+                                        name: row_line.fileName,
+                                      },
+                                    }));
+                                  } else {
+                                    handleViewFile(row_line._id);
+                                  }
                                 }}>
 
                                 <Typography
