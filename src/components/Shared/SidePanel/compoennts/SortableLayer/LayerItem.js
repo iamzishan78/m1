@@ -1,12 +1,14 @@
 import React, { useState } from "react";
+import * as turf from '@turf/turf'
 import { makeStyles } from "@material-ui/styles";
-import { Box, Grid, ListItemIcon } from "@material-ui/core";
+import { Box, CircularProgress, Grid, ListItemIcon } from "@material-ui/core";
 
 import { Flipped } from "react-flip-toolkit";
 import { useSelector } from "react-redux";
 import { getLayerColor } from "../common";
 import { useDrag, useDrop, useIsClosestDragging } from "react-sortly";
 import { DragIndicator } from "@material-ui/icons";
+import SearchIcon from "@material-ui/icons/Search";
 import LayerControls from "./LayerControls";
 import { FormControlLabel } from "@material-ui/core";
 import { Switch } from "@material-ui/core";
@@ -35,8 +37,15 @@ const useStyles = makeStyles((theme) => ({
     disabledLayerTitle: {
       "& span": { color: "rgb(127, 149, 199) !important" },
     },
+    "& .search-section": {
+      display: "none",
+    },
     "&:hover": {
       background: "#506187",
+      "& .search-section": {
+        display: "flex",
+        cursor: "pointer"
+      },
     },
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
@@ -56,9 +65,10 @@ const useStyles = makeStyles((theme) => ({
 
 const LayerItem = React.memo((props) => {
   const [hoverItemIndex, setHoverItem] = useState(-1);
+  const [searchLoading, setSearchLoading] = useState(false);
   const colors = useSelector(({ MainMap }) => MainMap);
 
-  const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin } = props;
+  const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin, map } = props;
   const itemRef = React.useRef({ id: -1, depth: -1, data: {} });
   const { type, collapsed, name } = data;
 
@@ -90,6 +100,46 @@ const LayerItem = React.memo((props) => {
     depth,
     muted: useIsClosestDragging() || isDragging,
   });
+
+  const handleLayerSearchClick = (data) => {
+    const sourceName = data.layerPaintProps[0].sourceProps
+    let sourceUrl = map.getSource(sourceName)?._data;
+    if (sourceUrl) {
+      fetchData(sourceUrl, map)
+    }
+    else {
+      setSearchLoading(true)
+      const intervalId = setInterval(() => {
+        let sourceUrl = map.getSource(sourceName)?._data;
+        if (sourceUrl) {
+          fetchData(sourceUrl, map)
+          clearInterval(intervalId);
+        }
+      }, 1000);
+    }
+
+
+    function fetchData(sourceUrl, map) {
+      fetch(sourceUrl)
+        .then((response) => response.json())
+        .then((response) => {
+          setSearchLoading(false)
+          var combined = turf.combine(turf.featureCollection(response?.features))
+          const bbox = turf.bbox(combined)
+          map?.fitBounds(
+            [
+              [bbox[0], bbox[1]], // southwestern corner of the bounds
+              [bbox[2], bbox[3]] // northeastern corner of the bounds
+            ],
+            {}
+          )
+        })
+        .catch((error) => {
+          setSearchLoading(false)
+          console.log(error);
+        });
+    }
+  }
 
   return (
     <Flipped flipId={id}>
@@ -129,8 +179,6 @@ const LayerItem = React.memo((props) => {
                   )}
                 </Box>
 
-
-
                 <Typography id={id} color="secondary" noWrap>
                   {name}
                 </Typography>
@@ -141,6 +189,19 @@ const LayerItem = React.memo((props) => {
                     </ListItemIcon>
                   )}
                 </Box>
+                <div className="search-section">
+                  {
+                    searchLoading ? <CircularProgress size={20} disableShrink color="secondary" /> :
+                      <>
+                        {type !== "group" && data.visiable && data.file && (
+                          <ListItemIcon onClick={() => handleLayerSearchClick(data)}>
+                            <SearchIcon htmlColor="#ffff" />
+                          </ListItemIcon>
+                        )}
+                      </>
+                  }
+                </div>
+
               </Grid>
             </Grid>
 

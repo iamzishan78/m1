@@ -241,7 +241,7 @@ const FileTree = ({ layerMap, panelItems }) => {
                   onDragEnd={handleDragEnd}
                   onDragBegin={handleDragBegin}
                   updateLayer={updateLayer}
-                  stateApp
+                  map={stateApp.map}
                 />
               )}
             </Sortly>
