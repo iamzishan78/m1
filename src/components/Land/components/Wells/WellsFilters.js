@@ -52,7 +52,7 @@ const WellsFilters = ({ filters, setFilters }) => {
   const [getGridViews, { data: gridViews }] = useLazyQuery(GET_GRID_VIEWS);
 
   const onChange = (filter, index, column, esKey) => {
-    const allFilters = JSON.parse(JSON.stringify(filters));
+    let allFilters = JSON.parse(JSON.stringify(filters));
     if (allFilters.length > 0) {
       const index = allFilters.findIndex((f) => f.field === column.filterKey);
       if (index > -1) {
@@ -63,6 +63,7 @@ const WellsFilters = ({ filters, setFilters }) => {
     } else {
       allFilters.push({ field: column.filterKey, value: column.filterList[0] });
     }
+    allFilters = allFilters.filter(filter => filter.value);
     setFilters(allFilters);
   };
 

@@ -64,7 +64,7 @@ const GlobalSettings = {
         maxWidth: "492px",
         whiteSpace: "pre-wrap",
         position: "sticky",
-        left: "132px",
+        left: "109px",
         zIndex: 200,
         boxShadow: "inset -1px 0px 0px 0px lightgrey",
         padding: "0px 25px 0px 0px",
