@@ -306,7 +306,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             >
               <div className={classes.tabContent}>
                 <Tooltip
-                  title="Land"
+                  title="Assets"
                   placement="right"
                   classes={{ tooltip: classes.iconTooltip }}
                 >
@@ -316,7 +316,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                 </Tooltip>
                 <ListItemText
                   className={`${classes.sideNavText} uppercase`}
-                  primary="Land"
+                  primary="Assets"
                 />
                 <ListItemSecondaryAction className={classes.sideNavAction}>
                   {/* <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">

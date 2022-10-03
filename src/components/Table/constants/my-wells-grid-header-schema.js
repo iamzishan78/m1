@@ -38,9 +38,48 @@ const wellsColumnHeaders = [
     },
   },
   {
+    name: "propertiesNames",
+    label: "Property Name",
+    esKey: "properties.name.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      customRender: (value) => (
+        <p>{value?.length ? value.join(", ") : null}</p>
+      )
+    },
+  },
+  {
     name: "operator",
     label: "Operator",
     esKey: "wellData.operator.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "wellType",
+    label: "Well Type",
+    esKey: "wellData.wellType.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "wellBoreProfile",
+    label: "Well Profile",
+    esKey: "wellData.wellBoreProfile.keyword",
+    options: {
+      display: true,
+      filter: true,
+    },
+  },
+  {
+    name: "wellStatus",
+    label: "Well Status",
+    esKey: "wellData.wellStatus.keyword",
     options: {
       sort: true,
       filter: true,
@@ -59,6 +98,24 @@ const wellsColumnHeaders = [
     name: "field",
     label: "Field",
     esKey: "wellData.field.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "state",
+    label: "State",
+    esKey: "wellData.state.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "county",
+    label: "County",
+    esKey: "wellData.county.keyword",
     options: {
       sort: true,
       filter: true,
@@ -127,18 +184,7 @@ const wellsColumnHeaders = [
       filter: true,
     },
   },
-  {
-    name: "propertiesNames",
-    label: "Revenue Properties",
-    esKey: "properties.name.keyword",
-    options: {
-      sort: true,
-      filter: true,
-      customRender: (value) => (
-        <p>{value?.length ? value.join(", ") : null}</p>
-      )
-    },
-  },
+
   {
     name: "divOrderStatus",
     label: "DO Status",
@@ -166,60 +212,18 @@ const wellsColumnHeaders = [
       filter: true,
     },
   },
-  {
-    name: "state",
-    label: "State",
-    esKey: "wellData.state.keyword",
-    options: {
-      sort: true,
-      filter: true,
-    },
-  },
-  {
-    name: "county",
-    label: "County",
-    esKey: "wellData.county.keyword",
-    options: {
-      sort: true,
-      filter: true,
-    },
-  },
-  {
-    name: "wellType",
-    label: "Well Type",
-    esKey: "wellData.wellType.keyword",
-    options: {
-      sort: true,
-      filter: true,
-    },
-  },
-  {
-    name: "wellStatus",
-    label: "Well Status",
-    esKey: "wellData.wellStatus.keyword",
-    options: {
-      sort: true,
-      filter: true,
-    },
-  },
-  {
-    name: "operator",
-    label: "Operator Name",
-    esKey: "wellData.operator.keyword",
-    options: {
-      display: true,
-      filter: true,
-    },
-  },
-  {
-    name: "wellBoreProfile",
-    label: "Well Profile",
-    esKey: "wellData.wellBoreProfile.keyword",
-    options: {
-      display: true,
-      filter: true,
-    },
-  },
+ 
+
+ 
+  // {
+  //   name: "operator",
+  //   label: "Operator Name",
+  //   esKey: "wellData.operator.keyword",
+  //   options: {
+  //     display: true,
+  //     filter: true,
+  //   },
+  // },
   {
     name: "commentsCounter",
     label: " ",

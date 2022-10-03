@@ -81,7 +81,7 @@ export default function Revenue() {
 
   return (
     <QuickActionPanel
-      title="Assets"
+      title="Asset Management"
       handlePanelStateChange={handlePanelStateChange}
       quickActionsPanelState={quickActionsPanelState}
       activeModule={activeModule}
