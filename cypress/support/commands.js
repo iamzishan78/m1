@@ -148,7 +148,7 @@ Cypress.Commands.add('searchOnMap', (data, value) => {
 Cypress.Commands.add('gridSearch', (searchString, gridOperationName, searchId = null) => {
     cy.interceptApi(gridOperationName, { searchString: searchString })
 
-    const commonSearchClass = ".MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart'"
+    const commonSearchClass = ".MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart"
     cy.get(searchId || commonSearchClass).focus().clear().type(searchString)
 
     cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: longTimeout }).then((apiResponse) => {
