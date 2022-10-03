@@ -85,7 +85,7 @@ const WellsFilters = ({ filters, setFilters }) => {
           getOptionLabel={(option) => option?.key?.toString().replace(/^\,|\,$/gm, "")}
           onChange={(e, value2, reason) => {
             const allFilters = JSON.parse(JSON.stringify(filters));
-            const data = JSON.parse(JSON.stringify(gridViews?.getGridViews?.gridViews.find((f) => value2.key === f.name)));
+            const data = value2?.key ? JSON.parse(JSON.stringify(gridViews?.getGridViews?.gridViews.find((f) => value2.key === f.name))) : null;
             if (allFilters.length > 0 && reporting.key) {
               const previousReporting = JSON.parse(
                 JSON.stringify(gridViews?.getGridViews?.gridViews.find((f) => reporting.key === f.name))
@@ -98,11 +98,12 @@ const WellsFilters = ({ filters, setFilters }) => {
                 allFilters.splice(index, 1);
               }
             }
+            let reportingFilters = [];
             if (data) {
-              const reportingFilters = data.filters.map((f) => ({ ...f, field: `properties.${f.field}` }));
-              setFilters([...allFilters, ...reportingFilters]);
+              reportingFilters = data.filters.map((f) => ({ ...f, field: `properties.${f.field}` }));
             }
-            setReporting(value2);
+            setFilters([...allFilters, ...reportingFilters]);
+            setReporting(value2 ?? { key: "" });
           }}
           options={gridViews?.getGridViews?.gridViews.map((view) => ({ key: view.name }))}
           renderInput={(params) => (
