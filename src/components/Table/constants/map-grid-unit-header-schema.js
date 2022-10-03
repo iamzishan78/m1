@@ -1,5 +1,4 @@
-import GlobalSettings from "..//..//..//GlobalSettings.js";
-import vf_currency from "components/Shared/valueformatters/vf_currency";
+import GlobalSettings from "GlobalSettings";
 
 const unitsColumnHeaders = [
   {
@@ -32,6 +31,12 @@ const unitsColumnHeaders = [
     esKey: "name.keyword",
     options: {
       ...GlobalSettings.muiGridControlOptions,
+      setCellHeaderProps: () => ({
+        style: {
+          ...GlobalSettings.muiGridControlOptions.setCellHeaderProps().style,
+          padding: "15px",
+        },
+      }),
       ignoreGlobal: true,
     },
   },
@@ -107,27 +112,9 @@ const unitsColumnHeaders = [
       filter: true
     }
   },
-  // {
-  //   name: "Block",
-  //   label: "Block",
-  //   esKey: "shapeJson.properties.originalProperties.Block.keyword",
-  //   options: {
-  //     sort: true,
-  //     filter: true,
-  //   },
-  // },
-  // {
-  //   name: "Section",
-  //   label: "Section",
-  //   esKey: "shapeJson.properties.originalProperties.Section.keyword",
-  //   options: {
-  //     sort: true,
-  //     filter: true,
-  //   },
-  // },
   {
     name: "shapeArea",
-    label: "Gross Acres",
+    label: "Unit Acres",
     esKey: "shapeJson.properties.shapeArea.keyword",
     options: {
       sort: true,
@@ -167,6 +154,16 @@ const unitsColumnHeaders = [
     name: "qualifier",
     label: "Qualifier",
     esKey: "shapeJson.properties.qualifier.name.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "125px" } }),
+    },
+  },
+  {
+    name: "reviewer",
+    label: "Reviewer",
+    esKey: "shapeJson.properties.reviewer.name.keyword",
     options: {
       sort: true,
       filter: true,

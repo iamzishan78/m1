@@ -136,7 +136,7 @@ const unitsColumnHeaders = [
   // },
   {
     name: "shapeArea",
-    label: "Gross Acres",
+    label: "Unit Acres",
     esKey: "shapeJson.properties.shapeArea.keyword",
     options: {
       sort: true,
@@ -153,6 +153,15 @@ const unitsColumnHeaders = [
       customRender: value => (
         <p>{value ? `$${vf_number(value)}` : ""}</p>
       )
+    },
+  },
+  {
+    name: "uStatus",
+    label: "Status",
+    esKey: "shapeJson.properties.uStatus.keyword",
+    options: {
+      sort: true,
+      filter: true,
     },
   },
   {
@@ -226,6 +235,7 @@ const unitsColumnHeaders = [
     label: "Tags ",
     esKey: "tags.tag.keyword",
     options: {
+      ignoreGlobal: true,
       dbName: "tags.tag",
       sort: true,
       download: false,

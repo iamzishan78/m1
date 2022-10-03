@@ -117,6 +117,7 @@ export const useStyles = makeStyles((theme) => ({
     position: "absolute",
     left: props.user ? "60px" : "0px",
     height: "100%",
+    overflow: props.isMap ? "hidden" : 'auto'
   }),
   grow1: {
     flexGrow: 1,

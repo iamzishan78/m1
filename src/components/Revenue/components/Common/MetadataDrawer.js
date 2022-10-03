@@ -224,8 +224,9 @@ export default function MetadataDrawer(props) {
   }, [files, uploadedFiles, viewFiles]);
 
   useEffect(() => {
-    if (props.data?.metaOwner) {
-      setOwnerId(props.data.metaOwner._id);
+    const owner = props.data.metaOwner?._id ?? props.data.owner;
+    if (owner) {
+      setOwnerId(owner);
     }
   }, [props.data]);
 
@@ -400,6 +401,7 @@ export default function MetadataDrawer(props) {
             <h4 style={{ margin: "0 0 8px 0", float: "left" }}>{props.documentsTitle}</h4>
             {viewAllDocuments && (
               <h4
+                id="viewAllDocuments"
                 className={classes.viewAll}
                 onClick={() => {
                   history.push(`/contact/details/${targetSourceId}/documents`);
