@@ -96,8 +96,9 @@ Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
         if (typeof response === 'string')
             throw new Error(response)
 
-        if (response?.errors)
-            throw new Error(`Api returned error: ${response.errors}`)
+        const errors = interception?.response?.body?.errors
+        if (errors)
+            throw new Error(`Api returned error: ${JSON.stringify(errors)}`)
 
         assert.isNotNull(interception.response.body, `${apiTitle} run succesfully`)
         return interception
