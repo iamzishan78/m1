@@ -124,9 +124,9 @@ describe('Add Contact Spec', () => {
                 cy.wrap($lastName).contains(recentlyAdded.lastName).should('exist')
             })
 
-            cy.log('==== STEP: VERIFY LAST NAME ====')
+            cy.log('==== STEP: VERIFY PRIMARY ADDRESS====')
             cy.getTableCell("Primary Address", indexOfRecentlyAdded).then(($name) => {
-                const completeAddress = `${recentlyAdded.address1}, ${recentlyAdded.address2}, ${recentlyAdded.city}, ${recentlyAdded.state} ${recentlyAdded.zip} ${recentlyAdded.country}`
+                const completeAddress = `${recentlyAdded.address1}, ${recentlyAdded.address2}, ${recentlyAdded.city} ${recentlyAdded.state} ${recentlyAdded.zip}`
 
                 cy.wrap($name).contains(completeAddress).should('exist')
             })
