@@ -8,7 +8,6 @@ export const baseUrls = {
     localhost: "http://localhost:7071/api/m1graph"
 }
 
-
 export const basic_timeouts = {
     shorTimeout: 5000,
     longTimeout: 50000,
@@ -45,7 +44,7 @@ export const contactObj = {
 
     contactOwner: { value: "Jacob", id: "" },
 
-    fileAddress: "cypress/files/checkif.pdf"
+    fileAddress: "cypress/files/sample.pdf"
 }
 
 export const associatedDataList = [
@@ -56,4 +55,3 @@ export const associatedDataList = [
     { name: 'Activities', operationName: "getESSimpleSearch", verifyElementId: "activitiesInterestsTable" },
     { name: 'Documents', operationName: "viewFiles", verifyElementId: "viewDocuments" }
 ]
-
