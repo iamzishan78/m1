@@ -184,7 +184,18 @@ const wellsColumnHeaders = [
       filter: true,
     },
   },
-
+  {
+    name: "status",
+    label: "Pay Status",
+    esKey: "properties.status.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      customRender: (value) => (
+        <p>{value?.length ? value.join(", ") : null}</p>
+      )
+    },
+  },
   {
     name: "divOrderStatus",
     label: "DO Status",
@@ -192,6 +203,9 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
+      customRender: (value) => (
+        <p>{value?.length ? value.join(", ") : null}</p>
+      )
     },
   },
   {
@@ -201,6 +215,21 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
+      customRender: (value) => (
+        <p>{value?.length ? value.join(", ") : null}</p>
+      )
+    },
+  },
+  {
+    name: "acquisitionID",
+    label: "Acquisition",
+    esKey: "properties.acquisitionID.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      customRender: (value) => (
+        <p>{value?.length ? value.join(", ") : null}</p>
+      )
     },
   },
   {
@@ -210,20 +239,11 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
+      customRender: (value) => (
+        <p>{value?.length ? value.join(", ") : null}</p>
+      )
     },
   },
- 
-
- 
-  // {
-  //   name: "operator",
-  //   label: "Operator Name",
-  //   esKey: "wellData.operator.keyword",
-  //   options: {
-  //     display: true,
-  //     filter: true,
-  //   },
-  // },
   {
     name: "commentsCounter",
     label: " ",
