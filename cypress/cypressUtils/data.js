@@ -45,7 +45,7 @@ export const contactObj = {
 
     contactOwner: { value: "Jacob", id: "" },
 
-    fileAddress: "cypress/files/sample.pdf"
+    fileAddress: "cypress/files/checkif.pdf"
 }
 
 export const associatedDataList = [

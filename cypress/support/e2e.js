@@ -21,7 +21,7 @@ Cypress.on('uncaught:exception', (err, runnable) => {
     console.log("err : ", err)
     console.log("err.message : ", err.message)
 
-    expect(err.message).to.include('AI (Internal)')
+    expect(err?.message).to.include('AI (Internal)')
 
     // using mocha's async done callback to finish
     // this test so we prove that an uncaught exception
