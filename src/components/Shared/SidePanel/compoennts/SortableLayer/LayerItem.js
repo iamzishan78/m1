@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { getLayerColor } from "../common";
 import { useDrag, useDrop, useIsClosestDragging } from "react-sortly";
 import { DragIndicator } from "@material-ui/icons";
-import SearchIcon from "@material-ui/icons/Search";
+import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import LayerControls from "./LayerControls";
 import { FormControlLabel } from "@material-ui/core";
 import { Switch } from "@material-ui/core";
@@ -37,12 +37,12 @@ const useStyles = makeStyles((theme) => ({
     disabledLayerTitle: {
       "& span": { color: "rgb(127, 149, 199) !important" },
     },
-    "& .search-section": {
+    "& .zoom-section": {
       display: "none",
     },
     "&:hover": {
       background: "#506187",
-      "& .search-section": {
+      "& .zoom-section": {
         display: "flex",
         cursor: "pointer"
       },
@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
 
 const LayerItem = React.memo((props) => {
   const [hoverItemIndex, setHoverItem] = useState(-1);
-  const [searchLoading, setSearchLoading] = useState(false);
+  const [zoomLoading, setZoomLoading] = useState(false);
   const colors = useSelector(({ MainMap }) => MainMap);
 
   const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin, map } = props;
@@ -101,14 +101,14 @@ const LayerItem = React.memo((props) => {
     muted: useIsClosestDragging() || isDragging,
   });
 
-  const handleLayerSearchClick = (data) => {
+  const handleLayerZoomClick = (data) => {
     const sourceName = data.layerPaintProps[0].sourceProps
     let sourceUrl = map.getSource(sourceName)?._data;
     if (sourceUrl) {
       fetchData(sourceUrl, map)
     }
     else {
-      setSearchLoading(true)
+      setZoomLoading(true)
       const intervalId = setInterval(() => {
         let sourceUrl = map.getSource(sourceName)?._data;
         if (sourceUrl) {
@@ -123,7 +123,7 @@ const LayerItem = React.memo((props) => {
       fetch(sourceUrl)
         .then((response) => response.json())
         .then((response) => {
-          setSearchLoading(false)
+          setZoomLoading(false)
           var combined = turf.combine(turf.featureCollection(response?.features))
           const bbox = turf.bbox(combined)
           map?.fitBounds(
@@ -131,11 +131,11 @@ const LayerItem = React.memo((props) => {
               [bbox[0], bbox[1]], // southwestern corner of the bounds
               [bbox[2], bbox[3]] // northeastern corner of the bounds
             ],
-            {}
+            { padding: { top: 40, bottom: 40, left: 40, right: 40 } }
           )
         })
         .catch((error) => {
-          setSearchLoading(false)
+          setZoomLoading(false)
           console.log(error);
         });
     }
@@ -189,13 +189,13 @@ const LayerItem = React.memo((props) => {
                     </ListItemIcon>
                   )}
                 </Box>
-                <div className="search-section">
+                <div className="zoom-section">
                   {
-                    searchLoading ? <CircularProgress size={20} disableShrink color="secondary" /> :
+                    zoomLoading ? <CircularProgress size={20} disableShrink color="secondary" /> :
                       <>
                         {type !== "group" && data.visiable && data.file && (
-                          <ListItemIcon onClick={() => handleLayerSearchClick(data)}>
-                            <SearchIcon htmlColor="#ffff" />
+                          <ListItemIcon onClick={() => handleLayerZoomClick(data)}>
+                            <ZoomInIcon htmlColor="#ffff" />
                           </ListItemIcon>
                         )}
                       </>
