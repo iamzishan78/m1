@@ -11,6 +11,7 @@ const wellsColumnHeaders = [
     esKey: "wellData.wellName.keyword",
     options: {
       ...globalSettings.muiGridInfScrollOptions,
+      ignoreGlobal: true,
       sort: true,
       filter: true,
     },

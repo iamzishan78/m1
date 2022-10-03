@@ -15,13 +15,13 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       setCellProps: () => ({
         style: {
           ...GlobalSettings.muiGridInfScrollOptions.setCellProps().style,
-          left: isSnapGrid ? "77px" : "132px",
+          left: isSnapGrid ? "77px" : "124px",
         },
       }),
       setCellHeaderProps: () => ({
         style: {
           ...GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps().style,
-          left: isSnapGrid ? "77px" : "132px",
+          left: isSnapGrid ? "77px" : "124px",
         },
       }),
       ignoreGlobal: true,
