@@ -397,8 +397,7 @@ function MapGridCard(props) {
         {selectedOwner ? (
           <OwnersSummaryCard />
         ) : (
-
-          <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: "relative" }}>
+          <div id="snapGrid" className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: "relative" }}>
             {/* //// search panel //// */}
             <TabPanel
               value={mapGridCardActiveTap}
@@ -545,6 +544,7 @@ function MapGridCard(props) {
                       )}
                       {searchTapValue.value === "unit" && (
                         <MapGridUnitTable
+                          id="MapGridUnitTable"
                           dense
                           parent="search"
                           customOptions={options}
@@ -554,6 +554,7 @@ function MapGridCard(props) {
                       )}
                       {searchTapValue.value === "agreement" && (
                         <AgreementsTable
+                          id="MapGridAgreementsTable"
                           isCheckboxSticky={true}
                           dense
                           esIndex={'shapes_flat'}
@@ -566,6 +567,7 @@ function MapGridCard(props) {
                       )}
                       {searchTapValue.value === "tract" && (
                         <TractsTable
+                          id="MapGridTractsTable"
                           dense
                           esIndex={'shapes_flat'}
                           parent="search"
@@ -690,8 +692,6 @@ function MapGridCard(props) {
               </div>
             </TabPanel>
           </div>
-
-
         )
         }
       </Card >

@@ -68,6 +68,7 @@ function GridIcon({ setStateApp }) {
   return (
     <Tooltip title="Search Grid">
       <Button
+        id="snapGridButton"
         className={mapGridCardActivated ? classes.selected : classes.gridOnIcon}
         onClick={() => {
           setStateApp((stateApp) => ({ ...stateApp, selectedDataset: { name: 'M1 Platform' } }))

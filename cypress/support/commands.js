@@ -90,9 +90,15 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
 // This command is to check api was successful or not
 Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
     cy.wait(apiTitle, { timeout: extraTimeout }).then((interception) => {
-        console.log("intercerption : ", interception?.body?.data?.errors)
-        if (interception?.body?.data?.errors)
-            throw new Error(`Api returned error`)
+        const operationName = interception?.request?.body?.operationName
+        const response = interception?.response?.body?.data[operationName]
+
+        if (typeof response === 'string')
+            throw new Error(response)
+
+        if (response?.errors)
+            throw new Error(`Api returned error: ${response.errors}`)
+
         assert.isNotNull(interception.response.body, `${apiTitle} run succesfully`)
         return interception
     })
@@ -138,6 +144,28 @@ Cypress.Commands.add('searchOnMap', (data, value) => {
     cy.typeAndSelect("#cognitive-search-autocomplete", value, "cognitive-search-autocomplete-option-1")
 })
 
+// Command will search and verify results have searched string or not
+Cypress.Commands.add('gridSearch', (searchString, gridOperationName, searchId = null) => {
+    cy.interceptApi(gridOperationName, { searchString: searchString })
+
+    const commonSearchClass = ".MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart'"
+    cy.get(searchId || commonSearchClass).focus().clear().type(searchString)
+
+    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: longTimeout }).then((apiResponse) => {
+        let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
+
+
+        if (gridOperationName === 'getESDocuments')
+            hits = apiResponse.response.body.data.getESFiles.hits
+
+        const unmatchedHit = hits.find(hit => !findInObject(hit, searchString.toLowerCase()))
+
+        if (unmatchedHit) {
+            throw new Error(`Record with _id:${unmatchedHit._id} does not contains searched String`)
+        }
+    })
+})
+
 //DocumentGrid Commands
 Cypress.Commands.add('addWell', (wellName) => {
     cy.interceptApi('addWellToFileDescriptor')
@@ -155,23 +183,7 @@ Cypress.Commands.add('clickWellIcon', (wellName) => {
     cy.get("#wellIcon", { timeout: longTimeout }).click()
 })
 
-Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
-    cy.interceptApi(gridOperationName, { searchString: searchString })
-    cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').focus().clear().type(searchString)
 
-    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: longTimeout }).then((apiResponse) => {
-        let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
-
-        if (gridOperationName === 'getESDocuments')
-            hits = apiResponse.response.body.data.getESFiles.hits
-
-        const unmatchedHit = hits.find(hit => !findInObject(hit, searchString.toLowerCase()))
-
-        if (unmatchedHit) {
-            throw new Error(`Record with _id:${unmatchedHit._id} does not contains searched String`)
-        }
-    })
-})
 Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
     cy.contains('th', columnName)
         .invoke('index')
@@ -186,24 +198,6 @@ Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
 })
 
 // ContactGrid Commands
-
-Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
-    cy.interceptApi(gridOperationName, { searchString: searchString })
-    cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').focus().clear().type(searchString)
-
-    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: longTimeout }).then((apiResponse) => {
-        let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
-
-        if (gridOperationName === 'getESDocuments')
-            hits = apiResponse.response.body.data.getESFiles.hits
-
-        const unmatchedHit = hits.find(hit => !findInObject(hit, searchString.toLowerCase()))
-
-        if (unmatchedHit) {
-            throw new Error(`Record with _id:${unmatchedHit._id} does not contains searched String`)
-        }
-    })
-})
 
 Cypress.Commands.add('sortColumn', (columnName, sortOrder) => {
     cy.interceptApi('getESSimpleSearch', { sortOrder: sortOrder })
