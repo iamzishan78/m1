@@ -38,7 +38,6 @@ function AgreementsTable(props) {
 
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [selectedGridView, setSelectedGridView] = useState(defaultView);
   const [stateApp, setStateApp] = useContext(AppContext);
 
   // queries
@@ -50,6 +49,7 @@ function AgreementsTable(props) {
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
   const GridViewModule = userGridViewSettings[`Agreements`];
+  const { Agreements: AgreementsGridView } = useSelector(({ session }) => session.userGridViewSettings);
 
   const searchInput = useSelector((state) => state.MapGridCard.searchInputValue);
   const { setESFilters } = props;
@@ -60,7 +60,7 @@ function AgreementsTable(props) {
     () =>
       debounce((request, top, callback) => {
         props.setTableMeta(request);
-      }, 500),
+      }, 1000),
     []
   );
 
@@ -88,8 +88,8 @@ function AgreementsTable(props) {
   }, []);
 
   useEffect(() => {
-    setSelectedGridView(GridViewModule || defaultView);
-  }, [GridViewModule]);
+    props.setSelectedGridView(AgreementsGridView || defaultView);
+  }, [AgreementsGridView]);
 
   console.log(props.landSearchQuery || "empty", searchInput || "empty");
   useEffect(() => {
@@ -132,6 +132,10 @@ function AgreementsTable(props) {
     // eslint-disable-next-line
   }, [props.initialFilters]);
 
+  useEffect(() => {
+    props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);
+  }, [props?.options?.count])
+
   const onCustomKeyChange = (value = null, index, key) => {
     const rows = JSON.parse(JSON.stringify(props.rows));
     rows[index].custom_data = {
@@ -166,7 +170,7 @@ function AgreementsTable(props) {
   const headerProps = {
     columns: props.columns,
     showViewModal,
-    selectedGridView,
+    selectedGridView: props.selectedGridView || defaultView,
     updateGridView,
     setShowSaveAsNew,
     setShowViewModal,
@@ -208,8 +212,8 @@ function AgreementsTable(props) {
           module="Agreements"
           handleDefaultView={handleDefaultView}
           handleClose={() => setShowViewModal(false)}
-          setSelectedGridView={setSelectedGridView}
-          selectedGridView={selectedGridView}
+          // setSelectedGridView={props.setSelectedGridView}
+          selectedGridView={props.selectedGridView}
           setShowViewModal={setShowViewModal}
           setShowSaveAsNew={setShowSaveAsNew}
           showSaveAsNew={showSaveAsNew}

@@ -320,9 +320,9 @@ function App() {
         />
         {apolloClient ? (
           <ApolloProvider client={apolloClient}>
-            <FeatureFlag feature={FEATURES.USERSNAP}>
+            {/* <FeatureFlag feature={FEATURES.USERSNAP}>
               <UsersnapProvider />
-            </FeatureFlag>
+            </FeatureFlag> */}
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
                 <ContactBulkProgress />

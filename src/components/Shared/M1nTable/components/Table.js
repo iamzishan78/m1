@@ -75,7 +75,7 @@ import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
 import StackedBarChart from "components/Shared/Charts/StackedBarChart";
 import ButtonDropDown from "./ButtonGroup";
 // auto complete for well API#
-import SearchWells from "components/Shared/Wells/WellsAutoCompleteFilter";
+// import SearchWells from "components/Shared/Wells/WellsAutoCompleteFilter";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 
@@ -98,8 +98,8 @@ import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 import CustomFieldText from "components/Shared/M1nTable/components/SubComponents/CustomFieldText";
-import CustomFieldSelectV2 from "./SubComponents/CustomFieldSelectV2";
-import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
+// import CustomFieldSelectV2 from "./SubComponents/CustomFieldSelectV2";
+// import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 // queries
 import { OWNERSLATSLONS } from "graphQL/useQueryOwnerLatsLonsArray";
@@ -111,7 +111,7 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 //icons
 import GetAppIcon from "@material-ui/icons/GetApp";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
-import LocationOnIcon from '@material-ui/icons/LocationOn';
+// import LocationOnIcon from '@material-ui/icons/LocationOn';
 // import { ReactComponent as RequestPageIcon } from 'components/Shared/svgIcons/request_page_icon.svg';
 import RequestPageIcon from "components/Shared/svgIcons/request_page";
 // import RequestPageIcon from 'components/Shared/svgIcons/request_page_icon';
@@ -121,21 +121,17 @@ import PostAddIcon from "@material-ui/icons/PostAdd";
 import FilterIcon from "../../svgIcons/filter";
 import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import MapFilledIcon from "components/Shared/svgIcons/MapFilled";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
-import { getIndexofColumn } from "utils/helper";
 import ReactSelectField from "./SubComponents/ReactSelectField";
-import { Waypoint } from "react-waypoint";
+import TableBody from "./MUIDataTable/TableBody";
 import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOfferPrice";
 
 
-import Radio from '@material-ui/core/Radio';
 import Checkbox from '@material-ui/core/Checkbox';
 import GlobalStyles from "GlobalStyles";
 
@@ -165,7 +161,12 @@ const useStyles = makeStyles((theme) => ({
     "& .MUIDataTableToolbar": {
       zIndex: "999999 !important",
     },
-
+    "& .MuiTableRow-head": {
+      backgroundColor: "#F2F2F2"
+    },
+    "& .MuiTableRow-root.MuiTableRow-hover:hover": {
+      backgroundColor: "rgb(223 223 223)"
+    },
     "& .MuiPaper-elevation1": {
       flexDirection: "row !important",
       height: "65px !important",
@@ -555,7 +556,6 @@ function SubTable(props) {
   const [isSearchOpen, openSearch] = useState(false);
   const [handleSearch, setHandleSearch] = useState(() => () => { });
   const [dataWell, setDataWell] = useState();
-  const [activeRowIndex, setActiveRowIndex] = useState("null");
   const [defaultActivityType, setDefaultAcitivityType] = useState("call");
   const [contact, setContact] = useState(null);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
@@ -648,7 +648,7 @@ function SubTable(props) {
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContact, { data: contactData }] = useLazyQuery(CONTACT);
-  const [autoCalculateOfferPrice, { data: autoCalculateOfferPriceData,  }] = useMutation(
+  const [autoCalculateOfferPrice, { data: autoCalculateOfferPriceData, }] = useMutation(
     AUTO_CALCULATE_OFFER_PRICE,
     {
       refetchQueries: [
@@ -1282,52 +1282,52 @@ function SubTable(props) {
         // without using refs we HAVE to re-create customBodyRender callback functions every render
         // or component state is stale
 
-        if (column.name === "_id" && column.options.isFiniteScroll) {
-          column.options = {
-            ...column.options,
+        // if (column.name === "_id" && column.options.isFiniteScroll) {
+        //   column.options = {
+        //     ...column.options,
 
-            setCellProps: () => ({
-              style: {
-                minWidth: "55px",
-                maxWidth: "55px",
-                position: "sticky",
-                left: "77px",
-                zIndex: 201,
-              }
-            }),
+        //     setCellProps: () => ({
+        //       style: {
+        //         minWidth: "90px",
+        //         maxWidth: "90px",
+        //         position: "sticky",
+        //         left: "77px",
+        //         zIndex: 201,
+        //       }
+        //     }),
 
-            setCellHeaderProps: () => ({
-              style: {
-                minWidth: "55px",
-                maxWidth: "55px",
-                position: "sticky",
-                paddingLeft: '34px !important',
-                zIndex: 201,
-                left: "77px",
-              },
-            }),
+        //     setCellHeaderProps: () => ({
+        //       style: {
+        //         minWidth: "90px",
+        //         maxWidth: "90px",
+        //         position: "sticky",
+        //         paddingLeft: '70px',
+        //         zIndex: 201,
+        //         left: "77px",
+        //       },
+        //     }),
 
-            customRender: (value, tableMeta) => {
-              const rowIndex = tableMeta.rowIndex;
-              return (
-                <>
-                  {rowIndex === props.rows.length - 5 && (<Waypoint
-                    onEnter={() => {
-                      if (props.onInfiniteScroll) props.onInfiniteScroll()
-                    }}
-                  />)}
+        //     customRender: (value, tableMeta) => {
+        //       const rowIndex = tableMeta.rowIndex;
+        //       return (
+        //         <>
+        //           {rowIndex === props.rows.length - 5 && (<Waypoint
+        //             onEnter={() => {
+        //               if (props.onInfiniteScroll) props.onInfiniteScroll()
+        //             }}
+        //           />)}
 
-                  <div
-                    id={`${rowIndex === props.rows.length - 5 ? `waypoint-${rowIndex}` : ''}`} z>
-                    {<span
-                      style={{ color: GlobalStyles.colors.mutedGrey }}
-                    >{tableMeta.rowIndex + 1}</span>}
-                  </div>
-                </>
-              );
-            },
-          }
-        }
+        //           <div
+        //             id={`${rowIndex === props.rows.length - 5 ? `waypoint-${rowIndex}` : ''}`} z>
+        //             {<span
+        //               style={{ color: GlobalStyles.colors.mutedGrey }}
+        //             >{tableMeta.rowIndex + 1}</span>}
+        //           </div>
+        //         </>
+        //       );
+        //     },
+        //   }
+        // }
 
         if (column?.options?.customRender) {
           column.options = {
@@ -1337,33 +1337,6 @@ function SubTable(props) {
           return;
         }
 
-        if (column?.infiniteScroll || column?.options?.infiniteScroll) {
-          column.options = {
-            ...column.options,
-            customBodyRender: (value, tableMeta) => {
-              const rowIndex = tableMeta.rowIndex;
-              if (rowIndex === props.rows.length - 5) {
-                return (
-                  <Fragment>
-                    <Waypoint
-                      onEnter={() => {
-                        if (props.onInfiniteScroll) props.onInfiniteScroll()
-                      }}
-                    />
-
-                    <div id={`waypoint-${rowIndex}`}>
-                      {gridElement(value)}
-                    </div>
-
-                  </Fragment>
-                );
-              } else {
-                return (gridElement(value))
-              }
-            },
-          };
-          return
-        }
         switch (column.name) {
 
 
@@ -1798,6 +1771,7 @@ function SubTable(props) {
 
           // Used for snapgrid tables
           case 'ApiNumber':
+          case 'Well':
           case 'Operator':
           case 'OwnerName':
             {
@@ -1806,6 +1780,7 @@ function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let disabled = false;
                   let type = 'well'
+                  if (column.name === 'Well' && !props.rows[tableMeta.rowIndex]?.well.globalWell) disabled = true;
                   if (column.name === 'ApiNumber' && !props.rows[tableMeta.rowIndex]?.globalWell) disabled = true;
                   if (column.name === 'OwnerName' && !props.rows[tableMeta.rowIndex]?.wellCount > 0) disabled = true;
                   if (column.name === 'Operator' && !props.rows[tableMeta.rowIndex]?.totalWellCount > 0) disabled = true;
@@ -1816,6 +1791,7 @@ function SubTable(props) {
                         if (!disabled) {
                           const coordinates = props.rows[tableMeta.rowIndex].coordinates
                           type = coordinates?.objToPopulateSearchLayer?.objectType || type
+                          if (column.name === 'Well') coordinates.wellId = props.rows[tableMeta.rowIndex]?.well.globalWell;
                           handleClickFlyToIcon(type, coordinates);
                           dispatch(setMapGridCardState({ mapGridCardActivated: false }));
                         }
@@ -1942,7 +1918,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customRender: (value, tableMeta) => {
-                  value = value?.toString()
+                  value = value?.toString();
                   const splitNumber = value?.split("_");
 
                   const styles = {
@@ -2542,13 +2518,13 @@ function SubTable(props) {
                         // paddingRight: '200px'
                       }}>
                         <Grid container spacing={0} direction="row" >
-                          {
+                          {/* {
                             props.parent === 'Documents' && <div style={{ position: 'relative', zIndex: 100 }}>
                               <div style={{ position: 'absolute', left: '-30px', top: '15px', fontWeight: 'bold' }}>
                                 {tableMeta.rowIndex + 1}
                               </div>
                             </div>
-                          }
+                          } */}
                           <Grid
                             item
                             xs={1}
@@ -2561,16 +2537,27 @@ function SubTable(props) {
                             <div
                               style={{
                                 // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                                cursor: 'pointer'
                               }}
 
-                              onClick={() => {
-                                if (file.state !== "active") return;
-
-                                if (fileExtension === "pdf") {
-                                  setStateApp({
-                                    ...stateApp,
-                                    viewDoc: { uri: uri, name: file },
-                                  });
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
+                                if (type === "pdf") {
+                                  if (props.addAble.type === "document") {
+                                    window.history.pushState("", "", `/documents/${row_line._id}/view`);
+                                  }
+                                  // const selectedRow = rows.find((row) => row._id === row_line._id);
+                                  setStateApp((state) => ({
+                                    ...state,
+                                    pdfView: row_line,
+                                    viewDoc: {
+                                      uri: row_line.viewToken,
+                                      name: row_line.fileName,
+                                    },
+                                  }));
+                                } else {
+                                  handleViewFile(row_line._id);
                                 }
                               }}
                             >
@@ -2593,30 +2580,7 @@ function SubTable(props) {
                                 justifyContent: "flex-start",
 
                               }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
-                                if (type === "pdf") {
-                                  if (props.addAble.type === "document") {
-                                    window.history.pushState("", "", `/documents/${row_line._id}/view`);
-                                  }
-                                  // const selectedRow = rows.find((row) => row._id === row_line._id);
-                                  setStateApp((state) => ({
-                                    ...state,
-                                    pdfView: row_line,
-                                    viewDoc: {
-                                      uri: row_line.viewToken,
-                                      name: row_line.fileName,
-                                    },
-                                  }));
-                                } else {
-                                  handleViewFile(row_line._id);
-                                }
-                              }}
                             >
-
-
-
                               <p
                                 style={{
                                   display: "flex",
@@ -2631,6 +2595,27 @@ function SubTable(props) {
                                   fontWeight: "bold",
                                   justifyContent: "flex-start",
                                   paddingRight: '40px',
+                                }}
+                                
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
+                                  if (type === "pdf") {
+                                    if (props.addAble.type === "document") {
+                                      window.history.pushState("", "", `/documents/${row_line._id}/view`);
+                                    }
+                                    // const selectedRow = rows.find((row) => row._id === row_line._id);
+                                    setStateApp((state) => ({
+                                      ...state,
+                                      pdfView: row_line,
+                                      viewDoc: {
+                                        uri: row_line.viewToken,
+                                        name: row_line.fileName,
+                                      },
+                                    }));
+                                  } else {
+                                    handleViewFile(row_line._id);
+                                  }
                                 }}>
 
                                 <Typography
@@ -2764,8 +2749,8 @@ function SubTable(props) {
           //     },
           //   };
           //   break;
-          case "offer_price": 
-            if(props.targetLabel === "Unit Ownership" || props.parent === "ownersPerUnit"){
+          case "offer_price":
+            if (props.targetLabel === "Unit Ownership" || props.parent === "ownersPerUnit") {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta) => {
@@ -4668,8 +4653,13 @@ function SubTable(props) {
 
           columns={columns ? columns : []}
           components={{
+            showRowNumber: !!props.onInfiniteScroll,
+            onInfiniteScroll: props.onInfiniteScroll,
+            TableBody: TableBody,
             Checkbox: CustomCheckbox,
             TableViewCol: CustomTableViewCol,
+
+
             TableFilterList: (props.header === "Tax Roll Ownership" || props.parent === "potentialOwnersPerUnit") && !isSearchOpen ? TableFilterList : null,
             icons: {
               FilterIcon,

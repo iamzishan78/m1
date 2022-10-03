@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useApolloClient, useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -47,6 +47,8 @@ import { showErrorMessage } from "actions";
 import { GET_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetAutoCompleteList";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import AutoCompleteParcelOwners from "components/Shared/Forms/Fields/AutoCompleteParcelOwners";
+import Loaders from "components/Loaders";
+import { GET_TRACT_ABSTRACT_SHAPE } from "graphQL/useQueryGetTractAbstractShape";
 import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
@@ -102,6 +104,7 @@ const qtrOptions = ["E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
 
 function AddAgreementOwnerAndTractDialog(props) {
   const classes = useStyles();
+  const client = useApolloClient();
   const dispatch = useDispatch();
   const { control, reset, register, getValues, watch, setValue } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
@@ -111,6 +114,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [loading, setLoading] = useState(false);
   const [isTractOwner, setIsTractOwner] = useState(false);
   const [isNewTract, setIsNewTract] = useState(true);
+  const [newTractError, setNewTractError] = useState();
   const [totalOwners, setTotalOwners] = useState(0);
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [tractValue, setTractValue] = useState({ name: "", _id: null });
@@ -118,9 +122,39 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
 
   const tract = watch("tract", {});
+  const state = watch("tract.state", '');
+
+  useEffect(() => {
+    if (isNewTract) {
+      const form = getValues();
+      form.tract = { state }
+      reset(form)
+    }
+  }, [state]);
 
   useEffect(() => {
     register("tract.qtrQtrSelection");
+  }, [tract]);
+
+  useEffect(() => {
+    if (tract.state && isNewTract) {
+      (async () => {
+        const { data: tractShape } = await client.query({
+          query: GET_TRACT_ABSTRACT_SHAPE,
+          variables: {
+            tract
+          }
+        });
+        if (tractShape?.getTractAbstractShape?.data?.properties?.shapeArea) {
+          setValue('tract.shapeArea', tractShape?.getTractAbstractShape?.data.properties?.shapeArea)
+          if (newTractError) { setNewTractError(null) }
+        } else {
+          setNewTractError(tractShape?.getTractAbstractShape)
+        }
+      })()
+    } else {
+      if (newTractError) { setNewTractError(null) }
+    }
   }, [tract]);
 
   const parcelOwnersRadioBValue = watch("parcelOwnersRadioBValue", "true");
@@ -129,21 +163,21 @@ function AddAgreementOwnerAndTractDialog(props) {
     onCompleted: (data) => {
       setLoading(false);
       if (data.addOwnerToAShape.success) {
-        handleClose();
+        Loaders.successToast('ageement-tract-creation', 'Agreement tract created Successfully')
       } else {
-        dispatch(showErrorMessage(data.addOwnerToAShape.message));
+        Loaders.errorToast('ageement-tract-creation', data.addOwnerToAShape.message)
       }
     },
-    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
+    refetchQueries: ["getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
   });
 
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
       setLoading(false);
-      handleClose();
+      Loaders.successToast('ageement-tract-creation', 'Agreement tract updated Successfully')
     },
-    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
+    refetchQueries: ["getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
   });
 
@@ -153,7 +187,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       handleClose();
     },
     onError: (err) => { },
-    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
+    refetchQueries: ["getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
   });
 
@@ -245,11 +279,15 @@ function AddAgreementOwnerAndTractDialog(props) {
   };
 
   const handleSave = () => {
+    if (newTractError) {
+      dispatch(showErrorMessage(newTractError.message))
+      return;
+    }
     const ownerToAdd = getValues();
     ownerToAdd.isTractOwner = isTractOwner;
     ownerToAdd.tract = tract;
     Object.keys(ownerToAdd).forEach((key) => {
-      if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'company_net_acres'].includes(key)) ownerToAdd[key] = addTrailingZeros(ownerToAdd[key]);
+      if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'nra', 'company_net_acres'].includes(key) && ownerToAdd[key]) ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(8));
     });
 
     if (ownerToAdd.parcelOwnersRadioBValue === "true") {
@@ -276,6 +314,7 @@ function AddAgreementOwnerAndTractDialog(props) {
         refetchQueries: ["getESSimpleSearch", 'getCustomLayer'],
         awaitRefetchQueries: true,
       });
+      Loaders.createToast('ageement-tract-creation', 'Agreement tract update in progress')
     } else {
       addOwnerToAShape({
         variables: {
@@ -288,7 +327,9 @@ function AddAgreementOwnerAndTractDialog(props) {
         refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
         awaitRefetchQueries: true,
       });
+      Loaders.createToast('ageement-tract-creation', 'Agreement tract creation in progress')
     }
+    handleClose();
   };
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
