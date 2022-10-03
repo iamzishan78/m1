@@ -286,7 +286,7 @@ function MapGridCard(props) {
                       />
                     )}
                     {searchTapValue.value === "deals" && <ContactDealsProvider />}
-                    {searchTapValue.value === "documents" && <ContactDocumentsProvider />}
+                    {searchTapValue.value === "documents" && <ContactDocumentsProvider contactId={props.contactData._id} />}
                   </div>
                 </Grid>
               </Grid>
