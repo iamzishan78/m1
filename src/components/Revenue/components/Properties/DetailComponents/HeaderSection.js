@@ -80,6 +80,8 @@ const useStyles = makeStyles((theme) => ({
   associatedWell: {
     border: "2px solid #d5d5d5",
     height: "525px",
+    display: 'flex',
+    flexDirection: 'column',
     borderRadius: "15px",
     maxWidth: "30%",
     width: "30%",
@@ -166,13 +168,11 @@ export default function HeaderSection(props) {
   useEffect(() => {
     return () => {
       const number = watch("number");
-      const name = watch("name");
+      const internalID = watch("internalID");
 
-      if (!number && !name){
+      if (!number && !internalID) {
         dispatch(
-          showInfoMessage(
-            "Operator Prop # or Property Name is required."
-          )
+          showInfoMessage("Internal Prop # or Operator Prop # is required.")
         );
         history.goBack();
       }
@@ -257,7 +257,7 @@ export default function HeaderSection(props) {
   const getMappedOptions = (strArray) => strArray?.map(option => ({ name: option, value: option })) || [];
 
   return (
-    <Grid container direction="row" justify="space-between" alignItems="center">
+    <Grid container direction="row" justify="space-between">
       <Grid item className={classes.infoSection}>
         <Grid
           container

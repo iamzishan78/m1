@@ -129,8 +129,9 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
             isProperties
             lastCheckMinDate={lastCheckMinDate}
             onChange={setSelectedFilter}
+            datesInputWidth={1}
           />
-          <Grid item xs maxWidth>
+          <Grid item xs md={2}>
             {extraFitlers.includes("propertyGroup") && (
               <ReportGroupHeader
                 type="Properties"
@@ -145,7 +146,7 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
               />
             )}
           </Grid>
-          <Grid item xs md>
+          <Grid item xs md={2}>
             {extraFitlers.includes("status") && (
               <MuiThemeProvider>
                 <FormControl variant="outlined" className={classes.formControl}>

@@ -37,7 +37,6 @@ import ContactBulkProgress from "./components/BulkUpload/ContactBulkProgress";
 import RevenueProvider from "components/Revenue/RevenueProvider";
 import Land from "components/Land";
 import AgreementProvider from "./components/Land/components/Agreements/AgreementProvider";
-import AgreementDetailProvider from "./components/Land/components/AgreementDetail/AgreementDetailProvider";
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 import { CircularProgress } from "@material-ui/core";
@@ -321,9 +320,9 @@ function App() {
         />
         {apolloClient ? (
           <ApolloProvider client={apolloClient}>
-            <FeatureFlag feature={FEATURES.USERSNAP}>
+            {/* <FeatureFlag feature={FEATURES.USERSNAP}>
               <UsersnapProvider />
-            </FeatureFlag>
+            </FeatureFlag> */}
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
                 <ContactBulkProgress />
@@ -380,9 +379,8 @@ function App() {
                         <PrivateRoute title="Bulk Upload" exact path={["/bulkupload", "/bulkupload/:type"]} component={BulkUpload} />
                         <PrivateRoute exact path="/agreement" component={AgreementProvider} />
                         <PrivateRoute title="Revenue Statements" path="/revenue" component={RevenueProvider} />
-                        <PrivateRoute path="/land" component={Land} />
+                        <PrivateRoute title="Land Management" path="/land" component={Land} />
                         <PrivateRoute exact path="/agreements" component={AgreementProvider} />
-                        <PrivateRoute exact path="/agreement/details/:agreementId?" component={AgreementDetailProvider} />
                         {/* <Route component={NotFoundRedirect} /> */}
                       </NavigationProvider>
                     </Switch>

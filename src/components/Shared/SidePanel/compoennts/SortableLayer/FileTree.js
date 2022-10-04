@@ -8,6 +8,7 @@ import LayerItem from "./LayerItem";
 import { AppContext } from "AppContext";
 import { UPDATELAYERSETTINGS } from "graphQL/useMutationUpdateLayerSettings";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
+import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 import { useMutation } from "@apollo/client";
 import { deepEqual } from "components/Shared/functions";
 import { useStyles } from '../style';
@@ -16,6 +17,7 @@ const FileTree = ({ layerMap, panelItems }) => {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
+  const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, { refetchQueries: ["getLayerGroups"], awaitRefetchQueries: true });
   const [items, setItems] = React.useState(layerMap);
   const itemsRef = React.useRef([]);
   const currentItem = React.useRef();
@@ -121,7 +123,7 @@ const FileTree = ({ layerMap, panelItems }) => {
 
     setStateApp((stateApp) => ({
       ...stateApp,
-      layers: currentLayers.filter((l) => l.type !== "group"),
+      layers: currentLayers.filter((l) => l.type !== "group" && !l.emptyLayer),
     }));
 
     updateManyUserLayerSettings({
@@ -143,17 +145,17 @@ const FileTree = ({ layerMap, panelItems }) => {
       return revert();
     }
 
-    let layersWithoutGroup = items.filter((l) => l.type !== "group");
+    let layersWithoutGroup = items.filter((l) => l.type !== "group" && !l.emptyLayer);
     const layersToUpdate = [];
-    let groupIndex;
+    const itemIndex = items.findIndex((item) => item.id === newItem.id);
+    const descendants = findDescendants(items, itemIndex).filter((item) => !item.emptyLayer);
 
     if (newItem.depth === 1) {
       // if layer into group
-      groupIndex = items.findIndex((item) => item.id === newItem.id);
-      const parent = findParent(items, groupIndex);
+      const parent = findParent(items, itemIndex);
       if (parent.type === "group" && ((oldItem.groupName === 'Agreements' && parent.name === 'Agreements') || (oldItem.groupName !== 'Agreements' && parent.name !== 'Agreements'))) {
-        items[groupIndex].groupName = parent.name;
-        items[groupIndex].groupId = parent.id;
+        items[itemIndex].groupName = parent.name;
+        items[itemIndex].groupId = parent.id;
       } else {
         return revert();
       }
@@ -161,26 +163,14 @@ const FileTree = ({ layerMap, panelItems }) => {
       if (oldItem.groupName === 'Agreements') {
         return revert();
       } else {
-        groupIndex = items.findIndex((item) => item.id === newItem.id);
-        items[groupIndex].groupName = null;
-        items[groupIndex].groupId = null;
+        items[itemIndex].groupName = null;
+        items[itemIndex].groupId = null;
       }
-
-    }
-    if (groupIndex) {
-      groupIndex = layersWithoutGroup.findIndex((item) => item.id === newItem.id);
     }
 
     const sortedLayers = stateApp.layers.sort((a, b) => (a.position > b.position ? 1 : b.position > a.position ? -1 : 0));
     layersWithoutGroup.forEach((layer, i) => {
-      if (i === groupIndex) {
-        layersToUpdate.push({
-          _id: layer._id,
-          position: i,
-          groupName: layer.groupName,
-          groupId: layer.groupId,
-        });
-      } else if (sortedLayers[i]._id !== layer._id) {
+      if (layer._id === newItem._id || sortedLayers[i]._id !== layer._id) {
         layersToUpdate.push({
           _id: layer._id,
           position: i,
@@ -191,7 +181,21 @@ const FileTree = ({ layerMap, panelItems }) => {
       layer.position = i;
     });
 
-    setStateApp({ ...stateApp, layers: [...layersWithoutGroup] });
+    if (newItem.type === 'group' && descendants.length === 0) {
+      updateUserMapSettings({
+        variables: {
+          settings: {
+            user: stateApp.user.mongoId,
+            type: 'LayerGroup',
+            settings: { [newItem.id]: { above: items[itemIndex - 1]?.id, below: items[itemIndex + 1]?.id } },
+          },
+        },
+      });
+    } else {
+      setStateApp({ ...stateApp, layers: [...layersWithoutGroup] });
+    }
+
+
     updateManyUserLayerSettings({
       variables: { manySettings: layersToUpdate },
     });
@@ -205,7 +209,7 @@ const FileTree = ({ layerMap, panelItems }) => {
     setItems(currentLayers);
     setStateApp((stateApp) => ({
       ...stateApp,
-      layers: currentLayers.filter((l) => l.type !== "group"),
+      layers: currentLayers.filter((l) => l.type !== "group" && !l.emptyLayer),
     }));
 
     // saving to mongo
