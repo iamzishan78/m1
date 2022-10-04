@@ -468,7 +468,7 @@ export default function ParcelsDetailCard(props) {
         {showSummary &&
           <Grid item
 
-            // sm={6} 
+            // sm={6}
 
             // temporary code hiding the parcel QQ grid in texas until we can build out the component
             sm={originalProperties && originalProperties !== null && originalProperties.state == "TX" ? 12 : 6}
@@ -605,6 +605,8 @@ export default function ParcelsDetailCard(props) {
                     customLayer={copy(parcelObj)}
                     dense
                     header={<Header />}
+                    isSnapGrid
+                    isCheckboxSticky={true}
                   />
                 </div>,
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
