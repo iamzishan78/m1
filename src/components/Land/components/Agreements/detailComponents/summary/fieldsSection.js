@@ -15,8 +15,6 @@ import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoComple
 import MetaField from "components/Table/helpers/MetaField";
 import { copy } from "utils/helper";
 import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
-import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
-import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 import { AppContext } from "AppContext";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
@@ -168,7 +166,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                 value={bonusValue ? bonusValue : params.value}
                                 InputProps={field.InputProps}
                                 onFocus={() => {
-                                  setBonusValue(params.value.replace(/,/g, ''));
+                                  setBonusValue(params.value?.replace(/,/g, ''));
                                 }}
                                 onChange={(e) => {
                                   setBonusValue(e.target.value);

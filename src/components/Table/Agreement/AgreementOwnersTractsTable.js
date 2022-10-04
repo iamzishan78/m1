@@ -42,11 +42,13 @@ function AgreementOwnersTractsTable(props) {
       setDrawer(null)
     }
   }, [props.addToTable])
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
       props.setLoading(false);
       props.setSelectedRows([]);
+      setResetSelectedRow(!resetSelectedRow)
     },
     onError: (err) => { },
   });
@@ -156,6 +158,7 @@ function AgreementOwnersTractsTable(props) {
         total={false}
         loading={props.loading}
         targetLabel={props.targetLabel}
+        resetSelectedRow={resetSelectedRow}
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={false}

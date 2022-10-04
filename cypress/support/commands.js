@@ -90,6 +90,9 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
 // This command is to check api was successful or not
 Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
     cy.wait(apiTitle, { timeout: extraTimeout }).then((interception) => {
+        console.log("intercerption : ", interception?.body?.data?.errors)
+        if (interception?.body?.data?.errors)
+            throw new Error(`Api returned error`)
         assert.isNotNull(interception.response.body, `${apiTitle} run succesfully`)
         return interception
     })
@@ -119,6 +122,11 @@ Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = 
 //Scroll grid by using id of the container 
 Cypress.Commands.add('scrollGridTo', (direction, containerId) => {
     cy.get(containerId).children().children().children().children().eq(2).scrollTo(direction)
+})
+//This command will hover, click on pencil icona and save value by pressing enter
+Cypress.Commands.add('updateSummaryField', (fieldName, value) => {
+    cy.contains(fieldName).siblings('.MuiTableCell-body').children().children().children().eq(1).trigger('mouseover', { force: true }).children().click({ force: true })
+    cy.contains(fieldName).siblings().eq(0).children().children().children().eq(0).type(`${value}{enter}`)
 })
 
 //DocumentGrid Commands
@@ -208,4 +216,46 @@ Cypress.Commands.add('removeFilter', (filterLabel) => {
 
 })
 
+// Map Commands
+
+Cypress.Commands.add('drawMapShape', () => {
+    cy.get('.mapboxgl-canvas').dblclick(643, 766, { force: true })
+        .dblclick(663, 770, { force: true })
+        .dblclick(663, 770, { force: true })
+        .dblclick(663, 770, { force: true })
+        .dblclick(716, 742, { force: true })
+        .dblclick(716, 742, { force: true })
+        .dblclick(736, 722, { force: true })
+        .dblclick(746, 712, { force: true })
+        .dblclick(746, 712, { force: true })
+
+    cy.get("#mapEditIcon", { timeout: longTimeout }).should('be.visible').click()
+    cy.wait(5000)
+    cy.get("#mapRectangle").click()
+
+    cy.get('.mapboxgl-canvas')
+        .first()
+        .wait(5000)
+        .trigger("mousedown", 746, 712, { bubbles: false, force: true })
+        .trigger("mousemove", 446, 612, {
+            which: 1,
+            force: true,
+            bubbles: false,
+        })
+        .trigger("mouseup", 446, 612, { force: true })
+})
+
+Cypress.Commands.add('createShapeLayer', (shapeLayerItemId) => {
+    cy.interceptApi('UpsertCustomLayer')
+    cy.get('.mapboxgl-canvas').click()
+    cy.get('#parcel-button', { timeout: longTimeout }).should('be.visible').click()
+    cy.wait(3000)
+    cy.get(shapeLayerItemId).wait(1000).click()
+    if (shapeLayerItemId === "#agreementItem")
+        cy.get('#addShapeButton').click()
+
+    cy.get('.MuiBox-root', { timeout: longTimeout }).should('be.visible')
+
+    cy.verifyApiResponse('@UpsertCustomLayerApi', { responseTimeout: longTimeout })
+})
 
