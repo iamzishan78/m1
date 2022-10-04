@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 
 /* 
-
 Then verify if the appear on grid
 */
 

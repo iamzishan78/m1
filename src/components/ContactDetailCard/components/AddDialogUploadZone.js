@@ -349,7 +349,7 @@ const Documents = memo((props) => {
               }
             })}
             <Grid item xs={4}>
-              <div className={classes.Uploadcomp}>
+              <div id="uploadZone" className={classes.Uploadcomp}>
                 <UploadZone
                   style={{ width: "150px", height: "150px" }}
                   setUploadedFileData={props.setUploadedFileData}
