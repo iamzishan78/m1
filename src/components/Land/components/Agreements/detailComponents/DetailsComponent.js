@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, useContext, useCallback } from "react";
+import ReactDOM from "react-dom";
+import moment from "moment";
 import { useParams, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import _, { debounce, get, set } from "lodash";
@@ -36,7 +38,6 @@ import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
-import moment from "moment";
 import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
 import MapImgViewIcon from "components/Shared/svgIcons/MapImgViewIcon";
 import MapProvider from "components/Map/MapProvider";
@@ -131,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   metaButton: ({ drawer }) => ({
-    backgroundColor: drawer ? "#eceded" : "#fff",
+    backgroundColor: drawer === "meta" ? "#eceded" : "#fff",
     "&:hover": {
       backgroundColor: !!drawer ? "#eceded" : "#fff",
     },
@@ -435,28 +436,9 @@ export function DetailComponents(props) {
     });
   }
 
-  const renderDrawer = useMemo(() => {
-    return {
-      "meta": <MetadataDrawer
-                  setCollapse={setDrawer}
-                  targetSourceId={agreementId}
-                  data={agreementDetails}
-                  targetLabel="Shape"
-                  showDescription={false}
-                  descriptionKey="description"
-                  ownerPlaceHolder='Assign Approver'
-                  ownerTitle="Approver"
-                  isApproval={true}
-                  onUpdate={(data) => Object.keys(data).forEach(key => updateAgreement(key, data[key]))}
-                  isSource={false}
-                />,
-      "tract": 
-        <AgreementDetailsTrackDialog />,
-      "wells": 
-        <AgreementDetailsAddUnitInterestDialog />
-    }[drawer]
-  }, [drawer])
-
+  const handleMetaToggle = () => {
+    setDrawer(drawer === "meta" ? null : "meta");
+  }
 
   return (
     <NavHeader
@@ -543,7 +525,7 @@ export function DetailComponents(props) {
               <Button
                 startIcon={<InfoOutlinedIcon />}
                 className={classes.metaButton}
-                onClick={() => setDrawer("meta")}
+                onClick={handleMetaToggle}
               >
                 Metadata
               </Button>
@@ -708,19 +690,31 @@ export function DetailComponents(props) {
           )}
         </div>
 
-        {drawer && (
           <div
             style={{
               marginTop: 20,
               marginRight: 24,
               height: "calc(100vh - 270px)",
               overflow: 'auto',
-              width: 620,
+              width: !!drawer ? 620 : 0,
+              background: 'white'
             }}
+            id={'agreementDetailsDrawer'}
           >
-            {renderDrawer}
+            {drawer === "meta" && <MetadataDrawer
+            setCollapse={setDrawer}
+            targetSourceId={agreementId}
+            data={agreementDetails}
+            targetLabel="Shape"
+            showDescription={false}
+            descriptionKey="description"
+            ownerPlaceHolder='Assign Approver'
+            ownerTitle="Approver"
+            isApproval={true}
+            onUpdate={(data) => Object.keys(data).forEach(key => updateAgreement(key, data[key]))}
+            isSource={false}
+          />}
           </div>
-        )}
       </div>
 
       {/**

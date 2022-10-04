@@ -27,7 +27,7 @@ function ShapeWellInterestTable(props) {
   const classes = usetableStyles();
   const [drawer, setDrawer] = useContext(DrawerContext);
   const [addToTable, setAddToTable] = useState(false);
-
+  const [drawerContainer, setDrawerContainer] = useState(null);
   // function states
   const [columns, Columns] = useState([]);
   const [selectedRow, selectRow] = useState([]);
@@ -124,6 +124,25 @@ function ShapeWellInterestTable(props) {
     }
   }, [tableData, props.dependencyUpdate]);
 
+    useEffect(() => {
+      if (props.portal) {
+        const ele = document.querySelector(props.portal);
+
+        if (ele) {
+          setDrawerContainer(ele);
+        }
+      }
+    }, [props.portal]);
+
+    useEffect(() => {
+      if (addToTable) {
+        setDrawer("wells");
+      } else {
+        setDrawer(null);
+      }
+    }, [addToTable]);
+
+
   ////////////Contact Wells end///////////////////////////////////////////////
 
   const onTableChange = (action, tableState, rows, meta) => {
@@ -160,9 +179,8 @@ function ShapeWellInterestTable(props) {
             color="secondary"
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {
-              // setAddToTable(true);
+              setAddToTable(true);
               selectRow(null);
-              setDrawer("wells");
             }}
           >
             + ADD Well To {props.shapeType?.toUpperCase()}
@@ -192,6 +210,7 @@ function ShapeWellInterestTable(props) {
     });
   };
 
+  console.log("-*-*-* addToTable --*-*-", {addToTable});
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       {addToTable && (
@@ -202,6 +221,7 @@ function ShapeWellInterestTable(props) {
           shapeType={props.shapeType}
           wellInterest={selectedRow}
           onClose={() => setAddToTable(false)}
+          drawerContainer={drawerContainer}
         />
       )}
 

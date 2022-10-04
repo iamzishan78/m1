@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 // context
 
 import { Button, Container, Dialog } from "@material-ui/core";
@@ -22,7 +22,26 @@ import { DrawerContext } from "components/Land/components/Agreements/detailCompo
 
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
+  const [drawerContainer, setDrawerContainer] = useState(null);
   const [drawer, setDrawer] = useContext(DrawerContext);
+
+  useEffect(() => {
+    if(props.portal){
+      const ele = document.querySelector(props.portal);
+
+      if(ele){
+        setDrawerContainer(ele);
+      }
+    }
+  }, [props.portal])
+
+  useEffect(() => {
+    if(props.addToTable){
+      setDrawer('tract')
+    } else {
+      setDrawer(null)
+    }
+  }, [props.addToTable])
 
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
@@ -79,21 +98,25 @@ function AgreementOwnersTractsTable(props) {
 
   const tableOptions = {
     ...props.options,
-    customToolbar: () => {
-
-      return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-        <Button
-          color="secondary"
-          variant="contained"
-          className={classes.multiSelectionTopBarButtons}
-          // disabled={true}
-        onClick={() => setDrawer("tract")}
-        >
-          + ADD TRACT TO AGREEMENT
-        </Button>
-      </div>
-    },
   }
+
+
+  // if(props.customToolbar){
+  //   tableOptions.customToolbar = () => {
+
+  //     return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
+  //       <Button
+  //         color="secondary"
+  //         variant="contained"
+  //         className={classes.multiSelectionTopBarButtons}
+  //         // disabled={true}
+  //       onClick={() => setDrawer("tract")}
+  //       >
+  //         + ADD TRACT TO AGREEMENT
+  //       </Button>
+  //     </div>
+  //   }
+  // }
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
@@ -106,6 +129,7 @@ function AgreementOwnersTractsTable(props) {
           seletedOwner={props.clickedRow}
           deleteFunc={deleteFunc}
           onClose={() => props.setAddToTable(false)}
+          drawerContainer={drawerContainer}
         />
       )}
 

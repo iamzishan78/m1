@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import _ from "underscore";
 import { Controller, useForm } from "react-hook-form";
 import { makeStyles } from "@material-ui/styles";
@@ -114,6 +114,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                   header={"Tracts"}
                   setTractsNumber={setTractsNumber}
                   dense
+                  portal={'#agreementDetailsDrawer'}
                 />
               </Grid>
             )}

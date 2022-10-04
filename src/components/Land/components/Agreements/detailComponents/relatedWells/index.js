@@ -111,6 +111,7 @@ export default function LagalDescription({ uniObj, shapeSummaryDetails }) {
                     header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
                     showTracks
                     dense
+                    portal={'#agreementDetailsDrawer'}
                   />
                 )}
                 {selectedWellTab === 1 && (

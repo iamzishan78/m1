@@ -99,6 +99,7 @@ const useStyles = makeStyles((theme) => ({
 
 const qtrOptions = ["E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
 
+// Renders on Agreement Details Right Slideout 
 function AgreementDetailsTrackDialog(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
