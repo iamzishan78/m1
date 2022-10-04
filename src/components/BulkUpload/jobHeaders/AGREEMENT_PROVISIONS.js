@@ -69,7 +69,7 @@ const AgreementProvisions = [
         label: "Comments",
         mapped_key: "",
         required: true,
-        actual_key: "provision.comments",
+        actual_key: "provision.comment",
     },
 ];
 export default AgreementProvisions;

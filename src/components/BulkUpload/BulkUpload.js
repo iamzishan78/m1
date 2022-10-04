@@ -44,6 +44,7 @@ export const rawJobs = [
   { name: 'Property Upload', type: 'PROPERTIES' },
   { name: 'Agreement Upload (Header)', type: 'AGREEMENT_HEADER', redirectTo: '/land/agreements' },
   { name: 'Agreement Upload (Provisions)', type: 'AGREEMENT_PROVISIONS' },
+  { name: 'Agreement Upload (Related Well)', type: 'AGREEMENT_RELATED_WELLS' },
   { name: 'Transfer Shape to M1 Layer', type: 'SHAPE_TO_M1_LAYER', initialActiveStepNumber: 1, skipReview: true }
 ]
 
