@@ -1396,6 +1396,7 @@ function SubTable(props) {
                     );
                   } else if (props.targetLabel === "contact") {
                     const nameIndex = props.columns.findIndex((val) => val.name === "name")
+                    debugger
                     return (
                       <div
                         style={{
@@ -2596,7 +2597,7 @@ function SubTable(props) {
                                   justifyContent: "flex-start",
                                   paddingRight: '40px',
                                 }}
-                                
+
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
