@@ -178,8 +178,6 @@ export default function TransferDataManager(props) {
   }
 
   const dataset = stateApp?.selectedDataset
-
-  console.log(dataset)
   return (
     <div style={{ width: '100%' }}>
       <Grid

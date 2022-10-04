@@ -209,8 +209,6 @@ function ShapeWellInterestTable(props) {
       awaitRefetchQueries: true,
     });
   };
-
-  console.log("-*-*-* addToTable --*-*-", {addToTable});
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       {addToTable && (

@@ -17,7 +17,7 @@ import { UPDATE_SHAPE_WELL_INTEREST } from "graphQL/useMutationUpdateShapeWellIn
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import { useForm, Controller } from "react-hook-form";
 
-// contexts 
+// contexts
 import { AppContext } from "AppContext";
 import WellSearchApiField from "components/Shared/Forms/Fields/WellSearchApiField";
 import AutoCompleteFieldComponent from "components/Shared/Forms/Fields/AutoCompleteField";
@@ -225,7 +225,7 @@ function AddUnitInterestDialog(props) {
               </IconButton>
             </>
           )}
-          <IconButton onClick={handleClose} size="small">
+          <IconButton onClick={!loading ? handleClose : undefined} size="small">
             <CloseIcon fontSize="small" />
           </IconButton>
         </div>
@@ -391,9 +391,6 @@ function AddUnitInterestDialog(props) {
       </div>
     </div>
   );
-
-
-  console.log("!!!! drawerContainer!!!!", props.drawerContainer);
   return (
     <>
       {deleteDialogOpen && (
@@ -416,11 +413,11 @@ function AddUnitInterestDialog(props) {
         </Dialog>
       )}
       {
-        props.drawerContainer && 
+        props.drawerContainer &&
           ReactDOM.createPortal(content, props.drawerContainer)
       }
       {
-        !props.drawerContainer && 
+        !props.drawerContainer &&
           <RightDialog
             open={props.open}
             handleClickDialogClose={handleClose}

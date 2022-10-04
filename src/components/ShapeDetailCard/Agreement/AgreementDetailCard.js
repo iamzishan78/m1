@@ -51,7 +51,6 @@ export default function AgreementDetailCard(props) {
 
   useEffect(() => {
     return history.listen((location) => {
-      console.log(`You changed the page to: ${location.pathname}`);
       if (!properties?.agreementNumber && !location.includes(uniObj._id)) {
         setStateApp((state) => ({
           ...state,

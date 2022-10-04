@@ -243,8 +243,6 @@ const Notifications = () => {
         return;
     }
   };
-
-  console.log(notifications)
   return (
     <Fragment>
       <CardHeader

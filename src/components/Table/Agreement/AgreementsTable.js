@@ -27,7 +27,7 @@ import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import GridView from "components/Shared/GridView";
 
-// value formatters 
+// value formatters
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 
 function AgreementsTable(props) {
@@ -94,8 +94,6 @@ function AgreementsTable(props) {
   useEffect(() => {
     setSelectedGridView(GridViewModule || defaultView);
   }, [GridViewModule]);
-
-  console.log(props.landSearchQuery || 'empty', searchInput || 'empty')
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : []
     props.setInitialFilters(formatedFilter)
