@@ -306,7 +306,7 @@ const AssociatedWellsList = ({
 
         <List aria-label="wells list" className={classes.wellList}>
           {wells && wells.length > 0 ? (
-            [...wells, ...wells].map((well, index) => (
+            [...wells].map((well, index) => (
               <div style={{ padding: "0px 0px 0px" }}>
                 <ListItem key={index}>
                   <Link className={classes.wellLink} color="primary" onClick={() => goToWell(well.descriptorObject)}>
