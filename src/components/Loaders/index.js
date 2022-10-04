@@ -96,7 +96,7 @@ export const successToast = (id, newMessage) => {
     setTimeout(() => {
       toast.dismiss(toastId);
       delete toastMeta[id]
-    }, 4000)
+    }, 5000)
   }
 }
 
@@ -118,10 +118,6 @@ export const errorToast = (id, newMessage) => {
       toastMeta[id].isOpen = true
     }
 
-    // setTimeout(() => {
-    //   toast.dismiss(toastId);
-    //   delete toastMeta[id]
-    // }, 4000)
   }
 }
 

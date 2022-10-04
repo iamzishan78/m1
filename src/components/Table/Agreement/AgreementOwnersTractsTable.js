@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 // context
 
 import { Container, Dialog } from "@material-ui/core";
@@ -21,11 +21,13 @@ import AddAgreementOwnerAndTractDialog from "components/Table/TableAddDialog/Add
 
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
       props.setLoading(false);
       props.setSelectedRows([]);
+      setResetSelectedRow(!resetSelectedRow)
     },
     onError: (err) => { },
   });
@@ -112,6 +114,7 @@ function AgreementOwnersTractsTable(props) {
         total={false}
         loading={props.loading}
         targetLabel={props.targetLabel}
+        resetSelectedRow={resetSelectedRow}
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={false}
