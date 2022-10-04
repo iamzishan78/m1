@@ -40,12 +40,10 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   useEffect(() => {
     document.addEventListener("keydown", onGlobalKeyDown, false);
     document.addEventListener("blur", (e) => {
-      console.log("blur triggered");
     });
   }, []);
 
   useEffect(() => {
-    console.log(agreementDetails)
     if (agreementDetails?._id && !agreementDetails?.agreementNumber)
       dispatch(showInfoMessage("Agreement Number is required"));
   }, [agreementDetails?._id]);
@@ -65,7 +63,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 
   useEffect(() => {
     return history.listen((location) => {
-      console.log(`You changed the page to: ${location.pathname}`);
       if (!agreementDetails?.agreementNumber) {
         setStateApp((state) => ({
           ...state,

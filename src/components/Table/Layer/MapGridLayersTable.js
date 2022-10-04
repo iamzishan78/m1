@@ -88,7 +88,6 @@ function MapGridLayersTable(props) {
   }
 
   useEffect(() => {
-    console.log('stateApp.selectedLayer', stateApp.selectedLayer)
     props.setTableMeta({
       extendSearchQuery: searchInput,
       advanceSearch: stateApp.selectedLayer?.layerGeometry === 'Polygon' ? [{

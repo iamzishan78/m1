@@ -149,7 +149,6 @@ export default function Contacts(props) {
     if (allContactList?.paginatedContacts && allContactList?.paginatedContacts?.edges[0]) {
       if (filteredContacts && filteredContacts.length > 0) {
         let filterData = filteredContacts.map((dataMap, index) => {
-          console.log('data map id ', allContactList?.paginatedContacts?.edges[0].node)
           if (dataMap === allContactList?.paginatedContacts?.edges[0].node.name) {
             contactDetail = {
               _id: dataMap._id,

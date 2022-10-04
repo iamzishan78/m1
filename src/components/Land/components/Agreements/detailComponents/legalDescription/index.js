@@ -74,7 +74,6 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
   const offClickHandler = (key, value) => updateAgreement(key, value);
 
   const handleKeyDown = (e) => {
-    console.log(e.keyCode);
     if (e.keyCode === 38 || e.keyCode === 40) {
       e.preventDefault();
     }

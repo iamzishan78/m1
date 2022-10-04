@@ -17,7 +17,6 @@ export default function LandAppBar(props) {
   const { activeModule, quickActionsPanelState } = useSelector(({ common }) => common);
   const [upsertCustomLayer] = useMutation(UPSERTCUSTOMLAYER, {
     onCompleted: (data) => {
-      console.log(data)
       if (data?.upsertCustomLayer?.customLayer) history.push(`/land/agreement/details/${data.upsertCustomLayer.customLayer._id}`);
     },
   });

@@ -462,7 +462,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     <EntityType
                       className={classes.maxWidth}
                       setDocumentType={(value) => {
-                        console.log("value : ", value.name)
                         setNewOwner({
                           ...newOwner,
                           ownerType: value ? addTrailingZeros(value.name) : null,

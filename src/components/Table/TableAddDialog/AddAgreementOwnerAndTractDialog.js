@@ -442,7 +442,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           </IconButton>
         </>
       )}
-      <IconButton onClick={handleClose} size="small">
+      <IconButton onClick={!loading && handleClose} size="small">
         <CloseIcon2 fontSize="small" />
       </IconButton>
       <Menu
@@ -460,7 +460,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           onClick={() => {
             props.deleteFunc([selectedShapeLayer._id])
             handleMenuClose();
-            handleClose();
+            !loading && handleClose();
           }}
         >
           <ListItemIcon style={{ minWidth: '30px' }}>
@@ -968,7 +968,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       color="default"
       size="medium"
       disableElevation
-      onClick={handleClose}
+      onClick={!loading && handleClose}
       disabled={loading}
       className={classes.footerButton}
       style={{ margin: "0px 15px 0px 0px" }}

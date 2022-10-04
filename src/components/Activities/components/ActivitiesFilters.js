@@ -383,7 +383,6 @@ const QualifierFilter = ({
     <Autocomplete
       size="small"
       onChange={(e, selectedValue, reason) => {
-        console.log(value);
         if (reason === "clear" || !selectedValue?.key) {
           setSearch("");
           setValue("");

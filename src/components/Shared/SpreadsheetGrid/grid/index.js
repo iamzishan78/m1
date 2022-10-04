@@ -256,10 +256,9 @@ class SpreadsheetGrid extends React.PureComponent {
 
     deleteEmptyRow(newRowIndex) {
         if (this.state?.activeCell?.x && this.state?.activeCell?.x !== newRowIndex) {
-            console.log('Row is changed', this.state?.activeCell?.x, newRowIndex)
+
             const { allRows, setRows } = this.props
             const index = this.state?.activeCell?.x
-            console.log('Row is changed Data', allRows[index])
             if (isEmpty(allRows[index])) {
                 allRows.splice(index, 1);
                 setRows([].concat(allRows))

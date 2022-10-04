@@ -29,7 +29,6 @@ import Provisions from "components/Land/components/Agreements/detailComponents/p
 import LegalDescription from "components/Land/components/Agreements/detailComponents/legalDescription";
 import RelatedWells from "components/Land/components/Agreements/detailComponents/relatedWells";
 import Documents from "components/Land/components/Agreements/detailComponents/documents";
-import AgreementDetailsTrackDialog from "components/Land/components/Agreements/detailComponents/tract";
 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
@@ -42,7 +41,6 @@ import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
 import MapImgViewIcon from "components/Shared/svgIcons/MapImgViewIcon";
 import MapProvider from "components/Map/MapProvider";
 import { DrawerContext } from "./DrawerContext";
-import AgreementDetailsAddUnitInterestDialog from "./wells";
 
 const useStyles = makeStyles((theme) => ({
   mapProvider: {

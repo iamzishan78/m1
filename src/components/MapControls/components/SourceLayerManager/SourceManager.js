@@ -223,8 +223,6 @@ function SourceManager(props) {
 
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const { stateApp, setStateApp } = props;
-
-  console.log('stateApp', stateApp)
   const [openM1, setOpenM1] = React.useState(true);
   const [openDataSets, setOpenDataSets] = React.useState({});
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);

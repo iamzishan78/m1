@@ -397,7 +397,6 @@ function SuggestedOwnerTable(props) {
           }}
           rows={formatInterestForImport()}
           setM1nSelectedRowsIndexes={(m1nSelectedRowsIndexes) => {
-            console.log("here");
             if (typeof setM1nSelectedRowsIndexesRef.current === "function") {
               setM1nSelectedRowsIndexesRef.current(m1nSelectedRowsIndexes);
             }
