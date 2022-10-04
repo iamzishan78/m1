@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { memo, useCallback, useContext, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -18,6 +18,7 @@ import {
 } from "react-sortable-hoc";
 import { findInFunction } from "utils/helper";
 import { arrayMoveImmutable } from "array-move";
+import { setStateIfDeepEqual } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -46,10 +47,11 @@ const useStyles = makeStyles((theme) => ({
 
 const CustomerViewCol = (props) => {
   const classes = useStyles();
-  const [, setStateApp] = useContext(AppContext);
-  const [items, setItems] = useState([]);
-  const { updateColumns, onColumnUpdate, columns, tableColumns, updateColumnSorting, selectedGridView } = props;
+  const { setStateApp } = props
 
+  const { updateColumns, onColumnUpdate, columns, tableColumns, updateColumnSorting, selectedGridView } = props;
+  const [items, Items] = useState([]);
+  const setItems = (newState) => { setStateIfDeepEqual(Items, newState); };
 
   const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
 
@@ -88,6 +90,7 @@ const CustomerViewCol = (props) => {
             columns={columns}
             updateColumnSorting={updateColumnSorting}
             setItems={(value) => {
+              console.log('setItems', value)
               setItems(value)
               const stickyColumns = columns.filter(column => column.setCellProps && findInFunction("sticky", column.setCellProps))
               updateColumnSorting(stickyColumns.concat(value))
@@ -98,6 +101,14 @@ const CustomerViewCol = (props) => {
     </>
   );
 };
+const MemoCustomerViewCol = memo(CustomerViewCol)
+
+export const CustomerViewColContainer = (props) => {
+  const [, setStateApp] = useContext(AppContext);
+  const setStateAppCallback = useCallback(setStateApp, [setStateApp])
+
+  return <MemoCustomerViewCol {...props} setStateApp={setStateAppCallback} />
+}
 
 const useSortableStyles = makeStyles((theme) => ({
   itemContainer: {
@@ -125,6 +136,7 @@ const SortableComponent = ({
   items,
 }) => {
   const onSortEnd = ({ oldIndex, newIndex }) => {
+    console.log('setItems SortableComponent', items)
     setItems(arrayMoveImmutable(items, oldIndex, newIndex));
   };
 
@@ -162,12 +174,14 @@ const SortableList = SortableContainer(
     const removeIndex = (index) => {
       const newItems = JSON.parse(JSON.stringify(items));
       newItems.splice(index, 1);
+      console.log('setItems removeIndex', items)
       setItems(newItems);
     };
 
     const updateIndex = (index, data) => {
       const newItems = JSON.parse(JSON.stringify(items));
       newItems[index] = data;
+      console.log('setItems updateIndex', items)
       setItems(newItems);
     };
 
@@ -207,8 +221,8 @@ const SortableItem = SortableElement(
     tableColumns,
     columns,
     updateColumns,
-    selectedGridView,
     onColumnUpdate,
+    selectedGridView,
     updateColumnSorting,
     updateMetaData,
     removeIndex,
@@ -268,4 +282,4 @@ const SortableItem = SortableElement(
   }
 );
 
-export default CustomerViewCol;
+export default CustomerViewColContainer;
