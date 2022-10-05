@@ -224,6 +224,7 @@ const ActivitySearch = () => {
                       </Tooltip>
                       <Tooltip title="List View">
                         <IconButton
+                          id="listView"
                           size="small"
                           htmlColor="#fff"
                           className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" && classes.activeBtn}`}

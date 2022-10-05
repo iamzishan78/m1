@@ -110,10 +110,10 @@ function ActivitiesTable(props) {
 
   useEffect(() => {
     props.setTableMeta({
-      filters: [ 
-        ...getFilters(appliedFilters), 
-        { field:'type.keyword', value:'Expiration', notInclude: true },
-        { field:'type.keyword', value:'Option to Extend', notInclude: true }
+      filters: [
+        ...getFilters(appliedFilters),
+        { field: 'type.keyword', value: 'Expiration', notInclude: true },
+        { field: 'type.keyword', value: 'Option to Extend', notInclude: true }
       ],
       extendSearchQuery: stateApp.activitySearchQuery,
       searchFields,
@@ -199,7 +199,7 @@ function ActivitiesTable(props) {
     <Container
       maxWidth={false}
       className={`${classes.container} ${!applyCustomClasses && classes.subComponentsClasses}`}
-      id={props.id ? props.id : props.parent}
+      id={props.id ? props.id : props.parent || "activitiesTable"}
     >
       <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
         {props.openDialog === "delete" && (
@@ -242,6 +242,7 @@ function ActivitiesTable(props) {
                 {props.addable && props.addAble.type === "contactActivity" && (
                   <ButtonGroup variant="contained" style={{ height: "40px", margin: "4px" }} color="primary" aria-label="split button">
                     <Button
+                      id="addActivityButton"
                       color="primary"
                       size="small"
                       aria-label="select merge strategy"

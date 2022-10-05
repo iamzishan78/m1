@@ -1396,7 +1396,6 @@ function SubTable(props) {
                     );
                   } else if (props.targetLabel === "contact") {
                     const nameIndex = props.columns.findIndex((val) => val.name === "name")
-                    debugger
                     return (
                       <div
                         style={{
@@ -3004,7 +3003,7 @@ function SubTable(props) {
                   if (column.name === "isClosed" && (props.targetLabel === "activity" || props.targetLabel === "activitiesDashboard") && value === true)
                     return (
                       <div style={{ textAlign: "center" }}>
-                        <CheckIcon />
+                        <CheckIcon id="checkIcon" />
                       </div>
                     );
 
