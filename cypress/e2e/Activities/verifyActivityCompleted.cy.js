@@ -13,21 +13,25 @@ describe('Verify Activity Completed Spec', () => {
         cy.visit('http://localhost:3000/calendar/activities')
         cy.checkAndLogin()
 
+        cy.log('==== STEP: CLICK ON LIST VIEW  ICON ====');
         cy.get('#listView', { timeout: longTimeout }).should('be.visible').click()
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
 
         cy.get('#activitiesTable', { timeout: longTimeout }).should('be.visible')
 
         cy.getTableCell('Completed?', 1).then(($tableCell) => {
+            cy.log('==== STEP: OPEN ACTIVIY MODEL ====');
             cy.wrap($tableCell).scrollIntoView().click({ force: true })
 
-            cy.wait(1000)
-
+            cy.log('==== STEP: CLICK ON MARK AS DONE ICON ====');
             cy.interceptApi('updateActivity')
             cy.get('#markAsDone', { timeout: longTimeout }).check({ force: true })
+
+            cy.log('==== STEP: CLICK ON SAVE BUTTON ====');
             cy.get("#addSaveButton").click({ force: true })
             cy.verifyApiResponse('@updateActivityApi', { responseTimeout: longTimeout })
 
+            cy.log('==== STEP: VERIFY IF CHECK ICON APEAR FOR ACTIVITY ====');
             cy.wrap($tableCell).get("#checkIcon").should('exist')
         })
     })
