@@ -201,6 +201,11 @@ const CodeMapping = ({settingsFor}) => {
     } else {
       mapping = [{ from: code, to: value }];
     }
+    setMetaData(metaData=>metaData.map(meta=>{
+      if(meta._id!==selectedMeta._id) return meta
+
+      return {...meta, mapping}
+    }))
     updateMetaData({
       variables: {
         metaData: {
@@ -208,7 +213,6 @@ const CodeMapping = ({settingsFor}) => {
           mapping: mapping,
         },
       },
-      refetchQueries: ["getMetaData"],
       awaitRefetchQueries: true,
     });
   };
@@ -262,7 +266,7 @@ const CodeMapping = ({settingsFor}) => {
             <>
               {codes.map((code, index) => {
                 const selectedMeta =
-                  metaData.find((meta) => meta.esKey === mappingType?.key) ||
+                metaData.find((meta) => meta.esKey === mappingType?.key) ||
                   {};
                 const value = selectedMeta?.mapping?.find(
                   (data) => data.from === code
