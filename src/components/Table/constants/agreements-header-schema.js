@@ -1,4 +1,4 @@
-import GlobalSettings from "GlobalSettings";
+import { GlobalStickyStyles } from "GlobalSettings";
 
 const AgreementsHeadCells = (isSnapGrid = false) => [
   {
@@ -12,19 +12,14 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Agreement",
     esKey: "shapeJson.properties.agreementNumber.keyword",
     options: {
-      setCellProps: () => ({
-        style: {
-          ...GlobalSettings.muiGridInfScrollOptions.setCellProps().style,
-          left: isSnapGrid ? "77px" : "124px",
+      ...GlobalStickyStyles({
+        setCellProps: {
+          maxWidth: "492px",
         },
+        setCellHeaderProps: {
+          paddingLeft: '35px',
+        }
       }),
-      setCellHeaderProps: () => ({
-        style: {
-          ...GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps().style,
-          left: isSnapGrid ? "77px" : "124px",
-        },
-      }),
-      ignoreGlobal: true,
       dbName: "shapeJson.properties.agreementNumber",
       isSnapGrid,
     },

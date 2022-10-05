@@ -19,6 +19,7 @@ import { usetableStyles } from "../Styles";
 // value formatters
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 
+const startPaginationAt = 50;
 function MyWellsGridTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
@@ -65,7 +66,7 @@ function MyWellsGridTable(props) {
       searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "mywells_flat",
-      startPaginationAt: 50,
+      startPaginationAt,
       defaultSort: { field: "lastUpdateAt", order: "desc" },
       formatHits,
     });
@@ -85,7 +86,7 @@ function MyWellsGridTable(props) {
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={false}
-        startPaginationAt={null}
+        startPaginationAt={startPaginationAt}
         onTableChange={props.onTableChange}
         options={{
           ...props.options,
