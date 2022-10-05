@@ -84,6 +84,7 @@ const mappingTypeOptions = {
     {
       value: "Interest Types",
       heading: 'Map interest type values expected to show up for each agreement type',
+      key: 'custom_data.interest_type',
       name: "Interest type",
       to: "Agreement type",
       codes: ['Mineral Interest', 'Royalty Interest', 'Overriding Royalty Interest (ORRI)', 'Working Interest'],
