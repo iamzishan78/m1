@@ -22,6 +22,7 @@ import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
 
+
 const useStyles = makeStyles((theme) => ({
   actionBar: ({ isBackground }) => ({
     padding: "10px 25px",
@@ -69,30 +70,72 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const mappingTypeOptions = [
-  {
-    value: "Acreage Report Categories",
-    esIndex: "shapeowners_flat",
-    key: "tractStatus.keyword",
-    heading: "Map distinct tract status values from agreements to desired reporting category",
-    name: "Tract status",
-    to: "Reporting category",
-  },
-  {
-    value: "Interest Types",
-    heading: 'Map interest type values expected to show up for each agreement type',
-    name: "Interest type",
-    to: "Agreement type",
-    codes: ['Mineral Interest', 'Royalty Interest', 'Overriding Royalty Interest (ORRI)', 'Working Interest']
-  },
-];
+const mappingTypeOptions = {
+  land: [
+    {
+      value: "Acreage Report Categories",
+      esIndex: "shapeowners_flat",
+      key: "tractStatus.keyword",
+      heading: "Map distinct tract status values from agreements to desired reporting category",
+      name: "Tract status",
+      to: "Reporting category",
+      category: "Agreement",
+    },
+    {
+      value: "Interest Types",
+      heading: 'Map interest type values expected to show up for each agreement type',
+      name: "Interest type",
+      to: "Agreement type",
+      codes: ['Mineral Interest', 'Royalty Interest', 'Overriding Royalty Interest (ORRI)', 'Working Interest'],
+      category: "Agreement",
+    }
+  ],
+  revenue: [
+    {
+      value: "Interest Type",
+      heading: 'Map distinct values from revenue statements to desired reporting category',
+      esIndex: "checkdetails_flat",
+      key: "interestType.keyword",
+      name: "Interest type code",
+      to: "Reporting category",
+      category: "Check Details",
+    },
+    {
+      value: "Tax Type",
+      heading: 'Map distinct values from revenue statements to desired reporting category',
+      esIndex: "checkdetails_flat",
+      key: "taxType.keyword",
+      name: "Tax type code",
+      to: "Reporting category",
+      category: "Check Details",
+    },
+    {
+      value: "Deduction Type",
+      heading: 'Map distinct values from revenue statements to desired reporting category',
+      esIndex: "checkdetails_flat",
+      key: "deductType.keyword",
+      name: "Deduction type code",
+      to: "Reporting category",
+      category: "Check Details",
+    },
+    {
+      value: "Product Type",
+      heading: 'Map distinct values from revenue statements to desired reporting category',
+      esIndex: "checkdetails_flat",
+      key: "product.keyword",
+      name: "Product type code",
+      to: "Reporting category",
+      category: "Check Details",
+    },
+  ],
+};
 
-const CodeMapping = () => {
+const CodeMapping = ({settingsFor}) => {
   const classes = useStyles();
   const [codes, setCodes] = useState([]);
   const [metaData, setMetaData] = useState([]);
   const [showEmpty, setShowEmpty] = useState(false);
-  const [mappingType, setMappingType] = useState(mappingTypeOptions[0]);
+  const [mappingType, setMappingType] = useState(mappingTypeOptions[settingsFor][0]);
 
   const [updateMetaData, { }] = useMutation(UPDATE_META_DATA);
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
@@ -111,7 +154,7 @@ const CodeMapping = () => {
   useEffect(() => {
     getMetaData({
       variables: {
-        category: "Agreement",
+        category: mappingType.category,
       },
     });
   }, [getMetaData]);
@@ -168,12 +211,14 @@ const CodeMapping = () => {
       awaitRefetchQueries: true,
     });
   };
+  
   return (
     <>
       <CodeMappingHeader
         metaData={metaData}
         setMappingType={setMappingType}
         mappingType={mappingType}
+        settingsFor={settingsFor}
       />
       <div className={classes.container}>
         <label>
@@ -277,6 +322,7 @@ const CodeMappingHeader = ({
   isBackground = true,
   fullWidth = false,
   isShrink = false,
+  settingsFor
 }) => {
   const classes = useStyles({ isBackground, isShrink });
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -298,7 +344,7 @@ const CodeMappingHeader = ({
           >
             <Autocomplete
               id="activityFilterByType"
-              options={mappingTypeOptions}
+              options={mappingTypeOptions[settingsFor]}
               getOptionLabel={(option) => option.value}
               style={{ width: 300 }}
               size="small"
@@ -358,7 +404,7 @@ const CodeMappingHeader = ({
       {stateApp.showFieldModal && (
         <MetaField
           columns={[]}
-          category="Agreement"
+          category={mappingType.category}
           esKey={mappingType?.key}
         />
       )}
