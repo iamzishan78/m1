@@ -1,4 +1,5 @@
 import globalSettings from "GlobalSettings";
+import vf_number from "components/Shared/valueformatters/vf_number";
 
 const wellsColumnHeaders = [
   {
@@ -167,6 +168,9 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
+      customRender: (value) => (
+        <p>{value ? vf_number(Math.floor(value)) : null}</p>
+      )
     },
   },
   {
@@ -176,6 +180,9 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
+      customRender: (value) => (
+        <p>{value ? vf_number(Math.floor(value)) : null}</p>
+      )
     },
   },
   {
@@ -185,6 +192,9 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
+      customRender: (value) => (
+        <p>{value ? vf_number(Math.floor(value)) : null}</p>
+      )
     },
   },
   {
