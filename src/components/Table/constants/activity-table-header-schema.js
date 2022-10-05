@@ -102,6 +102,7 @@ const ActivitiesHeadCells = [
     name: "isClosed",
     label: "Completed?",
     options: {
+      ignoreGlobal: true,
       display: true,
       sort: true,
       filter: true,
