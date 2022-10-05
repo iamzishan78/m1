@@ -16,6 +16,9 @@ import TableHeader from "components/Table/constants/my-wells-grid-header-schema"
 // Utilities
 import { usetableStyles } from "../Styles";
 
+// value formatters
+import convert_date from "components/Shared/valueformatters/convert_date.js";
+
 function MyWellsGridTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
@@ -43,8 +46,11 @@ function MyWellsGridTable(props) {
       });
       hit = {
         ...hit.wellData,
+        ...propertiesKeys,
         sort: hit.sort,
-        ...propertiesKeys
+        permitApprovedDate: hit.wellData.permitApprovedDate ? convert_date(hit.wellData.permitApprovedDate) : null,
+        spudDate: hit.wellData.spudDate ? convert_date(hit.wellData.spudDate) : null,
+        completionDate: hit.wellData.completionDate ? convert_date(hit.wellData.completionDate) : null,
       };
       return hit;
     });

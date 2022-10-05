@@ -128,6 +128,10 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
+      custom: {
+        key_as_string: true,
+        isDate: true,
+      },
     },
   },
   {
@@ -137,6 +141,10 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
+      custom: {
+        key_as_string: true,
+        isDate: true,
+      },
     },
   },
   {
@@ -146,6 +154,10 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
+      custom: {
+        key_as_string: true,
+        isDate: true,
+      },
     },
   },
   {

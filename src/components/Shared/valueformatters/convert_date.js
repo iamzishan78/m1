@@ -4,22 +4,16 @@ import moment from 'moment'
 
 export default function convert_date(value) {
 
-    const convertDate = unixStamp => {
+  const convertDate = unixStamp => {
 
-        const date = moment.utc(new Date(unixStamp)).format("MM/DD/YYYY");
-      
-        if (unixStamp === 'null') {return '--'}
-        else if(unixStamp === null) {return '--'}
-        else if(unixStamp === undefined) {return '--'}
+    const date = moment.utc(new Date(unixStamp)).format("MM/DD/YYYY");
 
-        else {return date}
-      }
+    if (unixStamp === 'null') { return '--' }
+    else if (unixStamp === null) { return '--' }
+    else if (unixStamp === undefined) { return '--' }
 
-    const valueFormatter = (v) => {
-        return convertDate(v);
-    };
-  
-
-    return valueFormatter(value)
+    else { return date }
   }
-  
+
+  return convertDate(value);
+}
