@@ -247,7 +247,7 @@ const PipelineCustomDialog = (props) => {
     } else if (selectedPipe) {
       ////update
       let stagesToUpdate = [];
-
+debugger
       let pipeToUpdate = { ...selectedPipe, ...formStates }; //// else update the ts
 
       let stagesToAdd = stages.filter((stage) => !stage._id);

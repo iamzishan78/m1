@@ -569,7 +569,7 @@ const Transact = () => {
 
           <div className={CardClasses.cardSubheading}>
             {
-                fieldsOnCardToShow?.map(field => 
+                fieldsOnCardToShow?.filter(field => metadata[field])?.map(field => 
                   <>
                     <br />
                     <span>

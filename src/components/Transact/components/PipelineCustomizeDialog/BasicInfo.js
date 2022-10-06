@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, Fragment } from "react";
+import React, { useEffect, useState, useRef, Fragment } from "react";
 import { useSelector } from "react-redux";
 import { Controller } from "react-hook-form";
 import { makeStyles } from "@material-ui/core/styles";
@@ -95,6 +95,7 @@ const reorder = (list, startIndex, endIndex) => {
 
 const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors }) => {
   const classes = useStyles();
+  const callCount = useRef(0)
   // const [stateTransact] = useContext(TransactContext);
   const { openPipeDialog, selectedPipe } = useSelector(({ Flow }) => Flow);
 
@@ -124,14 +125,15 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
       
       fieldsOnCardToShow?.forEach(field => {
         const find = optionsArr.find(item => item.key === field);
-
+        
         find && options.push({...find, isSelected: true});
       })
-
+      
       const unSelectedOptions = optionsArr.filter((item) => !fieldsOnCardToShow?.includes(item.key));
       options.push(...unSelectedOptions)
       setCardOptions(options);
-      setSelectedField([]);
+      callCount.current > 0 && setSelectedField([]);
+      callCount.current++;
     }
   }, [flowLineType]);
 
@@ -167,6 +169,8 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
     setCardOptions(newCardDataOptions);
     setSelectedField(newCardDataOptions);
   }
+
+  console.log(" fieldsOnCardToShow ", fieldsOnCardToShow);
 
   return (
     <div className={classes.basicInfoRoot}>
@@ -327,7 +331,7 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
                           }
                           defaultChecked={
                             (openPipeDialog === true &&
-                              selectedPipe.rottenness !== false) ||
+                              selectedPipe.showDescription !== false) ||
                             openPipeDialog !== true
                           }
                         />
