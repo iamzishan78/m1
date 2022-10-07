@@ -45,7 +45,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   }, []);
 
   useEffect(() => {
-    console.log(agreementDetails)
     if (agreementDetails?._id && !agreementDetails?.agreementNumber)
       dispatch(showInfoMessage("Agreement Number is required"));
   }, [agreementDetails?._id]);

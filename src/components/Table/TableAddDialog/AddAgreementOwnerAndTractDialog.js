@@ -50,6 +50,7 @@ import AutoCompleteParcelOwners from "components/Shared/Forms/Fields/AutoComplet
 import Loaders from "components/Loaders";
 import { GET_TRACT_ABSTRACT_SHAPE } from "graphQL/useQueryGetTractAbstractShape";
 import { useDispatch } from "react-redux";
+import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 
 const useStyles = makeStyles((theme) => ({
   dialogFooter: {
@@ -123,6 +124,29 @@ function AddAgreementOwnerAndTractDialog(props) {
 
   const tract = watch("tract", {});
   const state = watch("tract.state", '');
+
+  const layerType = props.layerType.charAt(0).toUpperCase() + props.layerType.slice(1)
+
+  const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
+
+  const [interestMapping, setInterestMapping] = useState({})
+  
+  useEffect(() => {
+    getMetaData({
+      variables: {
+        category: "Agreement", 
+      },
+    });
+  }, [getMetaData])
+
+  useEffect(() => {
+    if(!metaDataRes) return
+
+    const { metaData } = metaDataRes.getMetaData
+    const interestMetaData = metaData.filter(data => data.esKey==='custom_data.interest_type')[0]
+
+    setInterestMapping(interestMetaData.mapping.reduce((acc, val)=>({...acc, [val.from]: val.to}), {}))
+  }, [metaDataRes])
 
   useEffect(() => {
     if (isNewTract) {
@@ -712,87 +736,96 @@ function AddAgreementOwnerAndTractDialog(props) {
 
           <TextField id="ownerEntity" name={`ownerEntity`} style={{ display: "none" }} inputRef={register()} />
           <TextField id="ownerName" name={`ownerName`} style={{ display: "none" }} inputRef={register()} />
-          <Controller
-            control={control}
-            name="mineral_interest"
-            render={({ onChange, value }) => (
-              <TextField
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                margin="dense"
-                value={value}
-                type="number"
-                label={"Mineral Interest"}
-                fullWidth
-                onWheel={(e) => e.target.blur()}
-                onChange={(e) => {
-                  onChange(e.target.value);
-                  const net_acres = !isAcresOverridden ? calculateNetAcres(e.target.value) : getValues().net_acres
-                  const nra = !isNraOverridden ? calculateNRA(getValues().royalty_interest, getValues().orri, net_acres) : getValues().nra
-                  setValue("net_acres", net_acres);
-                  setValue("nra", nra);
-                }}
-              />
-            )}
-          />
 
-          <Controller
-            control={control}
-            name="royalty_interest"
-            render={({ onChange, value }) => (
-              <TextField
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                margin="dense"
-                value={value}
-                type="number"
-                label={"Royalty Interest"}
-                fullWidth
-                onWheel={(e) => e.target.blur()}
-                onChange={(e) => {
-                  onChange(e.target.value);
-                  if (!isNraOverridden)
-                    setValue("nra", calculateNRA(e.target.value, getValues().orri));
-                }}
-              />
-            )}
-          />
+          {interestMapping['Mineral Interest']?.includes(layerType) && (
+            <Controller
+              control={control}
+              name="mineral_interest"
+              render={({onChange, value}) => (
+                <TextField
+                  variant="outlined"
+                  InputLabelProps={{shrink: true}}
+                  margin="dense"
+                  value={value}
+                  type="number"
+                  label={'Mineral Interest'}
+                  fullWidth
+                  onWheel={(e) => e.target.blur()}
+                  onChange={(e) => {
+                    onChange(e.target.value)
+                    const net_acres = !isAcresOverridden ? calculateNetAcres(e.target.value) : getValues().net_acres
+                    const nra = !isNraOverridden ? calculateNRA(getValues().royalty_interest, getValues().orri, net_acres) : getValues().nra
+                    setValue('net_acres', net_acres)
+                    setValue('nra', nra)
+                  }}
+                />
+              )}
+            />
+          )}
 
-          <Controller
-            control={control}
-            name="orri"
-            render={({ onChange, value }) => (
-              <TextField
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                margin="dense"
-                value={value}
-                type="number"
-                label={"Overriding Royalty Interest (ORRI)"}
-                fullWidth
-                onWheel={(e) => e.target.blur()}
-                onChange={(e) => {
-                  onChange(e.target.value);
-                  if (!isNraOverridden)
-                    setValue("nra", calculateNRA(e.target.value, getValues().orri));
-                }}
-              />
-            )}
-          />
+          {interestMapping['Royalty Interest']?.includes(layerType) && (
+            <Controller
+              control={control}
+              name="royalty_interest"
+              render={({ onChange, value }) => (
+                <TextField
+                  variant="outlined"
+                  InputLabelProps={{ shrink: true }}
+                  margin="dense"
+                  value={value}
+                  type="number"
+                  label={"Royalty Interest"}
+                  fullWidth
+                  onWheel={(e) => e.target.blur()}
+                  onChange={(e) => {
+                    onChange(e.target.value);
+                    if (!isNraOverridden)
+                      setValue("nra", calculateNRA(e.target.value, getValues().orri));
+                  }}
+                />
+              )}
+            />
+          )}
 
-          <Controller
-            as={TextField}
-            control={control}
-            variant="outlined"
-            margin="dense"
-            name="working_interest"
-            inputRef={register()}
-            label={"Working Interest"}
-            InputLabelProps={{ shrink: true }}
-            type="number"
-            fullWidth
-            onWheel={(e) => e.target.blur()}
-          />
+          {interestMapping['Overriding Royalty Interest (ORRI)']?.includes(layerType) && (
+            <Controller
+              control={control}
+              name="orri"
+              render={({ onChange, value }) => (
+                <TextField
+                  variant="outlined"
+                  InputLabelProps={{ shrink: true }}
+                  margin="dense"
+                  value={value}
+                  type="number"
+                  label={"Overriding Royalty Interest (ORRI)"}
+                  fullWidth
+                  onWheel={(e) => e.target.blur()}
+                  onChange={(e) => {
+                    onChange(e.target.value);
+                    if (!isNraOverridden)
+                      setValue("nra", calculateNRA(e.target.value, getValues().orri));
+                  }}
+                />
+              )}
+            />
+          )}
+
+          {interestMapping['Working Interest']?.includes(layerType) && (
+            <Controller
+              as={TextField}
+              control={control}
+              variant="outlined"
+              margin="dense"
+              name="working_interest"
+              inputRef={register()}
+              label={"Working Interest"}
+              InputLabelProps={{ shrink: true }}
+              type="number"
+              fullWidth
+              onWheel={(e) => e.target.blur()}
+            />
+          )}
 
           <Controller
             control={control}
