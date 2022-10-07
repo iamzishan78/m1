@@ -354,7 +354,7 @@ function ExpandableCard(props) {
     if (props.targetLabel === "well" || props.targetLabel === "expandedWell") {
       const newPath = `/map/wells/${stateApp.selectedWell.id}`;
       history.location.pathname !== newPath &&
-        history.replace(newPath, { ...history.location.state });
+        history.replace({ path: newPath, search: window.location?.search }, { ...history.location.state });
       setStateApp((state) => ({
         ...state,
         wellDetailCardOpen: true,

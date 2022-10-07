@@ -177,7 +177,8 @@ const AssociatedWellsList = ({ title }) => {
   };
 
   // sending to wells page
-  const goToWell = (well) => {
+  const goToWell = (e, well) => {
+    e.preventDefault()
     history.push(`/map/wells/${well?.id.toUpperCase()}`, {
       showWellBreadcrumb: true, breadcrumbs: [
         { title: "Documents", url: "/documents" },
@@ -278,9 +279,9 @@ const AssociatedWellsList = ({ title }) => {
             wells.map((well, index) => (
               <div style={{ padding: "0px 0px 0px" }}>
                 <ListItem key={index}>
-                  <Link className={classes.wellLink} color="primary" onClick={() => goToWell(well)}>
+                  <a className={classes.wellLink} href={`/map/wells/${well?.id.toUpperCase()}?title="Documents"&url="/documents"`} onClick={(e) => goToWell(e, well)} target="_blank" rel="noreferrer">
                     {well.wellName}
-                  </Link>
+                  </a>
 
                   {deleteWellLoading && deletedRow === well.id ? (
                     <ListItemSecondaryAction>
