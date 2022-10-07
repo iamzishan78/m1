@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useApolloClient, useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -51,6 +51,7 @@ import Loaders from "components/Loaders";
 import { GET_TRACT_ABSTRACT_SHAPE } from "graphQL/useQueryGetTractAbstractShape";
 import { useDispatch } from "react-redux";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+import _ from "lodash";
 
 const useStyles = makeStyles((theme) => ({
   dialogFooter: {
@@ -125,12 +126,11 @@ function AddAgreementOwnerAndTractDialog(props) {
   const tract = watch("tract", {});
   const state = watch("tract.state", '');
 
-  const layerType = props.layerType.charAt(0).toUpperCase() + props.layerType.slice(1)
+  let layerType = _.upperFirst(props.layerType)
+  layerType = layerType === 'Surface' ? 'Surface/ROW' : layerType  
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
-  const [interestMapping, setInterestMapping] = useState({})
-  
   useEffect(() => {
     getMetaData({
       variables: {
@@ -139,13 +139,13 @@ function AddAgreementOwnerAndTractDialog(props) {
     });
   }, [getMetaData])
 
-  useEffect(() => {
+  const interestMapping = useMemo(() => {
     if(!metaDataRes) return
 
     const { metaData } = metaDataRes.getMetaData
     const interestMetaData = metaData.filter(data => data.esKey==='custom_data.interest_type')[0]
 
-    setInterestMapping(interestMetaData.mapping.reduce((acc, val)=>({...acc, [val.from]: val.to}), {}))
+    return interestMetaData.mapping.reduce((acc, val)=>({...acc, [val.from]: val.to}), {})
   }, [metaDataRes])
 
   useEffect(() => {
@@ -737,7 +737,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           <TextField id="ownerEntity" name={`ownerEntity`} style={{ display: "none" }} inputRef={register()} />
           <TextField id="ownerName" name={`ownerName`} style={{ display: "none" }} inputRef={register()} />
 
-          {interestMapping['Mineral Interest']?.includes(layerType) && (
+          {interestMapping?.['Mineral Interest']?.includes(layerType) && (
             <Controller
               control={control}
               name="mineral_interest"
@@ -763,7 +763,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             />
           )}
 
-          {interestMapping['Royalty Interest']?.includes(layerType) && (
+          {interestMapping?.['Royalty Interest']?.includes(layerType) && (
             <Controller
               control={control}
               name="royalty_interest"
@@ -787,7 +787,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             />
           )}
 
-          {interestMapping['Overriding Royalty Interest (ORRI)']?.includes(layerType) && (
+          {interestMapping?.['Overriding Royalty Interest (ORRI)']?.includes(layerType) && (
             <Controller
               control={control}
               name="orri"
@@ -811,7 +811,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             />
           )}
 
-          {interestMapping['Working Interest']?.includes(layerType) && (
+          {interestMapping?.['Working Interest']?.includes(layerType) && (
             <Controller
               as={TextField}
               control={control}
