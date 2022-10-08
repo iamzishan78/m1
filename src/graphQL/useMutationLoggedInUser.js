@@ -4,6 +4,7 @@ export const GET_LOGGED_IN_USER = `
     login(user: $user) {
       success
       message
+      error
       sessionData
       user {
         _id
