@@ -195,7 +195,7 @@ const AssociatedWellsList = ({
     setAddWell(false);
     upsertWellDescriptor({
       variables: {
-        well: wellData,
+        well: { ...wellData, isDeleted: false },
         relatedObject,
         relatedObjectType,
       },

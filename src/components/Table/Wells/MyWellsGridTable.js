@@ -24,40 +24,6 @@ function MyWellsGridTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
 
-  const setTableMeta = React.useMemo(
-    () =>
-      debounce((request, top, callback) => {
-        props.setTableMeta(request);
-      }, 500),
-    []
-  );
-
-  const formatHits = (hits) => {
-    hits = hits.map((hit) => {
-      const properties = get(hit, "properties", []);
-      const propertiesKeys = { internalID: [], propertiesNames: [], prospectID: [], status: [], acquisitionID: [], internalCompany: [], divOrderStatus: [] };
-      properties.forEach(property => {
-        propertiesKeys.internalID.push(property.internalID);
-        propertiesKeys.propertiesNames.push(property.name);
-        propertiesKeys.prospectID.push(property.prospectID);
-        propertiesKeys.internalCompany.push(property.internalCompany);
-        propertiesKeys.divOrderStatus.push(property.divOrderStatus);
-        propertiesKeys.status.push(startCase(property.status));
-        propertiesKeys.acquisitionID.push(startCase(property.acquisitionID));
-      });
-      hit = {
-        ...hit.wellData,
-        ...propertiesKeys,
-        sort: hit.sort,
-        permitApprovedDate: hit.wellData.permitApprovedDate ? convert_date(hit.wellData.permitApprovedDate) : null,
-        spudDate: hit.wellData.spudDate ? convert_date(hit.wellData.spudDate) : null,
-        completionDate: hit.wellData.completionDate ? convert_date(hit.wellData.completionDate) : null,
-      };
-      return hit;
-    });
-    return hits;
-  };
-
   useEffect(() => {
     setTableMeta({
       filters: props.filters,
@@ -72,6 +38,43 @@ function MyWellsGridTable(props) {
     });
     // eslint-disable-next-line
   }, [stateApp.landSearchQuery, props.filters]);
+
+  const setTableMeta = React.useMemo(
+    () =>
+      debounce((request, top, callback) => {
+        props.setTableMeta(request);
+      }, 500),
+    []
+  );
+
+  const formatHits = (hits) => {
+    hits = hits.map((hit) => {
+      const properties = get(hit, "properties", []);
+      const propertiesKeys = { internalID: [], propertiesNames: [], prospectID: [], status: [], acquisitionID: [], internalCompany: [], divOrderStatus: [], costFree: [] };
+      properties.forEach(property => {
+        propertiesKeys.internalID.push(property.internalID);
+        propertiesKeys.propertiesNames.push(property.name);
+        propertiesKeys.prospectID.push(property.prospectID);
+        propertiesKeys.internalCompany.push(property.internalCompany);
+        propertiesKeys.divOrderStatus.push(property.divOrderStatus);
+        propertiesKeys.status.push(startCase(property.status));
+        propertiesKeys.acquisitionID.push(startCase(property.acquisitionID));
+        propertiesKeys.costFree.push(startCase(property.costFree));
+      });
+      hit = {
+        ...hit.wellData,
+        ...propertiesKeys,
+        sort: hit.sort,
+        permitApprovedDate: hit.wellData.permitApprovedDate ? convert_date(hit.wellData.permitApprovedDate) : null,
+        spudDate: hit.wellData.spudDate ? convert_date(hit.wellData.spudDate) : null,
+        completionDate: hit.wellData.completionDate ? convert_date(hit.wellData.completionDate) : null,
+      };
+      return hit;
+    });
+    return hits;
+  };
+
+
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>

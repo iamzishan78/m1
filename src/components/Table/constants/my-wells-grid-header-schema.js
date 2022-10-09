@@ -123,6 +123,42 @@ const wellsColumnHeaders = [
     },
   },
   {
+    name: "GrId1",
+    label: "Survey",
+    esKey: "wellData.GrId1.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "GrId2",
+    label: "Block/Twsp",
+    esKey: "wellData.GrId2.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "GrId3",
+    label: "Sec/Range",
+    esKey: "wellData.GrId3.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "GrId4",
+    label: "Abstract/Sec",
+    esKey: "wellData.GrId4.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
     name: "permitApprovedDate",
     label: "Permit Date",
     esKey: "wellData.permitApprovedDate.keyword",
@@ -228,6 +264,15 @@ const wellsColumnHeaders = [
       customRender: (value) => (
         <p>{value?.length ? value.join(", ") : null}</p>
       )
+    },
+  },
+  {
+    name: "costFree",
+    label: "Cost Free",
+    esKey: "properties.costFree.keyword",
+    options: {
+      sort: true,
+      filter: true,
     },
   },
   {
