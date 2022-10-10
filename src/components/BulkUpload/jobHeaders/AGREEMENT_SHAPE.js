@@ -99,7 +99,7 @@ const Agreement = [
         label: "Description",
         mapped_key: "",
         required: true,
-        actual_key: "legalDesctiption",
+        actual_key: "metaDescription",
     },
     {
         label: "Acquisition ID",

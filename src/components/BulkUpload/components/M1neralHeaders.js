@@ -395,7 +395,7 @@ export default function M1neralHeaders(props) {
                 *Note: Existing agreements will be matched on M1neral ID or Agreement Number
               </div>
             </>
-          ) : (
+          ) : !['AGREEMENT_RELATED_WELLS'].includes(stateApp.jobType) && (
             <div style={{ ...text_grey }}>
               *First Name or Last Name is required to be mapped <br /> before
               uploading contacts.
