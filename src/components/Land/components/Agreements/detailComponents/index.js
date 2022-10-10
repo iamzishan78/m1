@@ -384,8 +384,7 @@ export default function DetailComponents(props) {
         customLayerId: activeAgreement._id,
         customLayer,
         userId: stateApp.user.mongoId
-      },
-      refetchQueries: ["customLayer"],
+      }
     });
   };
 
