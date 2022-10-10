@@ -33,9 +33,10 @@ describe('Searches Verifications Spec', () => {
 
         cy.log(`==== STEP:Search UNIT BY NAME ${searchStrings.unitName} ====`)
         cy.interceptApi('getCustomLayer')
-        cy.searchOnMap('Agreements', searchStrings.unitName)
+        cy.searchOnMap('Units', searchStrings.unitName)
         cy.verifyApiResponse('@getCustomLayerApi', { responseTimeout: longTimeout })
 
+        cy.visit('http://localhost:3000')
 
         cy.log('==== STEP: CLICK ON SNAP GRID BUTTON ====')
         cy.get("#snapGridButton", { timeout: longTimeout }).should('be.visible').click()
