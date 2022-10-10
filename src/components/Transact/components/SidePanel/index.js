@@ -122,8 +122,8 @@ const useStyles = makeStyles((theme) => ({
     color: "rgba(121, 121, 121, 0.85)",
     margin: "auto",
     "&:hover": {
-      backgroundColor: "#fff",
-      color: "#040e24",
+      backgroundColor: "#263451",
+      color: "#fff",
       transition: "all 0.3s linear",
     },
   },
@@ -328,10 +328,19 @@ const SidePanel = () => {
 
   return (
     <>
-      <Drawer variant="permanent" className={classes.drawer} classes={{ paper: classes.drawer }} open={true}>
+      <Drawer
+        variant="permanent"
+        className={classes.drawer}
+        classes={{ paper: classes.drawer }}
+        open={true}
+      >
         <div className={classes.toolbar}>
           <div className={classes.toolbarHeader}>
-            <Typography variant="h5" component="h4" style={{ float: "left", marginTop: "15px" }}>
+            <Typography
+              variant="h5"
+              component="h4"
+              style={{ float: "left", marginTop: "15px" }}
+            >
               Flowlines
             </Typography>
             <Typography
@@ -346,11 +355,21 @@ const SidePanel = () => {
               {get(pipelines, "length", 0)} Flowlines
             </Typography>
           </div>
-          <Grid container direction="row" justify="space-between" alignItems="center" className={classes.toolbarActions}>
+          <Grid
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="center"
+            className={classes.toolbarActions}
+          >
             {!isSearchActive && (
               <Grid item>
                 {flowlineActions.map((action, index) => (
-                  <Tooltip title={action.title} className={classes.action} onClick={() => handleAction(action.title)}>
+                  <Tooltip
+                    title={action.title}
+                    className={classes.action}
+                    onClick={() => handleAction(action.title)}
+                  >
                     <IconButton>{action.icon}</IconButton>
                   </Tooltip>
                 ))}
@@ -358,7 +377,11 @@ const SidePanel = () => {
             )}
             <Grid item>
               <div className={classes.search}>
-                <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput").focus()}>
+                <Tooltip
+                  title="Search"
+                  className={classes.iconSearch}
+                  onClick={() => document.getElementById("searchInput").focus()}
+                >
                   <SearchIcon />
                 </Tooltip>
                 <InputBase
@@ -396,23 +419,38 @@ const SidePanel = () => {
         </DndProvider>
 
         <div className={classes.footer}>
-          <Tooltip title="Add Flowline" onClick={() => handleAction("Add Flowline")}>
+          <Tooltip
+            title="Add Flowline"
+            onClick={() => handleAction("Add Flowline")}
+          >
             <IconButton className={classes.footerAction}>
               <AddIcon />
+              <Typography> NEW FLOWLINE</Typography>
             </IconButton>
           </Tooltip>
         </div>
       </Drawer>
-      <Dialog className={classes.dialog} open={deleteDialogOpen} onClose={() => setModal(false)} fullWidth={false} maxWidth="sm">
+      <Dialog
+        className={classes.dialog}
+        open={deleteDialogOpen}
+        onClose={() => setModal(false)}
+        fullWidth={false}
+        maxWidth="sm"
+      >
         <DeleteConfirmationDialogContent
-          header={selectedPipelines.length > 1 ? `Delete Flowline` : `Delete Flowlines`}
+          header={
+            selectedPipelines.length > 1
+              ? `Delete Flowline`
+              : `Delete Flowlines`
+          }
           onClose={() => setModal(false)}
           deleteFunc={handleDelete}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => { }}
+          setM1nSelectedRowsIndexes={() => {}}
         >
           <>
-            Are you sure you want to delete the following selected {selectedPipelines.length > 1 ? "flowlines" : "flowline"}?
+            Are you sure you want to delete the following selected{" "}
+            {selectedPipelines.length > 1 ? "flowlines" : "flowline"}?
             <List dense={false}>
               {pipelines
                 .filter((pipe) => selectedPipelines.includes(pipe._id))

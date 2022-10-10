@@ -1,4 +1,6 @@
-const TransactDealsHeadCells = [
+const TransactDealsHeadCells = (flowLineType = 'deal') => {
+
+  const TableHeads = [
     {
       name: "_id",
       options: {
@@ -13,28 +15,9 @@ const TransactDealsHeadCells = [
     },
     {
       name: "name",
-      label: "Deal Name",
+      label: flowLineType === "general" ? "Task Name" : "Deal Name",
     },
-    // {
-    //   name: "contactName",
-    //   label: "Contact Name",
-    // },
-    {
-      name: "offerPrice",
-      label: "Offer Price",
-    },
-    {
-      name: "receivedDate",
-      label: "Deal Received",
-    },
-    {
-      name: "bidDate",
-      label: "Bid Date",
-    },
-    {
-      name: "closeDate",
-      label: "Expected Close Date",
-    },
+    // Here cols will be added based on flowLineType
     {
       name: "pipelineName",
       label: "Flowline",
@@ -45,11 +28,11 @@ const TransactDealsHeadCells = [
     },
     {
       name: "status",
-      label: "Deal Status",
+      label: "Status",
     },
     {
       name: "ownerName",
-      label: "Deal Owner",
+      label: "Owner",
     },
     {
       name: "notes",
@@ -68,6 +51,37 @@ const TransactDealsHeadCells = [
     //   },
     // },
   ];
+
+  if(flowLineType === "general"){
+    TableHeads.splice(2, 0, { name: "dueDate", label: "Due Date"})
+  } else {
+    const dealFLowLineCols = [
+      // {
+      //   name: "contactName",
+      //   label: "Contact Name",
+      // },
+      {
+        name: "offerPrice",
+        label: "Offer Price",
+      },
+      {
+        name: "receivedDate",
+        label: "Deal Received",
+      },
+      {
+        name: "bidDate",
+        label: "Bid Date",
+      },
+      {
+        name: "closeDate",
+        label: "Expected Close Date",
+      },
+    ];
+    TableHeads.splice(2, 0, ...dealFLowLineCols);
+  }
+
+  return TableHeads
+};
 
   
   export default TransactDealsHeadCells;
