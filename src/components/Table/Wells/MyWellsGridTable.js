@@ -29,7 +29,7 @@ function MyWellsGridTable(props) {
       filters: props.filters,
       addBtnText: "WELLS",
       extendSearchQuery: stateApp.landSearchQuery,
-      searchFields: ["*"],
+      searchFields: ["wellData.wellName", "wellData.api"],
       TableHeader: copy(TableHeader),
       esIndex: "mywells_flat",
       startPaginationAt,
