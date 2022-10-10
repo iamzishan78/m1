@@ -1,4 +1,4 @@
-import { InputAdornment } from "@material-ui/core";
+import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
 
 export const agreementTypes = [
   { label: "Lease", value: "lease" },
@@ -81,11 +81,10 @@ const fieldsList = (activeUser) => {
 
     {
       label: "Bonus Payment",
-      type: "text",
+      type: "currency",
       key: "bounusPayment",
-      formatValue: (value) => (value ? `$ ${value}` : ""),
       InputProps: {
-        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        inputComponent: CurrencyFormatCustom,
       },
     },
     {
@@ -102,6 +101,14 @@ const fieldsList = (activeUser) => {
       label: "Acquisition Date",
       type: "date",
       key: "acquisitionDate",
+    },
+    {
+      label: "Total Acquisition Cost",
+      type: "currency",
+      key: "totalAcquisitionCost",
+      InputProps: {
+        inputComponent: CurrencyFormatCustom,
+      },
     },
     {
       label: "Prospect",

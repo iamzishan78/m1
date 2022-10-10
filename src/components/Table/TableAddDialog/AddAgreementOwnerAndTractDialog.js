@@ -319,6 +319,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             {
               shapeId: props.shapeId,
               ...ownerToAdd,
+              acquisition_cost: Number(parseFloat(ownerToAdd.nra*ownerToAdd.acquisition_nra).toFixed(2))
             },
           ],
           shapeType: props.shapeType,
@@ -334,6 +335,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           shapeOwner: {
             shapeId: props.shapeId,
             ...ownerToAdd,
+            acquisition_cost: Number(parseFloat(ownerToAdd.nra*ownerToAdd.acquisition_nra).toFixed(2))
           },
         },
         refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
@@ -388,7 +390,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     if (!nra && !aquisitionNra) return null;
     const aquisitionCost = parseFloat(nra || 0) * (parseFloat(aquisitionNra || 0));
 
-    return aquisitionCost;
+    return Number(aquisitionCost.toFixed(2))
   };
 
   useEffect(() => {
@@ -923,11 +925,11 @@ function AddAgreementOwnerAndTractDialog(props) {
                 label="Acquisition $/NRA"
                 variant="outlined"
                 margin="dense"
-                value={props.value}
+                value={Number(parseFloat(props.value).toFixed(2))}
                 inputRef={props.ref}
                 onWheel={(e) => e.target.blur()}
                 onChange={(e) => {
-                  props.onChange(e.target.value);
+                  props.onChange(Number(parseFloat(e.target.value).toFixed(2)));
                 }}
                 InputProps={{
                   inputComponent: CurrencyFormatCustom,
@@ -946,16 +948,17 @@ function AddAgreementOwnerAndTractDialog(props) {
                 label="Acquisition Cost"
                 variant="outlined"
                 margin="dense"
-                value={props.value}
+                value={Number(parseFloat(props.value).toFixed(2))}
                 inputRef={props.ref}
                 onWheel={(e) => e.target.blur()}
                 className={isAcquisitionCostOverridden ? classes.netAcresOveridden : classes.netAcresNormal}
                 onChange={(e) => {
-                  props.onChange(e.target.value);
+                  const toFixedValue = Number(parseFloat(e.target.value).toFixed(2))
+                  props.onChange(toFixedValue);
 
                   const acquisition_cost = calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra);
-                  setIsAcquisitionCostOverridden(parseFloat(acquisition_cost) !== parseFloat(e.target.value))
-                  setValue("acquisition_cost", e.target.value);
+                  setIsAcquisitionCostOverridden(acquisition_cost !== toFixedValue)
+                  setValue("acquisition_cost", toFixedValue);
                 }}
                 InputProps={{
                   inputComponent: CurrencyFormatCustom,
