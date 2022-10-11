@@ -1,6 +1,4 @@
 import './quickActions&searching.cy'
 import './sortFilterViewColumn.cy'
-import './add&removeTags.cy'
-import './campaignUnit.cy'
-import './contactActions/_allActionSpecs.cy'
+import './addRemoveTags.cy'
 import './contactDocuments.cy'
