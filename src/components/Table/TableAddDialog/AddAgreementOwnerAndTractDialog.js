@@ -125,6 +125,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 
   const tract = watch("tract", {});
   const state = watch("tract.state", '');
+  const nra = watch("nra", '');
 
   useEffect(() => {
     if (isNewTract) {
@@ -137,6 +138,11 @@ function AddAgreementOwnerAndTractDialog(props) {
   useEffect(() => {
     register("tract.qtrQtrSelection");
   }, [tract]);
+
+  useEffect(() => {
+    if (!isAcquisitionCostOverridden)
+      setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra));
+  }, [nra]);
 
   useEffect(() => {
     if (tract.state && isNewTract) {
@@ -194,7 +200,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   });
 
   useEffect(() => {
-    console.log({so:props.seletedOwner})
+    console.log({ so: props.seletedOwner })
     if (props.seletedOwner) {
       props.seletedOwner.realtedObject = props.seletedOwner?.contact?._id;
       props.seletedOwner.ownerEntity = props.seletedOwner.realtedObject;
@@ -294,10 +300,6 @@ function AddAgreementOwnerAndTractDialog(props) {
     ownerToAdd.isTractOwner = isTractOwner;
     ownerToAdd.tract = tract;
 
-    if(isNaN(parseFloat(ownerToAdd.acquisition_cost)))
-      if(!isNaN(parseFloat(ownerToAdd.nra) && !isNaN(parseFloat(ownerToAdd.acquisition_nra))))
-        ownerToAdd.acquisition_cost = calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra)
-    
     Object.keys(ownerToAdd).forEach((key) => {
       if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'nra', 'company_net_acres'].includes(key) && ownerToAdd[key]) ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(8));
     });
@@ -319,7 +321,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             {
               shapeId: props.shapeId,
               ...ownerToAdd,
-              acquisition_cost: Number(parseFloat(ownerToAdd.nra*ownerToAdd.acquisition_nra).toFixed(2))
+              acquisition_cost: Number(parseFloat(ownerToAdd.nra * ownerToAdd.acquisition_nra).toFixed(2))
             },
           ],
           shapeType: props.shapeType,
@@ -335,7 +337,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           shapeOwner: {
             shapeId: props.shapeId,
             ...ownerToAdd,
-            acquisition_cost: Number(parseFloat(ownerToAdd.nra*ownerToAdd.acquisition_nra).toFixed(2))
+            acquisition_cost: Number(parseFloat(ownerToAdd.nra * ownerToAdd.acquisition_nra).toFixed(2))
           },
         },
         refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
@@ -878,6 +880,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           <Controller
             control={control}
             name="nra"
+            prefix=''
             render={({ onChange, value }) => (
               <TextField
                 variant="outlined"
@@ -930,6 +933,8 @@ function AddAgreementOwnerAndTractDialog(props) {
                 onWheel={(e) => e.target.blur()}
                 onChange={(e) => {
                   props.onChange(Number(parseFloat(e.target.value).toFixed(2)));
+                  if (!isAcquisitionCostOverridden)
+                    setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, e.target.value));
                 }}
                 InputProps={{
                   inputComponent: CurrencyFormatCustom,
@@ -955,13 +960,26 @@ function AddAgreementOwnerAndTractDialog(props) {
                 onChange={(e) => {
                   const toFixedValue = Number(parseFloat(e.target.value).toFixed(2))
                   props.onChange(toFixedValue);
-
                   const acquisition_cost = calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra);
                   setIsAcquisitionCostOverridden(acquisition_cost !== toFixedValue)
-                  setValue("acquisition_cost", toFixedValue);
                 }}
                 InputProps={{
                   inputComponent: CurrencyFormatCustom,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      {isAcquisitionCostOverridden && (
+                        <IconButton
+                          aria-label="toggle royality-acres"
+                          onClick={() => {
+                            setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra));
+                            setIsNRAOverridden(false)
+                          }}
+                        >
+                          <AutorenewIcon />
+                        </IconButton>
+                      )}
+                    </InputAdornment>
+                  ),
                 }}
                 fullWidth
                 defaultValue=""

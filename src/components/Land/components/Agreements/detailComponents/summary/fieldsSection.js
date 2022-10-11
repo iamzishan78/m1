@@ -3,7 +3,8 @@ import moment from "moment";
 import { get } from "lodash";
 import { useLazyQuery } from "@apollo/client";
 import { Controller } from "react-hook-form";
-import { Grid, TextField, Button, Select, MenuItem, Tooltip, IconButton, makeStyles } from "@material-ui/core";
+import { Grid, TextField, Button, Select, MenuItem, Tooltip, IconButton, makeStyles, InputAdornment } from "@material-ui/core";
+import AutorenewIcon from "@material-ui/icons/Autorenew";
 import { Clear } from "@material-ui/icons";
 import { useStyles as summaryStyles } from "../style";
 import AddIcon from "@material-ui/icons/Add";
@@ -50,7 +51,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const [isAcquisitionCostOverridden, setIsAcquisitionCostOverridden] = useState(agreementDetails?.totalAcquisitionCost!==agreementDetails?.calculated?.totalAcquisitionCost);
+  const [isAcquisitionCostOverridden, setIsAcquisitionCostOverridden] = useState(agreementDetails?.totalAcquisitionCost !== agreementDetails?.calculated?.totalAcquisitionCost);
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
@@ -318,7 +319,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     id={`field-${index}`}
                   />
                 )}
-                {field.type === "currency" && (
+                {field.key === "totalAcquisitionCost" && (
                   <Controller
                     control={control}
                     name={field.key}
@@ -331,17 +332,34 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                         margin="dense"
                         fullWidth
                         inputRef={props.ref}
-                        value={Number(parseFloat(props.value).toFixed(2))}
                         onWheel={(e) => e.target.blur()}
                         onChange={(e) => {
                           const toFixedValue = Number(parseFloat(e.target.value).toFixed(2))
                           const calculatedAcquisitionCost = Number(parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2))
-                          props.onChange(toFixedValue);                        
-                      
-                          setIsAcquisitionCostOverridden(toFixedValue!==calculatedAcquisitionCost)
+                          props.onChange(toFixedValue);
+                          setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost)
                         }}
-                        onBlur={(event) => offClickHandler(field.key, props.value)}
-                        InputProps={field.InputProps}
+                        onBlur={(e) => offClickHandler(field.key, props.value)}
+                        InputProps={{
+                          ...field.InputProps,
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              {isAcquisitionCostOverridden && (
+                                <IconButton
+                                  aria-label="toggle royality-acres"
+                                  onClick={() => {
+                                    const totalAcquisitionCost = Number(parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2))
+                                    props.onChange(totalAcquisitionCost)
+                                    offClickHandler(field.key, totalAcquisitionCost)
+                                    setIsAcquisitionCostOverridden(false)
+                                  }}
+                                >
+                                  <AutorenewIcon />
+                                </IconButton>
+                              )}
+                            </InputAdornment>
+                          ),
+                        }}
                       />
                     )}
                   />
