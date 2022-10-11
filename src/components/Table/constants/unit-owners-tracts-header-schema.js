@@ -167,6 +167,7 @@ const UnitOwnersTractHeadCells = [
     options: { sort: true, filter: true },
   },
   { name: "tractStatus", esKey: "tractStatus.keyword", label: "Tract Status", editable: true, options: { filter: true } },
+  { name: "mapStatus", esKey: "mapStatus.keyword", label: "Map Status", editable: true, options: { filter: true } },
   { name: "countAcres", esKey: "countAcres.keyword", label: "Count Acres", options: { filter: true } },
   {
     name: "commentsCounter",
