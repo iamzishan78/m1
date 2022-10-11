@@ -49,7 +49,9 @@ import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoComple
 import AutoCompleteParcelOwners from "components/Shared/Forms/Fields/AutoCompleteParcelOwners";
 import { useDispatch } from "react-redux";
 import { getQtrQtrFromQtr, handleLayerChangeOnQtr } from "components/ParcelsDetailCard/ParcelSummary/helper";
+import Loaders from "components/Loaders";
 import { GET_TRACT_ABSTRACT_SHAPE } from "graphQL/useQueryGetTractAbstractShape";
+import { useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   dialogFooter: {
@@ -104,8 +106,8 @@ const qtrOptions = ["E2", "NE", "NW", "N2", "SE", "SW", "S2", "W2"];
 
 function AddAgreementOwnerAndTractDialog(props) {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const client = useApolloClient();
+  const dispatch = useDispatch();
   const { control, reset, register, getValues, watch, setValue } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
   const [anchorEl, setAnchorEl] = useState();
@@ -114,6 +116,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [loading, setLoading] = useState(false);
   const [isTractOwner, setIsTractOwner] = useState(false);
   const [isNewTract, setIsNewTract] = useState(true);
+  const [newTractError, setNewTractError] = useState();
   const [totalOwners, setTotalOwners] = useState(0);
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [tractValue, setTractValue] = useState({ name: "", _id: null });
@@ -121,13 +124,22 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
 
   const tract = watch("tract", {});
+  const state = watch("tract.state", '');
+
+  useEffect(() => {
+    if (isNewTract) {
+      const form = getValues();
+      form.tract = { state }
+      reset(form)
+    }
+  }, [state]);
 
   useEffect(() => {
     register("tract.qtrQtrSelection");
   }, [tract]);
 
   useEffect(() => {
-    if (tract.state) {
+    if (tract.state && isNewTract) {
       (async () => {
         const { data: tractShape } = await client.query({
           query: GET_TRACT_ABSTRACT_SHAPE,
@@ -135,10 +147,15 @@ function AddAgreementOwnerAndTractDialog(props) {
             tract
           }
         });
-        if (tractShape?.getTractAbstractShape?.data.properties?.shapeArea) {
+        if (tractShape?.getTractAbstractShape?.data?.properties?.shapeArea) {
           setValue('tract.shapeArea', tractShape?.getTractAbstractShape?.data.properties?.shapeArea)
+          if (newTractError) { setNewTractError(null) }
+        } else {
+          setNewTractError(tractShape?.getTractAbstractShape)
         }
       })()
+    } else {
+      if (newTractError) { setNewTractError(null) }
     }
   }, [tract]);
 
@@ -148,21 +165,21 @@ function AddAgreementOwnerAndTractDialog(props) {
     onCompleted: (data) => {
       setLoading(false);
       if (data.addOwnerToAShape.success) {
-        handleClose();
+        Loaders.successToast('ageement-tract-creation', 'Agreement tract created Successfully')
       } else {
-        dispatch(showErrorMessage(data.addOwnerToAShape.message));
+        Loaders.errorToast('ageement-tract-creation', data.addOwnerToAShape.message)
       }
     },
-    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
+    refetchQueries: ["getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
   });
 
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
       setLoading(false);
-      handleClose();
+      Loaders.successToast('ageement-tract-creation', 'Agreement tract updated Successfully')
     },
-    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
+    refetchQueries: ["getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
   });
 
@@ -172,7 +189,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       handleClose();
     },
     onError: (err) => { },
-    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
+    refetchQueries: ["getESSimpleSearch", "getESFilterList"],
     awaitRefetchQueries: true,
   });
 
@@ -264,6 +281,10 @@ function AddAgreementOwnerAndTractDialog(props) {
   };
 
   const handleSave = () => {
+    if (newTractError) {
+      dispatch(showErrorMessage(newTractError.message))
+      return;
+    }
     const ownerToAdd = getValues();
     ownerToAdd.isTractOwner = isTractOwner;
     ownerToAdd.tract = tract;
@@ -295,6 +316,7 @@ function AddAgreementOwnerAndTractDialog(props) {
         refetchQueries: ["getESSimpleSearch", 'getCustomLayer'],
         awaitRefetchQueries: true,
       });
+      Loaders.createToast('ageement-tract-creation', 'Agreement tract update in progress')
     } else {
       addOwnerToAShape({
         variables: {
@@ -307,7 +329,9 @@ function AddAgreementOwnerAndTractDialog(props) {
         refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
         awaitRefetchQueries: true,
       });
+      Loaders.createToast('ageement-tract-creation', 'Agreement tract creation in progress')
     }
+    handleClose();
   };
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);

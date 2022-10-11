@@ -2500,7 +2500,8 @@ function M1nTable(props) {
 
       if (props.filteredTabTransactData) {
         setRows([...props.filteredTabTransactData]);
-        setColumns(TransactDealsHeadCells);
+        
+        setColumns(TransactDealsHeadCells(props.flowLineType));
       }
     }
   }, [props.parent, props.filteredTabTransactData]);

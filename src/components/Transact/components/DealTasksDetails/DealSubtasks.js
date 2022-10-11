@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   }),
   subTaskLeftGrid: {
     display: "flex",
-    width: "55% !important",
+    width: "80%",
     alignItems: "center",
     "& .MuiFormControlLabel-root": {
       marginRight: 0,
@@ -31,7 +31,8 @@ const useStyles = makeStyles((theme) => ({
   subTaskRightGrid: (props) => ({
     alignItems: "right",
     textAlign: "right",
-    width: "39%",
+    maxWidth: 200,
+    width: '20%',
     "& .MuiIconButton-root": {
       height: "25px",
       width: "25px",
@@ -144,7 +145,7 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
             {!isEdit.isEditing ? (
               <>
                 <Tooltip title={task.name} placement="top">
-                  <span style={{ fontSize: "medium" }}>{truncate(task.name, 23)}</span>
+                  <p style={{ fontSize: "medium" }}>{task.name}</p>
                 </Tooltip>
                 {isEdit.index === task.index && isEdit.showIcon && (
                   <EditIcon

@@ -17,6 +17,18 @@ const ContactsHeadCells = [
     },
   },
   {
+    name: "name",
+    label: "Name",
+    esKey: 'name.keyword',
+    // editable: true,
+    options: {
+      ...GlobalSettings.muiGridInfScrollOptions,
+      ignoreGlobal: true,
+      // sort: true,
+      // filter: true,
+    },
+  },
+  {
     name: "entity",
     options: {
       display: false,
@@ -104,18 +116,6 @@ const ContactsHeadCells = [
       download: false,
       print: false,
       viewColumns: false,
-    },
-  },
-  {
-    name: "name",
-    label: "Name",
-    esKey: 'name.keyword',
-    // editable: true,
-    options: {
-      ...GlobalSettings.muiGridInfScrollOptions,
-      ignoreGlobal: true,
-      // sort: true,
-      // filter: true,
     },
   },
   {

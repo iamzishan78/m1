@@ -128,7 +128,7 @@ import AddActivityDialog from "components/ContactDetailCard/components/AddActivi
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
 import ReactSelectField from "./SubComponents/ReactSelectField";
-import { Waypoint } from "react-waypoint";
+import TableBody from "./MUIDataTable/TableBody";
 import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOfferPrice";
 
 
@@ -161,7 +161,12 @@ const useStyles = makeStyles((theme) => ({
     "& .MUIDataTableToolbar": {
       zIndex: "999999 !important",
     },
-
+    "& .MuiTableRow-head": {
+      backgroundColor: "#F2F2F2"
+    },
+    "& .MuiTableRow-root.MuiTableRow-hover:hover": {
+      backgroundColor: "rgb(223 223 223)"
+    },
     "& .MuiPaper-elevation1": {
       flexDirection: "row !important",
       height: "65px !important",
@@ -1277,52 +1282,52 @@ function SubTable(props) {
         // without using refs we HAVE to re-create customBodyRender callback functions every render
         // or component state is stale
 
-        if (column.name === "_id" && column.options.isFiniteScroll) {
-          column.options = {
-            ...column.options,
+        // if (column.name === "_id" && column.options.isFiniteScroll) {
+        //   column.options = {
+        //     ...column.options,
 
-            setCellProps: () => ({
-              style: {
-                minWidth: "55px",
-                maxWidth: "55px",
-                position: "sticky",
-                left: "77px",
-                zIndex: 201,
-              }
-            }),
+        //     setCellProps: () => ({
+        //       style: {
+        //         minWidth: "90px",
+        //         maxWidth: "90px",
+        //         position: "sticky",
+        //         left: "77px",
+        //         zIndex: 201,
+        //       }
+        //     }),
 
-            setCellHeaderProps: () => ({
-              style: {
-                minWidth: "55px",
-                maxWidth: "55px",
-                position: "sticky",
-                paddingLeft: '34px !important',
-                zIndex: 201,
-                left: "77px",
-              },
-            }),
+        //     setCellHeaderProps: () => ({
+        //       style: {
+        //         minWidth: "90px",
+        //         maxWidth: "90px",
+        //         position: "sticky",
+        //         paddingLeft: '70px',
+        //         zIndex: 201,
+        //         left: "77px",
+        //       },
+        //     }),
 
-            customRender: (value, tableMeta) => {
-              const rowIndex = tableMeta.rowIndex;
-              return (
-                <>
-                  {rowIndex === props.rows.length - 5 && (<Waypoint
-                    onEnter={() => {
-                      if (props.onInfiniteScroll) props.onInfiniteScroll()
-                    }}
-                  />)}
+        //     customRender: (value, tableMeta) => {
+        //       const rowIndex = tableMeta.rowIndex;
+        //       return (
+        //         <>
+        //           {rowIndex === props.rows.length - 5 && (<Waypoint
+        //             onEnter={() => {
+        //               if (props.onInfiniteScroll) props.onInfiniteScroll()
+        //             }}
+        //           />)}
 
-                  <div
-                    id={`${rowIndex === props.rows.length - 5 ? `waypoint-${rowIndex}` : ''}`} z>
-                    {<span
-                      style={{ color: GlobalStyles.colors.mutedGrey }}
-                    >{tableMeta.rowIndex + 1}</span>}
-                  </div>
-                </>
-              );
-            },
-          }
-        }
+        //           <div
+        //             id={`${rowIndex === props.rows.length - 5 ? `waypoint-${rowIndex}` : ''}`} z>
+        //             {<span
+        //               style={{ color: GlobalStyles.colors.mutedGrey }}
+        //             >{tableMeta.rowIndex + 1}</span>}
+        //           </div>
+        //         </>
+        //       );
+        //     },
+        //   }
+        // }
 
         if (column?.options?.customRender) {
           column.options = {
@@ -1332,33 +1337,6 @@ function SubTable(props) {
           return;
         }
 
-        if (column?.infiniteScroll || column?.options?.infiniteScroll) {
-          column.options = {
-            ...column.options,
-            customBodyRender: (value, tableMeta) => {
-              const rowIndex = tableMeta.rowIndex;
-              if (rowIndex === props.rows.length - 5) {
-                return (
-                  <Fragment>
-                    <Waypoint
-                      onEnter={() => {
-                        if (props.onInfiniteScroll) props.onInfiniteScroll()
-                      }}
-                    />
-
-                    <div id={`waypoint-${rowIndex}`}>
-                      {gridElement(value)}
-                    </div>
-
-                  </Fragment>
-                );
-              } else {
-                return (gridElement(value))
-              }
-            },
-          };
-          return
-        }
         switch (column.name) {
 
 
@@ -1940,7 +1918,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customRender: (value, tableMeta) => {
-                  value = value?.toString()
+                  value = value?.toString();
                   const splitNumber = value?.split("_");
 
                   const styles = {
@@ -2540,13 +2518,13 @@ function SubTable(props) {
                         // paddingRight: '200px'
                       }}>
                         <Grid container spacing={0} direction="row" >
-                          {
+                          {/* {
                             props.parent === 'Documents' && <div style={{ position: 'relative', zIndex: 100 }}>
                               <div style={{ position: 'absolute', left: '-30px', top: '15px', fontWeight: 'bold' }}>
                                 {tableMeta.rowIndex + 1}
                               </div>
                             </div>
-                          }
+                          } */}
                           <Grid
                             item
                             xs={1}
@@ -2618,7 +2596,7 @@ function SubTable(props) {
                                   justifyContent: "flex-start",
                                   paddingRight: '40px',
                                 }}
-                                
+
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
@@ -3025,12 +3003,12 @@ function SubTable(props) {
                   if (column.name === "isClosed" && (props.targetLabel === "activity" || props.targetLabel === "activitiesDashboard") && value === true)
                     return (
                       <div style={{ textAlign: "center" }}>
-                        <CheckIcon />
+                        <CheckIcon id="checkIcon" />
                       </div>
                     );
 
                   if (column.name === "isClosed" && (props.targetLabel === "activity" || props.targetLabel === "activitiesDashboard") && value === false)
-                    return <div style={{ textAlign: "center" }}>{/* <CheckBoxOutlineBlankIcon /> */}</div>;
+                    return <div style={{ textAlign: "center" }}>--</div>;
 
                   ////// if non editable column
                   if (
@@ -4675,8 +4653,13 @@ function SubTable(props) {
 
           columns={columns ? columns : []}
           components={{
+            showRowNumber: !!props.onInfiniteScroll,
+            onInfiniteScroll: props.onInfiniteScroll,
+            TableBody: TableBody,
             Checkbox: CustomCheckbox,
             TableViewCol: CustomTableViewCol,
+
+
             TableFilterList: (props.header === "Tax Roll Ownership" || props.parent === "potentialOwnersPerUnit") && !isSearchOpen ? TableFilterList : null,
             icons: {
               FilterIcon,

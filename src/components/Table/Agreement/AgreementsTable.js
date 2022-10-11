@@ -38,7 +38,6 @@ function AgreementsTable(props) {
 
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [selectedGridView, setSelectedGridView] = useState(defaultView);
   const [stateApp, setStateApp] = useContext(AppContext);
 
   // queries
@@ -47,10 +46,7 @@ function AgreementsTable(props) {
 
   const classes = usetableStyles({ isFullHeight: true, isAgreementsTable: true });
 
-
-  const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
-
-  const GridViewModule = userGridViewSettings[`Agreements`];
+  const { Agreements: AgreementsGridView } = useSelector(({ session }) => session.userGridViewSettings);
 
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
@@ -63,7 +59,7 @@ function AgreementsTable(props) {
     () =>
       debounce((request, top, callback) => {
         props.setTableMeta(request);
-      }, 500),
+      }, 1000),
     []
   );
 
@@ -92,17 +88,15 @@ function AgreementsTable(props) {
   }, [])
 
   useEffect(() => {
-    setSelectedGridView(GridViewModule || defaultView);
-  }, [GridViewModule]);
+    props.setSelectedGridView(AgreementsGridView || defaultView);
+  }, [AgreementsGridView]);
 
-  console.log(props.landSearchQuery || 'empty', searchInput || 'empty')
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : []
     props.setInitialFilters(formatedFilter)
     setTableMeta({
       // addableName: "Unit",
       extendSearchQuery: props.landSearchQuery || searchInput || '',
-      selectedGridView: GridViewModule || defaultView,
       customDataESKey: 'shapeJson.properties.custom_data',
       searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
@@ -125,11 +119,6 @@ function AgreementsTable(props) {
     });
     // eslint-disable-next-line
   }, [searchInput, props.landSearchQuery, props.filterToggle]);
-
-  useEffect(() => {
-    props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView: GridViewModule || defaultView }));
-    // eslint-disable-next-line
-  }, [GridViewModule]);
 
   useEffect(() => {
     props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);
@@ -172,14 +161,10 @@ function AgreementsTable(props) {
     return view;
   };
 
-  const modifySelectedGridView = (selectedGridView) => {
-    if (selectedGridView?.name === 'My Agreements' && selectedGridView?.filters?.length)
-      selectedGridView.filters[0].value = stateApp.user._id;
-  };
   const headerProps = {
     columns: props.columns,
     showViewModal,
-    selectedGridView,
+    selectedGridView: props.selectedGridView || defaultView,
     updateGridView,
     setShowSaveAsNew,
     setShowViewModal,
@@ -225,8 +210,8 @@ function AgreementsTable(props) {
           module="Agreements"
           handleDefaultView={handleDefaultView}
           handleClose={() => setShowViewModal(false)}
-          setSelectedGridView={setSelectedGridView}
-          selectedGridView={selectedGridView}
+          // setSelectedGridView={props.setSelectedGridView}
+          selectedGridView={props.selectedGridView}
           setShowViewModal={setShowViewModal}
           setShowSaveAsNew={setShowSaveAsNew}
           showSaveAsNew={showSaveAsNew}
