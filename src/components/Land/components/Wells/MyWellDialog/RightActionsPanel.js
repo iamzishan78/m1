@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function RightActionsPanel(props) {
   const classes = useStyles(props);
-  const { activePanel, setPanel } = props;
+  const { activePanel, setPanel, propertiesCount, agreementsCount } = props;
 
   const drawerIcons = {
     "Add New Well": (props) => (
@@ -61,12 +61,12 @@ export default function RightActionsPanel(props) {
       </Badge>
     ),
     "Revenue Properties": (props) => (
-      <Badge anchorOrigin={{ vertical: "top", horizontal: "right" }} color="primary" badgeContent={0}>
+      <Badge anchorOrigin={{ vertical: "top", horizontal: "right" }} color="primary" badgeContent={propertiesCount}>
         <BarChartIcon {...props} />
       </Badge>
     ),
     Agreements: (props) => (
-      <Badge anchorOrigin={{ vertical: "top", horizontal: "right" }} color="primary">
+      <Badge anchorOrigin={{ vertical: "top", horizontal: "right" }} color="primary" badgeContent={agreementsCount}>
         <Agreements {...props} />
       </Badge>
     ),

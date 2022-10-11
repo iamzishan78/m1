@@ -71,7 +71,7 @@ function Wells() {
           customOptions={customToolbar}
         />
       </div>
-      <MyWellDialog open={showDialog} />
+      <MyWellDialog open={showDialog} setDialog={setDialog} />
     </div>
   );
 }

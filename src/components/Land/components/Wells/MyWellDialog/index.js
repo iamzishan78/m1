@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import clsx from "clsx";
+import get from "lodash/get";
 import { makeStyles } from "@material-ui/core/styles";
 import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import RightActionsPanel from "./RightActionsPanel";
-import { AppContext } from "AppContext";
 import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 
-import { CircularProgress, Dialog, DialogTitle, IconButton } from "@material-ui/core";
+import { IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
+import { useLazyQuery } from "@apollo/client";
+import { GET_MY_WELL_BY_GLOBAL_ID } from "graphQL/useQueryMyWellByGlobalId";
 
 // Components
 import AddMyWell from "./AddMyWell";
+import RevenueProperties from "./RevenueProperties";
+import Agreements from "./Agreements";
 
 const useStyles = makeStyles({
   drawer: {
@@ -149,111 +149,54 @@ export default function MyWellDialog(props) {
   // const [state, setState] = useState({right: false});
   const [anchorEl, setAnchorEl] = useState();
 
-  const [stateApp, setStateApp] = React.useContext(AppContext);
-
-  // Fetching wells from descriptor
-  //   useEffect(() => {
-  //     if (!props.isRelatedDocuments)
-  //       getWellsFromDocument({
-  //         variables: {
-  //           descriptorObject: stateApp.selectedDocument._id,
-  //         },
-  //       });
-  //     // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   }, [stateApp.selectedDocument._id]);
-
-  const documentInitial = {
-    documentName: "",
-    book: "",
-    page: "",
-    instrument: "",
-    recordingInfo: "",
-    dateTime: null,
-    documentNumber: "",
-    documentType: "",
-    partyName1: "",
-    partyName2: "",
-    fileId: "",
-    custom_data: {},
-  };
-
-  const [newDocument, setNewDocument] = useState(documentInitial);
-
-  const [nameAutValueParty1, setNameAutValueParty1] = useState({
-    name: "",
-    _id: null,
-  });
-  const [nameAutValueParty2, setNameAutValueParty2] = useState({
-    name: "",
-    _id: null,
-  });
-
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 
-  const [fileIdToDelete, setFileIdToDelete] = useState(null);
-  const [replaceFile, setReplaceFile] = useState(null);
-
-  let [loader, setLoader] = useState(false);
-
-  const [updateDocument] = useMutation(UPDATE_DOCUMENT);
-
-  const handleDeleteCancel = () => {
-    setFileIdToDelete(null);
-    setOpenDeleteConfirmDialog(false);
-    setReplaceFile("CANCEL");
-  };
-
-  const handleClose = () => {
-    setStateApp({
-      ...stateApp,
-      DocumentDrawer: false,
-      selectedDocument: {},
-    });
-  };
-
-  const handleDeleteAccept = () => {};
-
+  const [getMyWellByGlobalId, { data: myWellData }] = useLazyQuery(GET_MY_WELL_BY_GLOBAL_ID);
   const toggleDrawer = (anchor, open) => (event) => {
     if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
     }
-    // setState({ ...state, [anchor]: open });
-  };
-
-  const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
 
-  const DocumentDetail = (anchor) => (
-    <div
-      style={{ width: "500px", marginLeft: "15px" }}
-      className={clsx(classes.list, {
-        [classes.fullList]: anchor === "top" || anchor === "bottom",
-      })}
-      role="presentation"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
-    >
+  const DocumentDetail = (anchor) => {
+    const getMyWell = (wellGlobalId) => {
+      getMyWellByGlobalId({
+        variables: {
+          wellId: wellGlobalId,
+        },
+      });
+    };
+
+    return (
       <div
-        style={{
-          width: "100%",
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          flexWrap: "nowrap",
-        }}
+        style={{ width: "500px" }}
+        className={clsx(classes.list, {
+          [classes.fullList]: anchor === "top" || anchor === "bottom",
+        })}
+        role="presentation"
+        onClick={toggleDrawer(anchor, false)}
+        onKeyDown={toggleDrawer(anchor, false)}
       >
-        <div style={{ flexShrink: 0 }}>
-          <div className={classes.titleSection}>
-            <div>
-              <h2>{activePanel}</h2>
-            </div>
-            <div style={{ cursor: "pointer" }}>
-              {/* <IconButton
+        <div
+          style={{
+            width: "100%",
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            flexWrap: "nowrap",
+          }}
+        >
+          <div style={{ flexShrink: 0 }}>
+            <div className={classes.titleSection}>
+              <div>
+                <h2>{activePanel}</h2>
+              </div>
+              <div style={{ cursor: "pointer" }}>
+                {/* <IconButton
                   size="small"
                   component="span"
                   style={{
@@ -265,56 +208,61 @@ export default function MyWellDialog(props) {
                 >
                   <MoreHorizIcon id="fileDetailHorzIcon" size="medium" />
                 </IconButton> */}
-              <IconButton size="small" onClick={() => handleClose()}>
-                <CloseIcon />
-              </IconButton>
-              <Menu
-                id="dealMenu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-                className={classes.menu}
-                getContentAnchorEl={null}
-                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-                transformOrigin={{ vertical: "top", horizontal: "center" }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    setOpenDeleteConfirmDialog(true);
-                    setFileIdToDelete(stateApp.selectedDocument.fileId);
-                    handleMenuClose();
-                  }}
+                <IconButton size="small" onClick={() => props.setDialog(false)}>
+                  <CloseIcon />
+                </IconButton>
+                <Menu
+                  id="dealMenu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                  className={classes.menu}
+                  getContentAnchorEl={null}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                  transformOrigin={{ vertical: "top", horizontal: "center" }}
                 >
-                  <ListItemIcon>
-                    <DeleteIcon size="medium" />
-                  </ListItemIcon>
-                  <ListItemText>Delete</ListItemText>
-                </MenuItem>
-              </Menu>
+                  <MenuItem
+                    onClick={() => {
+                      setOpenDeleteConfirmDialog(true);
+                      handleMenuClose();
+                    }}
+                  >
+                    <ListItemIcon>
+                      <DeleteIcon size="medium" />
+                    </ListItemIcon>
+                    <ListItemText>Delete</ListItemText>
+                  </MenuItem>
+                </Menu>
+              </div>
+            </div>
+          </div>
+          <div className={classes.contentRoot}>
+            <RightActionsPanel
+              activePanel={activePanel}
+              setPanel={setPanel}
+              propertiesCount={get(myWellData, "myWellByGlobalId.myWell.properties", []).length}
+              agreementsCount={get(myWellData, "myWellByGlobalId.myWell.shapes", []).length}
+            />
+            <div style={{ paddingRight: "60px", height: "93vh", overflow: "auto" }}>
+              {activePanel === "Add New Well" && (
+                // Add My Well fields component here
+                <AddMyWell getMyWell={getMyWell} />
+              )}
+              {activePanel === "Revenue Properties" && (
+                // show revenue properties here
+                <RevenueProperties properties={get(myWellData, "myWellByGlobalId.myWell.properties", [])} />
+              )}
+              {activePanel === "Agreements" && (
+                // show agreements list here
+                <Agreements agreements={get(myWellData, "myWellByGlobalId.myWell.shapes", [])} />
+              )}
             </div>
           </div>
         </div>
-        <div className={classes.contentRoot}>
-          <RightActionsPanel activePanel={activePanel} setPanel={setPanel} />
-          <div style={{ paddingRight: "60px" }}>
-            {activePanel === "Add New Well" && (
-              // Add My Well fields component here
-              <AddMyWell />
-            )}
-            {activePanel === "Revenue Properties" && (
-              // show revenue properties here
-              <></>
-            )}
-            {activePanel === "Agreements" && (
-              // show agreements list here
-              <></>
-            )}
-          </div>
-        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div>

@@ -18,6 +18,7 @@ import { INTERESTOWNERTYPESQUERY } from "graphQL/useQueryInterestOwnerTypes";
 import { INTERESTTYPESQUERY } from "graphQL/useQueryInterestTypes";
 import { TENANTWELL } from "graphQL/useQueryTenantWell";
 import { ADDWELLINTEREST } from "graphQL/useMutationAddWellInterest";
+import { WELLSUMMARYDETAILQUERY } from "graphQL/useQueryWellSummaryDetail";
 
 // contexts
 import { AppContext } from "AppContext";
@@ -109,13 +110,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function AddWellInterestDialog() {
+const wellParams = [
+  { type: "text", label: "API Number", key: "api" },
+  { type: "text", label: "Well Name", key: "wellName" },
+  { type: "text", label: "Operator", key: "operator" },
+  { type: "text", label: "Well Type", key: "wellTyoe" },
+  { type: "text", label: "Well Profile", key: "wellProfile" },
+  { type: "text", label: "Well Status", key: "wellStatus" },
+  { type: "text", label: "Basin", key: "basin" },
+  { type: "text", label: "Field", key: "" },
+  { type: "text", label: "State", key: "state" },
+  { type: "text", label: "County", key: "county" },
+  { type: "text", label: "Survey", key: "survey" },
+  { type: "text", label: "Block/Twsp", key: "" },
+  { type: "text", label: "Sec/Range", key: "" },
+  { type: "text", label: "Abstract/Sec", key: "abstract" },
+  { type: "text", label: "Permit Date", key: "permitApprovedDate" },
+  { type: "text", label: "Spud Date", key: "spudDate" },
+  { type: "text", label: "Completion Date", key: "completionDate" },
+  { type: "text", label: "First Prod", key: "" },
+  { type: "text", label: "Measured Depth", key: "measuredDepth" },
+  { type: "text", label: "TVD", key: "" },
+  { type: "text", label: "Lateral Length", key: "lateralLength" },
+  { type: "text", label: "Formation", key: "" },
+];
+
+function AddWellInterestDialog({ getMyWell }) {
   const classes = useStyles();
 
   const [stateApp, setStateApp] = useContext(AppContext);
 
   const [initializing, setInitializing] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [foundWells, setFoundWells] = useState([]);
   const [selectedWell, setSelectedWell] = useState(null);
   const [formLeaseName, setFormLeaseName] = useState("");
@@ -126,31 +151,11 @@ function AddWellInterestDialog() {
   const [formInterestAmount, setFormInterestAmount] = useState(null);
   const [formRoyaltyAcres, setFormRoyaltyAcres] = useState(null);
   const [formTaxValue, setFormTaxValue] = useState(null);
-  const [interestOwnerTypes, setInterestOwnerTypes] = useState([]);
-  const [interestTypes, setInterestTypes] = useState([]);
   const [valid, setValid] = useState({});
 
-  const [getInterestOwnerTypes, { data: dataInterestOwnerTypes }] = useLazyQuery(INTERESTOWNERTYPESQUERY, {
-    fetchPolicy: "cache-and-network",
-  });
-  const [getInterestTypes, { data: dataInterestTypes }] = useLazyQuery(INTERESTTYPESQUERY, {
-    fetchPolicy: "cache-and-network",
-  });
   const [getTenantWell, { data: dataTenantWell }] = useLazyQuery(TENANTWELL, {
     // must be network-only to trigger state change for field updates
     fetchPolicy: "network-only",
-  });
-  const [addWellInterest] = useMutation(ADDWELLINTEREST, {
-    onCompleted: () => {
-      setLoading(false);
-    },
-    refetchQueries: [
-      "getContactWells",
-      "getContactWellCardDetail",
-      "getPaginatedContactWellInterests",
-      "getContactWellInterestsFilterOptions",
-    ],
-    awaitRefetchQueries: true,
   });
 
   const callWellSearch2 = React.useMemo(
@@ -184,32 +189,10 @@ function AddWellInterestDialog() {
   );
 
   useEffect(() => {
-    getInterestOwnerTypes();
-    getInterestTypes();
-  }, []);
-
-  useEffect(() => {
-    setInterestOwnerTypes(dataInterestOwnerTypes?.interestOwnerTypes?.res?.map((e) => e.Desc));
-  }, dataInterestOwnerTypes);
-
-  useEffect(() => {
-    setInterestTypes(dataInterestTypes?.interestTypes?.res?.map((e) => e.Desc));
-  }, dataInterestTypes);
-
-  useEffect(() => {
     if (!dataTenantWell?.tenantWell) return;
 
-    const leaseToSet = dataTenantWell?.tenantWell?.lease || "";
-    const leaseAcresToSet = dataTenantWell?.tenantWell?.leaseAcres;
-
-    setSelectedWell({
-      ...selectedWell,
-      Lease: leaseToSet,
-      LeaseAcreage: leaseAcresToSet,
-    });
-
-    setFormLeaseName(leaseToSet);
-    setFormLeaseAcres(leaseAcresToSet);
+    const { tenantWell } = dataTenantWell;
+    setSelectedWell(tenantWell);
   }, dataTenantWell);
 
   useEffect(() => {
@@ -239,45 +222,20 @@ function AddWellInterestDialog() {
     setInitializing(false);
   }, [selectedWell]);
 
-  const handleClose = () => {
-    setFoundWells([]);
-    setSelectedWell(null);
-    setFormLeaseName("");
-    setFormLeaseAcres(null);
-    setFormOwnerName("");
-    setFormInterestOwnerType("");
-    setFormInterestType("");
-    setFormInterestAmount(null);
-    setFormRoyaltyAcres(null);
-    setFormTaxValue(null);
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      wellInterestDialog: false,
-      activeWellInterest: null,
-    }));
-    setInitializing(false);
-    setValid({});
-  };
-
-  const formatRoyaltyAcres = (royaltyAcres) => {
-    const decimals = royaltyAcres.toString().split(".");
-    if (decimals[1] && decimals[1].length > 8) royaltyAcres = royaltyAcres.toFixed(8);
-    return Number(royaltyAcres);
-  };
-
-  const handleRecalcNRA = (leaseAcres, interest) => {
-    if (initializing || leaseAcres == null || interest == null) return;
-    setFormRoyaltyAcres(formatRoyaltyAcres(leaseAcres * interest * 8));
-  };
-
-  const handleValidate = () => {
-    const tempValid = {
-      ...valid,
-      "selectedWell.Id": !selectedWell?.Id,
-    };
-    setValid(tempValid);
-
-    return !Object.values(tempValid).reduce((acc, cur) => acc + cur);
+  const handleWellDetail = (well) => {
+    setSelectedWell(well);
+    if (well) {
+      getTenantWell({
+        variables: {
+          globalWellId: well.Id,
+        },
+      });
+      setValid({
+        ...valid,
+        "selectedWell.Id": false,
+      });
+      getMyWell(well.Id);
+    }
   };
 
   const handleSave = () => {};
@@ -289,20 +247,7 @@ function AddWellInterestDialog() {
           <FormControl variant="outlined" fullWidth size="small">
             <Autocomplete
               options={foundWells || []}
-              onChange={(e, well) => {
-                setSelectedWell(well);
-                well &&
-                  getTenantWell({
-                    variables: {
-                      globalWellId: well.Id,
-                    },
-                  });
-                well &&
-                  setValid({
-                    ...valid,
-                    "selectedWell.Id": false,
-                  });
-              }}
+              onChange={(e, well) => handleWellDetail(well)}
               value={selectedWell}
               getOptionLabel={(option, value) => option.Primary}
               filterOptions={(x) => x}
@@ -398,62 +343,17 @@ function AddWellInterestDialog() {
           >
             Selected well and lease information
           </h4>
-
-          <TextField
-            variant="outlined"
-            margin="dense"
-            value={selectedWell?.WellName || ""}
-            //label={selectedWell?.WellName ? "Well Name" : "Well Name"}
-            label={"Well Name"}
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-            disabled
-            defaultValue=""
-          />
-
-          <TextField
-            variant="outlined"
-            margin="dense"
-            value={selectedWell?.ApiNumber || ""}
-            //label={selectedWell?.ApiNumber ? "API Number" : "API Number"}
-            label="API Number"
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-            disabled
-            defaultValue=""
-          />
-
-          <TextField
-            variant="outlined"
-            margin="dense"
-            value={formLeaseName}
-            onChange={(event) => setFormLeaseName(event.target.value)}
-            label={"Lease Name"}
-            fullWidth
-            //disabled
-            defaultValue=""
-          />
-
-          <TextField
-            // type="number"
-            variant="outlined"
-            margin="dense"
-            // error={isNaN(formLeaseAcres)}
-            value={formLeaseAcres === 0 || formLeaseAcres ? formLeaseAcres : ""}
-            onChange={(event) => {
-              const leaseAcresToSet = parseFloat(event.target.value);
-              setFormLeaseAcres(leaseAcresToSet);
-              handleRecalcNRA(leaseAcresToSet, formInterestAmount);
-            }}
-            label={"Lease Acres"}
-            // InputLabelProps={{ shrink: true }}
-            fullWidth
-            //disabled
-            defaultValue=""
-            InputProps={{
-              inputComponent: NumberFormatCustom,
-            }}
-          />
+          {wellParams.map((param, index) => (
+            <TextField
+              variant="outlined"
+              margin="dense"
+              value={selectedWell?.[param.key] || ""}
+              label={param.label}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+              defaultValue=""
+            />
+          ))}
         </div>
       </div>
     </>
