@@ -16,7 +16,6 @@ import * as Components from "components/Contacts/components";
 import { contactManagementRoutes } from "utils/data";
 
 //// WE MAY NOT BE USING THIS ENTIRE FILE ANYMORE
-
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: "65px",
