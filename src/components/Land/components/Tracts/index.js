@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 // import { useHistory } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "AppContext";
 import AnalyticsCards from "components/Land/components/Common/AnalyticsCards";
 import TractsTable from "../../../Table/Tract/TractsTable";
@@ -8,9 +9,46 @@ import { setStateIfDeepEqual } from "components/Shared/functions";
 import TabPanels from "components/Shared/TabPanels";
 import TabButtons from "components/Shared/TabPanels/TabButtons";
 import TractsFilters from "components/Land/components/Tracts/TractsFilters";
+
+const useStyles = makeStyles((theme) => ({
+  gridRoot: {
+    marginTop: "65px",
+    "& div": {
+      "&>.MuiPaper-root": {
+        display: "flex",
+        "flex-direction": "column",
+        height: "calc(100vh - 375px)",
+        position: "relative",
+        boxShadow: "none",
+        "align-items": "stretch",
+        "&>.MuiPaper-root": {
+          display: "contents",
+        },
+        "&>:nth-child(3)": {
+          height: "inherit !important",
+        },
+        "&> table": {
+          bottom: 0,
+        },
+      },
+    },
+
+    // '& .MuiDrawer-paperAnchorRight': {
+    //   overflow: "hidden",
+    // },
+    // marginLeft: '-10px'
+  },
+}));
+
 function Tracts(props) {
   const [stateApp] = useContext(AppContext);
+  const classes = useStyles();
   // const history = useHistory();
+
+  // waypointKey should any key of Table Header which do not have customRender in schema file
+  const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 445px)' }
+
+
 
   const [esFilters, ESFilters] = useState([]);
   const setESFilters = (newState) => {
@@ -121,10 +159,12 @@ function Tracts(props) {
       </div>
 
       <div
+        // className={classes.gridRoot}
         style={{
           marginTop: "40px",
           marginLeft: "-10px",
-        }}>
+        }}
+      >
         <TabPanels
           value={selectedTractTab}
           panels={[
@@ -138,6 +178,7 @@ function Tracts(props) {
                 setESFilters={setESFilters}
                 onTractCount={onTractCount}
                 landSearchQuery={stateApp.landSearchQuery}
+                loadMore={loadMore}
               />
             </div>,
             <div>
@@ -150,6 +191,7 @@ function Tracts(props) {
                 setESFilters={setESFilters}
                 onTractCount={onTractCount}
                 landSearchQuery={stateApp.landSearchQuery}
+                loadMore={loadMore}
               />
 
             </div>

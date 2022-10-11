@@ -100,6 +100,7 @@ const DocumentSearch = () => {
         margin="dense"
         variant="outlined"
         placeholder="Search for documents"
+        id="searchDocument"
         InputProps={{
           startAdornment: (
             <InputAdornment>
@@ -108,7 +109,7 @@ const DocumentSearch = () => {
                   htmlColor="grey"
                   aria-controls="customized-menu"
                   aria-haspopup="true"
-                  //onClick={(e) => setAnchorEl(e.currentTarget)}
+                //onClick={(e) => setAnchorEl(e.currentTarget)}
                 />
                 {/* <div className="check">
                   <Menu

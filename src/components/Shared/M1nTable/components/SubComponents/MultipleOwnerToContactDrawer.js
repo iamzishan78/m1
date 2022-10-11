@@ -362,6 +362,7 @@ const MultipleOwnerToContactDrawer = ({
                       }}
                       fullWidth
                       targetLabel="Shape"
+                      simpleChips
                     />
                   )}
                 />

@@ -546,7 +546,7 @@ export default function Comments(props) {
             {commentsArray.map((comment, index) =>
               props.detailCard
                 ? ((publicComment && comment.public) ||
-                  (!publicComment && stateApp.user.email === comment.user.email && !comment.public)) &&
+                  (!publicComment && stateApp?.user?.email === comment?.user?.email && !comment.public)) &&
                 (commentsDisplayedCount += 1) &&
                 (props.top && props.top < commentsDisplayedCount ? null : (
                   //// ListItem ////
@@ -560,7 +560,7 @@ export default function Comments(props) {
                       />
                     )}
                     {/* //// name and date line //// */}
-                    <h5 className={classes.nameAndDateLine}>{`${comment.user.name} · ${new Intl.DateTimeFormat("en-US", {
+                    <h5 className={classes.nameAndDateLine}>{`${comment?.user?.name} · ${new Intl.DateTimeFormat("en-US", {
                       year: "numeric",
                       month: "long",
                       day: "2-digit",
@@ -593,12 +593,12 @@ export default function Comments(props) {
                 ))
                 : //// ListItem  End ////
                 ((publicComment && comment.public) ||
-                  (!publicComment && stateApp.user.email === comment.user.email && !comment.public)) && (
+                  (!publicComment && stateApp.user.email === comment?.user?.email && !comment.public)) && (
                   <ListItem key={index} className={classes.listItem} alignItems="flex-start">
                     <ListItemAvatar className={classes.avatar}>
                       <Avatar
-                        name={comment.user.name}
-                        color={Avatar.getRandomColor(comment.user.email, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
+                        name={comment?.user?.name}
+                        color={Avatar.getRandomColor(comment?.user?.email, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                         fgColor="#000"
                         size="35"
                         round
@@ -612,7 +612,7 @@ export default function Comments(props) {
                         </React.Fragment>
                       }
                       secondary={
-                        `${comment.user.name}` +
+                        `${comment?.user?.name}` +
                         (comment.ids
                           ? ""
                           : ` - ${new Intl.DateTimeFormat("en-US", {

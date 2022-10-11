@@ -92,10 +92,11 @@ export default function Navigation(props) {
   const [matchFind, setMatchFind] = useState(false);
   const [matchDocument] = useState(false);
 
-  const classes = useStyles({ mapGridCardActivated, user: stateApp.user });
+
 
   let history = useHistory();
   let location = useLocation();
+  const classes = useStyles({ mapGridCardActivated, user: stateApp.user, isMap: location.pathname === "/" || location.pathname.startsWith("/map/") });
 
   useEffect(() => {
     if (location.pathname === "/" || location.pathname.startsWith("/map/")) {
@@ -382,9 +383,6 @@ export default function Navigation(props) {
   const matchAgreements = () => {
     return location.pathname === "/landmanagement/agreements";
   };
-
-  // console.log("matchActivities", matchActivities);
-  // console.log("stateApp", stateApp);
 
   return (
     <div className={classes.root}>

@@ -6,6 +6,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 
 import { AppContext } from "../../../AppContext";
+import { debounce } from "lodash";
 
 const useStyles = makeStyles((theme) => ({
   search: {
@@ -65,7 +66,7 @@ const LandSearch = () => {
   const { activeModule } = useSelector(({ common }) => common);
 
   useEffect(() => {
-    return () =>{
+    return () => {
       setStateApp((stateApp) => ({
         ...stateApp,
         landSearchQuery: "",
@@ -74,19 +75,21 @@ const LandSearch = () => {
     }
   }, []);
 
+  useEffect(() => {
+    setSearch(stateApp.landSearchQuery)
+  }, [stateApp.landSearchQuery]);
+
   return (
     <div className={classes.search}>
       <TextField
         value={search}
         onChange={(e) => {
           setSearch(e.target.value);
-          setTimeout(() => {
-            setStateApp((stateApp) => ({
-              ...stateApp,
-              landSearchQuery: e.target.value,
-              // isLandSearching: true,
-            }));
-          }, 500);
+          debounce(() => setStateApp((stateApp) => ({
+            ...stateApp,
+            landSearchQuery: e.target.value,
+            // isLandSearching: true,
+          })), 500)()
         }}
         style={{
           margin: 0,

@@ -41,17 +41,18 @@ export const rawJobs = [
   { name: 'Import Tracts', type: 'TRACTS', featureFlag: "TRACTIMPORT" },
   { name: 'Import Units', type: 'UNITS', featureFlag: "UNITIMPORT" },
   { name: 'Check Detail Upload', type: 'CHECKDETAILS' },
-  { name: 'Property Upload', type: 'PROPERTIES' }
+  { name: 'Property Upload', type: 'PROPERTIES' },
+  { name: 'Agreement Upload (Header)', type: 'AGREEMENT_HEADER', redirectTo: '/land/agreements' },
+  { name: 'Transfer Shape to M1 Layer', type: 'SHAPE_TO_M1_LAYER', initialActiveStepNumber: 1, skipReview: true }
 ]
 
 export default function BulkUpload(props) {
-  console.log(props);
-  const [, setStateApp] = React.useContext(AppContext);
+  const [stateApp, setStateApp] = React.useContext(AppContext);
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
   const history = useHistory();
   let previousRoute = matchRoutes(props.routes, typeof history.pathHistory[1] === "string" ? history.pathHistory[1] : history?.pathHistory[1]?.pathname ?? "");
 
-  if(!isEmpty(history.location.state)){
+  if (!isEmpty(history.location.state)) {
     previousRoute[0].match = { url: history.location.state.previousRoute }
     previousRoute[0].route = { title: history.location.state.title }
   }
@@ -78,7 +79,12 @@ export default function BulkUpload(props) {
   });
   let initialJob = jobs[0];
   if (props?.match?.params?.type) {
-    initialJob = jobs.find((job) => job.type.toLowerCase().includes(props.match.params.type)) || jobs[0];
+    initialJob = jobs.find((job) => job.type.toLowerCase().includes(props.match.params.type.toLowerCase())) || jobs[0];
+  }
+
+  if (initialJob.type === 'SHAPE_TO_M1_LAYER' && stateApp.transferData) {
+    initialJob.m1neralHeaders = stateApp.transferData.selectedSourceCategory.m1neralHeaders
+    initialJob.mappedHeadersFromCSV = stateApp.transferData.selectedSourceCategory.mappedHeadersFromCSV
   }
 
   const [selectedJob, setSelectedJob] = useState(initialJob);
@@ -110,12 +116,13 @@ export default function BulkUpload(props) {
   const reset_state = () => {
     setStateApp((state) => ({
       ...state,
-      csvContactsListToSend: [],
-      activeStepNumber: 0,
-      csvContactsList: [],
+      csvDataToSend: [],
+      activeStepNumber: selectedJob.initialActiveStepNumber || 0,
+      csvDataList: [],
+      job: selectedJob,
       jobType: selectedJob.type,
-      m1neralHeaders: M1neral_headers[selectedJob.type],
-      mappedHeadersFromCSV: [],
+      m1neralHeaders: selectedJob.m1neralHeaders || M1neral_headers[selectedJob.type] || [],
+      mappedHeadersFromCSV: selectedJob.mappedHeadersFromCSV || [],
     }));
   };
   const classes = useStyles();

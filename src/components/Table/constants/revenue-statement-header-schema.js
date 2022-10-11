@@ -29,26 +29,16 @@ const RevenueStatementHeadCells = [
     name: "purchaserName",
     label: "Purchaser Name",
     esKey: "payor.name.keyword",
-    options: { sort: true, filter: true },
-    style: { minWidth: 250 },
   },
   {
     name: "checkAmount",
     label: "Check Amount",
     esKey: "checkAmount",
-    options: {
-      sort: true,
-      filter: true,
-      customRender: (value) => {
-        return value ? <p style={{ fontWeight: 600 }}>{value ? `$${value?.toFixed(2)}` : ""}</p> : <p style={{ color: "#898989b0" }}>N/A</p>;
-      },
-    },
   },
   {
     name: "checkDate",
     label: "Check Date",
     esKey: "checkDate",
-    options: { sort: true, filter: true },
     custom: {
       key_as_string: true,
       isDate: true,
@@ -58,7 +48,6 @@ const RevenueStatementHeadCells = [
     name: "depositDate",
     label: "Deposit Date",
     esKey: "depositDate",
-    options: { sort: true, filter: true },
     custom: {
       key_as_string: true,
       isDate: true,
@@ -68,37 +57,32 @@ const RevenueStatementHeadCells = [
     name: "lines",
     label: "Lines",
     esKey: "checkDetail.lines",
-    options: { sort: true, filter: true },
   },
   {
     name: "source",
     label: "Source",
     esKey: "source.keyword",
-    options: { sort: true, filter: true },
   },
   {
     name: "sourceId",
     label: "Check ID",
     esKey: "sourceId.keyword",
-    options: { sort: true, filter: true },
   },
-  // {
-  //   name: "status",
-  //   label: "Status",
-  //   esKey: "status.keyword",
-  //   options: { sort: true, filter: true },
-  // },
   {
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
-    options: { sort: true, filter: true },
+    options: { 
+      ignoreGlobal: true,
+      sort: true, filter: true 
+    },
   },
   {
     name: "commentsCounter",
     label: " ",
     options: {
       dbName: "comments.comment",
+      ignoreGlobal: true,
       filter: false,
       searchable: false,
       sort: true,
@@ -112,6 +96,7 @@ const RevenueStatementHeadCells = [
     label: "Validation",
     esKey: "isAmountValidated",
     options: {
+      ignoreGlobal: true,
       customHeadLabelRender: () => (
         <>
           <div> </div>

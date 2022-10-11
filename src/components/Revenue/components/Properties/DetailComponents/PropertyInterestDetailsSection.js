@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import PropertyInterestDetailsTable from "components/Table/Revenue/PropertyInterestDetailsTable";
 import PropertyRevenueDetailsTable from "components/Table/Revenue/PropertyRevenueDetailsTable";
+import PropertyWellProductionTable from "components/Table/Revenue/PropertyWellProductionTable";
 import TabButtons from "components/Shared/TabPanels/TabButtons"
 
 const useStyles = makeStyles(() => ({
@@ -32,6 +33,7 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
       labels={[
         "Interest Details",
         "Revenue Details",
+        // "Well Production"
       ]}
       value={selectedTab}
       setValue={(n) => {
@@ -65,6 +67,17 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
           propertyId={propertyId}
         />
       )}
+      {/* {selectedTab === 2 && (
+        <PropertyWellProductionTable
+          onClickAdd={onClickAdd}
+          setSelectedInterest={setSelectedInterest}
+          showInterestDetails={showInterestDetails}
+          targetLabel="propertyInterest"
+          parent="PropertyInterestTable"
+          header={<Header />}
+          propertyId={propertyId}
+        />
+      )} */}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
 export default function RelatedParties({ agreementId, agreementProvisions, standardProvisions }) {
     const classes = useStyles();
     const customClasses = customStyles();
+    const [provisionsCount, setPCounts] = useState(0);
 
     return (
         <div className={classes.root}>
@@ -61,12 +62,12 @@ export default function RelatedParties({ agreementId, agreementProvisions, stand
                             <Typography variant="h5" className={customClasses.titleText}>
                                 Provisions & Obligations
                             </Typography>
-                            {agreementProvisions.length > 0 && <Chip color="info" label={agreementProvisions.length} />}
+                            {provisionsCount >= 0 && <Chip chipUpdate color="info" label={provisionsCount} />}
                         </Grid>
                     </Grid>
                 </AccordionSummary>
                 <AccordionDetails className={classes.accordionDetails}>
-                    <ProvisionsTab provisions={agreementProvisions} standardProvisions={standardProvisions} id={agreementId} />
+                    <ProvisionsTab provisions={agreementProvisions} setPCounts={setPCounts} standardProvisions={standardProvisions} id={agreementId} />
                 </AccordionDetails>
             </Accordion>
         </div>

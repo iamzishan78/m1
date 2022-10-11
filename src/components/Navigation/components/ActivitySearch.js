@@ -111,9 +111,9 @@ const ActivitySearch = () => {
       case "Obligations":
         category = "Obligation";
         break;
-        case "Expirations":
-          category = "Expirations";
-          break;
+      case "Expirations":
+        category = "Expiration";
+        break;
       default:
     }
     getAllActivitiesForSearch({
@@ -224,6 +224,7 @@ const ActivitySearch = () => {
                       </Tooltip>
                       <Tooltip title="List View">
                         <IconButton
+                          id="listView"
                           size="small"
                           htmlColor="#fff"
                           className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" && classes.activeBtn}`}

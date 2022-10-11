@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Container } from "@material-ui/core";
 import { useSelector } from "react-redux";
 
@@ -20,6 +20,8 @@ import { usetableStyles } from "../Styles";
 function MapGridLayersTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
+
+  const [_, setTableHeaders] = useState([])
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
   );
@@ -32,7 +34,7 @@ function MapGridLayersTable(props) {
       },
       {
         name: 'geom', label: 'geom',
-        options: { customRender: (value) => { return <div>{value}</div>; } }
+        options: { ignoreGlobal: true, customRender: (value) => { return <div>{value}</div>; } }
       },
     ]
     if (stateApp.selectedLayer.layerGeometry === 'Point') {
@@ -49,11 +51,20 @@ function MapGridLayersTable(props) {
       ...predefinedCols,
       ...Object.keys(hits[0]).map((column) => ({
         name: column.replace(/ /g, '_').replace(/\(/g, '').trim(), label: column,
-        options: { customRender: (value) => { return <div>{value}</div>; } }
+        esKey: isNaN(hits[0][column]) ? `properties.${column}.keyword` : `properties.${column}`,
+        options: { filter: true, customRender: (value) => { return <div>{value}</div>; } }
       }))
     ]
 
     headers = uniqBy(headers, 'name');
+    setTableHeaders((tableHeaders) => {
+      if (tableHeaders.length === 0)
+        props.setTableMeta((tableMeta) => {
+          tableMeta.TableHeader = headers;
+          return { ...tableMeta }
+        })
+      return tableHeaders.length === 0 ? headers : tableHeaders
+    })
     return headers
   };
 
@@ -77,11 +88,32 @@ function MapGridLayersTable(props) {
   }
 
   useEffect(() => {
+    console.log('stateApp.selectedLayer', stateApp.selectedLayer)
     props.setTableMeta({
       extendSearchQuery: searchInput,
+      advanceSearch: stateApp.selectedLayer?.layerGeometry === 'Polygon' ? [{
+        "bool": {
+          "should": [
+            {
+              "term": { "properties.layerGeometry.keyword": "Polygon" }
+            },
+            {
+              "term": { "properties.layerGeometry.keyword": "MultiPolygon" }
+            }
+          ]
+        }
+      }] : [{
+        "bool": {
+          "should": [
+            {
+              "term": { "properties.layerGeometry.keyword": stateApp.selectedLayer?.layerGeometry }
+            }
+          ]
+        }
+      }],
       searchFields: ['*'],
       TableHeader: [],
-      filters: [{ field: "file._id", value: stateApp.selectedLayer?.file }, { field: "properties.layerGeometry", value: stateApp.selectedLayer?.layerGeometry }],
+      filters: [{ field: "file._id", value: stateApp.selectedLayer?.file }],
       esIndex: "shapefile_flat",
       startPaginationAt: 25,
       formatColumns,
@@ -92,6 +124,7 @@ function MapGridLayersTable(props) {
     stateApp.selectedLayer,
     searchInput
   ]);
+
 
   return (
     <Container
@@ -114,11 +147,15 @@ function MapGridLayersTable(props) {
         onTableChange={props.onTableChange}
         options={{
           ...props.options,
-          ...props.customOptions,
+          ...props.customOptions
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
+      {stateApp.selectedDataset?.fileName &&
+        <div style={{ position: 'absolute', fontWeight: 'bold', fontSize: '16px', bottom: '0px', right: '410px', padding: '13px 54px 16px 19px', borderBottom: '1px solid rgba(224, 224, 224, 1)', backgroundColor: '#F2F2F2' }}>{stateApp.selectedDataset?.fileName}</div>
+      }
     </Container>
   );
 }

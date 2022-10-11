@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import _ from "lodash";
 import { makeStyles } from "@material-ui/styles";
-import { Grid, Card, CardContent, Typography } from "@material-ui/core";
+import { Grid, Card, CardContent, Typography, CircularProgress } from "@material-ui/core";
 import { Warning as WarningIcon } from "@material-ui/icons";
 import { useLazyQuery } from "@apollo/client";
 
@@ -45,6 +45,7 @@ export default function AnalyticsCards({
   totalCount,
   cardsDefault,
   landSearchQuery,
+  unmappedPropertyCount = 0
 }) {
   const classes = useStyles();
   const [cards, setCards] = useState(cardsDefault);
@@ -61,7 +62,7 @@ export default function AnalyticsCards({
     return myDate.toISOString();
   }
 
-  const [getESAggsActiveCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsActiveCount, { loading: activeCountLoading }] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
@@ -85,7 +86,7 @@ export default function AnalyticsCards({
       (item) => ["in pay", "inpay"].includes(item.key.toLowerCase()) && item
     );
     return activeBucket && activeBucket?.length > 0
-      ?  _.sumBy(activeBucket, "doc_count")
+      ? _.sumBy(activeBucket, "doc_count")
       : 0;
   }
 
@@ -98,8 +99,7 @@ export default function AnalyticsCards({
       : 0;
   }
 
-
-  const [getESAggsApprovedCount, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsApprovedCount, { loading: approvedCountLoading}] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
@@ -115,6 +115,7 @@ export default function AnalyticsCards({
             buckets && buckets.length > 0 ? getNotInPayCounts(buckets) : 0;
           cards[1].points = inPayCounts;
           cards[2].points = notInPayCounts;
+          cards[3].points = unmappedPropertyCount
           setCards(cards);
         }
       }
@@ -194,14 +195,19 @@ export default function AnalyticsCards({
                   <div>1</div>
                 </div>
               )}
-              <Typography
-                variant="h6"
-                component="div"
-                className={classes.cardNumberTypography}
-                style={{ color: card.type === "warning" ? "#b9b908" : "" }}
-              >
-                {card.points}
-              </Typography>
+              {
+                (activeCountLoading || approvedCountLoading) ? 
+                  <CircularProgress size={40} color="secondary" />
+                  :
+                  <Typography
+                    variant="h6"
+                    component="div"
+                    className={classes.cardNumberTypography}
+                    style={{ color: card.type === "warning" ? "#b9b908" : "" }}
+                  >
+                    {card.points}
+                  </Typography>
+              }
             </CardContent>
           </Card>
         </Grid>

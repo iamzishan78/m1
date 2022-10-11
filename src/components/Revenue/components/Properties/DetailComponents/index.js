@@ -367,13 +367,13 @@ export default function DetailComponents(props) {
               <StyledTabs
                 value={tab}
                 onChange={(event, tab) => {
-                  setButtonScroll(true);
+                  // setButtonScroll(true);
                   setTab(tab);
                 }}
                 aria-label="ant example"
               >
-                <StyledTab label="Header" />
                 <StyledTab label="Details" />
+                <StyledTab label="Validation" />
               </StyledTabs>
             </div>
             <div className={classes.metaActions}>
@@ -389,34 +389,38 @@ export default function DetailComponents(props) {
       </div>
 
       <div className="flex justifyBetween alignStart w-100">
-        <div className={classes.tabsDetailContainer}>
-          {/**
-           * Detail tabs section
-           */}
-          <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
-            <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
-              <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-                <HeaderSection
-                  propertyId={propertyId}
-                  propertyDetails={propertyDetails}
-                  propertyOwnerContact={propertyOwnerContact}
-                  setEntityToConvert={setEntityToConvert}
-                />
+        {tab === 0 && (
+          <>
+            <div className={classes.tabsDetailContainer}>
+              {/**
+               * Detail tabs section
+               */}
+              <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
+                <div className={classes.tabsSectionDetails}>
+                  <div className={classes.headerSection}>
+                    <HeaderSection
+                      propertyId={propertyId}
+                      propertyDetails={propertyDetails}
+                      propertyOwnerContact={propertyOwnerContact}
+                      setEntityToConvert={setEntityToConvert}
+                    />
+                  </div>
+                  <div>
+                    <PropertyInterestDetailsSection
+                      propertyId={propertyId}
+                      setSelectedInterest={setSelectedInterest}
+                      showInterestDetails={showInterestDetails}
+                      onClickAdd={() => setShowInterestDetails(true)}
+                    />
+                  </div>
+                </div>
               </div>
-              <div ref={tab === 1 ? selectedTabRef : null}>
-                <PropertyInterestDetailsSection
-                  propertyId={propertyId}
-                  setSelectedInterest={setSelectedInterest}
-                  showInterestDetails={showInterestDetails}
-                  onClickAdd={() => setShowInterestDetails(true)}
-                />
-              </div>
+              {stateApp.viewDoc && (
+                <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
+              )}
             </div>
-          </div>
-          {stateApp.viewDoc && (
-            <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
-          )}
-        </div>
+          </>
+        )}
         {showOwnerDialog && (
           <ConvertOwnerToContactContainer
             propertyDetails={propertyDetails}

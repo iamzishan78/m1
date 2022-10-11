@@ -12,7 +12,7 @@ import { usetableStyles } from "../Styles";
 const genericDataActions = ['tags', 'comments', 'tracks']
 function TractsTable(props) {
   const classes = usetableStyles();
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
   const GridViewModule = userGridViewSettings?.Tracts
@@ -45,6 +45,10 @@ function TractsTable(props) {
     });
     return hits
   }
+
+  useEffect(() => {
+    setStateApp((stateApp) => ({ ...stateApp, landSearchQuery: '' }))
+  }, [])
 
   useEffect(() => {
     setTableMeta({
@@ -104,6 +108,7 @@ function TractsTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

@@ -1,4 +1,6 @@
 import GlobalSettings from "..//..//..//GlobalSettings.js";
+import GlobalStyles from "..//..//..//GlobalStyles.js";
+import Typography from "@material-ui/core/Typography";
 import WellIcon from '../../../components/Shared/svgIcons/well.js';
 import { ErrorOutline } from "@material-ui/icons";
 import React from 'react';
@@ -13,6 +15,7 @@ const styles = {
 
 const ComponentPropertyName = ({ value, tableMeta }) => {
   const history = useHistory();
+
   return (
     <div
       style={{
@@ -45,8 +48,8 @@ const ComponentPropertyName = ({ value, tableMeta }) => {
           <ErrorOutline style={{
             width: "17px",
             height: "17px",
-            color:"gray"
-          }} 
+            color: "gray"
+          }}
           />
         </div>
       }
@@ -66,15 +69,13 @@ const RevenuePropertiesHeadCells = [
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-
     /// this is the control column for properties 
-
     name: "number",
     label: "Property",
     esKey: "number.keyword",
     options: {
-
       ...GlobalSettings.muiGridControlOptions,
+      ignoreGlobal: true,
 
 
       // setCellProps: () => ({
@@ -115,7 +116,6 @@ const RevenuePropertiesHeadCells = [
     //   display: false,
     // }
   },
-
   {
     name: "state",
     label: "State",
@@ -132,87 +132,36 @@ const RevenuePropertiesHeadCells = [
     name: "county",
     label: "County",
     esKey: "county.keyword",
-    options: { sort: true, filter: true },
   },
-
-
   {
     name: "wellApiNumber",
     label: "Well API",
     esKey: "wells.apiNumber.keyword",
-    options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "110px", maxWidth: "110px" } }),
-    },
   },
   {
     name: "wellName",
     label: "Well Name",
     esKey: "wells.wellName.keyword",
-    options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }),
-    },
   },
   {
     name: "payorName",
     label: "Operator",
     esKey: "operator.name.keyword",
-    options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "225px" } }),
-    },
   },
   {
     name: "status",
     label: "Pay Status",
     esKey: "status.keyword",
-    options: { sort: true, filter: true },
   },
-  // {
-  //   name: "type",
-  //   label: "Type",
-  //   esKey: "type.keyword",
-  //   options: { sort: true, filter: true },
-  // },
-  // {
-  //   name: "amount",
-  //   label: "Decimal",
-  //   esKey: "amount",
-  //   options: { sort: true, filter: true },
-  // },
   {
     name: "checkNumber",
     label: "Last Check #",
     esKey: "lastCheck.checkNumber.keyword",
-    options: {
-      customHeadLabelRender: () => (
-        <>
-          <div style={{ width: 120 }}>Last Check #</div>
-        </>
-      ),
-      sort: true,
-      filter: true,
-    },
-    style: { minWidth: 120 },
   },
   {
     name: "lastChecked",
     label: "Last Check",
     esKey: "lastCheck.checkDate",
-    options: {
-      customHeadLabelRender: () => (
-        <>
-          <div style={{ width: 120 }}>Last Check</div>
-        </>
-      ),
-      sort: true,
-      filter: true,
-    },
-    style: { minWidth: 120 },
     custom: {
       key_as_string: true,
       isDate: true,
@@ -222,16 +171,12 @@ const RevenuePropertiesHeadCells = [
     name: "prospectID",
     label: "Prospect",
     esKey: "prospectID.keyword",
-    options: { sort: true, filter: true },
   },
   {
     name: "acquisitionID",
     label: "Acquisition ID",
     esKey: "acquisitionID.keyword",
-    options: { sort: true, filter: true },
   },
-
-
   {
     name: "internalID",
     label: "Internal Prop #",
@@ -247,44 +192,29 @@ const RevenuePropertiesHeadCells = [
     },
     style: { minWidth: 100 },
   },
-
   {
     name: "internalCompany",
     label: "Internal Company",
     esKey: "internalCompany.keyword",
-    options: {
-      customHeadLabelRender: () => (
-        <>
-          <div style={{ minWidth: 120 }}>Internal Company</div>
-        </>
-      ),
-      sort: true,
-      filter: true,
-    },
-    style: { minWidth: 120 },
   },
-
   {
     name: "source",
     label: "Source",
     esKey: "source.keyword",
-    options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "120px", maxWidth: "120px" } }),
-    },
   },
-
   {
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
-    options: { sort: true, filter: true },
+    options: {
+      ignoreGlobal: true,
+    }
   },
   {
     name: "commentsCounter",
     label: " ",
     options: {
+      ignoreGlobal: true,
       dbName: "comments.comment",
       filter: false,
       searchable: false,
@@ -299,6 +229,7 @@ const RevenuePropertiesHeadCells = [
     label: "Status",
     esKey: "approvalStatus.keyword",
     options: {
+      ignoreGlobal: true,
       customHeadLabelRender: () => (
         <>
           <div> </div>

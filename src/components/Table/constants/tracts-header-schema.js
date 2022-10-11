@@ -1,6 +1,11 @@
 import WarningIcon from "@material-ui/icons/Warning";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { history } from "store";
+import GlobalSettings from "..//..//..//GlobalSettings.js";
+import GlobalStyles from "..//..//..//GlobalStyles.js";
+import Typography from "@material-ui/core/Typography";
+
+
 
 const TractsHeadCells = (isSnapGrid = false) => [
   {
@@ -8,41 +13,49 @@ const TractsHeadCells = (isSnapGrid = false) => [
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-    name: "name", label: "Tract Name", esKey: 'name.keyword',
+
+    /// this is the control column for tracts 
+    name: "name",
+    label: "Tract Name",
+    esKey: 'name.keyword',
+
     options: {
+      ...GlobalSettings.muiGridControlOptions,
       dbName: "name",
-      sort: true,
-      filter: true,
-      setCellProps: () => ({
-        style: {
-          minWidth: "250px",
-          whiteSpace: "nowrap",
-          position: "sticky",
-          left: "77px",
-          background: "white",
-          zIndex: 200,
-          boxShadow: 'inset -1px 0px 0px 0px lightgrey',
-        }
-      }),
-      setCellHeaderProps: () => ({
-        style: {
-          position: "sticky",
-          minWidth: "250px",
-          left: "77px",
-          zIndex: 201
-        }
-      }),
-      customRender: (value, tableMeta, updateValue) => {
+
+      customRender: (value, tableMeta) => {
+        const splitNumber = value?.split("_");
+
+        const styles = {
+          fontWeight: GlobalStyles.font.boldFontWeight,
+          color: GlobalStyles.colors.lightBlue,
+          cursor: GlobalStyles.hyperlink.cursor,
+          position: 'absolute',
+          // left: '70px',
+        };
+
         return (
-          <p
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >   <Typography
             onClick={(e) => {
               e.stopPropagation();
               history.push(`/map/parcels/${tableMeta.rowData[0]}`, { showTractsBreadcrumb: !isSnapGrid });
             }}
-            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
+            noWrap
+            variant='body2'
+            style={styles}
           >
-            {value}
-          </p>
+
+              {splitNumber?.[0]
+                ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
+                : tableMeta?.rowData[2]}
+
+            </Typography>
+          </div>
         );
       },
     }
@@ -65,8 +78,6 @@ const TractsHeadCells = (isSnapGrid = false) => [
     name: "County", label: "County", esKey: 'shapeJson.properties.originalProperties.County.keyword',
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.County",
-      sort: true,
-      filter: true
     }
   },
   {
@@ -129,16 +140,12 @@ const TractsHeadCells = (isSnapGrid = false) => [
     name: "GrossAcres", label: "Gross Acres", esKey: 'shapeJson.properties.sdGrossAcres.keyword',
     options: {
       dbName: "shapeJson.properties.sdGrossAcres",
-      sort: true,
-      filter: true
     }
   },
   {
     name: "CalcAcres", label: "Calc Acres", esKey: 'shapeJson.properties.shapeArea.keyword',
     options: {
       dbName: "shapeJson.properties.shapeArea",
-      sort: true,
-      filter: true
     }
   },
   {
@@ -153,12 +160,17 @@ const TractsHeadCells = (isSnapGrid = false) => [
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
-    options: { sort: true, filter: true },
+    options: {
+      ignoreGlobal: true,
+      sort: true,
+      filter: true
+    },
   },
   {
     name: "commentsCounter",
     label: " ",
     options: {
+      ignoreGlobal: true,
       dbName: "comments.comment",
       filter: false,
       searchable: false,

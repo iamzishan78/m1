@@ -116,7 +116,7 @@ export const contactManagementRoutes = {
     featureFlag: "CONTACTSUBMENU",
     title: "Prospects",
     link: "/contacts/prospects",
-    linkPrefix: "/contacts/proppects",
+    linkPrefix: "/contacts/prospects",
     component: "ContactsTable",
     filterValue: "Prospect",
     showAnalytics: true,

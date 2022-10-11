@@ -1,10 +1,8 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useMutation, useApolloClient } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { MapControlsContext } from "../MapControlsContext";
 import { AppContext } from "../../../AppContext";
-import * as turf from "@turf/turf";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import Dialog from "@material-ui/core/Dialog";
@@ -14,6 +12,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import shp from "shpjs";
 import { v4 as uuid } from "uuid";
 import { ADDFILE } from "../../../graphQL/useMutationAddFile";
@@ -25,23 +25,13 @@ import { getDefaultSettings, SimpleOrShapeFileImport } from './addUserHelper'
 import Loader from "components/Loaders";
 import { uploadFileData } from "components/Shared/functions";
 import { BlockBlobClient } from "@azure/storage-blob";
-import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
-import { CREATE_JOB } from "graphQL/useMutationCreateJob";
+import { Box, Checkbox, FormControlLabel } from "@material-ui/core";
+import { ADD_DATASET } from "graphQL/useMutationDataset";
+import { ADD_LAYER_GROUP } from "graphQL/useMutationLayerGroup";
 
 const Alert = (props) => {
   return <MuiAlert elevation={5} variant="filled" {...props} />;
 };
-
-function makeid(length) {
-  var result = [];
-  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result.push(characters.charAt(Math.floor(Math.random() *
-      charactersLength)));
-  }
-  return result.join('');
-}
 
 const useStyles = makeStyles((theme) => ({
   loadButton: {
@@ -67,6 +57,7 @@ export default function AddUserGroupData(props) {
   const [inputOriginalFile, setInputOriginalFile] = useState(stateMapControls.fileUploadedOriginalContent);
   const [layerNames, setLayerNames] = useState([]);
   const [groupName, setGroupName] = useState("");
+  const [isCreateLayers, setIsCreateLayers] = useState(true);
   const [error, setErrorr] = useState(false);
   const [notReturn, setNotReturn] = useState(false);
   const [uploadFailed, setUploadFailed] = useState("");
@@ -75,6 +66,11 @@ export default function AddUserGroupData(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const client = useApolloClient();
   const [addFile] = useMutation(ADDFILE);
+  const [addDataset] = useMutation(ADD_DATASET, { refetchQueries: ["getDatasets"], awaitRefetchQueries: true });
+  const [addLayerGroup] = useMutation(ADD_LAYER_GROUP, {
+    refetchQueries: ["getLayerGroups"],
+    awaitRefetchQueries: true,
+  });
 
   const [addLayer] = useMutation(ADDLAYER);
 
@@ -119,6 +115,8 @@ export default function AddUserGroupData(props) {
       fileUploadedOriginalContent: null,
       // selectedControl: 'layer',
       addLayer: false,
+      manageSourceLayer: false,
+      manageLayer: false,
     }));
     setNotReturn(false);
   };
@@ -180,68 +178,54 @@ export default function AddUserGroupData(props) {
         .then((response) => {
           return response._response.bodyAsText
         })
-        .then(() => {
-          fileContent.featureTypes.forEach(async (type, index) => {
-            const layerName = layerNames[index]
-            const defaultSettings = getDefaultSettings(type, layerName, sourceProps)
-            addLayer({
-              variables: {
-                layer: {
-                  layerName,
-                  groupName,
-                  groupId,
-                  layerGeometry: type,
-                  identifier: layerName + uuid(),
-                  layerType: "file layer",
-                  layerCategory: "UD layer",
-                  public: true,
-                  createBy: stateApp.user.mongoId,
-                  file: file_id,
-                  originalFile: originalFileId,
-                  defaultSettings,
-                },
-              },
-              refetchQueries: index === fileContent.featureTypes.length - 1 ? ["getAllLayerSettingsByUser"] : [],
-              awaitRefetchQueries: true,
-            });
+        .then(async () => {
+          // if iscreate layer is selected only then create the layers 
 
-            if (index === fileContent.featureTypes.length - 1) {
-
-              await SimpleOrShapeFileImport({ stateApp, setStateApp, client, file_id, sourceProps })
-
-              // const jobInitialization = await client.mutate({
-              //   mutation: INITIALIZE_EXPORT_JOB,
-              //   variables: {
-              //     jobName: "Shape File Import",
-              //     jobType: "SHAPEFILEIMPORT",
-              //     requestPayload: {
-              //       fileId: file_id,
-              //     },
-              //     userId: stateApp.user.mongoId,
-              //   },
-              // });
-
-              // await client.mutate({
-              //   mutation: CREATE_JOB,
-              //   variables: {
-              //     jobId: jobInitialization?.data?.initializeExportJob?.job?._id,
-              //     sendEmail: false,
-              //   },
-              // });
-              // setStateApp((state) => ({
-              //   ...state,
-              //   bulkUpload: !state.bulkUpload,
-              // }));
-              // Loader.createToast('group-creation', 'Group layer creation in progress')
-              // const interval = setInterval(() => {
-              //   if (stateApp.map.isSourceLoaded(sourceProps)) {
-              //     Loader.successToast('group-creation', 'Group layer created')
-              //     clearInterval(interval);
-              //   }
-              // }, 1000);
-              handleClose();
+          if (isCreateLayers) {
+            if (fileContent.featureTypes.length > 1) {
+              const layerGroup = { name: groupName, groupId: groupId, createBy: stateApp.user.mongoId }
+              addLayerGroup({ variables: { userId: stateApp.user.mongoId, layerGroup } })
             }
-          })
+            fileContent.featureTypes.forEach(async (type, index) => {
+              const layerName = layerNames[index]
+              const defaultSettings = getDefaultSettings(type, layerName, sourceProps)
+              addLayer({
+                variables: {
+                  layer: {
+                    layerName,
+                    groupName: fileContent.featureTypes.length === 1 ? null : groupName,
+                    groupId: fileContent.featureTypes.length === 1 ? null : groupId,
+                    layerGeometry: type,
+                    identifier: layerName + uuid(),
+                    layerType: "file layer",
+                    layerCategory: "UD layer",
+                    public: true,
+                    createBy: stateApp.user.mongoId,
+                    file: file_id,
+                    originalFile: originalFileId,
+                    defaultSettings,
+                  },
+                },
+                refetchQueries: index === fileContent.featureTypes.length - 1 ? ["getAllLayerSettingsByUser"] : [],
+                awaitRefetchQueries: true,
+              });
+
+              if (index === fileContent.featureTypes.length - 1) {
+
+                await SimpleOrShapeFileImport({ stateApp, setStateApp, client, file_id, sourceProps })
+                handleClose();
+              }
+            })
+          }
+
+          else {
+            await SimpleOrShapeFileImport({ stateApp, setStateApp, client, file_id, sourceProps })
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              universalCircularLoaderAct: false,
+            }));
+            handleClose();
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -289,6 +273,22 @@ export default function AddUserGroupData(props) {
           userId,
         },
       });
+
+      await addDataset({
+        variables: {
+          dataset: {
+            fileName: inputOriginalFile.fileName,
+            sourceName: groupName,
+            categories: layerNames.map((layerName, index) => ({ name: layerName, layerGeometry: stateMapControls.fileUploadedContent.featureTypes[index] })),
+            types: stateMapControls.fileUploadedContent.featureTypes,
+            file: file.data.addFile.file.id,
+            originalFile: originalFileId,
+            public: true,
+            createBy: stateApp.user.mongoId,
+          }
+        },
+      });
+
       if (file?.data?.addFile?.success) {
         uploadFile(file.data, stateMapControls.fileUploadedContent, groupName + uuid() + "_source", originalFileId)
       }
@@ -333,8 +333,15 @@ export default function AddUserGroupData(props) {
 
   return (
     <Dialog maxWidth='xs' fullWidth open={isOpen} onClose={handleCancel}>
-      <DialogTitle>Create a new Group</DialogTitle>
+      <DialogTitle>Create a new Source</DialogTitle>
       <DialogContent dividers>
+
+        <Box fontWeight='bold'>
+          Source File Name
+        </Box>
+        <Typography variant="subtitle1" gutterBottom>
+          {inputOriginalFile.fileName}
+        </Typography>
 
         <TextField
           defaultValue={stateMapControls.fileUploadedContent.groupName}
@@ -342,7 +349,7 @@ export default function AddUserGroupData(props) {
           required
           margin="dense"
           id="groupName"
-          label="Group Name"
+          label="Source Name"
           fullWidth
           error={error}
           onChange={handleGroupNameChanges}
@@ -356,13 +363,25 @@ export default function AddUserGroupData(props) {
               margin="dense"
               id="layerName"
               value={layerNames[i]}
-              label={`Layer ${i + 1} ( ${layer} )`}
+              label={`Source Category ${i + 1} ( ${layer} )`}
               fullWidth
               error={error}
               onChange={(e) => handleLayerNameChanges(e.target.value, i)}
             />
           )
         }
+        <FormControlLabel
+          control={
+            <Checkbox
+              icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+              checkedIcon={<CheckBoxIcon fontSize="small" />}
+              checked={isCreateLayers}
+              onChange={(event) => setIsCreateLayers(event.target.checked)}
+              color="default"
+            />
+          }
+          label="Auto-Add Source Data to Map Layers"
+        />
 
         {!stateMapControls.fileUploadedContent && (
           <TextField
@@ -427,7 +446,7 @@ export default function AddUserGroupData(props) {
           onClick={handleApplyChanges}
           color="primary"
         >
-          Create Group
+          Create Source
         </Button>
       </DialogActions>
     </Dialog>

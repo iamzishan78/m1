@@ -6,6 +6,8 @@ import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTa
 import { setStateIfDeepEqual } from "components/Shared/functions";
 // actions
 import LastCheckDateFilter from "../Common/LastCheckDateFilter";
+import { useLazyQuery } from "@apollo/client";
+import { GET_UNMAPPED_PROPERTY_COUNT } from "graphQL/useQueryGetProperty";
 
 const useStyles = makeStyles((theme) => ({
   propertyTableContainer: {
@@ -63,6 +65,13 @@ const useStyles = makeStyles((theme) => ({
     },
     // marginTop: theme.spacing(2),
   },
+
+  propertyTableInfContainer: {
+    paddingTop: theme.spacing(1),
+    // paddingLeft: "38px",
+    // paddingRight: "38px",
+    marginLeft: '-8px',
+  },
   label: {
     fontSize: 16,
     fontWeight: "bold",
@@ -78,10 +87,13 @@ export default function Properties() {
 
   // props to pass in table
   const esIndex = "properties_flat";
-  const startPaginationAt = 25;
+  const startPaginationAt = 50;
 
   const [propertiesCount, setPropertiesCount] = useState(0);
   const [esFilters, ESFilters] = useState([]);
+
+  // waypointKey should any key of Table Header which do not have customRender in schema file
+  const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 347px)' }
 
   const setESFilters = (newFilter) => {
     setStateIfDeepEqual(ESFilters, newFilter);
@@ -90,6 +102,14 @@ export default function Properties() {
   const onPropertiesCount = (count) => {
     setPropertiesCount(count);
   };
+
+  const [getUnmappedPropertyCount, { data: getUnmappedPropertyCountResult }] = useLazyQuery(GET_UNMAPPED_PROPERTY_COUNT, {
+    fetchPolicy: "no-cache",
+  });
+
+  useEffect(() => {
+    getUnmappedPropertyCount();
+  }, [])
 
   useEffect(() => {
     return () => {
@@ -138,9 +158,10 @@ export default function Properties() {
         cardsDefault={cardsDefault}
         totalCount={propertiesCount}
         landSearchQuery={stateApp.revenueSearchQuery}
+        unmappedPropertyCount={getUnmappedPropertyCountResult?.getUnmappedPropertyCount?.unmappedCount}
       />
-
-      <div className={classes.propertyTableContainer}>
+      {/* use propertyTableContainer class as container if not using infinite scroll */}
+      <div className={classes.propertyTableInfContainer}>
         <RevenuePropertiesTable
           searchBar={false}
           esIndex={esIndex}
@@ -156,6 +177,7 @@ export default function Properties() {
           startPaginationAt={startPaginationAt}
           revenueSearchQuery={stateApp.revenueSearchQuery}
           actionColumns={[" ", "Tags", "Comments", "Status"]}
+          loadMore={loadMore}
         />
       </div>
     </>

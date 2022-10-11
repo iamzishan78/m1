@@ -9,7 +9,10 @@ import { setMapGridCardState } from "actions";
 
 
 const useStyles = makeStyles((theme) => ({
-  root: { paddingTop: '65px' },
+  root: {
+    marginTop: '65px',
+    // marginLeft: '-10px',
+  },
   propertyTableContainer: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
@@ -32,13 +35,23 @@ export default function ReportingGroups() {
   const esIndex = "shapes_flat";
   const [esFilters, setESFilters] = useState([]);
 
+  // waypointKey should any key of Table Header which do not have customRender in schema file
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 166px)" }
+
+
   useEffect(() => { dispatch(setMapGridCardState({ searchInputValue: '' })) }, [])
 
   return (
     <div className={classes.root}>
       <ReportGroupHeader type={'Agreements'} esFilters={esFilters} setESFilters={setESFilters} setFilterToggle={setFilterToggle} />
 
-      <div className={classes.propertyTableContainer}>
+      <div
+        // className={classes.propertyTableContainer}
+        style={{
+          marginTop: "25px",
+          marginLeft: "-10px"
+        }}
+      >
         <AgreementsTable
           esIndex={esIndex}
           isCheckboxSticky={true}
@@ -49,6 +62,7 @@ export default function ReportingGroups() {
           parent="AgreementsTable"
           setESFilters={setESFilters}
           landSearchQuery={stateApp.landSearchQuery}
+          loadMore={loadMore}
         />
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
@@ -8,6 +8,7 @@ import Link from "@material-ui/core/Link";
 
 // Components
 import ProfileMenu from "components/Profile/ProfileMenu";
+import { AppContext } from "AppContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,6 +33,7 @@ export default function DetailComponents(props) {
   const history = useHistory();
   const classes = useStyles(props);
   const { title, onClickFunc } = props;
+  const [, setStateApp] = useContext(AppContext);
 
   const { activeModule } = useSelector(({ common }) => common);
 
@@ -47,7 +49,12 @@ export default function DetailComponents(props) {
               <Link
                 style={{ marginLeft: "5px", fontSize: "16px", cursor: "pointer", fontWeight: "bold" }}
                 color="inherit"
-                onClick={() => history.push("/contacts/campaigns")}
+                onClick={() => {
+                  history.push(activeModule.parent?.link ?? activeModule.link)
+                  setTimeout(() => {
+                    setStateApp((stateApp) => ({ ...stateApp, landSearchQuery: "" }));
+                  }, 0);
+                }}
               >
                 {activeModule.title}
               </Link>

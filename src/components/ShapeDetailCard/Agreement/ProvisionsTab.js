@@ -122,17 +122,17 @@ const styles = makeStyles(() => ({
   },
 }));
 
-export default function ProvisionsTab({ provisions, standardProvisions, id }) {
+export default function ProvisionsTab({ provisions, standardProvisions, id, setPCounts }) {
   const classes = styles();
   let history = useHistory();
-  const [, setStateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateNav] = useContext(NavigationContext);
   const [selectionProvision, setSelectedProvision] = useState("");
   const [frequenciesList, setFrequenciesList] = useState([]);
   const [provisionAutoCompleteList, setProvisionsList] = useState([]);
   const [hoverProvision, setHoverProvision] = useState(-1);
   const [, setAnchorEl] = useState();
-  const { control, register, reset, getValues } = useForm();
+  const { control, register, reset, getValues, watch } = useForm();
 
   const [getProvisionAutoCompleteList, { data: dataProvisionAutoCompleteList }] = useLazyQuery(GET_PROVISION_AUTOCOMPLETE_LIST);
   const [upsertAgreementProvision] = useMutation(CREATE_AGREEMENT_PROVISION);
@@ -165,12 +165,16 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
     }
   }, [dataProvisionAutoCompleteList]);
 
+  useEffect(() => {
+    setPCounts(fields.length)
+  }, [fields.length])
+
   const addRemoveProvision = (addProvision, provision) => {
     if (addProvision) {
       setSelectedProvision(provision.type);
       let addProvision = { agreement: id, type: provision.type, isDeleted: false, startDate: undefined, endDate: undefined };
       if (provision._id) {
-        addProvision = { ...addProvision, isTemplate: false, applicable: true, templateRef: provision._id };
+        addProvision = { ...addProvision, isTemplate: false, applicable: true, templateRef: provision._id, user: stateApp.user.mongoId };
         upsertAgreementProvision({
           variables: { provision: addProvision },
           refetchQueries: ["getAgreementProvisions", "provisionAutoCompleteList"],
@@ -194,7 +198,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
       if (provision.type)
         upsertAgreementProvision({
           variables: {
-            provision: { agreement: id, ...formValues.provisions[index] },
+            provision: { agreement: id, ...formValues.provisions[index], user: stateApp.user.mongoId },
           },
         });
     }
@@ -397,6 +401,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                           className={classes.marginNormal}
                           disableToolbar
                           fullWidth
+                          minDate={watch(`provisions[${index}].startDate`)}
                           label={"End Date"}
                           inputVariant="outlined"
                           variant="inline"

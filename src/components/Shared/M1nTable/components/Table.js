@@ -16,6 +16,7 @@ import TrackToggleButton from "../../TrackToggleButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
 import ChatIcon from "@material-ui/icons/Chat";
+import CachedIcon from '@material-ui/icons/Cached';
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
 
 import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
@@ -61,7 +62,7 @@ import debounce from "lodash/debounce";
 import isEmpty from "lodash/isEmpty";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { WELLQUERY } from "graphQL/useQueryWell";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import WellTableStyles from "../customStyles/WellTableStyle";
 import ParcelOwnershipStyles from "../customStyles/ParcelOwnership";
 import ProductionTableStyle from "../customStyles/ProductionDetailsStyle";
@@ -74,7 +75,7 @@ import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
 import StackedBarChart from "components/Shared/Charts/StackedBarChart";
 import ButtonDropDown from "./ButtonGroup";
 // auto complete for well API#
-import SearchWells from "components/Shared/Wells/WellsAutoCompleteFilter";
+// import SearchWells from "components/Shared/Wells/WellsAutoCompleteFilter";
 
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 
@@ -97,8 +98,8 @@ import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 import CustomFieldText from "components/Shared/M1nTable/components/SubComponents/CustomFieldText";
-import CustomFieldSelectV2 from "./SubComponents/CustomFieldSelectV2";
-import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
+// import CustomFieldSelectV2 from "./SubComponents/CustomFieldSelectV2";
+// import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 // queries
 import { OWNERSLATSLONS } from "graphQL/useQueryOwnerLatsLonsArray";
@@ -110,6 +111,7 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 //icons
 import GetAppIcon from "@material-ui/icons/GetApp";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+// import LocationOnIcon from '@material-ui/icons/LocationOn';
 // import { ReactComponent as RequestPageIcon } from 'components/Shared/svgIcons/request_page_icon.svg';
 import RequestPageIcon from "components/Shared/svgIcons/request_page";
 // import RequestPageIcon from 'components/Shared/svgIcons/request_page_icon';
@@ -125,9 +127,13 @@ import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
-import { getIndexofColumn } from "utils/helper";
 import ReactSelectField from "./SubComponents/ReactSelectField";
-import { Waypoint } from "react-waypoint";
+import TableBody from "./MUIDataTable/TableBody";
+import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOfferPrice";
+
+
+import Checkbox from '@material-ui/core/Checkbox';
+import GlobalStyles from "GlobalStyles";
 
 
 // suppress debug console logs
@@ -144,7 +150,9 @@ const useStyles = makeStyles((theme) => ({
       height: "50px",
       "& .MuiTableCell-paddingCheckbox": {
         zIndex: (props) => (typeof props.headerZIndex !== 'undefined' ? props.headerZIndex : 100),
-        paddingRight: (props) => props.dense ? '32px !important' : 'inherit',
+        paddingRight: (props) => props.dense ? '7px !important' : 'inherit',
+        // paddingRight: (props) => props.dense ? '0px !important' : '0px !important',
+
       },
     },
     "& .MuiPaper-root > .MuiToolbar-gutters": {
@@ -153,7 +161,12 @@ const useStyles = makeStyles((theme) => ({
     "& .MUIDataTableToolbar": {
       zIndex: "999999 !important",
     },
-
+    "& .MuiTableRow-head": {
+      backgroundColor: "#F2F2F2"
+    },
+    "& .MuiTableRow-root.MuiTableRow-hover:hover": {
+      backgroundColor: "rgb(223 223 223)"
+    },
     "& .MuiPaper-elevation1": {
       flexDirection: "row !important",
       height: "65px !important",
@@ -183,7 +196,7 @@ const useStyles = makeStyles((theme) => ({
     //   left: props.header !== "Tax Roll Ownership" ? "100px !important" : "0px !important",
     // }),
     "& .MuiTableCell-body": {
-      padding: (props) => (props.dense ? "0 !important" : "12px 16px"),
+      padding: (props) => (props.dense ? "0px 0px 0px 25px !important" : "0px 0px 0px 16px"),
       backgroundColor: "#fff",
     },
     // "& .MuiTableCell-paddingCheckbox": {
@@ -195,10 +208,11 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiTableHead-root:nth-child(1) .MuiButton-label": { minWidth: '103px' },
     "& .MuiTableHead-root": {
+      backgroundColor: '#F2F2F2',
       "& th": {
         backgroundColor: "#F2F2F2",
         zIndex: "auto",
-        padding: (props) => (props.dense ? "10px 10px 10px 0px" : null),
+        padding: (props) => (props.dense ? "10px 10px 10px 25px" : null),
         "& button": {
           minWidth: 'max-content',
           "& .MuiButton-label": {
@@ -208,7 +222,7 @@ const useStyles = makeStyles((theme) => ({
         },
       },
       "& .MuiTableCell-paddingCheckbox": {
-        padding: (props) => (props.dense ? "0 !important" : "16px"),
+        padding: (props) => (props.dense ? "0px 0px 0px 25px !important" : "16px"),
         left: "0px",
         position: "sticky",
         zIndex: 1800,
@@ -455,6 +469,25 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     fontSize: "smaller",
   },
+  agreementNumber: {
+    // position: 'absolute',
+    alignItems: 'center',
+    // justifyContent: 'space-between',
+
+    "&:hover": {
+      "& $actionButtons": {
+        display: "flex",
+      },
+    },
+  },
+  actionButtons: {
+    display: "none",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    "&:hover": {
+      display: "flex",
+    },
+  },
   customWarning: {
     "& .MuiSvgIcon-root": {
       fill: "#ffa800"
@@ -523,7 +556,6 @@ function SubTable(props) {
   const [isSearchOpen, openSearch] = useState(false);
   const [handleSearch, setHandleSearch] = useState(() => () => { });
   const [dataWell, setDataWell] = useState();
-  const [activeRowIndex, setActiveRowIndex] = useState("null");
   const [defaultActivityType, setDefaultAcitivityType] = useState("call");
   const [contact, setContact] = useState(null);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
@@ -616,7 +648,14 @@ function SubTable(props) {
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContact, { data: contactData }] = useLazyQuery(CONTACT);
-
+  const [autoCalculateOfferPrice, { data: autoCalculateOfferPriceData, }] = useMutation(
+    AUTO_CALCULATE_OFFER_PRICE,
+    {
+      refetchQueries: [
+        "getESSimpleSearch",
+      ],
+    }
+  );
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
@@ -643,16 +682,16 @@ function SubTable(props) {
   // handlers
   const handleWellFlyTo = (value) => {
     const shapeId = history.location.pathname.split("/");
-    const shapeType = stateApp.selectedShape.type;
+    const shapeType = stateApp?.selectedShape?.type;
     history.push(
-      `/map/wells/${value?.wellId.toUpperCase()}`,
-      {
+      `/map/wells/${value?.wellId}`,
+      shapeType ? {
         fromShapeDetail: true,
         shapeName: stateApp.selectedShape.shapeLabel,
         shapeId: shapeId[shapeId.length - 1],
         shapeType: shapeType === "agreement" ? "Agreements" : "Units",
         link: shapeType === "agreement" ? `/land/agreement/details/${stateApp.selectedShape.id}` : `/map/units/${shapeId[shapeId.length - 1]}`
-      }
+      } : null
     );
     setStateApp((stateApp) => ({
       ...stateApp,
@@ -724,6 +763,14 @@ function SubTable(props) {
     });
   };
 
+  const handleAutoCalculateClick = (shapeOwnerId) => {
+    autoCalculateOfferPrice({
+      variables: {
+        shapeOwnerId,
+      },
+    });
+  }
+
   const handleClickFlyToIcon = (entityType, searchTarget) => {
     if (!searchTarget) return;
 
@@ -755,7 +802,6 @@ function SubTable(props) {
   // functions 
   const gridElement = value => {
     // wraps standard grid elements w/ consistent styling
-
     return (
       <>
         <Typography
@@ -767,12 +813,43 @@ function SubTable(props) {
         </Typography>
       </>
     )
-
   }
 
+  // Shows comments
+  const GridComments = ({ value, targetSourceId, tableMeta }) => {
+    const id = props.targetLabel + tableMeta.columnIndex;
+    return (
+      <>
+        <Tooltip
+          title={!value || value === 0 ? "Add Comments" : "View Comments"}
+          placement="top"
+        // style={{ marginRight: "10px" }}
+        >
+          <Button
+            id={id + targetSourceId + tableMeta.rowIndex}
+            size='small'
+            startIcon={<ChatIcon />}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
+            }}
+            aria-label="show comments"
+            onMouseOver={() => {
+              if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                multiSelectMouseHoverColor(id, "#dadbde");
+            }}
+            onMouseOut={() => {
+              if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
+                multiSelectMouseHoverColor(id, "#efefef");
+            }}
+          >
+            {value}
+          </Button>
+        </Tooltip>
 
-
-
+      </>
+    )
+  }
   //// save contact data chosen by action menu
   useEffect(() => {
     if (contactData && contactData.contact) {
@@ -1205,6 +1282,53 @@ function SubTable(props) {
         // without using refs we HAVE to re-create customBodyRender callback functions every render
         // or component state is stale
 
+        // if (column.name === "_id" && column.options.isFiniteScroll) {
+        //   column.options = {
+        //     ...column.options,
+
+        //     setCellProps: () => ({
+        //       style: {
+        //         minWidth: "90px",
+        //         maxWidth: "90px",
+        //         position: "sticky",
+        //         left: "77px",
+        //         zIndex: 201,
+        //       }
+        //     }),
+
+        //     setCellHeaderProps: () => ({
+        //       style: {
+        //         minWidth: "90px",
+        //         maxWidth: "90px",
+        //         position: "sticky",
+        //         paddingLeft: '70px',
+        //         zIndex: 201,
+        //         left: "77px",
+        //       },
+        //     }),
+
+        //     customRender: (value, tableMeta) => {
+        //       const rowIndex = tableMeta.rowIndex;
+        //       return (
+        //         <>
+        //           {rowIndex === props.rows.length - 5 && (<Waypoint
+        //             onEnter={() => {
+        //               if (props.onInfiniteScroll) props.onInfiniteScroll()
+        //             }}
+        //           />)}
+
+        //           <div
+        //             id={`${rowIndex === props.rows.length - 5 ? `waypoint-${rowIndex}` : ''}`} z>
+        //             {<span
+        //               style={{ color: GlobalStyles.colors.mutedGrey }}
+        //             >{tableMeta.rowIndex + 1}</span>}
+        //           </div>
+        //         </>
+        //       );
+        //     },
+        //   }
+        // }
+
         if (column?.options?.customRender) {
           column.options = {
             ...column.options,
@@ -1213,35 +1337,150 @@ function SubTable(props) {
           return;
         }
 
-        if (column?.infiniteScroll) {
-          column.options = {
-            ...column.options,
-            customBodyRender: (value, tableMeta) => {
-              const rowIndex = tableMeta.rowIndex;
-              if (rowIndex === props.rows.length - 5) {
-                return (
-                  <Fragment>
-                    <Waypoint
-                      onEnter={() => {
-                        if (props.onInfiniteScroll) props.onInfiniteScroll()
-                      }}
-                    />
-
-                    <div id={`waypoint-${rowIndex}`}>
-                      {gridElement(value)}
-                    </div>
-
-                  </Fragment>
-                );
-              } else {
-                return (gridElement(value))
-              }
-            },
-          };
-          return
-        }
-
         switch (column.name) {
+
+
+
+          case "name":
+            {
+              column.options = {
+                ...column.options,
+                customRender: (value, tableMeta) => {
+                  if (props.targetLabel === "unit") {
+                    const targetSourceId = tableMeta.rowData[1];
+                    const commentValue = tableMeta.rowData[21]
+                    return (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Grid container spacing={0} direction="row"
+                          style={{ position: 'absolute' }}
+                          className={classes.agreementNumber}
+                        >
+                          <Grid item
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-start",
+                            }}
+                          >
+                            <Box
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                history.push(`/map/units/${tableMeta.rowData[0]}`);
+                              }}
+                              sx={{
+                                color: GlobalStyles.colors.lightBlue,
+                                cursor: 'pointer',
+                                maxWidth: '300px',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                p: 2,
+                                "&:hover": {
+                                  textDecoration: "underline",
+                                  fontWeight: GlobalStyles.font.boldFontWeight,
+                                },
+
+                              }}
+                            >
+                              {tableMeta?.rowData[2]}
+                            </Box>
+                          </Grid>
+                          <Grid item>
+                            <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
+                          </Grid>
+                        </Grid>
+                      </div>
+                    );
+                  } else if (props.targetLabel === "contact") {
+                    const nameIndex = props.columns.findIndex((val) => val.name === "name")
+                    return (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Avatar
+                          color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
+                          fgColor="#000"
+                          name={(tableMeta.rowData[nameIndex])
+                            .split(" ")
+                            .splice(0, 2)
+                            .join(" ")}
+                          size="35"
+                          round
+                        />
+                        <p
+                          className={classes.clickableCell}
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            minWidth: "300px",
+                          }}
+                          onClick={() => {
+                            history.push(`/contact/details/${tableMeta.rowData[0]}`);
+                          }}
+                        >
+                          {tableMeta.rowData[nameIndex]}
+
+                          {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
+                            <FeatureFlag feature={FEATURES.IDICORE}>
+                              <MonetizationOnIcon className={classes.monetizationIcon} />
+                            </FeatureFlag>
+                          )}
+                        </p>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          minWidth: "250px",
+                        }}
+                      >
+                        <Grid container spacing={0} direction="row"
+                          style={{ position: 'absolute' }}
+                          className={classes.agreementNumber}
+                        >
+                          <Grid item
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-start",
+                            }}
+                          >
+                            <p
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                minWidth: "300px",
+                              }}
+                            >
+                              {value}
+
+                              {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
+                                <FeatureFlag feature={FEATURES.IDICORE}>
+                                  <MonetizationOnIcon className={classes.monetizationIcon} />
+                                </FeatureFlag>
+                              )}
+                            </p>
+                          </Grid>
+                        </Grid>
+                      </div>
+                    );
+                  }
+                },
+              }
+              break;
+            }
+
           case "detailCard":
             column.options = {
               ...column.options,
@@ -1280,8 +1519,8 @@ function SubTable(props) {
                             props.showParcelDetails(selectedParcel);
                           } else {
                             let selectedWell = props.rows.find((row) => {
-                              if (row.id) return row.id == tableMeta.rowData[0];
-                              return row.Id == tableMeta.rowData[0];
+                              if (row.id) return row.id === tableMeta.rowData[0];
+                              return row.Id === tableMeta.rowData[0];
                             });
 
                             if (selectedWell) {
@@ -1380,31 +1619,31 @@ function SubTable(props) {
             }
             break;
           }
-          case "property": {
-            {
-              column.options = {
-                ...column.options,
-                customBodyRender: (value, tableMeta, updateValue) => {
-                  const {
-                    columnData: { label },
-                    rowData,
-                  } = tableMeta;
-                  return (
-                    <>
-                      {label === "property #" && <span style={{ padding: 10 }}>{rowData[1]}</span>}
+          // case "property": {
+          //   {
+          //     column.options = {
+          //       ...column.options,
+          //       customBodyRender: (value, tableMeta, updateValue) => {
+          //         const {
+          //           columnData: { label },
+          //           rowData,
+          //         } = tableMeta;
+          //         return (
+          //           <>
+          //             {label === "property #" && <span style={{ padding: 10 }}>{rowData[1]}</span>}
 
-                      {label === "Property Name" && <span style={{ padding: 10 }}>{rowData[1].name}</span>}
+          //             {label === "Property Name" && <span style={{ padding: 10 }}>{rowData[1].name}</span>}
 
-                      {label === "State" && <span style={{ padding: 10 }}>{rowData[1].state}</span>}
+          //             {label === "State" && <span style={{ padding: 10 }}>{rowData[1].state}</span>}
 
-                      {(label === "Country" || label === "County") && <span style={{ padding: 10 }}>{rowData[1].county}</span>}
-                    </>
-                  );
-                },
-              };
-            }
-            break;
-          }
+          //             {(label === "Country" || label === "County") && <span style={{ padding: 10 }}>{rowData[1].county}</span>}
+          //           </>
+          //         );
+          //       },
+          //     };
+          //   }
+          //   break;
+          // }
           case "date": {
             {
               column.options = {
@@ -1529,6 +1768,51 @@ function SubTable(props) {
               };
             }
             break;
+
+          // Used for snapgrid tables
+          case 'ApiNumber':
+          case 'Well':
+          case 'Operator':
+          case 'OwnerName':
+            {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta, updateValue) => {
+                  let disabled = false;
+                  let type = 'well'
+                  if (column.name === 'Well' && !props.rows[tableMeta.rowIndex]?.well.globalWell) disabled = true;
+                  if (column.name === 'ApiNumber' && !props.rows[tableMeta.rowIndex]?.globalWell) disabled = true;
+                  if (column.name === 'OwnerName' && !props.rows[tableMeta.rowIndex]?.wellCount > 0) disabled = true;
+                  if (column.name === 'Operator' && !props.rows[tableMeta.rowIndex]?.totalWellCount > 0) disabled = true;
+                  return (
+                    <Box
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!disabled) {
+                          const coordinates = props.rows[tableMeta.rowIndex].coordinates
+                          type = coordinates?.objToPopulateSearchLayer?.objectType || type
+                          if (column.name === 'Well') coordinates.wellId = props.rows[tableMeta.rowIndex]?.well.globalWell;
+                          handleClickFlyToIcon(type, coordinates);
+                          dispatch(setMapGridCardState({ mapGridCardActivated: false }));
+                        }
+                      }}
+                      sx={{
+                        color: !disabled ? GlobalStyles.colors.lightBlue : 'inherit',
+                        cursor: 'pointer',
+                        maxWidth: '300px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        p: 2,
+                        "&:hover": !disabled ? { textDecoration: "underline", fontWeight: GlobalStyles.font.boldFontWeight } : {},
+                      }}
+                    >
+                      {value}
+                    </Box>
+                  );
+                },
+              };
+            }
+            break;
           case "coordinates": //// fly to the map icon
             {
               column.options = {
@@ -1537,6 +1821,13 @@ function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   let id = props.targetLabel + tableMeta.columnIndex;
 
+                  let disabled = false;
+                  if (props.targetLabel === "well" && !props.rows[tableMeta.rowIndex]?.globalWell)
+                    disabled = true;
+                  if (props.targetLabel === "owner" && !props.rows[tableMeta.rowIndex]?.wellCount > 0)
+                    disabled = true;
+                  if (props.targetLabel === "operator" && !props.rows[tableMeta.rowIndex]?.totalWellCount > 0)
+                    disabled = true;
 
                   return (
                     // this whole implementation is a mesteban patch
@@ -1548,19 +1839,20 @@ function SubTable(props) {
                         size={props.dense ? "small" : "medium"}
                         color="secondary"
                         className={`${classes.icons}`}
-                        disabled={props.targetLabel === "well" && !props.rows[tableMeta.rowIndex]?.globalWell}
+                        disabled={disabled}
                         onClick={(e) => {
                           e.stopPropagation();
                           // for unit wells we need to use globalWell instead of wellId
-                          if (props.parent === "UnitsTable") {
+                          if (props.targetLabel === 'owner' || props.targetLabel === 'operator' || props.rows[tableMeta.rowIndex].globalWell)
+                            handleClickFlyToIcon(props.targetLabel, value);
+
+                          else if (props.parent === "UnitsTable" || props.parent === "search") {
                             const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
-                            history.push(`/map/units/${row_line._id}`)
+                            openUnitDetailCard(row_line._id);
                           }
-                          if (props.targetLabel === "well") {
+                          else if (props.targetLabel === "well") {
                             value.wellId = props.rows[tableMeta.rowIndex].globalWell;
                           }
-                          if (props.rows[tableMeta.rowIndex].globalWell)
-                            handleClickFlyToIcon(props.targetLabel, value);
                         }}
                         aria-label="fly"
                       >
@@ -1621,12 +1913,166 @@ function SubTable(props) {
               };
             }
             break;
+          case "agreementNumber":
+            {
+              column.options = {
+                ...column.options,
+                customRender: (value, tableMeta) => {
+                  value = value?.toString();
+                  const splitNumber = value?.split("_");
+
+                  const styles = {
+                    cursor: GlobalStyles.hyperlink.cursor,
+                    //minWidth: "1400px"
+                    // position: 'relative',
+                    // left: '55px',
+                  };
+                  const targetSourceId = tableMeta.rowData[0];
+                  const commentValue = tableMeta.rowData[21]
+                  const isSnapGrid = column.options.isSnapGrid || false
+
+                  return (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        minWidth: '500px',
+                        maxWidth: '500px'
+                      }}
+                    >
+                      <Grid container spacing={0} direction="row"
+                        style={{
+                          position: 'absolute',
+                          // justifyContent: 'space-between'
+                        }}
+                        className={classes.agreementNumber}
+                      >
+                        <Grid item
+                          style={{
+                            display: "flex",
+                            justifyContent: "flex-start",
+                            // alignItems: "center",
+                            // paddingRight: "100px"
+                          }}
+                        >
+                          {/* <Typography
+                            onClick={(e) => {
+                              e.stopPropagation();
+
+                              if (isSnapGrid)
+                                history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
+                                  { showAgreementBreadcrumb: false }
+                                );
+                              else
+                                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
+                                  { showAgreementBreadcrumb: true }
+                                );
+                            }}
+                            noWrap
+                            variant='body2'
+                            style={styles}
+                            color="inherit"
+                          >
+                            <Box sx={{
+                              color: GlobalStyles.colors.lightBlue,
+                              p: 2,
+                              "&:hover": {
+                                textDecoration: "underline",
+                                fontWeight: GlobalStyles.font.boldFontWeight,
+                              },
+                            }}>
+
+                              {splitNumber?.[0]
+                                ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
+                                : tableMeta?.rowData[2]}
+                            </Box>
+                          </Typography> */}
+
+
+                          <Box
+                            onClick={(e) => {
+                              e.stopPropagation();
+
+                              if (isSnapGrid && tableMeta.rowData[3])
+                                history.push(`/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}`,
+                                  { showAgreementBreadcrumb: false }
+                                );
+                              else if (!isSnapGrid)
+                                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
+                                  { showAgreementBreadcrumb: true }
+                                );
+                            }}
+
+                            sx={{
+                              color: GlobalStyles.colors.lightBlue,
+                              cursor: 'pointer',
+                              maxWidth: '300px',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              p: 2,
+                              "&:hover": {
+                                textDecoration: "underline",
+                                fontWeight: GlobalStyles.font.boldFontWeight,
+                              },
+
+                            }}
+
+                          >
+
+                            {splitNumber?.[0]
+                              ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
+                              : tableMeta?.rowData[2]}
+                          </Box>
+
+                        </Grid>
+
+                        {/* <Grid item>
+                          <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
+                        </Grid>
+
+
+                        <Grid item
+                          className={classes.actionButtons}
+                        >
+                          <Grid container spacing={0} direction="row">
+
+                            <Grid item
+                              style={{
+                                display: "flex",
+                                justifyContent: "flex-start",
+                                alignItems: "center",
+                              }}
+                            >
+                              <IconButton
+                                size="small"
+                                onClick={(e) => {
+                                  history.push(
+                                    `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
+                                    { showAgreementBreadcrumb: true }
+                                  );
+                                  e.stopPropagation();
+                                }}
+                              >
+                                <LocationOnIcon />
+                              </IconButton>
+                            </Grid>
+                          </Grid>
+
+                        </Grid> */}
+                      </Grid>
+                    </div>
+
+                  );
+                },
+              };
+            }
+            break;
+
           case "commentsCounter":
             {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  let id = props.targetLabel + tableMeta.columnIndex;
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
@@ -1649,35 +2095,9 @@ function SubTable(props) {
                   if (props.parent === "ownersPerUnit" && props.targetLabel === "Unit Ownership") {
                     targetSourceId = tableMeta.rowData[1];
                   }
-
                   return (
                     //add download and search icons here
-                    <Tooltip title={!value || value === 0 ? "Add Comments" : "Comments"} placement="top" style={{ marginRight: "10px" }}>
-                      <Badge badgeContent={value ? value : null} color="secondary">
-                        <IconButton
-                          id={id + targetSourceId + tableMeta.rowIndex}
-                          size={props.dense ? "small" : "medium"}
-                          color="primary"
-                          className={`${classes.icons} ${!value || value === 0 ? classes.noCommentsIcon : ""} ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex ? classes.iconSelected : ""
-                            }`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleExpandClick(tableMeta.columnIndex, tableMeta.rowIndex, targetSourceId, "comment");
-                          }}
-                          aria-label="show comments"
-                          onMouseOver={() => {
-                            if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                              multiSelectMouseHoverColor(id, "#dadbde");
-                          }}
-                          onMouseOut={() => {
-                            if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
-                              multiSelectMouseHoverColor(id, "#efefef");
-                          }}
-                        >
-                          <ChatIcon />
-                        </IconButton>
-                      </Badge>
-                    </Tooltip>
+                    <GridComments value={value} targetSourceId={targetSourceId} tableMeta={tableMeta} />
                   );
                 },
               };
@@ -1818,7 +2238,6 @@ function SubTable(props) {
                             routeChange(`/contact/details/${value}`);
                             setTitle("Contact Details");
                             setSubTitle(" ");
-
                           } else {
                             // Code is not used as we are opening different model from above
                             if (props.targetLabel === "owner") {
@@ -1934,7 +2353,13 @@ function SubTable(props) {
                 ...column.options,
 
                 customBodyRender: (value, tableMeta, updateValue) => {
+
                   let id = props.targetLabel + tableMeta.columnIndex;
+                  if (value[0]?.tag) {
+                    const length = value.length
+                    value[0] = value.map((tag) => tag.tag)
+                    value[1] = length
+                  }
                   let targetSourceId =
                     props.parent === "OwnersPerWell"
                       ? tableMeta.rowData[2]
@@ -1963,7 +2388,7 @@ function SubTable(props) {
                           id={id + targetSourceId + tableMeta.rowIndex}
                           className={`${classes.TagSample} ${colInd === tableMeta.columnIndex && rowInd === tableMeta.rowIndex ? classes.iconSelected : ""
                             }`}
-                          badgeContent={value ? value[1] : 0}
+                          badgeContent={value && value[0] && value[0].length > 0 ? value[1] : 0}
                           color="secondary"
                           onClick={(e) => {
                             e.preventDefault();
@@ -2093,13 +2518,13 @@ function SubTable(props) {
                         // paddingRight: '200px'
                       }}>
                         <Grid container spacing={0} direction="row" >
-                          {
+                          {/* {
                             props.parent === 'Documents' && <div style={{ position: 'relative', zIndex: 100 }}>
-                              <div style={{ position: 'absolute', left: '-25px', top: '15px', fontWeight: 'bold' }}>
+                              <div style={{ position: 'absolute', left: '-30px', top: '15px', fontWeight: 'bold' }}>
                                 {tableMeta.rowIndex + 1}
                               </div>
                             </div>
-                          }
+                          } */}
                           <Grid
                             item
                             xs={1}
@@ -2112,16 +2537,27 @@ function SubTable(props) {
                             <div
                               style={{
                                 // boxShadow: 'inset -1px 0px 0px 0px lightgrey',
+                                cursor: 'pointer'
                               }}
 
-                              onClick={() => {
-                                if (file.state !== "active") return;
-
-                                if (fileExtension === "pdf") {
-                                  setStateApp({
-                                    ...stateApp,
-                                    viewDoc: { uri: uri, name: file },
-                                  });
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
+                                if (type === "pdf") {
+                                  if (props.addAble.type === "document") {
+                                    window.history.pushState("", "", `/documents/${row_line._id}/view`);
+                                  }
+                                  // const selectedRow = rows.find((row) => row._id === row_line._id);
+                                  setStateApp((state) => ({
+                                    ...state,
+                                    pdfView: row_line,
+                                    viewDoc: {
+                                      uri: row_line.viewToken,
+                                      name: row_line.fileName,
+                                    },
+                                  }));
+                                } else {
+                                  handleViewFile(row_line._id);
                                 }
                               }}
                             >
@@ -2144,30 +2580,7 @@ function SubTable(props) {
                                 justifyContent: "flex-start",
 
                               }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
-                                if (type === "pdf") {
-                                  if (props.addAble.type === "document") {
-                                    window.history.pushState("", "", `/documents/${row_line._id}/view`);
-                                  }
-                                  // const selectedRow = rows.find((row) => row._id === row_line._id);
-                                  setStateApp((state) => ({
-                                    ...state,
-                                    pdfView: row_line,
-                                    viewDoc: {
-                                      uri: row_line.viewToken,
-                                      name: row_line.fileName,
-                                    },
-                                  }));
-                                } else {
-                                  handleViewFile(row_line._id);
-                                }
-                              }}
                             >
-
-
-
                               <p
                                 style={{
                                   display: "flex",
@@ -2182,6 +2595,27 @@ function SubTable(props) {
                                   fontWeight: "bold",
                                   justifyContent: "flex-start",
                                   paddingRight: '40px',
+                                }}
+
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
+                                  if (type === "pdf") {
+                                    if (props.addAble.type === "document") {
+                                      window.history.pushState("", "", `/documents/${row_line._id}/view`);
+                                    }
+                                    // const selectedRow = rows.find((row) => row._id === row_line._id);
+                                    setStateApp((state) => ({
+                                      ...state,
+                                      pdfView: row_line,
+                                      viewDoc: {
+                                        uri: row_line.viewToken,
+                                        name: row_line.fileName,
+                                      },
+                                    }));
+                                  } else {
+                                    handleViewFile(row_line._id);
+                                  }
                                 }}>
 
                                 <Typography
@@ -2215,22 +2649,28 @@ function SubTable(props) {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
                   return (
-                    <CellContentEdition
-                      id={tableMeta.rowData[0]}
-                      entityId={tableMeta.rowData[1]}
-                      content={{
-                        address1: tableMeta.rowData[2],
-                        address2: tableMeta.rowData[3],
-                        city: tableMeta.rowData[4],
-                        state: tableMeta.rowData[5],
-                        zip: tableMeta.rowData[6],
-                        country: tableMeta.rowData[7],
-                      }}
-                      targetLabel={props.targetLabel}
-                      nonEditable={!column.editable}
-                      isLinked
-                      toLink={value}
-                    />
+
+                    <div
+                      style={{
+                        width: '350px',
+                      }}>
+                      <CellContentEdition
+                        id={tableMeta.rowData[0]}
+                        entityId={tableMeta.rowData[1]}
+                        content={{
+                          address1: tableMeta.rowData[2],
+                          address2: tableMeta.rowData[3],
+                          city: tableMeta.rowData[4],
+                          state: tableMeta.rowData[5],
+                          zip: tableMeta.rowData[6],
+                          country: tableMeta.rowData[7],
+                        }}
+                        targetLabel={props.targetLabel}
+                        nonEditable={!column.editable}
+                        isLinked
+                        toLink={value}
+                      />
+                    </div>
                   );
                 },
               };
@@ -2309,6 +2749,34 @@ function SubTable(props) {
           //     },
           //   };
           //   break;
+          case "offer_price":
+            if (props.targetLabel === "Unit Ownership" || props.parent === "ownersPerUnit") {
+              column.options = {
+                ...column.options,
+                customBodyRender: (value, tableMeta) => {
+                  const { columnIndex, rowData, rowIndex } = tableMeta;
+                  const row = props?.rows?.[rowIndex];
+                  const isManual = !!row?.maualOverrides?.offer_price;
+                  return (
+                    <>
+                      <span style={{ padding: 10 }}>{vf_currency(value)}</span>
+                      {isManual && (
+                        <IconButton
+                          aria-label="cached"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleAutoCalculateClick(row._id);
+                          }}
+                        >
+                          <CachedIcon />
+                        </IconButton>
+                      )}
+                    </>
+                  );
+                },
+              };
+            }
+            break;
           case "checkAmount":
             column.options = {
               ...column.options,
@@ -2498,12 +2966,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-                  if (column.name === 'name' && props.parent === 'UnitsTable') {
-                    const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item, })));
-                    return (
-                      <span style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }} onClick={() => history.push(`/map/units/${row_line._id}`)}>{row_line.name}</span>
-                    )
-                  }
+
                   if (column.isCustom && (column.type === "multiselect" || column.type === "dropdown")) {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
@@ -2540,12 +3003,12 @@ function SubTable(props) {
                   if (column.name === "isClosed" && (props.targetLabel === "activity" || props.targetLabel === "activitiesDashboard") && value === true)
                     return (
                       <div style={{ textAlign: "center" }}>
-                        <CheckIcon />
+                        <CheckIcon id="checkIcon" />
                       </div>
                     );
 
                   if (column.name === "isClosed" && (props.targetLabel === "activity" || props.targetLabel === "activitiesDashboard") && value === false)
-                    return <div style={{ textAlign: "center" }}>{/* <CheckBoxOutlineBlankIcon /> */}</div>;
+                    return <div style={{ textAlign: "center" }}>--</div>;
 
                   ////// if non editable column
                   if (
@@ -2590,7 +3053,12 @@ function SubTable(props) {
 
                   return (
                     <div
-                      style={{ display: "flex", alignItems: "center", justifyContent: "left", ...column.style }}
+                      style={{
+                        // display: "flex", 
+                        // alignItems: "center", 
+                        // justifyContent: "left", 
+                        ...column.style
+                      }}
                       className={`${props.parent === "assocTaxRollInterests" &&
                         props.addAble.type === "wellInterest" &&
                         (!tableMeta.rowData[15] || tableMeta.rowData[20])
@@ -2598,26 +3066,73 @@ function SubTable(props) {
                         : []
                         }`}
                     >
-                      {props.targetLabel === "contact" && column.name === "name" && (
-                        <Avatar
-                          color={Avatar.getRandomColor(value, ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
-                          fgColor="#000"
-                          name={
-                            valueFormatter(column, tableMeta.rowData[8]) ||
-                            valueFormatter(column,
-                              `${tableMeta.rowData[10]
-                                ? tableMeta.rowData[10]
-                                : tableMeta.rowData[8]
-                                  ? tableMeta.rowData[8].split(" ")[0]
-                                  : ""
-                              }`
-                            )
+                      {props.targetLabel === "contact" && column.name !== "name" && (
+                        <CellContentEdition
+                          id={tableMeta.rowData[0]}
+                          content={{ [column.name]: valueFormatter(column, value) }}
+                          targetLabel={props.targetLabel}
+                          dropDownOptions={column.dropDownOptions ? column.dropDownOptions : null}
+                          entityId={
+                            props.targetLabel === "Parcel Interest" ||
+                              props.targetLabel === "Parcel Ownershipship" ||
+                              props.targetLabel === "contact"
+                              ? tableMeta.rowData[1]
+                              : null
                           }
-                          // name={valueFormatter(column, `${tableMeta.rowData[10]} ${tableMeta.rowData[12]}`)}
-                          size="35"
-                          round
+                          nonEditable={!column.editable}
                         />
                       )}
+                      {/* 
+                      // this is for the UNIT name section.
+                      // it is not in the case statement b/c multipe datapoints have the name: called "name"
+                      // we will need to somehow eventually refactor this as it is annoying 
+                      */}
+
+                      {/* {props.targetLabel === "unit" && column.name === "name" && (
+                      
+                          <div>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <Grid container spacing={0} direction="row"
+                              style={{
+                                position: 'absolute',
+                              }}
+                              className={classes.agreementNumber}
+                            >
+                              <Grid item
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "flex-start",
+                                }}
+                              >
+
+                                <Box sx={{
+                                    color: GlobalStyles.colors.lightBlue,
+                                    cursor: 'pointer',
+                                    maxWidth: '300px',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    p: 2,
+                                    "&:hover": {
+                                      textDecoration: "underline",
+                                      fontWeight: GlobalStyles.font.boldFontWeight,
+                                    },
+                                    
+                                  }}
+                                  >
+                                    {tableMeta?.rowData[2]}
+                                </Box>
+                              </Grid>
+    
+                            </Grid>
+                          </div>
+                          </div>
+                      )} */}
+
 
 
                       {/* // standard document grid elements */}
@@ -2642,46 +3157,7 @@ function SubTable(props) {
                           nonEditable={!column.editable}
                         />
                       )}
-                      {props.targetLabel === "contact" && column.name !== "name" && (
-                        <CellContentEdition
-                          id={tableMeta.rowData[0]}
-                          content={{ [column.name]: valueFormatter(column, value) }}
-                          targetLabel={props.targetLabel}
-                          dropDownOptions={column.dropDownOptions ? column.dropDownOptions : null}
-                          entityId={
-                            props.targetLabel === "Parcel Interest" ||
-                              props.targetLabel === "Parcel Ownershipship" ||
-                              props.targetLabel === "contact"
-                              ? tableMeta.rowData[1]
-                              : null
-                          }
-                          nonEditable={!column.editable}
-                        />
-                      )}
-                      {props.targetLabel === "contact" && column.name === "name" && (
-                        <p
-                          className={classes.clickableCell}
-                          onClick={() => {
-                            setStateApp((stateApp) => ({
-                              ...stateApp,
-                              selectedContact: tableMeta.rowData[0],
-                            }));
-                            setTitle("Contact Details");
-                            setSubTitle(" ");
-                            handleOpenExpandableCard();
-                          }}
-                        >
-                          {tableMeta.rowData[8] || (!tableMeta.rowData[10] && !tableMeta.rowData[12])
-                            ? `${tableMeta.rowData[8] ? tableMeta.rowData[8] : ""}`
-                            : `${tableMeta.rowData[10] ? tableMeta.rowData[10] : ""} ${tableMeta.rowData[12] ? tableMeta.rowData[12] : ""}`}
-                          <div className={classes.companyName}>{tableMeta.rowData[14]}</div>
-                        </p>
-                      )}
-                      {/* {props.targetLabel !== "contact" && column.name === "name" && (
-                        <FeatureFlag feature={FEATURES.IDICORE}>
-                          <span>{tableMeta.rowData[getIndexofColumn(columns, "isPurchased")] && <RequestPageIcon color="grey" fontSize="8px" />} </span>
-                        </FeatureFlag>
-                      )} */}
+
 
                       {props.targetLabel === "Unit Ownership" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
@@ -2691,26 +3167,16 @@ function SubTable(props) {
 
                       {props.parent === "ownersPerParcel" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
+                          {console.log(tableMeta.rowData, tableMeta.rowData[props.columns.findIndex(
+                            (val) => val.name === "isPurchased"
+                          )])}
                           <span> {tableMeta.rowData[props.columns.findIndex(
-                          (val) => val.name === "isPurchased"
-                        )] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
+                            (val) => val.name === "isPurchased"
+                          )] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
                         </FeatureFlag>
                       )}
 
-                      {props.targetLabel === "contact" &&
-                        column.name === "name" &&
-                        tableMeta.rowData[
-                        props.columns.findIndex(
-                          (val) => val.name === "isPurchased"
-                        )
-                        ] && (
-                          <FeatureFlag feature={FEATURES.IDICORE}>
-                            <MonetizationOnIcon
-                              className={classes.monetizationIcon}
 
-                            />
-                          </FeatureFlag>
-                        )}
                     </div>
                   );
                 },
@@ -2724,6 +3190,15 @@ function SubTable(props) {
       setViewColumns(props.addColumnFilter);
     }
   }, [props.columns, props.rows, rows, colInd, rowInd, m1nSelectedRowsTracks, m1nSelectedRowsIndexes, m1nSelectedRowsIds]);
+
+  const openUnitDetailCard = (unitId) => {
+    dispatch(
+      setMapGridCardState({
+        mapGridCardActivated: false,
+      })
+    );
+    history.push(`/map/units/${unitId}`);
+  }
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -3251,7 +3726,7 @@ function SubTable(props) {
                                 props.rows[props.selectedRows[i].dataIndex]
                               );
                             }
-                            props.setSelectedRows(owners);
+                            props.setSelectedRows && props.setSelectedRows(owners);
                             // props.setOpenCustomDialog("exportContacts");
                             handleExpandClick(null, null, getSelectedRows(), "exportContacts");
                           }}
@@ -3529,6 +4004,7 @@ function SubTable(props) {
             {props.header === "Documents" && (
               <ButtonGroup variant="contained" style={{ height: "40px" }} color="primary" aria-label="split button">
                 <Button
+                  id="addDocument"
                   color="primary"
                   size="small"
                   aria-label="select merge strategy"
@@ -3626,16 +4102,16 @@ function SubTable(props) {
         }
       }
 
-      if (props.targetLabel === "contact") {
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          selectedContact: rows[dataIndex]._id,
-        }));
-        routeChange(`/contact/details/${rows[dataIndex]._id}`);
-        setTitle("Contact Details");
-        setSubTitle(" ");
-        handleOpenExpandableCard();
-      }
+      // if (props.targetLabel === "contact") {
+      //   setStateApp((stateApp) => ({
+      //     ...stateApp,
+      //     selectedContact: rows[dataIndex]._id,
+      //   }));
+      //   routeChange(`/contact/details/${rows[dataIndex]._id}`);
+      //   setTitle("Contact Details");
+      //   setSubTitle(" ");
+      //   handleOpenExpandableCard();
+      // }
 
       if (props.targetLabel === "documents") {
         setStateApp((stateApp) => ({
@@ -3988,16 +4464,6 @@ function SubTable(props) {
     options.serverSide = true;
   }
 
-  // if (props.header === "Contacts") {
-  //   options.rowsPerPageOptions =
-  //     props.contactsPageProps.contactsCount > 25 ? [10, 25, 50] : props.contactsPageProps.contactsCount > 10 ? [10, 25] : [10];
-  //   options.count = props.contactsPageProps.contactsCount;
-  //   options.serverSide = true;
-  //   //options.print = true;
-  //   //options.export = true;
-  // }
-
-
   if (props.header === "Deals"
     || props.header === "Activities"
     || props.header === "Agreements"
@@ -4132,6 +4598,20 @@ function SubTable(props) {
     return dataSet;
   };
 
+
+
+  const CustomCheckbox = (props) => {
+    let newProps = Object.assign({}, props);
+    newProps.color = props['data-description'] === 'row-select' ? 'secondary' : 'primary';
+
+    if (props['data-description'] === 'row-select') {
+      return (<Checkbox {...newProps} />);
+    } else {
+      return (<Checkbox {...newProps} />);
+    }
+  };
+
+
   const CustomTableViewCol = (columnsProps) => {
     if (props.viewColumn) {
       const ViewColumn = props.viewColumn;
@@ -4157,6 +4637,7 @@ function SubTable(props) {
           innerRef={props.tableRef}
           className={tableStyle}
           title={getHeaders()}
+
           data={
             props.parent === "ownersPerParcel" || props.parent === 'boundary_grid_owners'
               ? searchedRows
@@ -4172,7 +4653,13 @@ function SubTable(props) {
 
           columns={columns ? columns : []}
           components={{
+            showRowNumber: !!props.onInfiniteScroll,
+            onInfiniteScroll: props.onInfiniteScroll,
+            TableBody: TableBody,
+            Checkbox: CustomCheckbox,
             TableViewCol: CustomTableViewCol,
+
+
             TableFilterList: (props.header === "Tax Roll Ownership" || props.parent === "potentialOwnersPerUnit") && !isSearchOpen ? TableFilterList : null,
             icons: {
               FilterIcon,
@@ -4184,6 +4671,9 @@ function SubTable(props) {
             onSearchOpen: () => openSearch(true),
             onSearchClose: () => openSearch(false),
 
+            // selectableRows: "multiple",
+            // selectableRowsHideCheckboxes: true,
+            // selectableRowsOnClick: true,
             // resizableColumns: true,
 
             filter:

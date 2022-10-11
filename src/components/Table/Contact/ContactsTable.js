@@ -24,11 +24,13 @@ import { getContactsAddress, copy } from "utils/helper";
 
 import { deepEqualObjects } from "components/Shared/functions";
 import { featureFlagChanges } from "components/ContactDetailedInfo/helper";
+import CustomerViewCol from "../helpers/CustomerView";
 
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0 !important",
     height: "100%",
+
     "& .MuiToolbar-regular > div:nth-child(2)": {
       overflow: "hidden",
       display: "flex",
@@ -87,13 +89,12 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "40px !important",
   },
 }));
-
+const defaultView = {
+  name: "All Contacts",
+  type: "Default",
+};
 function ContactsTable(props) {
   const classes = useStyles();
-  const defaultView = {
-    name: "All Contacts",
-    type: "Default",
-  };
 
   // const dispatch = useDispatch();
   const { Contacts } = useSelector(({ session }) => session.userGridViewSettings);
@@ -105,7 +106,6 @@ function ContactsTable(props) {
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
-  const [selectedGridView, setSelectedGridView] = useState(Contacts || defaultView);
   const { activeModule } = useSelector(({ common }) => common);
   const { user } = useSelector(state => state.app);
 
@@ -118,7 +118,7 @@ function ContactsTable(props) {
   const targetLabel = "contact";
   const uploadIcon = true;
   const header = "Contacts";
-  const dense = true;
+  const dense = false;
   const total = false;
   const orderByTracks = false;
   const startPaginationAt = 25;
@@ -139,7 +139,10 @@ function ContactsTable(props) {
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
       hit = getContactsAddress(props.setGenricData(hit, hit._id, ["tracks"]));
-      hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
+      hit.tags =
+        hit?.tags?.length > 0
+          ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+          : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       return hit;
     });
@@ -148,16 +151,19 @@ function ContactsTable(props) {
 
   useEffect(() => {
     props.setInitialFilters(uniqBy(props.customAppliedFilters, "field") || []);
+
+    const tableheaderCopy = copy(tableheader)
+    tableheaderCopy.map(thc => thc.options = tableheader.find(th => th.name === thc.name).options)
+
     props.setTableMeta({
       // filters: uniqBy(props.customAppliedFilters, "field") || [],
       addableName: "Contact",
       extendSearchQuery: props.contactSearchQuery ? props.contactSearchQuery : null,
       searchFields: ["name^4", "_all"],
-      TableHeader: copy(tableheader),
+      TableHeader: tableheaderCopy,
       esIndex,
       // filters: Contacts?.filters ? getFilters() : [],
       typeKeyword: { gridViewCategory: "Contacts" },
-      selectedGridView: Contacts || defaultView,
       startPaginationAt: 25,
       defaultSort: { field: "lastUpdateAt", order: "desc", unmapped_type: 'date' },
       formatHits,
@@ -167,18 +173,13 @@ function ContactsTable(props) {
   }, [props.contactSearchQuery, props.customAppliedFilters]);
 
   useEffect(() => {
-    props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView, filters: [] }));
-    // eslint-disable-next-line
-  }, [selectedGridView]);
-
-  useEffect(() => {
     if (Contacts?.name === "My Contacts" && !Contacts?.isPrivate) {
       Contacts.filters[0] = {
         field: "contactOwners.name",
         value: User.name,
       };
     }
-    setSelectedGridView(Contacts || defaultView);
+    props.setSelectedGridView(Contacts || defaultView);
     // eslint-disable-next-line
   }, [Contacts]);
 
@@ -199,7 +200,8 @@ function ContactsTable(props) {
       const rows = JSON.parse(JSON.stringify(props.rows));
       for (let i = 0; i < ContactPurchaseData?.getCheckPurchaseData.length; i++) {
         const index = rows.findIndex((row) => row._id === ContactPurchaseData.getCheckPurchaseData[i]);
-        rows[index].isPurchased = true;
+        if (index !== -1)
+          rows[index].isPurchased = true;
       }
       props.setRows(rows);
     }
@@ -243,15 +245,15 @@ function ContactsTable(props) {
 
   const getSelectedView = () => {
     const isAllModule = get(activeModule, "title", "").includes("All");
-    const view = copy(isAllModule ? selectedGridView : defaultView);
-    if (view.type === "Default") {
+    const view = copy(isAllModule ? props.selectedGridView : defaultView);
+    if (view?.type === "Default") {
       if (get(activeModule, "title", "").includes("All")) {
         view.name = view.name.replace("Contacts", get(activeModule, "title", "").replace("All ", ""));
       } else {
         view.name = view.name.replace("Contacts", get(activeModule, "title", ""));
       }
     }
-    return view;
+    return view || defaultView;
   };
 
   const headerProps = {
@@ -282,10 +284,11 @@ function ContactsTable(props) {
           <GridView
             module="Contacts"
             columns={props.columns}
+            defaultView={defaultView}
             handleDefaultView={handleDefaultView}
             handleClose={() => setShowViewModal(false)}
-            setSelectedGridView={setSelectedGridView}
-            selectedGridView={selectedGridView}
+            setSelectedGridView={props.setSelectedGridView}
+            selectedGridView={props.selectedGridView}
             setShowViewModal={setShowViewModal}
             setShowSaveAsNew={setShowSaveAsNew}
             showSaveAsNew={showSaveAsNew}
@@ -297,6 +300,8 @@ function ContactsTable(props) {
           style={{ backgroundColor: "#fff" }}
           header={header}
           headerComponent={HeaderComponent}
+          viewColumn={CustomerViewCol}
+          viewColumnProps={props.viewColumnProps}
           headerProps={headerProps}
           columns={props.columns}
           rows={props.rows}
@@ -343,10 +348,11 @@ function ContactsTable(props) {
             esIndex: esIndex,
             open: true
           }}
+          {...props.esHocProps}
         />
       </Container>
     </>
   );
 }
 
-export default React.memo(TableESHOC(ContactsTable, false), deepEqualObjects);
+export default React.memo(TableESHOC(ContactsTable), deepEqualObjects);

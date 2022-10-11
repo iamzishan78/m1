@@ -1,3 +1,5 @@
+import { GlobalStickyStyles } from "GlobalSettings";
+
 const UnitOwnersTractHeadCells = [
   {
     name: "_id",
@@ -8,6 +10,14 @@ const UnitOwnersTractHeadCells = [
     label: "Tract Name",
     esKey: "tract.tractName.keyword",
     options: {
+      ...GlobalStickyStyles({
+        setCellProps: {
+          maxWidth: "250px",
+        },
+        setCellHeaderProps: {
+          paddingLeft: '24px',
+        }
+      }),
       sort: true,
       filter: true,
     },
@@ -20,7 +30,9 @@ const UnitOwnersTractHeadCells = [
     name: "state",
     label: "State",
     esKey: "tract.state.keyword",
-    options: { sort: true, filter: true },
+    options: {
+      sort: true, filter: true,
+    },
     style: { maxWidth: 80 },
   },
   {
@@ -160,5 +172,16 @@ const UnitOwnersTractHeadCells = [
   { name: "mapStatus", esKey: "mapStatus.keyword", label: "Map Staus", editable: true, options: { filter: true } },
   { name: "countAcres", esKey: "countAcres.keyword", label: "Count Acres", options: { filter: true } },
 ];
+
+UnitOwnersTractHeadCells.forEach((cell) => {
+  if (!cell.options.setCellProps && cell.options.display !== false) {
+    cell.options.setCellProps = () => ({
+      style: {
+        minWidth: "initial",
+        maxWidth: "initial",
+      }
+    })
+  }
+})
 
 export default UnitOwnersTractHeadCells;

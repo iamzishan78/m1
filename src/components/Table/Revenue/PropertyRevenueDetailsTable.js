@@ -68,6 +68,7 @@ function PropertyRevenueDetailsTable(props) {
                 addAble={{ type: 'revenueStatementDetails' }}
                 parent={props.parent}
                 setColumnsBase={[]}
+                {...props.esHocProps}
             />
         </Container>
     );

@@ -9,6 +9,7 @@ import LandSearch from "components/Navigation/components/LandSearch";
 import { useHistory } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
+import ButtonDropDown from "components/Shared/M1nTable/components/ButtonGroup";
 
 export default function LandAppBar(props) {
   const { classes, user } = props;
@@ -23,34 +24,50 @@ export default function LandAppBar(props) {
 
   const featureId = hat();
 
-  const addEmptyAgreement = async () => {
-    const newShapeFeature = {
-      id: featureId,
-      type: "Feature",
-      geometry: {},
-      properties: {
-        originalProperties: {},
-        shapeSubtitle: '',
-        type: 'agreement',
-        layerType: 'agreement',
-        layerSubType: 'lease',
-        shapeArea: 0,
-        shapeCenter: [0, 0],
-        id: featureId,
-      },
-    };
-    const customLayerData = {
-      shapeJson: newShapeFeature,
-      shape: JSON.stringify(newShapeFeature),
-      layer: 'lease',
-      name: '',
-      user: user.mongoId,
-    };
+  const AgreementAction = React.useMemo(() => {
+    return [
+      {
+        isShow: false,
+        text: `Add New Agreement`,
+        action: () => {
+          const newShapeFeature = {
+            id: featureId,
+            type: "Feature",
+            geometry: {},
+            properties: {
+              originalProperties: {},
+              shapeSubtitle: '',
+              type: 'agreement',
+              layerType: 'agreement',
+              layerSubType: 'lease',
+              shapeArea: 0,
+              shapeCenter: [0, 0],
+              id: featureId,
+            },
+          };
+          const customLayerData = {
+            shapeJson: newShapeFeature,
+            shape: JSON.stringify(newShapeFeature),
+            layer: 'lease',
+            name: '',
+            user: user.mongoId,
+          };
 
-    upsertCustomLayer({
-      variables: { customLayer: customLayerData },
-    });
-  }
+          upsertCustomLayer({
+            variables: { customLayer: customLayerData },
+          });
+        },
+      },
+      {
+        isShow: true,
+        text: "Import Agreements",
+        action: () => {
+          history.push("/bulkupload/agreement_header", { title: 'Agreements', previousRoute: '/land/agreements' });
+        },
+      },
+    ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeModule]);
 
   return (
     <Grid
@@ -82,14 +99,7 @@ export default function LandAppBar(props) {
       {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.AGREEMENTS.title && (
         <Grid item>
           <div className={classes.filterTabs} style={{ paddingRight: "10px" }}>
-            <Button
-              color="primary"
-              variant="contained"
-              startIcon={<Add />}
-              onClick={addEmptyAgreement}
-            >
-              Add New Agreement
-            </Button>
+            <ButtonDropDown variant="contained" color="primary" options={AgreementAction} />
           </div>
         </Grid>
       )}

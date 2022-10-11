@@ -1,3 +1,5 @@
+import { GlobalStickyStyles } from "GlobalSettings";
+
 const ownersColumnHeaders = [
   {
     name: "id",
@@ -16,6 +18,15 @@ const ownersColumnHeaders = [
     label: "Name",
     esKey: "ownerName.keyword",
     options: {
+
+      ...GlobalStickyStyles({
+        setCellProps: {
+          maxWidth: "350px",
+        },
+        setCellHeaderProps: {
+          paddingLeft: '27px',
+        }
+      }),
       sort: true,
       filter: true,
     },

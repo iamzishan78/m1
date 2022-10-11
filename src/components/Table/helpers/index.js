@@ -65,16 +65,18 @@ export const handleCustomFilterColumns = (TableHeader, filterObject) => {
 export const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column) => {
   if (selectedGridView?.columns) {
     const col = selectedGridView.columns.find(col => col.name === column.name)
-    if (col && col.display) {
-      column.options.display = true;
+    if (col && typeof col.display !== 'undefined') {
+      column.options.display = col.display;
       if (column.esKey && !column.noFilter) {
         column.options.filter = true;
       }
     } else if (column.name !== ' ') {
       const tableHeaderCol = TableHeader.find(tH => tH.name === column.name)
       if (tableHeaderCol) {
-        column.options.display = tableHeaderCol.options.display;
-        column.options.filter = tableHeaderCol.options.filter;
+        if (typeof tableHeaderCol.options.display !== 'undefined')
+          column.options.display = tableHeaderCol.options.display;
+        if (typeof tableHeaderCol.options.filter !== 'undefined')
+          column.options.filter = tableHeaderCol.options.filter;
       }
       else {
         column.options.display = false;

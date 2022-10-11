@@ -48,6 +48,7 @@ function MapGridWellsTable(props) {
         hit.coordinates.center = [hit.Longitude, hit.Latitude];
         hit.coordinates.wellId = hit.Id;
       }
+      hit.globalWell = hit.Id
       hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
       return hit;
     });
@@ -128,6 +129,7 @@ function MapGridWellsTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

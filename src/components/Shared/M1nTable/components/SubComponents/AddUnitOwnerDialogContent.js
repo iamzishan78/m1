@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { get } from "lodash";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -64,13 +65,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, ...props }) {
+export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, ...props }) {
   const dispatch = useDispatch();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const { control, reset, setValue, getValues } = useForm();
+  const { control, reset, setValue, getValues, watch } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
+  const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false)
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
+  const [ownerTypeOfConctact, setOwnerTypeOfConctact] = useState();
+
+  const watchedNra = watch('nra')
 
   useEffect(() => {
     if (selectedRow) {
@@ -88,7 +93,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerEntity,
         contactStatus,
         ownerType,
-        contact: { campaignName }
+        contact
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
@@ -99,15 +104,19 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         nra: nra || null,
         seller_asking_price: seller_asking_price || null,
         competitor_offer_price: competitor_offer_price || null,
-        offer_price: offer_price || null,
-        contactStatus: contactStatus || null,
+        offer_price: parseFloat(parseFloat(offer_price).toFixed(2)) || null,
+        contactStatus: contactStatus || contact.contactStatus,
         ownerType,
         customLayer,
-        campaignName
+        campaignName: contact.campaignName
       }
       let calculatedNRA = calculateNRA(royalty_interest, orri);
+      let calculatedOfferPrice = calculateOfferPrice(nra)
       if (!isNaN(parseFloat(calculatedNRA)))
         setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)))
+
+      if (!isNaN(parseFloat(calculatedOfferPrice)))
+        setIsOfferPriceOverridden(calculatedOfferPrice !== owner.offer_price && !isNaN(parseFloat(offer_price)))
 
       reset(owner);
     }
@@ -159,6 +168,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     }
   }, [nameAutValue])
 
+  useEffect(() => {
+    if (!isOfferPriceOverridden && getValues().nra) setValue("offer_price", calculateOfferPrice(getValues().nra));
+  }, [watchedNra])
+
   const emptyStates = () => {
     setNameAutValue(null);
     // setSelectedRow(null);
@@ -182,7 +195,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           shapeType: props.shapeType,
           shapeOwners: [
             {
-              shapeId: props.shapeId,
+              shapeId: props.shapeId ?? get(selectedRow, "customLayer._id"),
               relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
               ...ownerToAdd,
               createBy: stateApp.user.mongoId,
@@ -198,7 +211,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         variables: {
           shapeType: props.shapeType,
           shapeOwner: {
-            shapeId: props.shapeId,
+            shapeId: props.shapeId ?? get(selectedRow, "customLayer._id"),
             relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
             ...ownerToAdd,
             createBy: stateApp.user.mongoId,
@@ -257,6 +270,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     return nra;
   };
 
+  const calculateOfferPrice = (nra) => {
+    return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
+  };
+
   const classes = useStyles();
   return (
     <div className={classes.move}>
@@ -287,7 +304,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <h3>Name</h3>
-                <AutocompEntityNamesList userId={stateApp.user.mongoId} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
+                <AutocompEntityNamesList userId={stateApp.user.mongoId} setOwnerTypeOfConctact={setOwnerTypeOfConctact} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
               </Grid>
               <Grid item xs={12}>
                 <h3>Entity Type</h3>
@@ -305,7 +322,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         }
                         setValue('ownerType', val);
                       }}
-                      value={props.value ?? ""}
+                      value={ownerTypeOfConctact ?? ""}
                     />
                   )}
                 />
@@ -517,10 +534,29 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        props.onChange(e.target.value);
+                        const value = parseFloat(e.target.value).toFixed(2)
+                        const calculatedOfferPrice = calculateOfferPrice(getValues().nra)
+                        setIsOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice))
+                        props.onChange(value);
                       }}
+                      className={isOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
                       InputProps={{
                         inputComponent: CurrencyFormatCustom,
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            {isOfferPriceOverridden && (
+                              <IconButton
+                                aria-label="toggle offer_price"
+                                onClick={() => {
+                                  setIsOfferPriceOverridden(false)
+                                  setValue("offer_price", calculateOfferPrice(getValues().nra));
+                                }}
+                              >
+                                <AutorenewIcon />
+                              </IconButton>
+                            )}
+                          </InputAdornment>
+                        ),
                       }}
                       fullWidth
                       defaultValue=""
@@ -563,6 +599,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       }}
                       fullWidth
                       targetLabel="Contact"
+                      simpleChips
                     />
                   )}
                 />

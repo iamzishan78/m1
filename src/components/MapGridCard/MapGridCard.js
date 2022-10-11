@@ -156,7 +156,7 @@ const useStyles = makeStyles((theme) => {
             },
             "@media (max-height:1600px)": {
               maxHeight: ({ dockMenu, userGridViewFilters }) => {
-                if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 640px)";
+                if (dockMenu === "bottom" || dockMenu === "top") return "calc(50vh - 135px)";
                 else if (dockMenu === "left" || dockMenu === "right")
                   return userGridViewFilters?.length > 0 ? "calc(100vh - 235px)" : "calc(100vh - 200px)";
                 else if (dockMenu === "full") return userGridViewFilters?.length ? "calc(100vh - 275px)" : "calc(100vh - 183px)";
@@ -232,7 +232,7 @@ const TabLabels = ({ labels, value, setValue }) => {
 
 function MapGridCard(props) {
   // contexts
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
 
   // function state
   const [searchTapValue, SearchTapValue] = useState(stateApp.layerGridCard ? platformDataInitialData[3] : platformDataInitialData[0]);
@@ -247,9 +247,15 @@ function MapGridCard(props) {
 
   const dispatch = useDispatch();
 
-  // React.useEffect(() => {
-  //   console.log(dcreenSizes);
-  // }, [dcreenSizes]);
+
+
+  React.useEffect(() => {
+    if (!stateApp.layerGridCard) {
+      SearchTapValue(platformDataInitialData[0])
+    } else {
+      SearchTapValue(platformDataInitialData[3])
+    }
+  }, [stateApp.layerGridCard]);
 
   const setSelectedDockMenu = (state) => {
     if (dockMenu !== state) {
@@ -337,7 +343,7 @@ function MapGridCard(props) {
   const handleSearchPanelChange = (value) => {
     setSearchTapValue(value);
     if (searchTapValue.index !== value.index) {
-      dispatch(setMapGridCardState({ searchResultData: [], searchloading: true }));
+      dispatch(setMapGridCardState({ searchInputValue: "", searchResultData: [], searchloading: true }));
     }
   };
 
@@ -360,6 +366,7 @@ function MapGridCard(props) {
             className="cancelDraggableEffect"
             onClick={(e) => {
               e.stopPropagation();
+              setStateApp((state) => ({ ...state, selectedDataset: null }))
               dispatch(
                 setMapGridCardState({
                   mapGridCardActivated: false,
@@ -404,9 +411,7 @@ function MapGridCard(props) {
                 direction="row"
                 style={{ height: '100%', marginBottom: '20px' }}
               >
-
-
-                <Grid item md={2} style={{ backgroundColor: '#F2F2F2' }}>
+                {stateApp?.selectedDataset?.name === 'M1 Platform' && <Grid item md={2} style={{ backgroundColor: '#F2F2F2' }}>
                   <Typography variant="h6" component="h1" style={{ fontWeight: "bold", padding: '10px 0px 0px 20px' }}>
                     M1 Platform
                   </Typography>
@@ -432,9 +437,36 @@ function MapGridCard(props) {
                     }
                     )}
                   </List>
-                </Grid>
+                </Grid>}
 
-                <Grid item md={10}>
+                {stateApp?.selectedDataset && stateApp?.selectedDataset?.name !== 'M1 Platform' && <Grid item md={2} style={{ backgroundColor: '#F2F2F2' }}>
+                  <Typography variant="h6" component="h1" style={{ fontWeight: "bold", padding: '10px 0px 0px 20px' }}>
+                    {stateApp.selectedDataset.name}
+                  </Typography>
+
+                  <List component="nav" aria-label="main mailbox folders">
+
+                    {stateApp.selectedDataset.categories.map((row) => {
+                      const Icon = stateApp.selectedDataset.Icon
+                      return (
+                        <ListItem
+                          key={row.name}
+                          button
+                          selected={row.name === stateApp.selectedLayer.name}
+                          onClick={() => setStateApp((state) => ({ ...state, selectedLayer: { ...row } }))}
+                        >
+                          <ListItemIcon>
+                            <Icon />
+                          </ListItemIcon>
+                          <ListItemText primary={row.name} />
+                        </ListItem>
+                      )
+                    }
+                    )}
+                  </List>
+                </Grid>}
+
+                <Grid item md={stateApp?.selectedDataset ? 10 : 12}>
                   <div style={{ position: "relative" }} classes={classes.gridTables}>
                     {/* <TabPanels
                   value={searchTapValue.index}

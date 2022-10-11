@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useContext } from "react";
 import { Container } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import debounce from "lodash/debounce";
@@ -67,6 +67,7 @@ function MapGridUnitTable(props) {
       };
       hit.ownersCount = get(hit, "interestSummary.unitInterestCount", "");
       hit.qualifier = get(hit, "qualifier.name", "");
+      hit.reviewer = get(hit, "reviewer.name", "");
       hit.lastUpdated = moment(hit._ts).format('MM/DD/YYYY');
       hit = props.setGenricData(hit, hit._id, [], []);
       hit.tags =
@@ -79,10 +80,6 @@ function MapGridUnitTable(props) {
     return hits;
   };
 
-  // useEffect(() => {
-  //   setSelectedGridView(GridViewModule || defaultView);
-  // }, [GridViewModule]);
-
   useEffect(() => {
     setTableMeta({
       extendSearchQuery: searchInput || stateApp.landSearchQuery,
@@ -90,7 +87,7 @@ function MapGridUnitTable(props) {
       searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
-      startPaginationAt: 25,
+      startPaginationAt: 50,
       // typeKeyword: { gridViewCategory: "Units", metaModule: "Unit" },
       filters: [
         {
@@ -150,6 +147,8 @@ function MapGridUnitTable(props) {
     });
   }, []);
 
+  // console.log('FISHBRAIN -1', props)
+
   return (
     <Container
       maxWidth={false}
@@ -175,6 +174,7 @@ function MapGridUnitTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

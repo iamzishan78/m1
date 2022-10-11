@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import {
   InputAdornment,
@@ -73,6 +73,18 @@ const ContactSearch = () => {
   const [search, setSearch] = useState(stateApp.contactSearchQuery);
   const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
+  useEffect(() => {
+    setSearch("");
+  }, [history.location.pathname]);
+
+  useEffect(() => {
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      contactSearchQuery: search,
+      isContactSearching: true,
+    }));
+  }, [search, setStateApp]);
+
   const isAllowed = stateApp?.user?.features?.find(
     (f) => f.name === FEATURES.CONTACTSUBMENU
   );
@@ -109,16 +121,7 @@ const ContactSearch = () => {
           <Grid item md={6}>
             <TextField
               value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setTimeout(() => {
-                  setStateApp((stateApp) => ({
-                    ...stateApp,
-                    contactSearchQuery: e.target.value,
-                    isContactSearching: true,
-                  }));
-                }, 500);
-              }}
+              onChange={e => setSearch(e.target.value)}
               style={{
                 margin: 0,
                 width: "100%",
@@ -139,19 +142,13 @@ const ContactSearch = () => {
                   <>
                     <Tooltip title="Clear">
                       <IconButton
+                        id="crossButton"
                         size="small"
                         htmlColor="#fff"
                         className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" &&
                           classes.activeBtn
                           }`}
-                        onClick={() => {
-                          setSearch("");
-                          setStateApp((stateApp) => ({
-                            ...stateApp,
-                            contactSearchQuery: "",
-                            isContactSearching: true,
-                          }));
-                        }}
+                        onClick={() => setSearch("")}
                       >
                         <ClearIcon />
                       </IconButton>

@@ -63,7 +63,8 @@ const useStyles = makeStyles((theme) => ({
 export default function LagalDescription({ agreementDetails, uniObj, updateAgreement }) {
   const classes = useStyles();
   const customClasses = customStyles();
-  const { reset, control } = useForm();
+  const [tractOwners, setTractOwners] = useState();
+  const { reset } = useForm();
   const [tractsNumber, setTractsNumber] = useState(0);
 
   useEffect(() => {
@@ -102,11 +103,12 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
         <AccordionDetails className={classes.accordionDetails}>
           <Grid container direction="column" alignItems="center" spacing={4} style={{ display: "block" }}>
             <Grid item xs={12} style={{ padding: "0px 50px 0px 0px" }}>
-              <AgreementLegalDescriptionFields agreementDetails={agreementDetails} updateAgreement={updateAgreement} />
+              <AgreementLegalDescriptionFields agreementDetails={agreementDetails} updateAgreement={updateAgreement} tractOwners={tractOwners} />
             </Grid>
             {uniObj && (
               <Grid item xs={12} style={{ padding: "35px 20px 0px 0px" }}>
                 <AgreementOwnersTractsTable
+                  setRecord={setTractOwners}
                   customLayer={uniObj}
                   shapeType="Agreement"
                   header={"Tracts"}

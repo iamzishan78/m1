@@ -58,14 +58,14 @@ function ContactParcelInterestTable(props) {
   }, [props.rows])
 
   useEffect(() => {
-    if (props.parent && props.parent === "assocTaxRollInterests") {
-      getContactParcelInterests({
-        variables: {
-          contactId: props.contactId,
-          filters: [{ field: 'contact._id', value: props.contactId }]
-        },
-      });
-    }
+    // if (props.parent && props.parent === "assocTaxRollInterests") {
+    getContactParcelInterests({
+      variables: {
+        contactId: props.contactId,
+        filters: [{ field: 'contact._id', value: props.contactId }]
+      },
+    });
+    // }
   }, [getContactParcelInterests, props.contactId, props.parent]);
 
   useEffect(() => {

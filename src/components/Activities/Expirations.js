@@ -132,7 +132,7 @@ const Activities = () => {
   useEffect(() => {
     getAllActivities({
       variables: {
-        category: "Expirations",
+        category: "Expiration",
       },
     });
   }, []);
@@ -254,7 +254,7 @@ const Activities = () => {
                   events={filteredEvents}
                   onEventClick={onEventClick}
                   mongoUsers={userLists?.allMongoUsers}
-                  type="Expirations"
+                  type="Expiration"
                 />
               </div>
               <div className={classes.table}>

@@ -1,4 +1,4 @@
-import vf_currency from "components/Shared/valueformatters/vf_currency";
+import GlobalSettings from "GlobalSettings";
 
 const unitsColumnHeaders = [
   {
@@ -30,30 +30,15 @@ const unitsColumnHeaders = [
     label: "Unit Name",
     esKey: "name.keyword",
     options: {
-      sort: true,
-      filter: true,
-      setCellProps: () => ({ style: { minWidth: "250px" } }),
-      // setCellProps: () => ({
-      //   style: {
-      //     minWidth: "150px",
-      //     whiteSpace: "nowrap",
-      //     position: "sticky",
-      //     left: "77px",
-      //     background: "white",
-      //     zIndex: 200,
-      //     boxShadow: 'inset -1px 0px 0px 0px lightgrey',
-      //   }
-      // }),
-      // setCellHeaderProps: () => ({
-      //   style: {
-      //     position: "sticky",
-      //     minWidth: "150px",
-      //     left: "77px",
-      //     zIndex: 201
-      //   }
-      // }),
+      ...GlobalSettings.muiGridControlOptions,
+      setCellHeaderProps: () => ({
+        style: {
+          ...GlobalSettings.muiGridControlOptions.setCellHeaderProps().style,
+          padding: "15px",
+        },
+      }),
+      ignoreGlobal: true,
     },
-    style: { minWidth: 185 },
   },
   {
     name: "uNumber",
@@ -62,7 +47,7 @@ const unitsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      setCellProps: () => ({ style: { minWidth: "125px" } }),
+      // setCellProps: () => ({ style: { minWidth: "125px" } }),
     },
   },
   {
@@ -84,66 +69,52 @@ const unitsColumnHeaders = [
     },
   },
   {
-    name: "SurveyMeridian",
-    label: "Survey/ Meridian",
-    esKey: ["shapeJson.properties.originalProperties.Survey.keyword", "shapeJson.properties.originalProperties.PrincipalMeridian.keyword"],
+    name: "SurveyMeridian", label: "Survey/ Meridian", esKey: [
+      'shapeJson.properties.originalProperties.Survey.keyword',
+      'shapeJson.properties.originalProperties.PrincipalMeridian.keyword'
+    ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
       sort: true,
-      filter: true,
-    },
+      filter: true
+    }
   },
   {
-    name: "BlockTownship",
-    label: "Block/ Township",
-    esKey: ["shapeJson.properties.originalProperties.Block.keyword", "shapeJson.properties.originalProperties.Township.keyword"],
+    name: "BlockTownship", label: "Block/ Township", esKey: [
+      'shapeJson.properties.originalProperties.Block.keyword',
+      'shapeJson.properties.originalProperties.Township.keyword'
+    ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Block?.Township?",
       sort: true,
-      filter: true,
-    },
+      filter: true
+    }
   },
   {
-    name: "SectionRange",
-    label: "Section/ Range",
-    esKey: ["shapeJson.properties.originalProperties.Section.keyword", "shapeJson.properties.originalProperties.Range.keyword"],
+    name: "SectionRange", label: "Section/ Range", esKey: [
+      'shapeJson.properties.originalProperties.Section.keyword',
+      'shapeJson.properties.originalProperties.Range.keyword'
+    ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
       sort: true,
-      filter: true,
-    },
+      filter: true
+    }
   },
   {
-    name: "AbstractSection",
-    label: "Abstract/ Section",
-    esKey: ["shapeJson.properties.originalProperties.AbstractName.keyword", "shapeJson.properties.originalProperties.ShortName.keyword"],
+    name: "AbstractSection", label: "Abstract/ Section", esKey: [
+      'shapeJson.properties.originalProperties.AbstractName.keyword',
+      'shapeJson.properties.originalProperties.ShortName.keyword'
+    ],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
       sort: true,
-      filter: true,
-    },
+      filter: true
+    }
   },
-  // {
-  //   name: "Block",
-  //   label: "Block",
-  //   esKey: "shapeJson.properties.originalProperties.Block.keyword",
-  //   options: {
-  //     sort: true,
-  //     filter: true,
-  //   },
-  // },
-  // {
-  //   name: "Section",
-  //   label: "Section",
-  //   esKey: "shapeJson.properties.originalProperties.Section.keyword",
-  //   options: {
-  //     sort: true,
-  //     filter: true,
-  //   },
-  // },
   {
     name: "shapeArea",
-    label: "Gross Acres",
+    label: "Unit Acres",
     esKey: "shapeJson.properties.shapeArea.keyword",
     options: {
       sort: true,
@@ -157,12 +128,6 @@ const unitsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value, tableMeta) => {
-        return (<>
-          {vf_currency(value)}
-        </>
-        );
-      },
     },
   },
   {
@@ -178,23 +143,27 @@ const unitsColumnHeaders = [
     name: "campaignName",
     label: "Campaign Name",
     esKey: "shapeJson.properties.campaignName.keyword",
-    options: {
-      customRender: (value) => {
-        if (typeof value === "string") {
-          return value;
-        } else {
-          return value?.map((v, index) => `${v}${index < value?.length - 1 ? "," : ""}`);
-        }
-      },
-      setCellProps: () => ({ style: { minWidth: "200px" } }),
-      sort: true,
-      filter: true,
-    },
+    // options: {
+    //   customRender: (value) => value?.map((v, index) => `${v}${index < value?.length - 1 ? ',' : ''}`),
+    //   setCellProps: () => ({ style: { minWidth: "200px" } }),
+    //   sort: true,
+    //   filter: true,
+    // },
   },
   {
     name: "qualifier",
     label: "Qualifier",
     esKey: "shapeJson.properties.qualifier.name.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      setCellProps: () => ({ style: { minWidth: "125px" } }),
+    },
+  },
+  {
+    name: "reviewer",
+    label: "Reviewer",
+    esKey: "shapeJson.properties.reviewer.name.keyword",
     options: {
       sort: true,
       filter: true,
@@ -226,11 +195,12 @@ const unitsColumnHeaders = [
   {
     name: "tags",
     label: "Tags ",
-    esKey: "tags.tag.keyword",
+    esKey: 'tags.tag.keyword',
     options: {
       dbName: "tags.tag",
       sort: true,
       download: false,
+      ignoreGlobal: true,
       print: false,
       filter: true,
       filterOptions: {
@@ -244,6 +214,7 @@ const unitsColumnHeaders = [
     options: {
       filter: false,
       searchable: false,
+      ignoreGlobal: true,
       sort: false,
       download: false,
       print: false,
@@ -255,6 +226,7 @@ const unitsColumnHeaders = [
     label: " ",
     options: {
       filter: false,
+      ignoreGlobal: true,
       sort: false,
       searchable: false,
       download: false,
@@ -264,4 +236,4 @@ const unitsColumnHeaders = [
   },
 ];
 
-export default unitsColumnHeaders;
+export default unitsColumnHeaders

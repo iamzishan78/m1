@@ -33,12 +33,6 @@ body {
   text-transform: uppercase !important;
 }
 
-.lightblueBtn {
-  text-transform: capitalize !important;
-  background-color: rgba(23, 170, 221, 1) !important;
-  color: #fff !important;
-}
-
 .MuiAutocomplete-popper,
 .MuiTooltip-popper {
   z-index: 9999999999 !important;

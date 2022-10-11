@@ -20,7 +20,7 @@ import ExportOwnersAndContacts from "components/Shared/ExportOwnerAndContacts";
 import AddUnitOwnerDialogContent from "components/Shared/M1nTable/components/SubComponents/AddUnitOwnerDialogContent";
 import BuyContactsInfoDialogContent from "components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
-import { AssignOwnerToContactDrawerContainer, MultipleOwnerToContactDrawerContainer } from 'store/containers';
+import { AssignOwnerToContactDrawerContainer } from 'store/containers';
 
 import TableHeader from "components/Table/constants/ownersperunit-header-schema";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
@@ -318,6 +318,7 @@ function UnitInterestOwnerTable(props) {
           width="450px"
           shapeId={props.customLayer._id}
           uAcres={props.customLayer?.shapeJson?.properties?.uAcres}
+          uUnitPricing={props.customLayer?.shapeJson?.properties?.uUnitPricing}
           shapeType={props.shapeType}
           selectedRow={selectedOwner}
           onClose={() => {
@@ -385,6 +386,7 @@ function UnitInterestOwnerTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

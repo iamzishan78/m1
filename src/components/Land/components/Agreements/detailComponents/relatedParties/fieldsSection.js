@@ -142,7 +142,7 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
         <Grid item xs={12} display="flex" style={{ margin: "20px 0px 35px" }}>
           {fields.map((item, index) => (
             <Grid item xs={12} onMouseEnter={() => setHoverParty(index)} onMouseLeave={() => setHoverParty(-1)}>
-              <Grid container className={customClasses.gridStyle} justify="space-between">
+              <Grid container className={customClasses.gridStyle}>
                 <Grid item xs={1} style={{ display: "flex" }}>
                   <div className={customClasses.fieldLabel}>Party {index + 1}</div>
                 </Grid>
@@ -235,7 +235,7 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
                     )}
                   />
                 </Grid>
-                <Grid item xs={1} style={{ textAlign: "right" }}>
+                <Grid item xs={1} style={{ textAlign: "left", paddingLeft: 10}}>
                   <Tooltip title={item?.comments !== 0 ? "Comments" : "Add Comments"} placement="top" style={{ marginRight: "10px" }}>
                     <Badge badgeContent={item?.comments ?? null} color="secondary">
                       <IconButton
@@ -258,8 +258,6 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
                       </IconButton>
                     </Badge>
                   </Tooltip>
-                </Grid>
-                <Grid item xs={1}>
                   {hoverParty === index ? (
                     <PopupState variant="popover" popupId={`party-${index}-popover`}>
                       {(popupState) => (

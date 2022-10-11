@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Switch, Route, useLocation } from "react-router-dom";
+import { Switch, Route, useLocation, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import QuickActionPanel from "components/Land/components/QuickActionPanel";
@@ -8,7 +8,6 @@ import { replaceLinkId } from "components/Shared/functions";
 
 //Actions
 import { toggleQuickActionsPanel, setActiveModule } from "store/actions/commonActions";
-import { padEnd } from "lodash";
 
 export const SIDE_PANEL_MENU_ITEMS_LIST = {
   // PORTFOLIO: {
@@ -42,12 +41,12 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/land/units",
     component: "Units",
   },
-  WELLS: {
-    featureFlag: "LANDMODULE",
-    title: "Wells",
-    link: "/land/wells",
-    component: "Wells",
-  },
+  // WELLS: {
+  //   featureFlag: "LANDMODULE",
+  //   title: "Wells",
+  //   link: "/land/wells",
+  //   component: "Wells",
+  // },
   REPORTING_GROUPS: {
     featureFlag: "LANDREPORTINGGROUPS",
     title: "Reporting Groups",
@@ -88,11 +87,18 @@ export default function Revenue() {
       activeModule={activeModule}
       actions={SIDE_PANEL_MENU_ITEMS_LIST}
     >
-      {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
-        <Switch>
-          <Route path={SIDE_PANEL_MENU_ITEMS_LIST[option].link} component={Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component]} />
-        </Switch>
-      ))}
+
+      <Switch>
+        {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
+          <Route
+            exact
+            path={SIDE_PANEL_MENU_ITEMS_LIST[option].link}
+            component={Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component]}
+          />
+        ))}
+        <Redirect to={`/land/agreements`} />
+      </Switch>
+
     </QuickActionPanel>
   );
 }

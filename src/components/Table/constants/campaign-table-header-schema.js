@@ -27,12 +27,10 @@ const CampaignsHeadCells = [
             onClick={(e) => {
               e.stopPropagation();
 
-              history.push(
-                {
-                  pathname: `/contacts/campaign/details/${tableMeta.rowData[0]}`,
-                  state: { campaignName: value }
-                }
-              );
+              history.push({
+                pathname: `/contacts/campaign/details/${tableMeta.rowData[0]}`,
+                state: { campaignName: value },
+              });
             }}
             style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
           >
@@ -76,14 +74,14 @@ const CampaignsHeadCells = [
       sort: true,
       filter: false,
       customRender: (value, tableMeta) => {
-        return <p>{value}</p>;
+        return <p>{value.toFixed(2)}</p>;
       },
     },
   },
   {
     name: "owner",
     label: "Supervisor",
-    esKey: "owner",
+    esKey: "owner.name.keyword",
     options: {
       display: true,
       sort: true,
@@ -93,7 +91,7 @@ const CampaignsHeadCells = [
   {
     name: "createdAt",
     label: "Created Date",
-    esKey: "createdAt.keyword",
+    esKey: "createdAt",
     options: {
       display: true,
       sort: true,

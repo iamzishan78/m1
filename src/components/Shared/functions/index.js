@@ -30,7 +30,7 @@ export function addTrailingZeros(num) {
 }
 
 export function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+  return string ? string.charAt(0).toUpperCase() + string.slice(1) : string;
 }
 
 export function uploadFileData(file, fileContent) {

@@ -65,12 +65,12 @@ export default [
     //     required: false,
     //     actual_key: "parcel.operating_rights"
     // },
-    // {
-    //     label: "Net Revenue Interest",
-    //     mapped_key: "",
-    //     required: false,
-    //     actual_key: "parcel.nri"
-    // },
+    {
+        label: "Net Revenue Interest",
+        mapped_key: "",
+        required: false,
+        actual_key: "shape.nri"
+    },
     // {
     //     label: "Net Acres",
     //     mapped_key: "",

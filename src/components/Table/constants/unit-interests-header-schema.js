@@ -1,3 +1,4 @@
+import vf_currency, { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 import { history } from "store";
 
 const UnitInterestsHeadCells = [
@@ -5,27 +6,27 @@ const UnitInterestsHeadCells = [
         name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
     },
     {
-        name: "contactId", options: { 
+        name: "contactId", options: {
             dbName: "contact._id",
-            filter: false, 
-            display: false, 
-            sort: false, 
+            filter: false,
+            display: false,
+            sort: false,
             viewColumns: false
         }
     },
     {
-        name: "customLayerId", options: { 
-            filter: false, 
-            display: false, 
-            sort: false, 
+        name: "customLayerId", options: {
+            filter: false,
+            display: false,
+            sort: false,
             viewColumns: false
         }
     },
     {
-        name: "unitName", label: "Unit Name", esKey: 'shape.shapeJson.properties.shapeLabel.keyword', 
-        options: { 
+        name: "unitName", label: "Unit Name", esKey: 'shape.shapeJson.properties.shapeLabel.keyword',
+        options: {
             dbName: "shape.shapeJson.properties.shapeLabel",
-            sort: true, 
+            sort: true,
             filter: true,
             setCellProps: () => ({ style: { minWidth: "250px" } }),
             //hide custom render of blue link for now as it is not consistent with tract interests
@@ -49,29 +50,29 @@ const UnitInterestsHeadCells = [
             'shape.shapeJson.properties.originalProperties.State.keyword',
             'shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword'
         ],
-        options: { 
+        options: {
             dbName: "shape.shapeJson.properties.originalProperties.0?.State?.StateAbbreviation?",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
-        name: "County", label: "County", esKey: 'shape.shapeJson.properties.originalProperties.County.keyword', 
-        options: { 
+        name: "County", label: "County", esKey: 'shape.shapeJson.properties.originalProperties.County.keyword',
+        options: {
             dbName: "shape.shapeJson.properties.originalProperties.0?.County",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
         name: "SurveyMeridian", label: "Survey/ Meridian", esKey: [
             'shape.shapeJson.properties.originalProperties.Survey.keyword',
             'shape.shapeJson.properties.originalProperties.PrincipalMeridian.keyword'
-        ], 
-        options: { 
+        ],
+        options: {
             dbName: "shape.shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     // {
@@ -86,11 +87,11 @@ const UnitInterestsHeadCells = [
         name: "BlockTownship", label: "Block/ Township", esKey: [
             'shape.shapeJson.properties.originalProperties.Block.keyword',
             'shape.shapeJson.properties.originalProperties.Township.keyword'
-        ], 
-        options: { 
+        ],
+        options: {
             dbName: "shape.shapeJson.properties.originalProperties.0?.Block?.Township?",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     // {
@@ -105,11 +106,11 @@ const UnitInterestsHeadCells = [
         name: "SectionRange", label: "Section/ Range", esKey: [
             'shape.shapeJson.properties.originalProperties.Section.keyword',
             'shape.shapeJson.properties.originalProperties.Range.keyword'
-        ], 
-        options: { 
+        ],
+        options: {
             dbName: "shape.shapeJson.properties.originalProperties.0?.Section?.Range?",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     // {
@@ -124,11 +125,11 @@ const UnitInterestsHeadCells = [
         name: "AbstractSection", label: "Abstract/ Section", esKey: [
             'shape.shapeJson.properties.originalProperties.AbstractName.keyword',
             'shape.shapeJson.properties.originalProperties.ShortName.keyword'
-        ], 
-        options: { 
+        ],
+        options: {
             dbName: "shape.shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     // {
@@ -172,11 +173,11 @@ const UnitInterestsHeadCells = [
     //     }
     // },
     {
-        name: "working_interest", label: "Working Interest", esKey: 'working_interest', 
-        options: { 
+        name: "working_interest", label: "Working Interest", esKey: 'working_interest',
+        options: {
             dbName: "working_interest",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     // {
@@ -188,28 +189,28 @@ const UnitInterestsHeadCells = [
     //     }
     // },
     {
-        name: "royalty_interest", label: "Royalty Interest", esKey: 'royalty_interest', 
-        options: { 
+        name: "royalty_interest", label: "Royalty Interest", esKey: 'royalty_interest',
+        options: {
             dbName: "royalty_interest",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
-        name: "orri", label: "ORRI", esKey: 'orri', 
-        options: { 
+        name: "orri", label: "ORRI", esKey: 'orri',
+        options: {
             dbName: "orri",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
 
     {
-        name: "nri", label: "NRI", esKey: 'nri', 
-        options: { 
+        name: "nri", label: "NRI", esKey: 'nri',
+        options: {
             dbName: "nri",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     // {
@@ -221,20 +222,21 @@ const UnitInterestsHeadCells = [
     //     }
     // },
     {
-        name: "nra", label: "NRA", esKey: 'nra', 
-        options: { 
+        name: "nra", label: "NRA", esKey: 'nra',
+        options: {
             dbName: "nra",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
 
     {
-        name: "offer_price", label: "Offer Price", esKey: 'offer_price', 
-        options: { 
+        name: "offer_price", label: "Offer Price", esKey: 'offer_price',
+        options: {
             dbName: "offer_price",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true,
+            customRender: (value) => vf_currency_to_fixed(value, 2)
         }
     },
     // {
@@ -350,11 +352,11 @@ const UnitInterestsHeadCells = [
     //     }
     // },
     {
-        name: "unitCampaign", label: "Campaign", esKey: 'shape.shapeJson.properties.campaignName.keyword', 
-        options: { 
+        name: "unitCampaign", label: "Campaign", esKey: 'shape.shapeJson.properties.campaignName.keyword',
+        options: {
             dbName: "shape.shapeJson.properties.campaignName.keyword",
-            sort: true, 
-            filter: true 
+            sort: true,
+            filter: true
         }
     },
     {
@@ -384,7 +386,7 @@ const UnitInterestsHeadCells = [
             print: false,
             viewColumns: false,
         },
-        },
+    },
 ];
 
 export default UnitInterestsHeadCells;

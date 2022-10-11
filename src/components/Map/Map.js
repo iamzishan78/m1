@@ -4972,7 +4972,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         newMap.dragPan.enable();
         newMap.dragRotate.enable();
         newMap.keyboard.enable();
-        newMap.doubleClickZoom.disable();
+        // newMap.doubleClickZoom.disable();
         newMap.boxZoom.enable();
         newMap.touchZoomRotate.enable();
 
@@ -5523,11 +5523,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       stateApp.fitBounds.minLong
     ) {
       let bounds = fitOverBounds();
-
-      map.fitBounds([
-        [bounds.minLong, bounds.minLat],
-        [bounds.maxLong, bounds.maxLat],
-      ]);
+      if (typeof bounds?.minLong !== "undefined")
+        map.fitBounds([
+          [bounds.minLong, bounds.minLat],
+          [bounds.maxLong, bounds.maxLat],
+        ]);
     }
   }, [map, stateApp.fitBounds]);
 
@@ -6050,17 +6050,18 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
       // mathematical formula for screen fit
       const alpha = 0.01;
-      const bbox = [
-        [stateApp?.selectedWell?.longitude - 1.5 * alpha, stateApp?.selectedWell?.latitude],
-        [stateApp?.selectedWell?.longitude + 0.5 * alpha, stateApp?.selectedWell?.latitude],
-      ];
+      if (typeof stateApp?.selectedWell?.longitude !== "undefined") {
+        const bbox = [
+          [stateApp?.selectedWell?.longitude - 1.5 * alpha, stateApp?.selectedWell?.latitude],
+          [stateApp?.selectedWell?.longitude + 0.5 * alpha, stateApp?.selectedWell?.latitude],
+        ];
 
-      // map may be null when wellDetailCard is launched from somewhere else
-      map?.fitBounds(bbox, {
-        speed: 0.75,
-        linear: true,
-      });
-
+        // map may be null when wellDetailCard is launched from somewhere else
+        map?.fitBounds(bbox, {
+          speed: 0.75,
+          linear: true,
+        });
+      }
       // setStateApp((state) => ({
       //   ...state,
       //   wellDetailCardOpen: false

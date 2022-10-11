@@ -4,8 +4,11 @@ import { get } from "lodash";
 
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import AddALayer from "components/MapControls/components/addALayer";
-import LayerStyling from "components/MapControls/components/LayerStyling";
+import SourceLayerManager from "components/MapControls/components/SourceLayerManager";
+import LayerStyling from "components/MapControls/components/Layer/LayerStyling";
+import LayerManager from "components/MapControls/components/Layer/LayerManager";
 import { AppContext } from "AppContext";
+import TransferDataManager from "components/MapControls/components/TransferDataManager";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -32,6 +35,9 @@ const Secondarypanel = () => {
   const classes = useStyles({ leftPixels });
   return (
     <div className={classes.root}>
+      {stateMapControls.manageLayer && <LayerManager />}
+      {stateMapControls.manageSourceLayer && <SourceLayerManager />}
+      {stateMapControls.manageTransferData && <TransferDataManager />}
       {stateMapControls.addLayer && <AddALayer />}
       {stateMapControls.selectedLayer && <LayerStyling layer={stateApp.selectedLayer} fileName={stateApp.selectedLayer.fileName} />}
     </div>

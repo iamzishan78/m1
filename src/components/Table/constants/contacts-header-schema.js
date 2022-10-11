@@ -1,6 +1,7 @@
 
 /* props is just a style object*/
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import GlobalSettings from "GlobalSettings";
 
 const ContactsHeadCells = [
   {
@@ -13,6 +14,18 @@ const ContactsHeadCells = [
       download: false,
       print: false,
       viewColumns: false,
+    },
+  },
+  {
+    name: "name",
+    label: "Name",
+    esKey: 'name.keyword',
+    // editable: true,
+    options: {
+      ...GlobalSettings.muiGridInfScrollOptions,
+      ignoreGlobal: true,
+      // sort: true,
+      // filter: true,
     },
   },
   {
@@ -106,16 +119,6 @@ const ContactsHeadCells = [
     },
   },
   {
-    name: "name",
-    label: "Name",
-    esKey: 'name.keyword',
-    // editable: true,
-    options: {
-      sort: true,
-      filter: true,
-    },
-  },
-  {
     name: "title",
     label: "Title",
     esKey: 'title.keyword',
@@ -196,15 +199,19 @@ const ContactsHeadCells = [
   {
     name: "fullContactAddress",
     label: "Primary Address",
-    // editable: true,
     esKey: ['address1.keyword', 'city.keyword', 'state.keyword', 'zip.keyword'],
     options: {
+      ignoreGlobal: true,
       dbName: "address1",
       sort: true,
       filter: true,
+      setCellProps: () => ({
+        style: {
+          paddingLeft: '10px',
+        }
+      })
     },
   },
-
   {
     name: "melissaRowsCount",
     options: {
@@ -607,16 +614,20 @@ const ContactsHeadCells = [
     },
   },
   {
-    name: "lastUpdateBy.name",
+    name: "lastUpdateBy",
     label: "Updated By",
     esKey: 'lastUpdateBy.name.keyword',
     options: {
+      ignoreGlobal: true,
       display: false,
       sort: true,
       filter: false,
       filterOptions: {
         names: [],
       },
+      customRender: (value) => (
+        <p>{value?.name ?? ""}</p>
+      )
     },
   },
   {
@@ -625,6 +636,7 @@ const ContactsHeadCells = [
     esKey: 'lastUpdateAt',
     noFilter: true,
     options: {
+      ignoreGlobal: true,
       filter: false,
       sort: true,
       sortDescFirst: true,
@@ -658,6 +670,7 @@ const ContactsHeadCells = [
     options: {
       dbName: "tags.tag",
       sort: true,
+      ignoreGlobal: true,
       download: false,
       print: false,
       filter: true,
@@ -671,6 +684,7 @@ const ContactsHeadCells = [
     label: " ",
     options: {
       dbName: "comments.comment",
+      ignoreGlobal: true,
       filter: false,
       searchable: false,
       sort: true,
@@ -712,6 +726,7 @@ const ContactsHeadCells = [
     name: "actionMenu",
     label: " ",
     options: {
+      ignoreGlobal: true,
       filter: false,
       searchable: false,
       sort: true,

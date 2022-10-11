@@ -346,7 +346,7 @@ export default function DocumentDrawer(props) {
                   }}
                   onClick={handleMenuClick}
                 >
-                  <MoreHorizIcon size="medium" />
+                  <MoreHorizIcon id="fileDetailHorzIcon" size="medium" />
                 </IconButton>
               )}
               <IconButton size="small" onClick={() => handleClose()}>

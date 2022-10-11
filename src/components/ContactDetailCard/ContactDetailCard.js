@@ -320,7 +320,7 @@ const useStyles = makeStyles((theme) => ({
   },
   detailHeader: {
     backgroundColor: "#fff",
-    padding: "20px 27px 0px 45px",
+    padding: "20px",
     marginTop: "8px",
   },
   title: {
@@ -612,14 +612,19 @@ function ContactDetailCard(props) {
           <div className={classes.title}>
             <StyleBadge>
               <Avatar
-                className={classes.grey}
-                name={
+                color={Avatar.getRandomColor(
                   contactData.name ||
-                  `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`
+                  `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`, 
+                  ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
+                // className={classes.grey}
+                name={
+                  (contactData.name ||
+                  `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`).split(' ').splice(0, 2).join(' ')
                 }
                 size="93"
                 round
               />
+         
             </StyleBadge>
             <div className={classes.titleText}>
               <div className={classes.userName}>
@@ -747,7 +752,12 @@ function ContactDetailCard(props) {
           ) : (
             <>
               <div className={classes.summarySection}>
-                <Grid item xs={12} container spacing={0} style={{ padding: "5px 20px", height: "550px", textAlign: "center" }}>
+                <Grid item xs={12} container spacing={0} style={{ 
+                  padding: "5px 20px", 
+                  height: "550px", 
+                  // marginBottom: "-100px",
+                  // marginTop: "20px",
+                  textAlign: "center" }}>
                   <SummaryFields contactData={contactData} />
                 </Grid>
               </div>
@@ -810,6 +820,7 @@ function ContactDetailCard(props) {
                   });
                 }}
                 activityLog={contactData.activityLog}
+                isSource={false}
               />
 
               <Menu

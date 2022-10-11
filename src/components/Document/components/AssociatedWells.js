@@ -257,7 +257,7 @@ const AssociatedWellsList = ({ title }) => {
               setSearch("");
             }}
           >
-            <AddIcon size="large" />
+            <AddIcon id="addIcon" size="large" />
           </IconButton>
         </Grid>
       </Grid>
@@ -273,7 +273,7 @@ const AssociatedWellsList = ({ title }) => {
           </Grid>
         )}
 
-        <List aria-label="wells list">
+        <List id="wellsList" aria-label="wells list">
           {wells && wells.length > 0 ? (
             wells.map((well, index) => (
               <div style={{ padding: "0px 0px 0px" }}>

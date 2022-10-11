@@ -15,20 +15,22 @@ import Paper from "@material-ui/core/Paper";
 import { useDispatch } from "react-redux";
 import { showErrorMessage } from "../../../actions";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(() => ({
   table: {
     margin: "0px auto",
     fontSize: "14px",
   },
-  csvReader: {
+  csvReader: ({ disabled }) => ({
     padding: "14px 0 30px 0",
     margin: "auto",
     maxWidth: 550,
     "&> div": {
       padding: "50px 0 30px 0 !important",
       borderRadius: "0 !important",
+      backgroundColor: disabled ? "#f2f2f2" : "transparent",
+      cursor: disabled ? "not-allowed" : "default"
     },
-  },
+  }),
   linkStyle: {
     fontSize: "15px",
     cursor: 'pointer',
@@ -36,8 +38,13 @@ const useStyles = makeStyles({
       textDecorationLine: "underline",
     },
     color: "rgba(23, 170, 221, 1)"
-  }
-});
+  },
+  lightblueBtn: ({ disabled }) => ({
+    textTransform: "capitalize !important",
+    backgroundColor: disabled ? "gray" : "rgba(23, 170, 221, 1)",
+    color: "#fff !important"
+  })
+}));
 
 function createData(
   firstName,
@@ -178,8 +185,8 @@ const StyledTableCell = withStyles((theme) => ({
 export default function CSVFileReader(props) {
   const dispatch = useDispatch();
   let [stateApp, setStateApp] = useContext(AppContext);
-  const [stateNav, setStateNav] = useContext(NavigationContext);
-  const classes = useStyles();
+  const [stateNav] = useContext(NavigationContext);
+  const classes = useStyles({ disabled: props.disabled });
   let unmounted = useRef(false);
   const csvColumns = [Object.fromEntries(stateApp.m1neralHeaders.map((col) => [col.label, ""]))]
 
@@ -205,20 +212,20 @@ export default function CSVFileReader(props) {
             ...(stateNav.bulkUploadShape?.shapeType) && { 'Shape Type': stateNav.bulkUploadShape?.shapeType }
           })
         })
-        stateApp.jobType === "TRACTS" && data.forEach((data) => {
-          Object.assign(data.data, {
-            ...(data.data["PLSS Township"] || data.data["PLSS Range"]) && { "PLSS Township/Range": [data.data["PLSS Township"], data.data["PLSS Range"]].join(" ") }
+        
+        if(["TRACTS", 'UNITS'].includes(stateApp.jobType) === "TRACTS") {
+          data.forEach((data) => {
+            console.log('data',data)
+            Object.assign(data.data, {
+              ...(data.data["PLSS Township"] || data.data["PLSS Range"]) && { "PLSS Township/Range": [data.data["PLSS Township"], data.data["PLSS Range"]].join(" ") }
+            })
           })
-        })
-        stateApp.jobType === "UNITS" && data.forEach((data) => {
-          Object.assign(data.data, {
-            ...(data.data["PLSS Township"] || data.data["PLSS Range"]) && { "PLSS Township/Range": [data.data["PLSS Township"], data.data["PLSS Range"]].join(" ") }
-          })
-        })
+        }
+
         mapped_headers_from_CSV(data);
         setStateApp((state) => ({
           ...state,
-          csvContactsList: data,
+          csvDataList: data,
           activeStepNumber: stateApp.activeStepNumber + 1,
         }));
       } else {
@@ -288,9 +295,10 @@ export default function CSVFileReader(props) {
               }}
               onRemoveFile={handleOnRemoveFile}
               style={upload_box}
+              noClick={!!props.disabled}
             >
               <span style={uploadText}>Drop File To Upload or</span>
-              <Button className="lightblueBtn" variant="contained">
+              <Button className={classes.lightblueBtn} variant="contained">
                 Choose File
               </Button>
             </CSVReader>
