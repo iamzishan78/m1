@@ -28,6 +28,7 @@ Date.prototype.addHours = function (h) {
 };
 
 const ActivitiesCalendar = (props) => {
+  const [selectedDate, setSelectedDate] = useState(new Date());
   return (
     <div>
       <Calendar
@@ -38,13 +39,13 @@ const ActivitiesCalendar = (props) => {
         endAccessor={"end"}
         startAccessor={"start"}
         view={props.view}
-        defaultDate={new Date()}
+        date={selectedDate || new Date()}
         style={{ height: "calc(100vh - 67px)", position: "relative" }}
         step={60}
         onSelectEvent={(e) => props.onEventClick(e)}
         showMultiDayTimes
         components={{
-          toolbar: (params) => <ActivitiesToolbar {...params} {...props} />,
+          toolbar: (params) => <ActivitiesToolbar selectedDate={selectedDate} setSelectedDate={setSelectedDate} {...params} {...props} />,
           event: (props) => <ActivitiesEvent {...props} />,
         }}
       />
@@ -118,7 +119,7 @@ const Activities = () => {
   const [appliedFilters, setAppliedFilters] = useState({
     toDate: null,
     fromDate: null,
-  });  
+  });
   const [tableFilters, setTableFilters] = useState([]);
 
   const filtersChange = (filters) => {
@@ -273,15 +274,15 @@ const Activities = () => {
               </div> */}
 
               <div className={classes.table}>
-              <ActivitiesTable
-                esIndex={esIndex}
-                searchFields={searchFields}
-                filtersChange={filtersChange}
-                appliedFilters={appliedFilters}
-                filterToggle={filterToggle}
-                targetLabel={"activitiesDashboard"}
-                header="Activities"
-              />              
+                <ActivitiesTable
+                  esIndex={esIndex}
+                  searchFields={searchFields}
+                  filtersChange={filtersChange}
+                  appliedFilters={appliedFilters}
+                  filterToggle={filterToggle}
+                  targetLabel={"activitiesDashboard"}
+                  header="Activities"
+                />
               </div>
 
 
