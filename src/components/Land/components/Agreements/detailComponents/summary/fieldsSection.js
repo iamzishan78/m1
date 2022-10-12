@@ -15,10 +15,12 @@ import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoComple
 import MetaField from "components/Table/helpers/MetaField";
 import { copy } from "utils/helper";
 import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
+// import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
+// import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 import { AppContext } from "AppContext";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
-import NumberField from "../../../../../Shared/components/Fields/NumberField";
+import NumberField from "components/Shared/components/Fields/NumberField";
 
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
