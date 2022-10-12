@@ -1,5 +1,3 @@
-import WarningIcon from "@material-ui/icons/Warning";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { history } from "store";
 import GlobalSettings from "..//..//..//GlobalSettings.js";
 import GlobalStyles from "..//..//..//GlobalStyles.js";
