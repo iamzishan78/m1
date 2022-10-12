@@ -97,10 +97,10 @@ function AgreementsTable(props) {
     props.setInitialFilters(formatedFilter);
     setTableMeta({
       // addableName: "Unit",
-      extendSearchQuery: props.landSearchQuery || searchInput || "",
+      extendSearchQuery: props.landSearchQuery || searchInput || '',
       selectedGridView: GridViewModule || defaultView,
-      customDataESKey: "shapeJson.properties.custom_data",
-      searchFields: ["*"],
+      customDataESKey: 'shapeJson.properties.custom_data',
+      // searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
       startPaginationAt: 50,
