@@ -4915,6 +4915,7 @@ function SubTable(props) {
                   focus
                   targetSourceId={expandedObject}
                   targetLabel={trueTargetLabel ? trueTargetLabel : props.targetLabel}
+                  commentType={props.commentType}
                   multipleIds={
                     m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 && m1nSelectedRowsIndexes.length > 1
                       ? removeDuplicatesIds(m1nSelectedRowsIds)

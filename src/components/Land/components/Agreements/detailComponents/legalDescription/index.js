@@ -118,6 +118,8 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                   header={"Tracts"}
                   setTractsNumber={setTractsNumber}
                   dense
+                  commentType="Ownership"
+                  targetLabel="Tract"
                 />
               </Grid>
             )}

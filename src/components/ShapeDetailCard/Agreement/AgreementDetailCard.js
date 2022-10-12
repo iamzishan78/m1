@@ -278,6 +278,8 @@ export default function AgreementDetailCard(props) {
                           shapeType="Agreement"
                           header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
                           dense
+                          commentType="Ownership"
+                          targetLabel="Tract"
                         />
                       </div>,
                       <div className={showSummary ? classes.subContent : classes.subContent2}>

@@ -331,6 +331,7 @@ export default function Comments(props) {
           user: stateApp.user.mongoId,
           commentedOn,
           objectType: props.targetLabel,
+          commentType: props.commentType
         },
       },
       refetchQueries: [
@@ -546,7 +547,7 @@ export default function Comments(props) {
             {commentsArray.map((comment, index) =>
               props.detailCard
                 ? ((publicComment && comment.public) ||
-                  (!publicComment && stateApp?.user?.email === comment?.user?.email && !comment.public)) &&
+                  (!publicComment && !comment.public && stateApp?.user?.email === comment?.user?.email)) &&
                 (commentsDisplayedCount += 1) &&
                 (props.top && props.top < commentsDisplayedCount ? null : (
                   //// ListItem ////
@@ -607,9 +608,17 @@ export default function Comments(props) {
                     <ListItemText
                       className={classes.listItemText}
                       primary={
-                        <React.Fragment>
-                          <CommonCommentText users={userLists?.allMongoUsers} eachComment={comment} />
-                        </React.Fragment>
+                        // <div style={{ marginBottom: '8px' }}>
+                        //   <div style={{
+                        //     marginTop: '2px',
+                        //     marginBottom: '5px',
+                        //     fontWeight: 'bolder',
+                        //     color: '#3e3e3e',
+                        //     fontSize: '15px',
+                        //   }}>{comment?.commentType || 'General'}</div>
+                        //   <CommentText users={userLists?.allMongoUsers} eachComment={comment} />
+                        // </div>
+                        <CommonCommentText users={userLists?.allMongoUsers} eachComment={comment} />
                       }
                       secondary={
                         `${comment?.user?.name}` +
@@ -637,7 +646,7 @@ export default function Comments(props) {
           <CircularProgress color="secondary"></CircularProgress>
         )}
       </CardContent>
-    </Card>
+    </Card >
   );
 }
 

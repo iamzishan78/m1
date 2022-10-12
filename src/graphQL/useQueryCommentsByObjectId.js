@@ -5,6 +5,7 @@ export const COMMENTSBYOBJECTIDQUERY = gql`
     commentsByObjectId(objectId: $objectId) {
       _id
       comment
+      commentType
       ts
       isEdited
       public

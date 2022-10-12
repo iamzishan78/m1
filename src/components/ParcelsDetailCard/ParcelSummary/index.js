@@ -328,7 +328,7 @@ export default function ParcelSummary(props) {
     return (
         <>
             <Grid container direction="row" className={classes.summaryCard}>
-                <Grid item md={7} sm={12} className={classes.paddingLeft}>
+                <Grid item md={6} sm={12} className={classes.paddingLeft}>
                     <Grid container spacing={1} direction="column" >
                         <Grid item>
                             <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: "space-between" }}>
@@ -390,7 +390,7 @@ export default function ParcelSummary(props) {
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item md={5} sm={12}>
+                <Grid item md={6} sm={12}>
                     <Grid container spacing={2} direction="row">
                         <Grid item >
                             <QtrQtrSelectorNew layerData={props.customLayer} />
@@ -422,7 +422,7 @@ export default function ParcelSummary(props) {
                             />
                         </Grid>
                         <Grid item md={12}>
-                            <CommentComponent targetLabel={'parcel'} targetSourceId={props.id} />
+                            <CommentComponent targetLabel={'parcel'} targetSourceId={props.id} showCommentType />
                         </Grid>
                     </Grid>
                 </Grid>
