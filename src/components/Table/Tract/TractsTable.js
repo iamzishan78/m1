@@ -54,7 +54,6 @@ function TractsTable(props) {
     setTableMeta({
       // addableName: "Unit",
       extendSearchQuery: props.landSearchQuery || searchInput || '',
-      searchFields: ["*"],
       TableHeader: copy(TableHeader(props.isSnapGrid)),
       esIndex: "shapes_flat",
       selectedGridView: GridViewModule || defaultView,
