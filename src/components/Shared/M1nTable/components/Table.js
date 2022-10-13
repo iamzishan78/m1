@@ -2540,26 +2540,6 @@ function SubTable(props) {
                                 cursor: 'pointer'
                               }}
 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
-                                if (type === "pdf") {
-                                  if (props.addAble.type === "document") {
-                                    window.history.pushState("", "", `/documents/${row_line._id}/view`);
-                                  }
-                                  // const selectedRow = rows.find((row) => row._id === row_line._id);
-                                  setStateApp((state) => ({
-                                    ...state,
-                                    pdfView: row_line,
-                                    viewDoc: {
-                                      uri: row_line.viewToken,
-                                      name: row_line.fileName,
-                                    },
-                                  }));
-                                } else {
-                                  handleViewFile(row_line._id);
-                                }
-                              }}
                             >
                               {get_file_icon(fileExtension)}
                             </div>
