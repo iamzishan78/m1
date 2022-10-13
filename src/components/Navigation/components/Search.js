@@ -414,7 +414,7 @@ function Search() {
       "tracts": {
         esIndex: "shapes_flat",
         search: (request) => request.input ? `*${request.input}*` : '',
-        searchFields: ['*'],
+        searchFields: ['name', 'shapeLabel', 'state', "shapeJson.properties.originalProperties.County"],
         filter: {
           field: "layer",
           value: "parcel"
@@ -429,7 +429,7 @@ function Search() {
       "agreements": {
         esIndex: "shapes_flat",
         search: (request) => request.input ? `*${request.input}*` : '',
-        searchFields: ['*'],
+        searchFields: ['name', 'shapeLabel', 'state', "shapeJson.properties.originalProperties.County"],
         filter: {
           field: "shapeJson.properties.type",
           value: "agreement"
@@ -925,6 +925,7 @@ function Search() {
         filterOptions={(x) => x}
         options={optionsWithHeader}
         groupBy={(option) => {
+          if (option?.shapeJson?.properties?.type === "agreement") return "Agreements"
           if (option.Source === ownerCogIndexName) return "Tax Owners";
           if (option.Source === wellCogIndexName) return "Wells";
           if (option.Source === operatorIndexName) return "Operators";
@@ -934,8 +935,6 @@ function Search() {
           if (option.Source === "mapboxSearch") return "Locations";
           if (option.layer === "unit") return "Units";
           if (option.layer === "parcel") return "Tracts";
-          if (option?.shapeJson?.properties?.type === "agreement") return "Agreements"
-
           if (option.Source === "loader") return "loader";
           return "header";
         }}
@@ -1374,7 +1373,7 @@ function Search() {
                 <Grid item>
                   {option.Source === ownerCogIndexName && <PersonIcon className={classes.icon} />}
                   {option.Source === operatorIndexName && <OperatorIcon className={classes.icon} color={"#757575"} />}
-                  {option.layer === 'unit' && (
+                  {option.layer === 'unit' && option?.shapeJson?.properties?.type !== 'agreement' && (
                     <UnitIcon className={classes.icon} color={"#757575"} />
                   )}
                   {option.layer === 'parcel' && (
