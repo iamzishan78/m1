@@ -470,6 +470,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "smaller",
   },
   agreementNumber: {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
     // position: 'absolute',
     alignItems: 'center',
     // justifyContent: 'space-between',
@@ -1446,7 +1449,7 @@ function SubTable(props) {
                         }}
                       >
                         <Grid container spacing={0} direction="row"
-                          style={{ position: 'absolute' }}
+                          // style={{ position: 'absolute' }}
                           className={classes.agreementNumber}
                         >
                           <Grid item
@@ -2596,7 +2599,7 @@ function SubTable(props) {
                                   justifyContent: "flex-start",
                                   paddingRight: '40px',
                                 }}
-                                
+
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   const type = row_line?.fileName?.split(".")[row_line?.fileName?.split(".").length - 1]?.toLowerCase();
