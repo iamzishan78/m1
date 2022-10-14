@@ -443,7 +443,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                       <>
                         {["qualifier", "reviewer"].includes(data.key) && (
                           <UserList
-                            id={data.key+"Input"}
+                            id={data.key + "Input"}
                             value={properties[data.key]}
                             setValue={(user) => {
                               updateProperties(null, data.key, user);
@@ -467,7 +467,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                       ) : (
                         <Grid item style={{ width: '100%' }}>
                           {data.type === "date" &&
-                            (properties[data.key] ? moment.parseZone(new Date(properties[data.key])).format("MM/DD/yyyy") : "-")}
+                            (properties[data.key] ? moment(properties[data.key]).utc(true).format("MM/DD/yyyy") : "-")}
                           {data.type === "custom" && (
                             <>
                               {["qualifier", "reviewer"].includes(data.key) && (properties[data.key]?.name || "-")}
