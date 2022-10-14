@@ -571,7 +571,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                     className={clsx(classes.filterDisplay, activityType === "call" && classes.active)}
                     onClick={() => setActivityType("call")}
                   >
-                    <CallIcon /> <span>Call</span>
+                    <CallIcon id="callIcon" /> <span>Call</span>
                   </span>
                   <span
                     className={clsx(classes.filterDisplay, activityType === "text_message" && classes.active)}
