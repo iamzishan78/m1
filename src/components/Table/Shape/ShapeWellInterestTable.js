@@ -192,7 +192,7 @@ function ShapeWellInterestTable(props) {
         })),
       },
       refetchQueries: [
-        "getESPaginatedList", "getESSimpleSearch", "getESFilterList"
+        "getESPaginatedList", "getESSimpleSearch", "getESFilterList","getShapeSummaryDetails"
       ],
       awaitRefetchQueries: true,
     });
