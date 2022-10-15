@@ -1,6 +1,6 @@
 export const loginCredential = {
     email: "support@m1neral.com",
-    passsword: "M1neral2022"
+    passsword: "M1neral2022!"
 }
 
 export const baseUrls = {
