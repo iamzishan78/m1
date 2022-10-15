@@ -8,7 +8,7 @@ import { isEmpty } from "lodash";
 
 import { AppContext } from "AppContext";
 
-import { copy, deepEqual, setStateIfDeepEqual } from "components/Shared/functions";
+import { copy, deepEqual, getSearchFields, setStateIfDeepEqual } from "components/Shared/functions";
 import { TAGSAMPLES } from "graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "graphQL/useQueryCommentsCounter";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
@@ -202,8 +202,10 @@ export const TableESHOC = (Component) => {
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
         useEffect(() => {
-            if (tableMeta?.esIndex) {
+            // New code added to only search on table related fields to avoid api crash
+            if (!tableMeta.searchFields && tableMeta.TableHeader) tableMeta.searchFields = getSearchFields(tableMeta.TableHeader)
 
+            if (tableMeta?.esIndex) {
                 if (tableMeta.modifySelectedGridView) {
                     tableMeta.modifySelectedGridView(selectedGridView)
                 }
