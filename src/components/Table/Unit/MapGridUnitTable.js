@@ -84,7 +84,7 @@ function MapGridUnitTable(props) {
     setTableMeta({
       extendSearchQuery: searchInput || stateApp.landSearchQuery,
       // selectedGridView: GridViewModule || defaultView,
-      searchFields: ["*"],
+      // searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapes_flat",
       startPaginationAt: 50,
