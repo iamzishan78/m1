@@ -421,7 +421,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
     return { ...well.getESPaginatedList.hits[0], tenantWellId: tenantWell?.tenantWell?.tenantWellId }
   }
 
-
   async function getCustomLayer() {
     const keys = { parcels: "selectedParcel", ...layersWithSelectedShapeKey(), wells: "selectedWell" };
 
