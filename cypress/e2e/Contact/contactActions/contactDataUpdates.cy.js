@@ -64,22 +64,24 @@ describe('Contact Data Updates Spec', () => {
             }
 
             cy.log('==== STEP: UPDATE PHONE 3 ====')
-            cy.get('#field-13').type('084933994503')
-            cy.get("[id='Full Name']").click()
+            cy.get('#field-13', { timeout: longTimeout }).type('084933994503')
+            cy.get("[id='Full Name']", { timeout: longTimeout }).click()
             cy.verifyApiResponse('@UpdateContactApi', { responseTimeout: longTimeout })
 
             cy.log('==== STEP: UPDATE PHONE 4 ====')
-            cy.get('#field-14').type('08493399345')
-            cy.get("[id='Full Name']").click()
+            cy.get('#field-14', { timeout: longTimeout }).type('08493399345')
+            cy.get("[id='Full Name']", { timeout: longTimeout }).click()
             cy.verifyApiResponse('@UpdateContactApi', { responseTimeout: longTimeout })
 
             cy.log('==== STEP: UPDATE CONTACT OWNER ====')
             const searchContact = "Kyle"
-            cy.get("#userList").clear().type(searchContact)
+            cy.wait(9000)
+            cy.get("#userList", { timeout: longTimeout }).clear().type(searchContact)
+            cy.wait(9000)
 
-            cy.get("#userList-option-0").invoke('text').then((contact) => {
+            cy.get("#userList-option-0", { timeout: longTimeout }).invoke('text').then((contact) => {
                 if (searchContact === contact)
-                    cy.get("#userList-option-0").click()
+                    cy.get("#userList-option-0", { timeout: longTimeout }).click()
                 else throw new Error(`User list searching is not working as expected`)
             });
 
