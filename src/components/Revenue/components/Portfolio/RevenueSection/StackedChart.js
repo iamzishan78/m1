@@ -41,7 +41,6 @@ const StackedAreaChart = ({ id = "chartDiv2", items, monthsInterval }) => {
     // Themes end
 
     let chart = am4core.create(id, am4charts.XYChart);
-    console.log("StackedChart", data)
     chart.data = data;
 
     chart.dateFormatter.inputDateFormat = "M/yyyy";
