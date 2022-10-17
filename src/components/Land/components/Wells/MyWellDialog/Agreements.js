@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
+import get from "lodash/get";
 import { Grid, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Link from "@material-ui/core/Link";
@@ -7,12 +8,14 @@ import AddIcon from "@material-ui/icons/Add";
 import IconButton from "@material-ui/core/IconButton";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
 //Contexts
 import { AppContext } from "AppContext";
 
 //Components
 import WellSearchApiFieldES from "components/Shared/Forms/Fields/WellSearchApiFieldES";
+import SearchField from "./SearchField";
 
 // Hooks
 import { useMutation } from "@apollo/client";
@@ -136,7 +139,7 @@ const Agreements = ({ agreements }) => {
             {!isSearchActive && (
               <Grid item xs={10}>
                 <Typography variant="h6" style={{ fontWeight: "bold" }}>
-                  Related Properties
+                  Related Agreements
                 </Typography>
               </Grid>
             )}
@@ -178,6 +181,12 @@ const Agreements = ({ agreements }) => {
         {addWell && (
           <Grid item xs={11}>
             {/* <WellSearchApiFieldES getSelectedWell={getSelectedWell} /> */}
+            <SearchField
+              esIndex="shapes_flat"
+              fields={["name^4", "_all"]}
+              optionsParams={["name", "internalID"]}
+              targetLabel="properties"
+            />
           </Grid>
         )}
         <Grid item xs={1}>
@@ -193,33 +202,25 @@ const Agreements = ({ agreements }) => {
       </Grid>
       <Divider />
       <div className={classes.list}>
-        {/* {(getWellsLoading === true || addWellLoading === true) && (
-          <Grid container className={classes.actionGrid}>
-            <Grid item xs={12}>
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <CircularProgress size="20px" />
-              </div>
-            </Grid>
-          </Grid>
-        )} */}
-
         <List id="wellsList" aria-label="wells list">
           {agreements.length > 0 ? (
-            agreements.map((property, index) => (
+            agreements.map((agreement, index) => (
               <div style={{ padding: "0px 0px 0px" }}>
                 <ListItem key={index}>
-                  <Link className={classes.wellLink} color="primary">
-                    {property.name}
+                  <Link className={classes.wellLink} color="primary" to={`/land/agreement/details/${agreement._id}`}>
+                    {get(agreement, "shapeJson.properties.name")}
                   </Link>
                 </ListItem>
-                <p className={classes.secondaryText}>{property.internalID}</p>
+                <p className={classes.secondaryText}>
+                  {agreementTypes.find((at) => at.value === get(agreement, "shapeJson.properties.agreementType"))?.label || ""}
+                </p>
                 <Divider />
               </div>
             ))
           ) : (
             <ListItem>
               <ListItemText
-                primary={"No property found."}
+                primary={"No ageement found."}
                 primaryTypographyProps={{
                   color: "primary",
                 }}

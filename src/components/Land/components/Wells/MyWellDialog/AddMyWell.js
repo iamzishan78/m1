@@ -1,24 +1,14 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import React, { useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import IconButton from "@material-ui/core/IconButton";
-import AutorenewIcon from "@material-ui/icons/Autorenew";
 import Grid from "@material-ui/core/Grid";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { CircularProgress, OutlinedInput, InputAdornment, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import debounce from "lodash/debounce";
 import parse from "autosuggest-highlight/parse";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
-import { INTERESTOWNERTYPESQUERY } from "graphQL/useQueryInterestOwnerTypes";
-import { INTERESTTYPESQUERY } from "graphQL/useQueryInterestTypes";
-import { TENANTWELL } from "graphQL/useQueryTenantWell";
-import { ADDWELLINTEREST } from "graphQL/useMutationAddWellInterest";
-import { WELLSUMMARYDETAILQUERY } from "graphQL/useQueryWellSummaryDetail";
 
 // contexts
 import { AppContext } from "AppContext";
@@ -135,28 +125,12 @@ const wellParams = [
   { type: "text", label: "Formation", key: "" },
 ];
 
-function AddWellInterestDialog({ getMyWell }) {
+function AddWellInterestDialog({ handleWellDetail, platformWell }) {
   const classes = useStyles();
 
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  const [initializing, setInitializing] = useState(true);
   const [foundWells, setFoundWells] = useState([]);
-  const [selectedWell, setSelectedWell] = useState(null);
-  const [formLeaseName, setFormLeaseName] = useState("");
-  const [formLeaseAcres, setFormLeaseAcres] = useState(null);
-  const [formOwnerName, setFormOwnerName] = useState("");
-  const [formInterestOwnerType, setFormInterestOwnerType] = useState("");
-  const [formInterestType, setFormInterestType] = useState("");
-  const [formInterestAmount, setFormInterestAmount] = useState(null);
-  const [formRoyaltyAcres, setFormRoyaltyAcres] = useState(null);
-  const [formTaxValue, setFormTaxValue] = useState(null);
-  const [valid, setValid] = useState({});
-
-  const [getTenantWell, { data: dataTenantWell }] = useLazyQuery(TENANTWELL, {
-    // must be network-only to trigger state change for field updates
-    fetchPolicy: "network-only",
-  });
 
   const callWellSearch2 = React.useMemo(
     () =>
@@ -188,175 +162,121 @@ function AddWellInterestDialog({ getMyWell }) {
     []
   );
 
-  useEffect(() => {
-    if (!dataTenantWell?.tenantWell) return;
-
-    const { tenantWell } = dataTenantWell;
-    setSelectedWell(tenantWell);
-  }, dataTenantWell);
-
-  useEffect(() => {
-    if (stateApp.activeWellInterest) {
-      setInitializing(true);
-      setSelectedWell({
-        Id: stateApp.activeWellInterest.wellId,
-        WellName: stateApp.activeWellInterest.wellName,
-        ApiNumber: stateApp.activeWellInterest.api,
-        LeaseId: stateApp.activeWellInterest.leaseId,
-        Lease: stateApp.activeWellInterest.lease,
-        LeaseAcreage: stateApp.activeWellInterest.leaseAcres,
-      });
-      setFormLeaseName(stateApp.activeWellInterest.lease);
-      setFormLeaseAcres(stateApp.activeWellInterest.leaseAcres);
-      setFormOwnerName(stateApp.activeWellInterest.interestOwner);
-      setFormInterestOwnerType(stateApp.activeWellInterest.interestOwnerType);
-      setFormInterestType(stateApp.activeWellInterest.type);
-      setFormInterestAmount(stateApp.activeWellInterest.amount);
-      setFormRoyaltyAcres(stateApp.activeWellInterest.nra);
-      setFormTaxValue(stateApp.activeWellInterest.taxValue);
-    }
-  }, [stateApp.activeWellInterest]);
-
-  useEffect(() => {
-    // if launched from grid row set initializing based on selectedWell state
-    setInitializing(false);
-  }, [selectedWell]);
-
-  const handleWellDetail = (well) => {
-    setSelectedWell(well);
-    if (well) {
-      getTenantWell({
-        variables: {
-          globalWellId: well.Id,
-        },
-      });
-      setValid({
-        ...valid,
-        "selectedWell.Id": false,
-      });
-      getMyWell(well.Id);
-    }
-  };
-
   const handleSave = () => {};
 
   return (
-    <>
-      <div style={{ padding: "30px" }}>
-        <div style={{ marginTop: "15px" }}>
-          <FormControl variant="outlined" fullWidth size="small">
-            <Autocomplete
-              options={foundWells || []}
-              onChange={(e, well) => handleWellDetail(well)}
-              value={selectedWell}
-              getOptionLabel={(option, value) => option.Primary}
-              filterOptions={(x) => x}
-              renderOption={(option) => {
-                const parts = parse(option.Primary, Array());
+    <div style={{ padding: "30px" }}>
+      <div style={{ marginTop: "15px" }}>
+        <FormControl variant="outlined" fullWidth size="small">
+          <Autocomplete
+            options={foundWells || []}
+            onChange={(e, well) => handleWellDetail(well)}
+            value={platformWell}
+            getOptionLabel={(option, value) => option.Primary}
+            filterOptions={(x) => x}
+            renderOption={(option) => {
+              const parts = parse(option.Primary, Array());
 
-                return (
-                  <Grid container spacing={0}>
-                    <Grid container item xs={11} alignItems="center">
-                      <Grid item xs>
-                        {parts.map((part, index) => (
-                          <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-                            {part.text}
-                          </span>
-                        ))}
+              return (
+                <Grid container spacing={0}>
+                  <Grid container item xs={11} alignItems="center">
+                    <Grid item xs>
+                      {parts.map((part, index) => (
+                        <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                          {part.text}
+                        </span>
+                      ))}
 
-                        {option && option.Secondary && (
-                          <Typography variant="body2" color="textSecondary">
-                            {option.Secondary}
-                          </Typography>
-                        )}
-                      </Grid>
-                    </Grid>
-                    <Grid container item xs={1} alignItems="center">
-                      <Grid item style={{ position: "relative" }}>
-                        <div
-                          className={classes.score}
-                          style={{
-                            zIndex: "1300",
-                            backgroundColor: "#12ABE0",
-                          }}
-                        />
-                        <div
-                          className={classes.score}
-                          style={{
-                            zIndex: "1301",
-                            backgroundImage: "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
-                          }}
-                        />
-                      </Grid>
+                      {option && option.Secondary && (
+                        <Typography variant="body2" color="textSecondary">
+                          {option.Secondary}
+                        </Typography>
+                      )}
                     </Grid>
                   </Grid>
-                );
-              }}
-              renderInput={(params) => (
-                <TextField
-                  margin="dense"
-                  {...params}
-                  required
-                  error={valid["selectedWell.Id"]}
-                  helperText={valid["selectedWell.Id"] ? "Select a well to get started" : ""}
-                  variant="outlined"
-                  label="Search for a well by name or API"
-                  InputLabelProps={{ shrink: true }}
-                  onChange={(event) => {
-                    callWellSearch2({ input: event.target.value }, (results) => {
-                      if (results) {
-                        const indexSource = results["@odata.context"].substring(
-                          results["@odata.context"].indexOf("('") + 2,
-                          results["@odata.context"].indexOf("')")
-                        );
+                  <Grid container item xs={1} alignItems="center">
+                    <Grid item style={{ position: "relative" }}>
+                      <div
+                        className={classes.score}
+                        style={{
+                          zIndex: "1300",
+                          backgroundColor: "#12ABE0",
+                        }}
+                      />
+                      <div
+                        className={classes.score}
+                        style={{
+                          zIndex: "1301",
+                          backgroundImage: "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              );
+            }}
+            renderInput={(params) => (
+              <TextField
+                margin="dense"
+                {...params}
+                required
+                variant="outlined"
+                label="Search for a well by name or API"
+                InputLabelProps={{ shrink: true }}
+                onChange={(event) => {
+                  callWellSearch2({ input: event.target.value }, (results) => {
+                    if (results) {
+                      const indexSource = results["@odata.context"].substring(
+                        results["@odata.context"].indexOf("('") + 2,
+                        results["@odata.context"].indexOf("')")
+                      );
 
-                        let newOptions = [
-                          ...results.value.map((result) => {
-                            result.Score = result["@search.score"];
-                            delete result["@search.score"];
-                            return {
-                              ...result,
-                              Source: indexSource,
-                              Primary: result.WellName,
-                              Secondary: result.ApiNumber,
-                            };
-                          }),
-                        ];
+                      let newOptions = [
+                        ...results.value.map((result) => {
+                          result.Score = result["@search.score"];
+                          delete result["@search.score"];
+                          return {
+                            ...result,
+                            Source: indexSource,
+                            Primary: result.WellName,
+                            Secondary: result.ApiNumber,
+                          };
+                        }),
+                      ];
 
-                        setFoundWells(newOptions);
-                      }
-                    });
-                  }}
-                />
-              )}
-            />
-          </FormControl>
+                      setFoundWells(newOptions);
+                    }
+                  });
+                }}
+              />
+            )}
+          />
+        </FormControl>
 
-          <h4
-            style={
-              {
-                //margin: "0 0 15px 0",
-                //float: "left",
-                //fontSize: "1.1rem",
-              }
+        <h4
+          style={
+            {
+              //margin: "0 0 15px 0",
+              //float: "left",
+              //fontSize: "1.1rem",
             }
-          >
-            Selected well and lease information
-          </h4>
-          {wellParams.map((param, index) => (
-            <TextField
-              variant="outlined"
-              margin="dense"
-              value={selectedWell?.[param.key] || ""}
-              label={param.label}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              defaultValue=""
-            />
-          ))}
-        </div>
+          }
+        >
+          Selected well and lease information
+        </h4>
+        {wellParams.map((param, index) => (
+          <TextField
+            variant="outlined"
+            margin="dense"
+            value={platformWell?.[param.key] || ""}
+            label={param.label}
+            InputLabelProps={{ shrink: true }}
+            fullWidth
+            defaultValue=""
+          />
+        ))}
       </div>
-    </>
+    </div>
   );
 }
 

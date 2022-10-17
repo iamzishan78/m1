@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import clsx from "clsx";
 import get from "lodash/get";
 import { makeStyles } from "@material-ui/core/styles";
@@ -11,6 +11,7 @@ import { IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useLazyQuery } from "@apollo/client";
 import { GET_MY_WELL_BY_GLOBAL_ID } from "graphQL/useQueryMyWellByGlobalId";
+import { TENANTWELL } from "graphQL/useQueryTenantWell";
 
 // Components
 import AddMyWell from "./AddMyWell";
@@ -150,13 +151,26 @@ export default function MyWellDialog(props) {
   const [anchorEl, setAnchorEl] = useState();
 
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
+  const [platformWell, setPlatformWell] = useState();
 
   const [getMyWellByGlobalId, { data: myWellData }] = useLazyQuery(GET_MY_WELL_BY_GLOBAL_ID);
+
+  const [getTenantWell, { data: dataTenantWell }] = useLazyQuery(TENANTWELL, {
+    // must be network-only to trigger state change for field updates
+    fetchPolicy: "network-only",
+  });
   const toggleDrawer = (anchor, open) => (event) => {
     if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
     }
   };
+
+  useEffect(() => {
+    if (!dataTenantWell?.tenantWell) return;
+
+    const { tenantWell } = dataTenantWell;
+    setPlatformWell(tenantWell);
+  }, dataTenantWell);
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -169,6 +183,17 @@ export default function MyWellDialog(props) {
           wellId: wellGlobalId,
         },
       });
+    };
+
+    const handleWellDetail = (well) => {
+      if (well) {
+        getTenantWell({
+          variables: {
+            globalWellId: well.Id,
+          },
+        });
+        getMyWell(well.Id);
+      }
     };
 
     return (
@@ -247,11 +272,14 @@ export default function MyWellDialog(props) {
             <div style={{ paddingRight: "60px", height: "93vh", overflow: "auto" }}>
               {activePanel === "Add New Well" && (
                 // Add My Well fields component here
-                <AddMyWell getMyWell={getMyWell} />
+                <AddMyWell handleWellDetail={handleWellDetail} platformWell={platformWell} />
               )}
               {activePanel === "Revenue Properties" && (
                 // show revenue properties here
-                <RevenueProperties properties={get(myWellData, "myWellByGlobalId.myWell.properties", [])} />
+                <RevenueProperties
+                  myWellId={get(myWellData, "myWellByGlobalId.myWell._id", [])}
+                  properties={get(myWellData, "myWellByGlobalId.myWell.properties", [])}
+                />
               )}
               {activePanel === "Agreements" && (
                 // show agreements list here

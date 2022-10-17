@@ -1,10 +1,25 @@
 import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import { Grid, ListItemText, makeStyles, Divider, List, ListItem, Typography, Tooltip, InputBase } from "@material-ui/core";
+import {
+  Grid,
+  ListItemText,
+  makeStyles,
+  Divider,
+  List,
+  ListItem,
+  Typography,
+  Tooltip,
+  InputBase,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  TextField,
+} from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Link from "@material-ui/core/Link";
 import AddIcon from "@material-ui/icons/Add";
 import IconButton from "@material-ui/core/IconButton";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 
@@ -12,13 +27,24 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import { AppContext } from "AppContext";
 
 //Components
-import WellSearchApiFieldES from "components/Shared/Forms/Fields/WellSearchApiFieldES";
+import SearchField from "./SearchField";
 
 // Hooks
 import { useMutation } from "@apollo/client";
 
 // Mutations
 import { ADD_WELL_TO_FILE_DESCRIPTOR } from "graphQL/useMutationAddWellToFileDescriptor";
+
+const propertyParams = [
+  { type: "text", label: "Well NRI", key: "wellNRI" },
+  { type: "text", label: "Pay Status", key: "payStatus" },
+  { type: "text", label: "Cost Free", key: "costFree" },
+  { type: "text", label: "Div Order Status", key: "divOrderStatus" },
+  { type: "text", label: "Internal Company", key: "internalCompany" },
+  { type: "text", label: "Acquisition ID", key: "acquisitionID" },
+  { type: "text", label: "Prospect ID", key: "prospectID" },
+  { type: "text", label: "Classification", key: "classification" },
+];
 
 const useStyles = makeStyles((theme) => ({
   rootPadding: {
@@ -98,15 +124,18 @@ const useStyles = makeStyles((theme) => ({
   },
   secondaryText: {
     color: "grey",
-    fontSize: "14px",
+    fontSize: "16px",
     margin: 0,
-    paddingLeft: 16,
-    paddingBottom: 4,
-    marginTop: -8,
+    padding: 0,
+  },
+  accordion: {
+    "& .MuiIconButton-root": {
+      padding: 0,
+    },
   },
 }));
 
-const ReveueProperties = ({ properties }) => {
+const ReveueProperties = ({ myWellId, properties }) => {
   // Initials
   let history = useHistory();
   const classes = useStyles();
@@ -115,19 +144,6 @@ const ReveueProperties = ({ properties }) => {
   const [search, setSearch] = useState("");
   const [isSearchActive, setSearchState] = useState(false);
   const [addWell, setAddWell] = useState(false);
-  const [deletedRow, setDeletedRow] = useState("");
-  const [stateApp, setStateApp] = useContext(AppContext);
-
-  const [addWellToFileDescriptor, { loading: addWellLoading }] = useMutation(ADD_WELL_TO_FILE_DESCRIPTOR);
-
-  // sending to wells page
-  const goToWell = (well) => {
-    history.push(`/map/wells/${well?.id.toUpperCase()}`, {
-      showWellBreadcrumb: true,
-      breadcrumbs: [{ title: "Documents", url: "/documents" }],
-    });
-    setStateApp({ ...stateApp, DocumentDrawer: false, selectedDocument: {} });
-  };
 
   return (
     <div style={{ marginRight: "14px" }}>
@@ -179,6 +195,12 @@ const ReveueProperties = ({ properties }) => {
         {addWell && (
           <Grid item xs={11}>
             {/* <WellSearchApiFieldES getSelectedWell={getSelectedWell} /> */}
+            <SearchField
+              esIndex="properties_flat"
+              fields={["name^4", "_all"]}
+              optionsParams={["name", "internalID"]}
+              targetLabel="properties"
+            />
           </Grid>
         )}
         <Grid item xs={1}>
@@ -194,28 +216,36 @@ const ReveueProperties = ({ properties }) => {
       </Grid>
       <Divider />
       <div className={classes.list}>
-        {/* {(getWellsLoading === true || addWellLoading === true) && (
-          <Grid container className={classes.actionGrid}>
-            <Grid item xs={12}>
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <CircularProgress size="20px" />
-              </div>
-            </Grid>
-          </Grid>
-        )} */}
-
         <List id="wellsList" aria-label="wells list">
           {properties.length > 0 ? (
             properties.map((property, index) => (
-              <div style={{ padding: "0px 0px 0px" }}>
-                <ListItem key={index}>
-                  <Link className={classes.wellLink} color="primary">
-                    {property.name}
-                  </Link>
-                </ListItem>
-                <p className={classes.secondaryText}>{property.internalID}</p>
-                <Divider />
-              </div>
+              <Accordion className={classes.accordion} key={index}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+                  <div>
+                    <Link className={classes.wellLink} color="primary">
+                      <Typography variant="h6">{property.name}</Typography>
+                    </Link>
+                    <p className={classes.secondaryText}>{property.internalID}</p>
+                  </div>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <div>
+                    {propertyParams.map((param, index) => (
+                      <React.Fragment key={index}>
+                        <TextField
+                          margin="dense"
+                          label={param.label}
+                          value={property[param.key]}
+                          InputLabelProps={{ shrink: true }}
+                          fullWidth
+                          defaultValue=""
+                          disabled
+                        />
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </AccordionDetails>
+              </Accordion>
             ))
           ) : (
             <ListItem>
