@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import clsx from "clsx";
 import get from "lodash/get";
 import { makeStyles } from "@material-ui/core/styles";
-import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import { Menu, MenuItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
 import RightActionsPanel from "./RightActionsPanel";
 import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
@@ -217,22 +217,12 @@ export default function MyWellDialog(props) {
         >
           <div style={{ flexShrink: 0 }}>
             <div className={classes.titleSection}>
-              <div>
-                <h2>{activePanel}</h2>
+              <div style={{ margin: "20px 0px" }}>
+                <Typography variant="h5" style={{ fontWeight: "bold" }}>
+                  {activePanel === "Add New Well" ? activePanel : "Well Details"}
+                </Typography>
               </div>
               <div style={{ cursor: "pointer" }}>
-                {/* <IconButton
-                  size="small"
-                  component="span"
-                  style={{
-                    background: "transparent",
-                    paddingLeft: "10px",
-                    align: "center",
-                  }}
-                  onClick={handleMenuClick}
-                >
-                  <MoreHorizIcon id="fileDetailHorzIcon" size="medium" />
-                </IconButton> */}
                 <IconButton size="small" onClick={() => props.setDialog(false)}>
                   <CloseIcon />
                 </IconButton>

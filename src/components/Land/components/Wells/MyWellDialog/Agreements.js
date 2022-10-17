@@ -207,7 +207,13 @@ const Agreements = ({ agreements }) => {
             agreements.map((agreement, index) => (
               <div style={{ padding: "0px 0px 0px" }}>
                 <ListItem key={index}>
-                  <Link className={classes.wellLink} color="primary" to={`/land/agreement/details/${agreement._id}`}>
+                  <Link
+                    className={classes.wellLink}
+                    color="primary"
+                    onClick={() => {
+                      history.push(`/land/agreement/details/${agreement._id}`);
+                    }}
+                  >
                     {get(agreement, "shapeJson.properties.name")}
                   </Link>
                 </ListItem>
