@@ -195,8 +195,6 @@ const SummarySection = ({ checkId }) => {
   let adjSummary = adjustmentSummary?.getESAggsList?.aggregations;
   let prodSummary = productSummary?.getESAggsList?.aggregations;
   let metaData = metaDataRes?.getMetaData?.metaData
-  console.log(metaData)
-
   const summaryTabs = [
     { id: 1, label: "Revenue" },
     { id: 2, label: "Adjustments" },
@@ -307,7 +305,6 @@ const SummarySection = ({ checkId }) => {
 
       const products = uniqBy(productMapping?.mapping, 'to').map((product) => product.to)
       let buckets = [];
-      console.log(prodSummary)
       products.forEach((p) => {
         const mappings = productMapping?.mapping?.filter((m) => m.to === p)
         const bucket = { key: p.includes('NGL') ? 'NGL' : p }
