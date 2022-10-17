@@ -125,10 +125,8 @@ const wellParams = [
   { type: "text", label: "Formation", key: "" },
 ];
 
-function AddWellInterestDialog({ handleWellDetail, platformWell }) {
+function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
   const classes = useStyles();
-
-  const [stateApp, setStateApp] = useContext(AppContext);
 
   const [foundWells, setFoundWells] = useState([]);
 
@@ -162,96 +160,98 @@ function AddWellInterestDialog({ handleWellDetail, platformWell }) {
     []
   );
 
-  const handleSave = () => {};
+  // const handleSave = () => {};
 
   return (
-    <div style={{ padding: "30px" }}>
+    <div style={{ padding: "10px 30px" }}>
       <div style={{ marginTop: "15px" }}>
-        <FormControl variant="outlined" fullWidth size="small">
-          <Autocomplete
-            options={foundWells || []}
-            onChange={(e, well) => handleWellDetail(well)}
-            value={platformWell}
-            getOptionLabel={(option, value) => option.Primary}
-            filterOptions={(x) => x}
-            renderOption={(option) => {
-              const parts = parse(option.Primary, Array());
+        {showSearch && (
+          <FormControl variant="outlined" fullWidth size="small">
+            <Autocomplete
+              options={foundWells || []}
+              onChange={(e, well) => handleWellDetail(well)}
+              value={platformWell}
+              getOptionLabel={(option, value) => option.Primary}
+              filterOptions={(x) => x}
+              renderOption={(option) => {
+                const parts = parse(option.Primary, Array());
 
-              return (
-                <Grid container spacing={0}>
-                  <Grid container item xs={11} alignItems="center">
-                    <Grid item xs>
-                      {parts.map((part, index) => (
-                        <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
-                          {part.text}
-                        </span>
-                      ))}
+                return (
+                  <Grid container spacing={0}>
+                    <Grid container item xs={11} alignItems="center">
+                      <Grid item xs>
+                        {parts.map((part, index) => (
+                          <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                            {part.text}
+                          </span>
+                        ))}
 
-                      {option && option.Secondary && (
-                        <Typography variant="body2" color="textSecondary">
-                          {option.Secondary}
-                        </Typography>
-                      )}
+                        {option && option.Secondary && (
+                          <Typography variant="body2" color="textSecondary">
+                            {option.Secondary}
+                          </Typography>
+                        )}
+                      </Grid>
+                    </Grid>
+                    <Grid container item xs={1} alignItems="center">
+                      <Grid item style={{ position: "relative" }}>
+                        <div
+                          className={classes.score}
+                          style={{
+                            zIndex: "1300",
+                            backgroundColor: "#12ABE0",
+                          }}
+                        />
+                        <div
+                          className={classes.score}
+                          style={{
+                            zIndex: "1301",
+                            backgroundImage: "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
+                          }}
+                        />
+                      </Grid>
                     </Grid>
                   </Grid>
-                  <Grid container item xs={1} alignItems="center">
-                    <Grid item style={{ position: "relative" }}>
-                      <div
-                        className={classes.score}
-                        style={{
-                          zIndex: "1300",
-                          backgroundColor: "#12ABE0",
-                        }}
-                      />
-                      <div
-                        className={classes.score}
-                        style={{
-                          zIndex: "1301",
-                          backgroundImage: "repeating-linear-gradient(135deg, #ffffff , #ffffffb7 4.5%, #ffffff 15%)",
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-              );
-            }}
-            renderInput={(params) => (
-              <TextField
-                margin="dense"
-                {...params}
-                required
-                variant="outlined"
-                label="Search for a well by name or API"
-                InputLabelProps={{ shrink: true }}
-                onChange={(event) => {
-                  callWellSearch2({ input: event.target.value }, (results) => {
-                    if (results) {
-                      const indexSource = results["@odata.context"].substring(
-                        results["@odata.context"].indexOf("('") + 2,
-                        results["@odata.context"].indexOf("')")
-                      );
+                );
+              }}
+              renderInput={(params) => (
+                <TextField
+                  margin="dense"
+                  {...params}
+                  required
+                  variant="outlined"
+                  label="Search for a well by name or API"
+                  InputLabelProps={{ shrink: true }}
+                  onChange={(event) => {
+                    callWellSearch2({ input: event.target.value }, (results) => {
+                      if (results) {
+                        const indexSource = results["@odata.context"].substring(
+                          results["@odata.context"].indexOf("('") + 2,
+                          results["@odata.context"].indexOf("')")
+                        );
 
-                      let newOptions = [
-                        ...results.value.map((result) => {
-                          result.Score = result["@search.score"];
-                          delete result["@search.score"];
-                          return {
-                            ...result,
-                            Source: indexSource,
-                            Primary: result.WellName,
-                            Secondary: result.ApiNumber,
-                          };
-                        }),
-                      ];
+                        let newOptions = [
+                          ...results.value.map((result) => {
+                            result.Score = result["@search.score"];
+                            delete result["@search.score"];
+                            return {
+                              ...result,
+                              Source: indexSource,
+                              Primary: result.WellName,
+                              Secondary: result.ApiNumber,
+                            };
+                          }),
+                        ];
 
-                      setFoundWells(newOptions);
-                    }
-                  });
-                }}
-              />
-            )}
-          />
-        </FormControl>
+                        setFoundWells(newOptions);
+                      }
+                    });
+                  }}
+                />
+              )}
+            />
+          </FormControl>
+        )}
 
         <h4
           style={

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import clsx from "clsx";
 import get from "lodash/get";
@@ -156,6 +156,9 @@ export default function MyWellDialog(props) {
   // const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [platformWell, setPlatformWell] = useState();
 
+  const { id: globalWellId } = useParams();
+  const history = useHistory();
+
   let [getMyWellByGlobalId, { data: myWellData }] = useLazyQuery(GET_MY_WELL_BY_GLOBAL_ID);
 
   const [getTenantWell, { data: dataTenantWell }] = useLazyQuery(TENANTWELL, {
@@ -179,15 +182,19 @@ export default function MyWellDialog(props) {
   //   setAnchorEl(null);
   // };
 
-  const { id: globalWellId } = useParams();
-  const history = useHistory();
-
   useEffect(() => {
     if (globalWellId) {
       handleWellDetail({ Id: globalWellId });
       props.setDialog(true);
     }
   }, [globalWellId]);
+
+  const dialogTitle = useMemo(() => {
+    if (activePanel === "Add New Well") {
+      if (globalWellId) return "Update Well Details";
+      return activePanel;
+    } else return "Well Details";
+  }, [activePanel, globalWellId]);
 
   const getMyWell = (wellGlobalId) => {
     getMyWellByGlobalId({
@@ -257,7 +264,7 @@ export default function MyWellDialog(props) {
               <div className={classes.titleSection}>
                 <div style={{ margin: "20px 0px" }}>
                   <Typography variant="h5" style={{ fontWeight: "bold" }}>
-                    {activePanel === "Add New Well" ? activePanel : "Well Details"}
+                    {dialogTitle}
                   </Typography>
                 </div>
                 <div style={{ cursor: "pointer" }}>
@@ -300,7 +307,7 @@ export default function MyWellDialog(props) {
               <div style={{ paddingRight: "60px", height: "93vh", overflow: "auto" }}>
                 {activePanel === "Add New Well" && (
                   // Add My Well fields component here
-                  <AddMyWell handleWellDetail={handleWellDetail} platformWell={platformWell} />
+                  <AddMyWell handleWellDetail={handleWellDetail} platformWell={platformWell} showSearch={!globalWellId} />
                 )}
                 {activePanel === "Revenue Properties" && (
                   // show revenue properties here
