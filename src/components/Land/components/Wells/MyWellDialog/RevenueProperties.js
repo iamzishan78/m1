@@ -222,7 +222,14 @@ const ReveueProperties = ({ myWellId, properties }) => {
               <Accordion className={classes.accordion} key={index}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
                   <div>
-                    <Link className={classes.wellLink} color="primary">
+                    <Link
+                      className={classes.wellLink}
+                      color="primary"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        history.push(`/revenue/property/details/${property._id}`);
+                      }}
+                    >
                       <Typography variant="h6">{property.name}</Typography>
                     </Link>
                     <p className={classes.secondaryText}>{property.internalID}</p>
