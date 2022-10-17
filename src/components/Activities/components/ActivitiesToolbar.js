@@ -54,6 +54,7 @@ const useToolbarStyles = makeStyles((theme) => ({
     opacity: "0",
 
     '& input::-webkit-calendar-picker-indicator': {
+      cursor: "pointer",
       display: "block",
       top: 0,
       left: 0,
