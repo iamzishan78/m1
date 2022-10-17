@@ -47,6 +47,14 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/land/wells",
     component: "Wells",
   },
+  WELL_DETAILS: {
+    featureFlag: "LANDMODULE",
+    title: "Wells",
+    link: "/land/well/details/:id",
+    parent: "WELLS",
+    component: "Wells",
+    isExcluded: true,
+  },
   REPORTING_GROUPS: {
     featureFlag: "LANDREPORTINGGROUPS",
     title: "Reporting Groups",
@@ -87,7 +95,6 @@ export default function Revenue() {
       activeModule={activeModule}
       actions={SIDE_PANEL_MENU_ITEMS_LIST}
     >
-
       <Switch>
         {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
           <Route
@@ -98,8 +105,6 @@ export default function Revenue() {
         ))}
         <Redirect to={`/land/agreements`} />
       </Switch>
-
     </QuickActionPanel>
   );
 }
-
