@@ -50,8 +50,17 @@ function MyWellsGridTable(props) {
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
       const properties = get(hit, "properties", []);
-      const propertiesKeys = { internalID: [], propertiesNames: [], prospectID: [], status: [], acquisitionID: [], internalCompany: [], divOrderStatus: [], costFree: [] };
-      properties.forEach(property => {
+      const propertiesKeys = {
+        internalID: [],
+        propertiesNames: [],
+        prospectID: [],
+        status: [],
+        acquisitionID: [],
+        internalCompany: [],
+        divOrderStatus: [],
+        costFree: [],
+      };
+      properties.forEach((property) => {
         propertiesKeys.internalID.push(property.internalID);
         propertiesKeys.propertiesNames.push(property.name);
         propertiesKeys.prospectID.push(property.prospectID);
@@ -68,13 +77,12 @@ function MyWellsGridTable(props) {
         permitApprovedDate: hit.wellData.permitApprovedDate ? convert_date(hit.wellData.permitApprovedDate) : null,
         spudDate: hit.wellData.spudDate ? convert_date(hit.wellData.spudDate) : null,
         completionDate: hit.wellData.completionDate ? convert_date(hit.wellData.completionDate) : null,
+        firstProdDate: hit.wellData.FirstProdDate ? convert_date(hit.wellData.FirstProdDate) : null,
       };
       return hit;
     });
     return hits;
   };
-
-
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
