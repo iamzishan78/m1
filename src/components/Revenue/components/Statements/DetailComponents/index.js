@@ -433,7 +433,7 @@ export default function DetailComponents(props) {
                 <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
               </div>
 
-              {!collapse && (
+              {!collapse &&  (
                 <div
                   style={{
                     marginTop: 20,
@@ -452,6 +452,8 @@ export default function DetailComponents(props) {
                     setStateApp={setStateApp}
                     descriptionKey="description"
                     isApproval={true}
+                    ownerTitle="Approver"
+                    ownerPlaceHolder="Assign Approver"
                   />
                 </div>
               )}

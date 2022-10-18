@@ -25,6 +25,9 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 const useStyles = makeStyles((theme) => ({
   root: {
     // backgroundColor: "#fff",
+    "& .MuiCardContent-root": {
+      padding: 0,
+    },
   },
   timelineItemRight: {
     "&:before": {
