@@ -133,6 +133,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     }
   }, [state]);
 
+  /**TODO below both effect continuous call when we select the TX state*/
   useEffect(() => {
     register("tract.qtrQtrSelection");
   }, [tract]);

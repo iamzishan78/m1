@@ -700,7 +700,7 @@ export function DetailComponents(props) {
             id={'agreementDetailsDrawer'}
           >
             {drawer === "meta" && <MetadataDrawer
-            setCollapse={setDrawer}
+            setCollapse={handleMetaToggle}
             targetSourceId={agreementId}
             data={agreementDetails}
             targetLabel="Shape"
