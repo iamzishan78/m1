@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'auto',
         height: '274px',
         paddingTop: '10px',
+        borderBottom:'1px solid gray',
         ...scrollbarStyle,
 
         "& .item": {

@@ -297,7 +297,7 @@ const Documents = memo((props) => {
             }}
           />
 
-          <Grid container display="flex" direction="row" spacing={1}>
+          <Grid container display="flex" direction="row" spacing={1} style={{width:'100%'}}>
             {recentFiles?.map((value, key) => {
               let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
               if (key <= 2) {
