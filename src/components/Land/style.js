@@ -98,10 +98,10 @@ export const StyledMenuItem = withStyles((theme) => ({
     fontFamily: "Poppins",
     display: "block",
     color: "white",
+    paddingLeft:'10px',
     "&:hover": {
       background: "#808080",
     },
-
     backgroundColor: "#0e111a",
     // backgroundColor: "red",
 
