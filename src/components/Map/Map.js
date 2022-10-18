@@ -1589,7 +1589,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         } else if (layer.layerType === "file layer") {
           let layerData = layersData.find((l) => l.file === layer.file);
           if (layerData.fileUrl) {
-            if (layerData.layerPaintProps[0].sourceProps) {
+            if (layerData.layerPaintProps?.[0]?.sourceProps) {
               if (!map.getSource(layerData.layerPaintProps[0].sourceProps)) {
                 map.addSource(layerData.layerPaintProps[0].sourceProps, {
                   type: "geojson",
@@ -1620,6 +1620,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   //// remove the layer and it's source from the map after it's deleted
   const removeLayer = (layer) => {
     const paintProps = layer.layerPaintProps;
+    if(!paintProps?.length) return
+    
     for (let i = paintProps.length - 1; i >= 0; i--) {
       const prop = paintProps[i];
 
