@@ -119,7 +119,7 @@ const LayerItem = React.memo((props) => {
                   alignItems: "center",
                 }}
               >
-                <Box borderColor={getLayerColor(data, "layer", colors)} borderLeft={4}>
+                <Box borderLeft={4} style={{borderColor: getLayerColor(data, "layer", colors)}} >
                   {hoverItemIndex === id ? (
                     <ListItemIcon ref={drag}>
                       <DragIndicator style={{ cursor: "move", justifyContent: "center" }} />
