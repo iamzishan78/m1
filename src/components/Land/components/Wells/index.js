@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
@@ -18,9 +19,15 @@ const useStyles = makeStyles((theme) => ({
 
 function Wells() {
   const classes = useStyles();
+  const { id: globalWellId } = useParams();
+
   const [filters, setFilters] = useState([]);
   const [showDialog, setDialog] = useState(false);
   const loadMore = { type: "infiniteScroll", height: "calc(100vh - 166px)" };
+
+  useEffect(() => {
+    if (globalWellId) setDialog(true);
+  }, [globalWellId]);
 
   const Header = () => {
     return (
@@ -71,7 +78,7 @@ function Wells() {
           customOptions={customToolbar}
         />
       </div>
-      <MyWellDialog open={showDialog} setDialog={setDialog} />
+      {showDialog && <MyWellDialog setDialog={setDialog} />}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import {
   Grid,
@@ -34,6 +34,7 @@ import { useMutation } from "@apollo/client";
 
 // Mutations
 import { ADD_WELL_TO_FILE_DESCRIPTOR } from "graphQL/useMutationAddWellToFileDescriptor";
+import { DELETE_WELL_DESCRIPTOR, UPSERT_WELL_DESCRIPTOR } from "graphQL/useMutationWellDescriptor";
 
 const propertyParams = [
   { type: "text", label: "Well NRI", key: "wellNRI" },
@@ -135,7 +136,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ReveueProperties = ({ myWellId, properties }) => {
+const ReveueProperties = ({ platformWell, properties }) => {
   // Initials
   let history = useHistory();
   const classes = useStyles();
@@ -144,6 +145,18 @@ const ReveueProperties = ({ myWellId, properties }) => {
   const [search, setSearch] = useState("");
   const [isSearchActive, setSearchState] = useState(false);
   const [addWell, setAddWell] = useState(false);
+
+  const [upsertWellDescriptor, { loading: upsertWellLoading }] = useMutation(UPSERT_WELL_DESCRIPTOR);
+
+  const handleAddProperty = (propertyId) => {
+    upsertWellDescriptor({
+      variables: {
+        well: { ...platformWell, Id: platformWell.id, isDeleted: false },
+        relatedObject: propertyId,
+        relatedObjectType: "Property",
+      },
+    });
+  };
 
   return (
     <div style={{ marginRight: "14px" }}>
@@ -200,6 +213,7 @@ const ReveueProperties = ({ myWellId, properties }) => {
               fields={["name^4", "_all"]}
               optionsParams={["name", "internalID"]}
               targetLabel="properties"
+              onSelectOption={(property) => handleAddProperty(property._id)}
             />
           </Grid>
         )}

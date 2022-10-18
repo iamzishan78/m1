@@ -24,13 +24,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function WellSearchApiField({ esIndex, fields, optionsParams, targetLabel }) {
+function WellSearchApiField({ esIndex, fields, optionsParams, targetLabel, onSelectOption }) {
   //Intials
   const location = useLocation();
   const classes = useStyles();
   const startPaginationAt = 50;
   const [foundWells, setFoundWells] = useState([]);
-  const [selectedWell, setSelectedWell] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
   const [focused, setFocused] = useState(false);
 
   const [getESSimpleSearch, { data: constDataWells }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });
@@ -65,9 +65,9 @@ function WellSearchApiField({ esIndex, fields, optionsParams, targetLabel }) {
   }, [constDataWells]);
 
   // ON change of selected well
-  const onChange = (well) => {
-    // props.getSelectedWell(well);
-    setSelectedWell(well);
+  const onChange = (option) => {
+    setSelectedOption(option);
+    onSelectOption(option);
   };
 
   useEffect(() => {
@@ -80,10 +80,10 @@ function WellSearchApiField({ esIndex, fields, optionsParams, targetLabel }) {
     <FormControl variant="outlined" fullWidth size="small">
       <Autocomplete
         options={foundWells || []}
-        onChange={(e, well) => {
-          onChange(well);
+        onChange={(e, option) => {
+          onChange(option);
         }}
-        value={selectedWell}
+        value={selectedOption}
         getOptionLabel={(option, value) => option.wellName}
         filterOptions={(x) => x}
         loading

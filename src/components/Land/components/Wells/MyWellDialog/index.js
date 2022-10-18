@@ -159,8 +159,7 @@ export default function MyWellDialog(props) {
   const { id: globalWellId } = useParams();
   const history = useHistory();
 
-  let [getMyWellByGlobalId, { data: myWellData }] = useLazyQuery(GET_MY_WELL_BY_GLOBAL_ID);
-
+  const [getMyWellByGlobalId, { data: myWellData }] = useLazyQuery(GET_MY_WELL_BY_GLOBAL_ID);
   const [getTenantWell, { data: dataTenantWell }] = useLazyQuery(TENANTWELL, {
     // must be network-only to trigger state change for field updates
     fetchPolicy: "network-only",
@@ -218,13 +217,11 @@ export default function MyWellDialog(props) {
   const handleCloseDialog = () => {
     props.setDialog(false);
     history.push("/land/wells");
-    setPlatformWell({});
-    myWellData = null;
   };
 
   return (
     <div>
-      <Drawer className={classes.drawer} anchor={"right"} open={props.open}>
+      <Drawer className={classes.drawer} anchor={"right"} open>
         {/* <Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
           <DeleteConfirmationDialogContent
             header="Delete Document"
@@ -311,10 +308,7 @@ export default function MyWellDialog(props) {
                 )}
                 {activePanel === "Revenue Properties" && (
                   // show revenue properties here
-                  <RevenueProperties
-                    myWellId={get(myWellData, "myWellByGlobalId.myWell._id", [])}
-                    properties={get(myWellData, "myWellByGlobalId.myWell.properties", [])}
-                  />
+                  <RevenueProperties platformWell={platformWell} properties={get(myWellData, "myWellByGlobalId.myWell.properties", [])} />
                 )}
                 {activePanel === "Agreements" && (
                   // show agreements list here
