@@ -52,7 +52,6 @@ function PropertyRevenueDetailsTable(props) {
               setRows(wellProduction)
           }
       }
-      console.log('rows', rows)
       return (
         <Container
             maxWidth={false}
