@@ -22,6 +22,7 @@ import { useMutation } from "@apollo/client";
 
 // Mutations
 import { ADD_WELL_TO_FILE_DESCRIPTOR } from "graphQL/useMutationAddWellToFileDescriptor";
+import { ADD_SHAPE_WELL_INTEREST } from "graphQL/useMutationAddShapeWellInterest";
 
 const useStyles = makeStyles((theme) => ({
   rootPadding: {
@@ -109,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Agreements = ({ agreements }) => {
+const Agreements = ({ platformWell, agreements }) => {
   // Initials
   let history = useHistory();
   const classes = useStyles();
@@ -118,17 +119,26 @@ const Agreements = ({ agreements }) => {
   const [search, setSearch] = useState("");
   const [isSearchActive, setSearchState] = useState(false);
   const [addWell, setAddWell] = useState(false);
-  const [stateApp, setStateApp] = useContext(AppContext);
 
-  const [addWellToFileDescriptor, { loading: addWellLoading }] = useMutation(ADD_WELL_TO_FILE_DESCRIPTOR);
+  const [stateApp] = useContext(AppContext);
 
-  // sending to wells page
-  const goToWell = (well) => {
-    history.push(`/map/wells/${well?.id.toUpperCase()}`, {
-      showWellBreadcrumb: true,
-      breadcrumbs: [{ title: "Documents", url: "/documents" }],
+  const [addShapeWellInterest] = useMutation(ADD_SHAPE_WELL_INTEREST);
+
+  const handleAddAgreement = (shapeId) => {
+    console.log(shapeId);
+    addShapeWellInterest({
+      variables: {
+        wellInterest: {
+          ...platformWell,
+          globalWellId: platformWell.id,
+          userId: stateApp.user.mongoId,
+          shapeType: "Agreement",
+          shapeId: shapeId,
+        },
+      },
+      refetchQueries: ["getMyWellByGlobalId"],
+      awaitRefetchQueries: true,
     });
-    setStateApp({ ...stateApp, DocumentDrawer: false, selectedDocument: {} });
   };
 
   return (
@@ -184,8 +194,10 @@ const Agreements = ({ agreements }) => {
             <SearchField
               esIndex="shapes_flat"
               fields={["name^4", "_all"]}
+              filters={[{ field: "shapeJson.properties.type", value: "agreement" }]}
               optionsParams={["name", "internalID"]}
-              targetLabel="properties"
+              targetLabel="agreement"
+              onSelectOption={(shape) => handleAddAgreement(shape._id)}
             />
           </Grid>
         )}
@@ -214,7 +226,7 @@ const Agreements = ({ agreements }) => {
                       history.push(`/land/agreement/details/${agreement._id}`);
                     }}
                   >
-                    {get(agreement, "shapeJson.properties.name")}
+                    {get(agreement, "shapeJson.properties.agreementNumber")} - {get(agreement, "shapeJson.properties.agreementName")}
                   </Link>
                 </ListItem>
                 <p className={classes.secondaryText}>

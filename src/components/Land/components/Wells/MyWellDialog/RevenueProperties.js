@@ -146,7 +146,7 @@ const ReveueProperties = ({ platformWell, properties }) => {
   const [isSearchActive, setSearchState] = useState(false);
   const [addWell, setAddWell] = useState(false);
 
-  const [upsertWellDescriptor, { loading: upsertWellLoading }] = useMutation(UPSERT_WELL_DESCRIPTOR);
+  const [upsertWellDescriptor] = useMutation(UPSERT_WELL_DESCRIPTOR);
 
   const handleAddProperty = (propertyId) => {
     upsertWellDescriptor({
@@ -155,6 +155,8 @@ const ReveueProperties = ({ platformWell, properties }) => {
         relatedObject: propertyId,
         relatedObjectType: "Property",
       },
+      refetchQueries: ["getMyWellByGlobalId"],
+      awaitRefetchQueries: true,
     });
   };
 

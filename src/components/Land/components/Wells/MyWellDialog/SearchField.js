@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function WellSearchApiField({ esIndex, fields, optionsParams, targetLabel, onSelectOption }) {
+function WellSearchApiField({ esIndex, fields, filters = [], optionsParams, targetLabel, onSelectOption }) {
   //Intials
   const location = useLocation();
   const classes = useStyles();
@@ -49,7 +49,7 @@ function WellSearchApiField({ esIndex, fields, optionsParams, targetLabel, onSel
               query: `${request.input}*`,
               fields,
             },
-            filters: [],
+            filters,
             sort: { field: "name.keyword", order: "asc" },
           },
         });

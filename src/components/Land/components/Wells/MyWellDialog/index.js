@@ -312,7 +312,7 @@ export default function MyWellDialog(props) {
                 )}
                 {activePanel === "Agreements" && (
                   // show agreements list here
-                  <Agreements agreements={get(myWellData, "myWellByGlobalId.myWell.shapes", [])} />
+                  <Agreements platformWell={platformWell} agreements={get(myWellData, "myWellByGlobalId.myWell.shapes", [])} />
                 )}
               </div>
             </div>
