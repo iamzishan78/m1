@@ -34,8 +34,6 @@ export default function OperatorFilterJ() {
     let filter;
     if (value && value.length) {
       filter = ["match", ["get", "operator"], value, true, false];
-      console.log("value", value);
-
       setStateNav((stateNav) => ({ ...stateNav, operatorName: value }));
       setOperatorName(value);
     } else {

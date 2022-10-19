@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import * as turf from '@turf/turf'
 import { makeStyles } from "@material-ui/styles";
-import { Box, CircularProgress, Grid, ListItemIcon } from "@material-ui/core";
+import { Box, Grid, ListItemIcon } from "@material-ui/core";
 
 import { Flipped } from "react-flip-toolkit";
 import { useSelector } from "react-redux";
@@ -68,7 +67,7 @@ const LayerItem = React.memo((props) => {
   const [zoomLoading, setZoomLoading] = useState(false);
   const colors = useSelector(({ MainMap }) => MainMap);
 
-  const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin, map } = props;
+  const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin } = props;
   const itemRef = React.useRef({ id: -1, depth: -1, data: {} });
   const { type, collapsed, name } = data;
 
@@ -178,6 +177,8 @@ const LayerItem = React.memo((props) => {
                     <ListItemIcon />
                   )}
                 </Box>
+
+
 
                 <Typography id={id} color="secondary" noWrap>
                   {name}
