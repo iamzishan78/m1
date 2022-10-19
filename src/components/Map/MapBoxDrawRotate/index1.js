@@ -415,9 +415,6 @@ SRMode.computeAxes = function (state, polygon) {
         scaleCenters[i] = c0;
         distances[i] = distance(point(c0), point(c1), { units: 'meters' });
     }
-    console.log("corners", corners)
-    console.log("scaleCenters", scaleCenters)
-
     // var distances = polygon.geometry.coordinates[0].map((c) =>
     //     turf.distance(center, turf.point(c), { units: 'meters'}) );
 
@@ -500,7 +497,6 @@ SRMode.dragScalePoint = function (state, e, delta) {
     }
 
     var polygon = state.feature.toGeoJSON();
-    console.log(state.selectedCoordPaths)
     var cIdx = this.coordinateIndex(state.selectedCoordPaths);
     const path = state.selectedCoordPaths[0]
     if (state?.scaling?.sCenters && typeof state?.scaling?.sCenters[path] !== undefined) {

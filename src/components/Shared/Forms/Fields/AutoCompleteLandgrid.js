@@ -38,7 +38,6 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
         if (label === 'Range') {
           if (compoundValue)
             hits = hits.filter((hit) => hit.key.includes(compoundValue))
-          console.log(compoundValue)
           hits = uniqBy(hits.map((hit) => ({ ...hit, key: hit.key.split(" ")[1] })), 'key')
         }
 

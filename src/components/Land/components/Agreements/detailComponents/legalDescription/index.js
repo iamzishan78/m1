@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import _ from "underscore";
 import { Controller, useForm } from "react-hook-form";
 import { makeStyles } from "@material-ui/styles";
@@ -74,7 +74,6 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
   const offClickHandler = (key, value) => updateAgreement(key, value);
 
   const handleKeyDown = (e) => {
-    console.log(e.keyCode);
     if (e.keyCode === 38 || e.keyCode === 40) {
       e.preventDefault();
     }
@@ -115,6 +114,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                   header={"Tracts"}
                   setTractsNumber={setTractsNumber}
                   dense
+                  portal={'#agreementDetailsDrawer'}
                 />
               </Grid>
             )}
