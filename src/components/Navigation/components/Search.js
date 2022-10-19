@@ -313,7 +313,7 @@ function Search() {
       "wells": {
         esIndex: "platformData:wells",
         search: (request) => `${request.input}`,
-        searchFields: ["wellName", "api"],
+        searchFields: ["wellName", "api", 'ApiNumber'],
         formatOptions: (data) => {
           return { ...data, Source: wellCogIndexName, Primary: data.WellName, Secondary: data.ApiNumber }
         }
@@ -321,6 +321,7 @@ function Search() {
       "contacts": {
         esIndex: "contacts_flat",
         search: (request) => `${request.input}`,
+        searchFields: ['name', 'address1', 'city', 'state', 'zip'],
         formatOptions: (data) => {
           return {
             ...data, ...data.node, Primary: data.name || "--",
@@ -342,7 +343,7 @@ function Search() {
       "operators": {
         esIndex: "platformData:operator",
         search: (request) => `${request.input}`,
-        searchFields: ["operator"],
+        searchFields: ["operator", 'Operator'],
         formatOptions: (data) => {
           return { ...data, Source: operatorIndexName, Primary: data.Operator, Secondary: null }
         }
@@ -429,7 +430,7 @@ function Search() {
       "agreements": {
         esIndex: "shapes_flat",
         search: (request) => request.input ? `*${request.input}*` : '',
-        searchFields: ['name', 'shapeLabel', 'state', "shapeJson.properties.originalProperties.County"],
+        searchFields: ['name', 'shapeJson.properties.shapeLabel', 'state', "shapeJson.properties.originalProperties.County", 'shapeJson.properties.agreementNumber', 'shapeJson.properties.agreementType'],
         filter: {
           field: "shapeJson.properties.type",
           value: "agreement"
