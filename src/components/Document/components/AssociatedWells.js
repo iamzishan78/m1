@@ -90,11 +90,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   wellLink: {
+    textDecoration: "none",
     cursor: "pointer",
     fontSize: "16px",
     margin: 0,
     variant: "subtitle1",
-    color: "primary",
+    color: "primary !important",
     "&:hover": {
       fontWeight: "700",
     },
@@ -278,9 +279,13 @@ const AssociatedWellsList = ({ title }) => {
             wells.map((well, index) => (
               <div style={{ padding: "0px 0px 0px" }}>
                 <ListItem key={index}>
-                  <Link className={classes.wellLink} color="primary" onClick={() => goToWell(well)}>
+                  <a style={{ color: "inherit" }} className={classes.wellLink} href={`/map/wells/${well?.id.toUpperCase()}?breadcrumbs=Documents`}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      goToWell(well)
+                    }} target="_blank" rel="noreferrer">
                     {well.wellName}
-                  </Link>
+                  </a>
 
                   {deleteWellLoading && deletedRow === well.id ? (
                     <ListItemSecondaryAction>

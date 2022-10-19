@@ -203,10 +203,9 @@ const ReactSelectField = ({
               alignItems="center"
             >
               <Grid style={{ "flex-grow": 1, width: "fit-content" }} item xs>
-                <span
-                  style={{
+                <Tooltip title={props.value} placement="top">
+                  <Typography style={{
                     width: "100%",
-                    // display: "inline-block",
                     fontWeight: 400,
                     backgroundColor: pallete?.color,
                     color: pallete?.textColor,
@@ -216,10 +215,14 @@ const ReactSelectField = ({
                     overflow: "hidden",
                     "white-space": "nowrap",
                     "text-overflow": "ellipsis",
-                  }}
-                >
-                  {props.value}
-                </span>
+                    textOverflow: 'ellipsis',
+                    maxWidth: "187px"
+                  }}>
+                    {props.value
+                    }</Typography>
+
+                </Tooltip>
+
               </Grid>
             </Grid>
           </Grid>
