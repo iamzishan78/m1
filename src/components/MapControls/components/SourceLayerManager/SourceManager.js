@@ -328,7 +328,7 @@ function SourceManager(props) {
       if (!feature.properties) {
         feature.properties = {};
       }
-      feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type };
+      feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type, layerShapeName: `${geo.fileName || name} - ${feature.geometry.type}` };
       if (!layerTypes.includes(feature.geometry.type) && feature.geometry.type !== 'MultiPolygon') {
         layerTypes.push(feature.geometry.type);
       }

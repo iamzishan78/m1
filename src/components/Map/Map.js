@@ -947,10 +947,12 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
         if (prop.paintProps) layerConfig.paint = prop.paintProps;
         if (prop.filter) layerConfig.filter = prop.filter;
-
-        // Incase of group we have one datasource but we filter by layerGeometryType ( Polygon, MultiPolygon , Point etc)
-        if (config.layerGeometry && config.groupId) layerConfig.filter = ["==", "layerGeometry", config.layerGeometry];
-
+        
+        // Incase of group we have one datasource but we filter by layerShapeName ( i.e file name)
+        if (config.layerShapeName && config.groupId) 
+          layerConfig.filter = ['all', ["==", "layerShapeName", config.layerShapeName], ["==", "layerGeometry", config.layerGeometry]];
+        else if (config.layerGeometry && config.groupId) layerConfig.filter = ["==", "layerGeometry", config.layerGeometry];
+        
         if (prop.minZoom) {
           layerConfig.minzoom = prop.minZoom;
         }
@@ -1075,14 +1077,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   // }, [permitData]);
 
   useEffect(() => {
-    if (
-      permitRecentSubmittedData &&
-      permitRecentSubmittedData.recent_submitted_permits &&
-      permitRecentSubmittedData.recent_submitted_permits.length > 0
-    ) {
-      const nextOffset = recent_submitted_permits.length + permitRecentSubmittedData.recent_submitted_permits.length;
-      setRecentSubmittedPermitData([...recent_submitted_permits, ...permitRecentSubmittedData.recent_submitted_permits]);
-    }
   }, [permitRecentSubmittedData]);
 
   useEffect(() => {
