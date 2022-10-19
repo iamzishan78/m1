@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState, Fragment, useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
 import Grid from "@material-ui/core/Grid";
@@ -9,9 +9,11 @@ import debounce from "lodash/debounce";
 import parse from "autosuggest-highlight/parse";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
+import { wellParams } from "./helpers";
+import { addMyWellStyles as useStyles } from "./styles";
 
-// contexts
-import { AppContext } from "AppContext";
+import { UPSERT_MY_WELL } from "graphQL/useMutationUpsertMyWell";
+import { useMutation } from "@apollo/client";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, name, ...other } = props;
@@ -68,67 +70,17 @@ CurrencyFormatCustom.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-const useStyles = makeStyles((theme) => ({
-  dialogFooter: {
-    display: "flex",
-    justifyContent: "flex-end",
-    paddingTop: "10px",
-  },
-  footerButton: {
-    letterSpacing: "1px",
-    textTransform: "capitalize",
-    fontWeight: "bold",
-    padding: "8px 20px",
-  },
-  dialog: {
-    zIndex: "9999999999 !important",
-  },
-  royaltyAcres: {
-    "& .MuiInputBase-input": {
-      color: "red",
-    },
-  },
-  menu: {
-    "& .MuiListItem-root": {
-      "& .MuiListItemIcon-root": {
-        minWidth: "30px",
-        "& .MuiSvgIcon-root": {
-          fill: "red !important",
-        },
-      },
-    },
-  },
-}));
-
-const wellParams = [
-  { type: "text", label: "API Number", key: "api" },
-  { type: "text", label: "Well Name", key: "wellName" },
-  { type: "text", label: "Operator", key: "operator" },
-  { type: "text", label: "Well Type", key: "wellTyoe" },
-  { type: "text", label: "Well Profile", key: "wellProfile" },
-  { type: "text", label: "Well Status", key: "wellStatus" },
-  { type: "text", label: "Basin", key: "basin" },
-  { type: "text", label: "Field", key: "" },
-  { type: "text", label: "State", key: "state" },
-  { type: "text", label: "County", key: "county" },
-  { type: "text", label: "Survey", key: "survey" },
-  { type: "text", label: "Block/Twsp", key: "" },
-  { type: "text", label: "Sec/Range", key: "" },
-  { type: "text", label: "Abstract/Sec", key: "abstract" },
-  { type: "text", label: "Permit Date", key: "permitApprovedDate" },
-  { type: "text", label: "Spud Date", key: "spudDate" },
-  { type: "text", label: "Completion Date", key: "completionDate" },
-  { type: "text", label: "First Prod", key: "" },
-  { type: "text", label: "Measured Depth", key: "measuredDepth" },
-  { type: "text", label: "TVD", key: "" },
-  { type: "text", label: "Lateral Length", key: "lateralLength" },
-  { type: "text", label: "Formation", key: "" },
-];
-
 function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
   const classes = useStyles();
 
   const [foundWells, setFoundWells] = useState([]);
+  const [upsertMyWell, { loading: upsertWellLoading }] = useMutation(UPSERT_MY_WELL);
+
+  const { control, reset } = useForm();
+
+  useEffect(() => {
+    if (platformWell) reset(platformWell);
+  }, [platformWell, reset]);
 
   const callWellSearch2 = React.useMemo(
     () =>
@@ -160,7 +112,18 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
     []
   );
 
-  // const handleSave = () => {};
+  const handleSave = React.useMemo(
+    () =>
+      debounce((key, value) => {
+        upsertMyWell({
+          variables: {
+            myWell: { ...platformWell, [key]: value },
+          },
+        });
+        // console.table(platformWell);
+      }, 500),
+    [platformWell]
+  );
 
   return (
     <div style={{ padding: "10px 30px" }}>
@@ -169,7 +132,15 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
           <FormControl variant="outlined" fullWidth size="small">
             <Autocomplete
               options={foundWells || []}
-              onChange={(e, well) => handleWellDetail(well)}
+              onChange={(e, well) => {
+                handleWellDetail(well);
+                upsertMyWell({
+                  variables: {
+                    myWell: well,
+                  },
+                });
+              }}
+              disabled={!!upsertWellLoading}
               value={platformWell}
               getOptionLabel={(option, value) => option.Primary}
               filterOptions={(x) => x}
@@ -265,15 +236,29 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
           Selected well and lease information
         </h4>
         {wellParams.map((param, index) => (
-          <TextField
-            variant="outlined"
-            margin="dense"
-            value={platformWell?.[param.key] || ""}
-            label={param.label}
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-            defaultValue=""
-          />
+          <Fragment key={index}>
+            <Controller
+              control={control}
+              name={param.key}
+              render={(params) => (
+                <TextField
+                  {...params}
+                  label={param.label}
+                  variant="outlined"
+                  margin="dense"
+                  InputLabelProps={{ shrink: true }}
+                  fullWidth
+                  defaultValue=""
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    params.onChange(value);
+                    handleSave(param.key, value);
+                  }}
+                  disabled={upsertWellLoading}
+                />
+              )}
+            ></Controller>
+          </Fragment>
         ))}
       </div>
     </div>
