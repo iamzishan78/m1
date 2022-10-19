@@ -128,7 +128,7 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
             isProperties
             lastCheckMinDate={lastCheckMinDate}
             onChange={setSelectedFilter}
-            datesInputWidth={1}
+            datesInputWidth={2}
           />
           <Grid item xs md={2}>
             {extraFitlers.includes("propertyGroup") && (
