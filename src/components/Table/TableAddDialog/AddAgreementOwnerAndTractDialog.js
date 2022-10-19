@@ -121,7 +121,6 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [tractValue, setTractValue] = useState({ name: "", _id: null });
   const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
   const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
-
   const tract = watch("tract", {});
   const state = watch("tract.state", '');
 
@@ -133,30 +132,35 @@ function AddAgreementOwnerAndTractDialog(props) {
     }
   }, [state]);
 
-  /**TODO below both effect continuous call when we select the TX state*/
   useEffect(() => {
     register("tract.qtrQtrSelection");
   }, [tract]);
 
   useEffect(() => {
-    if (tract.state && isNewTract) {
-      (async () => {
-        const { data: tractShape } = await client.query({
-          query: GET_TRACT_ABSTRACT_SHAPE,
-          variables: {
-            tract
+    try{
+      if (tract.state && isNewTract) {
+        (async () => {
+          const { data: tractShape } = await client.query({
+            query: GET_TRACT_ABSTRACT_SHAPE,
+            variables: {
+              tract
+            }
+          });
+          if (tractShape?.getTractAbstractShape?.data?.properties?.shapeArea) {
+            setValue('tract.shapeArea', tractShape?.getTractAbstractShape?.data.properties?.shapeArea)
+            if (newTractError) { setNewTractError(null) }
+          } else {
+            setNewTractError(tractShape?.getTractAbstractShape)
           }
-        });
-        if (tractShape?.getTractAbstractShape?.data?.properties?.shapeArea) {
-          setValue('tract.shapeArea', tractShape?.getTractAbstractShape?.data.properties?.shapeArea)
-          if (newTractError) { setNewTractError(null) }
-        } else {
-          setNewTractError(tractShape?.getTractAbstractShape)
-        }
-      })()
-    } else {
-      if (newTractError) { setNewTractError(null) }
+        })();
+        setIsNewTract(false);
+      } else {
+        if (newTractError) { setNewTractError(null) }
+      }
+    }catch (error){
+        console.log("%c Fetch track with newState","color:red",error);
     }
+
   }, [tract]);
 
   const parcelOwnersRadioBValue = watch("parcelOwnersRadioBValue", "true");

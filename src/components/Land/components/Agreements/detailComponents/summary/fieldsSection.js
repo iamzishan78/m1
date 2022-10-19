@@ -104,10 +104,10 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   };
 
   return (
-    <Grid container direction="row" display="flex" justify="flex-start" alignItems="center" spacing={1} className={classes.fieldsSection}>
+    <Grid container direction="row" display="flex" justify="space-between" alignItems="center" spacing={1} className={classes.fieldsSection}>
       {fieldsList.map((field, index) => (
         <Grid item xs={12}>
-          <Grid container className={classes.gridStyle}>
+          <Grid container className={classes.gridStyle} style={{display:'flex',justifyContent:'space-between'}}>
             <Grid
               item
               xs={3}
