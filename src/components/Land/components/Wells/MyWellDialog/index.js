@@ -304,7 +304,11 @@ export default function MyWellDialog(props) {
               <div style={{ paddingRight: "60px", height: "93vh", overflow: "auto" }}>
                 {activePanel === "Add New Well" && (
                   // Add My Well fields component here
-                  <AddMyWell handleWellDetail={handleWellDetail} platformWell={platformWell} showSearch={!globalWellId} />
+                  <AddMyWell
+                    handleWellDetail={handleWellDetail}
+                    platformWell={{ ...get(myWellData, "myWellByGlobalId.myWell.wellData", {}), ...platformWell }}
+                    showSearch={!globalWellId}
+                  />
                 )}
                 {activePanel === "Revenue Properties" && (
                   // show revenue properties here

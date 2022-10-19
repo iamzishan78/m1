@@ -117,7 +117,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
       debounce((key, value) => {
         upsertMyWell({
           variables: {
-            myWell: { ...platformWell, [key]: value },
+            myWell: { ...platformWell, _id: platformWell.id, [key]: value },
           },
         });
         // console.table(platformWell);
@@ -239,7 +239,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
           <Fragment key={index}>
             <Controller
               control={control}
-              name={param.key}
+              name={param.esKey ?? param.key}
               render={(params) => (
                 <TextField
                   {...params}
@@ -252,7 +252,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                   onChange={(event) => {
                     const value = event.target.value;
                     params.onChange(value);
-                    handleSave(param.key, value);
+                    handleSave(param.esKey ?? param.key, value);
                   }}
                   disabled={upsertWellLoading}
                 />

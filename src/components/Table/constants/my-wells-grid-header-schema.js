@@ -1,7 +1,6 @@
 import GlobalSettings from "..//..//..//GlobalSettings.js";
 import GlobalStyles from "..//..//..//GlobalStyles.js";
 import { history } from "store";
-import get from "lodash";
 
 import Typography from "@material-ui/core/Typography";
 import vf_number from "components/Shared/valueformatters/vf_number";
