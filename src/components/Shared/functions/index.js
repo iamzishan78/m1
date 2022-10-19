@@ -24,6 +24,21 @@ export function copy(obj) {
   return cloneDeep(obj);
 }
 
+export function getSearchFields(Table) {
+  let searchFields = []
+  Table.forEach((row) => {
+    if (row?.options?.display !== false && row.esKey) {
+      if (Array.isArray(row.esKey)) {
+        searchFields = [...searchFields, ...row.esKey]
+      } else if (row.esKey.includes('.keyword'))
+        searchFields.push(row.esKey)
+    }
+  })
+
+  searchFields = searchFields.map((key) => key.replace('.keyword', ''))
+  return searchFields
+}
+
 export function addTrailingZeros(num) {
   return num ? num.toLocaleString("en", { useGrouping: false, minimumFractionDigits: 8, maximumFractionDigits: 20 }) : num;
 }

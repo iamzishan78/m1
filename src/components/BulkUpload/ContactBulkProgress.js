@@ -92,7 +92,6 @@ const ContactBulkProgress = () => {
   const downloadResults = async (job, onCloseToast) => {
     if (job?.resultsPayload?.datasets) {
       for (const dataset of job?.resultsPayload?.datasets) {
-        console.log('dataset', dataset.uri)
         // job?.resultsPayload?.datasets.map(async (dataset) => {
         let a = document.createElement("a");
         a.href = dataset.uri;

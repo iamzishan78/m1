@@ -95,7 +95,7 @@ function AgreementsTable(props) {
       // addableName: "Unit",
       extendSearchQuery: props.landSearchQuery || searchInput || '',
       customDataESKey: 'shapeJson.properties.custom_data',
-      searchFields: ["*"],
+      // searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
       startPaginationAt: 50,
