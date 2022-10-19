@@ -46,6 +46,23 @@ const useToolbarStyles = makeStyles((theme) => ({
       marginLeft: 4,
     },
   },
+  datePicker: {
+    overflow: "hidden",
+    position: "absolute",
+    width: "97px",
+    marginLeft: "41px",
+    opacity: "0",
+
+    '& input::-webkit-calendar-picker-indicator': {
+      cursor: "pointer",
+      display: "block",
+      top: 0,
+      left: 0,
+      background: "#0000",
+      position: "absolute",
+      transform: " scale(12)"
+    },
+  },
   active: {
     backgroundColor: "#d0f1fc",
     color: "#15a9d7 !important",
@@ -100,6 +117,8 @@ const ActivitiesToolbar = ({
   setActivityFilterByTime,
   activityFilterByOwner,
   setActivityFilterByOwner,
+  setSelectedDate,
+  selectedDate,
   view,
   setView,
   mongoUsers,
@@ -121,10 +140,27 @@ const ActivitiesToolbar = ({
   }, [type, getActivityTypes]);
 
   const goToBack = () => {
-    toolbar.onNavigate("PREV");
+    setSelectedDate(state => {
+      let current = state
+      if (state.getMonth() === 1)
+        current = new Date(state.getFullYear() - 1, 0, 1);
+      else
+        current = new Date(state.getFullYear(), state.getMonth() - 1, 1);
+
+      return current
+    })
+
   };
   const goToNext = () => {
-    toolbar.onNavigate("NEXT");
+    setSelectedDate(state => {
+      let current = state
+      if (state.getMonth() === 11)
+        current = new Date(state.getFullYear() + 1, 0, 1);
+      else
+        current = new Date(state.getFullYear(), state.getMonth() + 1, 1);
+
+      return current
+    })
   };
   // const goToCurrent = () => {
   //   toolbar.onNavigate("TODAY");
@@ -233,6 +269,19 @@ const ActivitiesToolbar = ({
           <IconButton size="small" className={classes.marginLeft} onClick={() => goToNext()}>
             <NavigateNextIcon />
           </IconButton>
+
+          <TextField
+            id="date"
+            label="Birthday"
+            type="date"
+            format="MM/DD/YYYY"
+            defaultValue={selectedDate}
+            className={classes.datePicker}
+            onChange={(event) => setSelectedDate(new Date(event.target.value))}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
         </div>
       )}
       <div className={classes.right}>

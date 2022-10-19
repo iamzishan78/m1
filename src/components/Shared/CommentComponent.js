@@ -199,7 +199,6 @@ export default function CommentComponent(props) {
     if (dataComments && dataComments.commentsByObjectId) {
       if (props.activityLog && props.activityLog.length > 0) {
         let activittyData = [];
-        console.log(props.activityLog);
         props.activityLog.forEach(element => {
           activittyData.push({
             user: { name: element.ownerName, email: element.ownerName },

@@ -179,7 +179,7 @@ const AssociatedWellsList = ({ title }) => {
 
   // sending to wells page
   const goToWell = (well) => {
-    history.push(`/map/wells/${well?.id.toUpperCase()}`, {
+    history.push(`/map/wells/${well?.id.toLowerCase()}`, {
       showWellBreadcrumb: true, breadcrumbs: [
         { title: "Documents", url: "/documents" },
       ],
