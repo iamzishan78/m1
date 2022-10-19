@@ -27,7 +27,7 @@ import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import GridView from "components/Shared/GridView";
 
-// value formatters 
+// value formatters
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 
 function AgreementsTable(props) {
@@ -98,7 +98,7 @@ function AgreementsTable(props) {
       // addableName: "Unit",
       extendSearchQuery: props.landSearchQuery || searchInput || '',
       customDataESKey: 'shapeJson.properties.custom_data',
-      searchFields: ["*"],
+      // searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
       startPaginationAt: 50,
