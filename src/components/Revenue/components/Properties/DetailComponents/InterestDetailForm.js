@@ -3,6 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import loadashFilter from "lodash/filter";
 import moment from "moment";
+import GlobalStyles from "GlobalStyles.js";
 
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Grid, TextField, MenuItem, Select, Button } from "@material-ui/core";
@@ -65,7 +66,8 @@ const useStyles = makeStyles((theme) => ({
   },
   btnColor: {
     color: "white",
-    backgroundColor: "#60ABD6",
+    // backgroundColor: "#60ABD6",
+    backgroundColor: GlobalStyles.colors.lightBlue,
   },
   fieldset: {
     marginTop: 40,
