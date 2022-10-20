@@ -4634,10 +4634,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         ...stateApp,
         mapVars: stateApp.defaultMapVars,
       }));
-      map.flyTo({
+      map.jumpTo({
         center: [stateApp.defaultMapVars.center.lng, stateApp.defaultMapVars.center.lat],
         zoom: stateApp.defaultMapVars.zoom,
-        speed: 0.5,
+        // flyTo v
+        // speed: 0.5,
       });
     }
   }, [stateApp.defaultMapVars]);
@@ -5000,12 +5001,13 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         });
         newMap.addControl(geoLocate, "bottom-right");
         geoLocate.on("geolocate", function (e) {
-          newMap.flyTo({
+          newMap.jumpTo({
             center: [e.coords.longitude, e.coords.latitude],
             zoom: 14,
             pitch: 80,
             bearing: 20,
-            speed: 0.4,
+            // flyTo v
+            // speed: 0.4,
           });
         });
 
@@ -5502,10 +5504,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       }));
 
       !stateApp.activateWellDetailsFromTable &&
-        map.flyTo({
+        map.jumpTo({
           center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
           zoom: stateApp.flyTo.zoom ? stateApp.flyTo.zoom : zVal,
-          speed: 0.5,
+          // flyTo v
+          // speed: 0.5,
         });
     }
   }, [map, stateApp.flyTo]);
@@ -5581,7 +5584,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         }));
       } else {
         if (stateApp.wellListFromSearch[0] && stateApp.wellListFromSearch[0].latitude && stateApp.wellListFromSearch[0].longitude) {
-          map.flyTo({
+          map.jumpTo({
             center: {
               lng: stateApp.wellListFromSearch[0].longitude,
               lat: stateApp.wellListFromSearch[0].latitude,
@@ -5632,12 +5635,13 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   useEffect(() => {
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
-        map.flyTo({
+        map.jumpTo({
           center: stateApp.defaultMapVars.center,
           zoom: stateApp.defaultMapVars.zoom,
           pitch: stateApp.defaultMapVars.pitch,
           bearing: stateApp.defaultMapVars.bearing,
-          speed: 0.5,
+          // flyTo v
+          // speed: 0.5,
         });
 
         let flying = null;
