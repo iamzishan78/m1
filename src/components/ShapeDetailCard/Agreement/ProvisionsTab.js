@@ -122,7 +122,7 @@ const styles = makeStyles(() => ({
   },
 }));
 
-export default function ProvisionsTab({ provisions, standardProvisions, id }) {
+export default function ProvisionsTab({ provisions, standardProvisions, id, setPCounts }) {
   const classes = styles();
   let history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -132,7 +132,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
   const [provisionAutoCompleteList, setProvisionsList] = useState([]);
   const [hoverProvision, setHoverProvision] = useState(-1);
   const [, setAnchorEl] = useState();
-  const { control, register, reset, getValues } = useForm();
+  const { control, register, reset, getValues, watch } = useForm();
 
   const [getProvisionAutoCompleteList, { data: dataProvisionAutoCompleteList }] = useLazyQuery(GET_PROVISION_AUTOCOMPLETE_LIST);
   const [upsertAgreementProvision] = useMutation(CREATE_AGREEMENT_PROVISION);
@@ -164,6 +164,10 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
       });
     }
   }, [dataProvisionAutoCompleteList]);
+
+  useEffect(() => {
+    setPCounts(fields.length)
+  }, [fields.length])
 
   const addRemoveProvision = (addProvision, provision) => {
     if (addProvision) {
@@ -397,6 +401,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id }) {
                           className={classes.marginNormal}
                           disableToolbar
                           fullWidth
+                          minDate={watch(`provisions[${index}].startDate`)}
                           label={"End Date"}
                           inputVariant="outlined"
                           variant="inline"

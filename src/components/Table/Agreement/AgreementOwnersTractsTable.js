@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 // context
 
-import { Container, Dialog } from "@material-ui/core";
+import { Button, Container, Dialog } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 
@@ -18,18 +18,39 @@ import TableHeader from "components/Table/constants/unit-owners-tracts-header-sc
 // Utilities
 import { usetableStyles } from "../Styles";
 import AddAgreementOwnerAndTractDialog from "components/Table/TableAddDialog/AddAgreementOwnerAndTractDialog";
+import { DrawerContext } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
+  const [drawerContainer, setDrawerContainer] = useState(null);
+  const [drawer, setDrawer] = useContext(DrawerContext);
+
+  useEffect(() => {
+    if(props.portal){
+      const ele = document.querySelector(props.portal);
+
+      if(ele){
+        setDrawerContainer(ele);
+      }
+    }
+  }, [props.portal])
+
+  useEffect(() => {
+    if(props.addToTable){
+      setDrawer('tract')
+    } else {
+      setDrawer(null)
+    }
+  }, [props.addToTable])
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
       props.setLoading(false);
       props.setSelectedRows([]);
+      setResetSelectedRow(!resetSelectedRow)
     },
     onError: (err) => { },
-    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
-    awaitRefetchQueries: true,
   });
 
   const formatHits = (hits) => {
@@ -44,15 +65,14 @@ function AgreementOwnersTractsTable(props) {
     });
   };
 
-
   const deleteFunc = (ids) => {
     if (ids.length > 0) {
       props.setLoading(true);
       updateShapeOwners({
         variables: {
-          shapeOwners: ids.map((_id) => ({ _id, isDeleted: true })),
+          shapeOwners: ids.map((_id) => ({ _id, isDeleted: true, shapeId: props.customLayer?._id })),
         },
-        refetchQueries: ["getCustomLayer"],
+        refetchQueries: ["getCustomLayer", "getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
         awaitRefetchQueries: true
       });
     }
@@ -78,6 +98,28 @@ function AgreementOwnersTractsTable(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.rows]);
 
+  const tableOptions = {
+    ...props.options,
+  }
+
+
+  // if(props.customToolbar){
+  //   tableOptions.customToolbar = () => {
+
+  //     return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
+  //       <Button
+  //         color="secondary"
+  //         variant="contained"
+  //         className={classes.multiSelectionTopBarButtons}
+  //         // disabled={true}
+  //       onClick={() => setDrawer("tract")}
+  //       >
+  //         + ADD TRACT TO AGREEMENT
+  //       </Button>
+  //     </div>
+  //   }
+  // }
+
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       {props.addToTable && (
@@ -89,6 +131,7 @@ function AgreementOwnersTractsTable(props) {
           seletedOwner={props.clickedRow}
           deleteFunc={deleteFunc}
           onClose={() => props.setAddToTable(false)}
+          drawerContainer={drawerContainer}
         />
       )}
 
@@ -115,12 +158,13 @@ function AgreementOwnersTractsTable(props) {
         total={false}
         loading={props.loading}
         targetLabel={props.targetLabel}
+        resetSelectedRow={resetSelectedRow}
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={false}
         startPaginationAt={null}
         onTableChange={props.onTableChange}
-        options={props.options}
+        options={tableOptions}
         parent={props.parent}
         setColumnsBase={[]}
         {...props.esHocProps}

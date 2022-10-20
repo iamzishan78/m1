@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
   layerName: {
     maxWidth: theme.spacing(40),
     textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
+    whiteSpace: "pre-wrap",
     overflow: "hidden",
     flex: "0 1 auto",
     fontSize: theme.spacing(2),
@@ -130,7 +130,7 @@ const WhiteOutlinedSearch = withStyles({
 
 
 export default function AddGroup({ userId, above, layerGroups }) {
-  const [menuPosition, setMenuPos] = useState({ top: 0, left: 0})
+  const [menuPosition, setMenuPos] = useState({ top: 0, left: 0 })
   const classes = useStyles({ ...menuPosition });
 
   const [tabValue, setTabValue] = useState(0);
@@ -160,7 +160,7 @@ export default function AddGroup({ userId, above, layerGroups }) {
     const ele = document.getElementById("layerGroupMenuBtn")?.getBoundingClientRect();
 
     setMenuOpen(true);
-    setMenuPos({ top: ele.top, left: ele.left})
+    setMenuPos({ top: ele.top, left: ele.left })
   };
 
   const handleTabChange = (_, newValue) => {
@@ -293,7 +293,7 @@ const LayerGroupItem = ({ layerGroup }) => {
   });
 
   const handleSubmit = (e) => {
-    if (e.key === "Enter" && !updating){
+    if (e.key === "Enter" && !updating) {
       updateLayerGroup({
         variables: {
           layerGroupId: layerGroup.id,
@@ -304,7 +304,7 @@ const LayerGroupItem = ({ layerGroup }) => {
       });
     }
   }
-  
+
   const deleteGroup = () => {
     removeLayerGroup({
       variables: {
@@ -363,7 +363,7 @@ const LayerGroupItem = ({ layerGroup }) => {
           onClose={() => setOpenDialog(false)}
           deleteFunc={deleteGroup}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={() => { }}
         >
           Do you want to delete "{layerGroup.name}" layer group?
         </DeleteConfirmationDialogContent>

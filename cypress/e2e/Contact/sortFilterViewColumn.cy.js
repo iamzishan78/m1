@@ -21,7 +21,7 @@ Remove filter tag*/
 describe('Sort Filter ViewColumn Grid Spec', () => {
     it('passes', () => {
         // Constants 
-        const { longTimeout, extraTimeout } = basic_timeouts
+        const { longTimeout } = basic_timeouts
 
         cy.viewport(1400, 900)
         cy.visit('http://localhost:3000/contacts')

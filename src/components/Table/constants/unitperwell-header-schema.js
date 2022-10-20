@@ -1,3 +1,4 @@
+import { GlobalStickyStyles } from "GlobalSettings";
 
 const UnitWellHeadCells = [
   {
@@ -16,18 +17,27 @@ const UnitWellHeadCells = [
     },
   },
   {
-    name: "apiNumber", label: "Api Number", options: {
+    name: "Well", label: "Well", options: {
       dbName: "well.apiNumber",
       sort: true,
       filter: false,
+      ...GlobalStickyStyles({
+        setCellProps: {
+          maxWidth: "350px",
+        },
+        setCellHeaderProps: {
+          paddingLeft: '37px',
+        }
+      }),
+      ignoreGlobal: true,
     }
   },
-  {
-    name: "wellName", label: "Well", esKey: 'well.wellName.keyword', options: {
-      sort: true,
-      filter: true,
-    }
-  },
+  // {
+  //   name: "wellName", label: "Well", esKey: 'well.wellName.keyword', options: {
+  //     sort: true,
+  //     filter: true,
+  //   }
+  // },
 
   {
     name: "leaseId", label: "Lease Number", esKey: 'leaseId.keyword', options: {

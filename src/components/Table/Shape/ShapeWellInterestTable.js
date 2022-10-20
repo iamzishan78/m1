@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 // context
 
 import { Container, Button } from "@material-ui/core";
@@ -7,7 +7,7 @@ import TableHOC from "components/Table/TableHOC";
 
 // QUERIES
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
+// import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
 import { UPDATE_SHAPE_WELL_INTEREST } from "graphQL/useMutationUpdateShapeWellInterest";
 
 import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
@@ -21,11 +21,13 @@ import AddUnitInterestDialog from "components/Shared/M1nTable/components/SubComp
 import { AutoCompleteFilter } from "../AutoCompleteFilter";
 import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { DrawerContext } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 
 function ShapeWellInterestTable(props) {
   const classes = usetableStyles();
+  const [drawer, setDrawer] = useContext(DrawerContext);
   const [addToTable, setAddToTable] = useState(false);
-
+  const [drawerContainer, setDrawerContainer] = useState(null);
   // function states
   const [columns, Columns] = useState([]);
   const [selectedRow, selectRow] = useState([]);
@@ -81,9 +83,18 @@ function ShapeWellInterestTable(props) {
   }, [tableData]);
 
   useEffect(() => {
+    if (props.shapeType === 'Agreement') {
+      const indexOfTrack = TableHeader.findIndex((column) => column.name === "isTracked");
+      TableHeader[indexOfTrack].options.display = false
+      TableHeader[indexOfTrack].options.viewColumns = false
+    }
+  }, [props.shapeType]);
+
+  useEffect(() => {
     if (tableData?.hits?.length > 0) {
       let hits = tableData?.hits;
       hits = hits.map((hit) => {
+        hit.Well = `${hit.apiNumber} - ${hit.wellName}`
         hit = props.setGenricData(hit, hit._id, ["comments", "tracks", "tags"]);
         return hit;
       });
@@ -121,6 +132,25 @@ function ShapeWellInterestTable(props) {
       props.setLoading(false);
     }
   }, [tableData, props.dependencyUpdate]);
+
+    useEffect(() => {
+      if (props.portal) {
+        const ele = document.querySelector(props.portal);
+
+        if (ele) {
+          setDrawerContainer(ele);
+        }
+      }
+    }, [props.portal]);
+
+    useEffect(() => {
+      if (addToTable) {
+        setDrawer("wells");
+      } else {
+        setDrawer(null);
+      }
+    }, [addToTable]);
+
 
   ////////////Contact Wells end///////////////////////////////////////////////
 
@@ -183,12 +213,11 @@ function ShapeWellInterestTable(props) {
         })),
       },
       refetchQueries: [
-        "getESPaginatedList", "getESSimpleSearch", "getESFilterList"
+        "getESPaginatedList", "getESSimpleSearch", "getESFilterList","getShapeSummaryDetails"
       ],
       awaitRefetchQueries: true,
     });
   };
-
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       {addToTable && (
@@ -199,6 +228,7 @@ function ShapeWellInterestTable(props) {
           shapeType={props.shapeType}
           wellInterest={selectedRow}
           onClose={() => setAddToTable(false)}
+          drawerContainer={drawerContainer}
         />
       )}
 

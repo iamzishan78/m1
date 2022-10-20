@@ -24,7 +24,7 @@ export default function ContactDocumentsCard(props) {
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [fileIdToDelete, setFileIdToDelete] = useState(null);
 
-  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
+  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 2];
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
   const [deleteFile] = useMutation(DELETEDESCRIPTORFILE);

@@ -236,7 +236,7 @@ function SuggestedOwnerTable(props) {
           disabled={true}
         // onClick={addAction}
         >
-          + ADD TO PARCEL
+          + ADD TO TRACT
         </Button>
       </div>
     },
@@ -252,7 +252,7 @@ function SuggestedOwnerTable(props) {
               setShowConvertDialog(true);
             }}
           >
-            + ADD TO PARCEL
+            + ADD TO TRACT
           </Button>
         </div>
       </div>
@@ -397,7 +397,6 @@ function SuggestedOwnerTable(props) {
           }}
           rows={formatInterestForImport()}
           setM1nSelectedRowsIndexes={(m1nSelectedRowsIndexes) => {
-            console.log("here");
             if (typeof setM1nSelectedRowsIndexesRef.current === "function") {
               setM1nSelectedRowsIndexesRef.current(m1nSelectedRowsIndexes);
             }

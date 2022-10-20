@@ -19,8 +19,10 @@ const agreementParams = [
   { key: "agreementNumber", label: "Agreement Number" },
   { key: "agreementName", label: "Agreement Name" },
   {
-    key: "agreementType", label: "Type", options: agreementTypes,
-    formatValue: (value) => agreementTypes.find((at) => at.value === value)?.label || ""
+    key: "agreementType",
+    label: "Type",
+    options: agreementTypes,
+    formatValue: (value) => agreementTypes.find((at) => at.value === value)?.label || "",
   },
   { key: "agreementSubtype", label: "Subtype" },
   { key: "grantor", label: "Grantor" },
@@ -31,7 +33,11 @@ const agreementParams = [
   { key: "agreementStatus", label: "Status" },
 ];
 
-const filterKey = ["shapeJson.properties.agreementName.keyword", "shapeJson.properties.agreementNumber.keyword", "shapeJson.properties.layerSubType.keyword"];
+const filterKey = [
+  "shapeJson.properties.agreementName.keyword",
+  "shapeJson.properties.agreementNumber.keyword",
+  "shapeJson.properties.layerSubType.keyword",
+];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px",
     "& .MuiAutocomplete-popper": {
       width: "560px !important",
-    }
+    },
   },
   contentRoot: {
     overflow: "overlay",
@@ -121,12 +127,12 @@ const AddNewRelatedAgreementDialog = (props) => {
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
       if (data.upsertRelatedAgreementDescriptor.success) {
-        setNewAgmtState(false);
+        setDrawer("");
       }
-    }
+    },
   });
 
-  const { customLayerId, setNewAgmtState, parentType } = props;
+  const { customLayerId, setDrawer, parentType } = props;
 
   const selectedAgreement = useMemo(() => get(agreement, "customLayer.shapeJson.properties"), [agreement]);
 
@@ -146,7 +152,7 @@ const AddNewRelatedAgreementDialog = (props) => {
         descriptorObject: customLayerId,
         relatedObject: get(agreement, "customLayer._id"),
         descriptorType: parentType,
-        relatedObjectType: "Agreement"
+        relatedObjectType: "Agreement",
       },
       refetchQueries: ["getESSimpleSearch"],
       awaitRefetchQueries: true,
@@ -180,7 +186,7 @@ const AddNewRelatedAgreementDialog = (props) => {
 
         <div className="flex alignCenter c-pointer">
           {props.menuComponent}
-          <span onClick={() => setNewAgmtState(false)}>
+          <span onClick={() => setDrawer("")}>
             <ArrowForwardIcon />
           </span>
         </div>
@@ -208,7 +214,7 @@ const AddNewRelatedAgreementDialog = (props) => {
                   renderOption={(option) => {
                     if (option.id === "newEntity") return;
                     let parts = parse([option.key[1], option.key[0]], Array());
-                    const type = get(option, `key[${2}]`) && agreementTypes.find(type => type.value === option.key[2]);
+                    const type = get(option, `key[${2}]`) && agreementTypes.find((type) => type.value === option.key[2]);
 
                     return (
                       <Grid container spacing={0}>
@@ -223,7 +229,7 @@ const AddNewRelatedAgreementDialog = (props) => {
                                 <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
                                   {part.text}
                                 </span>
-                              )
+                              );
                             })}
 
                             {type && (
@@ -268,8 +274,8 @@ const AddNewRelatedAgreementDialog = (props) => {
                           ? moment(get(selectedAgreement, param.key)).format("DD/MM/YYYY")
                           : ""
                         : param.formatValue
-                          ? param.formatValue(get(selectedAgreement, param.key, ""))
-                          : get(selectedAgreement, param.key, "")
+                        ? param.formatValue(get(selectedAgreement, param.key, ""))
+                        : get(selectedAgreement, param.key, "")
                     }
                     fullWidth
                     disabled
@@ -282,7 +288,7 @@ const AddNewRelatedAgreementDialog = (props) => {
         </div>
       </DialogContent>
       <DialogActions className={classes.dialogAction}>
-        <Button className={classes.primary} color="primary" style={{ marginBottom: "40px" }} onClick={() => setNewAgmtState(false)}>
+        <Button className={classes.primary} color="primary" style={{ marginBottom: "40px" }} onClick={() => setDrawer("")}>
           Cancel
         </Button>
         <Button

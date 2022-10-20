@@ -259,7 +259,7 @@ export default function ViewDocuments(props) {
       </div>
       <div className={classes.divider} />
 
-      <ul className={classes.documentsList}>
+      <ul id="contactDocumentsList" className={classes.documentsList}>
         {!!filesLoading && (
           <div style={{ display: "flex", justifyContent: "center" }}>
             <CircularProgress size="20px" />

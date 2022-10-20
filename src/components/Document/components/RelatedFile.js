@@ -15,6 +15,7 @@ import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
 
 import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from "@material-ui/core";
+import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import UploadZone from "../../Shared/UploadZone";
@@ -36,6 +37,7 @@ import AutoCompleteDocumentList from "components/Shared/Forms/Fields/AutoComplet
 
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
+import { grey600, grey400 } from "material-ui/styles/colors";
 
 const filter = createFilterOptions();
 
@@ -155,6 +157,14 @@ const useStyles = makeStyles({
   optionNumber: {
     fontSize: "12px",
   },
+  closeButton:{
+    "& svg": {
+      fill: grey400,
+      "&:hover": {
+        fill: grey600,
+      },
+    },
+  }
 });
 
 export default function RelatedFile(props) {
@@ -485,9 +495,20 @@ export default function RelatedFile(props) {
           <ListItemText>
             <h3>Related Documents</h3>
           </ListItemText>
-          <ListItemIcon style={{ cursor: "pointer" }}>
-            <IconButton size="small" onClick={() => handleClose()}>
-              <CloseIcon></CloseIcon>
+          <ListItemIcon>
+            <IconButton
+
+              size="small"
+              component="span"
+              style={{
+                background: "transparent",
+                paddingLeft: "10px",
+                align: "center",
+              }}
+              className={classes.closeButton}
+              onClick={handleClose}
+            >
+              <KeyboardTabBlackIcon size="medium" />
             </IconButton>
           </ListItemIcon>
         </ListItem>

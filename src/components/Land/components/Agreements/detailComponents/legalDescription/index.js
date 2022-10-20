@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import _ from "underscore";
 import { useForm } from "react-hook-form";
 import { makeStyles } from "@material-ui/styles";
@@ -89,7 +89,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
               <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
-          onClick={(e) => { }}
+          onClick={(e) => {}}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>
@@ -118,6 +118,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                   header={"Tracts"}
                   setTractsNumber={setTractsNumber}
                   dense
+                  portal={"#agreementDetailsDrawer"}
                 />
               </Grid>
             )}

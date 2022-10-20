@@ -125,6 +125,7 @@ const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpe
           <Button
             variant="contained"
             color="primary"
+            id="addShapeButton"
             size="medium"
             disabled={selectedType === 'new' ? !selectedType : !selectedAgreement}
             disableElevation

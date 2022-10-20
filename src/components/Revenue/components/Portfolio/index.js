@@ -42,23 +42,23 @@ export default function Portfolio() {
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
-        if (data?.getESMinValue) {
-            setLastCheckMinDate(data?.getESMinValue);
-            // setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
-            // setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
-        }
+      if (data?.getESMinValue) {
+        setLastCheckMinDate(data?.getESMinValue);
+        // setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
+        // setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
+      }
     },
   });
-  
+
   useEffect(() => {
     getESMinValue({
-        variables: {
-            esIndex: 'checks_flat',
-            field: 'checkDate',
-            value_as_string: true
-        }
+      variables: {
+        esIndex: 'checks_flat',
+        field: 'checkDate',
+        value_as_string: true
+      }
     })
-  }, [getESMinValue]) 
+  }, [getESMinValue])
 
   useEffect(() => {
     setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
@@ -94,7 +94,7 @@ export default function Portfolio() {
 
   return (
     <>
-      <div className={classes.actionBar}>
+      <div className={classes.actionBar} id="portfilioActionBar">
         <Grid
           container
           direction="row"

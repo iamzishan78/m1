@@ -47,20 +47,16 @@ describe('Quick Actions And Searching Spec', () => {
         cy.selectQuickAction('All Entities 101', 'All Entities')
         cy.wait(10000)
 
-        const contactName = 'SGF TRUST LEGAL'
+
+
+        cy.log('==== STEP: TEST Exact Match ====')
+        
+        cy.gridSearch('STATEWIDE MINERALS', 'getESSimpleSearch')
+
+
         cy.log('==== STEP: SEARCH jacob in CONTACT ====')
 
         cy.gridSearch('jacob', 'getESSimpleSearch').then(response => {
-            // const hits = response.response.body.data.getESSimpleSearch.hits
-
-            // const indexofContact = hits.findIndex(hit => hit.name === contactName)
-
-            // if (indexofContact < 0)
-            //     throw new Error(`Could not find ${contactName} in api response`)
-
-            // cy.getTableCell("Name", indexofContact).scrollIntoView().wait(500).click({ force: true })
-
-            // cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: longTimeout }).contains(contactName).should('be.visible').click();
 
             cy.wait(2000)
             cy.getTableCell("Name", 3).click()
