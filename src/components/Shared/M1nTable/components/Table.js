@@ -3006,12 +3006,12 @@ function SubTable(props) {
                   if (column.name === "isClosed" && (props.targetLabel === "activity" || props.targetLabel === "activitiesDashboard") && value === true)
                     return (
                       <div style={{ textAlign: "center" }}>
-                        <CheckIcon />
+                        <CheckIcon id="checkIcon" />
                       </div>
                     );
 
                   if (column.name === "isClosed" && (props.targetLabel === "activity" || props.targetLabel === "activitiesDashboard") && value === false)
-                    return <div style={{ textAlign: "center" }}>{/* <CheckBoxOutlineBlankIcon /> */}</div>;
+                    return <div style={{ textAlign: "center" }}>--</div>;
 
                   ////// if non editable column
                   if (

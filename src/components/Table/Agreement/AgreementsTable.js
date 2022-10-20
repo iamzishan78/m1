@@ -126,6 +126,10 @@ function AgreementsTable(props) {
     // eslint-disable-next-line
   }, [props.initialFilters]);
 
+  useEffect(() => {
+    props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);
+  }, [props?.options?.count]);
+
   const onCustomKeyChange = (value = null, index, key) => {
     const rows = JSON.parse(JSON.stringify(props.rows));
     rows[index].custom_data = {
