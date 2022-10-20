@@ -267,6 +267,36 @@ const wellsColumnHeaders = [
     },
   },
   {
+    name: "interestType",
+    label: "Interest Type",
+    esKey: "properties.interestType.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+    },
+  },
+  {
+    name: "interestAmount",
+    label: "Interest Amount",
+    esKey: "properties.interestAmount.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+    },
+  },
+  {
+    name: "effectiveDate",
+    label: "Effective Date",
+    esKey: "properties.effectiveDate.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+    },
+  },
+  {
     name: "costFree",
     label: "Cost Free",
     esKey: "properties.costFree.keyword",
