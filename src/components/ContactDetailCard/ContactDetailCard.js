@@ -741,7 +741,7 @@ function ContactDetailCard(props) {
       </div>
 
       <div className={classes.mainGridContainer}>
-        <Grid container className={classes.leftColumn}>
+        <Grid container className={classes.leftColumn} id="leftColumn">
           {stateApp.viewDoc && ExtenstionGetter(stateApp?.viewDoc.name) === "pdf" ? (
             <DocViewer
               divCondition={true}
@@ -803,7 +803,7 @@ function ContactDetailCard(props) {
                 viewAllDocuments
                 menuComponent={
                   <IconButton className={classes.menuIcon} onClick={handleClick}>
-                    <MoreHorizIcon fontSize="medium" aria-controls="simple-menu" aria-haspopup="true" />
+                    <MoreHorizIcon id="MoreHorizIcon" fontSize="medium" aria-controls="simple-menu" aria-haspopup="true" />
                   </IconButton>
                 }
                 data={contactData}
@@ -871,7 +871,7 @@ function ContactDetailCard(props) {
         </div>
         {shrinkRightColumn && (
           <div className={classes.pulloutBox} onClick={togglePullout}>
-            <ArrowBackIosIcon />
+            <ArrowBackIosIcon id="ArrowBackIosIcon" />
           </div>
         )}
 
