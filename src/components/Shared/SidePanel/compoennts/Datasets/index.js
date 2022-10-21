@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     root: (props) => ({
         background: '#0e111a',
         overflow: 'auto',
-        height: '274px',
+        maxHeight: '274px',
         paddingTop: '10px',
         borderBottom:'1px solid gray',
         ...scrollbarStyle,

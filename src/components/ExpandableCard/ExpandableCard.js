@@ -78,6 +78,7 @@ function ExpandableCard(props) {
   const [mouseY] = useState(props.mouseY);
   const [position] = useState(props.position);
   const [cardHeight] = useState(props.cardHeight);
+  const [breadcrumbs, setBreadcrumbs] = useState(null);
   // const [zIdx, setZidx] = useState(props.zIndex);
   const [cardLeft, setCardLeft] = useState(props.cardLeft);
   const [cardTop, setCardTop] = useState(props.cardTop);
@@ -298,6 +299,19 @@ function ExpandableCard(props) {
   }, [props.title, props.targetLabel]);
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search?.replace("?", ""));
+    const paramBreadCrumbs = searchParams.get("breadcrumbs")
+
+    if (paramBreadCrumbs === 'Documents')
+      setBreadcrumbs([
+        { title: "Documents", url: "/documents" },
+      ])
+    else if (history.location?.state?.showWellBreadcrumb)
+      setBreadcrumbs(history.location?.state?.breadcrumbs)
+
+  }, [history.location?.state?.breadcrumbs, history?.location?.state?.showWellBreadcrumb]);
+
+  useEffect(() => {
     if (stateApp.user && stateApp.user.mongoId && targetSourceId) {
       trackByObjectId({
         variables: {
@@ -354,7 +368,7 @@ function ExpandableCard(props) {
     if (props.targetLabel === "well" || props.targetLabel === "expandedWell") {
       const newPath = `/map/wells/${stateApp.selectedWell.id}`;
       history.location.pathname !== newPath &&
-        history.replace(newPath, { ...history.location.state });
+        history.replace({ path: newPath, search: window.location?.search }, { ...history.location.state });
       setStateApp((state) => ({
         ...state,
         wellDetailCardOpen: true,
@@ -642,12 +656,12 @@ function ExpandableCard(props) {
             </Typography>
           </Breadcrumbs>
         )}
-        {history.location?.state?.showWellBreadcrumb && (
+        {breadcrumbs && (
           <Breadcrumbs
             separator={<NavigateNextIcon fontSize="small" />}
             aria-label="breadcrumb"
           >
-            {history.location.state.breadcrumbs.map((breadcrumb, index) => (
+            {breadcrumbs.map((breadcrumb, index) => (
               <Typography
                 key={index}
                 className={classes.prevlocation}
@@ -712,7 +726,7 @@ function ExpandableCard(props) {
           onClose={() => setOpenBugModal(false)}
         />
         {(history.location?.state?.fromShapeDetail ||
-          history.location?.state?.showWellBreadcrumb) && <DisplayBreadCrums />}
+          breadcrumbs) && <DisplayBreadCrums />}
 
         {(history.location?.state?.showAgreementBreadcrumb ||
           history.location?.state?.showTractsBreadcrumb) && (
@@ -934,7 +948,7 @@ function ExpandableCard(props) {
                   className={classes.icons}
                   onClick={handleClose}
                 >
-                  <CloseIcon color="secondary" />
+                  <CloseIcon id="closeIcon" color="secondary" />
                 </IconButton>
               </Tooltip>
             </div>

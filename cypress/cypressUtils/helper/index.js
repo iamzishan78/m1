@@ -8,7 +8,7 @@ export const findInObject = (obj, stringToCheck) => {
 
         const objectValue = obj[key]
         if (objectValue) {
-            if (typeof objectValue === 'string' && objectValue.toLowerCase().includes(stringToCheck))
+            if (typeof objectValue === 'string' && objectValue.toLowerCase().includes(stringToCheck.toLowerCase()))
                 return true
             else if (typeof objectValue === 'object' && !_.isEmpty(objectValue) && findInObject(objectValue, stringToCheck))
                 return true
@@ -18,3 +18,19 @@ export const findInObject = (obj, stringToCheck) => {
     });
 }
 
+export const isArraysEqual = (array1, array2) => {
+    array1 = Array.isArray(array1) ? array1 : [];
+    array2 = Array.isArray(array2) ? array2 : [];
+    return array1.length === array2.length && array1.every((el, ix) => el === array2[ix]);
+}
+
+export const isApiWithSearchString = (searchString, variables) => {
+    const searchQuery = variables?.search?.query || variables?.search
+
+    if (typeof searchQuery === 'string') {
+        if (searchQuery.substring(1, 2) === '*')
+            searchString = `"*${searchString}*"`
+
+        return searchQuery === searchString
+    }
+}
