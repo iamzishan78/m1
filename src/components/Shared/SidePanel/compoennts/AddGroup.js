@@ -129,7 +129,7 @@ const WhiteOutlinedSearch = withStyles({
 })(TextField);
 
 
-export default function AddGroup({ userId, above, layerGroups }) {
+export default function AddGroup({ userId, above }) {
   const [menuPosition, setMenuPos] = useState({ top: 0, left: 0 })
   const classes = useStyles({ ...menuPosition });
 
@@ -139,10 +139,17 @@ export default function AddGroup({ userId, above, layerGroups }) {
 
   const [open, setMenuOpen] = useState(false);
 
+  const [getLayerGroups, { data: layerGroupData }] = useLazyQuery(GET_LAYER_GROUPS);
+  const layerGroups = layerGroupData?.getLayerGroups || []
+  
   const [addLayerGroup, { loading }] = useMutation(ADD_LAYER_GROUP, {
     refetchQueries: ["getLayerGroups"],
     awaitRefetchQueries: true,
   });
+
+  useEffect(() => {
+    getLayerGroups({ variables: { userId } })
+  }, [getLayerGroups, userId])
 
   useEffect(() => {
     // reset states when anchor is changed
@@ -284,7 +291,7 @@ const LayerGroupItem = ({ layerGroup }) => {
   const [stateApp] = useContext(AppContext);
 
   const [updateLayerGroup, { loading: updating }] = useMutation(UPDATE_LAYER_GROUP, {
-    refetchQueries: ["getLayerGroups"],
+    refetchQueries: ["getLayerGroups", "getAllLayerSettingsByUser"],
     awaitRefetchQueries: true,
   });
   const [removeLayerGroup, { loading: removing }] = useMutation(REMOVE_LAYER_GROUP, {
@@ -296,7 +303,7 @@ const LayerGroupItem = ({ layerGroup }) => {
     if (e.key === "Enter" && !updating) {
       updateLayerGroup({
         variables: {
-          layerGroupId: layerGroup.id,
+          layerGroupId: layerGroup.groupId,
           layerGroupName: e.target.value,
         },
       }).then((res) => {
@@ -309,7 +316,7 @@ const LayerGroupItem = ({ layerGroup }) => {
     removeLayerGroup({
       variables: {
         userId: stateApp.user.mongoId,
-        layerGroupId: layerGroup.id,
+        layerGroupId: layerGroup.groupId,
       },
     });
 
@@ -325,7 +332,7 @@ const LayerGroupItem = ({ layerGroup }) => {
         {editing ? (
           <ClickAwayListener onClickAway={() => setEditing(false)}>
             <WhiteOutlinedSearch
-              id={"inline-edit-input" + layerGroup.id}
+              id={"inline-edit-input" + layerGroup.groupId}
               variant="outlined"
               color="white"
               fullWidth
