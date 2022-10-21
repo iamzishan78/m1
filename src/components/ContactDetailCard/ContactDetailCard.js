@@ -702,15 +702,17 @@ function ContactDetailCard(props) {
                   <Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" publicLeftBottom onlyTags />
                 </div>
                 <div className={classes.metaActions}>
-                  <Button
-                    className={classes.contactDataButton}
-                    startIcon={<RequestPageIcon color="grey" />}
-                    onClick={() => {
-                      handleExpandClick("buyContactsInfo");
-                    }}
-                  >
-                    Contact Data
-                  </Button>
+                  <FeatureFlag feature={FEATURES.IDICORE}>
+                    <Button
+                      className={classes.contactDataButton}
+                      startIcon={<RequestPageIcon color="grey" />}
+                      onClick={() => {
+                        handleExpandClick("buyContactsInfo");
+                      }}
+                    >
+                      Contact Data
+                    </Button>
+                  </FeatureFlag>
                   <Button
                     className={classes.contactDataButton}
                     startIcon={<MonetizationOnIcon color="grey" />}

@@ -28,7 +28,7 @@
 
 import { deepEqualObjects } from "../../src/components/Shared/functions";
 import { baseUrls, basic_timeouts, loginCredential } from "../cypressUtils/data";
-import { findInObject } from "../cypressUtils/helper";
+import { findInObject, isApiWithSearchString } from "../cypressUtils/helper";
 
 // Constants
 const workSpace = Cypress.env('WORK_SPACE') || "enerx"
@@ -67,13 +67,10 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
     cy.intercept('POST', baseUrls[workSpace], req => {
 
         if (req.body.operationName === operationName) {
-
             if (payloadKey) {
                 const { variables } = req.body
-                if (payloadKey.searchString && (variables?.search?.query === payloadKey.searchString
-                    || variables?.search === `${payloadKey.searchString}*`)) {
+                if (payloadKey.searchString && isApiWithSearchString(payloadKey.searchString, variables))
                     req.alias = `${operationName}WithSearchStringApi`;
-                }
                 else if (payloadKey?.sortOrder && variables?.sort?.order === payloadKey.sortOrder) {
                     req.alias = `${operationName}WithSortOrderApi`;
                 }
@@ -93,9 +90,16 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
 // This command is to check api was successful or not
 Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
     cy.wait(apiTitle, { timeout: extraTimeout }).then((interception) => {
-        console.log("intercerption : ", interception?.body?.data?.errors)
-        if (interception?.body?.data?.errors)
-            throw new Error(`Api returned error`)
+        const operationName = interception?.request?.body?.operationName
+        const response = interception?.response?.body?.data[operationName]
+
+        if (typeof response === 'string')
+            throw new Error(response)
+
+        const errors = interception?.response?.body?.errors
+        if (errors)
+            throw new Error(`Api returned error: ${JSON.stringify(errors)}`)
+
         assert.isNotNull(interception.response.body, `${apiTitle} run succesfully`)
         return interception
     })
@@ -132,6 +136,37 @@ Cypress.Commands.add('updateSummaryField', (fieldName, value) => {
     cy.contains(fieldName).siblings().eq(0).children().children().children().eq(0).type(`${value}{enter}`)
 })
 
+//Search from map like wells ,tract etc....
+Cypress.Commands.add('searchOnMap', (data, value) => {
+    cy.get('#dataNameSelect', { timeout: longTimeout }).should('be.visible').click()
+    cy.get('.MuiList-root', { timeout: longTimeout }).should('be.visible').contains(data).click()
+
+    // cy.get('#cognitive-search-autocomplete', { timeout: 10000 }).should('be.visible').type(value)
+    cy.typeAndSelect("#cognitive-search-autocomplete", value, "cognitive-search-autocomplete-option-1")
+})
+
+// Command will search and verify results have searched string or not
+Cypress.Commands.add('gridSearch', (searchString, gridOperationName, searchId = null) => {
+    cy.interceptApi(gridOperationName, { searchString: searchString })
+
+    const commonSearchClass = ".MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart"
+    cy.get(searchId || commonSearchClass).focus().clear().type(searchString)
+
+    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: longTimeout }).then((apiResponse) => {
+        let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
+
+
+        if (gridOperationName === 'getESDocuments')
+            hits = apiResponse.response.body.data.getESFiles.hits
+
+        const unmatchedHit = hits.find(hit => !findInObject(hit, searchString.toLowerCase()))
+
+        if (unmatchedHit) {
+            throw new Error(`Record with _id:${unmatchedHit._id} does not contains searched String`)
+        }
+    })
+})
+
 //DocumentGrid Commands
 Cypress.Commands.add('addWell', (wellName) => {
     cy.interceptApi('addWellToFileDescriptor')
@@ -149,23 +184,7 @@ Cypress.Commands.add('clickWellIcon', (wellName) => {
     cy.get("#wellIcon", { timeout: longTimeout }).click()
 })
 
-Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
-    cy.interceptApi(gridOperationName, { searchString: searchString })
-    cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').focus().clear().type(searchString)
 
-    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: longTimeout }).then((apiResponse) => {
-        let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
-
-        if (gridOperationName === 'getESDocuments')
-            hits = apiResponse.response.body.data.getESFiles.hits
-
-        const unmatchedHit = hits.find(hit => !findInObject(hit, searchString.toLowerCase()))
-
-        if (unmatchedHit) {
-            throw new Error(`Record with _id:${unmatchedHit._id} does not contains searched String`)
-        }
-    })
-})
 Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
     cy.contains('th', columnName)
         .invoke('index')
@@ -180,24 +199,6 @@ Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
 })
 
 // ContactGrid Commands
-
-Cypress.Commands.add('gridSearch', (searchString, gridOperationName) => {
-    cy.interceptApi(gridOperationName, { searchString: searchString })
-    cy.get('.MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart').focus().clear().type(searchString)
-
-    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: longTimeout }).then((apiResponse) => {
-        let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
-
-        if (gridOperationName === 'getESDocuments')
-            hits = apiResponse.response.body.data.getESFiles.hits
-
-        const unmatchedHit = hits.find(hit => !findInObject(hit, searchString.toLowerCase()))
-
-        if (unmatchedHit) {
-            throw new Error(`Record with _id:${unmatchedHit._id} does not contains searched String`)
-        }
-    })
-})
 
 Cypress.Commands.add('sortColumn', (columnName, sortOrder) => {
     cy.interceptApi('getESSimpleSearch', { sortOrder: sortOrder })
@@ -279,4 +280,39 @@ Cypress.Commands.add('updateAndVerifyContact', (fieldId, keyName, contactToUpdat
             throw new Error(`${keyName} not updated successfully`);
         }
     })
+})
+
+Cypress.Commands.add('createShapeLayer', (shapeLayerItemId) => {
+    cy.interceptApi('UpsertCustomLayer')
+    cy.get('.mapboxgl-canvas').click()
+    cy.get('#parcel-button', { timeout: longTimeout }).should('be.visible').click()
+    cy.wait(3000)
+    cy.get(shapeLayerItemId).wait(1000).click()
+    if (shapeLayerItemId === "#agreementItem")
+        cy.get('#addShapeButton').click()
+
+    cy.get('.MuiBox-root', { timeout: longTimeout }).should('be.visible')
+
+    cy.verifyApiResponse('@UpsertCustomLayerApi', { responseTimeout: longTimeout })
+})
+
+Cypress.Commands.add('addTract', (tractName) => {
+    cy.log(`==== STEP: CLICK ON ADD TRACT BUTTON ====`)
+    cy.get(".MuiButtonBase-root").contains('+ ADD Tract To AGREEMENT').click({ force: true })
+
+    cy.log(`==== STEP: CLICK ON EXISTING TRACT TAB ====`)
+    cy.get("#existingTractTab").click()
+
+    cy.log(`==== STEP: SELECT TRACT FROM DROP DOWN ====`)
+    cy.typeAndSelect("#autucompleteShapeLayer", tractName, "autucompleteShapeLayer-option-0")
+
+    cy.log(`==== STEP: SELECT ENTITY NAME ====`)
+    cy.get("#AutocompEntityNamesList").click().type("mike jones")
+    cy.get("[id='AutocompEntityNamesList-option-0']")
+    cy.get("#AutocompEntityNamesList").click().type("{downArrow}{downArrow}{enter}")
+
+    cy.log(`==== STEP: CLICK ON SAVE BUTTON ====`)
+    cy.interceptApi('addOwnerToAShape')
+    cy.get("#saveButton").click()
+    cy.verifyApiResponse('@addOwnerToAShapeApi', { responseTimeout: longTimeout })
 })

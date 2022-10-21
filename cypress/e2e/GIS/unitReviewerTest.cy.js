@@ -9,7 +9,7 @@ describe("[Unit Summary] test 'Reviewer' Field", () => {
 
     cy.wait(14000);
 
-    cy.get("#data-name-select", { timeout: 14000 })
+    cy.get("#dataNameSelect", { timeout: 14000 })
       .should("be.visible")
       .click();
     cy.wait(1000);

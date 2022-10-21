@@ -23,6 +23,9 @@ describe('Verify Activity Completed Spec', () => {
             cy.log('==== STEP: OPEN ACTIVIY MODEL ====');
             cy.wrap($tableCell).scrollIntoView().click({ force: true })
 
+            cy.log('==== STEP: CLICK ON CALL BUTTON ====');
+            cy.get('#callIcon', { timeout: longTimeout }).click({ force: true })
+
             cy.log('==== STEP: CLICK ON MARK AS DONE ICON ====');
             cy.interceptApi('updateActivity')
             cy.get('#markAsDone', { timeout: longTimeout }).check({ force: true })

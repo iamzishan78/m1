@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
+import ReactDOM from "react-dom";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -16,7 +17,7 @@ import { UPDATE_SHAPE_WELL_INTEREST } from "graphQL/useMutationUpdateShapeWellIn
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import { useForm, Controller } from "react-hook-form";
 
-// contexts 
+// contexts
 import { AppContext } from "AppContext";
 import WellSearchApiField from "components/Shared/Forms/Fields/WellSearchApiField";
 import AutoCompleteFieldComponent from "components/Shared/Forms/Fields/AutoCompleteField";
@@ -193,6 +194,203 @@ function AddUnitInterestDialog(props) {
     if (well) reset(well)
   }
 
+  const content = (
+    <div style={{ padding: "30px" }}>
+      <Grid item xs={12} style={{ minHeight: "35px" }}>
+        <h4
+          style={{
+            margin: "0 0 15px 0",
+            float: "left",
+            fontSize: "1.1rem",
+          }}
+        >
+          {props.wellInterest
+            ? `Update ${props.shapeType} Well`
+            : `Add ${props.shapeType} Well`}
+        </h4>
+        <div style={{ float: "right" }}>
+          {props.wellInterest && (
+            <>
+              <IconButton
+                disabled={loading}
+                onClick={openConfirmationDialog}
+                size="small"
+                style={{ margin: "0 8px" }}
+              >
+                {loading ? (
+                  <CircularProgress size={20} color="secondary" />
+                ) : (
+                  <DeleteIcon className={classes.closeIcon} fontSize="small" />
+                )}
+              </IconButton>
+            </>
+          )}
+          <IconButton onClick={!loading ? handleClose : undefined} size="small">
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </div>
+      </Grid>
+
+      <div>
+        <WellSearchApiField
+          setTenantWell={setTenantWell}
+          setSelectedWell={setSelectedWell}
+        />
+
+        <h4
+          style={
+            {
+              //margin: "0 0 15px 0",
+              //float: "left",
+              //fontSize: "1.1rem",
+            }
+          }
+        >
+          Selected well and lease information
+        </h4>
+
+        <Controller
+          as={TextField}
+          control={control}
+          variant="outlined"
+          margin="dense"
+          name="wellName"
+          label={"Well Name"}
+          InputLabelProps={{ shrink: true }}
+          fullWidth
+          disabled
+          defaultValue=""
+        />
+
+        <Controller
+          as={TextField}
+          control={control}
+          variant="outlined"
+          margin="dense"
+          name="api"
+          label="API Number"
+          InputLabelProps={{ shrink: true }}
+          fullWidth
+          disabled
+          defaultValue=""
+        />
+
+        <Controller
+          control={control}
+          name="operator"
+          label="Operator"
+          defaultValue={""}
+          options={getOptions("Operator") || []}
+          as={<AutoCompleteFieldComponent />}
+        />
+
+        <Controller
+          as={TextField}
+          control={control}
+          variant="outlined"
+          margin="dense"
+          name="leaseId"
+          label={"Lease Number"}
+          fullWidth
+          defaultValue=""
+        />
+        <Controller
+          as={TextField}
+          control={control}
+          variant="outlined"
+          margin="dense"
+          name="lease"
+          label={"Lease Name"}
+          fullWidth
+          defaultValue=""
+        />
+
+        {/* <Controller
+              control={control}
+              name="leaseAcres"
+              render={(props) => (
+                <TextField
+                  variant="outlined"
+                  margin="dense"
+                  value={props.value}
+                  inputRef={props.ref}
+                  onChange={(event) => {
+                    props.onChange(parseFloat(event.target.value))
+                  }}
+                  label={"Lease Acres"}
+                  fullWidth
+                  defaultValue=""
+                  InputProps={{
+                    inputComponent: NumberFormatCustom,
+                  }}
+                />
+              )}
+            /> */}
+      </div>
+
+      <div>
+        <FormControl variant="outlined" fullWidth size="small">
+          <Controller
+            control={control}
+            name="wellType"
+            label="Well Type"
+            defaultValue={""}
+            options={getOptions("WellType") || []}
+            as={<AutoCompleteFieldComponent />}
+          />
+
+          <Controller
+            control={control}
+            name="wellBoreProfile"
+            label="Wellbore Profile"
+            defaultValue={""}
+            options={getOptions("WellBoreProfile") || []}
+            as={<AutoCompleteFieldComponent />}
+          />
+
+          <Controller
+            control={control}
+            name="wellStatus"
+            label="Well Status"
+            defaultValue={""}
+            options={getOptions("WellStatus") || []}
+            as={<AutoCompleteFieldComponent />}
+          />
+        </FormControl>
+      </div>
+
+      <div className={classes.dialogFooter}>
+        <Button
+          variant="contained"
+          color="default"
+          size="medium"
+          disableElevation
+          onClick={handleClose}
+          disabled={loading}
+          className={classes.footerButton}
+          style={{
+            margin: "0px 15px 0px 0px",
+          }}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          variant="contained"
+          color="secondary"
+          size="medium"
+          disableElevation
+          onClick={() => {
+            handleValidate() && handleSave();
+          }}
+          className={classes.footerButton}
+          disabled={loading || !valid}
+        >
+          {loading ? <CircularProgress size={14} /> : "Save"}
+        </Button>
+      </div>
+    </div>
+  );
   return (
     <>
       {deleteDialogOpen && (
@@ -214,197 +412,20 @@ function AddUnitInterestDialog(props) {
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
-      <RightDialog
-        open={props.open}
-        handleClickDialogClose={handleClose}
-        width={props.width}
-      >
-        <div style={{ padding: "30px" }}>
-          <Grid item xs={12} style={{ minHeight: "35px" }}>
-            <h4
-              style={{
-                margin: "0 0 15px 0",
-                "float": "left",
-                fontSize: "1.1rem",
-              }}
-            >
-              {props.wellInterest ? `Update ${props.shapeType} Well` : `Add ${props.shapeType} Well`}
-            </h4>
-            <div style={{ "float": "right" }}>
-              {(props.wellInterest && (
-                <>
-                  <IconButton
-                    disabled={loading}
-                    onClick={openConfirmationDialog}
-                    size="small"
-                    style={{ margin: "0 8px" }}
-                  >
-                    {loading ? (
-                      <CircularProgress size={20} color="secondary" />
-                    ) : (
-                      <DeleteIcon
-                        className={classes.closeIcon}
-                        fontSize="small"
-                      />
-                    )}
-                  </IconButton>
-                </>
-              ))}
-              <IconButton
-                onClick={handleClose}
-                size="small"
-              >
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </div>
-          </Grid>
-
-          <div>
-
-
-            <WellSearchApiField setTenantWell={setTenantWell} setSelectedWell={setSelectedWell} />
-
-            <h4
-              style={{
-                //margin: "0 0 15px 0",
-                //float: "left",
-                //fontSize: "1.1rem",
-              }}
-            >
-              Selected well and lease information
-            </h4>
-
-            <Controller as={TextField} control={control}
-              variant="outlined"
-              margin="dense"
-              name='wellName'
-              label={"Well Name"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue=""
-            />
-
-            <Controller as={TextField} control={control}
-              variant="outlined"
-              margin="dense"
-              name='api'
-              label="API Number"
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue=""
-            />
-
-            <Controller
-              control={control}
-              name="operator"
-              label="Operator"
-              defaultValue={''}
-              options={getOptions('Operator') || []}
-              as={<AutoCompleteFieldComponent />}
-            />
-
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='leaseId' label={"Lease Number"} fullWidth defaultValue="" />
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='lease' label={"Lease Name"} fullWidth defaultValue="" />
-
-            {/* <Controller
-              control={control}
-              name="leaseAcres"
-              render={(props) => (
-                <TextField
-                  variant="outlined"
-                  margin="dense"
-                  value={props.value}
-                  inputRef={props.ref}
-                  onChange={(event) => {
-                    props.onChange(parseFloat(event.target.value))
-                  }}
-                  label={"Lease Acres"}
-                  fullWidth
-                  defaultValue=""
-                  InputProps={{
-                    inputComponent: NumberFormatCustom,
-                  }}
-                />
-              )}
-            /> */}
-
-          </div>
-
-          <div>
-
-            <FormControl
-              variant="outlined"
-              fullWidth
-              size="small"
-            >
-
-              <Controller
-                control={control}
-                name="wellType"
-                label="Well Type"
-                defaultValue={''}
-                options={getOptions('WellType') || []}
-                as={<AutoCompleteFieldComponent />}
-              />
-
-              <Controller
-                control={control}
-                name="wellBoreProfile"
-                label="Wellbore Profile"
-                defaultValue={''}
-                options={getOptions('WellBoreProfile') || []}
-                as={<AutoCompleteFieldComponent />}
-              />
-
-              <Controller
-                control={control}
-                name="wellStatus"
-                label="Well Status"
-                defaultValue={''}
-                options={getOptions('WellStatus') || []}
-                as={<AutoCompleteFieldComponent />}
-              />
-            </FormControl>
-          </div>
-
-          <div className={classes.dialogFooter}>
-            <Button
-              variant="contained"
-              color="default"
-              size="medium"
-              disableElevation
-              onClick={handleClose}
-              disabled={loading}
-              className={classes.footerButton}
-              style={{
-                margin: "0px 15px 0px 0px",
-              }}
-            >
-              Cancel
-            </Button>
-
-            <Button
-              variant="contained"
-              color="secondary"
-              size="medium"
-              disableElevation
-              onClick={() => {
-                handleValidate() && handleSave()
-              }}
-              className={classes.footerButton}
-              disabled={loading || !valid}
-            >
-              {loading ? (
-                <CircularProgress size={14} />
-              ) : (
-                "Save"
-              )}
-            </Button>
-          </div>
-        </div>
-      </RightDialog>
+      {
+        props.drawerContainer &&
+          ReactDOM.createPortal(content, props.drawerContainer)
+      }
+      {
+        !props.drawerContainer &&
+          <RightDialog
+            open={props.open}
+            handleClickDialogClose={handleClose}
+            width={props.width}
+          >
+            {content}
+          </RightDialog>
+      }
     </>
   );
 }
