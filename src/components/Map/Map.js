@@ -421,7 +421,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
     return { ...well.getESPaginatedList.hits[0], tenantWellId: tenantWell?.tenantWell?.tenantWellId }
   }
 
-
   async function getCustomLayer() {
     const keys = { parcels: "selectedParcel", ...layersWithSelectedShapeKey(), wells: "selectedWell" };
 
@@ -948,10 +947,12 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
         if (prop.paintProps) layerConfig.paint = prop.paintProps;
         if (prop.filter) layerConfig.filter = prop.filter;
-
-        // Incase of group we have one datasource but we filter by layerGeometryType ( Polygon, MultiPolygon , Point etc)
-        if (config.layerGeometry && config.groupId) layerConfig.filter = ["==", "layerGeometry", config.layerGeometry];
-
+        
+        // Incase of group we have one datasource but we filter by layerShapeName ( i.e file name)
+        if (config.layerShapeName && config.groupId) 
+          layerConfig.filter = ['all', ["==", "layerShapeName", config.layerShapeName], ["==", "layerGeometry", config.layerGeometry]];
+        else if (config.layerGeometry && config.groupId) layerConfig.filter = ["==", "layerGeometry", config.layerGeometry];
+        
         if (prop.minZoom) {
           layerConfig.minzoom = prop.minZoom;
         }
@@ -1076,14 +1077,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   // }, [permitData]);
 
   useEffect(() => {
-    if (
-      permitRecentSubmittedData &&
-      permitRecentSubmittedData.recent_submitted_permits &&
-      permitRecentSubmittedData.recent_submitted_permits.length > 0
-    ) {
-      const nextOffset = recent_submitted_permits.length + permitRecentSubmittedData.recent_submitted_permits.length;
-      setRecentSubmittedPermitData([...recent_submitted_permits, ...permitRecentSubmittedData.recent_submitted_permits]);
-    }
   }, [permitRecentSubmittedData]);
 
   useEffect(() => {
@@ -1590,7 +1583,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         } else if (layer.layerType === "file layer") {
           let layerData = layersData.find((l) => l.file === layer.file);
           if (layerData.fileUrl) {
-            if (layerData.layerPaintProps[0].sourceProps) {
+            if (layerData.layerPaintProps?.[0]?.sourceProps) {
               if (!map.getSource(layerData.layerPaintProps[0].sourceProps)) {
                 map.addSource(layerData.layerPaintProps[0].sourceProps, {
                   type: "geojson",
@@ -1621,6 +1614,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   //// remove the layer and it's source from the map after it's deleted
   const removeLayer = (layer) => {
     const paintProps = layer.layerPaintProps;
+    if(!paintProps?.length) return
+    
     for (let i = paintProps.length - 1; i >= 0; i--) {
       const prop = paintProps[i];
 
