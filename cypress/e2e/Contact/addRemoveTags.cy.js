@@ -48,8 +48,8 @@ describe('Add and Remove Tags Grid Spec', () => {
                 cy.get('#tags-outlined', { timeout: longTimeout }).click().wait(1000).type(tagName).type('{downArrow}{enter}')
                 cy.wait(3000)
 
-                cy.log('==== STEP: VERIFY ADDED TAG ====')
-                cy.get('.MuiChip-label', { timeout: longTimeout }).contains(tagName).should('be.visible')
+                cy.log('==== STEP: VERIFY ADDED TAG 1 ====')
+                cy.get('.MuiChip-label', { timeout: longTimeout }).contains(tagName, { timeout: longTimeout }).should('be.visible')
                 cy.wait(3000)
                 cy.get('body').type('{esc}{esc}')
 
@@ -57,7 +57,7 @@ describe('Add and Remove Tags Grid Spec', () => {
                 cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: longTimeout }).contains(contactName).click();
                 // cy.getTableCell('Name', 2).click()
 
-                cy.log('==== STEP: REMOVE TAG ====')
+                cy.log('==== STEP: REMOVE TAG 1 ====')
                 cy.get('.MuiGrid-root', { timeout: longTimeout }).contains('Total Offer Price').should('be.visible')
                 cy.wait(3000)
                 cy.get('.MuiChip-label', { timeout: longTimeout }).contains(tagName).siblings().click()
@@ -74,12 +74,12 @@ describe('Add and Remove Tags Grid Spec', () => {
 
                     cy.wait(3000)
                     cy.log('==== STEP: OPEN ANOTHER CONTACT DETAIL ====')
-                    cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: longTimeout }).contains(contactName).click();
+                    cy.get('.MuiTableCell-root.MuiTableCell-body', { timeout: longTimeout }).contains(contactName, { timeout: longTimeout }).click();
 
                     cy.log('==== STEP: SELECT AND ENTER TAG ====')
-                    cy.get('#tags-outlined', { timeout: longTimeout }).click().wait(1000).type(tagName).type('{downArrow}{enter}')
+                    cy.get('#tags-outlined', { timeout: longTimeout }).click().wait(2000).type(tagName).type('{downArrow}{enter}')
 
-                    cy.log('==== STEP: VERIFY ADDED TAG ====')
+                    cy.log('==== STEP: VERIFY ADDED TAG 2====')
                     cy.wait(5000)
                     cy.get('.MuiChip-label', { timeout: longTimeout }).contains(tagName).should('be.visible')
 
@@ -88,25 +88,23 @@ describe('Add and Remove Tags Grid Spec', () => {
                     cy.get('.MuiTypography-root').contains('Contacts').click()
                     cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
 
-                    cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
-                        const hits = response.response.body.data.getESSimpleSearch.hits
+                    cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
 
-                        //picking same record index
-                        const contactIndex = hits.findIndex(hit => hit.name === contactName)
+                    cy.log(`==== STEP: SEARCH FOR CONTACT : ${contactName} ====`)
+                    cy.gridSearch(contactName, 'getESSimpleSearch')
 
-                        cy.getTableCell('Tags', contactIndex + 1).then(($tagger) => {
-                            cy.log('==== STEP: SCROLL TO TOP RIGHT ====')
-                            cy.scrollGridTo('topRight', '#Contacts')
+                    cy.getTableCell('Tags', 1).then(($tagger) => {
+                        cy.log('==== STEP: SCROLL TO TOP RIGHT ====')
+                        cy.scrollGridTo('topRight', '#Contacts')
 
-                            cy.log('==== STEP: OPEN TAGGER ====')
-                            cy.wrap($tagger).click()
+                        cy.log('==== STEP: OPEN TAGGER ====')
+                        cy.wrap($tagger).click()
 
-                            cy.wait(3000)
-                            cy.log('==== STEP: REMOVE TAG ====')
-                            cy.get('.MuiChip-label', { timeout: longTimeout }).contains(tagName).siblings().click()
+                        cy.wait(3000)
+                        cy.log('==== STEP: REMOVE TAG 2 ====')
+                        cy.get('.MuiChip-label', { timeout: longTimeout }).contains(tagName).siblings().click()
 
-                            cy.get('body').type('{esc}{esc}')
-                        })
+                        cy.get('body').type('{esc}{esc}')
                     })
 
                 })
