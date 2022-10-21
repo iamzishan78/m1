@@ -8,7 +8,7 @@ export const findInObject = (obj, stringToCheck) => {
 
         const objectValue = obj[key]
         if (objectValue) {
-            if (typeof objectValue === 'string' && objectValue.toLowerCase().includes(stringToCheck))
+            if (typeof objectValue === 'string' && objectValue.toLowerCase().includes(stringToCheck.toLowerCase()))
                 return true
             else if (typeof objectValue === 'object' && !_.isEmpty(objectValue) && findInObject(objectValue, stringToCheck))
                 return true

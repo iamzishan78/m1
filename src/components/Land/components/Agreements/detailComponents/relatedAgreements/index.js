@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import _ from "underscore";
-import { useForm } from "react-hook-form";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import { useStyles as customStyles } from "../style";
 
-import AgreementLegalDescriptionFields from "components/Land/components/Agreements/detailComponents/legalDescription/FieldsSection";
-import AgreementOwnersTractsTable from "components/Table/Agreement/AgreementOwnersTractsTable";
+import RelatedAgreementsTable from "./RelatedAgreementsTable";
 
-// Components
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "10px 25px",
@@ -58,26 +55,22 @@ const useStyles = makeStyles((theme) => ({
       margin: 0,
     },
   },
+  documentHeader: {
+    fontSize: "1.25rem",
+    "& svg": {
+      transform: "translate(-4%, 22%)",
+    },
+  },
 }));
 
-export default function LagalDescription({ agreementDetails, uniObj, updateAgreement }) {
+const RelatedAgreements = (props) => {
+  const { uniObj } = props;
   const classes = useStyles();
   const customClasses = customStyles();
-  const [tractOwners, setTractOwners] = useState();
-  const { reset } = useForm();
-  const [tractsNumber, setTractsNumber] = useState(0);
 
-  useEffect(() => {
-    if (!_.isEmpty(agreementDetails)) reset(agreementDetails);
-  }, [reset, agreementDetails]);
+  const [counter, setCounter] = useState(0);
 
-  // const offClickHandler = (key, value) => updateAgreement(key, value);
-
-  const handleKeyDown = (e) => {
-    if (e.keyCode === 38 || e.keyCode === 40) {
-      e.preventDefault();
-    }
-  };
+  const customLayerId = useSelector(({ Land }) => Land.agreement?.activeAgreement)?._id;
 
   return (
     <div className={classes.root}>
@@ -93,34 +86,21 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>
               <Typography variant="h5" className={customClasses.titleText}>
-                Legal Description
+                Related Agreements
               </Typography>
-              <Chip color="info" label={tractsNumber} />
+              <Chip color="info" label={counter} />
             </Grid>
           </Grid>
         </AccordionSummary>
         <AccordionDetails className={classes.accordionDetails}>
           <Grid container direction="column" alignItems="center" spacing={4} style={{ display: "block" }}>
-            <Grid item xs={12} style={{ padding: "0px 50px 0px 0px" }}>
-              <AgreementLegalDescriptionFields
-                agreementDetails={agreementDetails}
-                updateAgreement={updateAgreement}
-                tractOwners={tractOwners}
-              />
-            </Grid>
-            {uniObj && (
+            {uniObj?._id && (
               <Grid item xs={12} style={{ padding: "35px 20px 0px 0px" }}>
-                <AgreementOwnersTractsTable
-                  id="AgreementOwnersTractsTable"
-                  setRecord={setTractOwners}
-                  customLayer={uniObj}
-                  shapeType="Agreement"
-                  header={"Tracts"}
-                  setTractsNumber={setTractsNumber}
+                <RelatedAgreementsTable
                   dense
-                  commentType="Ownership"
-                  targetLabel="Tract"
-                  portal={'#agreementDetailsDrawer'}
+                  moduleId={customLayerId}
+                  setNewAgmtState={props.setNewAgmtState}
+                  setCounter={setCounter}
                 />
               </Grid>
             )}
@@ -129,4 +109,6 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
       </Accordion>
     </div>
   );
-}
+};
+
+export default RelatedAgreements;

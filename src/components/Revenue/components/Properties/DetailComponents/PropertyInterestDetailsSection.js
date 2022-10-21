@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import PropertyInterestDetailsTable from "components/Table/Revenue/PropertyInterestDetailsTable";
 import PropertyRevenueDetailsTable from "components/Table/Revenue/PropertyRevenueDetailsTable";
-import PropertyWellProductionTable from "components/Table/Revenue/PropertyWellProductionTable";
+// import PropertyWellProductionTable from "components/Table/Revenue/PropertyWellProductionTable";
 import TabButtons from "components/Shared/TabPanels/TabButtons"
+import RelatedAgreementsTable from "components/Land/components/Agreements/detailComponents/relatedAgreements/RelatedAgreementsTable";
 
 const useStyles = makeStyles(() => ({
   sectionCard: {
@@ -24,7 +25,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDetails, setSelectedInterest }) => {
+const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDetails, setSelectedInterest, setNewAgmtState }) => {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState(0)
 
@@ -33,6 +34,7 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
       labels={[
         "Interest Details",
         "Revenue Details",
+        "Related Agreements"
         // "Well Production"
       ]}
       value={selectedTab}
@@ -65,6 +67,14 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
           parent="PropertyInterestTable"
           header={<Header />}
           propertyId={propertyId}
+        />
+      )}
+      {selectedTab === 2 && (
+        <RelatedAgreementsTable
+          header={<Header />}
+          moduleId={propertyId}
+          dense
+          setNewAgmtState={setNewAgmtState}
         />
       )}
       {/* {selectedTab === 2 && (
