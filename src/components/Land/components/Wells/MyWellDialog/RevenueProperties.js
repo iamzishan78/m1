@@ -115,7 +115,7 @@ const useStyles = makeStyles((theme) => ({
   },
   wellLink: {
     cursor: "pointer",
-    fontSize: "16px",
+    fontSize: "14px",
     margin: 0,
     variant: "subtitle1",
     color: "primary",
@@ -125,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
   },
   secondaryText: {
     color: "grey",
-    fontSize: "16px",
+    fontSize: "14px",
     margin: 0,
     padding: 0,
   },
