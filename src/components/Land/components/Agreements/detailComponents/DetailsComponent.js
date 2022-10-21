@@ -451,7 +451,7 @@ export function DetailComponents(props) {
         <div className="flex column alignStart justifyStart w-100">
           <div className={classes.title}>
             <IconButton className={classes.icon}>
-              <DocumentIcon />
+              <DocumentIcon id="documentIcon" />
             </IconButton>
             <div className={classes.titleText}>
               {agreementDetails && (
@@ -688,18 +688,18 @@ export function DetailComponents(props) {
           )}
         </div>
 
-          <div
-            style={{
-              marginTop: 20,
-              marginRight: 24,
-              height: "calc(100vh - 270px)",
-              overflow: 'auto',
-              width: !!drawer ? 620 : 0,
-              background: 'white'
-            }}
-            id={'agreementDetailsDrawer'}
-          >
-            {drawer === "meta" && <MetadataDrawer
+        <div
+          style={{
+            marginTop: 20,
+            marginRight: 24,
+            height: "calc(100vh - 270px)",
+            overflow: 'auto',
+            width: !!drawer ? 620 : 0,
+            background: 'white'
+          }}
+          id={'agreementDetailsDrawer'}
+        >
+          {drawer === "meta" && <MetadataDrawer
             setCollapse={setDrawer}
             targetSourceId={agreementId}
             data={agreementDetails}
@@ -712,7 +712,7 @@ export function DetailComponents(props) {
             onUpdate={(data) => Object.keys(data).forEach(key => updateAgreement(key, data[key]))}
             isSource={false}
           />}
-          </div>
+        </div>
       </div>
 
       {/**
