@@ -681,6 +681,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     ) : (
       <AutocompEntityNamesList
         variant="outlined"
+        id="AutocompEntityNamesList"
         placeholder="Search for owner by name"
         nameAutValue={nameAutValue}
         setNameAutValue={setNameAutValue}
