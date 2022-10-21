@@ -91,6 +91,7 @@ const UsersListWithIcon = ({ label, placeholder, selectedUserId, onChangeUser })
       </Grid>
       <Grid item xs={9}>
         <Autocomplete
+          id="userList"
           options={users.filter((u) => u.text)}
           onChange={(e, user) => onChangeUser(user)}
           value={users.find((user) => user?.value === selectedUserId) || null}

@@ -1,5 +1,3 @@
-import React from "react";
-
 /* props is just a style object*/
 
 const SuggestedOwnersHeadCells = [

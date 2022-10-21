@@ -212,10 +212,9 @@ export default function CSVFileReader(props) {
             ...(stateNav.bulkUploadShape?.shapeType) && { 'Shape Type': stateNav.bulkUploadShape?.shapeType }
           })
         })
-        
+
         if(["TRACTS", 'UNITS'].includes(stateApp.jobType) === "TRACTS") {
           data.forEach((data) => {
-            console.log('data',data)
             Object.assign(data.data, {
               ...(data.data["PLSS Township"] || data.data["PLSS Range"]) && { "PLSS Township/Range": [data.data["PLSS Township"], data.data["PLSS Range"]].join(" ") }
             })

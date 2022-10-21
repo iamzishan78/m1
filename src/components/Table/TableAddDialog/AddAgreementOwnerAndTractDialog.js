@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ReactDOM from 'react-dom';
 import { useApolloClient, useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -415,6 +416,585 @@ function AddAgreementOwnerAndTractDialog(props) {
   }
 
   const autoCompleteList = dataAutoCompleteList?.autoCompleteList || [];
+
+  const content = <div style={{ padding: "30px" }}>
+  <Grid item xs={12} style={{ minHeight: "35px" }}>
+    <h4
+      style={{
+        margin: "0 0 15px 0",
+        float: "left",
+        fontSize: "1.1rem",
+      }}
+    >
+      {props.seletedTract ? `Update ${props.shapeType} Tract` : `Associate Tract to ${props.shapeType}`}
+    </h4>
+    <div style={{ float: "right" }}>
+      {selectedShapeLayer?.tract && (
+        <>
+          <IconButton
+            size="small"
+            component="span"
+            style={{
+              background: "transparent",
+              paddingLeft: "10px",
+              align: "center",
+            }}
+            onClick={handleMenuClick}
+          >
+            <MoreHorizIcon size="medium" />
+          </IconButton>
+        </>
+      )}
+      <IconButton onClick={!loading && handleClose} size="small">
+        <CloseIcon2 fontSize="small" />
+      </IconButton>
+      <Menu
+        id="dealMenu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        className={classes.menu}
+        getContentAnchorEl={null}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <MenuItem
+          onClick={() => {
+            props.deleteFunc([selectedShapeLayer._id])
+            handleMenuClose();
+            !loading && handleClose();
+          }}
+        >
+          <ListItemIcon style={{ minWidth: '30px' }}>
+            <DeleteIcon size="medium" />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
+    </div>
+  </Grid>
+
+  <div>
+    <List>
+      <ListItem
+        style={{
+          flexDirection: "column",
+          justifyContent: "start",
+          alignItems: "start",
+        }}
+      >
+        <ListItemText>
+          <h4
+            onClick={() => {
+              setIsNewTract(true);
+            }}
+            className={isNewTract ? classes.selectedType : classes.unSelectedType}
+          >
+            New Tract
+          </h4>
+          <h4
+            onClick={() => {
+              setIsNewTract(false);
+            }}
+            className={!isNewTract ? classes.selectedType : classes.unSelectedType}
+            style={{ marginLeft: "20px" }}
+          >
+            Existing Tract
+          </h4>
+        </ListItemText>
+      </ListItem>
+    </List>
+  </div>
+
+  <div>
+    <Box mt={2}>
+      {isNewTract ?
+        <Typography>Add new tract to the map by entering a valid legal description</Typography> :
+        <Typography>Search for existing tract to associate to agreement and populate ownership detail</Typography>
+      }
+
+    </Box>
+    <TextField id="_id" name="_id" style={{ display: "none" }} inputRef={register()} />
+
+    <TractForm
+      isNewTract={isNewTract}
+      tract={tract}
+      tractValue={tractValue}
+      setSelectedShapeLayer={setSelectedShapeLayer}
+      control={control}
+      prefix={"tract."}
+    />
+
+    <TextField id="tractId" name="tract.tractId" style={{ display: "none" }} inputRef={register()} />
+    <Grid container direction="row" spacing={1} className={classes.qtrCalls}>
+      <Grid item xs={3}>
+        <Autocomplete
+          options={qtrOptions}
+          getOptionLabel={(option) => option}
+          value={tract?.qtrQtrSelection?.selectedQtr?.[0] ?? ""}
+
+          onChange={(e, newInputValue) => {
+            handleChangeQtr(newInputValue, 0);
+          }}
+          renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 1" size="small" className={classes.maxWidth} />}
+        />
+      </Grid>
+      <Grid item xs={3}>
+        <Autocomplete
+          options={qtrOptions}
+          getOptionLabel={(option) => option}
+          value={tract?.qtrQtrSelection?.selectedQtr?.[1] ?? ""}
+          onChange={(e, newInputValue) => {
+            handleChangeQtr(newInputValue, 1);
+          }}
+          renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 2" size="small" className={classes.maxWidth} />}
+        />
+      </Grid>
+      <Grid item xs={3}>
+        <Autocomplete
+          options={qtrOptions}
+          getOptionLabel={(option) => option}
+          value={tract?.qtrQtrSelection?.selectedQtr?.[2] ?? ""}
+          onChange={(e, newInputValue) => {
+            handleChangeQtr(newInputValue, 2);
+          }}
+          renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 3" size="small" className={classes.maxWidth} />}
+        />
+      </Grid>
+      <Grid item xs={3}>
+        <Autocomplete
+          options={qtrOptions}
+          getOptionLabel={(option) => option}
+          value={tract?.qtrQtrSelection?.selectedQtr?.[3] ?? ""}
+          onChange={(e, newInputValue) => {
+            handleChangeQtr(newInputValue, 3);
+          }}
+          renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 4" size="small" className={classes.maxWidth} />}
+        />
+      </Grid>
+    </Grid>
+    <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.sdGrossAcres" label={"Gross. Acres"} InputLabelProps={{ shrink: true }} fullWidth defaultValue={tract?.sdGrossAcres || ""} />
+    <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.shapeArea" label={"Calc. Acres"} InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.shapeArea || ""} />
+    {/* <Controller
+      control={control}
+      name={`tract.tractStatus`}
+      defaultValue={tract?.tractStatus || ''}
+      render={(props) => (
+        <AutoCompleteTypeComponent
+          value={props.value}
+          meta={{
+            path: 'shapeJson.properties.tractStatus'
+          }}
+          label="Tract Status"
+          variant="outlined"
+          onChange={(e, value) => { props.onChange(value?.name || '') }}
+          autoFocus={false}
+        />
+      )}
+    /> */}
+    <Controller
+      control={control}
+      name={`tract.department`}
+      defaultValue={tract?.department || ''}
+      render={(props) => (
+        <AutoCompleteTypeComponent
+          value={props.value}
+          meta={{
+            path: 'shapeJson.properties.department'
+          }}
+          label="Department"
+          variant="outlined"
+          onChange={(e, value) => { props.onChange(value?.name || '') }}
+          autoFocus={false}
+        />
+      )}
+    />
+    <Controller
+      control={control}
+      name={`tract.mapStatus`}
+      defaultValue={tract?.mapStatus || ''}
+      render={(props) => (
+        <AutoCompleteTypeComponent
+          value={props.value}
+          meta={{
+            path: 'shapeJson.properties.mapStatus'
+          }}
+          label="Map Status"
+          variant="outlined"
+          onChange={(e, value) => { props.onChange(value?.name || '') }}
+          autoFocus={false}
+        />
+      )}
+    />
+
+  </div>
+  <div>
+    <List>
+      <ListItem
+        style={{
+          flexDirection: "column",
+          justifyContent: "start",
+          alignItems: "start",
+        }}
+      >
+        <ListItemText>
+          <h4
+            onClick={() => {
+              setIsTractOwner(false);
+            }}
+            className={!isTractOwner ? classes.selectedType : classes.unSelectedType}
+          >
+            New Owner
+          </h4>
+          <h4
+            onClick={() => {
+              setIsTractOwner(true);
+            }}
+            className={isTractOwner ? classes.selectedType : classes.unSelectedType}
+            style={{ marginLeft: "10px" }}
+          >
+            {` Existing Tract Owners (${totalOwners ? totalOwners : "0"})`}
+          </h4>
+        </ListItemText>
+      </ListItem>
+    </List>
+  </div>
+
+  {isTractOwner ? (
+    <AutoCompleteParcelOwners
+      variant="outlined"
+      setTotalOwners={setTotalOwners}
+      parcel={tract}
+      placeholder="Search existing tract owner by name"
+      value={nameAutValue}
+      onChange={setExistingOwner}
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <SearchIcon />
+          </InputAdornment>
+        ),
+      }}
+    />
+  ) : (
+    <AutocompEntityNamesList
+      variant="outlined"
+      placeholder="Search for owner by name"
+      nameAutValue={nameAutValue}
+      setNameAutValue={setNameAutValue}
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <SearchIcon />
+          </InputAdornment>
+        ),
+      }}
+    />
+  )}
+
+  <TextField id="ownerEntity" name={`ownerEntity`} style={{ display: "none" }} inputRef={register()} />
+  <TextField id="ownerName" name={`ownerName`} style={{ display: "none" }} inputRef={register()} />
+  <Controller
+    control={control}
+    name="mineral_interest"
+    render={({ onChange, value }) => (
+      <TextField
+        variant="outlined"
+        InputLabelProps={{ shrink: true }}
+        margin="dense"
+        value={value}
+        type="number"
+        label={"Mineral Interest"}
+        fullWidth
+        onWheel={(e) => e.target.blur()}
+        onChange={(e) => {
+          onChange(e.target.value);
+          const net_acres = !isAcresOverridden ? calculateNetAcres(e.target.value) : getValues().net_acres
+          const nra = !isNraOverridden ? calculateNRA(getValues().royalty_interest, getValues().orri, net_acres) : getValues().nra
+          setValue("net_acres", net_acres);
+          setValue("nra", nra);
+        }}
+      />
+    )}
+  />
+
+  <Controller
+    control={control}
+    name="royalty_interest"
+    render={({ onChange, value }) => (
+      <TextField
+        variant="outlined"
+        InputLabelProps={{ shrink: true }}
+        margin="dense"
+        value={value}
+        type="number"
+        label={"Royalty Interest"}
+        fullWidth
+        onWheel={(e) => e.target.blur()}
+        onChange={(e) => {
+          onChange(e.target.value);
+          if (!isNraOverridden)
+            setValue("nra", calculateNRA(e.target.value, getValues().orri));
+        }}
+      />
+    )}
+  />
+
+  <Controller
+    control={control}
+    name="orri"
+    render={({ onChange, value }) => (
+      <TextField
+        variant="outlined"
+        InputLabelProps={{ shrink: true }}
+        margin="dense"
+        value={value}
+        type="number"
+        label={"Overriding Royalty Interest (ORRI)"}
+        fullWidth
+        onWheel={(e) => e.target.blur()}
+        onChange={(e) => {
+          onChange(e.target.value);
+          if (!isNraOverridden)
+            setValue("nra", calculateNRA(e.target.value, getValues().orri));
+        }}
+      />
+    )}
+  />
+
+  <Controller
+    as={TextField}
+    control={control}
+    variant="outlined"
+    margin="dense"
+    name="working_interest"
+    inputRef={register()}
+    label={"Working Interest"}
+    InputLabelProps={{ shrink: true }}
+    type="number"
+    fullWidth
+    onWheel={(e) => e.target.blur()}
+  />
+
+  <Controller
+    control={control}
+    name="net_acres"
+    render={({ onChange, value }) => (
+      <TextField
+        variant="outlined"
+        InputLabelProps={{ shrink: true }}
+        margin="dense"
+        value={value}
+        type="number"
+        label={"Net Acres"}
+        className={isAcresOverridden ? classes.netAcresOveridden : classes.netAcresNormal}
+        fullWidth
+        onWheel={(e) => e.target.blur()}
+        onChange={(e) => {
+          onChange(e.target.value);
+          const value = addTrailingZeros(e.target.value);
+          const netAcres = calculateNetAcres(getValues().mineral_interest);
+          setIsAcresOverridden(parseFloat(netAcres) !== e.target.value);
+          onChange(e.target.value);
+          setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri, value));
+        }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              {isAcresOverridden && (
+                <IconButton
+                  aria-label="toggle royality-acres"
+                  onClick={() => {
+                    setValue("net_acres", calculateNetAcres());
+                    const netAcres = calculateNetAcres(getValues().mineral_interest);
+                    setIsAcresOverridden(false)
+                    setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri, netAcres));
+                    setValue("net_acres", netAcres);
+                  }}
+                >
+                  <AutorenewIcon />
+                </IconButton>
+              )}
+            </InputAdornment>
+          ),
+        }}
+      />
+    )}
+  />
+
+  <Controller
+    as={TextField}
+    control={control}
+    variant="outlined"
+    margin="dense"
+    name="company_net_acres"
+    inputRef={register()}
+    label={"Company Net Acres"}
+    InputLabelProps={{ shrink: true }}
+    type="number"
+    fullWidth
+    onWheel={(e) => e.target.blur()}
+  />
+
+  <Controller
+    control={control}
+    name="nra"
+    render={({ onChange, value }) => (
+      <TextField
+        variant="outlined"
+        InputLabelProps={{ shrink: true }}
+        margin="dense"
+        value={value}
+        type="number"
+        label="Net Royalty Acres (NRA)"
+        className={isNraOverridden ? classes.netAcresOveridden : classes.netAcresNormal}
+        fullWidth
+        onWheel={(e) => e.target.blur()}
+        onChange={(e) => {
+          onChange(e.target.value);
+          const nra = calculateNRA(getValues().royalty_interest, getValues().orri);
+          setIsNRAOverridden(parseFloat(nra) !== parseFloat(e.target.value))
+          setValue("nra", e.target.value);
+        }}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              {isNraOverridden && (
+                <IconButton
+                  aria-label="toggle royality-acres"
+                  onClick={() => {
+                    const nra = calculateNRA(getValues().royalty_interest, getValues().orri);
+                    setValue("nra", nra);
+                    setIsNRAOverridden(false)
+                  }}
+                >
+                  <AutorenewIcon />
+                </IconButton>
+              )}
+            </InputAdornment>
+          ),
+        }}
+      />
+    )}
+  />
+
+  <Controller
+    control={control}
+    name={`parcelOwnersRadioBValue`}
+    render={({ onChange, value, ref }) => (
+      <RadioGroup
+        row
+        value={value || "true"}
+        onChange={(event) => {
+          if (event.target.value === "true") {
+            setValue("depthFrom", "All depths");
+            setValue("depthTo", "All depths");
+          }
+          onChange(event.target.value);
+        }}
+      >
+        <FormControlLabel value="true" control={<Radio />} label="All Depths" />
+        <FormControlLabel value="false" control={<Radio />} label="Footages/Formations" />
+      </RadioGroup>
+    )}
+  />
+
+  <Grid item xs={12} style={{ display: parcelOwnersRadioBValue !== "false" ? "none" : "block" }}>
+    <Controller
+      as={TextField}
+      control={control}
+      variant="outlined"
+      margin="dense"
+      name="depthFrom"
+      inputRef={register()}
+      label={"Depth From"}
+      InputLabelProps={{ shrink: true }}
+      fullWidth
+      onWheel={(e) => e.target.blur()}
+    />
+
+    <Controller
+      as={TextField}
+      control={control}
+      variant="outlined"
+      margin="dense"
+      name="depthTo"
+      inputRef={register()}
+      label={"Depth To"}
+      InputLabelProps={{ shrink: true }}
+      fullWidth
+      onWheel={(e) => e.target.blur()}
+    />
+  </Grid>
+
+  <Grid container direction="row" spacing={2}>
+    <Grid item xs={6}>
+      <Controller
+        control={control}
+        name={`tractStatus`}
+        render={({ onChange, value, ref }) => (
+          <AutoCompleteWithNewOption
+            margin="dense"
+            label="Tract Status"
+            InputLabelProps={{ shrink: true }}
+            variant="outlined"
+            options={autoCompleteList}
+            value={value}
+            onChange={(_, value) => {
+              value && onChange(value.name);
+            }}
+          />
+        )}
+      />
+    </Grid>
+    <Grid item xs={6}>
+      <FormControl variant="outlined" fullWidth margin="dense" inputRef={register()} name="countAcres">
+        <InputLabel id="countAcres">Count Acres</InputLabel>
+        <Controller
+          control={control}
+          name="countAcres"
+          render={({ onChange, value }) => (
+            <Select labelId="countAcres" label="Count Acres" value={value} onChange={onChange}>
+              <MenuItem value="Yes">Yes</MenuItem>
+              <MenuItem value="No">No</MenuItem>
+            </Select>
+          )}
+        />
+      </FormControl>
+    </Grid>
+  </Grid>
+
+  <div className={classes.dialogFooter}>
+    <Button
+      variant="contained"
+      color="default"
+      size="medium"
+      disableElevation
+      onClick={!loading && handleClose}
+      disabled={loading}
+      className={classes.footerButton}
+      style={{ margin: "0px 15px 0px 0px" }}
+    >
+      Cancel
+    </Button>
+
+    <Button
+      variant="contained"
+      color="secondary"
+      size="medium"
+      disableElevation
+      onClick={() => {
+        handleSave();
+      }}
+      className={classes.footerButton}
+    // disabled={!selectedShapeLayer?._id}
+    >
+      {loading ? <CircularProgress size={14} /> : "Save"}
+    </Button>
+  </div>
+</div>
+
   return (
     <>
       {deleteDialogOpen && (
@@ -436,589 +1016,17 @@ function AddAgreementOwnerAndTractDialog(props) {
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
-      <RightDialog open={props.open} handleClickDialogClose={handleClose} width={props.width}>
-        <div style={{ padding: "30px" }}>
-          <Grid item xs={12} style={{ minHeight: "35px" }}>
-            <h4
-              style={{
-                margin: "0 0 15px 0",
-                float: "left",
-                fontSize: "1.1rem",
-              }}
-            >
-              {props.seletedTract ? `Update ${props.shapeType} Tract` : `Associate Tract to ${props.shapeType}`}
-            </h4>
-            <div style={{ float: "right" }}>
-              {selectedShapeLayer?.tract && (
-                <>
-                  <IconButton
-                    size="small"
-                    component="span"
-                    style={{
-                      background: "transparent",
-                      paddingLeft: "10px",
-                      align: "center",
-                    }}
-                    onClick={handleMenuClick}
-                  >
-                    <MoreHorizIcon size="medium" />
-                  </IconButton>
-                </>
-              )}
-              <IconButton onClick={handleClose} size="small">
-                <CloseIcon2 fontSize="small" />
-              </IconButton>
-              <Menu
-                id="dealMenu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-                className={classes.menu}
-                getContentAnchorEl={null}
-                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-                transformOrigin={{ vertical: "top", horizontal: "center" }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    props.deleteFunc([selectedShapeLayer._id])
-                    handleMenuClose();
-                    handleClose();
-                  }}
-                >
-                  <ListItemIcon style={{ minWidth: '30px' }}>
-                    <DeleteIcon size="medium" />
-                  </ListItemIcon>
-                  <ListItemText>Delete</ListItemText>
-                </MenuItem>
-              </Menu>
-            </div>
-          </Grid>
+      {
+        !!props.drawerContainer &&
+        ReactDOM.createPortal(content, props.drawerContainer)
+      }
+      {
+        !props.drawerContainer &&
+        <RightDialog open={props.open} handleClickDialogClose={handleClose} width={props.width}>
+          {content}
+        </RightDialog>
 
-          <div>
-            <List>
-              <ListItem
-                style={{
-                  flexDirection: "column",
-                  justifyContent: "start",
-                  alignItems: "start",
-                }}
-              >
-                <ListItemText>
-                  <h4
-                    onClick={() => {
-                      setIsNewTract(true);
-                    }}
-                    className={isNewTract ? classes.selectedType : classes.unSelectedType}
-                  >
-                    New Tract
-                  </h4>
-                  <h4
-                    onClick={() => {
-                      setIsNewTract(false);
-                    }}
-                    id="existingTractTab"
-                    className={!isNewTract ? classes.selectedType : classes.unSelectedType}
-                    style={{ marginLeft: "20px" }}
-                  >
-                    Existing Tract
-                  </h4>
-                </ListItemText>
-              </ListItem>
-            </List>
-          </div>
-
-          <div>
-            <Box mt={2}>
-              {isNewTract ?
-                <Typography>Add new tract to the map by entering a valid legal description</Typography> :
-                <Typography>Search for existing tract to associate to agreement and populate ownership detail</Typography>
-              }
-
-            </Box>
-            <TextField id="_id" name="_id" style={{ display: "none" }} inputRef={register()} />
-
-            <TractForm
-              isNewTract={isNewTract}
-              tract={tract}
-              tractValue={tractValue}
-              setSelectedShapeLayer={setSelectedShapeLayer}
-              control={control}
-              prefix={"tract."}
-            />
-
-            <TextField id="tractId" name="tract.tractId" style={{ display: "none" }} inputRef={register()} />
-            <Grid container direction="row" spacing={1} className={classes.qtrCalls}>
-              <Grid item xs={3}>
-                <Autocomplete
-                  options={qtrOptions}
-                  getOptionLabel={(option) => option}
-                  value={tract?.qtrQtrSelection?.selectedQtr?.[0] ?? ""}
-
-                  onChange={(e, newInputValue) => {
-                    handleChangeQtr(newInputValue, 0);
-                  }}
-                  renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 1" size="small" className={classes.maxWidth} />}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <Autocomplete
-                  id="autocompleteQTR2"
-                  options={qtrOptions}
-                  getOptionLabel={(option) => option}
-                  value={tract?.qtrQtrSelection?.selectedQtr?.[1] ?? ""}
-                  onChange={(e, newInputValue) => {
-                    handleChangeQtr(newInputValue, 1);
-                  }}
-                  renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 2" size="small" className={classes.maxWidth} />}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <Autocomplete
-                  options={qtrOptions}
-                  getOptionLabel={(option) => option}
-                  value={tract?.qtrQtrSelection?.selectedQtr?.[2] ?? ""}
-                  onChange={(e, newInputValue) => {
-                    handleChangeQtr(newInputValue, 2);
-                  }}
-                  renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 3" size="small" className={classes.maxWidth} />}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <Autocomplete
-                  options={qtrOptions}
-                  getOptionLabel={(option) => option}
-                  value={tract?.qtrQtrSelection?.selectedQtr?.[3] ?? ""}
-                  onChange={(e, newInputValue) => {
-                    handleChangeQtr(newInputValue, 3);
-                  }}
-                  renderInput={(params) => <TextField {...params} variant="outlined" label="QTR 4" size="small" className={classes.maxWidth} />}
-                />
-              </Grid>
-            </Grid>
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.sdGrossAcres" label={"Gross. Acres"} InputLabelProps={{ shrink: true }} fullWidth defaultValue={tract?.sdGrossAcres || ""} />
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name="tract.shapeArea" label={"Calc. Acres"} InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.shapeArea || ""} />
-            {/* <Controller
-              control={control}
-              name={`tract.tractStatus`}
-              defaultValue={tract?.tractStatus || ''}
-              render={(props) => (
-                <AutoCompleteTypeComponent
-                  value={props.value}
-                  meta={{
-                    path: 'shapeJson.properties.tractStatus'
-                  }}
-                  label="Tract Status"
-                  variant="outlined"
-                  onChange={(e, value) => { props.onChange(value?.name || '') }}
-                  autoFocus={false}
-                />
-              )}
-            /> */}
-            <Controller
-              control={control}
-              name={`tract.department`}
-              defaultValue={tract?.department || ''}
-              render={(props) => (
-                <AutoCompleteTypeComponent
-                  value={props.value}
-                  meta={{
-                    path: 'shapeJson.properties.department'
-                  }}
-                  label="Department"
-                  variant="outlined"
-                  onChange={(e, value) => { props.onChange(value?.name || '') }}
-                  autoFocus={false}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name={`tract.mapStatus`}
-              defaultValue={tract?.mapStatus || ''}
-              render={(props) => (
-                <AutoCompleteTypeComponent
-                  value={props.value}
-                  meta={{
-                    path: 'shapeJson.properties.mapStatus'
-                  }}
-                  label="Map Status"
-                  variant="outlined"
-                  onChange={(e, value) => { props.onChange(value?.name || '') }}
-                  autoFocus={false}
-                />
-              )}
-            />
-
-          </div>
-          <div>
-            <List>
-              <ListItem
-                style={{
-                  flexDirection: "column",
-                  justifyContent: "start",
-                  alignItems: "start",
-                }}
-              >
-                <ListItemText>
-                  <h4
-                    onClick={() => {
-                      setIsTractOwner(false);
-                    }}
-                    className={!isTractOwner ? classes.selectedType : classes.unSelectedType}
-                  >
-                    New Owner
-                  </h4>
-                  <h4
-                    onClick={() => {
-                      setIsTractOwner(true);
-                    }}
-                    className={isTractOwner ? classes.selectedType : classes.unSelectedType}
-                    style={{ marginLeft: "10px" }}
-                  >
-                    {` Existing Tract Owners (${totalOwners ? totalOwners : "0"})`}
-                  </h4>
-                </ListItemText>
-              </ListItem>
-            </List>
-          </div>
-
-          {isTractOwner ? (
-            <AutoCompleteParcelOwners
-              variant="outlined"
-              setTotalOwners={setTotalOwners}
-              parcel={tract}
-              placeholder="Search existing tract owner by name"
-              value={nameAutValue}
-              onChange={setExistingOwner}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          ) : (
-            <AutocompEntityNamesList
-              id="AutocompEntityNamesList"
-              variant="outlined"
-              placeholder="Search for owner by name"
-              nameAutValue={nameAutValue}
-              setNameAutValue={setNameAutValue}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
-
-          <TextField id="ownerEntity" name={`ownerEntity`} style={{ display: "none" }} inputRef={register()} />
-          <TextField id="ownerName" name={`ownerName`} style={{ display: "none" }} inputRef={register()} />
-          <Controller
-            control={control}
-            name="mineral_interest"
-            render={({ onChange, value }) => (
-              <TextField
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                margin="dense"
-                value={value}
-                type="number"
-                label={"Mineral Interest"}
-                fullWidth
-                onWheel={(e) => e.target.blur()}
-                onChange={(e) => {
-                  onChange(e.target.value);
-                  const net_acres = !isAcresOverridden ? calculateNetAcres(e.target.value) : getValues().net_acres
-                  const nra = !isNraOverridden ? calculateNRA(getValues().royalty_interest, getValues().orri, net_acres) : getValues().nra
-                  setValue("net_acres", net_acres);
-                  setValue("nra", nra);
-                }}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="royalty_interest"
-            render={({ onChange, value }) => (
-              <TextField
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                margin="dense"
-                value={value}
-                type="number"
-                label={"Royalty Interest"}
-                fullWidth
-                onWheel={(e) => e.target.blur()}
-                onChange={(e) => {
-                  onChange(e.target.value);
-                  if (!isNraOverridden)
-                    setValue("nra", calculateNRA(e.target.value, getValues().orri));
-                }}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="orri"
-            render={({ onChange, value }) => (
-              <TextField
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                margin="dense"
-                value={value}
-                type="number"
-                label={"Overriding Royalty Interest (ORRI)"}
-                fullWidth
-                onWheel={(e) => e.target.blur()}
-                onChange={(e) => {
-                  onChange(e.target.value);
-                  if (!isNraOverridden)
-                    setValue("nra", calculateNRA(e.target.value, getValues().orri));
-                }}
-              />
-            )}
-          />
-
-          <Controller
-            as={TextField}
-            control={control}
-            variant="outlined"
-            margin="dense"
-            name="working_interest"
-            inputRef={register()}
-            label={"Working Interest"}
-            InputLabelProps={{ shrink: true }}
-            type="number"
-            fullWidth
-            onWheel={(e) => e.target.blur()}
-          />
-
-          <Controller
-            control={control}
-            name="net_acres"
-            render={({ onChange, value }) => (
-              <TextField
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                margin="dense"
-                value={value}
-                type="number"
-                label={"Net Acres"}
-                className={isAcresOverridden ? classes.netAcresOveridden : classes.netAcresNormal}
-                fullWidth
-                onWheel={(e) => e.target.blur()}
-                onChange={(e) => {
-                  onChange(e.target.value);
-                  const value = addTrailingZeros(e.target.value);
-                  const netAcres = calculateNetAcres(getValues().mineral_interest);
-                  setIsAcresOverridden(parseFloat(netAcres) !== e.target.value);
-                  onChange(e.target.value);
-                  setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri, value));
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {isAcresOverridden && (
-                        <IconButton
-                          aria-label="toggle royality-acres"
-                          onClick={() => {
-                            setValue("net_acres", calculateNetAcres());
-                            const netAcres = calculateNetAcres(getValues().mineral_interest);
-                            setIsAcresOverridden(false)
-                            setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri, netAcres));
-                            setValue("net_acres", netAcres);
-                          }}
-                        >
-                          <AutorenewIcon />
-                        </IconButton>
-                      )}
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            )}
-          />
-
-          <Controller
-            as={TextField}
-            control={control}
-            variant="outlined"
-            margin="dense"
-            name="company_net_acres"
-            inputRef={register()}
-            label={"Company Net Acres"}
-            InputLabelProps={{ shrink: true }}
-            type="number"
-            fullWidth
-            onWheel={(e) => e.target.blur()}
-          />
-
-          <Controller
-            control={control}
-            name="nra"
-            render={({ onChange, value }) => (
-              <TextField
-                variant="outlined"
-                InputLabelProps={{ shrink: true }}
-                margin="dense"
-                value={value}
-                type="number"
-                label="Net Royalty Acres (NRA)"
-                className={isNraOverridden ? classes.netAcresOveridden : classes.netAcresNormal}
-                fullWidth
-                onWheel={(e) => e.target.blur()}
-                onChange={(e) => {
-                  onChange(e.target.value);
-                  const nra = calculateNRA(getValues().royalty_interest, getValues().orri);
-                  setIsNRAOverridden(parseFloat(nra) !== parseFloat(e.target.value))
-                  setValue("nra", e.target.value);
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {isNraOverridden && (
-                        <IconButton
-                          aria-label="toggle royality-acres"
-                          onClick={() => {
-                            const nra = calculateNRA(getValues().royalty_interest, getValues().orri);
-                            setValue("nra", nra);
-                            setIsNRAOverridden(false)
-                          }}
-                        >
-                          <AutorenewIcon />
-                        </IconButton>
-                      )}
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name={`parcelOwnersRadioBValue`}
-            render={({ onChange, value, ref }) => (
-              <RadioGroup
-                row
-                value={value || "true"}
-                onChange={(event) => {
-                  if (event.target.value === "true") {
-                    setValue("depthFrom", "All depths");
-                    setValue("depthTo", "All depths");
-                  }
-                  onChange(event.target.value);
-                }}
-              >
-                <FormControlLabel value="true" control={<Radio />} label="All Depths" />
-                <FormControlLabel value="false" control={<Radio />} label="Footages/Formations" />
-              </RadioGroup>
-            )}
-          />
-
-          <Grid item xs={12} style={{ display: parcelOwnersRadioBValue !== "false" ? "none" : "block" }}>
-            <Controller
-              as={TextField}
-              control={control}
-              variant="outlined"
-              margin="dense"
-              name="depthFrom"
-              inputRef={register()}
-              label={"Depth From"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              onWheel={(e) => e.target.blur()}
-            />
-
-            <Controller
-              as={TextField}
-              control={control}
-              variant="outlined"
-              margin="dense"
-              name="depthTo"
-              inputRef={register()}
-              label={"Depth To"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              onWheel={(e) => e.target.blur()}
-            />
-          </Grid>
-
-          <Grid container direction="row" spacing={2}>
-            <Grid item xs={6}>
-              <Controller
-                control={control}
-                name={`tractStatus`}
-                render={({ onChange, value, ref }) => (
-                  <AutoCompleteWithNewOption
-                    margin="dense"
-                    label="Tract Status"
-                    InputLabelProps={{ shrink: true }}
-                    variant="outlined"
-                    options={autoCompleteList}
-                    value={value}
-                    onChange={(_, value) => {
-                      value && onChange(value.name);
-                    }}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl variant="outlined" fullWidth margin="dense" inputRef={register()} name="countAcres">
-                <InputLabel id="countAcres">Count Acres</InputLabel>
-                <Controller
-                  control={control}
-                  name="countAcres"
-                  render={({ onChange, value }) => (
-                    <Select labelId="countAcres" label="Count Acres" value={value} onChange={onChange}>
-                      <MenuItem value="Yes">Yes</MenuItem>
-                      <MenuItem value="No">No</MenuItem>
-                    </Select>
-                  )}
-                />
-              </FormControl>
-            </Grid>
-          </Grid>
-
-          <div className={classes.dialogFooter}>
-            <Button
-              variant="contained"
-              color="default"
-              size="medium"
-              disableElevation
-              onClick={handleClose}
-              disabled={loading}
-              className={classes.footerButton}
-              style={{ margin: "0px 15px 0px 0px" }}
-            >
-              Cancel
-            </Button>
-
-            <Button
-              id="saveButton"
-              variant="contained"
-              color="secondary"
-              size="medium"
-              disableElevation
-              onClick={() => {
-                handleSave();
-              }}
-              className={classes.footerButton}
-            // disabled={!selectedShapeLayer?._id}
-            >
-              {loading ? <CircularProgress size={14} /> : "Save"}
-            </Button>
-          </div>
-        </div>
-      </RightDialog>
+      }
     </>
   );
 }

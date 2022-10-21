@@ -470,6 +470,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "smaller",
   },
   agreementNumber: {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
     // position: 'absolute',
     alignItems: 'center',
     // justifyContent: 'space-between',
@@ -799,7 +802,7 @@ function SubTable(props) {
   };
 
 
-  // functions 
+  // functions
   const gridElement = value => {
     // wraps standard grid elements w/ consistent styling
     return (
@@ -1446,7 +1449,7 @@ function SubTable(props) {
                         }}
                       >
                         <Grid container spacing={0} direction="row"
-                          style={{ position: 'absolute' }}
+                          // style={{ position: 'absolute' }}
                           className={classes.agreementNumber}
                         >
                           <Grid item
@@ -3054,9 +3057,9 @@ function SubTable(props) {
                   return (
                     <div
                       style={{
-                        // display: "flex", 
-                        // alignItems: "center", 
-                        // justifyContent: "left", 
+                        // display: "flex",
+                        // alignItems: "center",
+                        // justifyContent: "left",
                         ...column.style
                       }}
                       className={`${props.parent === "assocTaxRollInterests" &&
@@ -3082,14 +3085,14 @@ function SubTable(props) {
                           nonEditable={!column.editable}
                         />
                       )}
-                      {/* 
+                      {/*
                       // this is for the UNIT name section.
                       // it is not in the case statement b/c multipe datapoints have the name: called "name"
-                      // we will need to somehow eventually refactor this as it is annoying 
+                      // we will need to somehow eventually refactor this as it is annoying
                       */}
 
                       {/* {props.targetLabel === "unit" && column.name === "name" && (
-                      
+
                           <div>
                           <div
                             style={{
@@ -3121,13 +3124,13 @@ function SubTable(props) {
                                       textDecoration: "underline",
                                       fontWeight: GlobalStyles.font.boldFontWeight,
                                     },
-                                    
+
                                   }}
                                   >
                                     {tableMeta?.rowData[2]}
                                 </Box>
                               </Grid>
-    
+
                             </Grid>
                           </div>
                           </div>
@@ -3167,9 +3170,6 @@ function SubTable(props) {
 
                       {props.parent === "ownersPerParcel" && column.name === "name" && (
                         <FeatureFlag feature={FEATURES.IDICORE}>
-                          {console.log(tableMeta.rowData, tableMeta.rowData[props.columns.findIndex(
-                            (val) => val.name === "isPurchased"
-                          )])}
                           <span> {tableMeta.rowData[props.columns.findIndex(
                             (val) => val.name === "isPurchased"
                           )] && <RequestPageIcon color="grey" fontSize="8px" />}</span>
@@ -4677,37 +4677,37 @@ function SubTable(props) {
             // resizableColumns: true,
 
             filter:
-              //  props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
-              props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
-                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
-                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
-                // || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+              //  props.parent === 'ownersPerParcel'               /// will need to build a backend for this search
+              props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search
+                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search
+                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search
+                // || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search
 
                 ? false : null,
 
             viewColumns:
-              // props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search 
-              props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
-                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
-                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
-                // || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
+              // props.parent === 'ownersPerParcel'                 /// will need to build a backend for this search
+              props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search
+                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search
+                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search
+                // || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search
 
                 ? false : null,
 
             search:
               (
                 // props.header === 'Contacts'
-                // || 
+                // ||
                 props.header === 'Deals'
                 || props.parent === 'WellsTable'
                 || props.header === 'Activities'
                 || props.header === 'Monthly Production'
-                // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search 
-                || props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search 
-                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search 
-                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search 
-                || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search 
-                || props.parent === 'search'       /// will need to build a backend for this search 
+                // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search
+                || props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search
+                || props.parent === 'associatedWellsPerParcel'       /// will need to build a backend for this search
+                || props.parent === 'boundary_grid_wells'       /// will need to build a backend for this search
+                || props.parent === 'boundary_grid_owners'       /// will need to build a backend for this search
+                || props.parent === 'search'       /// will need to build a backend for this search
 
               )
 
@@ -4795,9 +4795,9 @@ function SubTable(props) {
             setSelectedRow={setSelectedRow}
           />
         )}
-        {/* 
-        // the dialog box listed below controls 
-        // popups that overlay the screen due to actions from the grid 
+        {/*
+        // the dialog box listed below controls
+        // popups that overlay the screen due to actions from the grid
         // examples would be grid tags or grid comments  */}
 
         {openDialog === "addContact" && props.targetLabel === "contact" && (
@@ -4915,6 +4915,7 @@ function SubTable(props) {
                   focus
                   targetSourceId={expandedObject}
                   targetLabel={trueTargetLabel ? trueTargetLabel : props.targetLabel}
+                  commentType={props.commentType}
                   multipleIds={
                     m1nSelectedRowsIndexes.indexOf(rowInd) !== -1 && m1nSelectedRowsIndexes.length > 1
                       ? removeDuplicatesIds(m1nSelectedRowsIds)
@@ -5276,4 +5277,4 @@ function SubTable(props) {
   );
 }
 
-export default React.memo(SubTable, deepEqualObjects);
+export default  React.memo(SubTable, deepEqualObjects);

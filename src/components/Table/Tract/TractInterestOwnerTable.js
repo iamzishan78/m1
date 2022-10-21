@@ -129,7 +129,7 @@ function TractInterestOwnerTable(props) {
       filters: appliedFilters,
       extendSearchQuery: stateApp.activitySearchQuery,
       searchFields,
-      TableHeader: copy(TableHeader),
+      TableHeader: copy(TableHeader(props.isSnapGrid)),
       esIndex,
       startPaginationAt,
       formatHits,

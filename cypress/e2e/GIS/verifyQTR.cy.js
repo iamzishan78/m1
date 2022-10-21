@@ -38,9 +38,8 @@ describe('Verify QTR Calls Spec', () => {
             cy.get("#AgreementOwnersTractsTable").scrollIntoView().click()
 
             cy.log(`==== STEP: ADD ${tractName} IF NOT EXIST ====`)
-            if (!tractToTest) {
+            if (!tractToTest)
                 cy.addTract(tractName)
-            }
 
             cy.log('==== STEP: MAKING IT WAIT ====')
             cy.wait(15000)

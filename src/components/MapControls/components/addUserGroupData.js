@@ -181,6 +181,9 @@ export default function AddUserGroupData(props) {
         .then(async () => {
           // if iscreate layer is selected only then create the layers 
 
+          // Zip is added
+          // TODO: Check Data Add
+
           if (isCreateLayers) {
             if (fileContent.featureTypes.length > 1) {
               const layerGroup = { name: groupName, groupId: groupId, createBy: stateApp.user.mongoId }
@@ -188,11 +191,13 @@ export default function AddUserGroupData(props) {
             }
             fileContent.featureTypes.forEach(async (type, index) => {
               const layerName = layerNames[index]
+              const layerShapeName = fileContent.fileNames[index]
               const defaultSettings = getDefaultSettings(type, layerName, sourceProps)
               addLayer({
                 variables: {
                   layer: {
                     layerName,
+                    layerShapeName,
                     groupName: fileContent.featureTypes.length === 1 ? null : groupName,
                     groupId: fileContent.featureTypes.length === 1 ? null : groupId,
                     layerGeometry: type,
@@ -274,12 +279,15 @@ export default function AddUserGroupData(props) {
         },
       });
 
+      console.log({inAdd:stateMapControls.fileUploadedContent})
+
       await addDataset({
         variables: {
           dataset: {
             fileName: inputOriginalFile.fileName,
             sourceName: groupName,
-            categories: layerNames.map((layerName, index) => ({ name: layerName, layerGeometry: stateMapControls.fileUploadedContent.featureTypes[index] })),
+            // categories: layerNames.map((layerName, index) => ({ name: layerName, layerGeometry: stateMapControls.fileUploadedContent.featureTypes[index] })),
+            categories: layerNames.map((layerName, index) => ({ name: layerName, layerGeometry: stateMapControls.fileUploadedContent.featureTypes[index], layerShapeName: stateMapControls.fileUploadedContent.fileNames?.[index] })),
             types: stateMapControls.fileUploadedContent.featureTypes,
             file: file.data.addFile.file.id,
             originalFile: originalFileId,
