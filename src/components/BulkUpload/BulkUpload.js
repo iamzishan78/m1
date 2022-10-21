@@ -43,7 +43,8 @@ export const rawJobs = [
   { name: 'Check Detail Upload', type: 'CHECKDETAILS' },
   { name: 'Property Upload', type: 'PROPERTIES' },
   { name: 'Agreement Upload (Header)', type: 'AGREEMENT_HEADER', redirectTo: '/land/agreements' },
-  { name: 'Transfer Shape to M1 Layer', type: 'SHAPE_TO_M1_LAYER', initialActiveStepNumber: 1, skipReview: true }
+  { name: 'Transfer Shape to M1 Layer', type: 'SHAPE_TO_M1_LAYER', initialActiveStepNumber: 1, skipReview: true },
+  { name: 'Comment Uploader', type: 'AGREEMENT_COMMENTS' },
 ]
 
 export default function BulkUpload(props) {
@@ -258,7 +259,7 @@ export default function BulkUpload(props) {
           </div>
         </Breadcrumbs>
       </div>
-      <Stepper {...{ routes: props.routes, selectedJob }}>{props.children}</Stepper>
+      <Stepper {...{ routes: props.routes, selectedJob, setSelectedJob }}>{props.children}</Stepper>
     </div>
   );
 }

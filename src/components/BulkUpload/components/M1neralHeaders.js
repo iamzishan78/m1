@@ -366,10 +366,16 @@ export default function M1neralHeaders(props) {
               *Note: Existing agreements will be matched on M1neral ID or Agreement Number
             </div>
           </>
-          : <div style={{ ...text_grey }}>
-            *First Name or Last Name is required to be mapped <br /> before
-            uploading contacts.
-          </div>
+          : ['AGREEMENT_COMMENTS'].includes(stateApp.jobType) ? (
+            <div>
+              * Comment will be tied to agreement when match on Agreement System ID or Agreement Number is made
+            </div>
+          ) : (
+            <div style={{ ...text_grey }}>
+              *First Name or Last Name is required to be mapped <br /> before
+              uploading contacts.
+            </div>
+          )
         }
       </div>
     </div>

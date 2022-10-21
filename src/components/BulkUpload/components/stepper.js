@@ -315,6 +315,16 @@ export default function CustomizedSteppers(props) {
           requestPayload['autoCalculateOfferPrice'] = autoCalculateOfferPrice
         }
 
+        if (stateApp.jobType === 'AGREEMENT_COMMENTS') {
+          requestPayload['type'] = 'agreement'
+        }
+        if (stateApp.jobType === 'TRACT_COMMENTS') {
+          requestPayload['type'] = 'tract'
+        }
+        if (stateApp.jobType === 'CONTACT_COMMENTS') {
+          requestPayload['type'] = 'contact'
+        }
+
         getJobUploadUri({
           variables: {
             requestPayload,
@@ -408,7 +418,7 @@ export default function CustomizedSteppers(props) {
                     reset={reset}
                   />
                 )}
-                <CSVFileReader disabled={props.selectedJob.type === "CHECKDETAILS" && !(get(payor, "_id", "") && checkNumber && checkAmount)} />
+                <CSVFileReader setSelectedJob={props.setSelectedJob} selectedJob={props.selectedJob} disabled={props.selectedJob.type === "CHECKDETAILS" && !(get(payor, "_id", "") && checkNumber && checkAmount)} />
               </>
             ) : null}
             {steps[stateApp.activeStepNumber] === 'Match' ? <M1neralHeaders /> : null}
