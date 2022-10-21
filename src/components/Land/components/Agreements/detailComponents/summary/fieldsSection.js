@@ -263,7 +263,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     variant="outlined"
                     margin="normal"
                     fullWidth
-                    value={agreementDetailCopied?.[field.key] ? moment(agreementDetailCopied[field.key]).format("yyyy-MM-DD") : ""}
+                    value={agreementDetailCopied?.[field.key] ? moment(agreementDetailCopied[field.key]).utc(true).format("yyyy-MM-DD") : ""}
                     onChange={(event) => {
                       setAgreementCopied({ ...agreementDetailCopied, [field.key]: event ? event?.target?.value : "" })
                     }}

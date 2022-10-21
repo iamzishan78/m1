@@ -614,17 +614,17 @@ function ContactDetailCard(props) {
               <Avatar
                 color={Avatar.getRandomColor(
                   contactData.name ||
-                  `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`, 
+                  `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`,
                   ["#b5d2f6", "#ade2e9", "#eaeaea", "#f2c1e2", "#d7d6fb"])}
                 // className={classes.grey}
                 name={
                   (contactData.name ||
-                  `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`).split(' ').splice(0, 2).join(' ')
+                    `${contactData.firstName ? contactData.firstName : contactData.name ? contactData.name.split(" ")[0] : ""}`).split(' ').splice(0, 2).join(' ')
                 }
                 size="93"
                 round
               />
-         
+
             </StyleBadge>
             <div className={classes.titleText}>
               <div className={classes.userName}>
@@ -702,15 +702,17 @@ function ContactDetailCard(props) {
                   <Tags width="100%" targetSourceId={contactData._id} targetLabel="contact" publicLeftBottom onlyTags />
                 </div>
                 <div className={classes.metaActions}>
-                  <Button
-                    className={classes.contactDataButton}
-                    startIcon={<RequestPageIcon color="grey" />}
-                    onClick={() => {
-                      handleExpandClick("buyContactsInfo");
-                    }}
-                  >
-                    Contact Data
-                  </Button>
+                  <FeatureFlag feature={FEATURES.IDICORE}>
+                    <Button
+                      className={classes.contactDataButton}
+                      startIcon={<RequestPageIcon color="grey" />}
+                      onClick={() => {
+                        handleExpandClick("buyContactsInfo");
+                      }}
+                    >
+                      Contact Data
+                    </Button>
+                  </FeatureFlag>
                   <Button
                     className={classes.contactDataButton}
                     startIcon={<MonetizationOnIcon color="grey" />}
@@ -752,12 +754,13 @@ function ContactDetailCard(props) {
           ) : (
             <>
               <div className={classes.summarySection}>
-                <Grid item xs={12} container spacing={0} style={{ 
-                  padding: "5px 20px", 
-                  height: "550px", 
+                <Grid item xs={12} container spacing={0} style={{
+                  padding: "5px 20px",
+                  height: "550px",
                   // marginBottom: "-100px",
                   // marginTop: "20px",
-                  textAlign: "center" }}>
+                  textAlign: "center"
+                }}>
                   <SummaryFields contactData={contactData} />
                 </Grid>
               </div>
