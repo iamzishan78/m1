@@ -45,7 +45,7 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
     const [lastCheckMinDate, setLastCheckMinDate] = useState('');
     const [status, setStatus] = useState('ALL');
     const [propertyFilter, setPropertyFilter] = useState([]);
-    
+
     const propertiesReportGroup = useSelector(
       ({ Revenue }) => Revenue.propertiesReportGroup
     );
@@ -54,7 +54,6 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
         fetchPolicy: "no-cache",
         onCompleted: (data) => {
             if (data?.getESMinValue) {
-                console.log(data?.getESMinValue);
                 setLastCheckMinDate(data?.getESMinValue);
                 // setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
                 // setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
@@ -129,7 +128,7 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
             isProperties
             lastCheckMinDate={lastCheckMinDate}
             onChange={setSelectedFilter}
-            datesInputWidth={1}
+            datesInputWidth={2}
           />
           <Grid item xs md={2}>
             {extraFitlers.includes("propertyGroup") && (

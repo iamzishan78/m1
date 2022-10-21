@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { getLayerColor } from "../common";
 import { useDrag, useDrop, useIsClosestDragging } from "react-sortly";
 import { DragIndicator } from "@material-ui/icons";
+import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import LayerControls from "./LayerControls";
 import { FormControlLabel } from "@material-ui/core";
 import { Switch } from "@material-ui/core";
@@ -35,8 +36,15 @@ const useStyles = makeStyles((theme) => ({
     disabledLayerTitle: {
       "& span": { color: "rgb(127, 149, 199) !important" },
     },
+    "& .zoom-section": {
+      display: "none",
+    },
     "&:hover": {
       background: "#506187",
+      "& .zoom-section": {
+        display: "flex",
+        cursor: "pointer"
+      },
     },
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: theme.palette.common.white,
@@ -56,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
 
 const LayerItem = React.memo((props) => {
   const [hoverItemIndex, setHoverItem] = useState(-1);
+  const [zoomLoading, setZoomLoading] = useState(false);
   const colors = useSelector(({ MainMap }) => MainMap);
 
   const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin } = props;
@@ -91,6 +100,46 @@ const LayerItem = React.memo((props) => {
     muted: useIsClosestDragging() || isDragging,
   });
 
+  const handleLayerZoomClick = (data) => {
+    const sourceName = data.layerPaintProps[0].sourceProps
+    let sourceUrl = map.getSource(sourceName)?._data;
+    if (sourceUrl) {
+      fetchData(sourceUrl, map)
+    }
+    else {
+      setZoomLoading(true)
+      const intervalId = setInterval(() => {
+        let sourceUrl = map.getSource(sourceName)?._data;
+        if (sourceUrl) {
+          fetchData(sourceUrl, map)
+          clearInterval(intervalId);
+        }
+      }, 1000);
+    }
+
+
+    function fetchData(sourceUrl, map) {
+      fetch(sourceUrl)
+        .then((response) => response.json())
+        .then((response) => {
+          setZoomLoading(false)
+          var combined = turf.combine(turf.featureCollection(response?.features))
+          const bbox = turf.bbox(combined)
+          map?.fitBounds(
+            [
+              [bbox[0], bbox[1]], // southwestern corner of the bounds
+              [bbox[2], bbox[3]] // northeastern corner of the bounds
+            ],
+            { padding: { top: 40, bottom: 40, left: 40, right: 40 } }
+          )
+        })
+        .catch((error) => {
+          setZoomLoading(false)
+          console.log(error);
+        });
+    }
+  }
+
   return (
     <Flipped flipId={id}>
       <div ref={(ref) => drop(preview(ref))} onMouseEnter={() => setHoverItem(id)} onMouseLeave={() => setHoverItem(null)}>
@@ -119,7 +168,7 @@ const LayerItem = React.memo((props) => {
                   alignItems: "center",
                 }}
               >
-                <Box borderColor={getLayerColor(data, "layer", colors)} borderLeft={4}>
+                <Box borderLeft={4} style={{borderColor: getLayerColor(data, "layer", colors)}} >
                   {hoverItemIndex === id ? (
                     <ListItemIcon ref={drag}>
                       <DragIndicator style={{ cursor: "move", justifyContent: "center" }} />
@@ -141,6 +190,19 @@ const LayerItem = React.memo((props) => {
                     </ListItemIcon>
                   )}
                 </Box>
+                <div className="zoom-section">
+                  {
+                    zoomLoading ? <CircularProgress size={20} disableShrink color="secondary" /> :
+                      <>
+                        {type !== "group" && data.visiable && data.file && (
+                          <ListItemIcon onClick={() => handleLayerZoomClick(data)}>
+                            <ZoomInIcon htmlColor="#ffff" />
+                          </ListItemIcon>
+                        )}
+                      </>
+                  }
+                </div>
+
               </Grid>
             </Grid>
 

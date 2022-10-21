@@ -7,6 +7,7 @@ export const agreementTypes = [
   { label: "Contract", value: "contract" },
   { label: "Surface/ROW", value: "surface" },
 ];
+
 const fieldsList = (activeUser) => {
   return [
     {

@@ -312,6 +312,7 @@ function AddDealDialog(props) {
   const [users, setUsers] = useState([]);
   const [receivedDate, setReceivedDate] = useState("");
   const [bidDate, setBidDate] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const [closeDate, setCloseDate] = useState("");
   const [originationDate, setOriginationDate] = useState(null);
 
@@ -630,6 +631,7 @@ function AddDealDialog(props) {
       settingNewStageAndFindNextAvailablePosition(laneId, false);
       setReceivedDate(card.receivedDate ? moment.parseZone(card.receivedDate).format("yyyy-MM-DD") : "");
       setBidDate(card.bidDate ? moment.parseZone(card.bidDate).format("yyyy-MM-DD") : "");
+      setDueDate(card.dueDate ? moment.parseZone(card.dueDate).format("yyyy-MM-DD") : "");
       setCloseDate(card.closeDate ? moment.parseZone(card.closeDate).format("yyyy-MM-DD") : "");
       setMapSettings(card.mapSettings ? card.mapSettings : null);
       setDealPosition(card.position ? card.position : null);
@@ -744,6 +746,10 @@ function AddDealDialog(props) {
       if (closeDate instanceof Date) {
         selectedCloseDate = moment(closeDate).format("YYYY-MM-DD");
       }
+      let selectedDueDate = dueDate;
+      if (closeDate instanceof Date) {
+        selectedCloseDate = moment(dueDate).format("YYYY-MM-DD");
+      }
       const deal = {
         name: title ? title.trim() : null,
         offerPrice: label,
@@ -751,6 +757,7 @@ function AddDealDialog(props) {
         status: dealState ? dealState : "open",
         receivedDate: selectedReceivedDate && selectedReceivedDate !== "" ? new Date(`${selectedReceivedDate}T08:00`).toUTCString() : null,
         bidDate: selectedBidDate && selectedBidDate !== "" ? new Date(`${selectedBidDate}T08:00`).toUTCString() : null,
+        dueDate: selectedDueDate && selectedDueDate !== "" ? new Date(`${selectedDueDate}T08:00`).toUTCString() : null,
         closeDate: selectedCloseDate && selectedCloseDate !== "" ? new Date(`${selectedCloseDate}T08:00`).toUTCString() : null,
         mapSettings: mapSettings,
       };
@@ -1230,7 +1237,7 @@ function AddDealDialog(props) {
             onClose={handleCloseDialog}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
+            setM1nSelectedRowsIndexes={() => {}}
           >
             Do you want to delete the selected deal?
           </DeleteConfirmationDialogContent>
@@ -1263,14 +1270,25 @@ function AddDealDialog(props) {
             handleClickDialogClose={handleClickDialogClose}
           />
           {addDealLoading ? (
-            <div style={{ display: "flex", justifyContent: "center", marginTop: 5 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: 5,
+              }}
+            >
               <CircularProgress size="20px" />
             </div>
           ) : (
             <div className={classes.contentRoot}>
-              <Drawer dealSettingsNumber={getSubtaskNumber()} mapSettings={mapSettings} />
+              <Drawer
+                dealSettingsNumber={getSubtaskNumber()}
+                mapSettings={mapSettings}
+              />
               {!["Deal", "Map"].includes(stateApp.transactBarView) &&
-                (stateApp.activeDeal?.cardId || get(stateApp, "activeDeal._id") || get(stateTransact, "dealToCreate._id")) ? (
+              (stateApp.activeDeal?.cardId ||
+                get(stateApp, "activeDeal._id") ||
+                get(stateTransact, "dealToCreate._id")) ? (
                 <Fragment>{getView()}</Fragment>
               ) : (
                 <div className={classes.inputFieldRoot}>
@@ -1290,9 +1308,14 @@ function AddDealDialog(props) {
                             onChange={(e, user) => {
                               setOwnerId(user?.value);
                             }}
-                            value={users.find((user) => user?.value === ownerId) || null}
+                            value={
+                              users.find((user) => user?.value === ownerId) ||
+                              null
+                            }
                             getOptionLabel={(option) => option.text}
-                            getOptionSelected={(option) => option.value === ownerId}
+                            getOptionSelected={(option) =>
+                              option.value === ownerId
+                            }
                             classes={{
                               inputRoot: classes.dealOwnerRoot,
                               focused: classes.dealOwnerRootFocused,
@@ -1319,22 +1342,47 @@ function AddDealDialog(props) {
                                       <InputAdornment position="start">
                                         <Avatar
                                           style={{
-                                            backgroundColor: users.find((user) => user?.value === ownerId)
-                                              ? getRandomColor(users.find((user) => user?.value === ownerId).text.toString())
+                                            backgroundColor: users.find(
+                                              (user) => user?.value === ownerId
+                                            )
+                                              ? getRandomColor(
+                                                  users
+                                                    .find(
+                                                      (user) =>
+                                                        user?.value === ownerId
+                                                    )
+                                                    .text.toString()
+                                                )
                                               : "",
                                           }}
                                           className={classes.dealOwnerAvatar}
                                         >
-                                          {users.find((user) => user?.value === ownerId) ? (
+                                          {users.find(
+                                            (user) => user?.value === ownerId
+                                          ) ? (
                                             <CustomAvatar
                                               diglog={true}
-                                              email={users.find((user) => user?.value === ownerId).email}
+                                              email={
+                                                users.find(
+                                                  (user) =>
+                                                    user?.value === ownerId
+                                                ).email
+                                              }
                                               text={
                                                 users
-                                                  .find((user) => user?.value === ownerId)
+                                                  .find(
+                                                    (user) =>
+                                                      user?.value === ownerId
+                                                  )
                                                   .text.toString()
                                                   .toUpperCase().length > 1
-                                                  ? users.find((user) => user?.value === ownerId).text.toString()
+                                                  ? users
+                                                      .find(
+                                                        (user) =>
+                                                          user?.value ===
+                                                          ownerId
+                                                      )
+                                                      .text.toString()
                                                   : "Add Owner"
                                               }
                                             />
@@ -1355,93 +1403,164 @@ function AddDealDialog(props) {
                     </FormControl>
                   </div>
 
-                  <FormControl variant="outlined" fullWidth size="small">
-                    <Grid container className={classes.gridStyle}>
-                      <Grid item xs={3}>
-                        <div>Deal Received</div>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <TextField
-                          margin="dense"
-                          type="date"
-                          variant="outlined"
-                          value={receivedDate}
-                          placeholder=""
-                          fullWidth
-                          className={`${classes.dateRoot} ${classes.inputFieldDate}`}
-                          onChange={(e) => {
-                            setReceivedDate(e.target.value);
-                          }}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                          InputProps={{
-                            classes: {
-                              root: classes.dateRoot,
-                              focused: classes.focused,
-                              notchedOutline: classes.notchedOutline,
-                              light: classes.light,
-                            },
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={3}>
-                        <div>Bid Date</div>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <TextField
-                          margin="dense"
-                          type="date"
-                          variant="outlined"
-                          value={bidDate}
-                          placeholder=""
-                          fullWidth
-                          className={classes.inputFieldDate}
-                          onChange={(e) => {
-                            setBidDate(e.target.value);
-                          }}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                          InputProps={{
-                            classes: {
-                              root: classes.dateRoot,
-                              focused: classes.focused,
-                              notchedOutline: classes.notchedOutline,
-                            },
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs={3}>
-                        <div>Close Date</div>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <TextField
-                          margin="dense"
-                          type="date"
-                          variant="outlined"
-                          value={closeDate}
-                          placeholder=""
-                          fullWidth
-                          className={classes.inputFieldDate}
-                          onChange={(e) => {
-                            setCloseDate(e.target.value);
-                          }}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                          InputProps={{
-                            classes: {
-                              root: classes.dateRoot,
-                              focused: classes.focused,
-                              notchedOutline: classes.notchedOutline,
-                            },
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
-                  </FormControl>
 
+                  {selectedPipe.flowLineType === "general" && (
+                    <FormControl variant="outlined" fullWidth size="small">
+                      <Grid container className={classes.gridStyle}>
+                        <Grid item xs={3}>
+                          <div>Due Date</div>
+                        </Grid>
+                        <Grid item xs={9}>
+                          <TextField
+                            margin="dense"
+                            type="date"
+                            variant="outlined"
+                            value={dueDate}
+                            placeholder=""
+                            fullWidth
+                            className={classes.inputFieldDate}
+                            onChange={(e) => {
+                              setDueDate(e.target.value);
+                            }}
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
+                            InputProps={{
+                              classes: {
+                                root: classes.dateRoot,
+                                focused: classes.focused,
+                                notchedOutline: classes.notchedOutline,
+                              },
+                            }}
+                          />
+                        </Grid>
+                      </Grid>
+                    </FormControl>
+                  )}
+                  {selectedPipe.flowLineType !== "general" && (
+                    <>
+                      <FormControl variant="outlined" fullWidth size="small">
+                        <Grid container className={classes.gridStyle}>
+                          <Grid item xs={3}>
+                            <div>Deal Received</div>
+                          </Grid>
+                          <Grid item xs={9}>
+                            <TextField
+                              margin="dense"
+                              type="date"
+                              variant="outlined"
+                              value={receivedDate}
+                              placeholder=""
+                              fullWidth
+                              className={`${classes.dateRoot} ${classes.inputFieldDate}`}
+                              onChange={(e) => {
+                                setReceivedDate(e.target.value);
+                              }}
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              InputProps={{
+                                classes: {
+                                  root: classes.dateRoot,
+                                  focused: classes.focused,
+                                  notchedOutline: classes.notchedOutline,
+                                  light: classes.light,
+                                },
+                              }}
+                            />
+                          </Grid>
+                          <Grid item xs={3}>
+                            <div>Bid Date</div>
+                          </Grid>
+                          <Grid item xs={9}>
+                            <TextField
+                              margin="dense"
+                              type="date"
+                              variant="outlined"
+                              value={bidDate}
+                              placeholder=""
+                              fullWidth
+                              className={classes.inputFieldDate}
+                              onChange={(e) => {
+                                setBidDate(e.target.value);
+                              }}
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              InputProps={{
+                                classes: {
+                                  root: classes.dateRoot,
+                                  focused: classes.focused,
+                                  notchedOutline: classes.notchedOutline,
+                                },
+                              }}
+                            />
+                          </Grid>
+                          <Grid item xs={3}>
+                            <div>Close Date</div>
+                          </Grid>
+                          <Grid item xs={9}>
+                            <TextField
+                              margin="dense"
+                              type="date"
+                              variant="outlined"
+                              value={closeDate}
+                              placeholder=""
+                              fullWidth
+                              className={classes.inputFieldDate}
+                              onChange={(e) => {
+                                setCloseDate(e.target.value);
+                              }}
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              InputProps={{
+                                classes: {
+                                  root: classes.dateRoot,
+                                  focused: classes.focused,
+                                  notchedOutline: classes.notchedOutline,
+                                },
+                              }}
+                            />
+                          </Grid>
+                        </Grid>
+                      </FormControl>
+
+                      <FormControl variant="outlined" fullWidth size="small">
+                        <Grid container className={classes.gridStyle}>
+                          <Grid item xs={3}>
+                            <div>Offer Price</div>
+                          </Grid>
+                          <Grid item xs={9}>
+                            <TextField
+                              margin="dense"
+                              variant="outlined"
+                              value={label}
+                              error={isNaN(label)}
+                              helperText={
+                                isNaN(label)
+                                  ? "Offer Price must be a valid number"
+                                  : ""
+                              }
+                              className={classes.inputFieldCustomTextInput}
+                              fullWidth
+                              onChange={(e) => {
+                                setLabel(e.target.value);
+                              }}
+                              InputProps={{
+                                inputComponent: NumberFormatCustom,
+                                classes: {
+                                  root: classes.customDataTextInputRoot,
+                                  focused: classes.focused,
+                                  notchedOutline: classes.notchedOutline,
+                                },
+                              }}
+                            />
+                          </Grid>
+                        </Grid>
+                      </FormControl>
+                    </>
+                  )}
                   <FormControl variant="outlined" fullWidth size="small">
                     <Grid container className={classes.gridStyle}>
                       <Grid item xs={3}>
@@ -1463,7 +1582,10 @@ function AddDealDialog(props) {
                           value={pipelineId}
                           className={classes.inputFieldFlowline}
                           onChange={(e) => {
-                            settingNewPipeWithDefaultStage(e.target.value, true);
+                            settingNewPipeWithDefaultStage(
+                              e.target.value,
+                              true
+                            );
                           }}
                           InputProps={{
                             classes: {
@@ -1474,9 +1596,15 @@ function AddDealDialog(props) {
                           }}
                           fullWidth
                         >
-                          {selectedPipe && <option value={selectedPipe._id}>{selectedPipe.name}</option>}
+                          {selectedPipe && (
+                            <option value={selectedPipe._id}>
+                              {selectedPipe.name}
+                            </option>
+                          )}
                           {sortedPipelines
-                            .filter((pipeline) => selectedPipe?._id !== pipeline?._id)
+                            .filter(
+                              (pipeline) => selectedPipe?._id !== pipeline?._id
+                            )
                             .map((pipeline, i) => (
                               <option value={pipeline._id} key={i}>
                                 {pipeline.name}
@@ -1486,7 +1614,6 @@ function AddDealDialog(props) {
                       </Grid>
                     </Grid>
                   </FormControl>
-
                   <FormControl variant="outlined" fullWidth size="small">
                     <Grid container className={classes.gridStyle}>
                       <Grid item xs={3}>
@@ -1508,7 +1635,10 @@ function AddDealDialog(props) {
                           value={stageId}
                           className={classes.inputFieldFlowStage}
                           onChange={(e) => {
-                            settingNewStageAndFindNextAvailablePosition(e.target.value, true);
+                            settingNewStageAndFindNextAvailablePosition(
+                              e.target.value,
+                              true
+                            );
                           }}
                           InputProps={{
                             classes: {
@@ -1526,36 +1656,6 @@ function AddDealDialog(props) {
                               </option>
                             ))}
                         </TextField>
-                      </Grid>
-                    </Grid>
-                  </FormControl>
-
-                  <FormControl variant="outlined" fullWidth size="small">
-                    <Grid container className={classes.gridStyle}>
-                      <Grid item xs={3}>
-                        <div>Offer Price</div>
-                      </Grid>
-                      <Grid item xs={9}>
-                        <TextField
-                          margin="dense"
-                          variant="outlined"
-                          value={label}
-                          error={isNaN(label)}
-                          helperText={isNaN(label) ? "Offer Price must be a valid number" : ""}
-                          className={classes.inputFieldCustomTextInput}
-                          fullWidth
-                          onChange={(e) => {
-                            setLabel(e.target.value);
-                          }}
-                          InputProps={{
-                            inputComponent: NumberFormatCustom,
-                            classes: {
-                              root: classes.customDataTextInputRoot,
-                              focused: classes.focused,
-                              notchedOutline: classes.notchedOutline,
-                            },
-                          }}
-                        />
                       </Grid>
                     </Grid>
                   </FormControl>
@@ -1605,19 +1705,29 @@ function AddDealDialog(props) {
           )}
           {["Deal", "Map"].includes(stateApp.transactBarView) && (
             <div style={{ marginTop: 2 }}>
-              <DealComments setNewCommentId={setNewCommentId} targetLabel="deal" targetSourceId={stateApp.activeDeal?.cardId} />
+              <DealComments
+                setNewCommentId={setNewCommentId}
+                targetLabel="deal"
+                targetSourceId={stateApp.activeDeal?.cardId}
+              />
             </div>
           )}
         </RightDialog>
         {stateApp.transactBarView === "Map" && (
-          <div maxWidth="calc(100vw - 28vw)" style={{ position: "relative", "z-index": "9999", width: "calc(100vw - 30vw)" }}>
+          <div
+            maxWidth="calc(100vw - 28vw)"
+            style={{
+              position: "relative",
+              "z-index": "9999",
+              width: "calc(100vw - 30vw)",
+            }}
+          >
             <MapProvider
               match={{
                 params: {
                   expandedPanel: false,
                   openSpeedDial: false,
                   viewPortCallback: (mapSettings) => {
-                    console.log("here");
                     setMapSettings(mapSettings);
                   },
                 },
@@ -1634,7 +1744,11 @@ function AddDealDialog(props) {
               }}
               className={classes.inputFieldDealName}
             >
-              <Button color="secondary" variant="outlined" onClick={saveViewport}>
+              <Button
+                color="secondary"
+                variant="outlined"
+                onClick={saveViewport}
+              >
                 Save Viewport
               </Button>
             </div>

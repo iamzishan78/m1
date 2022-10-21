@@ -53,6 +53,12 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/land/reporting-groups",
     component: "ReportingGroups",
   },
+  ADMIN_SETTINGS: {
+    featureFlag: "LANDMODULE",
+    title: "Admin Settings",
+    link: "/land/admin-settings",
+    component: "AdminSettings",
+  },
 };
 
 export default function Revenue() {

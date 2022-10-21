@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { useContext, useState, useEffect, useRef, useMemo } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 import { get } from "lodash";
@@ -158,6 +158,15 @@ const useStyles = makeStyles((theme) => ({
     width: "calc(100% - 425px)",
   },
 }));
+
+const formatDate = (date) => moment.parseZone(new Date(date)).format("MM/DD/YY");
+const CARD_FIELD_MAPPER = {
+  dueDate:{ label:  "Due Date", format: (value) => formatDate(value)},
+  receivedDate:{ label:  "Deal Received", format: (value) => formatDate(value)},
+  bidDate:{ label: "Bid Date", format: (value) => formatDate(value)},
+  closeDate:{ label: "Close Date", format: (value) => formatDate(value)},
+  offerPrice:{ label: "Offer Price", format: (value) => vf_currency(value)},
+};
 
 const Transact = () => {
   let history = useHistory();
@@ -527,13 +536,6 @@ const Transact = () => {
   const GetCard = React.memo((cardProps) => {
     const CardClasses = useStyles(cardProps);
     const { metadata, title, description, id, laneId } = cardProps;
-    const cardPrice = metadata && metadata.offerPrice ? metadata.offerPrice : 0;
-    const formattedPrice = vf_currency(cardPrice);
-
-    let formattedBidDate = null;
-    if (metadata?.bidDate) formattedBidDate = moment.parseZone(new Date(metadata.bidDate)).format("MM/DD/YY");
-    let formattedCloseDate = null;
-    if (metadata?.closeDate) formattedCloseDate = moment.parseZone(new Date(metadata.closeDate)).format("MM/DD/YY");
 
     let owner = null;
     let ownerId = null;
@@ -553,11 +555,10 @@ const Transact = () => {
     if (description && description.length > 50) desc = description.slice(0, 53) + "...";
 
     const stageChangeDate = metadata.stageChangeDate && moment.parseZone(metadata.stageChangeDate);
-
     const lane = filteredBoardTransactData.lanes.find((lane) => lane.id === laneId);
-
     const cardColor = getCardColor(get(lane, "metadata.rotting"), stageChangeDate);
-
+    const showDescription = pipelineData?.pipeline?.showDescription;
+    const fieldsOnCardToShow = pipelineData?.pipeline?.fieldsOnCardToShow;
     return (
       <article className={CardClasses.cardStyle} onClick={() => handleCardClick(id, metadata, laneId)} style={getCardBorder(id, cardColor)}>
         <header className={CardClasses.cardHeaderStyle}>
@@ -567,38 +568,23 @@ const Transact = () => {
           </div>
 
           <div className={CardClasses.cardSubheading}>
-            {formattedBidDate && (
-              <>
-                <br />
-                <span>
-                  Bid Date {"   "}
-                  <span style={{ fontWeight: "normal" }}>{formattedBidDate}</span>
-                </span>
-              </>
-            )}
-
-            {formattedCloseDate && (
-              <>
-                <br />
-                <span>
-                  Est. Close {"   "}
-                  <span style={{ fontWeight: "normal" }}>{formattedCloseDate}</span>
-                </span>
-              </>
-            )}
-
-            {formattedPrice && (
-              <>
-                <br />
-
-                <span>
-                  Offer Price <span style={{ fontWeight: "normal" }}>{formattedPrice}</span>
-                </span>
-              </>
-            )}
+            {
+                fieldsOnCardToShow?.filter(field => metadata[field])?.map(field => 
+                  <>
+                    <br />
+                    <span>
+                      {CARD_FIELD_MAPPER[field]?.label} {"   "}
+                      <span style={{ fontWeight: "normal" }}>{metadata[field] && CARD_FIELD_MAPPER[field].format(metadata[field])}</span>
+                    </span>
+                  </>
+                  )
+            }
           </div>
         </header>
-        <div className={CardClasses.cardDescStyle}>{desc}</div>
+        {
+          showDescription &&
+            <div className={CardClasses.cardDescStyle}>{desc}</div>
+        }
       </article>
     );
   });
@@ -625,12 +611,20 @@ const Transact = () => {
         <span className={classes.laneHeaderSpanStyle}>
           {title} ({dealCount})
         </span>
-        <span className={classes.laneHeaderTotalStyle}>
-          Total: <span className={classes.laneHeaderNotBold}>{formattedTotal}</span>
-        </span>
-        <span className={classes.laneHeaderTotalStyle}>
-          Forecast: <span className={classes.laneHeaderNotBold}>{forecast === 0 || forecast === null ? "--" : forecastFormatted}</span>
-        </span>
+        {pipelineData?.pipeline?.flowLineType !== "general" &&
+          <>
+            <span className={classes.laneHeaderTotalStyle}>
+              Total:{" "}
+              <span className={classes.laneHeaderNotBold}>{formattedTotal}</span>
+            </span>
+            <span className={classes.laneHeaderTotalStyle}>
+              Forecast:{" "}
+              <span className={classes.laneHeaderNotBold}>
+                {forecast === 0 || forecast === null ? "--" : forecastFormatted}
+              </span>
+            </span>
+          </>
+        }
       </header>
     );
   };
@@ -720,7 +714,7 @@ const Transact = () => {
               />
             )}
             {stateApp.dealDisplayType === "table" && (
-              <M1nTable dense filteredTabTransactData={filteredTabTransactData} parent="TransactDeals" />
+              <M1nTable dense filteredTabTransactData={filteredTabTransactData} parent="TransactDeals" flowLineType={selectedPipe.flowLineType} />
             )}
           </div>
         ) : pipeToShow === false ? (

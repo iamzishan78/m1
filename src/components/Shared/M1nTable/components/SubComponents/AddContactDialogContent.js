@@ -318,6 +318,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={12}>
             <h3>First Name</h3>
             <TextField
+              id="firstName"
               size="small"
               className={classes.maxWidth}
               multiline
@@ -333,6 +334,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={12}>
             <h3>Middle Name</h3>
             <TextField
+              id="middleName"
               size="small"
               className={classes.maxWidth}
               multiline
@@ -348,6 +350,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={12}>
             <h3>Last Name</h3>
             <TextField
+              id="lastName"
               size="small"
               className={classes.maxWidth}
               multiline
@@ -381,6 +384,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={6}>
             <h3>Mobile Phone</h3>
             <TextField
+              id="mobilePhone"
               size="small"
               //placeholder="E.g. xxx-xxx-xxxx"
               className={classes.maxWidth}
@@ -399,6 +403,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={6}>
             <h3>Home Phone</h3>
             <TextField
+              id="homePhone"
               size="small"
               // placeholder="E.g. xxx-xxx-xxxx"
               className={classes.maxWidth}
@@ -417,6 +422,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={12}>
             <h3>Email</h3>
             <TextField
+              id="email"
               size="small"
               // placeholder="E.g. jacob@m1neral.com"
               className={classes.maxWidth}
@@ -435,6 +441,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={12}>
             <h3>Address #1</h3>
             <TextField
+              id="address1"
               size="small"
               className={classes.maxWidth}
               multiline
@@ -451,6 +458,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={12}>
             <h3>Address #2</h3>
             <TextField
+              id="address2"
               size="small"
               className={classes.maxWidth}
               multiline
@@ -467,6 +475,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={12}>
             <h3>City</h3>
             <TextField
+              id="city"
               size="small"
               className={classes.maxWidth}
               multiline
@@ -482,6 +491,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={6}>
             <h3>State</h3>
             <TextField
+              id="state"
               size="small"
               className={classes.maxWidth}
               multiline
@@ -497,6 +507,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={6}>
             <h3>Zip Code</h3>
             <TextField
+              id="zipCode"
               size="small"
               className={classes.maxWidth}
               multiline
@@ -514,6 +525,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={12}>
             <h3>Country</h3>
             <TextField
+              id="country"
               size="small"
               className={classes.maxWidth}
               multiline
@@ -529,6 +541,7 @@ export default function AddContactDialogContent(props) {
           <Grid item xs={12}>
             <h3>Contact Owner</h3>
             <Autocomplete
+              id="contactOwner"
               className={classes.fieldWidth}
               options={users.filter(u => u.text)}
               onChange={(e, user) => { setNewContact({ ...newContact, contactOwner: user.value }); }}
@@ -561,6 +574,7 @@ export default function AddContactDialogContent(props) {
       >
         <Grid item xs={12} style={{ maxHeight: "60px", padding: 22 }}>
           <h4
+            id="addContactHeading"
             style={{
               margin: "0 0 15px 0",
               float: "left",
@@ -606,6 +620,7 @@ export default function AddContactDialogContent(props) {
             Cancel
           </Button>
           <Button
+            id="addContactButton"
             disabled={!validated}
             onClick={handleClickAdd}
             variant="contained"
