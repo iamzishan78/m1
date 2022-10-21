@@ -51,6 +51,7 @@
     "custom-react-accordion": "^1.0.4",
     "date-fns": "^2.19.0",
     "deck.gl": "^8.4.10",
+    "dompurify": "^2.3.10",
     "email-validator": "^2.0.4",
     "fg-loadcss": "^3.1.0",
     "framer": "^1.2.28",

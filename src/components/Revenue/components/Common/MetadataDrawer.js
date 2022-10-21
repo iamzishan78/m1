@@ -427,6 +427,7 @@ export default function MetadataDrawer(props) {
             targetSourceId={targetSourceId}
             commentsHeight={targetLabel === "Contact" ? "580px" : null}
             activityLog={props.activityLog}
+            showCommentType={props.showCommentType}
           />
         </div>
       </div>
