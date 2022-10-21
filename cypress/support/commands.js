@@ -89,7 +89,7 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
 
 // This command is to check api was successful or not
 Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
-    cy.wait(apiTitle, { timeout: extraTimeout }).then((interception) => {
+    cy.wait(apiTitle, { timeout: longTimeout }).then((interception) => {
         const operationName = interception?.request?.body?.operationName
         const response = interception?.response?.body?.data[operationName]
 
@@ -121,7 +121,7 @@ Cypress.Commands.add('selectQuickAction', (actionId, containsString, isFilter = 
     cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
 
     if (isFilter)
-        cy.get('.MuiChip-label', { timeout: extraTimeout }).contains(containsString)
+        cy.get('.MuiChip-label', { timeout: longTimeout }).contains(containsString)
     else
         cy.get('.MuiTypography-root', { timeout: extraTimeout }).contains(containsString);
 })
