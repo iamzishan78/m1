@@ -48,6 +48,10 @@ function EditableTextField({ item, onChange, name, isEditable = true, showExpand
     }
 
   }, [openEditField])
+
+  useEffect(() => {
+  //  console.log(isEdit)
+  }, [isEdit])
   return (
     <Grid
       container
@@ -85,6 +89,7 @@ function EditableTextField({ item, onChange, name, isEditable = true, showExpand
           />
         )}
       </Grid>
+      {/* Hover Edit Icon */}
       <Grid item className={classes.editIcon}>
         {typeof openEditField === 'undefined' && isEdit.able && isEditable && (
           <EditIcon

@@ -1,4 +1,4 @@
 import './quickActions&searching.cy'
 import './sortFilterViewColumn.cy'
-import './add&removeTags.cy'
+import './addRemoveTags.cy'
 import './contactDocuments.cy'

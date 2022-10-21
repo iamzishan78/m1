@@ -948,7 +948,7 @@ function ExpandableCard(props) {
                   className={classes.icons}
                   onClick={handleClose}
                 >
-                  <CloseIcon color="secondary" />
+                  <CloseIcon id="closeIcon" color="secondary" />
                 </IconButton>
               </Tooltip>
             </div>

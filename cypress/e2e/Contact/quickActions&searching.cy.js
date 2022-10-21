@@ -47,15 +47,11 @@ describe('Quick Actions And Searching Spec', () => {
         cy.selectQuickAction('All Entities 101', 'All Entities')
         cy.wait(10000)
 
-
-
         cy.log('==== STEP: TEST Exact Match ====')
-        
         cy.gridSearch('STATEWIDE MINERALS', 'getESSimpleSearch')
 
 
         cy.log('==== STEP: SEARCH jacob in CONTACT ====')
-
         cy.gridSearch('jacob', 'getESSimpleSearch').then(response => {
 
             cy.wait(2000)
