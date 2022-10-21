@@ -453,7 +453,10 @@ const Login = (props) => {
 
     setLoadingSigInButton(false);
 
-    history.replace(window.location.pathname);
+    history.replace({
+      parhname: window.location.pathname,
+      search: window.location?.search,
+    });
 
     //setLoading(false);
   }

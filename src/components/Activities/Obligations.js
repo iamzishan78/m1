@@ -27,6 +27,8 @@ Date.prototype.addHours = function (h) {
 };
 
 const ActivitiesCalendar = (props) => {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
   return (
     <div>
       <Calendar
@@ -37,13 +39,13 @@ const ActivitiesCalendar = (props) => {
         endAccessor={"end"}
         startAccessor={"start"}
         view={props.view}
-        defaultDate={new Date()}
+        date={selectedDate || new Date()}
         style={{ height: "calc(100vh - 67px)", position: "relative" }}
         step={60}
         onSelectEvent={(e) => props.onEventClick(e)}
         showMultiDayTimes
         components={{
-          toolbar: (params) => <ActivitiesToolbar {...params} {...props} />,
+          toolbar: (params) => <ActivitiesToolbar selectedDate={selectedDate} setSelectedDate={setSelectedDate} {...params} {...props} />,
           event: (props) => <ActivitiesEvent {...props} />,
         }}
       />

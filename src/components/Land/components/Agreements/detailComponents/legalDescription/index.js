@@ -107,6 +107,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
             {uniObj && (
               <Grid item xs={12} style={{ padding: "35px 20px 0px 0px" }}>
                 <AgreementOwnersTractsTable
+                  id="AgreementOwnersTractsTable"
                   setRecord={setTractOwners}
                   customLayer={uniObj}
                   shapeType="Agreement"
