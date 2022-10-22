@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
   },
   acreageCard: {
     backgroundColor: "#F6F8F9",
-    paddingTop: "10px",
+    // paddingTop: "10px",
     marginTop: "8px",
     marginBottom: "8px",
     "& .heading": {
@@ -25,6 +25,9 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiGrid-item:last-child": {
     },
+  },
+  mainCard: {
+    paddingLeft: '5px'
   },
   lastChild: {
     marginBottom: "40px",
@@ -42,9 +45,9 @@ const Acreage = ({ properties }) => {
   }, [properties, reset]);
   return (
     <Grid item md={12} className={classes.acreageCard}>
-      <Grid container display="row" alignItems="center" justify="center" spacing={3}>
+      <Grid className={classes.mainCard} container display="row" alignItems="center"  >
         <Grid item xs={11} style={{ marginTop: 0 }}>
-          <Grid container display="row" alignItems="center" justify="space-between" spacing={3} >
+          <Grid container display="row" alignItems="center" justify="space-between" spacing={3}  >
             <Grid item xs={3}>
               <Typography className="heading"> Acreage</Typography>
             </Grid>
