@@ -3,7 +3,7 @@ const CommentUploader = [
         label: "Contact Id",
         mapped_key: "",
         required: false,
-        actual_key: "contact._id",
+        actual_key: "_id",
     },
     {
         label: "Full Name",
@@ -69,19 +69,19 @@ const CommentUploader = [
         label: "Comment Type",
         mapped_key: "",
         required: true,
-        actual_key: "commentType",
+        actual_key: "contact.commentType",
     },
     {
         label: "Comment Date",
         mapped_key: "",
         required: true,
-        actual_key: "commentDate",
+        actual_key: "contact.commentDate",
     },
     {
         label: "Comment Text",
         mapped_key: "",
         required: true,
-        actual_key: "commentText",
+        actual_key: "contact.comment",
     },
 
 ];
