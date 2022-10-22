@@ -15,19 +15,19 @@ const CommentUploader = [
         label: "Comment Type",
         mapped_key: "",
         required: true,
-        actual_key: "commentType",
+        actual_key: "agreement.commentType",
     },
     {
         label: "Comment Date",
         mapped_key: "",
         required: true,
-        actual_key: "commentDate",
+        actual_key: "agreement.commentDate",
     },
     {
         label: "Comment Text",
         mapped_key: "",
         required: true,
-        actual_key: "commentText",
+        actual_key: "agreement.comment",
     },
 ];
 export default CommentUploader;
