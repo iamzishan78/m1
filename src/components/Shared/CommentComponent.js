@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, Fragment } from "react";
-
+import { get } from "lodash";
 import Avatar from "react-avatar";
 import Grid from "@material-ui/core/Grid";
 import { CircularProgress, Menu, MenuItem } from "@material-ui/core";
@@ -92,8 +92,14 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-flex",
   },
   commentContent: {
-    width: "86%",
+    width: "84%",
     paddingRight: "10px"
+  },
+  commentTypeSection: {
+    fontWeight: "bold",
+    fontSize: "16px",
+    display: "flex",
+    marginBottom: "5px"
   }
 }));
 
@@ -107,10 +113,15 @@ function urlify(text) {
 
 export const CommonCommentText = ({ eachComment, users }) => {
   const classes = useStyles();
-  let formatComment = eachComment.comment.split(" ")
+  let formatComment = (eachComment?.comment || '').split(" ")
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
+      {get(eachComment, "commentType") && (
+        <span className={classes.commentTypeSection}>
+          {get(eachComment, "commentType.commentType", get(eachComment, "commentType"))}
+        </span>
+      )}
       {formatComment.map((word, index) => {
         if (word.includes("{{") && word.includes("}}")) {
           const splittedWord = word.split(/\r?\n/);
@@ -219,7 +230,7 @@ export default function CommentComponent(props) {
             user: { name: element.ownerName, email: element.ownerName },
             activityData: element,
             comment: element.notes,
-            ts: new Date(element._ts).getTime(),
+            ts: new Date(Number(element._ts)).getTime(),
             isActivity: true,
             isEdited: false,
             public: true,
@@ -227,7 +238,6 @@ export default function CommentComponent(props) {
           })
         });
         let tempArray = dataComments.commentsByObjectId.concat(activittyData);
-
         setCommentsArray(
           sortArrayBasedOnTs([...tempArray])
         );
@@ -325,7 +335,8 @@ export default function CommentComponent(props) {
     upsertComment({
       variables: {
         comment: {
-          comment: newCommentCleaner(value),
+          comment: typeof value === 'object' ? newCommentCleaner(value.comment) : newCommentCleaner(value),
+          commentType: typeof value === 'object' ? (value.commentType || 'General') : 'General',
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           _id: editCommentId,
@@ -368,8 +379,7 @@ export default function CommentComponent(props) {
   const addNewComment = (value) => {
     const userDetails = stateApp.user
     setCommentsArray(state => {
-      const newComment = {
-        comment: value,
+      let newComment = {
         commentedOn: targetSourceId,
         isEdited: false,
         public: true,
@@ -377,16 +387,21 @@ export default function CommentComponent(props) {
         user: { name: userDetails.name, email: userDetails.email, __typename: 'User' },
         __typename: "Comment",
         _id: "62e78820b4f930ae6002a7f2"
-
+      }
+      if (typeof value === 'object') {
+        newComment = { ...value, ...newComment };
+      } else {
+        newComment['comment'] = value;
       }
       state.push(newComment)
-      return state
-    })
+      return state;
+    });
 
     upsertComment({
       variables: {
         comment: {
-          comment: newCommentCleaner(value),
+          comment: typeof value === 'object' ? newCommentCleaner(value.comment) : newCommentCleaner(value),
+          commentType: typeof value === 'object' ? (value.commentType || 'General') : 'General',
           public: true,
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
@@ -441,60 +456,34 @@ export default function CommentComponent(props) {
                   <Fragment key={index}>
                     {(showAllComments || index >= indexToShow) && (
                       <Grid
+                        id="commentsArea"
                         container
                         className={classes.gridStyle}
-                        onMouseOver={() =>
-                          setShowCommentActionId(eachComment?._id)
-                        }
+                        onMouseOver={() => setShowCommentActionId(eachComment?._id)}
                         onMouseLeave={() => setShowCommentActionId(null)}
                       >
                         <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
                           <IconButton>
-                            {profilesInfo[eachComment?.user?.email]?.profileImage ||
-                              eachComment.isNew ? (
+                            {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
                               <Avatar
-                                src={
-                                  eachComment.isNew
-                                    ? profileImage
-                                    : profilesInfo[eachComment?.user?.email]
-                                      .profileImage
-                                }
+                                src={eachComment.isNew ? profileImage : profilesInfo[eachComment?.user?.email].profileImage}
                                 size="38"
                                 round
                               />
                             ) : (
-                              <Avatar
-                                name={eachComment?.user?.name}
-                                size="38"
-                                round
-                              />
+                              <Avatar name={eachComment?.user?.name} size="38" round />
                             )}
                           </IconButton>
                         </Grid>
                         <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
                           <div>
-                            <span className={classes.bold}>
-                              {eachComment?.user?.name}
-                            </span>
-                            {
-                              <ReactTimeAgo
-                                className={classes.commentTime}
-                                date={new Date(Number(eachComment.ts))}
-                                locale="en-US"
-                              />
-                            }
-                            {eachComment.isEdited && (
-                              <span className={classes.commentTime}>
-                                (Edited)
-                              </span>
-                            )}
-                            {
-                              eachComment?.user?.email === stateApp.user.email &&
+                            <span className={classes.bold}>{eachComment?.user?.name}</span>
+                            {<ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />}
+                            {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+                            {eachComment?.user?.email === stateApp.user.email &&
                               showCommentActionId === eachComment._id &&
                               editCommentId !== eachComment._id && (
-                                <div
-                                  className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}
-                                >
+                                <div className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}>
                                   <ActionMenu
                                     eachComment={eachComment}
                                     setEditCommentId={setEditCommentId}
@@ -504,20 +493,19 @@ export default function CommentComponent(props) {
                                 </div>
                               )}
                           </div>
-                          {eachComment.isActivity === true &&
+                          {eachComment.isActivity === true && (
                             <>
                               <div className={`${classes.whiteSpace}`}>
-                                {eachComment.activityData.type.replace(/_/g, ' ').toUpperCase()} - {eachComment.activityData.name}
+                                {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
                               </div>
                               <div className={`${classes.whiteSpace}`}>
-                                START DATE: {moment(eachComment.activityData.dateTime).format('MM/DD/YYYY hh:mm A')}
+                                START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
                               </div>
                               <div className={`${classes.whiteSpace}`}>
-                                END DATE: {moment(eachComment.activityData.endDateTime).format('MM/DD/YYYY hh:mm A')}
+                                END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
                               </div>
                             </>
-
-                          }
+                          )}
                           {editCommentId !== eachComment._id ? (
                             <CommonCommentText users={users} eachComment={eachComment} />
                           ) : (
@@ -583,6 +571,7 @@ export default function CommentComponent(props) {
                       showActions={showActions}
                       setComment={setComment}
                       upsertComment={addNewComment}
+                      showCommentType={props.showCommentType}
                     // fieldWidth={`${size - 23}px`}
                     />
 
@@ -593,13 +582,13 @@ export default function CommentComponent(props) {
           </div>
         )}
       </div>
-    }</SizeMe>
+    }</SizeMe >
   );
 }
 
 export const CommentText = ({ eachComment, users }) => {
   const classes = useStyles();
-  let formatComment = eachComment.comment.split(" ")
+  let formatComment = (eachComment?.comment || '').split(" ")
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
@@ -654,6 +643,7 @@ const ActionMenu = ({
   return (
     <>
       <ExpandMoreIcon
+        id="expandIcon"
         aria-controls={eachComment._id}
         aria-haspopup="true"
         onClick={handleClick}
@@ -681,6 +671,7 @@ const ActionMenu = ({
         <MenuItem
           textcolor="red"
           onClick={() => deleteComment(eachComment._id)}
+          id="deleteComment"
         >
           Delete Comment
         </MenuItem>
