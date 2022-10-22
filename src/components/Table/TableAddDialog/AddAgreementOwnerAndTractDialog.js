@@ -51,6 +51,7 @@ import AutoCompleteParcelOwners from "components/Shared/Forms/Fields/AutoComplet
 import Loaders from "components/Loaders";
 import { GET_TRACT_ABSTRACT_SHAPE } from "graphQL/useQueryGetTractAbstractShape";
 import { useDispatch } from "react-redux";
+import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import _ from "lodash";
 
@@ -111,6 +112,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   const dispatch = useDispatch();
   const { control, reset, register, getValues, watch, setValue } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
+  const [isAcquisitionCostOverridden, setIsAcquisitionCostOverridden] = useState(false);
   const [anchorEl, setAnchorEl] = useState();
   const [isAcresOverridden, setIsAcresOverridden] = useState(false);
 
@@ -126,6 +128,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 
   const tract = watch("tract", {});
   const state = watch("tract.state", '');
+  const nra = watch("nra", '');
 
   let layerType = _.upperFirst(props.layerType)
   layerType = layerType === 'Surface' ? 'Surface/ROW' : layerType
@@ -160,6 +163,11 @@ function AddAgreementOwnerAndTractDialog(props) {
   useEffect(() => {
     register("tract.qtrQtrSelection");
   }, [tract]);
+
+  useEffect(() => {
+    if (!isAcquisitionCostOverridden)
+      setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra));
+  }, [nra]);
 
   useEffect(() => {
     if (tract.state && isNewTract) {
@@ -217,6 +225,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   });
 
   useEffect(() => {
+    console.log({ so: props.seletedOwner })
     if (props.seletedOwner) {
       props.seletedOwner.realtedObject = props.seletedOwner?.contact?._id;
       props.seletedOwner.ownerEntity = props.seletedOwner.realtedObject;
@@ -232,7 +241,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       reset(props.seletedOwner);
 
       setTimeout(() => {
-        const { royalty_interest, orri, net_acres, nra, mineral_interest } = props.seletedOwner
+        const { royalty_interest, orri, net_acres, nra, mineral_interest, acquisition_nra, acquisition_cost } = props.seletedOwner
         let calculatedNRA = calculateNRA(royalty_interest, orri, net_acres);
         if (!isNaN(parseFloat(calculatedNRA)))
           setIsNRAOverridden(parseFloat(calculatedNRA) !== parseFloat(nra) && !isNaN(parseFloat(nra)))
@@ -240,6 +249,10 @@ function AddAgreementOwnerAndTractDialog(props) {
         let calculatedAcres = calculateNetAcres(mineral_interest);
         if (!isNaN(parseFloat(calculatedAcres)))
           setIsAcresOverridden(parseFloat(calculatedAcres) !== parseFloat(net_acres) && !isNaN(parseFloat(net_acres)))
+
+        let calculatedAcquisitionCost = calculateAcquisitionCost(nra, acquisition_nra);
+        if (!isNaN(parseFloat(calculatedAcquisitionCost)))
+          setIsAcquisitionCostOverridden(parseFloat(calculatedAcquisitionCost) !== parseFloat(acquisition_cost) && !isNaN(parseFloat(acquisition_cost)))
       }, 0);
 
       setIsNewTract(false)
@@ -311,6 +324,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     const ownerToAdd = getValues();
     ownerToAdd.isTractOwner = isTractOwner;
     ownerToAdd.tract = tract;
+
     Object.keys(ownerToAdd).forEach((key) => {
       if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'nra', 'company_net_acres'].includes(key) && ownerToAdd[key]) ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(8));
     });
@@ -332,6 +346,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             {
               shapeId: props.shapeId,
               ...ownerToAdd,
+              acquisition_cost: Number(parseFloat(ownerToAdd.nra * ownerToAdd.acquisition_nra).toFixed(2))
             },
           ],
           shapeType: props.shapeType,
@@ -347,6 +362,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           shapeOwner: {
             shapeId: props.shapeId,
             ...ownerToAdd,
+            acquisition_cost: Number(parseFloat(ownerToAdd.nra * ownerToAdd.acquisition_nra).toFixed(2))
           },
         },
         refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
@@ -395,6 +411,13 @@ function AddAgreementOwnerAndTractDialog(props) {
     nra = addTrailingZeros(nra.toFixed(8));
 
     return nra;
+  };
+
+  const calculateAcquisitionCost = (nra, aquisitionNra) => {
+    if (!nra && !aquisitionNra) return null;
+    const aquisitionCost = parseFloat(nra || 0) * (parseFloat(aquisitionNra || 0));
+
+    return Number(aquisitionCost.toFixed(2))
   };
 
   useEffect(() => {

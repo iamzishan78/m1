@@ -3,7 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
 
-export function CurrencyFormatCustom(props) {
+export function CurrencyFormatCustomWithoutPrefix(props) {
   const { inputRef, onChange, name, prefix, ...other } = props;
   return (
     <NumberFormat
@@ -18,13 +18,13 @@ export function CurrencyFormatCustom(props) {
         });
       }}
       thousandSeparator
-      // isNumericString
-      prefix='$'
+    // isNumericString
+    // prefix={typeof prefix !== 'undefined' ? prefix : '$'}
     />
   );
 }
 
-CurrencyFormatCustom.propTypes = {
+CurrencyFormatCustomWithoutPrefix.propTypes = {
   inputRef: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
