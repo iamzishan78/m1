@@ -254,11 +254,15 @@ class TableBody extends React.Component {
 
                         return (
                             <React.Fragment key={rowIndex}>
-                                {
-                                    rowIndex === tableRows.length - 5 && <Waypoint
-                                        onEnter={() => { if (components.onInfiniteScroll) components.onInfiniteScroll() }}
+                                {rowIndex === tableRows.length - 5 && (
+                                    <Waypoint
+                                        onEnter={() => {
+                                            if (components.onInfiniteScroll) {
+                                                components.onInfiniteScroll();
+                                            }
+                                        }}
                                     />
-                                }
+                                )}
 
                                 <TableBodyRow
                                     {...bodyClasses}
@@ -270,14 +274,15 @@ class TableBody extends React.Component {
                                     onClick={this.handleRowClick.bind(null, row, { rowIndex, dataIndex })}
                                     className={clsx({
                                         [classes.lastStackedCell]:
-                                            options.responsive === 'vertical' ||
-                                            options.responsive === 'stacked' ||
-                                            options.responsive === 'stackedFullWidth',
-                                        [classes.lastSimpleCell]: options.responsive === 'simple',
+                                            options.responsive === "vertical" ||
+                                            options.responsive === "stacked" ||
+                                            options.responsive === "stackedFullWidth",
+                                        [classes.lastSimpleCell]: options.responsive === "simple",
                                         [bodyClasses.className]: bodyClasses.className,
                                     })}
-                                    data-testid={'MUIDataTableBodyRow-' + dataIndex}
-                                    id={'MUIDataTableBodyRow-' + dataIndex}>
+                                    data-testid={"MUIDataTableBodyRow-" + dataIndex}
+                                    id={"MUIDataTableBodyRow-" + dataIndex}
+                                >
                                     <TableSelectCell
                                         onChange={this.handleRowSelect.bind(null, {
                                             index: this.getRowIndex(rowIndex),
@@ -299,13 +304,13 @@ class TableBody extends React.Component {
                                         isRowExpanded={this.isRowExpanded(dataIndex)}
                                         isRowSelectable={isRowSelectable}
                                         dataIndex={dataIndex}
-                                        id={'MUIDataTableSelectCell-' + dataIndex}
+                                        id={"MUIDataTableSelectCell-" + dataIndex}
                                         components={components}
                                     />
 
                                     {processedRow.map(
-                                        column =>
-                                            columns[column.index].display === 'true' && (
+                                        (column) =>
+                                            columns[column.index].display === "true" && (
                                                 <TableBodyCell
                                                     {...(columns[column.index].setCellProps
                                                         ? columns[column.index].setCellProps(column.value, dataIndex, column.index) || {}
@@ -318,10 +323,11 @@ class TableBody extends React.Component {
                                                     print={columns[column.index].print}
                                                     options={options}
                                                     tableId={tableId}
-                                                    key={column.index}>
+                                                    key={column.index}
+                                                >
                                                     {column.value}
                                                 </TableBodyCell>
-                                            ),
+                                            )
                                     )}
                                 </TableBodyRow>
                                 {this.isRowExpanded(dataIndex) && options.renderExpandableRow(row, { rowIndex, dataIndex })}

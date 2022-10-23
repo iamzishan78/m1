@@ -1,5 +1,4 @@
 import { BlockBlobClient } from "@azure/storage-blob";
-import { getPolygonString } from './getPolygonString';
 import { cloneDeep } from "lodash";
 
 export * from "./deepEqual";
@@ -22,7 +21,7 @@ export function truncate(str, n) {
 }
 
 export function copy(obj) {
-  return cloneDeep(obj)
+  return cloneDeep(obj);
 }
 
 export function getSearchFields(Table) {

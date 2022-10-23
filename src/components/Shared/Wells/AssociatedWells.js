@@ -190,7 +190,7 @@ const AssociatedWellsList = ({ title, relatedObject, relatedObjectType, details 
     setAddWell(false);
     upsertWellDescriptor({
       variables: {
-        well: wellData,
+        well: { ...wellData, isDeleted: false },
         relatedObject,
         relatedObjectType,
       },
@@ -301,7 +301,7 @@ const AssociatedWellsList = ({ title, relatedObject, relatedObjectType, details 
 
         <List aria-label="wells list" className={classes.wellList}>
           {wells && wells.length > 0 ? (
-            [...wells].map((well, index) => (
+            wells.map((well, index) => (
               <div style={{ padding: "0px 0px 0px" }}>
                 <ListItem key={index}>
                   <Link className={classes.wellLink} color="primary" onClick={() => goToWell(well.descriptorObject)}>

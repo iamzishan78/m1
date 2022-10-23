@@ -15,8 +15,8 @@ const UnitOwnersTractHeadCells = [
           maxWidth: "250px",
         },
         setCellHeaderProps: {
-          paddingLeft: '24px',
-        }
+          paddingLeft: "24px",
+        },
       }),
       sort: true,
       filter: true,
@@ -31,7 +31,8 @@ const UnitOwnersTractHeadCells = [
     label: "State",
     esKey: "tract.state.keyword",
     options: {
-      sort: true, filter: true,
+      sort: true,
+      filter: true,
     },
     style: { maxWidth: 80 },
   },
@@ -42,15 +43,14 @@ const UnitOwnersTractHeadCells = [
     options: { sort: true, filter: true },
   },
   {
-    name: "SurveyMeridian", label: "Survey/ Meridian", esKey: [
-      'tract.rurvey.keyword',
-      'tract.meridian.keyword'
-    ],
+    name: "SurveyMeridian",
+    label: "Survey/ Meridian",
+    esKey: ["tract.rurvey.keyword", "tract.meridian.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
       sort: true,
-      filter: true
-    }
+      filter: true,
+    },
   },
   // {
   //   name: "meridian",
@@ -60,15 +60,14 @@ const UnitOwnersTractHeadCells = [
   // },
 
   {
-    name: "BlockTownship", label: "Block/ Township", esKey: [
-      'tract.block.keyword',
-      'tract.township.keyword'
-    ],
+    name: "BlockTownship",
+    label: "Block/ Township",
+    esKey: ["tract.block.keyword", "tract.township.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Block?.Township?",
       sort: true,
-      filter: true
-    }
+      filter: true,
+    },
   },
 
   // {
@@ -79,15 +78,14 @@ const UnitOwnersTractHeadCells = [
   // },
 
   {
-    name: "SectionRange", label: "Section/ Range", esKey: [
-      'tract.section.keyword',
-      'tract.range.keyword'
-    ],
+    name: "SectionRange",
+    label: "Section/ Range",
+    esKey: ["tract.section.keyword", "tract.range.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
       sort: true,
-      filter: true
-    }
+      filter: true,
+    },
   },
 
   // {
@@ -98,15 +96,14 @@ const UnitOwnersTractHeadCells = [
   // },
 
   {
-    name: "AbstractSection", label: "Abstract/ Section", esKey: [
-      'tract.abstract.keyword',
-      'tract.section.keyword'
-    ],
+    name: "AbstractSection",
+    label: "Abstract/ Section",
+    esKey: ["tract.abstract.keyword", "tract.section.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
       sort: true,
-      filter: true
-    }
+      filter: true,
+    },
   },
 
   // {
@@ -195,9 +192,9 @@ UnitOwnersTractHeadCells.forEach((cell) => {
       style: {
         minWidth: "initial",
         maxWidth: "initial",
-      }
-    })
+      },
+    });
   }
-})
+});
 
 export default UnitOwnersTractHeadCells;

@@ -38,16 +38,16 @@ const OwnersPerUnitHeadCells = [
           maxWidth: "300px",
         },
         setCellHeaderProps: {
-          paddingLeft: '35px',
-        }
-      })
+          paddingLeft: "35px",
+        },
+      }),
     },
   },
   {
     name: "ownerType",
-    esKey: 'contact.ownerType.keyword',
+    esKey: "contact.ownerType.keyword",
     label: "Entity Type",
-    options: { filter: true }
+    options: { filter: true },
   },
   {
     name: "working_interest",
@@ -120,13 +120,7 @@ const OwnersPerUnitHeadCells = [
     esKey: "contact.campaignName.keyword",
     options: {
       customRender: (value) => {
-        return (
-          <CampaignNameField
-            value={value.campaignName}
-            fullWidth
-            disabled
-          />
-        )
+        return <CampaignNameField value={value.campaignName} fullWidth disabled />;
         // if (typeof value.campaignName === "string") {
         //   return value.campaignName;
         // } else {
@@ -247,7 +241,7 @@ const OwnersPerUnitHeadCells = [
       download: false,
       print: false,
       viewColumns: false,
-      parent: "Unit detail"
+      parent: "Unit detail",
     },
   },
 ];

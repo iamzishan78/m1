@@ -79,22 +79,26 @@ const LandSearch = () => {
     setSearch(stateApp.landSearchQuery)
   }, [stateApp.landSearchQuery]);
 
+  const handleChange = React.useMemo(
+    () =>
+      debounce((value) => {
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          landSearchQuery: value,
+        }));
+      }, 500),
+    []
+  );
+
   return (
     <div className={classes.search}>
       <TextField
         value={search}
         onChange={(e) => {
           setSearch(e.target.value);
-          debounce(() => setStateApp((stateApp) => ({
-            ...stateApp,
-            landSearchQuery: e.target.value,
-            // isLandSearching: true,
-          })), 500)()
+          handleChange(e.target.value);
         }}
-        style={{
-          margin: 0,
-          width: "100%",
-        }}
+        style={{ margin: 0, width: "100%" }}
         className={classes.contactSearchField}
         margin="dense"
         variant="outlined"
