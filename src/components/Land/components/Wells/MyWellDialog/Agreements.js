@@ -238,7 +238,7 @@ const Agreements = ({ platformWell, agreements }) => {
           ) : (
             <ListItem>
               <ListItemText
-                primary={"No ageement found."}
+                primary={"No related agreements found."}
                 primaryTypographyProps={{
                   color: "primary",
                 }}
