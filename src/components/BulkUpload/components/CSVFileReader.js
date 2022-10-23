@@ -13,6 +13,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { useDispatch } from "react-redux";
+import Select from "@material-ui/core/Select";
 import { showErrorMessage } from "../../../actions";
 
 const useStyles = makeStyles(() => ({
@@ -273,6 +274,31 @@ export default function CSVFileReader(props) {
 
   return (
     <div style={main_div}>
+      {props.selectedJob.name === 'Comment Uploader' && (
+        <>
+          <label>Begin by selecting the entity in which the comment should be associated</label>
+          <div>
+            <Select
+              variant='outlined'
+              style={{ width: '400px', marginTop: '10px', marginBottom: '10px', height: 40 }}
+              native
+              labelId="activity-type-label"
+              id="activity-type-input"
+              value={props.selectedJob.type}
+              onChange={(e) => {
+                props.setSelectedJob({
+                  ...props.selectedJob,
+                  type: e.target.value
+                })
+              }}
+            >
+              <option value={"AGREEMENT_COMMENTS"}>Agreement</option>
+              <option value={"CONTACT_COMMENTS"}>Contact</option>
+              <option value={"TRACT_COMMENTS"}>Tract</option>
+            </Select>
+          </div>
+        </>
+      )}
       <div style={{ ...big_text, ...padding_div_top }}>
         Select a File to Import (Max 10,000 rows)
       </div>

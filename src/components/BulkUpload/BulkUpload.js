@@ -43,6 +43,7 @@ export const rawJobs = [
   { name: 'Check Detail Upload', type: 'CHECKDETAILS' },
   { name: 'Property Upload', type: 'PROPERTIES' },
   { name: 'Agreement Upload (Header)', type: 'AGREEMENT_HEADER', redirectTo: '/land/agreements' },
+  { name: 'Comment Uploader', type: 'AGREEMENT_COMMENTS' },
   { name: 'Agreement Upload (Provisions)', type: 'AGREEMENT_PROVISIONS' },
   { name: 'Agreement Upload (Related Well)', type: 'AGREEMENT_RELATED_WELLS' },
   { name: 'Agreement Upload (Related Tracts)', type: 'AGREEMENT_RELATED_TRACTS' },
@@ -261,7 +262,7 @@ export default function BulkUpload(props) {
           </div>
         </Breadcrumbs>
       </div>
-      <Stepper {...{ routes: props.routes, selectedJob }}>{props.children}</Stepper>
+      <Stepper {...{ routes: props.routes, selectedJob, setSelectedJob }}>{props.children}</Stepper>
     </div>
   );
 }

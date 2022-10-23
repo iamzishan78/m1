@@ -7,27 +7,31 @@ const CHECKDETAILS = require("./CHECKDETAILS").default;
 const PARCELINTERESTS = require("./PARCELINTERESTS").default;
 const AGREEMENT_SHAPE = require("./AGREEMENT_SHAPE").default;
 const AGREEMENT_HEADER = require("./AGREEMENT_HEADER").default;
+const AGREEMENT_COMMENTS = require("./AGREEMENT_COMMENTS").default;
+const TRACT_COMMENTS = require("./TRACT_COMMENTS").default;
+const CONTACT_COMMENTS = require("./CONTACT_COMMENTS").default;
 const AGREEMENT_PROVISIONS = require("./AGREEMENT_PROVISIONS").default;
 const CONTACTS_WELL_INTEREST = require("./CONTACTS_WELL_INTEREST").default;
 const AGREEMENT_RELATED_WELLS = require("./AGREEMENT_RELATED_WELLS").default;
 const AGREEMENT_RELATED_TRACTS = require("./AGREEMENT_RELATED_TRACTS").default;
-
-const exportData = { 
-    UNITS,
-    TRACTS,
+const eportData = { 
     CONTACTS, 
-    PROPERTIES,
-    SHAPEOWNER,
-    CHECKDETAILS,
-    AGREEMENT_SHAPE,
+    TRACTS, 
+    UNITS, 
     PARCELINTERESTS, 
-    AGREEMENT_HEADER,
+    SHAPEOWNER, 
+    CHECKDETAILS, 
+    PROPERTIES, 
+    CONTACTS_WELL_INTEREST, 
+    AGREEMENT_SHAPE, 
+    AGREEMENT_HEADER, 
     AGREEMENT_PROVISIONS,
-    CONTACTS_WELL_INTEREST,
+    AGREEMENT_COMMENTS, 
+    CONTACT_COMMENTS, 
     AGREEMENT_RELATED_WELLS, 
-    AGREEMENT_RELATED_TRACTS
-}
-export default exportData
+    AGREEMENT_RELATED_TRACTS,
+    TRACT_COMMENTS }
+export default eportData
 
 export const addAfterLabel = (data, label, insertData) => {
     const index = data.findIndex((row) => row.label === label)
