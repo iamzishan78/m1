@@ -5,14 +5,14 @@ import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { StyledTextField } from "../style";
 
 const useStyles = makeStyles((theme) => ({
-  fieldContainer: {opacity: 0.7},
+  fieldContainer: { opacity: 0.7 },
   fieldText: {
     fontSize: '15px',
     fontWeight: 'bold'
   },
   acreageCard: {
     backgroundColor: "#F6F8F9",
-    padding: "10px",
+    // paddingTop: "10px",
     marginTop: "8px",
     marginBottom: "8px",
     "& .heading": {
@@ -25,6 +25,9 @@ const useStyles = makeStyles((theme) => ({
     },
     "& .MuiGrid-item:last-child": {
     },
+  },
+  mainCard: {
+    paddingLeft: '5px'
   },
   lastChild: {
     marginBottom: "40px",
@@ -42,32 +45,30 @@ const Acreage = ({ properties }) => {
   }, [properties, reset]);
   return (
     <Grid item md={12} className={classes.acreageCard}>
-      <Grid container display="row" alignItems="center" justify="center" spacing={3}>
-        <Grid item xs={11}>
-            <Grid container display="row" alignItems="center" justify="space-between" spacing={3}>
-              <Grid item xs={3}>
-                <Typography variant="h5" className={classes.heading}>
-                  Acreage
-                </Typography>
-              </Grid>
-              <Grid item xs={3} className={classes.fieldContainer}>
-                <Typography variant="h5" className={classes.fieldText}>
-                  Total
-                </Typography>
-              </Grid>
-              <Grid item xs={3} className={classes.fieldContainer}>
-                <Typography variant="h5" className={classes.fieldText}>
-                  Developed
-                </Typography>
-              </Grid>
-              <Grid item xs={3} className={classes.fieldContainer}>
-                <Typography variant="h5" className={classes.fieldText}>
-                  Undeveloped
-                </Typography>
-              </Grid>
+      <Grid className={classes.mainCard} container display="row" alignItems="center"  >
+        <Grid item xs={11} style={{ marginTop: 0 }}>
+          <Grid container display="row" alignItems="center" justify="space-between" spacing={3}  >
+            <Grid item xs={3}>
+              <Typography className="heading"> Acreage</Typography>
             </Grid>
+            <Grid item xs={3} className={classes.fieldContainer}>
+              <Typography variant="h5" className={classes.fieldText}>
+                Total
+              </Typography>
+            </Grid>
+            <Grid item xs={3} className={classes.fieldContainer}>
+              <Typography variant="h5" className={classes.fieldText}>
+                Developed
+              </Typography>
+            </Grid>
+            <Grid item xs={3} className={classes.fieldContainer}>
+              <Typography variant="h5" className={classes.fieldText}>
+                Undeveloped
+              </Typography>
+            </Grid>
+          </Grid>
         </Grid>
-        
+
         <Grid item xs={11}>
           <Grid container display="row" alignItems="center" justify="space-between" spacing={3}>
             <Grid item xs={3} className={classes.fieldContainer}>
@@ -182,7 +183,7 @@ const Acreage = ({ properties }) => {
           </Grid>
         </Grid>
       </Grid>
-    </Grid>
+    </Grid >
   );
 };
 
