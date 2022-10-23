@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     width: "425px",
     top: "auto",
     backgroundColor: "#0e111a",
-    left: "52px",
+    left: "60px",
   },
   toolbar: {
     display: "block",

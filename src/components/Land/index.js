@@ -41,12 +41,12 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/land/units",
     component: "Units",
   },
-  // WELLS: {
-  //   featureFlag: "LANDMODULE",
-  //   title: "Wells",
-  //   link: "/land/wells",
-  //   component: "Wells",
-  // },
+  WELLS: {
+    featureFlag: "LANDMODULE",
+    title: "Wells",
+    link: "/land/wells",
+    component: "Wells",
+  },
   REPORTING_GROUPS: {
     featureFlag: "LANDREPORTINGGROUPS",
     title: "Reporting Groups",
@@ -87,7 +87,7 @@ export default function Revenue() {
 
   return (
     <QuickActionPanel
-      title="Land Management"
+      title="Asset Management"
       handlePanelStateChange={handlePanelStateChange}
       quickActionsPanelState={quickActionsPanelState}
       activeModule={activeModule}
