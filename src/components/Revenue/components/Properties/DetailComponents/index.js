@@ -38,6 +38,7 @@ import ValidationFilter from "./ValidationFilter";
 import WellProdChart from "components/WellProdChart/WellProdChart";
 import TabButtons from "components/Shared/TabPanels/TabButtons"
 import AssociatedWellsProductionTable from 'components/Table/Revenue/AssociatedWellsProductionTable'
+import AddNewRelatedAgreementDialog from "components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -102,9 +103,9 @@ const useStyles = makeStyles((theme) => ({
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
   },
-  tabsDetailContainer: ({ showInterestDetails, collapse }) => ({
+  tabsDetailContainer: ({ showInterestDetails, collapse, isNewAgmt }) => ({
     padding: 20,
-    width: showInterestDetails || !collapse ? "calc(100% - 644px)" : "100%",
+    width: showInterestDetails || !collapse || isNewAgmt ? "calc(100% - 644px)" : "100%",
   }),
   menuIcon: {
     background: "transparent",
@@ -232,8 +233,9 @@ export default function DetailComponents(props) {
   const [isButtonScroll, setButtonScroll] = useState(false);
   const [propertyDetails, setProperty] = useState(null);
   const [entityToConvert, setEntityToConvert] = useState(null);
+  const [isNewAgmt, setNewAgmtState] = useState(false);
 
-  const classes = useStyles({ ...props, showInterestDetails, collapse });
+  const classes = useStyles({ ...props, showInterestDetails, collapse, isNewAgmt });
 
   const [updateMetaOwner] = useMutation(UPSERT_USER_DESCRIPTOR);
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
@@ -403,29 +405,25 @@ export default function DetailComponents(props) {
            * Detail tabs section
            */}
           <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
-            {tab === 0 && (
-              <div className={classes.tabsSectionDetails}>
-                <div className={classes.headerSection}>
-                  <HeaderSection
-                    propertyId={propertyId}
-                    propertyDetails={propertyDetails}
-                    propertyOwnerContact={propertyOwnerContact}
-                    setEntityToConvert={setEntityToConvert}
-                  />
-                </div>
-                <div>
-                  <PropertyInterestDetailsSection
-                    propertyId={propertyId}
-                    setSelectedInterest={setSelectedInterest}
-                    showInterestDetails={showInterestDetails}
-                    onClickAdd={() => setShowInterestDetails(true)}
-                  />
-                </div>
+            <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
+              <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
+                <HeaderSection
+                  propertyId={propertyId}
+                  propertyDetails={propertyDetails}
+                  propertyOwnerContact={propertyOwnerContact}
+                  setEntityToConvert={setEntityToConvert}
+                />
               </div>
-            )}
-            {tab === 1 && (
-              <Validation  propertyId={propertyId} />
-            )}
+              <div ref={tab === 1 ? selectedTabRef : null}>
+                <PropertyInterestDetailsSection
+                  propertyId={propertyId}
+                  setSelectedInterest={setSelectedInterest}
+                  showInterestDetails={showInterestDetails}
+                  onClickAdd={() => setShowInterestDetails(true)}
+                  setNewAgmtState={setNewAgmtState}
+                />
+              </div>
+            </div>
           </div>
           {stateApp.viewDoc && (
             <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
@@ -458,7 +456,7 @@ export default function DetailComponents(props) {
           />
         )}
 
-        {!collapse && !showInterestDetails && !showOwnerDialog && (
+        {((!collapse && !showInterestDetails && !showOwnerDialog) || isNewAgmt) && (
           <div
             style={{
               marginTop: 20,
@@ -468,16 +466,20 @@ export default function DetailComponents(props) {
               maxWidth: "620px",
             }}
           >
-            <MetadataDrawer
-              data={propertyDetails}
-              onUpdate={onUpdateMetaData}
-              setCollapse={setCollapse}
-              targetLabel="Property"
-              targetSourceId={propertyId}
-              setStateApp={setStateApp}
-              ownerTitle="Approver"
-              isApproval={true}
-            />
+            {!isNewAgmt ? (
+              <MetadataDrawer
+                data={propertyDetails}
+                onUpdate={onUpdateMetaData}
+                setCollapse={setCollapse}
+                targetLabel="Property"
+                targetSourceId={propertyId}
+                setStateApp={setStateApp}
+                ownerTitle="Approver"
+                isApproval={true}
+              />
+            ) : (
+              <AddNewRelatedAgreementDialog customLayerId={propertyId} setNewAgmtState={setNewAgmtState} parentType="Property" />
+            )}
           </div>
         )}
       </div>

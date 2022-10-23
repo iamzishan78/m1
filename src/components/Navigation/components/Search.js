@@ -397,7 +397,7 @@ function Search() {
       },
       "units": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `*${request.input}*` : '',
+        search: (request) => request.input ? `"*${request.input}*"` : '',
         searchFields: ["name", "shapeJson.properties.uNumber", "shapeJson.properties.originalProperties.County", "data.shapeJson.properties.originalProperties.State"],
         filter: {
           field: "layer",

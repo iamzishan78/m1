@@ -135,6 +135,7 @@ export default function LanesInfoPanel({
   stagesError,
   setStageError,
   setStage,
+  flowLineType,
   handleSaveOrUpdate,
 }) {
   const dispatch = useDispatch();
@@ -301,8 +302,9 @@ export default function LanesInfoPanel({
                                       InputProps={{
                                         type: "number",
                                       }}
+                                      disabled={flowLineType === "general"}
                                       onChange={(event) => {
-                                        handleCellTextChange(event.target.value, "dealProbability", index);
+                                        flowLineType !== "general" && handleCellTextChange(event.target.value, "dealProbability", index);
                                       }}
                                     />
                                   </TableCell>
@@ -331,7 +333,7 @@ export default function LanesInfoPanel({
                                       onChange={(event, newValue) => {
                                         handleCellTextChange(newValue?.toLowerCase(), "dealsStatus", index);
                                       }}
-                                      options={["Open", "Won", "Lost"]}
+                                      options={flowLineType === "general" ? ["Open", "Closed"] : ["Open", "Won", "Lost"]}
                                       renderInput={(params) => (
                                         <TextField {...params} variant="outlined" size="small" fullWidth margin="none" />
                                       )}

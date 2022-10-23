@@ -166,7 +166,8 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
   }, [dataProvisionAutoCompleteList]);
 
   useEffect(() => {
-    setPCounts(fields.length)
+    if (setPCounts)
+      setPCounts(fields.length)
   }, [fields.length])
 
   const addRemoveProvision = (addProvision, provision) => {

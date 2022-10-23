@@ -571,7 +571,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                     className={clsx(classes.filterDisplay, activityType === "call" && classes.active)}
                     onClick={() => setActivityType("call")}
                   >
-                    <CallIcon /> <span>Call</span>
+                    <CallIcon id="callIcon" /> <span>Call</span>
                   </span>
                   <span
                     className={clsx(classes.filterDisplay, activityType === "text_message" && classes.active)}
@@ -792,7 +792,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                 <div className={classes.btnGroup} style={{ width: "76%", marginRight: 24 }}>
                   <FormControlLabel
                     enabled
-                    control={<Checkbox checked={closed} onChange={(e) => setClosed(e.target.checked)} color="primary" />}
+                    control={<Checkbox id="markAsDone" checked={closed} onChange={(e) => setClosed(e.target.checked)} color="primary" />}
                     label="Mark as done"
                   />
                   <Button
@@ -809,6 +809,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                   <Button
                     disabled={addLoading || updateLoading}
                     className={classes.marginLeft}
+                    id="addSaveButton"
                     color="primary"
                     variant="contained"
                     onClick={() => {

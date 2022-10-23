@@ -35,16 +35,8 @@ describe('Sort Filter ViewColumn Grid Spec', () => {
 
         cy.wait(1000)
 
-        const contactName = 'SUSAN CHERYL BLALOCK'
         cy.log('==== STEP: APPLY SORTING ON CONTACT OWNER DESCENDING ====')
         cy.sortColumn('Contact Owner', 'desc').then(response => {
-            // const hits = response.response.body.data.getESSimpleSearch.hits
-
-            // const indexofContact = hits.findIndex(hit => hit.name === contactName)
-
-            // if (indexofContact < 0)
-            //     throw new Error(`Could not find ${contactName} in api response`)
-
             cy.log('==== STEP: CLICK ON CONTACT====')
             cy.getTableCell("Name", 3).click()
 

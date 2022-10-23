@@ -127,6 +127,7 @@ function AgreementOwnersTractsTable(props) {
           open={props.addToTable}
           width="450px"
           shapeId={props.customLayer._id}
+          layerType={props.customLayer.layer}
           shapeType={props.shapeType}
           seletedOwner={props.clickedRow}
           deleteFunc={deleteFunc}
@@ -167,6 +168,7 @@ function AgreementOwnersTractsTable(props) {
         options={tableOptions}
         parent={props.parent}
         setColumnsBase={[]}
+        commentType={props.commentType}
         {...props.esHocProps}
       />
     </Container>

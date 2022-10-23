@@ -153,6 +153,8 @@ const UnitOwnersTractHeadCells = [
   { name: "net_acres", esKey: "net_acres", label: "Net Acres", type: "number", options: { filter: true } },
   { name: "company_net_acres", esKey: "company_net_acres", label: "Co Net Acres", type: "number", options: { filter: true } },
   { name: "nra", esKey: "nra", label: "NRA", type: "number", options: { filter: true } },
+  { name: "acquisition_nra", esKey: "acquisition_nra", label: "Acquisition $/NRA", type: "number", options: { filter: true } },
+  { name: "acquisition_cost", esKey: "acquisition_cost", label: "Acquisition Cost", type: "number", options: { filter: true } },
   {
     name: "depthFrom",
     label: "Depth From",
@@ -166,8 +168,22 @@ const UnitOwnersTractHeadCells = [
     options: { sort: true, filter: true },
   },
   { name: "tractStatus", esKey: "tractStatus.keyword", label: "Tract Status", editable: true, options: { filter: true } },
-  { name: "mapStatus", esKey: "mapStatus.keyword", label: "Map Staus", editable: true, options: { filter: true } },
+  { name: "mapStatus", esKey: "mapStatus.keyword", label: "Map Status", editable: true, options: { filter: true } },
   { name: "countAcres", esKey: "countAcres.keyword", label: "Count Acres", options: { filter: true } },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      dbName: "comments.comment",
+      display: true,
+      filter: false,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 ];
 
 UnitOwnersTractHeadCells.forEach((cell) => {
