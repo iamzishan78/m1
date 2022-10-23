@@ -125,7 +125,6 @@ function AgreementsTable(props) {
   useEffect(() => {
     props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);
   }, [props?.options?.count]);
-  
   useEffect(() => {
     props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView: GridViewModule || defaultView }));
     // eslint-disable-next-line

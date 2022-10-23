@@ -3,7 +3,8 @@ import moment from "moment";
 import { get } from "lodash";
 import { useLazyQuery } from "@apollo/client";
 import { Controller } from "react-hook-form";
-import { Grid, TextField, Button, Select, MenuItem, Tooltip, IconButton } from "@material-ui/core";
+import { Grid, TextField, Button, Select, MenuItem, Tooltip, IconButton, makeStyles, InputAdornment } from "@material-ui/core";
+import AutorenewIcon from "@material-ui/icons/Autorenew";
 import { Clear } from "@material-ui/icons";
 import { useStyles as summaryStyles } from "../style";
 import AddIcon from "@material-ui/icons/Add";
@@ -27,15 +28,32 @@ import { useDispatch } from "react-redux";
 import { showInfoMessage } from "actions";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
 
+const useStyles = makeStyles((theme) => ({
+  valueOveridden: {
+    "& .MuiInputBase-input": {
+      color: "#01B0F0 !important",
+      fontWeight: "bold !important",
+    },
+  },
+  valueNormal: {
+    "& .MuiInputBase-input": {
+      color: "inherit !important",
+      fontWeight: "normal !important",
+    },
+  },
+}));
+
 export default function FieldsSection({ updateAgreement, control, agreementDetails }) {
   const classes = summaryStyles();
+  const overrideClasses = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [fieldsList, setFieldsList] = useState([]);
   const [editIconState, setEditIconState] = useState({});
   const [agreementDetailCopied, setAgreementCopied] = useState();
-  const [bonusValue, setBonusValue] = useState('');
   const history = useHistory();
   const dispatch = useDispatch();
+
+  const [isAcquisitionCostOverridden, setIsAcquisitionCostOverridden] = useState(agreementDetails?.totalAcquisitionCost !== agreementDetails?.calculated?.totalAcquisitionCost);
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
@@ -108,7 +126,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   return (
     <Grid container direction="row" display="flex" justify="flex-start" alignItems="center" spacing={1} className={classes.fieldsSection}>
       {fieldsList.map((field, index) => (
-        <Grid item xs={12}>
+        <Grid item xs={12} key={index}>
           <Grid container className={classes.gridStyle}>
             <Grid
               item
@@ -151,7 +169,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
 
                         return (
                           <Fragment>
-                            {field.type === "text" && field.key === 'bounusPayment' && (
+                            {/* {field.type === "text" && field.key === 'bounusPayment' && (
                               <TextField
                                 {...params}
                                 id={`field-${index}`}
@@ -177,8 +195,8 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                 }}
                                 disabled={field.disabled}
                               />
-                            )}
-                            {field.type === "text" && field.key !== 'bounusPayment' && (
+                            )} */}
+                            {field.type === "text" && (
                               <TextField
                                 {...params}
                                 id={`field-${index}`}
@@ -263,7 +281,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     variant="outlined"
                     margin="normal"
                     fullWidth
-                    value={agreementDetailCopied?.[field.key] ? moment(agreementDetailCopied[field.key]).format("yyyy-MM-DD") : ""}
+                    value={agreementDetailCopied?.[field.key] ? moment(agreementDetailCopied[field.key]).utc(true).format("yyyy-MM-DD") : ""}
                     onChange={(event) => {
                       setAgreementCopied({ ...agreementDetailCopied, [field.key]: event ? event?.target?.value : "" })
                     }}
@@ -299,6 +317,51 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     onBlur={(event) => offClickHandler(field.key, event.target.value)}
                     autoFocus={false}
                     id={`field-${index}`}
+                  />
+                )}
+                {field.key === "totalAcquisitionCost" && (
+                  <Controller
+                    control={control}
+                    name={field.key}
+                    render={(props) => (
+                      <TextField
+                        {...props}
+                        id={`field-${index}`}
+                        className={isAcquisitionCostOverridden ? overrideClasses.valueOveridden : overrideClasses.valueNormal}
+                        variant="outlined"
+                        margin="dense"
+                        fullWidth
+                        inputRef={props.ref}
+                        onWheel={(e) => e.target.blur()}
+                        onChange={(e) => {
+                          const toFixedValue = Number(parseFloat(e.target.value).toFixed(2))
+                          const calculatedAcquisitionCost = Number(parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2))
+                          props.onChange(toFixedValue);
+                          setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost)
+                        }}
+                        onBlur={(e) => offClickHandler(field.key, props.value)}
+                        InputProps={{
+                          ...field.InputProps,
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              {isAcquisitionCostOverridden && (
+                                <IconButton
+                                  aria-label="toggle royality-acres"
+                                  onClick={() => {
+                                    const totalAcquisitionCost = Number(parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2))
+                                    props.onChange(totalAcquisitionCost)
+                                    offClickHandler(field.key, totalAcquisitionCost)
+                                    setIsAcquisitionCostOverridden(false)
+                                  }}
+                                >
+                                  <AutorenewIcon />
+                                </IconButton>
+                              )}
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
                   />
                 )}
               </Fragment>

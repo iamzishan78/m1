@@ -151,6 +151,10 @@ const UnitOwnersTractHeadCells = [
     options: { sort: true, filter: true },
   },
   { name: "net_acres", esKey: "net_acres", label: "Net Acres", type: "number", options: { filter: true } },
+  { name: "company_net_acres", esKey: "company_net_acres", label: "Co Net Acres", type: "number", options: { filter: true } },
+  { name: "nra", esKey: "nra", label: "NRA", type: "number", options: { filter: true } },
+  { name: "acquisition_nra", esKey: "acquisition_nra", label: "Acquisition $/NRA", type: "number", options: { filter: true } },
+  { name: "acquisition_cost", esKey: "acquisition_cost", label: "Acquisition Cost", type: "number", options: { filter: true } },
   {
     name: "depthFrom",
     label: "Depth From",
