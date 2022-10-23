@@ -263,6 +263,25 @@ export const tractFilterColumnsHeader = [
     disabled: true
   }]
 
+export const wellsFilterColumnsHeader = [
+  // Ali - Commenting this as we don't have this existing functionality
+  // {
+  //   label: "Classification",
+  //   filterKey: 'wellData.classification.keyword',
+  //   name: "classification"
+  // },
+  {
+    label: "Internal Company",
+    filterKey: 'properties.internalCompany.keyword',
+    name: "internalCompany"
+  },
+  {
+    label: "Pay Status",
+    filterKey: 'properties.status.keyword',
+    name: "payStatus"
+  }
+]
+
 export const tractInterestFilterColumnsHeader = [
   {
     label: "Department",

@@ -702,8 +702,7 @@ export const TableESHOC = (Component) => {
                 case "filterChange":
                 case "resetFilters":
                 case "changeRowsPerPage":
-                    // updateGridViewRedux(tableState)
-                    setSearch(tableState.searchText);
+                    if (action === "search") setSearch(tableState.searchText);
                     if (isFiniteScroll) {
                         const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]")
                         if (tableClass.length > 0) tableClass[0].scrollTop = 0;
