@@ -273,7 +273,7 @@ const ReveueProperties = ({ platformWell, properties }) => {
           ) : (
             <ListItem>
               <ListItemText
-                primary={"No property found."}
+                primary={"No related properties found."}
                 primaryTypographyProps={{
                   color: "primary",
                 }}
