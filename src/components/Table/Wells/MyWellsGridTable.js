@@ -64,7 +64,14 @@ function MyWellsGridTable(props) {
         interestType: [],
       };
       properties.forEach((property) => {
-        // pushing all the property keys to main object
+        propertiesKeys.internalID.push(property.internalID);
+        propertiesKeys.propertiesNames.push(property.name);
+        propertiesKeys.prospectID.push(property.prospectID);
+        propertiesKeys.internalCompany.push(property.internalCompany);
+        propertiesKeys.divOrderStatus.push(property.divOrderStatus);
+        propertiesKeys.status.push(startCase(property.status));
+        propertiesKeys.acquisitionID.push(startCase(property.acquisitionID));
+        propertiesKeys.costFree.push(startCase(property.costFree));
         Object.keys(propertiesKeys).forEach((key) => {
           const _key = key === "name" ? "propertiesNames" : key,
             _value = key.includes("Date") ? convert_date(property[key]) : property[key];

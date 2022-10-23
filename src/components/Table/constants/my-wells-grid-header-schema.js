@@ -1,4 +1,8 @@
-import globalSettings from "GlobalSettings";
+import GlobalSettings from "..//..//..//GlobalSettings.js";
+import GlobalStyles from "..//..//..//GlobalStyles.js";
+import { history } from "store";
+
+import Typography from "@material-ui/core/Typography";
 import vf_number from "components/Shared/valueformatters/vf_number";
 
 const wellsColumnHeaders = [
@@ -11,10 +15,41 @@ const wellsColumnHeaders = [
     label: "Well Name",
     esKey: "wellData.wellName.keyword",
     options: {
-      ...globalSettings.muiGridInfScrollOptions,
+      ...GlobalSettings.muiGridInfScrollOptions,
       ignoreGlobal: true,
       sort: true,
       filter: true,
+      customRender: (value, tableMeta) => {
+        const styles = {
+          fontWeight: GlobalStyles.font.boldFontWeight,
+          color: GlobalStyles.colors.lightBlue,
+          cursor: GlobalStyles.hyperlink.cursor,
+          position: "absolute",
+          // left: '70px',
+        };
+        const globalWellId = tableMeta.rowData[0];
+
+        return (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Typography
+              onClick={(e) => {
+                e.stopPropagation();
+                history.push(`/land/well/details/${globalWellId}`);
+              }}
+              noWrap
+              variant="body2"
+              style={styles}
+            >
+              {value}
+            </Typography>
+          </div>
+        );
+      },
     },
   },
   {

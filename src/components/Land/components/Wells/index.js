@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 import WellIcon from "components/Shared/svgIcons/well";
 import MyWellsGridTable from "components/Table/Wells/MyWellsGridTable";
 import WellsFilters from "components/Land/components/Wells/WellsFilters";
+import MyWellDialog from "components/Land/components/Wells/MyWellDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -13,11 +17,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Wells(props) {
-  const [filters, setFilters] = useState([]);
+function Wells() {
   const classes = useStyles();
+  const { id: globalWellId } = useParams();
 
+  const [filters, setFilters] = useState([]);
+  const [showDialog, setDialog] = useState(false);
   const loadMore = { type: "infiniteScroll", height: "calc(100vh - 166px)" };
+
+  useEffect(() => {
+    if (globalWellId) setDialog(true);
+  }, [globalWellId]);
 
   const Header = () => {
     return (
@@ -42,12 +52,33 @@ function Wells(props) {
     );
   };
 
+  const customToolbar = {
+    customToolbar: () => (
+      <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
+        <ButtonGroup variant="contained" color="primary" aria-label="split button">
+          <Button color="primary" className={classes.multiSelectionTopBarButtons} onClick={() => setDialog(true)}>
+            + Add Well
+          </Button>
+        </ButtonGroup>
+      </div>
+    ),
+  };
+
   return (
     <div className={classes.root}>
       <WellsFilters filters={filters} setFilters={setFilters} />
       <div className={classes.custom}>
-        <MyWellsGridTable dense filters={filters} header={<Header />} parent="WellsTable" targetLabel="wells" loadMore={loadMore} />
+        <MyWellsGridTable
+          dense
+          filters={filters}
+          header={<Header />}
+          parent="WellsTable"
+          targetLabel="wells"
+          loadMore={loadMore}
+          customOptions={customToolbar}
+        />
       </div>
+      {showDialog && <MyWellDialog setDialog={setDialog} />}
     </div>
   );
 }
