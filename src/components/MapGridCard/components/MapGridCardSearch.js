@@ -65,12 +65,12 @@ function MapGridCardSearch(props) {
         dispatch(
           setMapGridCardState({
             searchloading: true,
-            searchInputValue: request,
+            searchInputValue: `"*${request}*"`,
           })
         );
         setStateGrid((state) => ({
           ...state,
-          gridSearchTarget: request,
+          gridSearchTarget: `"*${request}*"`,
         }));
       }, 500),
     []

@@ -78,7 +78,7 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
               <Typography variant="h6" component="div" className={classes.cardHeaderTypography}>
                 Units
               </Typography>
-              <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
+              <Typography id="unitCounts" variant="h6" component="div" className={classes.cardNumberTypography}>
                 {get(campaign, "unitCount", 0)}
               </Typography>
             </CardContent>

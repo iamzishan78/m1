@@ -99,13 +99,19 @@ const Agreement = [
         label: "Description",
         mapped_key: "",
         required: true,
-        actual_key: "description",
+        actual_key: "metaDescription",
     },
     {
         label: "Acquisition ID",
         mapped_key: "",
         required: true,
         actual_key: "acquisitionID",
+    },
+    {
+        label: "Acquisition Date",
+        mapped_key: "",
+        required: true,
+        actual_key: "acquisitionDate",
     },
     {
         label: "Prospect",

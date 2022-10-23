@@ -45,25 +45,25 @@ describe('Verify Well Spec', () => {
 
                 cy.log('==== STEP: UPLOAD NEW DOCUMENT ====')
                 cy.interceptApi('AddDescriptorFile')
-                cy.get('input[type=file]', { force: true }).selectFile('cypress/files/documentSample.png', {
+                cy.get('input[type=file]', { force: true }).selectFile('cypress/files/sample.pdf', {
                     force: true
                 })
                 cy.verifyApiResponse('@AddDescriptorFileApi', { responseTimeout: longTimeout })
 
                 cy.log('==== STEP: CLICK ON SAVE BUTTON ====')
                 cy.interceptApi('updateDocument')
-                cy.get(".MuiButton-label").contains('Save').click()
+                cy.get("#documentSaveButton").click()
                 cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: longTimeout })
+
+                cy.get('#documentSaveButton', { responseTimeout: longTimeout }).then($button => {
+                    if ($button.is(':visible')) {
+                        cy.wait(1000)
+                        cy.get("#documentSaveButton").click()
+                    }
+                })
 
                 cy.log('==== STEP: OPENING SAME FILE DETAIL DRAWER ====')
                 cy.get('table', { responseTimeout: longTimeout }).contains('td', documentName).next().click();
-
-                cy.get('#documentSaveButton', { responseTimeout: longTimeout }).then($button => {
-                    if (!$button.is(':visible')) {
-                        cy.wait(1000)
-                        cy.get('table', { responseTimeout: longTimeout }).contains('td', documentName).next().click();
-                    }
-                })
 
                 cy.clickWellIcon()
 

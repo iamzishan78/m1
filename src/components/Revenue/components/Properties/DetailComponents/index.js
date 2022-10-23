@@ -11,12 +11,17 @@ import {
   MoreHoriz as MoreHorizIcon,
   Delete as DeleteIcon,
 } from "@material-ui/icons";
+import moment from "moment";
 
 import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { GET_PROPERTY } from "graphQL/useQueryGetProperty";
 import { AppContext } from "AppContext";
+import { GET_ASSOCIATED_WELL_PRODUCTION_DATA } from "graphQL/useQueryAssociatedWellProductionData";
+
+import { WellCardContext, WellCardContextProvider } from "components/WellCard/WellCardContext";
+import { WellProdChartContext, WellProdChartContextProvider } from "components/WellProdChart/WellProdChartContext";
 
 // Components
 import Tags from "components/Shared/Tagger";
@@ -29,6 +34,11 @@ import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer"
 import { MultipleOwnerToContactDrawerContainer } from "store/containers";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import DocViewer from "components/Shared/DocViewer";
+import ValidationFilter from "./ValidationFilter";
+import WellProdChart from "components/WellProdChart/WellProdChart";
+import TabButtons from "components/Shared/TabPanels/TabButtons"
+import AssociatedWellsProductionTable from 'components/Table/Revenue/AssociatedWellsProductionTable'
+import AddNewRelatedAgreementDialog from "components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -93,9 +103,9 @@ const useStyles = makeStyles((theme) => ({
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
   },
-  tabsDetailContainer: ({ showInterestDetails, collapse }) => ({
+  tabsDetailContainer: ({ showInterestDetails, collapse, isNewAgmt }) => ({
     padding: 20,
-    width: showInterestDetails || !collapse ? "calc(100% - 644px)" : "100%",
+    width: showInterestDetails || !collapse || isNewAgmt ? "calc(100% - 644px)" : "100%",
   }),
   menuIcon: {
     background: "transparent",
@@ -223,8 +233,9 @@ export default function DetailComponents(props) {
   const [isButtonScroll, setButtonScroll] = useState(false);
   const [propertyDetails, setProperty] = useState(null);
   const [entityToConvert, setEntityToConvert] = useState(null);
+  const [isNewAgmt, setNewAgmtState] = useState(false);
 
-  const classes = useStyles({ ...props, showInterestDetails, collapse });
+  const classes = useStyles({ ...props, showInterestDetails, collapse, isNewAgmt });
 
   const [updateMetaOwner] = useMutation(UPSERT_USER_DESCRIPTOR);
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
@@ -389,38 +400,35 @@ export default function DetailComponents(props) {
       </div>
 
       <div className="flex justifyBetween alignStart w-100">
-        {tab === 0 && (
-          <>
-            <div className={classes.tabsDetailContainer}>
-              {/**
-               * Detail tabs section
-               */}
-              <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
-                <div className={classes.tabsSectionDetails}>
-                  <div className={classes.headerSection}>
-                    <HeaderSection
-                      propertyId={propertyId}
-                      propertyDetails={propertyDetails}
-                      propertyOwnerContact={propertyOwnerContact}
-                      setEntityToConvert={setEntityToConvert}
-                    />
-                  </div>
-                  <div>
-                    <PropertyInterestDetailsSection
-                      propertyId={propertyId}
-                      setSelectedInterest={setSelectedInterest}
-                      showInterestDetails={showInterestDetails}
-                      onClickAdd={() => setShowInterestDetails(true)}
-                    />
-                  </div>
-                </div>
+        <div className={classes.tabsDetailContainer}>
+          {/**
+           * Detail tabs section
+           */}
+          <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
+            <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
+              <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
+                <HeaderSection
+                  propertyId={propertyId}
+                  propertyDetails={propertyDetails}
+                  propertyOwnerContact={propertyOwnerContact}
+                  setEntityToConvert={setEntityToConvert}
+                />
               </div>
-              {stateApp.viewDoc && (
-                <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
-              )}
+              <div ref={tab === 1 ? selectedTabRef : null}>
+                <PropertyInterestDetailsSection
+                  propertyId={propertyId}
+                  setSelectedInterest={setSelectedInterest}
+                  showInterestDetails={showInterestDetails}
+                  onClickAdd={() => setShowInterestDetails(true)}
+                  setNewAgmtState={setNewAgmtState}
+                />
+              </div>
             </div>
-          </>
-        )}
+          </div>
+          {stateApp.viewDoc && (
+            <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
+          )}
+        </div>
         {showOwnerDialog && (
           <ConvertOwnerToContactContainer
             propertyDetails={propertyDetails}
@@ -448,7 +456,7 @@ export default function DetailComponents(props) {
           />
         )}
 
-        {!collapse && !showInterestDetails && !showOwnerDialog && (
+        {((!collapse && !showInterestDetails && !showOwnerDialog) || isNewAgmt) && (
           <div
             style={{
               marginTop: 20,
@@ -458,16 +466,20 @@ export default function DetailComponents(props) {
               maxWidth: "620px",
             }}
           >
-            <MetadataDrawer
-              data={propertyDetails}
-              onUpdate={onUpdateMetaData}
-              setCollapse={setCollapse}
-              targetLabel="Property"
-              targetSourceId={propertyId}
-              setStateApp={setStateApp}
-              ownerTitle="Approver"
-              isApproval={true}
-            />
+            {!isNewAgmt ? (
+              <MetadataDrawer
+                data={propertyDetails}
+                onUpdate={onUpdateMetaData}
+                setCollapse={setCollapse}
+                targetLabel="Property"
+                targetSourceId={propertyId}
+                setStateApp={setStateApp}
+                ownerTitle="Approver"
+                isApproval={true}
+              />
+            ) : (
+              <AddNewRelatedAgreementDialog customLayerId={propertyId} setNewAgmtState={setNewAgmtState} parentType="Property" />
+            )}
           </div>
         )}
       </div>
@@ -504,5 +516,174 @@ export default function DetailComponents(props) {
         </MenuItem>
       </Menu>
     </NavHeader>
+  );
+}
+
+
+const Validation = ({ propertyId }) => {
+  const [esFilters, setESFilters] = useState([]);
+  const [filterToggle, setFilterToggle] = useState(false);
+  const [associatedWellIds, setAssociatedWellIds] = useState([]);
+  const [startDate, setStartDate] = useState(null)
+  console.log('esFilters', esFilters)
+
+  return (
+    <div style={{ background: "white", padding: "10px" }}>
+      <ValidationFilter
+        field={"date"}
+        defaultStartDate={startDate}
+        setESFilters={setESFilters}
+        setFilterToggle={setFilterToggle}
+        filterToggle={filterToggle}
+      />
+
+      <WellCardContextProvider>
+        <WellProdChartContextProvider>
+          <ValidationChart filter={esFilters} propertyId={propertyId} setStartDate={setStartDate} setAssociatedWellIds={setAssociatedWellIds} />
+        </WellProdChartContextProvider>
+      </WellCardContextProvider>
+
+      <ValidationGrids associatedWellIds={associatedWellIds} />
+      
+    </div>
+  )
+}
+
+const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellIds }) => {
+
+  const [, setStateWellCard] = useContext(WellCardContext);
+  const [, setStateWellProdChart] = useContext(WellProdChartContext);
+  const [wellProductionData, setWellProductionData]= useState([])
+  const [getAssociatedWellProductionData, { data: associatedWells }] = useLazyQuery(GET_ASSOCIATED_WELL_PRODUCTION_DATA);
+
+  useEffect(() => {
+    setStateWellCard((state) => {
+      return {
+        ...state,
+        wellProdHistory: JSON.parse(JSON.stringify(wellProductionData)),
+      }
+    });
+    setStateWellProdChart((state) => ({
+      ...state,
+      wellProdHistory: JSON.parse(JSON.stringify(wellProductionData)),
+    }));
+  },[wellProductionData])
+
+  useEffect(() => {
+    if(associatedWells?.getAssociatedWellProductionData?.length > 0) {
+      const wellData = JSON.parse(JSON.stringify(associatedWells.getAssociatedWellProductionData))
+      const productionData = []
+      const wellIds = []
+      wellData.forEach((data) => {
+        wellIds.push(data.well._id)
+        if (data.well.productionData.length > 0) {
+          let pData = data.well.productionData
+
+          if(filter[0].value.range.date.lte){
+            pData = pData.filter(d => moment(d.ReportDate) <= moment(filter[0].value.range.date.lte))
+          }
+
+          if(filter[0].value.range.date.gte){
+            pData = pData.filter(d => moment(d.ReportDate) >= moment(filter[0].value.range.date.gte))
+          }
+          
+          pData.forEach((production)=> {
+            production = production.data
+            const date = moment(production.ReportDate).format("MM/yyyy")
+            production.ReportDate = date
+            const index = productionData.findIndex(d => d.ReportDate === date)
+
+            if (index > -1) {
+              productionData[index].allocatedGas  = get(productionData[index],'allocatedGas', 0) + get(production, 'allocatedGas', 0)
+              productionData[index].allocatedOil  = get(productionData[index],'allocatedOil', 0) + get(production, 'allocatedOil', 0)
+              productionData[index].allocatedWater  = get(productionData[index],'allocatedWater', 0) + get(production, 'allocatedWater', 0)
+              productionData[index].gas  = get(productionData[index],'gas', 0) + get(production, 'gas', 0)
+              productionData[index].oil  = get(productionData[index],'oil', 0) + get(production, 'oil', 0)
+              productionData[index].water  = get(productionData[index],'water', 0) + get(production, 'water', 0)
+            } else {
+              production.allocatedGas  = production.allocatedGas ? production.allocatedGas : 0
+              production.allocatedOil  = production.allocatedOil ? production.allocatedOil : 0
+              production.allocatedWater  =  production.allocatedWater ? production.allocatedWater : 0
+              production.gas  = production.gas ? production.gas : 0
+              production.oil  = production.oil ? production.oil : 0
+              production.water  = production.water ? production.water : 0
+              productionData.push(production)
+            }
+          })
+        }
+      })
+
+      // console.log('productionData',productionData)
+      setAssociatedWellIds(wellIds)
+      setWellProductionData(JSON.parse(JSON.stringify(productionData)))
+    }
+  },[associatedWells, filter])
+
+  useEffect(() => {
+    if(associatedWells?.getAssociatedWellProductionData) {
+      let minDate = new Date();
+      const wellData = JSON.parse(JSON.stringify(associatedWells.getAssociatedWellProductionData))
+
+      wellData.forEach((data) => {
+        let pData = data.well.productionData
+        const newMinDate = new Date(
+          Math.min(
+            ...pData.map(element => {
+              return new Date(element.data.ReportDate);
+            }),
+          ),
+        );
+        if( newMinDate < minDate) {
+          minDate = newMinDate
+        }
+      })
+      setStartDate(minDate)
+    }
+  },[associatedWells])
+
+  console.log('associatedWells', associatedWells)
+
+    useEffect(() => {
+      getAssociatedWellProductionData({
+        variables: {
+          relatedObject: propertyId,
+        },
+      });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+  return (
+      <WellProdChart  />
+  )
+}
+
+const ValidationGrids = ({associatedWellIds}) => {
+  const classes = useStyles();
+  const [selectedTab, setSelectedTab] = useState(0)
+
+  const Header = () => (
+    <TabButtons
+      labels={[
+        "Well Production"
+      ]}
+      value={selectedTab}
+      setValue={(n) => {
+        setSelectedTab(n);
+      }}
+    />
+  );
+
+
+  return (
+    <div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
+      {selectedTab === 0 && (
+        <AssociatedWellsProductionTable
+          targetLabel="propertyInterest"
+          parent="PropertyAssociatedWell"
+          header={<Header />}
+          associatedWellIds={associatedWellIds}
+        />
+      )}
+    </div>
   );
 }
