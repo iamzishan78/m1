@@ -24,13 +24,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function WellSearchApiField(props) {
+function WellSearchApiField({ esIndex, fields, filters = [], optionsParams, targetLabel, onSelectOption }) {
   //Intials
   const location = useLocation();
   const classes = useStyles();
   const startPaginationAt = 50;
   const [foundWells, setFoundWells] = useState([]);
-  const [selectedWell, setSelectedWell] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
   const [focused, setFocused] = useState(false);
 
   const [getESSimpleSearch, { data: constDataWells }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });
@@ -40,16 +40,17 @@ function WellSearchApiField(props) {
       debounce((request, callback) => {
         getESSimpleSearch({
           variables: {
-            index: "platformData:wells",
+            index: esIndex,
             pagination: {
               first: request.searchTop ? request.searchTop : startPaginationAt,
               keep_alive: "1micros",
             },
             search: {
-              query: request.input,
-              fields: ["wellName", "api"],
+              query: `${request.input}*`,
+              fields,
             },
-            sort: [],
+            filters,
+            sort: { field: "name.keyword", order: "asc" },
           },
         });
       }, 500),
@@ -64,9 +65,9 @@ function WellSearchApiField(props) {
   }, [constDataWells]);
 
   // ON change of selected well
-  const onChange = (well) => {
-    props.getSelectedWell(well);
-    setSelectedWell(well);
+  const onChange = (option) => {
+    setSelectedOption(option);
+    onSelectOption(option);
   };
 
   useEffect(() => {
@@ -79,10 +80,10 @@ function WellSearchApiField(props) {
     <FormControl variant="outlined" fullWidth size="small">
       <Autocomplete
         options={foundWells || []}
-        onChange={(e, well) => {
-          onChange(well);
+        onChange={(e, option) => {
+          onChange(option);
         }}
-        value={selectedWell}
+        value={selectedOption}
         getOptionLabel={(option, value) => option.wellName}
         filterOptions={(x) => x}
         loading
@@ -95,8 +96,8 @@ function WellSearchApiField(props) {
         renderOption={(option) => {
           return (
             <div>
-              <Typography variant="subtitle1">{option?.wellName}</Typography>
-              <p className={classes.secondaryText}>{option?.ApiNumber}</p>
+              <Typography variant="subtitle1">{option[optionsParams[0]]}</Typography>
+              <p className={classes.secondaryText}>{option?.[optionsParams[1]]}</p>
             </div>
           );
         }}
@@ -107,7 +108,7 @@ function WellSearchApiField(props) {
             {...params}
             required
             variant="outlined"
-            label="Search for a well by name or API"
+            label={`Search for ${targetLabel} by name`}
             InputLabelProps={{ shrink: true }}
             onChange={(event) => {
               callWellESSearch({ input: event.target.value }, (results) => null);
