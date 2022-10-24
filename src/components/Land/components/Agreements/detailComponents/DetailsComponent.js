@@ -643,6 +643,33 @@ export function DetailComponents(props) {
             />
           )}
         </div>
+
+        <div
+          style={{
+            marginTop: 20,
+            marginRight: 24,
+            height: "calc(100vh - 270px)",
+            overflow: 'auto',
+            width: !!drawer ? 620 : 0,
+            background: 'white'
+          }}
+          id={'agreementDetailsDrawer'}
+        >
+          {drawer === "meta" && <MetadataDrawer
+            setCollapse={setDrawer}
+            targetSourceId={agreementId}
+            data={agreementDetails}
+            targetLabel="Shape"
+            showDescription={false}
+            descriptionKey="description"
+            ownerPlaceHolder='Assign Approver'
+            ownerTitle="Approver"
+            onUpdate={(data) => Object.keys(data).forEach(key => updateAgreement(key, data[key]))}
+            isSource={false}
+            isApproval
+            showCommentType
+          />}
+        </div>
       </div>
 
       {/**
