@@ -413,8 +413,8 @@ export function DetailComponents(props) {
       if (getRelativePosition("provisions-div") < 30) activeTab = 2;
       if (getRelativePosition("legal-description-div") < 30) activeTab = 3;
       if (getRelativePosition("related-wells-div") < 30) activeTab = 4;
-      if (getRelativePosition("related-docs-div") < 200) activeTab = 5;
-      if (getRelativePosition("related-agrmt-div") < 300) activeTab = 6;
+      if (getRelativePosition("related-docs-div") < 30) activeTab = 5;
+      if (getRelativePosition("related-agrmt-div") < 30) activeTab = 6;
 
       if (tab !== activeTab) setTab(activeTab);
     }
