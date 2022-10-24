@@ -261,7 +261,7 @@ export default function DealComment(props) {
     upsertComment({
       variables: {
         comment: {
-          comment: newCommentCleaner(value),
+          comment: typeof value === "object" ? newCommentCleaner(value.comment) : newCommentCleaner(value),
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           _id: editCommentId,
@@ -298,7 +298,7 @@ export default function DealComment(props) {
     upsertComment({
       variables: {
         comment: {
-          comment: newCommentCleaner(value),
+          comment: typeof value === "object" ? newCommentCleaner(value.comment) : newCommentCleaner(value),
           public: true,
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,

@@ -37,7 +37,7 @@ function AgreementOwnersTractsTable(props) {
             color="secondary"
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {
-              if (props.setNewAgmtState) props.setNewAgmtState(true);
+              if (props.setDrawer) props.setDrawer("agrmt");
             }}
           >
             + ADD RELATED AGMT
@@ -126,8 +126,9 @@ function AgreementOwnersTractsTable(props) {
           m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
-          {`Do you want to delete the selected related agreement${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
-            }?`}
+          {`Do you want to delete the selected related agreement${
+            props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+          }?`}
         </DeleteConfirmationDialogContent>
       </Dialog>
 
