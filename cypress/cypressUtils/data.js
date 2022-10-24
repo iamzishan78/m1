@@ -10,7 +10,7 @@ export const baseUrls = {
 
 export const basic_timeouts = {
     shorTimeout: 5000,
-    longTimeout: 50000,
+    longTimeout: 100000,
     extraTimeout: 500000
 }
 
