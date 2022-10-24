@@ -325,8 +325,8 @@ function AddAgreementOwnerAndTractDialog(props) {
     ownerToAdd.isTractOwner = isTractOwner;
     ownerToAdd.tract = tract;
 
-    if(isNaN(parseFloat(ownerToAdd.acquisition_cost)))
-      if(!isNaN(parseFloat(ownerToAdd.nra) && !isNaN(parseFloat(ownerToAdd.acquisition_nra))))
+    if (isNaN(parseFloat(ownerToAdd.acquisition_cost)))
+      if (!isNaN(parseFloat(ownerToAdd.nra) && !isNaN(parseFloat(ownerToAdd.acquisition_nra))))
         ownerToAdd.acquisition_cost = parseFloat(calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra))
 
     Object.keys(ownerToAdd).forEach((key) => {
@@ -943,11 +943,13 @@ function AddAgreementOwnerAndTractDialog(props) {
           label="Acquisition $/NRA"
           variant="outlined"
           margin="dense"
-          value={parseFloat(props.value).toFixed(2)}
+          value={Number(parseFloat(props.value).toFixed(2))}
           inputRef={props.ref}
           onWheel={(e) => e.target.blur()}
           onChange={(e) => {
-            props.onChange(parseFloat(e.target.value).toFixed(2));
+            props.onChange(Number(parseFloat(e.target.value).toFixed(2)));
+            if (!isAcquisitionCostOverridden)
+              setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, e.target.value));
           }}
           InputProps={{
             inputComponent: CurrencyFormatCustom,
@@ -966,27 +968,39 @@ function AddAgreementOwnerAndTractDialog(props) {
           label="Acquisition Cost"
           variant="outlined"
           margin="dense"
-          value={parseFloat(props.value).toFixed(2)}
+          value={Number(parseFloat(props.value).toFixed(2))}
           inputRef={props.ref}
           onWheel={(e) => e.target.blur()}
           className={isAcquisitionCostOverridden ? classes.netAcresOveridden : classes.netAcresNormal}
           onChange={(e) => {
-            const toFixedValue = parseFloat(e.target.value).toFixed(2)
+            const toFixedValue = Number(parseFloat(e.target.value).toFixed(2))
             props.onChange(toFixedValue);
-
             const acquisition_cost = calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra);
             setIsAcquisitionCostOverridden(acquisition_cost !== toFixedValue)
-            setValue("acquisition_cost", toFixedValue);
           }}
           InputProps={{
             inputComponent: CurrencyFormatCustom,
+            endAdornment: (
+              <InputAdornment position="end">
+                {isAcquisitionCostOverridden && (
+                  <IconButton
+                    aria-label="toggle royality-acres"
+                    onClick={() => {
+                      setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra));
+                      setIsNRAOverridden(false)
+                    }}
+                  >
+                    <AutorenewIcon />
+                  </IconButton>
+                )}
+              </InputAdornment>
+            ),
           }}
           fullWidth
           defaultValue=""
         />
       )}
     />
-
     <Controller
       control={control}
       name={`parcelOwnersRadioBValue`}
