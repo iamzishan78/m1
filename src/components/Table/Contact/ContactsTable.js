@@ -89,13 +89,12 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "40px !important",
   },
 }));
-
+const defaultView = {
+  name: "All Contacts",
+  type: "Default",
+};
 function ContactsTable(props) {
   const classes = useStyles();
-  const defaultView = {
-    name: "All Contacts",
-    type: "Default",
-  };
 
   // const dispatch = useDispatch();
   const { Contacts } = useSelector(({ session }) => session.userGridViewSettings);
@@ -107,7 +106,6 @@ function ContactsTable(props) {
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
-  const [selectedGridView, setSelectedGridView] = useState(Contacts || defaultView);
   const { activeModule } = useSelector(({ common }) => common);
   const { user } = useSelector(state => state.app);
 
@@ -138,10 +136,6 @@ function ContactsTable(props) {
     }))
   }, [showGenericPhones]);
 
-  useEffect(() => {
-    setSelectedGridView(Contacts || defaultView);
-  }, [Contacts]);
-
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
       hit = getContactsAddress(props.setGenricData(hit, hit._id, ["tracks"]));
@@ -170,7 +164,6 @@ function ContactsTable(props) {
       esIndex,
       // filters: Contacts?.filters ? getFilters() : [],
       typeKeyword: { gridViewCategory: "Contacts" },
-      selectedGridView: Contacts || defaultView,
       startPaginationAt: 25,
       defaultSort: { field: "lastUpdateAt", order: "desc", unmapped_type: 'date' },
       formatHits,
@@ -180,18 +173,13 @@ function ContactsTable(props) {
   }, [props.contactSearchQuery, props.customAppliedFilters]);
 
   useEffect(() => {
-    props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView, filters: [] }));
-    // eslint-disable-next-line
-  }, [selectedGridView]);
-
-  useEffect(() => {
     if (Contacts?.name === "My Contacts" && !Contacts?.isPrivate) {
       Contacts.filters[0] = {
         field: "contactOwners.name",
         value: User.name,
       };
     }
-    setSelectedGridView(Contacts || defaultView);
+    props.setSelectedGridView(Contacts || defaultView);
     // eslint-disable-next-line
   }, [Contacts]);
 
@@ -257,15 +245,15 @@ function ContactsTable(props) {
 
   const getSelectedView = () => {
     const isAllModule = get(activeModule, "title", "").includes("All");
-    const view = copy(isAllModule ? selectedGridView : defaultView);
-    if (view.type === "Default") {
+    const view = copy(isAllModule ? props.selectedGridView : defaultView);
+    if (view?.type === "Default") {
       if (get(activeModule, "title", "").includes("All")) {
         view.name = view.name.replace("Contacts", get(activeModule, "title", "").replace("All ", ""));
       } else {
         view.name = view.name.replace("Contacts", get(activeModule, "title", ""));
       }
     }
-    return view;
+    return view || defaultView;
   };
 
   const headerProps = {
@@ -299,8 +287,8 @@ function ContactsTable(props) {
             defaultView={defaultView}
             handleDefaultView={handleDefaultView}
             handleClose={() => setShowViewModal(false)}
-            setSelectedGridView={setSelectedGridView}
-            selectedGridView={selectedGridView}
+            setSelectedGridView={props.setSelectedGridView}
+            selectedGridView={props.selectedGridView}
             setShowViewModal={setShowViewModal}
             setShowSaveAsNew={setShowSaveAsNew}
             showSaveAsNew={showSaveAsNew}
@@ -367,4 +355,4 @@ function ContactsTable(props) {
   );
 }
 
-export default React.memo(TableESHOC(ContactsTable, false), deepEqualObjects);
+export default React.memo(TableESHOC(ContactsTable), deepEqualObjects);

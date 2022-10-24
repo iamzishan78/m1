@@ -35,7 +35,7 @@ export default function UnitDetailCard(props) {
   const [selectedTractTab, setTractSelectedTab] = useState(0);
   const [uniObj, setUniObj] = useState();
   const [properties, setProperties] = useState();
-  const [_, setStateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [updateCustomLayer, { data: updatedUnit }] = useMutation(UPDATECUSTOMLAYER);
 
   const classes = detailCardStyles();
@@ -131,6 +131,7 @@ export default function UnitDetailCard(props) {
       variables: {
         customLayerId: uniObj._id,
         customLayer,
+        userId: stateApp.user.mongoId
       },
     });
   };
@@ -149,6 +150,7 @@ export default function UnitDetailCard(props) {
       variables: {
         customLayerId: uniObj._id,
         customLayer,
+        userId: stateApp.user.mongoId
       },
     });
   };

@@ -1,9 +1,19 @@
+import { GlobalStickyStyles } from "GlobalSettings";
+
 const operatorsColumnHeaders = [
   {
     name: "Operator",
     label: "Operator",
     esKey: "operator.keyword",
     options: {
+      ...GlobalStickyStyles({
+        setCellProps: {
+          maxWidth: "350px",
+        },
+        setCellHeaderProps: {
+          paddingLeft: '27px',
+        }
+      }),
       sort: true,
       filter: true,
     },

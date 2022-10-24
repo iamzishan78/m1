@@ -6,6 +6,7 @@ import ListItem from "@material-ui/core/ListItem";
 import { AppContext } from "AppContext";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
+import get from "lodash/get";
 
 import { IconButton, TextField, withStyles } from "@material-ui/core";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
@@ -19,6 +20,8 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 import { useLazyQuery } from "@apollo/client";
 import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+
+
 
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
@@ -161,6 +164,15 @@ const useStyles = makeStyles({
   contentRoot: {
     maxHeight: "calc(100vh - 310px)",
   },
+  listItem: {
+    flexDirection: "column",
+    justifyContent: "start",
+    alignItems: "start",
+
+    "& h4": {
+      marginBottom: 0
+    }
+  }
 });
 
 const LightTooltip = withStyles((theme) => ({
@@ -250,19 +262,6 @@ export default function DocumentDetails(props) {
     }
   }, [fileData]);
 
-  useEffect(() => {
-    if (viewFileResult?.viewFile?.uri) {
-      let a = document.createElement("a");
-      a.href = viewFileResult.viewFile.uri;
-      a.download = viewFileResult.viewFile.name;
-
-      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
-      // a.target = "_blank";
-
-      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
-      a.click();
-    }
-  }, [viewFileResult]);
 
   const sortFields = (gridViews) => {
     const metaData = [];
@@ -325,10 +324,35 @@ export default function DocumentDetails(props) {
       });
     }
   };
-  const handleViewFile = async (id) => {
-    viewFile({ variables: { fileId: id } });
-    if (viewFileLoading) {
-    }
+
+  const handleViewFile = async (id, isPdf = false) => {
+    let selectedDocument = stateApp.selectedDocument
+
+    viewFile({ variables: { fileId: selectedDocument._id } }).then((response) => {
+      const viewFileData = get(response, "data.viewFile", {})
+
+      if (isPdf) {
+        setStateApp((state) => ({
+          ...state,
+          viewDoc: {
+            uri: viewFileData.uri,
+            name: viewFileData.name,
+          },
+        }));
+      }
+      else {
+        let a = document.createElement("a");
+        a.href = viewFileData.uri;
+        a.download = viewFileData.name;
+
+        // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
+        // a.target = "_blank";
+
+        // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
+        a.click();
+      }
+
+    })
   };
 
   const onFileUpload = (file) => {
@@ -356,11 +380,7 @@ export default function DocumentDetails(props) {
       >
         <List>
           <ListItem
-            style={{
-              flexDirection: "column",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
           >
             <h4>File Number</h4>
             <TextField
@@ -377,11 +397,7 @@ export default function DocumentDetails(props) {
             />
           </ListItem>
           <ListItem
-            style={{
-              flexDirection: "column",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
           >
             <h4>File Name</h4>
             <TextField
@@ -398,11 +414,7 @@ export default function DocumentDetails(props) {
             />
           </ListItem>
           <ListItem
-            style={{
-              flexDirection: "column",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
           >
             <h4>File Type</h4>
             <DocumentType
@@ -418,11 +430,7 @@ export default function DocumentDetails(props) {
             />
           </ListItem>
           <ListItem
-            style={{
-              flexDirection: "column",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
           >
             <h4>File Date</h4>
             <TextField
@@ -431,7 +439,7 @@ export default function DocumentDetails(props) {
               id="filedate"
               //variant="outlined"
               defaultValue={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
-              margin="normal"
+              margin="none"
               fullWidth
               onChange={(event) => {
                 const splittedDate = event?.target?.value.split("-")
@@ -513,11 +521,8 @@ export default function DocumentDetails(props) {
           </ListItem> */}
 
           <ListItem
-            style={{
-              flexDirection: "row",
-              justifyContent: "start",
-              alignItems: "start",
-            }}
+            className={classes.listItem}
+            style={{ flexDirection: 'row' }}
           >
             <div style={{
               marginRight: "15px",
@@ -584,11 +589,7 @@ export default function DocumentDetails(props) {
                 <Fragment key={meta.name}>
                   {meta.type === "text" && (
                     <ListItem
-                      style={{
-                        flexDirection: "column",
-                        justifyContent: "start",
-                        alignItems: "start",
-                      }}
+                      className={classes.listItem}
                     >
                       <h4>{meta.label}</h4>
                       <TextField
@@ -608,11 +609,7 @@ export default function DocumentDetails(props) {
                   {meta.type === "dropdown" && (
                     <ListItem
                       id={`dropdown-${index}`}
-                      style={{
-                        flexDirection: "column",
-                        justifyContent: "start",
-                        alignItems: "start",
-                      }}
+                      className={classes.listItem}
                     >
                       <h4>{meta.label}</h4>
                       <ReactSelectField
@@ -638,11 +635,7 @@ export default function DocumentDetails(props) {
                   {meta.type === "multiselect" && (
                     <ListItem
                       id={`multiselect-${index}`}
-                      style={{
-                        flexDirection: "column",
-                        justifyContent: "start",
-                        alignItems: "start",
-                      }}
+                      className={classes.listItem}
                     >
                       <h4>{meta.label}</h4>
                       {/* <CustomFieldMultiSelect
@@ -689,7 +682,7 @@ export default function DocumentDetails(props) {
       <div style={{ flexShrink: 0 }}>
         {(stateApp.selectedDocument?.fileId || fileData) && replaceFile !== 'IN_PROGRESS' ? (
           <ListItem>
-            <div style={{ display: "flex", justifyContent: "start" }}>
+            <div style={{ display: "flex", justifyContent: "start" }} id="attachedDocument">
               {viewFileSResult?.viewFiles?.map((value, key) => {
                 let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
                 if (key <= 1) {
@@ -708,7 +701,7 @@ export default function DocumentDetails(props) {
                                 // setFileData(null)
                               }}
                             >
-                              <DeleteIcon />
+                              <DeleteIcon id="documentDeleteIcon" />
                             </IconButton>
 
                             <IconButton
@@ -732,7 +725,9 @@ export default function DocumentDetails(props) {
                             <div
                               className={classes.forImageContainer}
                               onClick={() => {
-                                if (fileExtension === "pdf") {
+                                const isPdf = fileExtension === "pdf"
+
+                                if (isPdf && stateApp?.selectedDocument.viewToken) {
                                   setStateApp((state) => ({
                                     ...state,
                                     viewDoc: {
@@ -745,7 +740,7 @@ export default function DocumentDetails(props) {
                                   //   pdfView: stateApp.selectedDocument,
                                   // }));
                                 } else {
-                                  handleViewFile(stateApp.selectedDocument.fileId);
+                                  handleViewFile(stateApp.selectedDocument.fileId, isPdf);
                                 }
                               }}
                             >
@@ -847,7 +842,7 @@ export default function DocumentDetails(props) {
               }}
               userId={stateApp.user.mongoId}
               setFileData={setFileData}
-              fileId={replaceFile ? null : stateApp.selectedDocument?._id}
+              fileId={stateApp.selectedDocument?._id}
               onFileUpload={onFileUpload}
             />
           </div>

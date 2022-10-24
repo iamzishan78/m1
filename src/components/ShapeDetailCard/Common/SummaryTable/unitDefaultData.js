@@ -67,6 +67,11 @@ const tableData = [
     key: "qualifier",
   },
   {
+    label: "Reviewer",
+    type: "custom",
+    key: "reviewer",
+  },
+  {
     label: "Campaign Name",
     type: "custom",
     key: "campaignName",

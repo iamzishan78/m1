@@ -190,40 +190,6 @@ export default function AddUserData(props) {
               });
 
               await SimpleOrShapeFileImport({ stateApp, setStateApp, client, file_id, sourceProps })
-              // const isShapeFileImport = stateApp?.user?.features?.find(f => f.name === 'ShapeFileImport')
-              // if (isShapeFileImport) {
-              //   const jobInitialization = await client.mutate({
-              //     mutation: INITIALIZE_EXPORT_JOB,
-              //     variables: {
-              //       jobName: "Shape File Import",
-              //       jobType: "SHAPEFILEIMPORT",
-              //       requestPayload: {
-              //         fileId: file_id,
-              //       },
-              //       userId: stateApp.user.mongoId,
-              //     },
-              //   });
-
-              //   await client.mutate({
-              //     mutation: CREATE_JOB,
-              //     variables: {
-              //       jobId: jobInitialization?.data?.initializeExportJob?.job?._id,
-              //       sendEmail: false,
-              //     },
-              //   });
-              //   setStateApp((state) => ({
-              //     ...state,
-              //     bulkUpload: !state.bulkUpload,
-              //   }));
-              // } else {
-              //   Loader.createToast('layer-creation', 'Layer creation in progress')
-              //   const interval = setInterval(() => {
-              //     if (stateApp.map.isSourceLoaded(sourceProps)) {
-              //       Loader.successToast('layer-creation', 'Layer created')
-              //       clearInterval(interval);
-              //     }
-              //   }, 1000);
-              // }
               handleClose();
             })
             .catch((error) => {

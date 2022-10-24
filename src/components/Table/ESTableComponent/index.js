@@ -93,6 +93,7 @@ function ESTableComponent(props) {
         width="450px"
         shapeId={props.customLayer._id}
         shapeType={props.shapeType}
+        layerType={props.customLayer.layer}
         seletedOwner={props.clickedRow}
         onClose={() =>
           props.setAddToTable(false)

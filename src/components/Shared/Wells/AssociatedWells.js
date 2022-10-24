@@ -31,7 +31,10 @@ const useStyles = makeStyles((theme) => ({
   list: {
     overflowX: "hidden",
     overflowY: "auto",
-    maxHeight: "79vh",
+    height: "100%",
+    maxHeight: 465,
+    flex: "1 1 auto",
+    // maxHeight: "79vh",
     "& .MuiList-padding": {
       padding: "23px 0px !important",
     },
@@ -109,14 +112,15 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: 4,
     marginTop: -8,
   },
+  wellList: {
+    height: "100%",
+    width: "100%",
+    overflowY: "auto",
+    overflowX: "hidden",
+  },
 }));
 
-const AssociatedWellsList = ({
-  title,
-  relatedObject,
-  relatedObjectType,
-  details
-}) => {
+const AssociatedWellsList = ({ title, relatedObject, relatedObjectType, details }) => {
   // Initials
   let history = useHistory();
   const location = useLocation();
@@ -186,7 +190,7 @@ const AssociatedWellsList = ({
     setAddWell(false);
     upsertWellDescriptor({
       variables: {
-        well: wellData,
+        well: { ...wellData, isDeleted: false },
         relatedObject,
         relatedObjectType,
       },
@@ -295,7 +299,7 @@ const AssociatedWellsList = ({
           </Grid>
         )}
 
-        <List aria-label="wells list">
+        <List aria-label="wells list" className={classes.wellList}>
           {wells && wells.length > 0 ? (
             wells.map((well, index) => (
               <div style={{ padding: "0px 0px 0px" }}>
@@ -353,5 +357,5 @@ export default function AssociatedWellsProvider(props) {
 
 AssociatedWellsList.defaultProps = {
   title: "Wells",
-  details: {}
+  details: {},
 };

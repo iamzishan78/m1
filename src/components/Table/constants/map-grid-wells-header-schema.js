@@ -1,3 +1,5 @@
+import { GlobalStickyStyles } from "GlobalSettings";
+
 const wellsColumnHeaders = [
   {
     name: "Id",
@@ -16,6 +18,14 @@ const wellsColumnHeaders = [
     label: "API",
     esKey: "api.keyword",
     options: {
+      ...GlobalStickyStyles({
+        setCellProps: {
+          maxWidth: "200px",
+        },
+        setCellHeaderProps: {
+          paddingLeft: '35px',
+        }
+      }),
       sort: true,
       filter: true,
     },
@@ -25,6 +35,7 @@ const wellsColumnHeaders = [
     label: "Well Name",
     esKey: "wellName.keyword",
     options: {
+
       sort: true,
       filter: true,
     },

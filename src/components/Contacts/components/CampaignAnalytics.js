@@ -128,7 +128,7 @@ export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }
               component="div"
               className={classes.cardNumberTypography}
             >
-              {Math.round(get(analyticsData, "totalNra", 0))}
+              {vf_number(Math.round(get(analyticsData, "totalNra", 0)))}
             </Typography>
           </CardContent>
         </Card>

@@ -669,7 +669,7 @@ export const SUMMARY_FIELDS = (contactData) => {
     {
       label: "Total Offer Price",
       key: offerPriceSum,
-      type: "number",
+      type: "currency",
       position: "right",
     },
     {

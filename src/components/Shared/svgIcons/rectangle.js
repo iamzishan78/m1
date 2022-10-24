@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Base from './base';
 
@@ -44,6 +44,7 @@ export default class Rectangle extends Component {
           x="2"
           y="2"
           width="18"
+          id="mapRectangle"
           height="12"
           stroke="currentColor"
           fill="transparent"

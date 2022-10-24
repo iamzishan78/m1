@@ -281,7 +281,7 @@ export default function MapControls(props) {
         action: "heatMaps",
       },
       {
-        icon: !stateApp.editDraw ? <EditIcon /> : <CancelIcon />,
+        icon: !stateApp.editDraw ? <EditIcon id="mapEditIcon" /> : <CancelIcon />,
         name: "Draw",
         action: "draw",
       },

@@ -322,10 +322,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     filterLayers(value);
   };
 
-  const layerGroups = useMemo(() => {
-    return panelItems.filter(item => item.type === "group");
-  }, [panelItems])
-
   const secondaryPanelState = React.useMemo(() => {
     if (stateMapControls.addLayer || stateMapControls.selectedLayer || stateMapControls.manageTransferData || stateMapControls.manageSourceLayer || stateMapControls.manageLayer) {
       return true;
@@ -353,7 +349,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           open={Boolean(stateMapControls.selectedControl)}
         >
           <StyledMenuHeaderItem disableRipple key="subheader" role={undefined} dense className={classes.subHeaderItem}>
-            <ListItemText primary="Find Map" />
+            <ListItemText primary="Map" />
           </StyledMenuHeaderItem>
 
           {/* Layer Icons */}
@@ -376,30 +372,35 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
               )}
               <Grid item xs={searchState ? 12 : 1}>
                 <div className={classes.search}>
-                  <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput").focus()}>
-                    <SearchIcon />
-                  </Tooltip>
-                  <InputBase
-                    id="searchInput"
-                    fullWidth
-                    placeholder="Search by Layer Name"
-                    value={search}
-                    classes={{
-                      root: classes.inputRoot,
-                      input: classes.inputInput,
-                    }}
-                    autoComplete="off"
-                    inputProps={{ "aria-label": "search" }}
-                    onFocus={() => setSearchState(true)}
-                    onChange={(evt) => setSearchValue(evt.target.value)}
-                  />
-                  {searchState && (
-                    <Tooltip title="Clear" className={classes.iconClear}>
-                      <IconButton size="small" htmlColor="white" onClick={clearSearch}>
-                        <ClearIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
+                  {
+                    type === "layer" &&
+                    <>
+                      <Tooltip title="Search" className={classes.iconSearch} onClick={() => document.getElementById("searchInput").focus()}>
+                        <SearchIcon />
+                      </Tooltip>
+                      <InputBase
+                        id="searchInput"
+                        fullWidth
+                        placeholder="Search by Layer Name"
+                        value={search}
+                        classes={{
+                          root: classes.inputRoot,
+                          input: classes.inputInput,
+                        }}
+                        autoComplete="off"
+                        inputProps={{ "aria-label": "search" }}
+                        onFocus={() => setSearchState(true)}
+                        onChange={(evt) => setSearchValue(evt.target.value)}
+                      />
+                      {searchState && (
+                        <Tooltip title="Clear" className={classes.iconClear}>
+                          <IconButton size="small" htmlColor="white" onClick={clearSearch}>
+                            <ClearIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </>
+                  }
                 </div>
               </Grid>
             </Grid>
@@ -414,7 +415,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
             <StyledMenuSecondaryHeaderItem>
               <div>
                 <ListItemText primary={title} />
-                <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} layerGroups={layerGroups} />
+                {
+                  type === "layer" &&
+                    <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} />
+                }
               </div>
               {headerButton && (
                 <StyledListItemSecondaryAction>
@@ -466,7 +470,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           </TransitionGroup>
         </StyledMenu>
         <div className={classes.pulloutBox} onClick={togglePullout}>
-          {stateMapControls.expandedPanel ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
+          {stateMapControls.expandedPanel ? <ArrowBackIosIcon id="arrowBackIcon" /> : <ArrowForwardIosIcon />}
         </div>
       </div>
     </div>

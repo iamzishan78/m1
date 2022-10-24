@@ -1,5 +1,3 @@
-import WarningIcon from "@material-ui/icons/Warning";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { history } from "store";
 import GlobalSettings from "..//..//..//GlobalSettings.js";
 import GlobalStyles from "..//..//..//GlobalStyles.js";
@@ -179,6 +177,21 @@ const TractsHeadCells = (isSnapGrid = false) => [
       print: false,
       viewColumns: false,
     },
+  },
+  {
+    name: "name-elasticsearch",
+    esKey: 'name.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+  },
+  {
+    name: "shapeLabel-elasticsearch",
+    esKey: 'shapeLabel.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+  },
+  {
+    name: "state-elasticsearch",
+    esKey: 'state.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
   },
   // {
   //   name: "approvalStatus",

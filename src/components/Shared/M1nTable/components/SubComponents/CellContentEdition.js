@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
   },
   cellDataDiv: {
     minWidth: "100px",
-    padding: "10px 30px 10px 10px",
+    padding: "10px 30px 10px 0px",
     position: "relative",
     borderRadius: "7px",
     cursor: "text",

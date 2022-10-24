@@ -116,7 +116,7 @@ export const contactManagementRoutes = {
     featureFlag: "CONTACTSUBMENU",
     title: "Prospects",
     link: "/contacts/prospects",
-    linkPrefix: "/contacts/proppects",
+    linkPrefix: "/contacts/prospects",
     component: "ContactsTable",
     filterValue: "Prospect",
     showAnalytics: true,
@@ -294,6 +294,25 @@ export const tractFilterColumnsHeader = [
     name: "department",
     disabled: true
   }]
+
+export const wellsFilterColumnsHeader = [
+  // Ali - Commenting this as we don't have this existing functionality
+  // {
+  //   label: "Classification",
+  //   filterKey: 'wellData.classification.keyword',
+  //   name: "classification"
+  // },
+  {
+    label: "Internal Company",
+    filterKey: 'properties.internalCompany.keyword',
+    name: "internalCompany"
+  },
+  {
+    label: "Pay Status",
+    filterKey: 'properties.status.keyword',
+    name: "payStatus"
+  }
+]
 
 export const tractInterestFilterColumnsHeader = [
   {

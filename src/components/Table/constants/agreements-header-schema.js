@@ -1,4 +1,4 @@
-import GlobalSettings from "GlobalSettings";
+import { GlobalStickyStyles } from "GlobalSettings";
 
 const AgreementsHeadCells = (isSnapGrid = false) => [
   {
@@ -12,24 +12,19 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Agreement",
     esKey: "shapeJson.properties.agreementNumber.keyword",
     options: {
-      setCellProps: () => ({
-        style: {
-          ...GlobalSettings.muiGridInfScrollOptions.setCellProps().style,
-          left: isSnapGrid ? "77px" : "132px",
+      ...GlobalStickyStyles({
+        setCellProps: {
+          maxWidth: "492px",
+        },
+        setCellHeaderProps: {
+          paddingLeft: '35px',
         }
       }),
-      setCellHeaderProps: () => ({
-        style: {
-          ...GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps().style,
-          left: isSnapGrid ? "77px" : "132px",
-        }
-      }),
-      ignoreGlobal: true,
       dbName: "shapeJson.properties.agreementNumber",
       isSnapGrid,
     },
   },
-  // //temp hide until we decide how we want this to work
+  //temp hide until we decide how we want this to work
   // {
   //   name: "agreementId",
   //   label: 'Agreement Id',
@@ -44,13 +39,13 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       setCellProps: () => ({
         style: {
           minWidth: "300px",
-          maxWidth: "350px"
-        }
+          maxWidth: "350px",
+        },
       }),
       setCellHeaderProps: () => ({
         style: {
-          paddingLeft: "0px"
-        }
+          paddingLeft: "0px",
+        },
       }),
       dbName: "shapeJson.properties.agreementName",
       // ignoreGlobal: true,
@@ -220,7 +215,21 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       filter: true,
     },
   },
-
+  {
+    name: "acquisitionDate",
+    label: "Acquisition Date",
+    esKey: "shapeJson.properties.acquisitionDate",
+    options: {
+      setCellProps: () => ({ style: { minWidth: "175px" } }),
+      dbName: "shapeJson.properties.acquisitionDate",
+      sort: true,
+      filter: true,
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
   {
     name: "prospectID",
     label: "Prospect",
@@ -288,7 +297,9 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     esKey: "tags.tag.keyword",
     options: {
       ignoreGlobal: true,
-      display: true, sort: true, filter: true
+      display: true,
+      sort: true,
+      filter: true,
     },
   },
 
@@ -304,6 +315,21 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       print: false,
       viewColumns: false,
     },
+  },
+  {
+    name: "name-elasticsearch",
+    esKey: 'name.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+  },
+  {
+    name: "shapeLabel-elasticsearch",
+    esKey: 'shapeJson.properties.shapeLabel.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+  },
+  {
+    name: "state-elasticsearch",
+    esKey: 'state.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
   },
   // {
   //   name: "mapFlyTo",

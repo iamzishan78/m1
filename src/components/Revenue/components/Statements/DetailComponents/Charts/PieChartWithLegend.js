@@ -7,9 +7,6 @@ import { copy } from "utils/helper";
 // Revenue Chart
 export default function PieChart({ chartData = [], type = "" }) {
   const [data, setData] = useState([]);
-
-  console.log(chartData, type)
-
   useEffect(() => {
     let data = [];
     data = copy(chartData);

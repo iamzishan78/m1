@@ -41,17 +41,31 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/land/units",
     component: "Units",
   },
-  // WELLS: {
-  //   featureFlag: "LANDMODULE",
-  //   title: "Wells",
-  //   link: "/land/wells",
-  //   component: "Wells",
-  // },
+  WELLS: {
+    featureFlag: "LANDMODULE",
+    title: "Wells",
+    link: "/land/wells",
+    component: "Wells",
+  },
+  WELL_DETAILS: {
+    featureFlag: "LANDMODULE",
+    title: "Wells",
+    link: "/land/well/details/:id",
+    parent: "WELLS",
+    component: "Wells",
+    isExcluded: true,
+  },
   REPORTING_GROUPS: {
     featureFlag: "LANDREPORTINGGROUPS",
     title: "Reporting Groups",
     link: "/land/reporting-groups",
     component: "ReportingGroups",
+  },
+  ADMIN_SETTINGS: {
+    featureFlag: "LANDMODULE",
+    title: "Admin Settings",
+    link: "/land/admin-settings",
+    component: "AdminSettings",
   },
 };
 
@@ -81,13 +95,12 @@ export default function Land() {
 
   return (
     <QuickActionPanel
-      title="Land Management"
+      title="Asset Management"
       handlePanelStateChange={handlePanelStateChange}
       quickActionsPanelState={quickActionsPanelState}
       activeModule={activeModule}
       actions={SIDE_PANEL_MENU_ITEMS_LIST}
     >
-
       <Switch>
         {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
           <Route
@@ -98,8 +111,6 @@ export default function Land() {
         ))}
         <Redirect to={`/land/agreements`} />
       </Switch>
-
     </QuickActionPanel>
   );
 }
-

@@ -51,7 +51,6 @@ export default function AgreementDetailCard(props) {
 
   useEffect(() => {
     return history.listen((location) => {
-      console.log(`You changed the page to: ${location.pathname}`);
       if (!properties?.agreementNumber && !location.includes(uniObj._id)) {
         setStateApp((state) => ({
           ...state,
@@ -271,13 +270,15 @@ export default function AgreementDetailCard(props) {
                   <TabPanels
                     value={selectedTractTab}
                     panels={[
-                      <div className={showSummary ? classes.subContent : classes.subContent2}>
+                      <div className={showSummary ? classes.agreementSubContent : classes.subContent2}>
                         <AgreementOwnersTractsTable
                           setRecord={setTractOwners}
                           customLayer={uniObj}
                           shapeType="Agreement"
                           header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
                           dense
+                          commentType="Ownership"
+                          targetLabel="Tract"
                         />
                       </div>,
                       <div className={showSummary ? classes.subContent : classes.subContent2}>

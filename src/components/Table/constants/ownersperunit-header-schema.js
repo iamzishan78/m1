@@ -1,5 +1,6 @@
 import vf_currency from "components/Shared/valueformatters/vf_currency";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
+import { GlobalStickyStyles } from "GlobalSettings";
 
 const OwnersPerUnitHeadCells = [
   {
@@ -32,14 +33,21 @@ const OwnersPerUnitHeadCells = [
     esKey: "contact.entityDetail.name.keyword",
     options: {
       filter: true,
-      setCellProps: () => ({ style: { minWidth: "270px" } }),
+      ...GlobalStickyStyles({
+        setCellProps: {
+          maxWidth: "300px",
+        },
+        setCellHeaderProps: {
+          paddingLeft: "35px",
+        },
+      }),
     },
   },
   {
     name: "ownerType",
-    esKey: 'contact.ownerType.keyword',
+    esKey: "contact.ownerType.keyword",
     label: "Entity Type",
-    options: { filter: true }
+    options: { filter: true },
   },
   {
     name: "working_interest",
@@ -96,10 +104,7 @@ const OwnersPerUnitHeadCells = [
     esKey: "offer_price",
     label: "Offer Price",
     type: "number",
-    options: {
-      filter: true,
-      customRender: (value) => vf_currency(value),
-    },
+    options: { filter: true, customRender: (value) => vf_currency(value) },
   },
   {
     name: "contactStatus",
@@ -115,13 +120,7 @@ const OwnersPerUnitHeadCells = [
     esKey: "contact.campaignName.keyword",
     options: {
       customRender: (value) => {
-        return (
-          <CampaignNameField
-            value={value.campaignName}
-            fullWidth
-            disabled
-          />
-        )
+        return <CampaignNameField value={value.campaignName} fullWidth disabled />;
         // if (typeof value.campaignName === "string") {
         //   return value.campaignName;
         // } else {
@@ -135,7 +134,7 @@ const OwnersPerUnitHeadCells = [
   },
   {
     name: "tags",
-    label: "Tags ",
+    label: "Tags",
     esKey: "tags.tag.keyword",
     options: {
       filter: true,
@@ -242,7 +241,7 @@ const OwnersPerUnitHeadCells = [
       download: false,
       print: false,
       viewColumns: false,
-      parent: "Unit detail"
+      parent: "Unit detail",
     },
   },
 ];

@@ -1,0 +1,5 @@
+import './add&DeleteDocument.cy'
+import './associateWellToDoc.cy'
+import './searchDocument.cy'
+import './verifyWells.cy'
+import './documentGrid.cy'

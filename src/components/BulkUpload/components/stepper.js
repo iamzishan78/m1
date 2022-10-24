@@ -1,5 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import PropTypes from "prop-types";
+import { set, get } from "lodash";
+import { useForm } from "react-hook-form";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Checkbox } from "@material-ui/core";
 import clsx from "clsx";
@@ -10,6 +13,7 @@ import { useDispatch } from "react-redux";
 import StepConnector from "@material-ui/core/StepConnector";
 import Button from "@material-ui/core/Button";
 import CSVFileReader from "./CSVFileReader";
+import RevenueStatementInfoForm from "./RevenueStatementInfoForm";
 import M1neralHeaders from "./M1neralHeaders";
 import ReviewCSV from "./ReviewCSV";
 import UploadStepperComponent from "./UploadStepperComponent";
@@ -21,9 +25,8 @@ import { showErrorMessage } from "actions";
 import { CREATE_JOB } from "graphQL/useMutationCreateJob";
 import { UPDATE_JOB } from "graphQL/useMutationUpdateJob";
 import { GET_JOB_UPLOAD_URI } from "graphQL/useQueryGetJobUploadUri";
-import { showSuccessMessage } from "../../../actions";
 import { BlockBlobClient } from "@azure/storage-blob";
-import jobHeaders from '../jobHeaders'
+import jobHeaders from "../jobHeaders";
 import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
 
 const QontoConnector = withStyles({
@@ -173,6 +176,8 @@ const stepper_style = {
 };
 export default function CustomizedSteppers(props) {
   const classes = useStyles();
+  const { control, watch, getValues, reset } = useForm();
+  const [statementInfo, setStatementsInfo] = useState({});
   const [stateApp, setStateApp] = React.useContext(AppContext);
   const client = useApolloClient();
   const history = useHistory();
@@ -180,7 +185,7 @@ export default function CustomizedSteppers(props) {
 
   const [contactList, setContactList] = useState(null);
   const [jobId, setJobId] = useState(null);
-  const [processing, setProcessing] = useState(false)
+  const [processing, setProcessing] = useState(false);
 
   const steps = getSteps(stateApp.job);
   const dispatch = useDispatch();
@@ -193,6 +198,10 @@ export default function CustomizedSteppers(props) {
   const userID = stateApp.user.mongoId;
   let data_to_send = stateApp.csvDataToSend;
 
+  const payor = watch("payor");
+  const checkAmount = watch("checkAmount");
+  const checkNumber = watch("checkNumber");
+
   useEffect(() => {
     if (createJobData?.createJob && jobId) {
       updateJob({
@@ -200,15 +209,14 @@ export default function CustomizedSteppers(props) {
           job: {
             _id: jobId,
             createJobResponse: createJobData?.createJob.body,
-          }
-        }
-      })
+          },
+        },
+      });
     }
-  }, [createJobData, jobId])
+  }, [createJobData, jobId]);
 
   useEffect(() => {
-    if (contactUploadUri?.getJobUploadUri?.success &&
-      !processing) {
+    if (contactUploadUri?.getJobUploadUri?.success && !processing) {
       setProcessing(true);
       setStateApp((state) => ({
         ...state,
@@ -218,39 +226,38 @@ export default function CustomizedSteppers(props) {
       const id = contactUploadUri.getJobUploadUri.job.id;
       const interal_key = contactUploadUri.getJobUploadUri.job.internalKey;
 
-      setJobId(id)
+      setJobId(id);
 
       const blockBlobClient = new BlockBlobClient(uri);
-      blockBlobClient.uploadBrowserData(contactList, {
-        maxSingleShotSize: 4 * 1024 * 1024,
-        blobHTTPHeaders: {
-          blobContentDisposition: `attachment; filename="${id}"`
-        },
-        metadata: {
-          Internalkey: interal_key || ""
-        }
-      })
+      blockBlobClient
+        .uploadBrowserData(contactList, {
+          maxSingleShotSize: 4 * 1024 * 1024,
+          blobHTTPHeaders: {
+            blobContentDisposition: `attachment; filename="${id}"`,
+          },
+          metadata: {
+            Internalkey: interal_key || "",
+          },
+        })
         .then((res) => {
           if (res?._response?.status === 201) {
             createJob({
               variables: {
                 jobId: id,
-                sendEmail: true
+                sendEmail: true,
               },
-            })
+            });
           } else {
             dispatch(showErrorMessage("Upload failed"));
           }
         })
         .catch((err) => console.log(err));
     }
-
-  }, [contactUploadUri])
+  }, [contactUploadUri]);
 
   const handleNext = async () => {
     if (stateApp.activeStepNumber === steps.length - 2) {
       if (stateApp.jobType === 'SHAPE_TO_M1_LAYER') {
-        console.log(stateApp)
         const jobInitialization = await client.mutate({
           mutation: INITIALIZE_EXPORT_JOB,
           variables: {
@@ -283,6 +290,12 @@ export default function CustomizedSteppers(props) {
           element.createAt = changeDate;
           element.lastUpdateBy = userID;
           element.lastUpdateAt = changeDate;
+          set(element, "check.payor", statementInfo.payor);
+          set(element, "check.payee", statementInfo.payee);
+          set(element, "check.checkNumber", statementInfo.checkNumber);
+          set(element, "check.checkAmount", statementInfo.checkAmount);
+          set(element, "check.checkDate", statementInfo.checkDate);
+          set(element, "check.sourceId", statementInfo.sourceId);
           if (props.selectedJob.type === "UNITS") {
             element['shape.shapeType'] = "Unit";
           }
@@ -292,12 +305,29 @@ export default function CustomizedSteppers(props) {
           delete element.tableData;
         });
 
+        const requestPayload = {
+          sampleCsv: jobHeaders[props.selectedJob.type],
+          uploadType: stateApp.selectedShapeLayerOption
+        }
+
+        if (stateApp.jobType === 'UNITS') {
+          const autoCalculateOfferPrice = !!stateApp?.user?.features?.find(f => f.name === 'autoCalculateOfferPrice')
+          requestPayload['autoCalculateOfferPrice'] = autoCalculateOfferPrice
+        }
+
+        if (stateApp.jobType === 'AGREEMENT_COMMENTS') {
+          requestPayload['type'] = 'agreement'
+        }
+        if (stateApp.jobType === 'TRACT_COMMENTS') {
+          requestPayload['type'] = 'tract'
+        }
+        if (stateApp.jobType === 'CONTACT_COMMENTS') {
+          requestPayload['type'] = 'contact'
+        }
+
         getJobUploadUri({
           variables: {
-            requestPayload: {
-              sampleCsv: jobHeaders[props.selectedJob.type],
-              uploadType: stateApp.selectedShapeLayerOption
-            },
+            requestPayload,
             jobName: props.selectedJob.name,
             jobType: props.selectedJob.type,
             userId: userID,
@@ -350,7 +380,7 @@ export default function CustomizedSteppers(props) {
   };
 
   let routeChange = (route) => {
-    history.push(route || '/');
+    history.push(route || "/");
   };
 
   const isDisabled = useMemo(() => {
@@ -366,24 +396,31 @@ export default function CustomizedSteppers(props) {
 
   return (
     <div className={classes.root}>
-      <Stepper
-        style={stepper_style}
-        alternativeLabel
-        activeStep={stateApp.activeStepNumber}
-        connector={<QontoConnector />}
-      >
+      <Stepper style={stepper_style} alternativeLabel activeStep={stateApp.activeStepNumber} connector={<QontoConnector />}>
         {steps.map((label) => (
           <Step key={label}>
-            <NewSteplabel StepIconComponent={QontoStepIcon}>
-              {label}
-            </NewSteplabel>
+            <NewSteplabel StepIconComponent={QontoStepIcon}>{label}</NewSteplabel>
           </Step>
         ))}
       </Stepper>
       <div>
         <div>
           <div>
-            {steps[stateApp.activeStepNumber] === 'Select' ? <CSVFileReader /> : null}
+            {steps[stateApp.activeStepNumber] === 'Select' ? (
+              <>
+                {props.selectedJob.type === "CHECKDETAILS" && (
+                  <RevenueStatementInfoForm
+                    statementInfo={statementInfo}
+                    setStatementsInfo={setStatementsInfo}
+                    control={control}
+                    watch={watch}
+                    getValues={getValues}
+                    reset={reset}
+                  />
+                )}
+                <CSVFileReader setSelectedJob={props.setSelectedJob} selectedJob={props.selectedJob} disabled={props.selectedJob.type === "CHECKDETAILS" && !(get(payor, "_id", "") && checkNumber && checkAmount)} />
+              </>
+            ) : null}
             {steps[stateApp.activeStepNumber] === 'Match' ? <M1neralHeaders /> : null}
             {steps[stateApp.activeStepNumber] === 'Review' ? <ReviewCSV /> : null}
             {steps[stateApp.activeStepNumber] === 'Upload' ? <UploadStepperComponent /> : null}

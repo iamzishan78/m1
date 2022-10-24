@@ -70,13 +70,22 @@ export const detailCardStyles = makeStyles((theme) => ({
       borderRadius: 5,
     },
   },
+  agreementSubContent: {
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": {
+          height: "calc(100vh - 675px) !important",
+        },
+      },
+    },
+  },
   subContent: {
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
           height: "calc(100vh - 443px) !important",
           "& .MuiTableCell-paddingCheckbox": {
-            position: "unset",
+            position: "sticky",
           },
         },
       },
@@ -88,7 +97,7 @@ export const detailCardStyles = makeStyles((theme) => ({
         "&>:nth-child(3)": {
           height: "calc(100vh - 483px) !important",
           "& .MuiTableCell-paddingCheckbox": {
-            position: "unset",
+            position: "sticky",
           },
         },
       },

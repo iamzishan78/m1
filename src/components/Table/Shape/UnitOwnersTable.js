@@ -15,7 +15,7 @@ import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import BuyContactsInfoDialogContent from "../../Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 
 
-// QUERIES 
+// QUERIES
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
@@ -23,7 +23,7 @@ import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 import { addTrailingZeros, copy, deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent"
 
-// Header Schemas 
+// Header Schemas
 import TableHeader from 'components/Table/constants/ownersperunit-header-schema'
 
 // Utilities
@@ -43,14 +43,14 @@ function UnitOwnersTable(props) {
   const [openDialog, setOpenDialog] = useState(null);
   const [expandedObject, ExpandedObject] = useState();
 
-  // function states 
+  // function states
   const [columns, Columns] = useState([]);
   const [selectedRow, selectRow] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
 
   const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
 
-  // queries 
+  // queries
 
   const [getESPaginatedList, { data: elasticData }] = useLazyQuery(GET_ES_PAGINATED_LIST, {
     fetchPolicy: "no-cache", onCompleted: () => {
@@ -114,7 +114,6 @@ function UnitOwnersTable(props) {
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
       const objectsIdsArray = tableData.hits.map((contact) => contact.contactId);
-      console.log("objectsIdsArray", objectsIdsArray);
       getCheckPurchaseData({
         variables: {
           contactIds: objectsIdsArray,
@@ -182,10 +181,10 @@ function UnitOwnersTable(props) {
   const onTableChange = (action, tableState, rows, meta) => {
     tableState.esIndex = esIndex
     const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESPaginatedList)
-    if(action === 'filterChange'){
-      if(tableActions?.pageESVariables?.variables?.filters?.length > 0){
+    if (action === 'filterChange') {
+      if (tableActions?.pageESVariables?.variables?.filters?.length > 0) {
         props.setIsFiltered(true)
-      }else{
+      } else {
         props.setIsFiltered(false)
       }
     }
@@ -274,7 +273,6 @@ function UnitOwnersTable(props) {
                 onClick={() => {
                   let contacts = [];
                   for (let i in selectedRows) {
-                    console.log(selectedRows[i]);
                     props.rows[selectedRows[i].dataIndex]._id =
                       props.rows[selectedRows[i].dataIndex].contactId;
                     contacts.push(props.rows[selectedRows[i].dataIndex]);
@@ -342,6 +340,7 @@ function UnitOwnersTable(props) {
         width="450px"
         shapeId={props.customLayer._id}
         uAcres={props.customLayer?.shapeJson?.properties?.uAcres}
+        uUnitPricing={props.customLayer?.shapeJson?.properties?.uUnitPricing}
         shapeType={props.shapeType}
         selectedRow={selectedRow}
         onClose={() =>

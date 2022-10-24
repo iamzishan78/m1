@@ -4,8 +4,7 @@ import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
 
 export function CurrencyFormatCustom(props) {
-  const { inputRef, onChange, name, ...other } = props;
-
+  const { inputRef, onChange, name, prefix, ...other } = props;
   return (
     <NumberFormat
       {...other}
@@ -20,7 +19,7 @@ export function CurrencyFormatCustom(props) {
       }}
       thousandSeparator
       // isNumericString
-      prefix="$"
+      prefix='$'
     />
   );
 }

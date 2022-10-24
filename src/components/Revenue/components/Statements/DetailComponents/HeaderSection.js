@@ -1,4 +1,5 @@
 import React, { memo, useEffect } from "react";
+import { get } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Grid,
@@ -7,19 +8,27 @@ import {
   Select,
   MenuItem,
   IconButton,
+  Tooltip,
 } from "@material-ui/core";
-import { Clear } from "@material-ui/icons";
+import { Clear, ErrorOutline } from "@material-ui/icons";
 import moment from "moment";
-import { KeyboardDatePicker } from "@material-ui/pickers";
 import debounce from "lodash/debounce";
 
 import { Controller, useForm } from "react-hook-form";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
 import { UPDATE_CHECK_DATA } from "graphQL/useMutationUpdateCheck";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import { useDispatch } from "react-redux";
-import { useHistory } from "react-router";
+import { useHistory, useParams } from "react-router-dom";
 import { showInfoMessage } from "actions";
+import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+
+const formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -62,11 +71,28 @@ const useStyles = makeStyles(() => ({
 
 function HeaderFunction(props) {
   const classes = useStyles();
-  // const [check, setCheck] = useState({});
+  const params = useParams();
   const { check, setCheck } = props
   const [updateCheck] = useMutation(UPDATE_CHECK_DATA);
+  const { data: elasticData } = useQuery(GET_ES_AGGS_LIST, {
+    variables: {
+      esIndex: "checkdetails_flat",
+      filters: [
+        {
+          field: "check._id.keyword",
+          value: params.id,
+        },
+      ],
+      search: "",
+      aggs: {
+        totalNetOwnerValue: { sum: { field: "netOwnerValue" } },
+      },
+    },
+    fetchPolicy: "cache-first",
+  });
   const history = useHistory();
   const dispatch = useDispatch();
+  const [getPayorList, { data: payorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   const { control, reset, watch } = useForm();
 
@@ -92,6 +118,17 @@ function HeaderFunction(props) {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    getPayorList({
+      variables: {
+        search: "*",
+        filterKey: "payor.name.keyword",
+        esIndex: "checks_flat",
+        size: 50,
+      }
+    })
+  }, [getPayorList])
 
   useEffect(() => {
     if (check) {
@@ -122,6 +159,19 @@ function HeaderFunction(props) {
       setCheck(check);
     }
   };
+
+  const isEqualCheckAmount = (checkAmount) => {
+    if(isNaN(elasticData?.getESAggsList?.aggregations?.totalNetOwnerValue?.value) || isNaN(checkAmount))
+      return true
+
+    const totalSum = formatter.format(
+      elasticData?.getESAggsList?.aggregations?.totalNetOwnerValue?.value || 0
+    );
+    const fCheckAmount = formatter.format(checkAmount || 0);
+
+    return totalSum === fCheckAmount
+  }
+
 
   return (
     <div className={classes.root}>
@@ -169,18 +219,15 @@ function HeaderFunction(props) {
               <Controller
                 control={control}
                 name="payor"
-                defaultValue={check?.payor || {}}
-                render={({ onChange, value, ref }) => (
-                  <AutocompEntityNamesList
+                render={(params) => (
+                  <AutoCompleteWithAddNew
+                    {...params}
+                    value={get(params, "value.name", "")}
                     variant="outlined"
-                    margin=""
-                    size=""
-                    nameAutValue={value}
-                    withContactCard={true}
-                    setNameAutValue={(value) => {
+                    setValue={(value) => {
                       if (value?._id)
-                        onChange({ _id: value._id, name: value.name });
-                      else onChange({});
+                        params.onChange({ _id: value._id, name: value.name });
+                      else params.onChange({});
                       handleUpdateCheck({
                         payor: {
                           ...check.payor,
@@ -189,6 +236,14 @@ function HeaderFunction(props) {
                         },
                       });
                     }}
+                    options={get(
+                      payorList,
+                      "getESFilterList.hits",
+                      []
+                    )?.map((payor) => ({
+                      _id: get(payor, `original.hits.hits.${0}._id`),
+                      name: payor.key,
+                    }))}
                   />
                 )}
               />
@@ -393,12 +448,18 @@ function HeaderFunction(props) {
                     variant="outlined"
                     onChange={(e) => {
                       params.onChange(e.target.value);
-                      handleUpdateCheck({ checkAmount: e.target.value });
+                      handleUpdateCheck({ checkAmount: parseFloat(e.target.value) });
                     }}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start"> $</InputAdornment>
                       ),
+                      endAdornment:
+                        !isEqualCheckAmount(params.value) ? (
+                          <Tooltip title="Sum of line items not equal to check amount">
+                            <ErrorOutline style={{ color: "red" }} />
+                          </Tooltip>
+                        ) : null,
                     }}
                     value={params.value || ""}
                     onBlur={() => handleCheckAmount()}

@@ -226,7 +226,7 @@ export default function ViewDocuments(props) {
   };
 
   return (
-    <div className={classes.viewAllCard}>
+    <div className={classes.viewAllCard} id="viewDocuments">
       {!isEmpty(stateApp?.viewDoc) && <DocViewer
         divCondition={false}
         DocStyle={{
@@ -259,7 +259,7 @@ export default function ViewDocuments(props) {
       </div>
       <div className={classes.divider} />
 
-      <ul className={classes.documentsList}>
+      <ul id="contactDocumentsList" className={classes.documentsList}>
         {!!filesLoading && (
           <div style={{ display: "flex", justifyContent: "center" }}>
             <CircularProgress size="20px" />
@@ -313,6 +313,7 @@ export default function ViewDocuments(props) {
 
                   <div
                     className={classes.fileText.concat(" DocumentTitle")}
+                    id={doc.fileName}
                     style={{ cursor: "pointer" }}>
                     <h4 className={classes.uploadTitle}>{doc.fileName}</h4>
                     {/* <h5 className={classes.uploadSubtext}>{doc.userName}</h5> */}
@@ -327,7 +328,7 @@ export default function ViewDocuments(props) {
                       props.setFileIdToDelete(doc.descriptorId);
                     }}
                   >
-                    <DeleteIcon />
+                    <DeleteIcon id={`${doc.fileName}deleteIcon`} />
                   </IconButton>
 
                   <IconButton

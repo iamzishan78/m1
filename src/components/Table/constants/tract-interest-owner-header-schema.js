@@ -1,4 +1,5 @@
-const TractInterestOwnerHeadCells = [
+import GlobalSettings from "../../../GlobalSettings";
+const TractInterestOwnerHeadCells =  (isSnapGrid = false) => [
   {
     name: "_id",
     options: {
@@ -27,7 +28,23 @@ const TractInterestOwnerHeadCells = [
     name: "name",
     label: "Owner Name",
     esKey: "contact.entityDetail.name.keyword",
-    options: { display: true },
+    options: {
+      setCellProps: () => ({
+        style: {
+          ...GlobalSettings.muiGridInfScrollOptions.setCellProps().style,
+          left: isSnapGrid ? "77px" : "132px",
+        },
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          ...GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps().style,
+          left: isSnapGrid ? "77px" : "132px",
+        },
+      }),
+      ignoreGlobal: true,
+      dbName: "shapeJson.properties.agreementNumber",
+      isSnapGrid,
+    },
     style: { minWidth: "320px" },
   },
   {

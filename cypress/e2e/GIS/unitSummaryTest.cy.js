@@ -1,20 +1,21 @@
 /* eslint-disable no-undef */
 
-describe('empty spec', () => {
+describe('unit summary testing', () => {
   it('passes', () => {
+    cy.viewport(1400, 900)
     cy.visit('http://localhost:3000')
 
-    cy.checkAndLogin('#workSpaceSignin')
+    cy.checkAndLogin()
 
     cy.wait(14000)
 
-    cy.get('#data-name-select', { timeout: 14000 }).should('be.visible').click()
-    cy.wait(2000)
-    cy.get('.MuiList-root', { timeout: 10000 }).should('be.visible').contains('Tracts').click()
+    cy.get('#dataNameSelect', { timeout: 14000 }).should('be.visible').click()
+    cy.wait(1000)
+    cy.get('.MuiList-root', { timeout: 10000 }).should('be.visible').contains('Units').click()
 
     cy.wait(2000)
 
-    cy.get('#cognitive-search-autocomplete', { timeout: 10000 }).should('be.visible').type('T&P').then((option) => {
+    cy.get('#cognitive-search-autocomplete', { timeout: 10000 }).should('be.visible').type('p-t').then((option) => {
       option[0].click();
     })
 
@@ -32,13 +33,14 @@ describe('empty spec', () => {
     });
 
     cy.wait(2000)
-    cy.contains('Tract Name').siblings('.MuiTableCell-root').children().children().children().eq(1).trigger('mouseover', { force: true }).children().click({ force: true })
+    cy.contains('Unit Name').siblings('.MuiTableCell-root').children().children().children().eq(1).trigger('mouseover', { force: true }).children().click({ force: true })
 
 
-    cy.contains('Tract Name').siblings().eq(0).children().children().children().eq(0).type('{backspace}{backspace}{backspace}PR{enter}')
+    cy.contains('Unit Name').siblings().eq(0).children().children().children().eq(0).type('{backspace}{backspace}{backspace}TR{enter}')
+
 
     cy.wait('@updateCustomLayerApiCheck', { timeout: 10000 }).then((interception) => {
-      assert.isNotNull(interception.response.body, 'Update Custom Layer api call has data')
+      assert.isNotNull(interception.response.body, 'Update Custom Layer api called Successfully')
     })
     // cy.get('.MuiList-root', { timeout: 10000 }).should('be.visible').contains('Units').click()
 

@@ -45,10 +45,11 @@ export default function RevenueStatements() {
   const onGettingStatements = useCallback((statementsList) => {
     if (statementsList.statementCount) {
       const checks = statementsList.statementCount;
-      const approved = statementsList?.approvedCount
+      const approved = statementsList?.approvedCount;
+      const unApprovedCount = statementsList.unApprovedCount;
       setApprovedCount(approved);
       setStatementCount(checks)
-      setUnapprovedCount(Number(checks) - Number(approved));
+      setUnapprovedCount(unApprovedCount);
     } else {
       setStatementCount(0)
       setApprovedCount(0);
@@ -91,7 +92,7 @@ export default function RevenueStatements() {
         <div
           classes={classes.revenueContainer}
           style={{
-            marginLeft: "-10px"
+            // marginLeft: "-10px"
           }}
         >
           <RevenueStatementTable

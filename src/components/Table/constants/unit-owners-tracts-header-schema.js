@@ -1,3 +1,5 @@
+import { GlobalStickyStyles } from "GlobalSettings";
+
 const UnitOwnersTractHeadCells = [
   {
     name: "_id",
@@ -8,6 +10,14 @@ const UnitOwnersTractHeadCells = [
     label: "Tract Name",
     esKey: "tract.tractName.keyword",
     options: {
+      ...GlobalStickyStyles({
+        setCellProps: {
+          maxWidth: "250px",
+        },
+        setCellHeaderProps: {
+          paddingLeft: "24px",
+        },
+      }),
       sort: true,
       filter: true,
     },
@@ -20,7 +30,10 @@ const UnitOwnersTractHeadCells = [
     name: "state",
     label: "State",
     esKey: "tract.state.keyword",
-    options: { sort: true, filter: true },
+    options: {
+      sort: true,
+      filter: true,
+    },
     style: { maxWidth: 80 },
   },
   {
@@ -30,15 +43,14 @@ const UnitOwnersTractHeadCells = [
     options: { sort: true, filter: true },
   },
   {
-    name: "SurveyMeridian", label: "Survey/ Meridian", esKey: [
-      'tract.rurvey.keyword',
-      'tract.meridian.keyword'
-    ],
+    name: "SurveyMeridian",
+    label: "Survey/ Meridian",
+    esKey: ["tract.rurvey.keyword", "tract.meridian.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
       sort: true,
-      filter: true
-    }
+      filter: true,
+    },
   },
   // {
   //   name: "meridian",
@@ -48,15 +60,14 @@ const UnitOwnersTractHeadCells = [
   // },
 
   {
-    name: "BlockTownship", label: "Block/ Township", esKey: [
-      'tract.block.keyword',
-      'tract.township.keyword'
-    ],
+    name: "BlockTownship",
+    label: "Block/ Township",
+    esKey: ["tract.block.keyword", "tract.township.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Block?.Township?",
       sort: true,
-      filter: true
-    }
+      filter: true,
+    },
   },
 
   // {
@@ -67,15 +78,14 @@ const UnitOwnersTractHeadCells = [
   // },
 
   {
-    name: "SectionRange", label: "Section/ Range", esKey: [
-      'tract.section.keyword',
-      'tract.range.keyword'
-    ],
+    name: "SectionRange",
+    label: "Section/ Range",
+    esKey: ["tract.section.keyword", "tract.range.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
       sort: true,
-      filter: true
-    }
+      filter: true,
+    },
   },
 
   // {
@@ -86,15 +96,14 @@ const UnitOwnersTractHeadCells = [
   // },
 
   {
-    name: "AbstractSection", label: "Abstract/ Section", esKey: [
-      'tract.abstract.keyword',
-      'tract.section.keyword'
-    ],
+    name: "AbstractSection",
+    label: "Abstract/ Section",
+    esKey: ["tract.abstract.keyword", "tract.section.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
       sort: true,
-      filter: true
-    }
+      filter: true,
+    },
   },
 
   // {
@@ -144,6 +153,8 @@ const UnitOwnersTractHeadCells = [
   { name: "net_acres", esKey: "net_acres", label: "Net Acres", type: "number", options: { filter: true } },
   { name: "company_net_acres", esKey: "company_net_acres", label: "Co Net Acres", type: "number", options: { filter: true } },
   { name: "nra", esKey: "nra", label: "NRA", type: "number", options: { filter: true } },
+  { name: "acquisition_nra", esKey: "acquisition_nra", label: "Acquisition $/NRA", type: "number", options: { filter: true } },
+  { name: "acquisition_cost", esKey: "acquisition_cost", label: "Acquisition Cost", type: "number", options: { filter: true } },
   {
     name: "depthFrom",
     label: "Depth From",
@@ -157,8 +168,33 @@ const UnitOwnersTractHeadCells = [
     options: { sort: true, filter: true },
   },
   { name: "tractStatus", esKey: "tractStatus.keyword", label: "Tract Status", editable: true, options: { filter: true } },
-  { name: "mapStatus", esKey: "mapStatus.keyword", label: "Map Staus", editable: true, options: { filter: true } },
+  { name: "mapStatus", esKey: "mapStatus.keyword", label: "Map Status", editable: true, options: { filter: true } },
   { name: "countAcres", esKey: "countAcres.keyword", label: "Count Acres", options: { filter: true } },
+  {
+    name: "commentsCounter",
+    label: " ",
+    options: {
+      dbName: "comments.comment",
+      display: true,
+      filter: false,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: false,
+    },
+  },
 ];
+
+UnitOwnersTractHeadCells.forEach((cell) => {
+  if (!cell.options.setCellProps && cell.options.display !== false) {
+    cell.options.setCellProps = () => ({
+      style: {
+        minWidth: "initial",
+        maxWidth: "initial",
+      },
+    });
+  }
+});
 
 export default UnitOwnersTractHeadCells;

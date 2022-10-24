@@ -177,7 +177,7 @@ export const useStyles = makeStyles((theme) => ({
     height: "calc(100vh - 499px)",
     maxheight: "calc(100vh - 172px)",
     paddingTop: 10,
-    paddingBottom: 10,
+    paddingBottom: 30,
     ...scrollbarStyle
   },
   toolbarActions: {

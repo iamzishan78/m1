@@ -401,6 +401,7 @@ export default function MetadataDrawer(props) {
             <h4 style={{ margin: "0 0 8px 0", float: "left" }}>{props.documentsTitle}</h4>
             {viewAllDocuments && (
               <h4
+                id="viewAllDocuments"
                 className={classes.viewAll}
                 onClick={() => {
                   history.push(`/contact/details/${targetSourceId}/documents`);
@@ -426,6 +427,7 @@ export default function MetadataDrawer(props) {
             targetSourceId={targetSourceId}
             commentsHeight={targetLabel === "Contact" ? "580px" : null}
             activityLog={props.activityLog}
+            showCommentType={props.showCommentType}
           />
         </div>
       </div>

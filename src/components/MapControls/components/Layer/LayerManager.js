@@ -11,7 +11,6 @@ import { ColorPickerStyledBox, useLayerStyle, useStyles, WidthPicker } from "./C
 import { Autocomplete } from "@material-ui/lab";
 
 function LayerManager(props) {
-  const classes = useStyles();
   const [stateApp] = useContext(AppContext);
   const sourceProps = "" + uuid() + "_source"
 

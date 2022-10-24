@@ -30,6 +30,10 @@ const ProductChart = ({ productSummaryDetails }) => {
         return key === 'GAS' ? 'MCF' : key === 'OIL' ? 'BBL' : key.includes('NGL') ? 'GAL' : ''
     }
 
+    const valueFormatter = (value) => {
+        return isNaN(Number(removeCommasFromString(value))) ? "0" : value
+    }
+
     useEffect(() => {
         const donut = {
             production: {
@@ -214,13 +218,13 @@ const ProductChart = ({ productSummaryDetails }) => {
                             <TableBody>
                                 {data.production.table.map((item) => <TableRow style={{ height: '71px' }}>
                                     <TableCell scope="row" style={{ borderBottom: 'none' }}>
-                                        {item.gross} {item.unit}
+                                        {valueFormatter(item.gross)} {item.unit}
                                     </TableCell>
                                     <TableCell
                                         scope="row"
                                         style={{ borderBottom: 'none' }}
                                     >
-                                        {item.net} {item.unit}
+                                        {valueFormatter(item.net)} {item.unit}
                                     </TableCell>
                                 </TableRow>)}
 

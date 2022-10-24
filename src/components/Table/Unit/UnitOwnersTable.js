@@ -220,6 +220,7 @@ function UnitOwnersTable(props) {
         width="450px"
         shapeId={props.customLayer._id}
         uAcres={props.customLayer?.shapeJson?.properties?.uAcres}
+        uUnitPricing={props.customLayer?.shapeJson?.properties?.uUnitPricing}
         shapeType={props.shapeType}
         selectedRow={selectedRow}
         onClose={() =>

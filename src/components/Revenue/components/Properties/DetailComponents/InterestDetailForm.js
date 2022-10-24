@@ -3,6 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useHistory } from "react-router-dom";
 import loadashFilter from "lodash/filter";
 import moment from "moment";
+import GlobalStyles from "GlobalStyles.js";
 
 import { makeStyles } from "@material-ui/styles";
 import { Typography, Grid, TextField, MenuItem, Select, Button } from "@material-ui/core";
@@ -65,7 +66,8 @@ const useStyles = makeStyles((theme) => ({
   },
   btnColor: {
     color: "white",
-    backgroundColor: "#60ABD6",
+    // backgroundColor: "#60ABD6",
+    backgroundColor: GlobalStyles.colors.lightBlue,
   },
   fieldset: {
     marginTop: 40,
@@ -286,11 +288,7 @@ const InterestDetailForm = (props) => {
           />
         </Grid>
         <Grid item xs={12} className={classes.fieldset}>
-          <div
-            style={{
-              borderTop: "1px solid #EEF1F4",
-            }}
-          >
+          <div>
             <div style={{ float: "right" }}>
               <Button style={{ margin: "25px 5px 25px 0px" }} variant="outlined">
                 Cancel

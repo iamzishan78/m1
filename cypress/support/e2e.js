@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // ***********************************************************
 // This example support/e2e.js is processed and
 // loaded automatically before your test files.
@@ -15,6 +16,20 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+
+Cypress.on('uncaught:exception', (err, runnable) => {
+    console.log("err : ", err)
+    console.log("err.message : ", err.message)
+
+    expect(err?.message).to.include('AI (Internal)')
+
+    // using mocha's async done callback to finish
+    // this test so we prove that an uncaught exception
+    // was thrown
+
+
+    return false
+})
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
