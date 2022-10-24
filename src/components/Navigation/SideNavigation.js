@@ -33,6 +33,7 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import WorkspaceEditModal from "components/Navigation/components/WorkSpaceEditModal";
+import Analytics from "components/Shared/svgIcons/analytics";
 
 const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   width: 260px;
@@ -204,7 +205,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
           >
             <div className={classes.tabContent}>
               <Tooltip
-                title="Find"
+                title="Map"
                 placement="right"
                 classes={{ tooltip: classes.iconTooltip }}
               >
@@ -214,7 +215,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               </Tooltip>
               <ListItemText
                 className={`${classes.sideNavText} uppercase`}
-                primary="Find"
+                primary="Map"
               />
             </div>
           </ListItem>
@@ -279,15 +280,12 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                   <FlowIcon />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Flow"
-              />
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Flow" />
               <ListItemSecondaryAction className={classes.sideNavAction}>
                 {/* <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
                   beta
-                </Button> */}
-              </ListItemSecondaryAction>
+                </Button>*/}
+              </ListItemSecondaryAction> 
             </div>
           </ListItem>
 
@@ -306,7 +304,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             >
               <div className={classes.tabContent}>
                 <Tooltip
-                  title="Land"
+                  title="Assets"
                   placement="right"
                   classes={{ tooltip: classes.iconTooltip }}
                 >
@@ -316,7 +314,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                 </Tooltip>
                 <ListItemText
                   className={`${classes.sideNavText} uppercase`}
-                  primary="Land"
+                  primary="Assets"
                 />
                 <ListItemSecondaryAction className={classes.sideNavAction}>
                   {/* <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
@@ -381,7 +379,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
           >
             <div className={classes.tabContent}>
               <Tooltip
-                title="Documents"
+                title="Files"
                 placement="right"
                 classes={{ tooltip: classes.iconTooltip }}
               >
@@ -391,7 +389,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               </Tooltip>
               <ListItemText
                 className={`${classes.sideNavText} uppercase`}
-                primary="Documents"
+                primary="Files"
               />
               <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button
@@ -425,17 +423,9 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                   <ActivityIcon />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText
-                className={`${classes.sideNavText} uppercase`}
-                primary="Calendar"
-              />
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Calendar" />
               <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button
-                  disabled
-                  className={`${classes.betaSideNav3} uppercase`}
-                  edge="start"
-                  aria-label="beta"
-                >
+                <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
                   beta
                 </Button>
               </ListItemSecondaryAction>
@@ -473,6 +463,44 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               </ListItemSecondaryAction>
             </div>
           </ListItem> */}
+
+          <ListItem
+            classes={{
+              root: classes.menuListItem,
+              selected: classes.menuListItemSelected,
+            }}
+            button
+            selected={stateNav.selectedMenuIndexAnalytics === 1}
+            onClick={(event) => {
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                selectedContact: null,
+                contactSearchQuery: null,
+              }));
+              setStateNav((stateApp) => ({
+                ...stateApp,
+                contactFromMap: false,
+              }));
+              handleListItemClick("/analytics");
+            }}
+            key="analytics"
+          >
+            <div className={classes.tabContent}>
+              <Tooltip title="Analytics" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                <ListItemIcon className={classes.sideNavIcon}>
+                <Analytics />
+                </ListItemIcon>
+              </Tooltip>
+              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Analytics" />
+              <ListItemSecondaryAction className={classes.sideNavAction}>
+                <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
+                  beta
+                </Button>
+              </ListItemSecondaryAction>
+            </div>
+          </ListItem>
+
+
         </List>
       </Drawer>
       {showWorkspaceModal && (

@@ -64,10 +64,10 @@ const LandSearch = ({ activeModule }) => {
   const [search, setSearch] = useState("");
 
   const searchPlaceholder = useMemo(() => {
-    switch (activeModule.title) {
-      case SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title:
+    switch (activeModule?.title) {
+      case SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS?.title:
         return "Search by check number or attribute";
-      case SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title:
+      case SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES?.title:
         return "Search by property number or attribute";
       default:
         return "";

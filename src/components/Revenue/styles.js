@@ -43,7 +43,7 @@ export const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
     flexShrink: 0,
     "& .MuiDrawer-paperAnchorLeft": {
-      left: "52px",
+      left: "60px",
     },
     "& .MuiDivider-root": {
       backgroundColor: "#263451",

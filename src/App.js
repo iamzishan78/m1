@@ -60,6 +60,7 @@ import Notifications from "./components/Notifications/Notifications";
 import { Provider as ReduxProvider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
 import configureStore, { history } from "./store";
+import AnalyticsProvider from "components/Analytics/AnalyticsProvider";
 // user management
 const store = configureStore(/ provide initial state if any /);
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
@@ -359,6 +360,7 @@ function App() {
                           component={ContactRecentActivitiesProvider}
                         />
                         <PrivateRoute exact path="/contact/details/:contactId/documents" component={ContactDocumentsProvider} />
+                        <PrivateRoute title="Analytics" path="/analytics" component={AnalyticsProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/wells" component={ContactWellInterestProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId/parcels" component={ContactParcelsInterestProvider} />
                         <PrivateRoute

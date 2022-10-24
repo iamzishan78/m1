@@ -1,5 +1,4 @@
 import { BlockBlobClient } from "@azure/storage-blob";
-import { getPolygonString } from './getPolygonString';
 import { cloneDeep } from "lodash";
 
 export * from "./deepEqual";
@@ -22,13 +21,13 @@ export function truncate(str, n) {
 }
 
 export function copy(obj) {
-  return cloneDeep(obj)
+  return cloneDeep(obj);
 }
 
 export function getSearchFields(Table) {
   let searchFields = []
   Table.forEach((row) => {
-    if (row?.options?.display !== false && row.esKey) {
+    if ((row?.options?.display !== false && row.esKey && !row.name?.toLowerCase()?.includes('date')) || row?.options?.forSearch) {
       if (Array.isArray(row.esKey)) {
         searchFields = [...searchFields, ...row.esKey]
       } else if (row.esKey.includes('.keyword'))
