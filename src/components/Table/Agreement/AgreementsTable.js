@@ -45,7 +45,9 @@ function AgreementsTable(props) {
   const [updateGridView] = useMutation(UPDATE_GRID_VIEW);
 
   const classes = usetableStyles({ isFullHeight: true, isAgreementsTable: true });
+  const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
+  const GridViewModule = userGridViewSettings[`Agreements`];
   const { Agreements: AgreementsGridView } = useSelector(({ session }) => session.userGridViewSettings);
 
   const searchInput = useSelector((state) => state.MapGridCard.searchInputValue);
