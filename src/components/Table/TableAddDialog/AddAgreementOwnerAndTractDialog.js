@@ -166,7 +166,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 
   useEffect(() => {
     if (!isAcquisitionCostOverridden)
-      setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra));
+      setValue("acquisition_cost", calculateAcquisitionCost(nra, getValues().acquisition_nra));
   }, [nra]);
 
   useEffect(() => {
@@ -283,6 +283,8 @@ function AddAgreementOwnerAndTractDialog(props) {
       const shapeArea = selectedShapeLayer?.shapeJson?.properties?.shapeArea || "";
       const legalDescription = selectedShapeLayer?.shapeJson?.properties?.legalDescription || "";
       const mapStatus = selectedShapeLayer?.shapeJson?.properties?.mapStatus || "";
+      const basin = selectedShapeLayer?.shapeJson?.properties?.basin || "";
+      const field = selectedShapeLayer?.shapeJson?.properties?.field || "";
       selectedShapeLayer.parcelId = selectedShapeLayer._id;
 
       setTractValue({ _id: selectedShapeLayer._id, name: selectedShapeLayer.name });
@@ -297,6 +299,8 @@ function AddAgreementOwnerAndTractDialog(props) {
           shapeArea,
           legalDescription,
           mapStatus,
+          basin,
+          field,
           ...originalProperties,
           qtrQtrSelection: selectedShapeLayer.qtrQtrSelection,
         },
@@ -421,7 +425,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     if (!nra && !aquisitionNra) return null;
     const aquisitionCost = parseFloat(nra || 0) * (parseFloat(aquisitionNra || 0));
 
-    return aquisitionCost.toFixed(2)
+    return Number(aquisitionCost.toFixed(2))
   };
 
   useEffect(() => {
@@ -987,7 +991,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                     aria-label="toggle royality-acres"
                     onClick={() => {
                       setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra));
-                      setIsNRAOverridden(false)
+                      setIsAcquisitionCostOverridden(false)
                     }}
                   >
                     <AutorenewIcon />
