@@ -81,7 +81,7 @@ const RelatedAgreements = (props) => {
               <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
-          onClick={(e) => { }}
+          onClick={(e) => {}}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>
@@ -96,12 +96,7 @@ const RelatedAgreements = (props) => {
           <Grid container direction="column" alignItems="center" spacing={4} style={{ display: "block" }}>
             {uniObj?._id && (
               <Grid item xs={12} style={{ padding: "35px 20px 0px 0px" }}>
-                <RelatedAgreementsTable
-                  dense
-                  moduleId={customLayerId}
-                  setNewAgmtState={props.setNewAgmtState}
-                  setCounter={setCounter}
-                />
+                <RelatedAgreementsTable dense moduleId={customLayerId} setDrawer={props.setDrawer} setCounter={setCounter} />
               </Grid>
             )}
           </Grid>

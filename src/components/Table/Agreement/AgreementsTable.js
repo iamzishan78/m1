@@ -46,9 +46,6 @@ function AgreementsTable(props) {
 
   const classes = usetableStyles({ isFullHeight: true, isAgreementsTable: true });
 
-  const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
-
-  const GridViewModule = userGridViewSettings[`Agreements`];
   const { Agreements: AgreementsGridView } = useSelector(({ session }) => session.userGridViewSettings);
 
   const searchInput = useSelector((state) => state.MapGridCard.searchInputValue);
@@ -91,15 +88,13 @@ function AgreementsTable(props) {
     props.setSelectedGridView(AgreementsGridView || defaultView);
   }, [AgreementsGridView]);
 
-  console.log(props.landSearchQuery || "empty", searchInput || "empty");
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : [];
     props.setInitialFilters(formatedFilter);
     setTableMeta({
       // addableName: "Unit",
-      extendSearchQuery: props.landSearchQuery || searchInput || '',
-      selectedGridView: GridViewModule || defaultView,
-      customDataESKey: 'shapeJson.properties.custom_data',
+      extendSearchQuery: props.landSearchQuery || searchInput || "",
+      customDataESKey: "shapeJson.properties.custom_data",
       // searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
@@ -125,10 +120,6 @@ function AgreementsTable(props) {
   useEffect(() => {
     props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);
   }, [props?.options?.count]);
-  useEffect(() => {
-    props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView: GridViewModule || defaultView }));
-    // eslint-disable-next-line
-  }, [GridViewModule]);
 
   useEffect(() => {
     setESFilters && setESFilters(props.initialFilters);
@@ -137,7 +128,7 @@ function AgreementsTable(props) {
 
   useEffect(() => {
     props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);
-  }, [props?.options?.count])
+  }, [props?.options?.count]);
 
   const onCustomKeyChange = (value = null, index, key) => {
     const rows = JSON.parse(JSON.stringify(props.rows));
