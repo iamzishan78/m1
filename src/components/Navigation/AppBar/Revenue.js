@@ -79,6 +79,7 @@ export default function RevenueAppBar(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeModule]);
 
+  console.log("*-*-*- activeModule *-*-*-", activeModule);
   return (
     <Grid
       container
@@ -92,16 +93,16 @@ export default function RevenueAppBar(props) {
         <Grid container direction="row" display="flex" justify="flex-start" alignItems="center">
           <Grid item xs={2.5}>
             <Typography variant="h5" style={{ color: "black", fontWeight: "bold" }}>
-              {activeModule.title}
+              {activeModule?.title}
             </Typography>
           </Grid>
-          {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS.title ||
-            activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES.title) && (
+          {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS?.title ||
+            activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES?.title) && (
             <Grid item xs={5} style={{ marginLeft: "20px" }}>
               <RevenueSearch activeModule={activeModule} />
             </Grid>
           )}
-          {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PORTFOLIO.title && (
+          {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PORTFOLIO?.title && (
             <Grid item xs={7} style={{ marginLeft: "20px" }}>
               <ReportGroupHeader
                 type="Properties"
