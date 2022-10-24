@@ -94,7 +94,7 @@ function AgreementsTable(props) {
     setTableMeta({
       // addableName: "Unit",
       extendSearchQuery: props.landSearchQuery || searchInput ? `*${searchInput}*` : '' || '',
-      selectedGridView: GridViewModule || defaultView,
+      // selectedGridView: GridViewModule || defaultView,
       customDataESKey: 'shapeJson.properties.custom_data',
       // searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
