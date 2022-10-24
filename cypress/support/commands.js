@@ -282,6 +282,33 @@ Cypress.Commands.add('updateAndVerifyContact', (fieldId, keyName, contactToUpdat
     })
 })
 
+Cypress.Commands.add('drawMapShape', () => {
+    cy.get('.mapboxgl-canvas').dblclick(643, 766, { force: true })
+        .dblclick(663, 770, { force: true })
+        .dblclick(663, 770, { force: true })
+        .dblclick(663, 770, { force: true })
+        .dblclick(716, 742, { force: true })
+        .dblclick(716, 742, { force: true })
+        .dblclick(736, 722, { force: true })
+        .dblclick(746, 712, { force: true })
+        .dblclick(746, 712, { force: true })
+
+    cy.get("#mapEditIcon", { timeout: longTimeout }).should('be.visible').click()
+    cy.wait(5000)
+    cy.get("#mapRectangle").click()
+
+    cy.get('.mapboxgl-canvas')
+        .first()
+        .wait(5000)
+        .trigger("mousedown", 746, 712, { bubbles: false, force: true })
+        .trigger("mousemove", 446, 612, {
+            which: 1,
+            force: true,
+            bubbles: false,
+        })
+        .trigger("mouseup", 446, 612, { force: true })
+})
+
 Cypress.Commands.add('createShapeLayer', (shapeLayerItemId) => {
     cy.interceptApi('UpsertCustomLayer')
     cy.get('.mapboxgl-canvas').click()
