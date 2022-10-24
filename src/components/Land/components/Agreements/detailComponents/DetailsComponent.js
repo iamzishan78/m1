@@ -37,7 +37,7 @@ import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
-import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
+// import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
 import MapImgViewIcon from "components/Shared/svgIcons/MapImgViewIcon";
 import MapProvider from "components/Map/MapProvider";
 import { DrawerContext } from "./DrawerContext";
@@ -235,6 +235,7 @@ export function DetailComponents(props) {
 
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
+  // const [isNewAgmt, setNewAgmtState] = useState(false);
   const [isButtonScroll, setButtonScroll] = useState(false);
   const [mapCollapse, setMapCollapse] = useState(true);
   const [validationCollapse, setValidationCollapse] = useState(true);
@@ -251,7 +252,7 @@ export function DetailComponents(props) {
   const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
   const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
-  const [updateMetaData] = useMutation(UPSERT_USER_DESCRIPTOR);
+  // const [updateMetaData] = useMutation(UPSERT_USER_DESCRIPTOR);
 
   useEffect(() => {
     return () => {
@@ -409,7 +410,8 @@ export function DetailComponents(props) {
       if (getRelativePosition("provisions-div") < 30) activeTab = 2;
       if (getRelativePosition("legal-description-div") < 30) activeTab = 3;
       if (getRelativePosition("related-wells-div") < 30) activeTab = 4;
-      if (getRelativePosition("related-docs-div") < 300) activeTab = 5;
+      if (getRelativePosition("related-docs-div") < 30) activeTab = 5;
+      if (getRelativePosition("related-agrmt-div") < 30) activeTab = 6;
 
       if (tab !== activeTab) setTab(activeTab);
     }
@@ -688,18 +690,18 @@ export function DetailComponents(props) {
           )}
         </div>
 
-          <div
-            style={{
-              marginTop: 20,
-              marginRight: 24,
-              height: "calc(100vh - 270px)",
-              overflow: 'auto',
-              width: !!drawer ? 620 : 0,
-              background: 'white'
-            }}
-            id={'agreementDetailsDrawer'}
-          >
-            {drawer === "meta" && <MetadataDrawer
+        <div
+          style={{
+            marginTop: 20,
+            marginRight: 24,
+            height: "calc(100vh - 270px)",
+            overflow: 'auto',
+            width: !!drawer ? 620 : 0,
+            background: 'white'
+          }}
+          id={'agreementDetailsDrawer'}
+        >
+          {drawer === "meta" && <MetadataDrawer
             setCollapse={setDrawer}
             targetSourceId={agreementId}
             data={agreementDetails}
@@ -708,11 +710,12 @@ export function DetailComponents(props) {
             descriptionKey="description"
             ownerPlaceHolder='Assign Approver'
             ownerTitle="Approver"
-            isApproval={true}
             onUpdate={(data) => Object.keys(data).forEach(key => updateAgreement(key, data[key]))}
             isSource={false}
+            isApproval
+            showCommentType
           />}
-          </div>
+        </div>
       </div>
 
       {/**
