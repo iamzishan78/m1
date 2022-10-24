@@ -327,6 +327,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                       <TextField
                         {...props}
                         id={`field-${index}`}
+                        value={parseFloat(props.value).toFixed(2)}
                         className={isAcquisitionCostOverridden ? overrideClasses.valueOveridden : overrideClasses.valueNormal}
                         variant="outlined"
                         margin="dense"
@@ -334,8 +335,8 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                         inputRef={props.ref}
                         onWheel={(e) => e.target.blur()}
                         onChange={(e) => {
-                          const toFixedValue = Number(parseFloat(e.target.value).toFixed(2))
-                          const calculatedAcquisitionCost = Number(parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2))
+                          const toFixedValue = parseFloat(e.target.value).toFixed(2)
+                          const calculatedAcquisitionCost = parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2)
                           props.onChange(toFixedValue);
                           setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost)
                         }}

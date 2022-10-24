@@ -325,6 +325,10 @@ function AddAgreementOwnerAndTractDialog(props) {
     ownerToAdd.isTractOwner = isTractOwner;
     ownerToAdd.tract = tract;
 
+    if(isNaN(parseFloat(ownerToAdd.acquisition_cost)))
+      if(!isNaN(parseFloat(ownerToAdd.nra) && !isNaN(parseFloat(ownerToAdd.acquisition_nra))))
+        ownerToAdd.acquisition_cost = parseFloat(calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra))
+
     Object.keys(ownerToAdd).forEach((key) => {
       if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'nra', 'company_net_acres'].includes(key) && ownerToAdd[key]) ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(8));
     });
@@ -417,7 +421,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     if (!nra && !aquisitionNra) return null;
     const aquisitionCost = parseFloat(nra || 0) * (parseFloat(aquisitionNra || 0));
 
-    return Number(aquisitionCost.toFixed(2))
+    return aquisitionCost.toFixed(2)
   };
 
   useEffect(() => {
@@ -927,6 +931,58 @@ function AddAgreementOwnerAndTractDialog(props) {
               </InputAdornment>
             ),
           }}
+        />
+      )}
+    />
+
+    <Controller
+      control={control}
+      name="acquisition_nra"
+      render={(props) => (
+        <TextField
+          label="Acquisition $/NRA"
+          variant="outlined"
+          margin="dense"
+          value={parseFloat(props.value).toFixed(2)}
+          inputRef={props.ref}
+          onWheel={(e) => e.target.blur()}
+          onChange={(e) => {
+            props.onChange(parseFloat(e.target.value).toFixed(2));
+          }}
+          InputProps={{
+            inputComponent: CurrencyFormatCustom,
+          }}
+          fullWidth
+          defaultValue=""
+        />
+      )}
+    />
+
+    <Controller
+      control={control}
+      name="acquisition_cost"
+      render={(props) => (
+        <TextField
+          label="Acquisition Cost"
+          variant="outlined"
+          margin="dense"
+          value={parseFloat(props.value).toFixed(2)}
+          inputRef={props.ref}
+          onWheel={(e) => e.target.blur()}
+          className={isAcquisitionCostOverridden ? classes.netAcresOveridden : classes.netAcresNormal}
+          onChange={(e) => {
+            const toFixedValue = parseFloat(e.target.value).toFixed(2)
+            props.onChange(toFixedValue);
+
+            const acquisition_cost = calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra);
+            setIsAcquisitionCostOverridden(acquisition_cost !== toFixedValue)
+            setValue("acquisition_cost", toFixedValue);
+          }}
+          InputProps={{
+            inputComponent: CurrencyFormatCustom,
+          }}
+          fullWidth
+          defaultValue=""
         />
       )}
     />
