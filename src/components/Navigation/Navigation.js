@@ -8,6 +8,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import clsx from "clsx";
 
 //3rd party packages
+import _ from "lodash";
 import PropTypes from "prop-types";
 
 //@material-ui components
@@ -23,7 +24,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { contactManagementRoutes } from "utils/data";
+import { analyticsManagementRoutes, contactManagementRoutes } from "utils/data";
 import SupportCenterModal from "./components/SupportCenter";
 import { useStyles } from "./Common";
 
@@ -75,7 +76,13 @@ TabPanel.propTypes = {
 };
 
 export default function Navigation(props) {
-  const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
+  const mapGridCardActivated = useSelector(
+    ({ MapGridCard }) => MapGridCard.mapGridCardActivated
+  );
+
+  const { quickActionsPanelState } = useSelector(
+    ({ common }) => common
+  );
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -114,6 +121,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/track") {
       setStateNav((state) => ({
@@ -130,6 +138,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname.startsWith("/flow")) {
       setStateNav((state) => ({
@@ -146,6 +155,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/title") {
       setStateNav((state) => ({
@@ -163,6 +173,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/contacts") {
       setStateGrid((state) => ({
@@ -183,6 +194,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/alerts") {
       setStateNav((state) => ({
@@ -199,6 +211,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/dashboard") {
       setStateNav((state) => ({
@@ -215,6 +228,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/studio") {
       setStateNav((state) => ({
@@ -231,6 +245,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/calendar/activities") {
       setStateNav((state) => ({
@@ -247,6 +262,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname === "/documents") {
       setStateNav((state) => ({
@@ -263,6 +279,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 1,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname.startsWith("/revenue")) {
       setStateNav((state) => ({
@@ -279,6 +296,7 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 1,
         selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics:0,
       }));
     } else if (location.pathname.startsWith("/land")) {
       setStateNav((state) => ({
@@ -295,6 +313,24 @@ export default function Navigation(props) {
         selectedMenuIndexDocuments: 0,
         selectedMenuIndexRevenue: 0,
         selectedMenuIndexLand: 1,
+        selectedMenuIndexAnalytics:0,
+      }));
+    } else if (location.pathname === "/analytics") {
+      setStateNav((state) => ({
+        ...state,
+        selectedMenuIndexFind: 0,
+        selectedMenuIndexTrack: 0,
+        selectedMenuIndexTransact: 0,
+        selectedMenuIndexTitle: 0,
+        selectedMenuIndexAlerts: 0,
+        selectedMenuIndexContacts: 0,
+        selectedMenuIndexDashboard: 0,
+        selectedMenuIndexStudio: 0,
+        selectedMenuIndexCalendar: 0,
+        selectedMenuIndexDocuments: 0,
+        selectedMenuIndexRevenue: 0,
+        selectedMenuIndexLand: 0,
+        selectedMenuIndexAnalytics: 1,
       }));
     }
   }, [location, setStateNav]);
@@ -390,16 +426,24 @@ export default function Navigation(props) {
       {!checkIfIgnoreHeader() && (
         <AppBar
           position="fixed"
-          className={clsx(!location.pathname.startsWith("/land") ? classes.appBar : classes.appBarWhite, {
-            [classes.appBarShift]: openDrawer,
-          })}
+          className={clsx(
+            !location.pathname.startsWith("/land")
+              ? classes.appBar
+              : classes.appBarWhite,
+            {
+              [classes.appBarShift]: openDrawer,
+            }
+          )}
           style={
-            location.pathname === "/contacts/activityDashboard" || location.pathname.includes("revenue") ? { background: "white" } : null
+            location.pathname === "/contacts/activityDashboard" ||
+              location.pathname.includes("revenue")
+              ? { background: "white" }
+              : null
           }
-        // style={{
-        //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
-        //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
-        // }}
+          // style={{
+          //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
+          //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
+          // }}
         >
           {stateApp.user && (
             <Toolbar>
@@ -420,11 +464,39 @@ export default function Navigation(props) {
               )}
               {(location.pathname === "/contacts" ||
                 location.pathname === "/contacts/" ||
-                Object.values(contactManagementRoutes).find((item) => item.link === location.pathname && item.search)) && <ContactSearch />}
-              {location.pathname.includes("/contact/details") && <ContactBreadcrumbs />}
+                Object.values(contactManagementRoutes).find(
+                  (item) => item.link === location.pathname && item.search
+                )) && <ContactSearch />}
+              {location.pathname.includes("/contact/details") && (
+                <ContactBreadcrumbs />
+              )}
+              
+              {(location.pathname === "/analytics" ||
+                Object.values(analyticsManagementRoutes).find(
+                  (item) => item.link === location.pathname && item.search
+                )) && <ContactSearch />}
+
+              {["/analytics/revenue", "/analytics/land"].includes(
+                location.pathname
+              ) && (
+                <Typography
+                  variant="h4"
+                  style={{
+                    color: "black",
+                    fontWeight: "bold",
+                    marginLeft: quickActionsPanelState ? 433 : 15,
+                  }}
+                >
+                  {_.capitalize(location.pathname.split("/").pop())} Analytics
+                </Typography>
+              )}
+
               {location.pathname.startsWith("/flow") && <DealSearch />}
               {location.pathname === "/dashboard" && (
-                <Typography variant="h4" style={{ color: "black", fontWeight: "bold", marginLeft: 15 }}>
+                <Typography
+                  variant="h4"
+                  style={{ color: "black", fontWeight: "bold", marginLeft: 15 }}
+                >
                   Dashboard
                 </Typography>
               )}
