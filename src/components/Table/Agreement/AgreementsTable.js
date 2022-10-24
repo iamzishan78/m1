@@ -91,13 +91,12 @@ function AgreementsTable(props) {
     props.setSelectedGridView(AgreementsGridView || defaultView);
   }, [AgreementsGridView]);
 
-  console.log(props.landSearchQuery || "empty", searchInput || "empty");
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : [];
     props.setInitialFilters(formatedFilter);
     setTableMeta({
       // addableName: "Unit",
-      extendSearchQuery: props.landSearchQuery || searchInput || '',
+      extendSearchQuery: props.landSearchQuery || searchInput ? `*${searchInput}*` : '' || '',
       selectedGridView: GridViewModule || defaultView,
       customDataESKey: 'shapeJson.properties.custom_data',
       // searchFields: ["*"],
