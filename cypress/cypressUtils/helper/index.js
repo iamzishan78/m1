@@ -28,9 +28,14 @@ export const isApiWithSearchString = (searchString, variables) => {
     const searchQuery = variables?.search?.query || variables?.search
 
     if (typeof searchQuery === 'string') {
+
         if (searchQuery.substring(1, 2) === '*')
-            searchString = `"*${searchString}*"`
+            searchString = `*${searchString}"`
+        if (searchQuery.slice(-1) === "*")
+            searchString = `${searchString}*`
 
         return searchQuery === searchString
     }
+
+    return false
 }

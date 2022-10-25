@@ -451,7 +451,7 @@ export function DetailComponents(props) {
         <div className="flex column alignStart justifyStart w-100">
           <div className={classes.title}>
             <IconButton className={classes.icon}>
-              <DocumentIcon />
+              <DocumentIcon id="documentIcon" />
             </IconButton>
             <div className={classes.titleText}>
               {agreementDetails && (
