@@ -166,7 +166,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 
   useEffect(() => {
     if (!isAcquisitionCostOverridden)
-      setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra));
+      setValue("acquisition_cost", calculateAcquisitionCost(nra, getValues().acquisition_nra));
   }, [nra]);
 
   useEffect(() => {
@@ -283,6 +283,8 @@ function AddAgreementOwnerAndTractDialog(props) {
       const shapeArea = selectedShapeLayer?.shapeJson?.properties?.shapeArea || "";
       const legalDescription = selectedShapeLayer?.shapeJson?.properties?.legalDescription || "";
       const mapStatus = selectedShapeLayer?.shapeJson?.properties?.mapStatus || "";
+      const basin = selectedShapeLayer?.shapeJson?.properties?.basin || "";
+      const field = selectedShapeLayer?.shapeJson?.properties?.field || "";
       selectedShapeLayer.parcelId = selectedShapeLayer._id;
 
       setTractValue({ _id: selectedShapeLayer._id, name: selectedShapeLayer.name });
@@ -297,6 +299,8 @@ function AddAgreementOwnerAndTractDialog(props) {
           shapeArea,
           legalDescription,
           mapStatus,
+          basin,
+          field,
           ...originalProperties,
           qtrQtrSelection: selectedShapeLayer.qtrQtrSelection,
         },
@@ -322,11 +326,14 @@ function AddAgreementOwnerAndTractDialog(props) {
       return;
     }
     const ownerToAdd = getValues();
+    
+    ownerToAdd.acquisition_nra = Number(ownerToAdd.acquisition_nra);
+    ownerToAdd.acquisition_cost = Number(ownerToAdd.acquisition_cost);
     ownerToAdd.isTractOwner = isTractOwner;
     ownerToAdd.tract = tract;
 
     Object.keys(ownerToAdd).forEach((key) => {
-      if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'nra', 'company_net_acres'].includes(key) && ownerToAdd[key]) ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(8));
+      if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'nra', 'company_net_acres', 'lease_royalty_interest'].includes(key) && ownerToAdd[key]) ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(8));
     });
 
     if (ownerToAdd.parcelOwnersRadioBValue === "true") {
@@ -346,7 +353,6 @@ function AddAgreementOwnerAndTractDialog(props) {
             {
               shapeId: props.shapeId,
               ...ownerToAdd,
-              acquisition_cost: Number(parseFloat(ownerToAdd.nra * ownerToAdd.acquisition_nra).toFixed(2))
             },
           ],
           shapeType: props.shapeType,
@@ -362,7 +368,6 @@ function AddAgreementOwnerAndTractDialog(props) {
           shapeOwner: {
             shapeId: props.shapeId,
             ...ownerToAdd,
-            acquisition_cost: Number(parseFloat(ownerToAdd.nra * ownerToAdd.acquisition_nra).toFixed(2))
           },
         },
         refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
@@ -417,7 +422,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     if (!nra && !aquisitionNra) return null;
     const aquisitionCost = parseFloat(nra || 0) * (parseFloat(aquisitionNra || 0));
 
-    return Number(aquisitionCost.toFixed(2))
+    return aquisitionCost.toFixed(2)
   };
 
   useEffect(() => {
@@ -768,6 +773,28 @@ function AddAgreementOwnerAndTractDialog(props) {
       />
     )}
 
+    {interestMapping?.['Lease Royalty Interest']?.includes(layerType) && (
+      <Controller
+        control={control}
+        name="lease_royalty_interest"
+        render={({ onChange, value }) => (
+          <TextField
+            variant="outlined"
+            InputLabelProps={{ shrink: true }}
+            margin="dense"
+            value={value}
+            type="number"
+            label={'Lease Royalty Interest'}
+            fullWidth
+            onWheel={(e) => e.target.blur()}
+            onChange={(e) => {
+              onChange(e.target.value)
+            }}
+          />
+        )}
+      />
+    )}
+
     {interestMapping?.['Royalty Interest']?.includes(layerType) && (
       <Controller
         control={control}
@@ -934,6 +961,72 @@ function AddAgreementOwnerAndTractDialog(props) {
       )}
     />
 
+    <Controller
+      control={control}
+      name="acquisition_nra"
+      render={(props) => (
+        <TextField
+          label="Acquisition $/NRA"
+          variant="outlined"
+          margin="dense"
+          value={parseFloat(props.value).toFixed(2)}
+          inputRef={props.ref}
+          onWheel={(e) => e.target.blur()}
+          onChange={(e) => {
+            props.onChange(parseFloat(e.target.value).toFixed(2));
+            if (!isAcquisitionCostOverridden)
+              setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, e.target.value));
+          }}
+          InputProps={{
+            inputComponent: CurrencyFormatCustom,
+          }}
+          fullWidth
+          defaultValue=""
+        />
+      )}
+    />
+
+    <Controller
+      control={control}
+      name="acquisition_cost"
+      render={(props) => (
+        <TextField
+          label="Acquisition Cost"
+          variant="outlined"
+          margin="dense"
+          value={parseFloat(props.value).toFixed(2)}
+          inputRef={props.ref}
+          onWheel={(e) => e.target.blur()}
+          className={isAcquisitionCostOverridden ? classes.netAcresOveridden : classes.netAcresNormal}
+          onChange={(e) => {
+            const toFixedValue = parseFloat(e.target.value).toFixed(2)
+            props.onChange(toFixedValue);
+            const acquisition_cost = calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra);
+            setIsAcquisitionCostOverridden(acquisition_cost !== toFixedValue)
+          }}
+          InputProps={{
+            inputComponent: CurrencyFormatCustom,
+            endAdornment: (
+              <InputAdornment position="end">
+                {isAcquisitionCostOverridden && (
+                  <IconButton
+                    aria-label="toggle royality-acres"
+                    onClick={() => {
+                      setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra));
+                      setIsAcquisitionCostOverridden(false)
+                    }}
+                  >
+                    <AutorenewIcon />
+                  </IconButton>
+                )}
+              </InputAdornment>
+            ),
+          }}
+          fullWidth
+          defaultValue=""
+        />
+      )}
+    />
     <Controller
       control={control}
       name={`parcelOwnersRadioBValue`}
