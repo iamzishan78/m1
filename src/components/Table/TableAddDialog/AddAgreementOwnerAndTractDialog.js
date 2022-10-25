@@ -548,6 +548,7 @@ function AddAgreementOwnerAndTractDialog(props) {
               onClick={() => {
                 setIsNewTract(false);
               }}
+              id="existingTractTab"
               className={!isNewTract ? classes.selectedType : classes.unSelectedType}
               style={{ marginLeft: "20px" }}
             >
@@ -594,6 +595,7 @@ function AddAgreementOwnerAndTractDialog(props) {
         <Grid item xs={3}>
           <Autocomplete
             options={qtrOptions}
+            id="autocompleteQTR2"
             getOptionLabel={(option) => option}
             value={tract?.qtrQtrSelection?.selectedQtr?.[1] ?? ""}
             onChange={(e, newInputValue) => {
@@ -731,6 +733,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     ) : (
       <AutocompEntityNamesList
         variant="outlined"
+        id="AutocompEntityNamesList"
         placeholder="Search for owner by name"
         nameAutValue={nameAutValue}
         setNameAutValue={setNameAutValue}
@@ -768,6 +771,10 @@ function AddAgreementOwnerAndTractDialog(props) {
               setValue('net_acres', net_acres)
               setValue('nra', nra)
             }}
+            label="Department"
+            variant="outlined"
+            onChange={(e, value) => { props.onChange(value?.name || '') }}
+            autoFocus={false}
           />
         )}
       />
@@ -1108,6 +1115,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       <Button
         variant="contained"
         color="secondary"
+        id="saveButton"
         size="medium"
         disableElevation
         onClick={() => {
