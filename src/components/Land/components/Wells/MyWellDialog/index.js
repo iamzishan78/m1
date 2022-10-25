@@ -306,7 +306,7 @@ export default function MyWellDialog(props) {
                   // Add My Well fields component here
                   <AddMyWell
                     handleWellDetail={handleWellDetail}
-                    platformWell={{ ...get(myWellData, "myWellByGlobalId.myWell.wellData", {}), ...platformWell }}
+                    platformWell={{ ...platformWell, ...get(myWellData, "myWellByGlobalId.myWell.wellData", {}) }}
                     showSearch={!globalWellId}
                   />
                 )}
