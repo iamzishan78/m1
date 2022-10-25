@@ -70,9 +70,6 @@ describe('Add & Delete Document Spec', () => {
                     cy.verifyApiResponse('@updateDocumentApi')
                 }
             })
-
-
-
     })
 
 })

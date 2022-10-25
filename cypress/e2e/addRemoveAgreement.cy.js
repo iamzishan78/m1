@@ -13,13 +13,13 @@ describe('Add And Remove Agreement Spec', () => {
 
         cy.get('.mapboxgl-canvas', { timeout: longTimeout }).should('be.visible').click()
 
-        cy.get("#arrowBackIcon").click()
+        cy.get("#arrowBackIcon", { timeout: longTimeout }).click()
 
         cy.drawMapShape()
 
         cy.createShapeLayer("#agreementItem")
 
-        cy.get('#expandIcon').click()
+        cy.get('#expandIcon', { timeout: longTimeout }).click()
 
         cy.wait(20000)
         cy.interceptApi('updateCustomLayer')

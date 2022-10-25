@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo, useContext, useCallback } from "react";
-import ReactDOM from "react-dom";
+import React, { useState, useRef, useEffect, useMemo, useContext } from "react";
 import moment from "moment";
 import { useParams, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -11,7 +10,6 @@ import {
   InfoOutlined as InfoOutlinedIcon,
   Delete as DeleteIcon,
   MoreHoriz as MoreHorizIcon,
-  Repeat as FlowIcon,
 } from "@material-ui/icons";
 import Tags from "components/Shared/Tagger";
 
@@ -29,6 +27,8 @@ import Provisions from "components/Land/components/Agreements/detailComponents/p
 import LegalDescription from "components/Land/components/Agreements/detailComponents/legalDescription";
 import RelatedWells from "components/Land/components/Agreements/detailComponents/relatedWells";
 import Documents from "components/Land/components/Agreements/detailComponents/documents";
+import RelatedAgreementsTable from "components/Land/components/Agreements/detailComponents/relatedAgreements";
+import AddNewRelatedAgreementDialog from "components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog";
 
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
@@ -37,7 +37,7 @@ import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
-import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
+// import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
 import MapImgViewIcon from "components/Shared/svgIcons/MapImgViewIcon";
 import MapProvider from "components/Map/MapProvider";
 import { DrawerContext } from "./DrawerContext";
@@ -235,6 +235,7 @@ export function DetailComponents(props) {
 
   const [tab, setTab] = useState(0);
   const selectedTabRef = useRef(null);
+  // const [isNewAgmt, setNewAgmtState] = useState(false);
   const [isButtonScroll, setButtonScroll] = useState(false);
   const [mapCollapse, setMapCollapse] = useState(true);
   const [validationCollapse, setValidationCollapse] = useState(true);
@@ -245,13 +246,12 @@ export function DetailComponents(props) {
   const classes = useStyles({ ...props, drawer, validationCollapse, flowlineCollapse, mapCollapse });
   // queries
 
-
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
   const [getStandardProvisions, { data: standardProvisions }] = useLazyQuery(GET_STANDARD_PROVISIONS);
   const [getAgreementProvisions, { data: agreementProvisions }] = useLazyQuery(GET_AGREEMENT_PROVISIONS);
   const [getShapeSummaryDetails, { data: dataShapeSummaryDetails }] = useLazyQuery(SHAPE_SUMMARY_DETAILS);
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
-  const [updateMetaData] = useMutation(UPSERT_USER_DESCRIPTOR);
+  // const [updateMetaData] = useMutation(UPSERT_USER_DESCRIPTOR);
 
   useEffect(() => {
     return () => {
@@ -328,39 +328,43 @@ export function DetailComponents(props) {
       getShapeSummaryDetails({
         variables: {
           shapeId: activeAgreement._id,
-          shapeType: "Agreement"
-        }
+          shapeType: "Agreement",
+        },
       });
     }
   }, [activeAgreement, getShapeSummaryDetails]);
 
   useEffect(() => {
     const escapeFunc = (e) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         setMapCollapse(true);
       }
-    }
-    document.addEventListener('keyup', escapeFunc);
+    };
+    document.addEventListener("keyup", escapeFunc);
     return () => {
-      setStateApp({ ...stateApp, viewDoc: null })
-      document.removeEventListener('keyup', escapeFunc);
-    }
+      setStateApp({ ...stateApp, viewDoc: null });
+      document.removeEventListener("keyup", escapeFunc);
+    };
   }, []);
 
   const updateAgreement = (field, value, isCustom) => {
     if (agreementDetails[field] === value) return;
     const shape = activeAgreement.shape;
-    if (field === 'agreementTerm' || field === 'effectiveDate') {
-      if (field === 'agreementTerm') {
-        shape.properties.expirationDate = moment(shape.properties.effectiveDate, 'YYYY-MM-DD').add(parseInt(value), 'months').format('YYYY-MM-DD');
+    if (field === "agreementTerm" || field === "effectiveDate") {
+      if (field === "agreementTerm") {
+        shape.properties.expirationDate = moment(shape.properties.effectiveDate, "YYYY-MM-DD")
+          .add(parseInt(value), "months")
+          .format("YYYY-MM-DD");
       } else {
-        shape.properties.expirationDate = moment(value, 'YYYY-MM-DD').add(parseInt(shape.properties.agreementTerm), 'months').format('YYYY-MM-DD');
+        shape.properties.expirationDate = moment(value, "YYYY-MM-DD")
+          .add(parseInt(shape.properties.agreementTerm), "months")
+          .format("YYYY-MM-DD");
       }
     }
     // Used for Agreement nra, net_acres and grossAcres overidden
     if (value?.overridden?.toString()) {
       set(shape, `properties.overridden.${field}`, value.overridden);
-      value = value.value
+      value = value.value;
     }
     set(shape, `properties.${field}`, value);
     const customLayer = {};
@@ -383,14 +387,14 @@ export function DetailComponents(props) {
       variables: {
         customLayerId: activeAgreement._id,
         customLayer,
-        userId: stateApp.user.mongoId
+        userId: stateApp.user.mongoId,
       },
       refetchQueries: ["customLayer"],
     });
   };
 
   const getRelativePosition = (childDivId) => {
-    const parentPos = document.getElementById('parent-div').getBoundingClientRect();
+    const parentPos = document.getElementById("parent-div").getBoundingClientRect();
     const childPos = document.getElementById(childDivId).getBoundingClientRect();
     const relativePos = {};
 
@@ -399,7 +403,7 @@ export function DetailComponents(props) {
     relativePos.bottom = childPos.bottom - parentPos.bottom;
     relativePos.left = childPos.left - parentPos.left;
     return relativePos.top;
-  }
+  };
 
   const handleScroll = (e) => {
     if (!isButtonScroll) {
@@ -409,7 +413,8 @@ export function DetailComponents(props) {
       if (getRelativePosition("provisions-div") < 30) activeTab = 2;
       if (getRelativePosition("legal-description-div") < 30) activeTab = 3;
       if (getRelativePosition("related-wells-div") < 30) activeTab = 4;
-      if (getRelativePosition("related-docs-div") < 300) activeTab = 5;
+      if (getRelativePosition("related-docs-div") < 30) activeTab = 5;
+      if (getRelativePosition("related-agrmt-div") < 30) activeTab = 6;
 
       if (tab !== activeTab) setTab(activeTab);
     }
@@ -427,31 +432,26 @@ export function DetailComponents(props) {
         customLayer: {
           IsDeleted: true,
         },
-      }
+      },
     }).then(({ data }) => {
-      if (data.updateCustomLayer?.success)
-        history.push('/land/agreements')
+      if (data.updateCustomLayer?.success) history.push("/land/agreements");
     });
-  }
+  };
 
   const handleMetaToggle = () => {
     setDrawer(drawer === "meta" ? null : "meta");
-  }
+  };
 
   return (
-    <NavHeader
-      title={`${agreementDetails?.agreementNumber} - ${agreementDetails?.agreementName}`}
-    >
+    <NavHeader title={`${agreementDetails?.agreementNumber} - ${agreementDetails?.agreementName}`}>
       {/**
        * Detail title section
        */}
-      <div
-        className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}
-      >
+      <div className={`${classes.detailHeader} flex justifyBetween alignStart w-100`}>
         <div className="flex column alignStart justifyStart w-100">
           <div className={classes.title}>
             <IconButton className={classes.icon}>
-              <DocumentIcon />
+              <DocumentIcon id="documentIcon" />
             </IconButton>
             <div className={classes.titleText}>
               {agreementDetails && (
@@ -470,13 +470,7 @@ export function DetailComponents(props) {
                   </Typography>
                 </div>
                 <div className={classes.tags}>
-                  <Tags
-                    width="100%"
-                    targetSourceId={agreementId}
-                    targetLabel="agreement"
-                    publicLeftBottom
-                    onlyTags
-                  />
+                  <Tags width="100%" targetSourceId={agreementId} targetLabel="agreement" publicLeftBottom onlyTags />
                 </div>
               </div>
             </div>
@@ -498,6 +492,7 @@ export function DetailComponents(props) {
                 <StyledTab label="Legal Description" />
                 <StyledTab label="Wells" />
                 <StyledTab label="Documents" />
+                <StyledTab label="Related Agreements" />
                 {/* <StyledTab label="Related Info" /> */}
               </StyledTabs>
             </div>
@@ -516,23 +511,16 @@ export function DetailComponents(props) {
               <Button
                 startIcon={<MapImgViewIcon />}
                 className={classes.mapButton}
-                onClick={() => { setMapCollapse(o => !o) }}
+                onClick={() => {
+                  setMapCollapse((o) => !o);
+                }}
               >
                 Map View
               </Button>
-              <Button
-                startIcon={<InfoOutlinedIcon />}
-                className={classes.metaButton}
-                onClick={handleMetaToggle}
-              >
+              <Button startIcon={<InfoOutlinedIcon />} className={classes.metaButton} onClick={handleMetaToggle}>
                 Metadata
               </Button>
-              <IconButton
-                size="small"
-                component="span"
-                className={classes.menuIcon}
-                onClick={handleMenuClick}
-              >
+              <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
                 <MoreHorizIcon size="medium" />
               </IconButton>
             </div>
@@ -546,104 +534,54 @@ export function DetailComponents(props) {
            * Detail tabs section
            */}
 
-          <div
-            className={classes.tabsSection}
-            style={{ display: stateApp.viewDoc ? "none" : "" }}
-          >
-            <div
-              id="parent-div"
-              className={classes.tabsSectionDetails}
-              onScroll={handleScroll}
-            >
-              {
-                mapCollapse ?
-                  <div
-                    id="summary-div"
-                    className={classes.tabDetailSection}
-                    ref={tab === 0 ? selectedTabRef : null}
-                    style={{ backgroundColor: "#fff" }}
-                  >
-                    <Summary
-                      agreementDetails={agreementDetails}
-                      activeAgreement={activeAgreement}
-                      agreementProvisions={get(
-                        agreementProvisions,
-                        "getAgreementProvisions",
-                        []
-                      )}
-                      standardProvisions={get(
-                        standardProvisions,
-                        "getStandardProvisions",
-                        []
-                      )}
-                      updateAgreement={updateAgreement}
-                      shapeSummaryDetails={
-                        dataShapeSummaryDetails?.shapeSummaryDetails
-                      }
-                    />
-                  </div>
-                  : <div
-                    id="summary-div"
-                    ref={tab === 0 ? selectedTabRef : null}
-                    className={`${classes.mapProvider}  summary-div-small-map`}
-                  >
-                    <MapProvider
-                      match={{
-                        params: {
-                          expandedPanel: false,
-                          openSpeedDial: false,
-                          hideShape: true,
-                          paramId: agreementId,
-                          layerPadding: { padding: { top: 50, bottom: 50, left: !drawer ? 300 : 700, right: 20 } }
-                        },
-                      }}
-                    ></MapProvider>
-                  </div>
-              }
-              <div
-                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
-              />
-              <div
-                id="related-parties-div"
-                className={classes.tabDetailSection}
-                ref={tab === 1 ? selectedTabRef : null}
-              >
-                <RelatedParties
-                  agreementDetails={agreementDetails}
-                  agreementId={agreementId}
-                />
+          <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
+            <div id="parent-div" className={classes.tabsSectionDetails} onScroll={handleScroll}>
+              {mapCollapse ? (
+                <div
+                  id="summary-div"
+                  className={classes.tabDetailSection}
+                  ref={tab === 0 ? selectedTabRef : null}
+                  style={{ backgroundColor: "#fff" }}
+                >
+                  <Summary
+                    agreementDetails={agreementDetails}
+                    activeAgreement={activeAgreement}
+                    agreementProvisions={get(agreementProvisions, "getAgreementProvisions", [])}
+                    standardProvisions={get(standardProvisions, "getStandardProvisions", [])}
+                    updateAgreement={updateAgreement}
+                    shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails}
+                  />
+                </div>
+              ) : (
+                <div id="summary-div" ref={tab === 0 ? selectedTabRef : null} className={`${classes.mapProvider}  summary-div-small-map`}>
+                  <MapProvider
+                    match={{
+                      params: {
+                        expandedPanel: false,
+                        openSpeedDial: false,
+                        hideShape: true,
+                        paramId: agreementId,
+                        layerPadding: { padding: { top: 50, bottom: 50, left: !drawer ? 300 : 700, right: 20 } },
+                      },
+                    }}
+                  ></MapProvider>
+                </div>
+              )}
+              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
+              <div id="related-parties-div" className={classes.tabDetailSection} ref={tab === 1 ? selectedTabRef : null}>
+                <RelatedParties agreementDetails={agreementDetails} agreementId={agreementId} />
               </div>
-              <div
-                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
-              />
-              <div
-                id="provisions-div"
-                className={classes.tabDetailSection}
-                ref={tab === 2 ? selectedTabRef : null}
-              >
+              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
+              <div id="provisions-div" className={classes.tabDetailSection} ref={tab === 2 ? selectedTabRef : null}>
                 <Provisions
                   agreementDetails={agreementDetails}
                   agreementId={agreementId}
-                  agreementProvisions={get(
-                    agreementProvisions,
-                    "getAgreementProvisions",
-                    []
-                  )}
-                  standardProvisions={get(
-                    standardProvisions,
-                    "getStandardProvisions",
-                    []
-                  )}
+                  agreementProvisions={get(agreementProvisions, "getAgreementProvisions", [])}
+                  standardProvisions={get(standardProvisions, "getStandardProvisions", [])}
                 />
               </div>
-              <div
-                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
-              />
-              <div
-                id="legal-description-div"
-                className={classes.tabDetailSection}
-                ref={tab === 3 ? selectedTabRef : null}
-              >
+              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
+              <div id="legal-description-div" className={classes.tabDetailSection} ref={tab === 3 ? selectedTabRef : null}>
                 <LegalDescription
                   agreementDetails={agreementDetails}
                   uniObj={uniObj}
@@ -651,55 +589,73 @@ export function DetailComponents(props) {
                   updateAgreement={updateAgreement}
                 />
               </div>
-              <div
-                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
-              />
-              <div
-                id="related-wells-div"
-                className={classes.tabDetailSection}
-                ref={tab === 4 ? selectedTabRef : null}
-              >
-                <RelatedWells
-                  uniObj={uniObj}
-                  shapeSummaryDetails={
-                    dataShapeSummaryDetails?.shapeSummaryDetails
-                  }
-                />
+              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
+              <div id="related-wells-div" className={classes.tabDetailSection} ref={tab === 4 ? selectedTabRef : null}>
+                <RelatedWells uniObj={uniObj} shapeSummaryDetails={dataShapeSummaryDetails?.shapeSummaryDetails} />
               </div>
-              <div
-                style={{ backgroundColor: "#f3f3f3 !important", height: 24 }}
-              />
-              <div
-                id="related-docs-div"
-                className={classes.tabDetailSection}
-                ref={tab === 5 ? selectedTabRef : null}
-              >
+              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
+              <div id="related-docs-div" className={classes.tabDetailSection} ref={tab === 5 ? selectedTabRef : null}>
                 <Documents uniObj={uniObj} />
+              </div>
+              <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
+              <div id="related-agrmt-div" className={classes.tabDetailSection} ref={tab === 6 ? selectedTabRef : null}>
+                <RelatedAgreementsTable uniObj={uniObj} setDrawer={setDrawer} />
               </div>
             </div>
           </div>
 
           {/*** Component for viewing selected pdf file*/}
-          {stateApp.viewDoc && (
-            <DocViewer
-              divCondition={true}
-              DocStyle={{ height: "calc(100vh - 280px)" }}
+          {stateApp.viewDoc && <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />}
+        </div>
+
+        <div
+          style={{
+            marginTop: 20,
+            marginRight: 24,
+            height: "calc(100vh - 270px)",
+            overflow: "auto",
+            width: !!drawer ? 620 : 0,
+            background: "white",
+          }}
+          id={"agreementDetailsDrawer"}
+        >
+          {drawer === "meta" && (
+            <MetadataDrawer
+              setCollapse={setDrawer}
+              targetSourceId={agreementId}
+              data={agreementDetails}
+              targetLabel="Shape"
+              showDescription={false}
+              descriptionKey="description"
+              ownerPlaceHolder="Assign Approver"
+              ownerTitle="Approver"
+              onUpdate={(data) => Object.keys(data).forEach((key) => updateAgreement(key, data[key]))}
+              isSource={false}
+              isApproval
+              showCommentType
+            />
+          )}
+          {drawer === "agrmt" && (
+            <AddNewRelatedAgreementDialog
+              customLayerId={get(dataCustomLayer, "customLayer._id")}
+              setDrawer={setDrawer}
+              parentType="Agreement"
             />
           )}
         </div>
 
-          <div
-            style={{
-              marginTop: 20,
-              marginRight: 24,
-              height: "calc(100vh - 270px)",
-              overflow: 'auto',
-              width: !!drawer ? 620 : 0,
-              background: 'white'
-            }}
-            id={'agreementDetailsDrawer'}
-          >
-            {drawer === "meta" && <MetadataDrawer
+        <div
+          style={{
+            marginTop: 20,
+            marginRight: 24,
+            height: "calc(100vh - 270px)",
+            overflow: 'auto',
+            width: !!drawer ? 620 : 0,
+            background: 'white'
+          }}
+          id={'agreementDetailsDrawer'}
+        >
+          {drawer === "meta" && <MetadataDrawer
             setCollapse={setDrawer}
             targetSourceId={agreementId}
             data={agreementDetails}
@@ -708,11 +664,12 @@ export function DetailComponents(props) {
             descriptionKey="description"
             ownerPlaceHolder='Assign Approver'
             ownerTitle="Approver"
-            isApproval={true}
             onUpdate={(data) => Object.keys(data).forEach(key => updateAgreement(key, data[key]))}
             isSource={false}
+            isApproval
+            showCommentType
           />}
-          </div>
+        </div>
       </div>
 
       {/**
@@ -745,19 +702,17 @@ export function DetailComponents(props) {
       {/**
        * Delete Custom Layer confirmation dialog
        * */}
-      {
-        openDialog && (
-          <DeleteConfirmationDialogContent
-            header="Delete Agreement"
-            onClose={() => setOpenDialog(false)}
-            deleteFunc={handleDeleteAgreement}
-            m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => { }}
-          >
-            Are you sure you want to delete this agreement?
-          </DeleteConfirmationDialogContent>
-        )
-      }
-    </NavHeader >
+      {openDialog && (
+        <DeleteConfirmationDialogContent
+          header="Delete Agreement"
+          onClose={() => setOpenDialog(false)}
+          deleteFunc={handleDeleteAgreement}
+          m1nSelectedRowsIds={null}
+          setM1nSelectedRowsIndexes={() => {}}
+        >
+          Are you sure you want to delete this agreement?
+        </DeleteConfirmationDialogContent>
+      )}
+    </NavHeader>
   );
 }
