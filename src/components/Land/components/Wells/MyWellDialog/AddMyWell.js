@@ -120,6 +120,8 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
           variables: {
             myWell: { ...platformWell, _id: platformWell.id, [key]: value },
           },
+          refetchQueries: ["getESSimpleSearch"],
+          awaitRefetchQueries: true,
         });
       }, 500),
     [platformWell]
@@ -138,6 +140,8 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                   variables: {
                     myWell: well,
                   },
+                  refetchQueries: ["getESSimpleSearch"],
+                  awaitRefetchQueries: true,
                 });
               }}
               disabled={!!upsertWellLoading}
