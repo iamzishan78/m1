@@ -621,7 +621,7 @@ export function DetailComponents(props) {
         >
           {drawer === "meta" && (
             <MetadataDrawer
-              setCollapse={setDrawer}
+              setCollapse={(value) => setDrawer(!value)}
               targetSourceId={agreementId}
               data={agreementDetails}
               targetLabel="Shape"
@@ -642,33 +642,6 @@ export function DetailComponents(props) {
               parentType="Agreement"
             />
           )}
-        </div>
-
-        <div
-          style={{
-            marginTop: 20,
-            marginRight: 24,
-            height: "calc(100vh - 270px)",
-            overflow: 'auto',
-            width: !!drawer ? 620 : 0,
-            background: 'white'
-          }}
-          id={'agreementDetailsDrawer'}
-        >
-          {drawer === "meta" && <MetadataDrawer
-            setCollapse={setDrawer}
-            targetSourceId={agreementId}
-            data={agreementDetails}
-            targetLabel="Shape"
-            showDescription={false}
-            descriptionKey="description"
-            ownerPlaceHolder='Assign Approver'
-            ownerTitle="Approver"
-            onUpdate={(data) => Object.keys(data).forEach(key => updateAgreement(key, data[key]))}
-            isSource={false}
-            isApproval
-            showCommentType
-          />}
         </div>
       </div>
 
