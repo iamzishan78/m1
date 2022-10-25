@@ -763,10 +763,6 @@ function AddAgreementOwnerAndTractDialog(props) {
               setValue('net_acres', net_acres)
               setValue('nra', nra)
             }}
-            label="Department"
-            variant="outlined"
-            onChange={(e, value) => { props.onChange(value?.name || '') }}
-            autoFocus={false}
           />
         )}
       />

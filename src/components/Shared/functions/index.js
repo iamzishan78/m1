@@ -24,6 +24,11 @@ export function copy(obj) {
   return cloneDeep(obj);
 }
 
+export function esExtentedSearch(search1, search2) {
+  const search = search1 || search2 || ''
+  return search ? `*${search}*` : '';
+}
+
 export function getSearchFields(Table) {
   let searchFields = []
   Table.forEach((row) => {
