@@ -1,5 +1,6 @@
 import React, { useState, Fragment, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
+import moment from "moment";
 import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
 import Grid from "@material-ui/core/Grid";
@@ -120,7 +121,6 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
             myWell: { ...platformWell, _id: platformWell.id, [key]: value },
           },
         });
-        // console.table(platformWell);
       }, 500),
     [platformWell]
   );
@@ -249,6 +249,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                   InputLabelProps={{ shrink: true }}
                   fullWidth
                   defaultValue=""
+                  value={param.type === "text" ? params.value : params.value ? moment(new Date(params.value)).format("MM/DD/YYYY") : ""}
                   onChange={(event) => {
                     const value = event.target.value;
                     params.onChange(value);
