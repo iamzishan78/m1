@@ -69,7 +69,7 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
   },
 };
 
-export default function Revenue() {
+export default function Land() {
   const location = useLocation();
   const dispatch = useDispatch();
   const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
