@@ -335,8 +335,8 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                         inputRef={props.ref}
                         onWheel={(e) => e.target.blur()}
                         onChange={(e) => {
-                          const toFixedValue = parseFloat(e.target.value).toFixed(2)
-                          const calculatedAcquisitionCost = parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2)
+                          const toFixedValue = Number(parseFloat(e.target.value).toFixed(2))
+                          const calculatedAcquisitionCost = Number(parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2))
                           props.onChange(toFixedValue);
                           setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost)
                         }}
