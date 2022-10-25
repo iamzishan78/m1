@@ -184,7 +184,6 @@ Cypress.Commands.add('clickWellIcon', (wellName) => {
     cy.get("#wellIcon", { timeout: longTimeout }).click()
 })
 
-
 Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
     cy.contains('th', columnName)
         .invoke('index')
@@ -196,6 +195,24 @@ Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
                 })
             cy.get('@cell')   // last command, it's result will be returned
         });
+})
+
+//Add Document
+Cypress.Commands.add('addDocument', (fileAddress) => {
+    cy.interceptApi('AddDescriptorFile')
+    cy.get('input[type=file]', { force: true }).selectFile(fileAddress, {
+        force: true
+    })
+    cy.verifyApiResponse('@AddDescriptorFileApi')
+})
+
+//Remove Document
+Cypress.Commands.add('detachDocument', () => {
+    cy.get('#attachedDocument').trigger('mouseover')
+    cy.get('#documentDeleteIcon').click({ force: true })
+    cy.interceptApi('updateDocument')
+    cy.get(".MuiButton-label").contains('Delete').click()
+    cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: 500 })
 })
 
 // ContactGrid Commands

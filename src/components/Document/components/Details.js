@@ -696,7 +696,7 @@ export default function DocumentDetails(props) {
                               onClick={() => {
                                 setReplaceFile('INITIATE')
                                 setOpenDeleteConfirmDialog(true);
-                                setFileIdToDelete(stateApp.selectedDocument.fileId);
+                                setFileIdToDelete(stateApp?.selectedDocument?.fileId || stateApp?.selectedDocument?._id);
                                 // setStateApp((state) => ({ ...state, selectedDocument: { ...state.selectedDocument, fileId: null } }))
                                 // setFileData(null)
                               }}
