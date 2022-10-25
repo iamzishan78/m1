@@ -329,12 +329,8 @@ function AddAgreementOwnerAndTractDialog(props) {
     ownerToAdd.isTractOwner = isTractOwner;
     ownerToAdd.tract = tract;
 
-    if (isNaN(parseFloat(ownerToAdd.acquisition_cost)))
-      if (!isNaN(parseFloat(ownerToAdd.nra) && !isNaN(parseFloat(ownerToAdd.acquisition_nra))))
-        ownerToAdd.acquisition_cost = parseFloat(calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra))
-
     Object.keys(ownerToAdd).forEach((key) => {
-      if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'nra', 'company_net_acres'].includes(key) && ownerToAdd[key]) ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(8));
+      if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'nra', 'company_net_acres', 'lease_royalty_interest'].includes(key) && ownerToAdd[key]) ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(8));
     });
 
     if (ownerToAdd.parcelOwnersRadioBValue === "true") {
@@ -354,7 +350,6 @@ function AddAgreementOwnerAndTractDialog(props) {
             {
               shapeId: props.shapeId,
               ...ownerToAdd,
-              acquisition_cost: Number(parseFloat(ownerToAdd.nra * ownerToAdd.acquisition_nra).toFixed(2))
             },
           ],
           shapeType: props.shapeType,
@@ -370,7 +365,6 @@ function AddAgreementOwnerAndTractDialog(props) {
           shapeOwner: {
             shapeId: props.shapeId,
             ...ownerToAdd,
-            acquisition_cost: Number(parseFloat(ownerToAdd.nra * ownerToAdd.acquisition_nra).toFixed(2))
           },
         },
         refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
@@ -767,6 +761,28 @@ function AddAgreementOwnerAndTractDialog(props) {
               const nra = !isNraOverridden ? calculateNRA(getValues().royalty_interest, getValues().orri, net_acres) : getValues().nra
               setValue('net_acres', net_acres)
               setValue('nra', nra)
+            }}
+          />
+        )}
+      />
+    )}
+
+    {interestMapping?.['Lease Royalty Interest']?.includes(layerType) && (
+      <Controller
+        control={control}
+        name="lease_royalty_interest"
+        render={({ onChange, value }) => (
+          <TextField
+            variant="outlined"
+            InputLabelProps={{ shrink: true }}
+            margin="dense"
+            value={value}
+            type="number"
+            label={'Lease Royalty Interest'}
+            fullWidth
+            onWheel={(e) => e.target.blur()}
+            onChange={(e) => {
+              onChange(e.target.value)
             }}
           />
         )}
