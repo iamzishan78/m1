@@ -1,4 +1,4 @@
-import vf_currency from "components/Shared/valueformatters/vf_currency";
+import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 import { GlobalStickyStyles } from "GlobalSettings";
 
 const getHeaders = ({interestMapping, layerType}) => {
@@ -155,8 +155,8 @@ const getHeaders = ({interestMapping, layerType}) => {
     { name: "net_acres", esKey: "net_acres", label: "Net Acres", type: "number", options: { filter: true } },
     { name: "company_net_acres", esKey: "company_net_acres", label: "Co Net Acres", type: "number", options: { filter: true } },
     { name: "nra", esKey: "nra", label: "NRA", type: "number", options: { filter: true } },
-    { name: "acquisition_nra", esKey: "acquisition_nra", label: "Acquisition $/NRA", type: "number", options: { editable:false,filter: true, customRender: (value) => <p>{vf_currency(value)}</p>, } },
-    { name: "acquisition_cost", esKey: "acquisition_cost", label: "Acquisition Cost", type: "number", options: { filter: true, customRender: (value) => <p>{vf_currency(value)}</p>, } },
+    { name: "acquisition_nra", esKey: "acquisition_nra", label: "Acquisition $/NRA", type: "number", options: { editable:false,filter: true, customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>, } },
+    { name: "acquisition_cost", esKey: "acquisition_cost", label: "Acquisition Cost", type: "number", options: { filter: true, customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>, } },
     {
       name: "depthFrom",
       label: "Depth From",

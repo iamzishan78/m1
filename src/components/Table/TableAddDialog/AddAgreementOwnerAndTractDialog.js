@@ -326,6 +326,9 @@ function AddAgreementOwnerAndTractDialog(props) {
       return;
     }
     const ownerToAdd = getValues();
+    
+    ownerToAdd.acquisition_nra = Number(ownerToAdd.acquisition_nra);
+    ownerToAdd.acquisition_cost = Number(ownerToAdd.acquisition_cost);
     ownerToAdd.isTractOwner = isTractOwner;
     ownerToAdd.tract = tract;
 
@@ -419,7 +422,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     if (!nra && !aquisitionNra) return null;
     const aquisitionCost = parseFloat(nra || 0) * (parseFloat(aquisitionNra || 0));
 
-    return Number(aquisitionCost.toFixed(2))
+    return aquisitionCost.toFixed(2)
   };
 
   useEffect(() => {
@@ -970,11 +973,11 @@ function AddAgreementOwnerAndTractDialog(props) {
           label="Acquisition $/NRA"
           variant="outlined"
           margin="dense"
-          value={Number(parseFloat(props.value).toFixed(2))}
+          value={parseFloat(props.value).toFixed(2)}
           inputRef={props.ref}
           onWheel={(e) => e.target.blur()}
           onChange={(e) => {
-            props.onChange(Number(parseFloat(e.target.value).toFixed(2)));
+            props.onChange(parseFloat(e.target.value).toFixed(2));
             if (!isAcquisitionCostOverridden)
               setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, e.target.value));
           }}
@@ -995,12 +998,12 @@ function AddAgreementOwnerAndTractDialog(props) {
           label="Acquisition Cost"
           variant="outlined"
           margin="dense"
-          value={Number(parseFloat(props.value).toFixed(2))}
+          value={parseFloat(props.value).toFixed(2)}
           inputRef={props.ref}
           onWheel={(e) => e.target.blur()}
           className={isAcquisitionCostOverridden ? classes.netAcresOveridden : classes.netAcresNormal}
           onChange={(e) => {
-            const toFixedValue = Number(parseFloat(e.target.value).toFixed(2))
+            const toFixedValue = parseFloat(e.target.value).toFixed(2)
             props.onChange(toFixedValue);
             const acquisition_cost = calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra);
             setIsAcquisitionCostOverridden(acquisition_cost !== toFixedValue)

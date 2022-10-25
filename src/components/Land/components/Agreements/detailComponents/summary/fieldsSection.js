@@ -334,12 +334,12 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                         inputRef={props.ref}
                         onWheel={(e) => e.target.blur()}
                         onChange={(e) => {
-                          const toFixedValue = Number(parseFloat(e.target.value).toFixed(2))
-                          const calculatedAcquisitionCost = Number(parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2))
+                          const toFixedValue = parseFloat(e.target.value).toFixed(2)
+                          const calculatedAcquisitionCost = parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2);
                           props.onChange(toFixedValue);
                           setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost);
                         }}
-                        onBlur={(e) => offClickHandler(field.key, props.value)}
+                        onBlur={(e) => offClickHandler(field.key, Number(props.value))}
                         InputProps={{
                           ...field.InputProps,
                           endAdornment: (
@@ -348,11 +348,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                 <IconButton
                                   aria-label="toggle royality-acres"
                                   onClick={() => {
-                                    const totalAcquisitionCost = Number(
-                                      parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2)
-                                    );
+                                    const totalAcquisitionCost = parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2);
                                     props.onChange(totalAcquisitionCost);
-                                    offClickHandler(field.key, totalAcquisitionCost);
+                                    offClickHandler(field.key, Number(totalAcquisitionCost));
                                     setIsAcquisitionCostOverridden(false);
                                   }}
                                 >
