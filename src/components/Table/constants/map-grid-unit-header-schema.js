@@ -122,6 +122,24 @@ const unitsColumnHeaders = [
     },
   },
   {
+    name: "uStatus",
+    label: "Unit Status",
+    esKey: "shapeJson.properties.uStatus.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "uPrimaryOperator",
+    label: "Current Operator",
+    esKey: "shapeJson.properties.uPrimaryOperator.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
     name: "uUnitPricing",
     label: "Price/Acre",
     esKey: "shapeJson.properties.uUnitPricing.keyword",
