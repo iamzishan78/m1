@@ -38,11 +38,13 @@ describe('Add & Delete Document Spec', () => {
         cy.contains('State').click({ force: true })
 
         cy.log('==== STEP: ADD DOCUMENT ====')
-        cy.interceptApi('AddDescriptorFile')
-        cy.get('input[type=file]', { force: true }).selectFile(documentObj.fileAddress, {
-            force: true
-        })
-        cy.verifyApiResponse('@AddDescriptorFileApi')
+        cy.addDocument(documentObj.fileAddress)
+
+        cy.log('==== STEP: DELETE DOCUMENT ====')
+        cy.detachDocument()
+
+        cy.log('==== STEP: ADD DOCUMENT AGAIN ====')
+        cy.addDocument(documentObj.fileAddress)
 
         cy.interceptApi('updateDocument')
         cy.interceptApi('getESDocuments')
