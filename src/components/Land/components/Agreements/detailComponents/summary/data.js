@@ -124,6 +124,14 @@ const fieldsList = (activeUser) => {
       type: "autocomplete",
       key: "internalCompany",
     },
+    {
+      label: "State",
+      type: "state",
+    },
+    {
+      label: "County",
+      type: "county",
+    },
   ];
 }
 export default fieldsList;
