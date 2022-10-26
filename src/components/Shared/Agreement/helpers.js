@@ -3,7 +3,7 @@ import { get } from "lodash";
 export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
     const metaData = get(metaDataRes, "getMetaData.metaData", [])
                         .filter(field => (
-                            field.name!=='interest_type' && field.name!=='tract_status'
+                            !(field.mapping?.length>0)
                         ));
     const customData = [];
     const attachedMetaData = [];
