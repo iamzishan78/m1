@@ -282,10 +282,10 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                       agreementDetailCopied?.[field.key] ? moment(agreementDetailCopied[field.key]).utc(true).format("yyyy-MM-DD") : ""
                     }
                     onChange={(event) => {
-                      setAgreementCopied({ ...agreementDetailCopied, [field.key]: event ? event?.target?.value : "" });
+                      setAgreementCopied({ ...agreementDetailCopied, [field.key]: event?.target?.value || null })
                     }}
                     onBlur={(event) => {
-                      offClickHandler(field.key, event ? event?.target?.value : "");
+                      offClickHandler(field.key, event?.target?.value || null);
                     }}
                     InputLabelProps={{
                       shrink: true,
@@ -296,7 +296,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     PopoverProps={{ disablePortal: false }}
                     InputProps={{
                       endAdornment: (
-                        <IconButton onClick={(event) => offClickHandler(field.key, "")}>
+                        <IconButton onClick={(event) => offClickHandler(field.key, null)}>
                           <Clear style={{ height: 22, width: 22 }} />
                         </IconButton>
                       ),
@@ -326,6 +326,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                       <TextField
                         {...props}
                         id={`field-${index}`}
+                        value={parseFloat(props.value).toFixed(2)}
                         className={isAcquisitionCostOverridden ? overrideClasses.valueOveridden : overrideClasses.valueNormal}
                         variant="outlined"
                         margin="dense"
@@ -333,12 +334,12 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                         inputRef={props.ref}
                         onWheel={(e) => e.target.blur()}
                         onChange={(e) => {
-                          const toFixedValue = Number(parseFloat(e.target.value).toFixed(2));
-                          const calculatedAcquisitionCost = Number(parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2));
+                          const toFixedValue = parseFloat(e.target.value).toFixed(2)
+                          const calculatedAcquisitionCost = parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2);
                           props.onChange(toFixedValue);
                           setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost);
                         }}
-                        onBlur={(e) => offClickHandler(field.key, props.value)}
+                        onBlur={(e) => offClickHandler(field.key, Number(props.value))}
                         InputProps={{
                           ...field.InputProps,
                           endAdornment: (
@@ -347,11 +348,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                 <IconButton
                                   aria-label="toggle royality-acres"
                                   onClick={() => {
-                                    const totalAcquisitionCost = Number(
-                                      parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2)
-                                    );
+                                    const totalAcquisitionCost = parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2);
                                     props.onChange(totalAcquisitionCost);
-                                    offClickHandler(field.key, totalAcquisitionCost);
+                                    offClickHandler(field.key, Number(totalAcquisitionCost));
                                     setIsAcquisitionCostOverridden(false);
                                   }}
                                 >

@@ -87,7 +87,7 @@ const mappingTypeOptions = {
       key: 'custom_data.interest_type',
       name: "Interest type",
       to: "Agreement type",
-      codes: ['Mineral Interest', 'Royalty Interest', 'Overriding Royalty Interest (ORRI)', 'Working Interest'],
+      codes: ['Mineral Interest', 'Royalty Interest', 'Overriding Royalty Interest (ORRI)', 'Working Interest', 'Lease Royalty Interest'],
       category: "Agreement",
     }
   ],
