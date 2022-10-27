@@ -82,7 +82,7 @@ export default function Summary({
                   justify="flex-start"
                   className={classes.summaryHeaderIcons}
                 >
-                 
+
                   <Grid item>
                     <div className={classes.summaryValue}>
                       {" "}
@@ -127,7 +127,7 @@ export default function Summary({
               container
               direction="row"
               justify="flex-start"
-              style={{ padding: "10px 0px",display:'flex',gap:'20px' }}
+              style={{ padding: "10px 0px",display:'flex',gap:'40px' }}
             >
               <Grid item className={classes.infoSection}>
                 <FieldsSection
@@ -141,7 +141,7 @@ export default function Summary({
               </Grid>
               <Grid item className={classes.mapSection}>
                 <Grid item md={12} className={classes.provisionCard}>
-                  <Typography className="heading">Provisions</Typography>
+                  <Typography className="heading">Provisions< /Typography>
                   <Grid container direction="row">
                     {standardProvisions.map((provision) => {
                       const found = agreementProvisions.find(
