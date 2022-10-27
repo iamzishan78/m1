@@ -74,7 +74,7 @@ function MyWellsGridTable(props) {
         propertiesKeys.costFree.push(startCase(property.costFree));
         Object.keys(propertiesKeys).forEach((key) => {
           const _key = key === "name" ? "propertiesNames" : key,
-            _value = key.includes("Date") ? convert_date(property[key]) : property[key];
+            _value = key.includes("Date") ? (property[key] ? convert_date(property[key]) : null) : property[key];
           propertiesKeys[_key].push(_value);
         });
       });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
   Grid,
@@ -20,11 +20,6 @@ import Link from "@material-ui/core/Link";
 import AddIcon from "@material-ui/icons/Add";
 import IconButton from "@material-ui/core/IconButton";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-
-//Contexts
-import { AppContext } from "AppContext";
 
 //Components
 import SearchField from "./SearchField";
@@ -33,8 +28,7 @@ import SearchField from "./SearchField";
 import { useMutation } from "@apollo/client";
 
 // Mutations
-import { ADD_WELL_TO_FILE_DESCRIPTOR } from "graphQL/useMutationAddWellToFileDescriptor";
-import { DELETE_WELL_DESCRIPTOR, UPSERT_WELL_DESCRIPTOR } from "graphQL/useMutationWellDescriptor";
+import { UPSERT_WELL_DESCRIPTOR } from "graphQL/useMutationWellDescriptor";
 
 const propertyParams = [
   { type: "text", label: "Well NRI", key: "wellNRI" },
@@ -132,6 +126,9 @@ const useStyles = makeStyles((theme) => ({
   accordion: {
     "& .MuiIconButton-root": {
       padding: 0,
+    },
+    "& .MuiInputBase-root.Mui-disabled:before": {
+      borderBottom: "1px solid",
     },
   },
 }));
@@ -255,15 +252,7 @@ const ReveueProperties = ({ platformWell, properties }) => {
                   <div>
                     {propertyParams.map((param, index) => (
                       <React.Fragment key={index}>
-                        <TextField
-                          margin="dense"
-                          label={param.label}
-                          value={property[param.key]}
-                          InputLabelProps={{ shrink: true }}
-                          fullWidth
-                          defaultValue=""
-                          disabled
-                        />
+                        <TextField margin="dense" label={param.label} value={property[param.key]} fullWidth defaultValue="" disabled />
                       </React.Fragment>
                     ))}
                   </div>
