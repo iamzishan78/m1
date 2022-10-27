@@ -34,9 +34,15 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiFormControl-marginDense": {
       margin: "0px !important",
     },
+    height: "calc(100vh - 653px)",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    minHeight: "527px"
   },
   comment: ({ commentsHeight }) => ({
-    maxHeight: commentsHeight ?? "230px",
+    maxHeight: commentsHeight ?? "530px",
+    minHeight: "130px",
     overflow: "auto",
     padding: "5px 0px",
   }),
@@ -308,21 +314,21 @@ export default function CommentComponent(props) {
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")
+        .split("\n")
+        .map((line) => {
+          if (line.trim() !== ".") {
+            return line.trim();
+          }
+        })
+        .join("\n")
       : `${value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")}`;
+        .split("\n")
+        .map((line) => {
+          if (line.trim() !== ".") {
+            return line.trim();
+          }
+        })
+        .join("\n")}`;
 
   const updateComment = (value) => {
     setLoadingComments(true);
@@ -520,7 +526,7 @@ export default function CommentComponent(props) {
                 <Grid item style={{ maxWidth: "55px" }}>
                   <IconButton
                     className={classes.commentView}
-                    // style={{ top: "3px" }}
+                  // style={{ top: "3px" }}
                   >
                     {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
                   </IconButton>
@@ -550,7 +556,7 @@ export default function CommentComponent(props) {
                           setComment={setComment}
                           upsertComment={addNewComment}
                           showCommentType={props.showCommentType}
-                          // fieldWidth={`${size - 23}px`}
+                        // fieldWidth={`${size - 23}px`}
                         />
                       </div>
                     )}

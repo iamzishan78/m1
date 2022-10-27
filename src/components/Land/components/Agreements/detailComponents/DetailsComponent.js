@@ -681,7 +681,7 @@ export function DetailComponents(props) {
           onClose={() => setOpenDialog(false)}
           deleteFunc={handleDeleteAgreement}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={() => { }}
         >
           Are you sure you want to delete this agreement?
         </DeleteConfirmationDialogContent>
