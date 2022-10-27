@@ -1,4 +1,7 @@
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import MonetizationOnIcon from "@material-ui/icons/LocalAtmOutlined";
 import GlobalSettings from "GlobalSettings";
 
 const ContactsHeadCells = [
@@ -114,13 +117,29 @@ const ContactsHeadCells = [
       filter: true,
       customRender: (value, tableMeta) => {
         return (
-          <a
-            href={`/contact/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
-            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer", textDecoration: "initial" }}
-            rel="noreferrer"
-          >
-            {value}
-          </a>
+          <>
+            <a
+              href={`/contact/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                fontWeight: 600, color: "#17aadd", cursor: "pointer", textDecoration: "initial"
+              }}
+              rel="noreferrer"
+            >
+              {value}
+
+              {!!(tableMeta.rowData[ContactsHeadCells.findIndex((val) => val.name === "isPurchased")]) && (
+                <FeatureFlag feature={FEATURES.IDICORE}>
+                  <MonetizationOnIcon style={{
+                    margin: "10px",
+                    color: "gray"
+                  }} />
+                </FeatureFlag>
+              )}
+            </a>
+          </>
         );
       },
     },

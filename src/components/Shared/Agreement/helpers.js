@@ -1,7 +1,10 @@
 import { get } from "lodash";
 
 export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
-    const metaData = get(metaDataRes, "getMetaData.metaData", []);
+    const metaData = get(metaDataRes, "getMetaData.metaData", [])
+                        .filter(field => (
+                            !(field.mapping?.length>0)
+                        ));
     const customData = [];
     const attachedMetaData = [];
     const nonAttachedMetaData = [];
@@ -49,5 +52,6 @@ export const getCustomMetaFields = (agreementDetails, metaDataRes) => {
             isCustomData: true,
         });
     });
+    
     return customData;
 };

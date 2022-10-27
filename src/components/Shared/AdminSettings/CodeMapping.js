@@ -155,7 +155,7 @@ const CodeMapping = ({settingsFor}) => {
   useEffect(() => {
     getMetaData({
       variables: {
-        category: mappingType.category,
+        category: mappingType?.category,
       },
     });
   }, [getMetaData]);
@@ -168,18 +168,18 @@ const CodeMapping = ({settingsFor}) => {
   }, [uniqueType]);
 
   useEffect(() => {
-    if (mappingType.codes) {
-      setCodes(mappingType.codes);
+    if (mappingType?.codes) {
+      setCodes(mappingType?.codes);
     }
     else if (mappingType) {
       getUniqueType({
         variables: {
-          esIndex: mappingType.esIndex,
-          index: mappingType.esIndex,
-          filterKey: mappingType.key,
+          esIndex: mappingType?.esIndex,
+          index: mappingType?.esIndex,
+          filterKey: mappingType?.key,
           size: 50,
           filterAggs: {
-            field: mappingType.key,
+            field: mappingType?.key,
             size: 50,
           },
         },
@@ -409,7 +409,7 @@ const CodeMappingHeader = ({
       {stateApp.showFieldModal && (
         <MetaField
           columns={[]}
-          category={mappingType.category}
+          category={mappingType?.category}
           esKey={mappingType?.key}
         />
       )}
