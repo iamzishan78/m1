@@ -25,18 +25,17 @@ export function copy(obj) {
 }
 
 export function getSearchFields(Table) {
-  let searchFields = []
+  let searchFields = [];
   Table.forEach((row) => {
-    if ((row?.options?.display !== false && row.esKey && !row.name?.toLowerCase()?.includes('date')) || row?.options?.forSearch) {
+    if ((row?.options?.display !== false && row.esKey && !row.name?.toLowerCase()?.includes("date")) || row?.options?.forSearch) {
       if (Array.isArray(row.esKey)) {
-        searchFields = [...searchFields, ...row.esKey]
-      } else if (row.esKey.includes('.keyword'))
-        searchFields.push(row.esKey)
+        searchFields = [...searchFields, ...row.esKey];
+      } else if (row.esKey.includes(".keyword")) searchFields.push(row.esKey);
     }
-  })
+  });
 
-  searchFields = searchFields.map((key) => key.replace('.keyword', ''))
-  return searchFields
+  searchFields = searchFields.map((key) => key.replace(".keyword", ""));
+  return searchFields;
 }
 
 export function addTrailingZeros(num) {
@@ -85,4 +84,12 @@ export function replaceLinkId(link, path) {
     }
   }
   return true;
+}
+
+export function customStartCaseString(str) {
+  if (!str) return str;
+  return str
+    .split(" ")
+    .map((s) => s[0] + s.substring(1).replace(/[A-Z]/g, (x) => ` ${x}`))
+    .join(" ");
 }

@@ -150,10 +150,6 @@ const anchor = "right";
 export default function MyWellDialog(props) {
   const classes = useStyles();
   const [activePanel, setPanel] = useState("Add New Well");
-  // const [state, setState] = useState({right: false});
-  // const [anchorEl, setAnchorEl] = useState();
-
-  // const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [platformWell, setPlatformWell] = useState();
 
   const { id: globalWellId } = useParams();
@@ -176,10 +172,6 @@ export default function MyWellDialog(props) {
     const { tenantWell } = dataTenantWell;
     setPlatformWell(tenantWell);
   }, [dataTenantWell]);
-
-  // const handleMenuClose = () => {
-  //   setAnchorEl(null);
-  // };
 
   useEffect(() => {
     if (globalWellId) {
@@ -268,29 +260,6 @@ export default function MyWellDialog(props) {
                   <IconButton size="small" onClick={handleCloseDialog}>
                     <CloseIcon />
                   </IconButton>
-                  {/* <Menu
-                  id="dealMenu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleMenuClose}
-                  className={classes.menu}
-                  getContentAnchorEl={null}
-                  anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-                  transformOrigin={{ vertical: "top", horizontal: "center" }}
-                >
-                  <MenuItem
-                    onClick={() => {
-                      setOpenDeleteConfirmDialog(true);
-                      handleMenuClose();
-                    }}
-                  >
-                    <ListItemIcon>
-                      <DeleteIcon size="medium" />
-                    </ListItemIcon>
-                    <ListItemText>Delete</ListItemText>
-                  </MenuItem>
-                </Menu> */}
                 </div>
               </div>
             </div>
@@ -306,7 +275,7 @@ export default function MyWellDialog(props) {
                   // Add My Well fields component here
                   <AddMyWell
                     handleWellDetail={handleWellDetail}
-                    platformWell={{ ...get(myWellData, "myWellByGlobalId.myWell.wellData", {}), ...platformWell }}
+                    platformWell={{ ...platformWell, ...get(myWellData, "myWellByGlobalId.myWell.wellData", {}) }}
                     showSearch={!globalWellId}
                   />
                 )}

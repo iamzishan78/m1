@@ -1351,7 +1351,7 @@ function SubTable(props) {
                 customRender: (value, tableMeta) => {
                   if (props.targetLabel === "unit") {
                     const targetSourceId = tableMeta.rowData[1];
-                    const commentValue = tableMeta.rowData[21]
+                    const commentValue = tableMeta.rowData[22]
                     return (
                       <div
                         style={{
@@ -5277,4 +5277,4 @@ function SubTable(props) {
   );
 }
 
-export default  React.memo(SubTable, deepEqualObjects);
+export default React.memo(SubTable, deepEqualObjects);
