@@ -28,7 +28,7 @@ function WellSearchApiField({ esIndex, fields, filters = [], optionsParams, targ
   //Intials
   const location = useLocation();
   const classes = useStyles();
-  const startPaginationAt = 50;
+  const startPaginationAt = 5;
   const [foundWells, setFoundWells] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [focused, setFocused] = useState(false);
@@ -46,11 +46,10 @@ function WellSearchApiField({ esIndex, fields, filters = [], optionsParams, targ
               keep_alive: "1micros",
             },
             search: {
-              query: `${request.input}*`,
+              query: `*${request.input}*`,
               fields,
             },
             filters,
-            sort: { field: "name.keyword", order: "asc" },
           },
         });
       }, 500),
