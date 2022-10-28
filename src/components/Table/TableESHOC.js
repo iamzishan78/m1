@@ -293,11 +293,16 @@ export const TableESHOC = (Component) => {
             tableCols.forEach((column, index) => {
                 /// apply global settings unless ignored
                 const setCellProps = column.options?.setCellProps
-                if (isFiniteScroll && rows.length && setCellProps
-                    && findInFunction("sticky", setCellProps) && column.name !== '_id') {
-                    column.options.setCellProps = GlobalSettings.muiGridInfScrollOptions.setCellProps
-                    column.options.setCellHeaderProps = GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps
-                }
+                setRows(state => {
+                    if (isFiniteScroll && state.length && setCellProps
+                        && findInFunction("sticky", setCellProps) && column.name !== '_id') {
+
+                        column.options.setCellProps = GlobalSettings.muiGridInfScrollOptions.setCellProps
+                        column.options.setCellHeaderProps = GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps
+                    }
+
+                    return state
+                })
 
                 /// apply global settings unless ignored
                 if (column?.options?.ignoreGlobal || props.actionColumns.includes(column.label) || props.actionColumns.includes(column.name)) {
