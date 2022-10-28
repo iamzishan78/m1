@@ -193,7 +193,14 @@ const Agreements = ({ platformWell, agreements }) => {
             {/* <WellSearchApiFieldES getSelectedWell={getSelectedWell} /> */}
             <SearchField
               esIndex="shapes_flat"
-              fields={["name^4", "_all"]}
+              fields={[
+                "name",
+                "shapeJson.properties.shapeLabel",
+                "state",
+                "shapeJson.properties.originalProperties.County",
+                "shapeJson.properties.agreementNumber",
+                "shapeJson.properties.agreementType",
+              ]}
               filters={[{ field: "shapeJson.properties.type", value: "agreement" }]}
               optionsParams={["name", "internalID"]}
               targetLabel="agreement"
