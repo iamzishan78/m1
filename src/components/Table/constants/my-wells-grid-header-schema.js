@@ -1,4 +1,4 @@
-import GlobalSettings from "..//..//..//GlobalSettings.js";
+import { GlobalStickyStyles } from "GlobalSettings";
 import GlobalStyles from "..//..//..//GlobalStyles.js";
 import { history } from "store";
 
@@ -15,8 +15,14 @@ const wellsColumnHeaders = [
     label: "Well Name",
     esKey: "wellData.wellName.keyword",
     options: {
-      ...GlobalSettings.muiGridInfScrollOptions,
-      ignoreGlobal: true,
+      ...GlobalStickyStyles({
+        setCellProps: {
+          left: '125px',
+        },
+        setCellHeaderProps: {
+          left: '125px',
+        }
+      }),
       sort: true,
       filter: true,
       customRender: (value, tableMeta) => {

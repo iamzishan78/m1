@@ -14,10 +14,11 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     options: {
       ...GlobalStickyStyles({
         setCellProps: {
+          left: '108.5px',
           maxWidth: "492px",
         },
         setCellHeaderProps: {
-          paddingLeft: '35px',
+          left: '108.5px',
         }
       }),
       dbName: "shapeJson.properties.agreementNumber",

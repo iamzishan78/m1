@@ -1,4 +1,4 @@
-import GlobalSettings from "GlobalSettings";
+import { GlobalStickyStyles } from "GlobalSettings";
 
 const unitsColumnHeaders = [
   {
@@ -30,14 +30,14 @@ const unitsColumnHeaders = [
     label: "Unit Name",
     esKey: "name.keyword",
     options: {
-      ...GlobalSettings.muiGridControlOptions,
-      setCellHeaderProps: () => ({
-        style: {
-          ...GlobalSettings.muiGridControlOptions.setCellHeaderProps().style,
-          padding: "15px",
+      ...GlobalStickyStyles({
+        setCellProps: {
+          left: '108.5px',
         },
+        setCellHeaderProps: {
+          left: '108.5px',
+        }
       }),
-      ignoreGlobal: true,
     },
   },
   {
