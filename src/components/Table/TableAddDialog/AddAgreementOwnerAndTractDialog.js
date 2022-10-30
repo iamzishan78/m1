@@ -1104,7 +1104,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           render={({ onChange, value }) => (
             <FormControl variant="outlined" fullWidth margin="dense">
               <InputLabel id="countAcres-label">Count Acres</InputLabel>
-              <Select id="countAcres" labelId="countAcres-label" label='Count Acres' value={'Yes'} onChange={onChange}>
+              <Select id="countAcres" labelId="countAcres-label" label='Count Acres' value={value} onChange={onChange}>
                 <MenuItem value="Yes">Yes</MenuItem>
                 <MenuItem value="No">No</MenuItem>
               </Select>
