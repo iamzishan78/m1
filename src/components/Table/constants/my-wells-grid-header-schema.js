@@ -192,7 +192,7 @@ const wellsColumnHeaders = [
   {
     name: "permitApprovedDate",
     label: "Permit Date",
-    esKey: "wellData.permitApprovedDate.keyword",
+    esKey: "wellData.permitApprovedDate",
     options: {
       sort: true,
       filter: true,
