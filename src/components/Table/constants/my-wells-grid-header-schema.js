@@ -4,6 +4,7 @@ import { history } from "store";
 
 import Typography from "@material-ui/core/Typography";
 import vf_number from "components/Shared/valueformatters/vf_number";
+import { statusData } from "components/Table/Revenue/RevenuePropertiesTable";
 
 const wellsColumnHeaders = [
   {
@@ -288,7 +289,9 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (values) => (
+        <p>{values?.length ? values.map((value) => statusData.find((sd) => sd.value === value)?.label).join(", ") : null}</p>
+      ),
     },
   },
   {
