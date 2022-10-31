@@ -52,6 +52,9 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "150px",
     display: "flex",
     "flex-direction": "column",
+    '& :hover':{
+      backgroundColor: "rgb(217, 217, 217)",
+    }
   },
   cardHeaderStyle: {
     display: "flex",
@@ -569,7 +572,7 @@ const Transact = () => {
 
           <div className={CardClasses.cardSubheading}>
             {
-                fieldsOnCardToShow?.filter(field => metadata[field])?.map(field => 
+                fieldsOnCardToShow?.filter(field => metadata[field])?.map(field =>
                   <>
                     <br />
                     <span>
