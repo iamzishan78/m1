@@ -33,6 +33,7 @@ import { UPSERT_WELL_DESCRIPTOR } from "graphQL/useMutationWellDescriptor";
 
 const propertyParams = [
   { type: "text", label: "Well NRI", key: "interestAmount" },
+  { type: "text", label: "Interest Type", key: "interestType" },
   {
     type: "text",
     label: "Pay Status",
@@ -44,7 +45,6 @@ const propertyParams = [
   { type: "text", label: "Internal Company", key: "internalCompany" },
   { type: "text", label: "Acquisition ID", key: "acquisitionID" },
   { type: "text", label: "Prospect ID", key: "prospectID" },
-  { type: "text", label: "Classification", key: "classification" },
 ];
 
 const useStyles = makeStyles((theme) => ({
