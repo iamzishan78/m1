@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/styles";
-import { Box, Grid, ListItemIcon } from "@material-ui/core";
+import * as turf from '@turf/turf'
+import { Box, CircularProgress, Grid, ListItemIcon } from "@material-ui/core";
 
 import { Flipped } from "react-flip-toolkit";
 import { useSelector } from "react-redux";
@@ -67,7 +68,7 @@ const LayerItem = React.memo((props) => {
   const [zoomLoading, setZoomLoading] = useState(false);
   const colors = useSelector(({ MainMap }) => MainMap);
 
-  const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin } = props;
+  const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin, map } = props;
   const itemRef = React.useRef({ id: -1, depth: -1, data: {} });
   const { type, collapsed, name } = data;
 
@@ -123,7 +124,11 @@ const LayerItem = React.memo((props) => {
         .then((response) => response.json())
         .then((response) => {
           setZoomLoading(false)
-          var combined = turf.combine(turf.featureCollection(response?.features))
+          let features = response?.features.filter((feature) => feature.properties.layerGeometry === data.layerGeometry)
+          if (data.layerShapeName) {
+            features = features.filter((feature) => feature.properties.layerShapeName === data.layerShapeName)
+          }
+          var combined = turf.combine(turf.featureCollection(features))
           const bbox = turf.bbox(combined)
           map?.fitBounds(
             [
@@ -168,7 +173,7 @@ const LayerItem = React.memo((props) => {
                   alignItems: "center",
                 }}
               >
-                <Box borderLeft={4} style={{borderColor: getLayerColor(data, "layer", colors)}} >
+                <Box borderLeft={4} style={{ borderColor: getLayerColor(data, "layer", colors) }} >
                   {hoverItemIndex === id ? (
                     <ListItemIcon ref={drag}>
                       <DragIndicator style={{ cursor: "move", justifyContent: "center" }} />
