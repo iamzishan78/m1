@@ -16,7 +16,7 @@ import { UPSERTCOMMENT } from "graphQL/useMutationUpsertComment";
 import { REMOVECOMMENT } from "graphQL/useMutationRemoveComment";
 import { COMMENTSBYOBJECTIDQUERY } from "graphQL/useQueryCommentsByObjectId";
 import CommentField from "components/Shared/components/Fields/CommentField";
-import { SizeMe } from 'react-sizeme'
+import { SizeMe } from "react-sizeme";
 
 import ReactTimeAgo from "react-time-ago";
 import TimeAgo from "javascript-time-ago";
@@ -49,17 +49,15 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
   },
   commentBtn: {
-    "float": "right",
+    float: "right",
     right: "10px",
     bottom: "10px",
     marginBottom: -20,
     background: "#24afdf",
-
   },
   paddingLeft10: {
     paddingLeft: "8px !important",
     paddingTop: "3px !important",
-
   },
   moreComment: {
     padding: "10px",
@@ -83,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "12px",
   },
   floatRight: {
-    "float": "right",
+    float: "right",
   },
   cursorPointer: {
     cursor: "pointer",
@@ -93,34 +91,32 @@ const useStyles = makeStyles((theme) => ({
   },
   commentContent: {
     width: "84%",
-    paddingRight: "10px"
+    paddingRight: "10px",
   },
   commentTypeSection: {
     fontWeight: "bold",
     fontSize: "16px",
     display: "flex",
-    marginBottom: "5px"
-  }
+    marginBottom: "5px",
+  },
 }));
 
 function urlify(text) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
 
-  return text.replace(urlRegex, function(url) {
-    return '<a href="' + url + '">' + url + '</a>';
-  })
+  return text.replace(urlRegex, function (url) {
+    return '<a href="' + url + '">' + url + "</a>";
+  });
 }
 
 export const CommonCommentText = ({ eachComment, users }) => {
   const classes = useStyles();
-  let formatComment = (eachComment?.comment || '').split(" ")
+  let formatComment = (eachComment?.comment || "").split(" ");
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
       {get(eachComment, "commentType") && (
-        <span className={classes.commentTypeSection}>
-          {get(eachComment, "commentType.commentType", get(eachComment, "commentType"))}
-        </span>
+        <span className={classes.commentTypeSection}>{get(eachComment, "commentType.commentType", get(eachComment, "commentType"))}</span>
       )}
       {formatComment.map((word, index) => {
         if (word.includes("{{") && word.includes("}}")) {
@@ -128,33 +124,45 @@ export const CommonCommentText = ({ eachComment, users }) => {
 
           // splitt word to manage new lines in the word
           if (splittedWord.length) {
-            return (<>
-              {splittedWord.map(sWord => {
-                if (sWord.includes("{{") && sWord.includes("}}")) {
-                  const firstPart = sWord.split("{{")[0];
-                  const secondPart = sWord.split("}}")[1];
-                  let id = sWord.split("{{")[1];
-                  id = id.split("}}")[0];
-                  return <> <span className="blue">{firstPart}@{users.find(user => user._id === id)?.name}{secondPart} </span>{splittedWord.length > 1 && <br />} </>
-                }
-                else return <span>{sWord} <br /> </span>;
-
-              })}
-            </>)
+            return (
+              <>
+                {splittedWord.map((sWord) => {
+                  if (sWord.includes("{{") && sWord.includes("}}")) {
+                    const firstPart = sWord.split("{{")[0];
+                    const secondPart = sWord.split("}}")[1];
+                    let id = sWord.split("{{")[1];
+                    id = id.split("}}")[0];
+                    return (
+                      <>
+                        {" "}
+                        <span className="blue">
+                          {firstPart}@{users.find((user) => user._id === id)?.name}
+                          {secondPart}{" "}
+                        </span>
+                        {splittedWord.length > 1 && <br />}{" "}
+                      </>
+                    );
+                  } else
+                    return (
+                      <span>
+                        {sWord} <br />{" "}
+                      </span>
+                    );
+                })}
+              </>
+            );
           }
 
           return <span>{splittedWord}</span>;
         } else {
+          const _word = index !== formatComment.length - 1 ? `${word} ` : word;
           const sanitizedData = () => ({
-            __html: DOMPurify.sanitize(urlify(word)),
+            __html: DOMPurify.sanitize(urlify(_word)),
           });
-          return (
-            <span dangerouslySetInnerHTML={sanitizedData()}>
-            </span>
-          );
+          return <span dangerouslySetInnerHTML={sanitizedData()}></span>;
         }
       })}
-    </div >
+    </div>
   );
 };
 
@@ -184,10 +192,7 @@ export default function CommentComponent(props) {
   const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
     fetchPolicy: "cache-first",
   });
-  const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
-    COMMENTSBYOBJECTIDQUERY,
-    { fetchPolicy: "no-cache" }
-  );
+  const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(COMMENTSBYOBJECTIDQUERY, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
     getAllMongoUsers();
@@ -225,26 +230,22 @@ export default function CommentComponent(props) {
     if (dataComments && dataComments.commentsByObjectId) {
       if (props.activityLog && props.activityLog.length > 0) {
         let activittyData = [];
-        props.activityLog.forEach(element => {
+        props.activityLog.forEach((element) => {
           activittyData.push({
             user: { name: element.ownerName, email: element.ownerName },
             activityData: element,
             comment: element.notes,
-            ts: new Date(Number(element._ts)).getTime(),
+            ts: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime(),
             isActivity: true,
             isEdited: false,
             public: true,
-            __typename: "Comment"
-          })
+            __typename: "Comment",
+          });
         });
         let tempArray = dataComments.commentsByObjectId.concat(activittyData);
-        setCommentsArray(
-          sortArrayBasedOnTs([...tempArray])
-        );
+        setCommentsArray(sortArrayBasedOnTs([...tempArray]));
       } else {
-        setCommentsArray(
-          sortArrayBasedOnTs([...dataComments.commentsByObjectId])
-        );
+        setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
       }
     }
     setLoadingComments(false);
@@ -259,8 +260,7 @@ export default function CommentComponent(props) {
         user: { name: stateApp.user.name, email: stateApp.user.email },
         isNew: true,
       });
-      if (props.setNewCommentId)
-        props.setNewCommentId(newlyAddedComment.upsertComment.comment._id);
+      if (props.setNewCommentId) props.setNewCommentId(newlyAddedComment.upsertComment.comment._id);
       setCommentsArray(sortArrayBasedOnTs([...comments]));
     }
   }, [newlyAddedComment]);
@@ -281,12 +281,7 @@ export default function CommentComponent(props) {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (
-      profiledata &&
-      profiledata.data &&
-      profiledata.data.profileByEmail &&
-      profiledata.data.profileByEmail.profile
-    ) {
+    if (profiledata && profiledata.data && profiledata.data.profileByEmail && profiledata.data.profileByEmail.profile) {
       const {
         data: {
           profileByEmail: {
@@ -335,8 +330,8 @@ export default function CommentComponent(props) {
     upsertComment({
       variables: {
         comment: {
-          comment: typeof value === 'object' ? newCommentCleaner(value.comment) : newCommentCleaner(value),
-          commentType: typeof value === 'object' ? (value.commentType || 'General') : 'General',
+          comment: typeof value === "object" ? newCommentCleaner(value.comment) : newCommentCleaner(value),
+          commentType: typeof value === "object" ? value.commentType || "General" : "General",
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           _id: editCommentId,
@@ -344,11 +339,7 @@ export default function CommentComponent(props) {
           isEdited: true,
         },
       },
-      refetchQueries: [
-        "getCommentsByObjectId",
-        "getCommentsCounter",
-        "getCommentsByObjectsIds",
-      ],
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
       awaitRefetchQueries: true,
     });
     setShowActions(false);
@@ -363,11 +354,7 @@ export default function CommentComponent(props) {
       variables: {
         commentId: id,
       },
-      refetchQueries: [
-        "getCommentsByObjectId",
-        "getCommentsCounter",
-        "getCommentsByObjectsIds",
-      ],
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
       awaitRefetchQueries: true,
     });
     setShowActions(false);
@@ -377,42 +364,38 @@ export default function CommentComponent(props) {
   };
 
   const addNewComment = (value) => {
-    const userDetails = stateApp.user
-    setCommentsArray(state => {
+    const userDetails = stateApp.user;
+    setCommentsArray((state) => {
       let newComment = {
         commentedOn: targetSourceId,
         isEdited: false,
         public: true,
         ts: Date.now(),
-        user: { name: userDetails.name, email: userDetails.email, __typename: 'User' },
+        user: { name: userDetails.name, email: userDetails.email, __typename: "User" },
         __typename: "Comment",
-        _id: "62e78820b4f930ae6002a7f2"
-      }
-      if (typeof value === 'object') {
+        _id: "62e78820b4f930ae6002a7f2",
+      };
+      if (typeof value === "object") {
         newComment = { ...value, ...newComment };
       } else {
-        newComment['comment'] = value;
+        newComment["comment"] = value;
       }
-      state.push(newComment)
+      state.push(newComment);
       return state;
     });
 
     upsertComment({
       variables: {
         comment: {
-          comment: typeof value === 'object' ? newCommentCleaner(value.comment) : newCommentCleaner(value),
-          commentType: typeof value === 'object' ? (value.commentType || 'General') : 'General',
+          comment: typeof value === "object" ? newCommentCleaner(value.comment) : newCommentCleaner(value),
+          commentType: typeof value === "object" ? value.commentType || "General" : "General",
           public: true,
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           objectType: props.targetLabel,
         },
       },
-      refetchQueries: [
-        "getCommentsByObjectId",
-        "getCommentsCounter",
-        "getCommentsByObjectsIds",
-      ],
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
       awaitRefetchQueries: true,
     });
     setShowActions(false);
@@ -425,170 +408,166 @@ export default function CommentComponent(props) {
   };
 
   return (
-    <SizeMe>{({ size }) =>
-      <div className={classes.container}>
-        <div className={classes.comment} >
-          {!loadingComments ? (
-            <>
-              {!showAllComments && commentsArray.length > 3 && (
-                <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
-                  <span
-                    onClick={() => {
-                      setShowAllComments(true);
-                    }}
-                  >
-                    {getCount()} more comments
-                  </span>
-                </div>
-              )}
-              {showAllComments && commentsArray.length > 3 && (
-                <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
-                  <span onClick={() => setShowAllComments(false)}>
-                    Hide Earlier Comments
-                  </span>
-                </div>
-              )}
+    <SizeMe>
+      {({ size }) => (
+        <div className={classes.container}>
+          <div className={classes.comment}>
+            {!loadingComments ? (
+              <>
+                {!showAllComments && commentsArray.length > 3 && (
+                  <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
+                    <span
+                      onClick={() => {
+                        setShowAllComments(true);
+                      }}
+                    >
+                      {getCount()} more comments
+                    </span>
+                  </div>
+                )}
+                {showAllComments && commentsArray.length > 3 && (
+                  <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
+                    <span onClick={() => setShowAllComments(false)}>Hide Earlier Comments</span>
+                  </div>
+                )}
 
-              {commentsArray.map((eachComment, index) => {
-                let indexToShow =
-                  commentsArray.length > 3 ? commentsArray.length - 3 : 0;
-                return (
-                  <Fragment key={index}>
-                    {(showAllComments || index >= indexToShow) && (
-                      <Grid
-                        id="commentsArea"
-                        container
-                        className={classes.gridStyle}
-                        onMouseOver={() => setShowCommentActionId(eachComment?._id)}
-                        onMouseLeave={() => setShowCommentActionId(null)}
-                      >
-                        <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
-                          <IconButton>
-                            {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
-                              <Avatar
-                                src={eachComment.isNew ? profileImage : profilesInfo[eachComment?.user?.email].profileImage}
-                                size="38"
-                                round
-                              />
-                            ) : (
-                              <Avatar name={eachComment?.user?.name} size="38" round />
-                            )}
-                          </IconButton>
-                        </Grid>
-                        <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
-                          <div>
-                            <span className={classes.bold}>{eachComment?.user?.name}</span>
-                            {<ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />}
-                            {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
-                            {eachComment?.user?.email === stateApp.user.email &&
-                              showCommentActionId === eachComment._id &&
-                              editCommentId !== eachComment._id && (
-                                <div className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}>
-                                  <ActionMenu
-                                    eachComment={eachComment}
-                                    setEditCommentId={setEditCommentId}
-                                    setEditComment={setEditComment}
-                                    deleteComment={deleteComment}
-                                  />
-                                </div>
+                {commentsArray.map((eachComment, index) => {
+                  let indexToShow = commentsArray.length > 3 ? commentsArray.length - 3 : 0;
+                  return (
+                    <Fragment key={index}>
+                      {(showAllComments || index >= indexToShow) && (
+                        <Grid
+                          id="commentsArea"
+                          container
+                          className={classes.gridStyle}
+                          onMouseOver={() => setShowCommentActionId(eachComment?._id)}
+                          onMouseLeave={() => setShowCommentActionId(null)}
+                        >
+                          <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
+                            <IconButton>
+                              {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
+                                <Avatar
+                                  src={eachComment.isNew ? profileImage : profilesInfo[eachComment?.user?.email].profileImage}
+                                  size="38"
+                                  round
+                                />
+                              ) : (
+                                <Avatar name={eachComment?.user?.name} size="38" round />
                               )}
-                          </div>
-                          {eachComment.isActivity === true && (
-                            <>
-                              <div className={`${classes.whiteSpace}`}>
-                                {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
-                              </div>
-                              <div className={`${classes.whiteSpace}`}>
-                                START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
-                              </div>
-                              <div className={`${classes.whiteSpace}`}>
-                                END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
-                              </div>
-                            </>
-                          )}
-                          {editCommentId !== eachComment._id ? (
-                            <CommonCommentText users={users} eachComment={eachComment} />
-                          ) : (
-                            <div className={classes.border}>
-                              <CommentField
-                                isEdit
-                                profilesInfo={profilesInfo}
-                                users={users}
-                                comment={editComment}
-                                showActions={showActions}
-                                setEditCommentId={setEditCommentId}
-                                setComment={setEditComment}
-                                upsertComment={updateComment}
-                              />
+                            </IconButton>
+                          </Grid>
+                          <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
+                            <div>
+                              <span className={classes.bold}>{eachComment?.user?.name}</span>
+                              {!isNaN(eachComment.ts) && <ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />}
+                              {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+                              {eachComment?.user?.email === stateApp.user.email &&
+                                showCommentActionId === eachComment._id &&
+                                editCommentId !== eachComment._id && (
+                                  <div className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}>
+                                    <ActionMenu
+                                      eachComment={eachComment}
+                                      setEditCommentId={setEditCommentId}
+                                      setEditComment={setEditComment}
+                                      deleteComment={deleteComment}
+                                    />
+                                  </div>
+                                )}
                             </div>
-                          )}
+                            {eachComment.isActivity === true && (
+                              <>
+                                <div className={`${classes.whiteSpace}`}>
+                                  {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
+                                </div>
+                                <div className={`${classes.whiteSpace}`}>
+                                  START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
+                                </div>
+                                <div className={`${classes.whiteSpace}`}>
+                                  END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
+                                </div>
+                              </>
+                            )}
+                            {editCommentId !== eachComment._id ? (
+                              <CommonCommentText users={users} eachComment={eachComment} />
+                            ) : (
+                              <div className={classes.border}>
+                                <CommentField
+                                  isEdit
+                                  profilesInfo={profilesInfo}
+                                  users={users}
+                                  comment={editComment}
+                                  showActions={showActions}
+                                  setEditCommentId={setEditCommentId}
+                                  setComment={setEditComment}
+                                  upsertComment={updateComment}
+                                />
+                              </div>
+                            )}
+                          </Grid>
                         </Grid>
-                      </Grid>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </>
+            ) : (
+              <CircularProgress color="secondary"></CircularProgress>
+            )}
+          </div>
+          {!editCommentId && (
+            <div style={{ paddingBottom: "20px" }}>
+              <Grid container>
+                <Grid item style={{ maxWidth: "55px" }}>
+                  <IconButton
+                    className={classes.commentView}
+                  // style={{ top: "3px" }}
+                  >
+                    {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
+                  </IconButton>
+                </Grid>
+                <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
+                  <SizeMe>
+                    {({ size }) => (
+                      <div
+                        className={classes.border}
+                        style={{ paddingBottom: "20px" }}
+                        onClick={() => {
+                          if (!showActions) {
+                            setShowActions(true);
+                          }
+                        }}
+                        onBlur={() => {
+                          if (showActions && !comment) {
+                            setShowActions(false);
+                          }
+                        }}
+                      >
+                        <CommentField
+                          profilesInfo={profilesInfo}
+                          users={users}
+                          comment={comment}
+                          showActions={showActions}
+                          setComment={setComment}
+                          upsertComment={addNewComment}
+                          showCommentType={props.showCommentType}
+                        // fieldWidth={`${size - 23}px`}
+                        />
+                      </div>
                     )}
-                  </Fragment>
-                );
-              })}
-            </>
-          ) : (
-            <CircularProgress color="secondary"></CircularProgress>
+                  </SizeMe>
+                </Grid>
+              </Grid>
+            </div>
           )}
         </div>
-        {!editCommentId && (
-          <div style={{ paddingBottom: '20px' }}>
-            <Grid container>
-              <Grid item style={{ maxWidth: "55px" }}>
-                <IconButton className={classes.commentView}
-                // style={{ top: "3px" }}
-                >
-                  {profileImage ? (
-                    <Avatar src={profileImage} size="38" round />
-                  ) : (
-                    <Avatar name={stateApp.user.name} size="38" round />
-                  )}
-                </IconButton>
-              </Grid>
-              <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
-                <SizeMe>{({ size }) =>
-                  <div
-                    className={classes.border}
-                    style={{ paddingBottom: '20px' }}
-                    onClick={() => {
-                      if (!showActions) {
-                        setShowActions(true);
-                      }
-                    }}
-                    onBlur={() => {
-                      if (showActions && !comment) {
-                        setShowActions(false);
-                      }
-                    }}
-                  >
-
-                    <CommentField
-                      profilesInfo={profilesInfo}
-                      users={users}
-                      comment={comment}
-                      showActions={showActions}
-                      setComment={setComment}
-                      upsertComment={addNewComment}
-                      showCommentType={props.showCommentType}
-                    // fieldWidth={`${size - 23}px`}
-                    />
-
-                  </div>
-                }</SizeMe>
-              </Grid>
-            </Grid>
-          </div>
-        )}
-      </div>
-    }</SizeMe >
+      )}
+    </SizeMe>
   );
 }
 
 export const CommentText = ({ eachComment, users }) => {
   const classes = useStyles();
-  let formatComment = (eachComment?.comment || '').split(" ")
+  let formatComment = (eachComment?.comment || "").split(" ");
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
@@ -598,21 +577,30 @@ export const CommentText = ({ eachComment, users }) => {
 
           // splitt word to manage new lines in the word
           if (splittedWord.length) {
-            return (<>
-              {splittedWord.map(sWord => {
-                if (sWord.includes("{{") && sWord.includes("}}")) {
-                  const firstPart = sWord.split("{{")[0];
-                  const secondPart = sWord.split("}}")[1];
-                  let id = sWord.split("{{")[1];
-                  id = id.split("}}")[0];
-                  return <span className="blue">{firstPart}@{users.find(user => user._id === id)?.name}{secondPart} </span>
-                }
-                else if (sWord === "")
-                  return <br />
-                else return <span>{sWord} <br /> </span>;
-
-              })}
-            </>)
+            return (
+              <>
+                {splittedWord.map((sWord) => {
+                  if (sWord.includes("{{") && sWord.includes("}}")) {
+                    const firstPart = sWord.split("{{")[0];
+                    const secondPart = sWord.split("}}")[1];
+                    let id = sWord.split("{{")[1];
+                    id = id.split("}}")[0];
+                    return (
+                      <span className="blue">
+                        {firstPart}@{users.find((user) => user._id === id)?.name}
+                        {secondPart}{" "}
+                      </span>
+                    );
+                  } else if (sWord === "") return <br />;
+                  else
+                    return (
+                      <span>
+                        {sWord} <br />{" "}
+                      </span>
+                    );
+                })}
+              </>
+            );
           }
 
           return <span>{splittedWord}</span>;
@@ -620,16 +608,11 @@ export const CommentText = ({ eachComment, users }) => {
           return <span>{word} </span>;
         }
       })}
-    </div >
+    </div>
   );
 };
 
-const ActionMenu = ({
-  eachComment,
-  setEditCommentId,
-  setEditComment,
-  deleteComment,
-}) => {
+const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -642,14 +625,9 @@ const ActionMenu = ({
 
   return (
     <>
-      <ExpandMoreIcon
-        id="expandIcon"
-        aria-controls={eachComment._id}
-        aria-haspopup="true"
-        onClick={handleClick}
-      />
+      <ExpandMoreIcon id="expandIcon" aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} />
       <Menu
-        style={{ zIndex: '1305' }}
+        style={{ zIndex: "1305" }}
         id={eachComment._id}
         anchorEl={anchorEl}
         keepMounted
@@ -668,11 +646,7 @@ const ActionMenu = ({
         >
           Edit Comment
         </MenuItem>
-        <MenuItem
-          textcolor="red"
-          onClick={() => deleteComment(eachComment._id)}
-          id="deleteComment"
-        >
+        <MenuItem textcolor="red" onClick={() => deleteComment(eachComment._id)} id="deleteComment">
           Delete Comment
         </MenuItem>
       </Menu>

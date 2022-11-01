@@ -100,7 +100,6 @@ export const TableESHOC = (Component) => {
         const tableData = elasticData?.getESSimpleSearch || {}
 
         const updateColumnsOnGridViewChange = (metaDatas) => {
-            console.log('Outside Columns', columns)
             Columns((cols) => {
                 if (cols?.length > 0) {
                     console.log('Inside Columns', cols)
@@ -702,8 +701,7 @@ export const TableESHOC = (Component) => {
                 case "filterChange":
                 case "resetFilters":
                 case "changeRowsPerPage":
-                    // updateGridViewRedux(tableState)
-                    setSearch(tableState.searchText);
+                    if (action === "search") setSearch(tableState.searchText);
                     if (isFiniteScroll) {
                         const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]")
                         if (tableClass.length > 0) tableClass[0].scrollTop = 0;

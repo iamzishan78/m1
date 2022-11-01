@@ -6,7 +6,7 @@ import { AppContext } from "AppContext";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHeader from "components/Table/constants/tracts-header-schema";
 import TableESHOC from "components/Table/TableESHOC";
-import { deepEqualObjects, copy } from "components/Shared/functions";
+import { deepEqualObjects, copy, esExtentedSearch } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 
 const genericDataActions = ['tags', 'comments', 'tracks']
@@ -51,12 +51,15 @@ function TractsTable(props) {
   }, [])
 
   useEffect(() => {
+    props.setSelectedGridView(GridViewModule || defaultView);
+    // eslint-disable-next-line
+  }, [GridViewModule]);
+
+  useEffect(() => {
     setTableMeta({
-      // addableName: "Unit",
-      extendSearchQuery: props.landSearchQuery || searchInput || '',
+      extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
       TableHeader: copy(TableHeader(props.isSnapGrid)),
       esIndex: "shapes_flat",
-      selectedGridView: GridViewModule || defaultView,
       typeKeyword: { gridViewCategory: "Tracts" },
       startPaginationAt: 10,
       filters: [

@@ -1,4 +1,4 @@
-import './add&DeleteDocument.cy'
+import './addDeleteDocument.cy'
 import './associateWellToDoc.cy'
 import './searchDocument.cy'
 import './verifyWells.cy'
