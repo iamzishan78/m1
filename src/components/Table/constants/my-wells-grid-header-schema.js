@@ -206,7 +206,7 @@ const wellsColumnHeaders = [
   {
     name: "spudDate",
     label: "Spud Date",
-    esKey: "wellData.spudDate.keyword",
+    esKey: "wellData.spudDate",
     options: {
       sort: true,
       filter: true,
@@ -219,7 +219,7 @@ const wellsColumnHeaders = [
   {
     name: "completionDate",
     label: "Completion Date",
-    esKey: "wellData.completionDate.keyword",
+    esKey: "wellData.completionDate",
     options: {
       sort: true,
       filter: true,
@@ -233,7 +233,7 @@ const wellsColumnHeaders = [
   {
     name: "firstProdDate",
     label: "First Prod Date",
-    esKey: "wellData.FirstProdDate.keyword",
+    esKey: "wellData.FirstProdDate",
     options: {
       sort: true,
       filter: true,
@@ -246,7 +246,7 @@ const wellsColumnHeaders = [
   {
     name: "measuredDepth",
     label: "Measured Depth",
-    esKey: "wellData.measuredDepth.keyword",
+    esKey: "wellData.measuredDepth",
     options: {
       sort: true,
       filter: true,
@@ -327,7 +327,7 @@ const wellsColumnHeaders = [
   {
     name: "effectiveDate",
     label: "Effective Date",
-    esKey: "properties.effectiveDate.keyword",
+    esKey: "properties.effectiveDate",
     options: {
       sort: true,
       filter: true,
