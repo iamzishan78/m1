@@ -110,7 +110,12 @@ export const findBoundsMap = (shapes, map, padding) => {
     }
     if (bound)
         map?.fitBounds([[bound.minLong, bound.minLat], [bound.maxLong, bound.maxLat],],
-            { padding: padding ? padding : { top: 200, bottom: 200, left: 1200, right: 0, linear: true } }
+            {
+                easing: () => 1,
+                padding: padding ? padding : {
+                    top: 200, bottom: 200, left: 1200, right: 0
+                }
+            }
         );
     return { ...bound };
 };

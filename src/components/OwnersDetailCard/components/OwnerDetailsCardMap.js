@@ -369,6 +369,7 @@ export default function OwnerDetailsCardMap(props) {
       map.fitBounds(bbox, {
         padding: 30,
         maxZoom: 13,
+        easing: () => 1,
       });
 
       if (bbox[1][0] - bbox[0][0] === 0 && bbox[1][1] - bbox[0][1] === 0) {

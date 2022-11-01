@@ -947,12 +947,12 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
         if (prop.paintProps) layerConfig.paint = prop.paintProps;
         if (prop.filter) layerConfig.filter = prop.filter;
-        
+
         // Incase of group we have one datasource but we filter by layerShapeName ( i.e file name)
-        if (config.layerShapeName && config.groupId) 
+        if (config.layerShapeName && config.groupId)
           layerConfig.filter = ['all', ["==", "layerShapeName", config.layerShapeName], ["==", "layerGeometry", config.layerGeometry]];
         else if (config.layerGeometry && config.groupId) layerConfig.filter = ["==", "layerGeometry", config.layerGeometry];
-        
+
         if (prop.minZoom) {
           layerConfig.minzoom = prop.minZoom;
         }
@@ -1614,8 +1614,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   //// remove the layer and it's source from the map after it's deleted
   const removeLayer = (layer) => {
     const paintProps = layer.layerPaintProps;
-    if(!paintProps?.length) return
-    
+    if (!paintProps?.length) return
+
     for (let i = paintProps.length - 1; i >= 0; i--) {
       const prop = paintProps[i];
 
@@ -5525,7 +5525,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         map.fitBounds([
           [bounds.minLong, bounds.minLat],
           [bounds.maxLong, bounds.maxLat],
-        ]);
+        ], {
+          easing: () => 1,
+        });
     }
   }, [map, stateApp.fitBounds]);
 
@@ -6057,8 +6059,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
         // map may be null when wellDetailCard is launched from somewhere else
         map?.fitBounds(bbox, {
-          speed: 0.75,
-          linear: true,
+          easing: () => 1,
         });
       }
       // setStateApp((state) => ({
