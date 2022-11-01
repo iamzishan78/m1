@@ -225,15 +225,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
           </FormControl>
         )}
 
-        <h4
-          style={
-            {
-              //margin: "0 0 15px 0",
-              //float: "left",
-              //fontSize: "1.1rem",
-            }
-          }
-        >
+        <h4>
           Selected well and lease information
         </h4>
         {wellParams.map((param, index) => (
@@ -254,7 +246,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                     param.type === "text"
                       ? params.value
                       : params.value
-                        ? new Date(params.value) === "Invalid date"
+                        ? new Date(params.value) === "Invalid Date"
                           ? ""
                           : moment(new Date(params.value)).format("MM/DD/YYYY")
                         : ""
