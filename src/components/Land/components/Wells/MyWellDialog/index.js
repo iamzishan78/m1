@@ -12,7 +12,7 @@ import { IconButton } from "@material-ui/core";
 // import DeleteIcon from "@material-ui/icons/Delete";
 import { useLazyQuery } from "@apollo/client";
 import { GET_MY_WELL_BY_GLOBAL_ID } from "graphQL/useQueryMyWellByGlobalId";
-import { TENANTWELL } from "graphQL/useQueryTenantWell";
+import { WELL_SUMMARY_WITH_HEADER } from "graphQL/useQueryWellWithHeader";
 
 // Components
 import AddMyWell from "./AddMyWell";
@@ -156,7 +156,7 @@ export default function MyWellDialog(props) {
   const history = useHistory();
 
   const [getMyWellByGlobalId, { data: myWellData }] = useLazyQuery(GET_MY_WELL_BY_GLOBAL_ID);
-  const [getTenantWell, { data: dataTenantWell }] = useLazyQuery(TENANTWELL, {
+  const [getWellSummaryWithHeader, { data: dataWell }] = useLazyQuery(WELL_SUMMARY_WITH_HEADER, {
     // must be network-only to trigger state change for field updates
     fetchPolicy: "network-only",
   });
@@ -167,11 +167,11 @@ export default function MyWellDialog(props) {
   };
 
   useEffect(() => {
-    if (!dataTenantWell?.tenantWell) return;
+    if (!dataWell?.tenantWell) return;
 
-    const { tenantWell } = dataTenantWell;
+    const { tenantWell } = dataWell;
     setPlatformWell(tenantWell);
-  }, [dataTenantWell]);
+  }, [dataWell]);
 
   useEffect(() => {
     if (globalWellId) {
@@ -197,7 +197,7 @@ export default function MyWellDialog(props) {
 
   const handleWellDetail = (well) => {
     if (well) {
-      getTenantWell({
+      getWellSummaryWithHeader({
         variables: {
           globalWellId: well.Id,
         },

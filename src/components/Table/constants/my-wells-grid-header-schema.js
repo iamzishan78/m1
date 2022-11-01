@@ -128,7 +128,7 @@ const wellsColumnHeaders = [
     },
   },
   {
-    name: "field",
+    name: "Field",
     label: "Field",
     esKey: "wellData.field.keyword",
     options: {
