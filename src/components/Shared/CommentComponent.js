@@ -241,7 +241,7 @@ export default function CommentComponent(props) {
             user: { name: element.ownerName, email: element.ownerName },
             activityData: element,
             comment: element.notes,
-            ts: new Date(Number(element._ts)).getTime(),
+            ts: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime(),
             isActivity: true,
             isEdited: false,
             public: true,
@@ -465,7 +465,7 @@ export default function CommentComponent(props) {
                           <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
                             <div>
                               <span className={classes.bold}>{eachComment?.user?.name}</span>
-                              {<ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />}
+                              {!isNaN(eachComment.ts) && <ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />}
                               {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
                               {eachComment?.user?.email === stateApp.user.email &&
                                 showCommentActionId === eachComment._id &&
