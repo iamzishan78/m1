@@ -31,9 +31,6 @@ function NumberFormatCustom(props) {
           },
         });
       }}
-      // thousandSeparator
-      // isNumericString
-      // prefix="$"
     />
   );
 }
@@ -253,7 +250,15 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                   InputLabelProps={{ shrink: true }}
                   fullWidth
                   defaultValue=""
-                  value={param.type === "text" ? params.value : params.value ? moment(new Date(params.value)).format("MM/DD/YYYY") : ""}
+                  value={
+                    param.type === "text"
+                      ? params.value
+                      : params.value
+                        ? new Date(params.value) === "Invalid date"
+                          ? ""
+                          : moment(new Date(params.value)).format("MM/DD/YYYY")
+                        : ""
+                  }
                   onChange={(event) => {
                     const value = event.target.value;
                     params.onChange(value);
