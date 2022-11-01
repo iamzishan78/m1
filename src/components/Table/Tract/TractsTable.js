@@ -51,11 +51,15 @@ function TractsTable(props) {
   }, [])
 
   useEffect(() => {
+    props.setSelectedGridView(GridViewModule || defaultView);
+    // eslint-disable-next-line
+  }, [GridViewModule]);
+
+  useEffect(() => {
     setTableMeta({
       extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
       TableHeader: copy(TableHeader(props.isSnapGrid)),
       esIndex: "shapes_flat",
-      selectedGridView: GridViewModule || defaultView,
       typeKeyword: { gridViewCategory: "Tracts" },
       startPaginationAt: 10,
       filters: [

@@ -92,7 +92,8 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 
       <Controller
         control={control}
-        name={`basin`}
+        name={`${prefix}basin`}
+        defaultValue={tract?.basin || ''}
         render={({ onChange, value, ref }) => (
           <AutoCompleteWithNewOption
             margin="dense"
@@ -110,7 +111,8 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 
       <Controller
         control={control}
-        name={`field`}
+        name={`${prefix}field`}
+        defaultValue={tract?.field || ''}
         render={({ onChange, value, ref }) => (
           <AutoCompleteWithNewOption
             margin="dense"
