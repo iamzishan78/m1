@@ -127,10 +127,12 @@ const fieldsList = (activeUser) => {
     {
       label: "State",
       type: "state",
+      key: "state"
     },
     {
       label: "County",
       type: "county",
+      key: "county"
     },
   ];
 }
