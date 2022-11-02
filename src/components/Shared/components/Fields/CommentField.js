@@ -331,6 +331,7 @@ export default function DealComment({
               style={{
                 margin: 0,
               }}
+              id="commentBox"
               fullWidth
               rows={isEdit || showActions ? 2 : 1}
               rowsMax={2}
@@ -342,9 +343,8 @@ export default function DealComment({
             />
             <div
               id="colorText"
-              className={`${comment || showActions ? classes.commentInputFocusIn : classes.commentInputFocusOut} ${
-                classes.textDiv
-              } hideScroll`}
+              className={`${comment || showActions ? classes.commentInputFocusIn : classes.commentInputFocusOut} ${classes.textDiv
+                } hideScroll`}
             ></div>
           </>
         )}
@@ -363,6 +363,7 @@ export default function DealComment({
               className={classes.commentBtn}
               variant="contained"
               color="primary"
+              id="commentButton"
               onClick={() => {
                 if (!showCommentTypeDialog) {
                   upsertComment({ comment, commentType: selectedCommentType });

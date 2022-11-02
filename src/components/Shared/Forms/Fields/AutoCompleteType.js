@@ -20,7 +20,7 @@ const useStyles = makeStyles({
   },
 });
 
-const AutoCompleteTypeComponent = ({ onChange, value, shapeType, path, meta, label, typeKey, onBlur, ...other }) => {
+const AutoCompleteTypeComponent = ({ onChange, value, shapeType, path, meta, label, typeKey, onBlur, createable, ...other }) => {
   const [types, setTypes] = useState([]);
 
   const [typeListQuery, { data: dataTypes }] = useLazyQuery(SHAPE_AUTOCOMPLETE_LIST);

@@ -517,7 +517,7 @@ export function DetailComponents(props) {
               >
                 Map View
               </Button>
-              <Button startIcon={<InfoOutlinedIcon />} className={classes.metaButton} onClick={handleMetaToggle}>
+              <Button id="metaDataButton" startIcon={<InfoOutlinedIcon />} className={classes.metaButton} onClick={handleMetaToggle}>
                 Metadata
               </Button>
               <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
