@@ -326,7 +326,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       return;
     }
     const ownerToAdd = getValues();
-    
+
     ownerToAdd.acquisition_nra = Number(ownerToAdd.acquisition_nra);
     ownerToAdd.acquisition_cost = Number(ownerToAdd.acquisition_cost);
     ownerToAdd.isTractOwner = isTractOwner;
@@ -1097,19 +1097,20 @@ function AddAgreementOwnerAndTractDialog(props) {
         />
       </Grid>
       <Grid item xs={6}>
-        <FormControl variant="outlined" fullWidth margin="dense" inputRef={register()} name="countAcres">
-          <InputLabel id="countAcres">Count Acres</InputLabel>
-          <Controller
-            control={control}
-            name="countAcres"
-            render={({ onChange, value }) => (
-              <Select labelId="countAcres" label="Count Acres" value={value} onChange={onChange}>
+        <Controller
+          control={control}
+          name="countAcres"
+          defaultValue={''}
+          render={({ onChange, value }) => (
+            <FormControl variant="outlined" fullWidth margin="dense">
+              <InputLabel id="countAcres-label">Count Acres</InputLabel>
+              <Select id="countAcres" labelId="countAcres-label" label='Count Acres' value={value} onChange={onChange}>
                 <MenuItem value="Yes">Yes</MenuItem>
                 <MenuItem value="No">No</MenuItem>
               </Select>
-            )}
-          />
-        </FormControl>
+            </FormControl>
+          )}
+        />
       </Grid>
     </Grid>
 
