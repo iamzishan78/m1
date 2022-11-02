@@ -167,10 +167,10 @@ export default function MyWellDialog(props) {
   };
 
   useEffect(() => {
-    if (!dataWell?.tenantWell) return;
+    if (!dataWell?.wellSummaryWithHeaderDetails) return;
 
-    const { tenantWell } = dataWell;
-    setPlatformWell(tenantWell);
+    const { wellSummaryWithHeaderDetails } = dataWell;
+    setPlatformWell(wellSummaryWithHeaderDetails);
   }, [dataWell]);
 
   useEffect(() => {
