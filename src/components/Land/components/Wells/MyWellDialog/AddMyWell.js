@@ -246,7 +246,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                     param.type === "text"
                       ? params.value
                       : params.value
-                        ? new Date(params.value) === "Invalid Date"
+                        ? moment(new Date(params.value)).format("MM/DD/YYYY") === "Invalid date"
                           ? ""
                           : moment(new Date(params.value)).format("MM/DD/YYYY")
                         : ""
