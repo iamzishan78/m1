@@ -63,6 +63,9 @@ export const useStyles = makeStyles((theme) => ({
         "&:hover ": {
             borderRadius: "0px",
         },
+    },
+    fileName: {
+        maxWidth: "464px"
     }
 }));
 
