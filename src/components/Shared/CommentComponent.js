@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     height: "calc(100vh - 653px)",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     minHeight: "527px"
   },
   comment: ({ commentsHeight }) => ({
