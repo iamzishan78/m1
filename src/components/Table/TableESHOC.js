@@ -100,7 +100,6 @@ export const TableESHOC = (Component) => {
         const tableData = elasticData?.getESSimpleSearch || {}
 
         const updateColumnsOnGridViewChange = (metaDatas) => {
-            console.log('Outside Columns', columns)
             Columns((cols) => {
                 if (cols?.length > 0) {
                     console.log('Inside Columns', cols)
