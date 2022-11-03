@@ -14,56 +14,51 @@ import TableESHOC from "../TableESHOC";
 
 const genericDataActions = ["tags", "comments"];
 
-const statusData = [
-  { label: 'Not in Pay', value: 'NotInPay' },
-  { label: 'In Pay', value: 'InPay' },
-]
+export const statusData = [
+  { label: "Not in Pay", value: "NotInPay" },
+  { label: "In Pay", value: "InPay" },
+];
 
 function RevenuePropertiesTable(props) {
   const classes = usetableStyles();
   const { esIndex, setESFilters } = props;
   // redux
   const dispatch = useDispatch();
-  const [refetchData, setRefetchData] = useState(false)
+  const [refetchData, setRefetchData] = useState(false);
 
-  const esFilters = props.esFilters ? props.esFilters : []
+  const esFilters = props.esFilters ? props.esFilters : [];
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
-      if (statusData.find(st => st.value === hit.status)) {
-        hit.status = statusData.find(st => st.value === hit.status).label
+      if (statusData.find((st) => st.value === hit.status)) {
+        hit.status = statusData.find((st) => st.value === hit.status).label;
       }
-      hit = props.setGenricData(
-        hit,
-        hit._id,
-        genericDataActions,
-        genericDataActions
-      );
+      hit = props.setGenricData(hit, hit._id, genericDataActions, genericDataActions);
       hit.payorName = hit?.operator?.name;
-      hit.wellApiNumber = hit?.wells?.length > 1 ? 'MULTIPLE' : hit?.wells && hit?.wells[0] ? hit?.wells[0].apiNumber : '';
-      hit.wellName = hit?.wells?.length > 1 ? 'MULTIPLE' : hit?.wells && hit?.wells[0] ? hit?.wells[0].wellName : '';
+      hit.wellApiNumber = hit?.wells?.length > 1 ? "MULTIPLE" : hit?.wells && hit?.wells[0] ? hit?.wells[0].apiNumber : "";
+      hit.wellName = hit?.wells?.length > 1 ? "MULTIPLE" : hit?.wells && hit?.wells[0] ? hit?.wells[0].wellName : "";
       hit.checkNumber = hit?.lastCheck?.checkNumber;
       hit.amount = hit?.lastCheck?.netOwnerValue;
       hit.type = hit?.lastCheck?.interestType[0];
-      hit.lastChecked = hit?.lastCheck?.checkDate ? new Date(hit?.lastCheck?.checkDate).toLocaleDateString() : ''
+      hit.lastChecked = hit?.lastCheck?.checkDate ? new Date(hit?.lastCheck?.checkDate).toLocaleDateString() : "";
       return hit;
     });
-    return hits
-  }
+    return hits;
+  };
 
   useEffect(() => {
-    const formatedFilter = esFilters ? copy(esFilters) : []
-    const fixedFilters = []
+    const formatedFilter = esFilters ? copy(esFilters) : [];
+    const fixedFilters = [];
     if (formatedFilter[0] && formatedFilter[0].value.range) {
-      formatedFilter[0].type = 'range'
-      formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field]
-      fixedFilters.push(formatedFilter[0])
+      formatedFilter[0].type = "range";
+      formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field];
+      fixedFilters.push(formatedFilter[0]);
     }
 
     // fixedFilters[1].type = "value";
     // fixedFilters[1].value = "";
 
-    props.setInitialFilters(formatedFilter)
+    props.setInitialFilters(formatedFilter);
     props.setTableMeta({
       extendSearchQuery: props.revenueSearchQuery,
       searchFields: ["name^4", "_all"],
@@ -72,7 +67,7 @@ function RevenuePropertiesTable(props) {
       filters: fixedFilters,
       selectedGridView: { filters: [] },
       startPaginationAt: 25,
-      defaultSort: { field: 'name.keyword', order: 'asc' },
+      defaultSort: { field: "name.keyword", order: "asc" },
       formatHits,
       initializeGenericData: { key: "_id", actions: genericDataActions },
     });
@@ -80,17 +75,14 @@ function RevenuePropertiesTable(props) {
   }, [props.revenueSearchQuery, props.filterToggle, refetchData]);
 
   useEffect(() => {
-    setESFilters(props.initialFilters)
+    setESFilters(props.initialFilters);
     // eslint-disable-next-line
   }, [props.initialFilters]);
-
-
 
   useEffect(() => {
     dispatch(setRevenuePropertyData({ loading: props.loading, data: props.rows }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props?.rows]);
-
 
   useEffect(() => {
     if ((props?.total === 0 || props?.total) && props.onPropertiesCount) {
@@ -102,7 +94,7 @@ function RevenuePropertiesTable(props) {
   delete props.options.customToolbar;
   delete props.options.customToolbarSelect;
   delete props.options.onRowClick;
-  props.options.search = props.searchBar
+  props.options.search = props.searchBar;
 
   // console.log('PROPS BRO', props)
 

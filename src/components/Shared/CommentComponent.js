@@ -411,7 +411,7 @@ export default function CommentComponent(props) {
     <SizeMe>
       {({ size }) => (
         <div className={classes.container}>
-          <div className={classes.comment}>
+          <div className={classes.comment} id="commentsContainer">
             {!loadingComments ? (
               <>
                 {!showAllComments && commentsArray.length > 3 && (
@@ -638,6 +638,7 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
         transformOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <MenuItem
+          id="editComment"
           onClick={(event) => {
             setEditCommentId(eachComment._id);
             setEditComment(eachComment.comment);
