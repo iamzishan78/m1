@@ -8,6 +8,7 @@ import { setStateIfDeepEqual } from "components/Shared/functions";
 import LastCheckDateFilter from "../Common/LastCheckDateFilter";
 import { useLazyQuery } from "@apollo/client";
 import { GET_UNMAPPED_PROPERTY_COUNT } from "graphQL/useQueryGetProperty";
+import FilterIcon from "components/Common/SvgIcons/Filter";
 
 const useStyles = makeStyles((theme) => ({
   propertyTableContainer: {
@@ -81,6 +82,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Properties() {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [isFiltered, setFiltered] = useState(false);
   // redux
   const [filterToggle, setFilterToggle] = React.useState(false);
 
@@ -135,8 +137,10 @@ export default function Properties() {
     },
     {
       heading: "Unmapped",
+      key: "unmapped",
       points: 0,
       type: "warning",
+      filterable:true,
     },
   ]
 
@@ -158,6 +162,11 @@ export default function Properties() {
         cardsDefault={cardsDefault}
         totalCount={propertiesCount}
         landSearchQuery={stateApp.revenueSearchQuery}
+        isFiltered={isFiltered}
+        setFiltered={setFiltered}
+        setESFilters={setESFilters}
+        filterToggle={filterToggle}
+        setFilterToggle={setFilterToggle}
         unmappedPropertyCount={getUnmappedPropertyCountResult?.getUnmappedPropertyCount?.unmappedCount}
       />
       {/* use propertyTableContainer class as container if not using infinite scroll */}
@@ -178,6 +187,7 @@ export default function Properties() {
           revenueSearchQuery={stateApp.revenueSearchQuery}
           actionColumns={[" ", "Tags", "Comments", "Status"]}
           loadMore={loadMore}
+          isFiltered={isFiltered}
         />
       </div>
     </>

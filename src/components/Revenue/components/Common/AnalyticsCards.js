@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 
 import _ from "lodash";
 import { makeStyles } from "@material-ui/styles";
-import { Grid, Card, CardContent, Typography, CircularProgress } from "@material-ui/core";
+import { Grid, Card, CardContent, Typography, CircularProgress, IconButton } from "@material-ui/core";
 import { Warning as WarningIcon } from "@material-ui/icons";
 import { useLazyQuery } from "@apollo/client";
 
 import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
+import FilterIcon from "components/Common/SvgIcons/Filter";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -15,14 +16,38 @@ const useStyles = makeStyles(() => ({
     margin: 0,
     backgroundColor: "#fff",
   },
-  card: { borderRadius: "8px" },
+  card: { 
+    borderRadius: "8px",
+
+    "&.active": {
+      border: '1px solid #000'
+    },
+
+    "& .filterButton": {
+      display: "none",
+      transition: "0.2s ease-in-out"
+    },
+
+    "&:hover .filterButton, & .filterButton.active": {
+      display: "inline-block",
+    },
+ },
   cardHeaderTypography: {
+    display:'flex',
+    alignItems:'center',
+    gap:'10px',
     fontWeight: "bolder",
     marginBottom: "25px",
   },
   cardNumberTypography: {
     fontWeight: 900,
     fontSize: "xx-large",
+  },
+  filterIcon:{
+    color:'grey',
+    cursor:'pointer',
+    height:'100%',
+    width:'100%',
   },
   cardContent: {
     display: "flex",
@@ -37,6 +62,32 @@ const useStyles = makeStyles(() => ({
     color: "red",
     height: "20px",
   },
+
+  filterButton: {
+    padding: 5,
+    "& .MuiIconButton-label": {
+      height: 24,
+      width: 24
+    },
+    "& svg": {
+      flex: 1,
+    },
+    "& .filter-alt": {
+      display: "none"
+    },
+    "&.active .filter-alt": {
+      display: 'block'
+    },
+    "&.active .filter-outlined": {
+      display: 'none'
+    },
+    "&:hover .filter-alt": {
+      display: 'inline-block'
+    },
+    "&:hover .filter-outlined": {
+      display: 'none'
+    },
+  }
 }));
 
 export default function AnalyticsCards({
@@ -45,10 +96,42 @@ export default function AnalyticsCards({
   totalCount,
   cardsDefault,
   landSearchQuery,
-  unmappedPropertyCount = 0
+  unmappedPropertyCount = 0,
+  isFiltered,
+  setFiltered,
+  setESFilters,
+  setFilterToggle,
+  filterToggle
 }) {
   const classes = useStyles();
   const [cards, setCards] = useState(cardsDefault);
+
+  const updateFilters = () => {
+    const filters = [];
+
+    if(isFiltered){
+      // filters.push({
+      //   script : {
+      //     script : "doc['wells'].values.length > 10"
+      //   }
+      // });
+
+      // filters.push({
+      //   field: "wells",
+      //   includeEmpty: false,
+      //   type: "terms",
+      //   value: []
+      // })
+    }
+
+    setESFilters(filters);
+    setFilterToggle(!filterToggle);
+  };
+
+
+  useEffect(()=>{
+    updateFilters();
+  },[isFiltered]);
 
   const setCardPoint = (count, index) => {
     const newCards = JSON.parse(JSON.stringify(cards));
@@ -172,10 +255,22 @@ export default function AnalyticsCards({
     <Grid container direction="row" display="flex" align="center" spacing={4} textAlign="left" className={classes.root}>
       {cards && cards.map((card, index) => (
         <Grid item md={3}>
-          <Card variant="outlined" className={classes.card}>
+           <Card
+              variant="outlined"
+              className={[classes.card, card.key === isFiltered && "active" || ""]}
+          >
             <CardContent className={classes.cardContent}>
               <Typography variant="h6" component="div" className={classes.cardHeaderTypography}>
                 {card.heading}
+                {card.filterable && (
+                  <IconButton
+                    className={[classes.filterButton, "filterButton", card.key === isFiltered && "active" || ""]}
+                    onClick={()=>{ setFiltered(card.key === isFiltered ? "" : card.key)}}
+                    >
+                     <FilterIcon className={"filter-alt"} />
+                     <FilterIcon variant="outlined" className="filter-outlined"  />
+                  </IconButton>
+                )}
               </Typography>
               {card.type === "error" && (
                 <div className={classes.issuesBadges}>
