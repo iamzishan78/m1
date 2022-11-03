@@ -6,7 +6,7 @@ export const wellParams = [
   { type: "text", label: "Well Name", key: "wellName" },
   { type: "text", label: "Operator", key: "operator" },
   { type: "text", label: "Well Type", key: "wellType" },
-  { type: "text", label: "Well Profile", key: "wellProfile" },
+  { type: "text", label: "Well Profile", key: "wellBoreProfile" },
   { type: "text", label: "Well Status", key: "wellStatus" },
   { type: "text", label: "Basin", key: "basin" },
   { type: "text", label: "Field", key: "Field" },
