@@ -117,6 +117,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: "overlay",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "space-between",
     width: "100%",
     height: "100%",
   },
@@ -420,7 +421,12 @@ export default function MetadataDrawer(props) {
             setUploadedFileData={setUploadedFileData}
           />
         </div>
-        <div style={{ width: props.commentsWidth }}>
+        <div style={{
+          width: props.commentsWidth,
+          position: "absolute",
+          bottom: "10px",
+
+        }}>
           <CommentComponent
             targetLabel={targetLabel}
             targetSourceId={targetSourceId}

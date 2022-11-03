@@ -34,17 +34,15 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiFormControl-marginDense": {
       margin: "0px !important",
     },
-    height: "calc(100vh - 653px)",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    minHeight: "527px"
+    height: "auto",
+    minHeight: "300px",
+
   },
   comment: ({ commentsHeight }) => ({
-    maxHeight: commentsHeight ?? "530px",
-    minHeight: "130px",
+    position: "relative",
     overflow: "auto",
-    padding: "5px 0px",
+    padding: "14px 0px",
+    maxHeight: "calc(100vh - 890px)",
   }),
   noBorder: {
     border: "none",
@@ -521,7 +519,12 @@ export default function CommentComponent(props) {
             )}
           </div>
           {!editCommentId && (
-            <div style={{ paddingBottom: "20px" }}>
+            <div style={{
+              paddingBottom: "20px",
+              // position: "absolute",
+              // bottom: "0px",
+              width: "100%"
+            }}>
               <Grid container>
                 <Grid item style={{ maxWidth: "55px" }}>
                   <IconButton
