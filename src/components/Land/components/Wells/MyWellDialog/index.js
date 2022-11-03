@@ -10,7 +10,7 @@ import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 
 import { IconButton } from "@material-ui/core";
 // import DeleteIcon from "@material-ui/icons/Delete";
-import { useLazyQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client";
 import { GET_MY_WELL_BY_GLOBAL_ID } from "graphQL/useQueryMyWellByGlobalId";
 import { WELL_SUMMARY_WITH_HEADER } from "graphQL/useQueryWellWithHeader";
 
@@ -151,27 +151,17 @@ export default function MyWellDialog(props) {
   const classes = useStyles();
   const [activePanel, setPanel] = useState("Add New Well");
   const [platformWell, setPlatformWell] = useState();
-
+  const [myWellData, setMyWellData] = useState();
   const { id: globalWellId } = useParams();
   const history = useHistory();
+  const client = useApolloClient();
 
-  const [getMyWellByGlobalId, { data: myWellData }] = useLazyQuery(GET_MY_WELL_BY_GLOBAL_ID);
-  const [getWellSummaryWithHeader, { data: dataWell }] = useLazyQuery(WELL_SUMMARY_WITH_HEADER, {
-    // must be network-only to trigger state change for field updates
-    fetchPolicy: "network-only",
-  });
   const toggleDrawer = (anchor, open) => (event) => {
     if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
     }
   };
 
-  useEffect(() => {
-    if (!dataWell?.wellSummaryWithHeaderDetails) return;
-
-    const { wellSummaryWithHeaderDetails } = dataWell;
-    setPlatformWell(wellSummaryWithHeaderDetails);
-  }, [dataWell]);
 
   useEffect(() => {
     if (globalWellId) {
@@ -187,22 +177,25 @@ export default function MyWellDialog(props) {
     } else return "Well Details";
   }, [activePanel, globalWellId]);
 
-  const getMyWell = (wellGlobalId) => {
-    getMyWellByGlobalId({
-      variables: {
-        wellId: wellGlobalId,
-      },
-    });
-  };
 
-  const handleWellDetail = (well) => {
+  const handleWellDetail = async (well) => {
     if (well) {
-      getWellSummaryWithHeader({
+      const { data:dataWell } = await client.query({
+        query: WELL_SUMMARY_WITH_HEADER,
         variables: {
           globalWellId: well.Id,
         },
       });
-      getMyWell(well.Id);
+      if(dataWell?.wellSummaryWithHeaderDetails)
+      setPlatformWell(dataWell.wellSummaryWithHeaderDetails);
+    
+      const { data: myWellData } = await client.query({
+        query: GET_MY_WELL_BY_GLOBAL_ID,
+        variables: {
+          wellId: well.Id,
+        },
+      });
+      setMyWellData(myWellData)
     }
   };
 

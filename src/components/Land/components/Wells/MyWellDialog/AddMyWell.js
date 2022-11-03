@@ -132,13 +132,14 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
             <Autocomplete
               options={foundWells || []}
               onChange={(e, well) => {
-                handleWellDetail(well);
                 upsertMyWell({
                   variables: {
                     myWell: well,
                   },
                   refetchQueries: ["getESSimpleSearch"],
                   awaitRefetchQueries: true,
+                }).then(()=>{
+                  handleWellDetail(well);
                 });
               }}
               disabled={!!upsertWellLoading}
