@@ -126,8 +126,8 @@ export default function Summary({
             <Grid
               container
               direction="row"
-              justify="space-between"
-              style={{ padding: "10px 0px" }}
+              justify="flex-start"
+              style={{ padding: "10px 0px",display:'flex',gap:'40px' }}
             >
               <Grid item className={classes.infoSection}>
                 <FieldsSection
@@ -141,7 +141,7 @@ export default function Summary({
               </Grid>
               <Grid item className={classes.mapSection}>
                 <Grid item md={12} className={classes.provisionCard}>
-                  <Typography className="heading">Provisions</Typography>
+                  <Typography className="heading">Provisions< /Typography>
                   <Grid container direction="row">
                     {standardProvisions.map((provision) => {
                       const found = agreementProvisions.find(
