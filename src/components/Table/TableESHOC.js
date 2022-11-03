@@ -784,6 +784,7 @@ export const TableESHOC = (Component) => {
                     && props.targetLabel !== "unit"
                     && props.targetLabel !== "operator"
                     && props.targetLabel !== "owner"
+                    && props.targetLabel !== "agreement"
                     && (
                         <div style={{ height: "48px", display: "flex" }}>
                             <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
