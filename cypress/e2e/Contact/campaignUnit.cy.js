@@ -2,6 +2,9 @@
 
 import { basic_timeouts } from "../../cypressUtils/data"
 
+// this test case was in response to a bug ali fixed on campaign units 
+// the goal is to search for a campaign and determine if the units totals are correct
+
 
 describe('Campaign Unit Grid Spec', () => {
     it('passes', () => {
