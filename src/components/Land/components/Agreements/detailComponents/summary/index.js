@@ -64,7 +64,7 @@ export default function Summary({
                 <ExpandMoreIcon fontSize="large" />
               </IconButton>
             }
-            onClick={(e) => {}}
+            onClick={(e) => { }}
           >
             <Grid
               container
@@ -186,8 +186,9 @@ export default function Summary({
                     </Grid>
                   </Grid>
                 </Grid>
-                <Acreage properties={agreementDetails} />
-
+                <div style={{ padding: "0px 5px 5px 5px", backgroundColor: '#F6F8F9' }}>
+                  <Acreage properties={agreementDetails} />
+                </div>
                 <Grid item className={classes.descriptionInput}>
                   <TextField
                     id="outlined-multiline-static"

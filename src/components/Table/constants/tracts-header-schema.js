@@ -178,6 +178,21 @@ const TractsHeadCells = (isSnapGrid = false) => [
       viewColumns: false,
     },
   },
+  {
+    name: "name-elasticsearch",
+    esKey: 'name.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+  },
+  {
+    name: "shapeLabel-elasticsearch",
+    esKey: 'shapeLabel.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+  },
+  {
+    name: "state-elasticsearch",
+    esKey: 'state.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+  },
   // {
   //   name: "approvalStatus",
   //   label: " ",

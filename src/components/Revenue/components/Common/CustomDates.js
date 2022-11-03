@@ -62,6 +62,7 @@ export default function Portfolio({
   isProperties,
   lastCheckMinDate,
   onChange,
+  defaultRange,
   datesInputWidth = 1
 }) {
   const classes = useStyles();
@@ -125,7 +126,7 @@ export default function Portfolio({
               style={{ backgroundColor: "white" }}
             />
           )}
-          defaultValue={CUSTOM_DATES.THIS_YEAR_TO_DATE}
+          defaultValue={defaultRange ? defaultRange : CUSTOM_DATES.THIS_YEAR_TO_DATE}
           disableListWrap
           id="custom-date-dropdown"
         />

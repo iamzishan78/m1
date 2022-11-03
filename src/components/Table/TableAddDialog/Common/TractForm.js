@@ -6,15 +6,26 @@ import { US_STATES_CODES } from "utils/data";
 import AutoCompleteShapeLayer from "components/Shared/Forms/Fields/AutoCompleteShapeLayer";
 import { AutoCompleteLandgrid } from "components/Shared/Forms/Fields/AutoCompleteLandgrid";
 import { upperFirst } from "lodash";
+import { GET_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetAutoCompleteList";
+import { useLazyQuery } from "@apollo/client";
+import AutoCompleteWithNewOption from "components/Shared/Forms/Fields/AutoCompleteWithNewOption";
 
 
 function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, control, prefix = '' }) {
   const [state, setState] = useState(tract.state)
 
+  const [getautoCompleteListBasin, { data: dataAutoCompleteListBasin = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
+  const [getautoCompleteListField, { data: dataAutoCompleteListField = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
+
   useEffect(() => {
     if (tract.state)
       setState(tract.state)
   }, [tract.state])
+
+  useEffect(() => {
+    getautoCompleteListBasin({ variables: { type: "AgreementShapeOwner", data: { key: "basin" } } });
+    getautoCompleteListField({ variables: { type: "AgreementShapeOwner", data: { key: "field" } } });
+  }, []);
 
   const getDependencies = useCallback((deps) => {
     const county = tract.county?.toLowerCase().split(' ').reduce((county, current) => county + ' ' + upperFirst(current), '')
@@ -36,6 +47,10 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
     })
     return dependencies
   }, [tract, state])
+
+  const autoCompleteListBasin = dataAutoCompleteListBasin?.autoCompleteList || [];
+  const autoCompleteListField = dataAutoCompleteListField?.autoCompleteList || [];
+
   return (
     <>
       {!isNewTract && <AutoCompleteShapeLayer value={tractValue} shapeType='parcel' setSelectedShapeLayer={setSelectedShapeLayer} />}
@@ -71,6 +86,44 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             variant="outlined"
             onChange={(value) => { props.onChange(value.key) }}
             autoFocus={false}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name={`${prefix}basin`}
+        defaultValue={tract?.basin || ''}
+        render={({ onChange, value, ref }) => (
+          <AutoCompleteWithNewOption
+            margin="dense"
+            label="Basin"
+            InputLabelProps={{ shrink: true }}
+            variant="outlined"
+            options={autoCompleteListBasin}
+            value={value}
+            onChange={(_, value) => {
+              value && onChange(value.name);
+            }}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name={`${prefix}field`}
+        defaultValue={tract?.field || ''}
+        render={({ onChange, value, ref }) => (
+          <AutoCompleteWithNewOption
+            margin="dense"
+            label="Field"
+            InputLabelProps={{ shrink: true }}
+            variant="outlined"
+            options={autoCompleteListField}
+            value={value}
+            onChange={(_, value) => {
+              value && onChange(value.name);
+            }}
           />
         )}
       />

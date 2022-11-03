@@ -24,7 +24,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       isSnapGrid,
     },
   },
-  // //temp hide until we decide how we want this to work
+  //temp hide until we decide how we want this to work
   // {
   //   name: "agreementId",
   //   label: 'Agreement Id',
@@ -315,6 +315,21 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       print: false,
       viewColumns: false,
     },
+  },
+  {
+    name: "name-elasticsearch",
+    esKey: 'name.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+  },
+  {
+    name: "shapeLabel-elasticsearch",
+    esKey: 'shapeJson.properties.shapeLabel.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+  },
+  {
+    name: "state-elasticsearch",
+    esKey: 'state.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
   },
   // {
   //   name: "mapFlyTo",

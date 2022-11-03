@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 // context
 
 import { Container, Dialog } from "@material-ui/core";
@@ -6,7 +6,7 @@ import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "../TableESHOC";
 
 // QUERIES 
-import { useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import AddAgreementOwnerAndTractDialog from "components/Shared/M1nTable/components/SubComponents/AddAgreementOwnerAndTractDialog";
 
@@ -14,10 +14,12 @@ import { deepEqualObjects, copy } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 // Header Schemas 
-import TableHeader from 'components/Table/constants/unit-owners-tracts-header-schema.js'
+import getTableHeader from 'components/Table/constants/unit-owners-tracts-header-schema.js'
 
 // Utilities
 import { usetableStyles } from "../Styles";
+import _ from "lodash";
+import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 
 function ESTableComponent(props) {
   const classes = usetableStyles();
@@ -43,18 +45,44 @@ function ESTableComponent(props) {
     });
   };
 
+  const layerType  = useMemo(() => {
+    let layerType = _.upperFirst(props.customLayer.layer)
+    layerType = layerType === 'Surface' ? 'Surface/ROW' : layerType
+    return layerType
+  }, [props.customLayer.layer])
+
+  const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
+
   useEffect(() => {
-    props.setTableMeta({
-      shapeType: props.shapeType,
-      addableName: "Tract",
-      extendSearchQuery: `shape._id:${props.customLayer._id}`,
-      TableHeader: copy(TableHeader),
-      esIndex: 'shapeowners_flat',
-      startPaginationAt: 25,
-      formatHits,
-      // formatColumns,
-    })
-  }, []);
+    getMetaData({
+      variables: {
+        category: "Agreement",
+      },
+    });
+  }, [getMetaData])
+
+  const interestMapping = useMemo(() => {
+    if (!metaDataRes) return
+
+    const { metaData } = metaDataRes.getMetaData
+    const interestMetaData = metaData.filter(data => data.esKey === 'custom_data.interest_type')[0]
+
+    return interestMetaData.mapping.reduce((acc, val) => ({ ...acc, [val.from]: val.to }), {})
+  }, [metaDataRes])
+
+  useEffect(() => {
+    if (props.customLayer?._id && interestMapping && layerType)
+      props.setTableMeta({
+        shapeType: props.shapeType,
+        addableName: "Tract",
+        extendSearchQuery: `shape._id:${props.customLayer._id}`,
+        TableHeader: copy(getTableHeader({layerType, interestMapping})),
+        esIndex: 'shapeowners_flat',
+        startPaginationAt: 25,
+        formatHits,
+        // formatColumns,
+      })
+  }, [props.customLayer, interestMapping, layerType]);
 
   const formatColumns = (headers, hits) => {
     // const isStateTx = !!hits.find((hit) => hit.state === 'TX')
@@ -93,6 +121,7 @@ function ESTableComponent(props) {
         width="450px"
         shapeId={props.customLayer._id}
         shapeType={props.shapeType}
+        layerType={props.customLayer.layer}
         seletedOwner={props.clickedRow}
         onClose={() =>
           props.setAddToTable(false)

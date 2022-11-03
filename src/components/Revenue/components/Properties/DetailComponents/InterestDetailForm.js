@@ -6,8 +6,8 @@ import moment from "moment";
 import GlobalStyles from "GlobalStyles.js";
 
 import { makeStyles } from "@material-ui/styles";
-import { Typography, Grid, TextField, MenuItem, Select, Button } from "@material-ui/core";
-import { KeyboardDatePicker } from "@material-ui/pickers";
+import { Typography, Grid, TextField, MenuItem, Select, Button, IconButton } from "@material-ui/core";
+import { Clear } from "@material-ui/icons";
 import { useMutation } from "@apollo/client";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 
@@ -134,9 +134,9 @@ const InterestDetailForm = (props) => {
         effectiveDate: effectiveDate ? moment(effectiveDate).format("YYYY-MM-DD") : null,
         owner: owner
           ? {
-            ...owner,
-            name: owner.entityDetail.name,
-          }
+              ...owner,
+              name: owner.entityDetail.name,
+            }
           : { name: "", _id: null },
       });
     } else if (props.propertyOwnerContact) {
@@ -173,11 +173,11 @@ const InterestDetailForm = (props) => {
             control={control}
             name="owner"
             defaultValue={{ name: "", _id: null }}
-            render={(props) => (
+            render={(params) => (
               <ContactPaginatedAutocomplete
-                nameAutValue={props.value}
+                nameAutValue={params.value}
                 setNameAutValue={(value) => {
-                  props.onChange(value);
+                  params.onChange(value);
                 }}
               />
             )}
@@ -189,15 +189,15 @@ const InterestDetailForm = (props) => {
             control={control}
             name="interestType"
             defaultValue={""}
-            render={(props) => (
+            render={(params) => (
               <InterestType
                 options={interestTypeOptions.map((option) => ({
                   _id: option,
                   name: option,
                 }))}
-                value={props.value}
+                value={params.value}
                 onChange={(value) => {
-                  props.onChange(value);
+                  params.onChange(value);
                 }}
               />
             )}
@@ -209,13 +209,13 @@ const InterestDetailForm = (props) => {
             control={control}
             name="interestAmount"
             defaultValue={""}
-            render={(props) => (
+            render={(params) => (
               <TextField
                 style={{ width: "100%" }}
                 className={classes.numberField}
                 type="number"
-                value={props.value}
-                onChange={(e) => props.onChange(e.target.value)}
+                value={params.value}
+                onChange={(e) => params.onChange(e.target.value)}
               />
             )}
           />
@@ -226,21 +226,26 @@ const InterestDetailForm = (props) => {
             control={control}
             name="effectiveDate"
             defaultValue={null}
-            render={(props) => (
-              <KeyboardDatePicker
-                autoOk
-                disableToolbar
-                variant="inline"
-                format="MM/DD/YYYY"
-                margin="normal"
-                id="date-picker-inline"
-                value={props.value ? props.value : null}
-                onChange={(date) => {
-                  props.onChange(date);
-                }}
-                KeyboardButtonProps={{ "aria-label": "change date" }}
-                InputAdornmentProps={{ position: "start" }}
+            render={(params) => (
+              <TextField
+                {...params}
+                type="date"
+                margin="dense"
                 fullWidth
+                value={params.value ?? null}
+                InputLabelProps={{ shrink: true }}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton
+                      onClick={(event) => {
+                        params.onChange("");
+                      }}
+                    >
+                      <Clear style={{ height: 22, width: 22 }} />
+                    </IconButton>
+                  ),
+                  classes: { root: classes.dateRoot },
+                }}
               />
             )}
           />
@@ -251,12 +256,12 @@ const InterestDetailForm = (props) => {
             control={control}
             name="status"
             defaultValue={null}
-            render={(props) => (
+            render={(params) => (
               <Select
                 fullWidth
-                value={props.value}
+                value={params.value}
                 onChange={(e) => {
-                  props.onChange(e.target.value);
+                  params.onChange(e.target.value);
                 }}
               >
                 {statusOptions.map((option) => (
@@ -272,12 +277,12 @@ const InterestDetailForm = (props) => {
             control={control}
             name="costFree"
             defaultValue={null}
-            render={(props) => (
+            render={(params) => (
               <Select
                 fullWidth
-                value={props.value}
+                value={params.value}
                 onChange={(e) => {
-                  props.onChange(e.target.value);
+                  params.onChange(e.target.value);
                 }}
               >
                 {costFreeOptions.map((option) => (
