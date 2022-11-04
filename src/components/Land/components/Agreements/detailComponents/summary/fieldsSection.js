@@ -335,7 +335,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                         onWheel={(e) => e.target.blur()}
                         onChange={(e) => {
                           const toFixedValue = parseFloat(e.target.value).toFixed(2)
-                          const calculatedAcquisitionCost = parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2);
+                          const calculatedAcquisitionCost = parseFloat(agreementDetails?.calculated?.totalAcquisitionCost || 0).toFixed(2);
                           props.onChange(toFixedValue);
                           setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost);
                         }}
@@ -348,7 +348,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                 <IconButton
                                   aria-label="toggle royality-acres"
                                   onClick={() => {
-                                    const totalAcquisitionCost = parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2);
+                                    const totalAcquisitionCost = parseFloat(agreementDetails?.calculated?.totalAcquisitionCost || 0).toFixed(2);
                                     props.onChange(totalAcquisitionCost);
                                     offClickHandler(field.key, Number(totalAcquisitionCost));
                                     setIsAcquisitionCostOverridden(false);
