@@ -13,7 +13,8 @@ import PersonIcon from "@material-ui/icons/Person";
 import DescriptionIcon from "@material-ui/icons/Description";
 // import AdminPanelSettingsIcon from '@material-ui/icons/AdminPanelSettings';
 // import ImageOutlinedIcon from '@material-ui/icons/ImageOutlined';
-import AdminPanelSettingsIcon from "@material-ui/icons/Dashboard";
+// import AdminPanelSettingsIcon from "@material-ui/icons/Dashboard";
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
@@ -43,6 +44,13 @@ const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   padding-left: 10px;
   padding-right: 15px;
 `;
+
+//#263451
+const style = {
+  adminDevider:{
+    borderTop:'0.5px solid #43454D',
+  }
+}
 
 const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handleListItemClick, handleDrawerClose, handleDrawerOpen }) => {
   const [stateApp] = useContext(AppContext);
@@ -525,6 +533,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                 handleListItemClick("/admin");
               }}
               key="Admin"
+              style={style.adminDevider}
           >
             <div className={classes.tabContent}>
               <Tooltip
