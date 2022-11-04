@@ -124,7 +124,11 @@ const LayerItem = React.memo((props) => {
         .then((response) => response.json())
         .then((response) => {
           setZoomLoading(false)
-          var combined = turf.combine(turf.featureCollection(response?.features))
+          let features = response?.features.filter((feature) => feature.properties.layerGeometry === data.layerGeometry)
+          if (data.layerShapeName) {
+            features = features.filter((feature) => feature.properties.layerShapeName === data.layerShapeName)
+          }
+          var combined = turf.combine(turf.featureCollection(features))
           const bbox = turf.bbox(combined)
           map?.fitBounds(
             [
