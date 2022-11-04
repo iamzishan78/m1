@@ -21,7 +21,7 @@ const statusData = [
 
 function RevenuePropertiesTable(props) {
   const classes = usetableStyles();
-  const { esIndex, setESFilters, isFiltered } = props;
+  const { esIndex, setESFilters } = props;
   // redux
   const dispatch = useDispatch();
   const [refetchData, setRefetchData] = useState(false)
@@ -54,33 +54,7 @@ function RevenuePropertiesTable(props) {
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : []
     const fixedFilters = []
-    console.log("-*-*-**-* formatedFilter *-*-*-*",{formatedFilter});
-    const findRangeFilterIndex = formatedFilter.findIndex(filter => filter?.type === "range")
-    if (findRangeFilterIndex > -1) {
-      formatedFilter[findRangeFilterIndex].type = 'range'
-      formatedFilter[findRangeFilterIndex].value = formatedFilter[findRangeFilterIndex].value.range[formatedFilter[findRangeFilterIndex].field]
-      formatedFilter[findRangeFilterIndex].onInclude = isFiltered ? { field: "well.0", value: undefined} : undefined
-      fixedFilters.push(formatedFilter[findRangeFilterIndex])
-    }
-    
-    if(isFiltered){
-      formatedFilter.push({ field: "well", value: null })
-    }
-    // const findScriptFilterIndex = formatedFilter.findIndex(filter => filter.script);
-    
-    // if(findScriptFilterIndex > -1){
-    //   fixedFilters.push({ 
-    //     script: {
-    //       "script" : "doc['wells'].values.length > 10"
-    //     }
-    //   })
-    // }
-    
-    // console.log("-*-*-**-* fixedFilters *-*-*-*",{fixedFilters, findScriptFilterIndex});
-
-    // fixedFilters[1].type = "value";
-    // fixedFilters[1].value = "";
-
+       
     props.setInitialFilters(formatedFilter)
     props.setTableMeta({
       extendSearchQuery: props.revenueSearchQuery,

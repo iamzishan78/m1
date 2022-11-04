@@ -82,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Properties() {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [isFiltered, setFiltered] = useState(false);
+  const [isFiltered, setFiltered] = useState(null);
   // redux
   const [filterToggle, setFilterToggle] = React.useState(false);
 
@@ -187,7 +187,6 @@ export default function Properties() {
           revenueSearchQuery={stateApp.revenueSearchQuery}
           actionColumns={[" ", "Tags", "Comments", "Status"]}
           loadMore={loadMore}
-          isFiltered={isFiltered}
         />
       </div>
     </>

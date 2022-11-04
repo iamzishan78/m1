@@ -110,18 +110,10 @@ export default function AnalyticsCards({
     const filters = [];
 
     if(isFiltered){
-      // filters.push({
-      //   script : {
-      //     script : "doc['wells'].values.length > 10"
-      //   }
-      // });
-
-      // filters.push({
-      //   field: "wells",
-      //   includeEmpty: false,
-      //   type: "terms",
-      //   value: []
-      // })
+      filters.push({
+        field: "wells",
+        value: null
+      })
     }
 
     setESFilters(filters);
