@@ -144,6 +144,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   // function states
   const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
 
+  const [oneTimeMapBounds, setOneTimeMapBounds] = useState(null);
+
   // styles
   let classes = useStyles({
     drawingCircle: stateApp.draw && stateApp.draw.getMode() === "drag_circle" ? true : false,
@@ -462,9 +464,24 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       jsonLayer.layer = { id: layer.customLayer.layer };
       jsonLayer.id = layer.customLayer._id;
 
+      if (!oneTimeMapBounds) {
+        const bound = findBoundsMap([jsonLayer], map, layerPadding, true);
+    
+        setOneTimeMapBounds({
+          bounds: [
+            [bound.minLong, bound.minLat],
+            [bound.maxLong, bound.maxLat],
+          ],
+          options: {
+            easing: () => 1,
+            padding: layerPadding
+              ? layerPadding
+              : { top: 200, bottom: 200, left: 1200, right: 0, linear: true },
+          },
+        });
+      }
+    
       if (!loading) {
-        findBoundsMap([jsonLayer], map, layerPadding);
-
         drawBoundary(map, jsonLayer);
       }
 
@@ -4936,8 +4953,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   }
 
   useEffect(() => {
-    if (mapStyles.length > 0) {
+      if (mapStyles.length <= 0) return;
       // const SET_INITIAL_MAP_STYLE = "Satellite";
+
+      if (paramId && type !== 'wells' && !oneTimeMapBounds) return;
 
       const initializeMap = ({ setMap, mapEl, setStateApp, setDraw }) => {
         let id = mapEl.current.id;
@@ -5291,6 +5310,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           setMap(newMap);
           setLoading(false);
         });
+        
+        if (oneTimeMapBounds) {
+          newMap.fitBounds(oneTimeMapBounds.bounds, oneTimeMapBounds.options);
+          setOneTimeMapBounds(null);
+        }
       };
 
       if (!map) {
@@ -5299,12 +5323,13 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         // map.on("mousemove", mapMouseMove);
         // map.on("zoom", mapZoom);
       }
-    }
   }, [
     map,
     setStateApp,
     mapStyles,
     // stateApp.checkedLayersInteraction,
+    oneTimeMapBounds,
+    paramId,
   ]);
 
   // VIEWPORT REMOVE
