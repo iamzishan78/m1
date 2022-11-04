@@ -89,6 +89,7 @@
     "react-avatar": "^3.10.0",
     "react-beautiful-dnd": "^13.0.0",
     "react-big-calendar": "^0.33.2",
+    "react-calendar": "^3.9.0",
     "react-csv-downloader": "^2.7.1",
     "react-data-grid-m1n-version": "^1.0.1",
     "react-device-detect": "^1.17.0",

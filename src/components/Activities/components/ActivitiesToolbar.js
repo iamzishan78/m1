@@ -259,30 +259,30 @@ const ActivitiesToolbar = ({
             renderInput={(params) => <TextField {...params} label="Owner" variant="outlined" value={activityFilterByOwner} />}
           />
         </div>
-        {stateApp.activityDisplayType === "calendar" && (
-            <div className={classes.centerNav}>
-              <IconButton size="small" className={classes.marginLeft} onClick={() => goToBack()}>
-                <NavigateBeforeIcon />
-              </IconButton>
-              <p className={classes.marginLeft}>{toolbar.label}</p>
-              <IconButton size="small" className={classes.marginLeft} onClick={() => goToNext()}>
-                <NavigateNextIcon />
-              </IconButton>
+        {/*{stateApp.activityDisplayType === "calendar" && (*/}
+        {/*    <div className={classes.centerNav}>*/}
+        {/*      <IconButton size="small" className={classes.marginLeft} onClick={() => goToBack()}>*/}
+        {/*        <NavigateBeforeIcon />*/}
+        {/*      </IconButton>*/}
+        {/*      <p className={classes.marginLeft}>{toolbar.label}</p>*/}
+        {/*      <IconButton size="small" className={classes.marginLeft} onClick={() => goToNext()}>*/}
+        {/*        <NavigateNextIcon />*/}
+        {/*      </IconButton>*/}
 
-              <TextField
-                  id="date"
-                  label="Birthday"
-                  type="date"
-                  format="MM/DD/YYYY"
-                  defaultValue={selectedDate}
-                  className={classes.datePicker}
-                  onChange={(event) => setSelectedDate(new Date(event.target.value))}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-              />
-            </div>
-        )}
+        {/*      <TextField*/}
+        {/*          id="date"*/}
+        {/*          label="Birthday"*/}
+        {/*          type="date"*/}
+        {/*          format="MM/DD/YYYY"*/}
+        {/*          defaultValue={selectedDate}*/}
+        {/*          className={classes.datePicker}*/}
+        {/*          onChange={(event) => setSelectedDate(new Date(event.target.value))}*/}
+        {/*          InputLabelProps={{*/}
+        {/*            shrink: true,*/}
+        {/*          }}*/}
+        {/*      />*/}
+        {/*    </div>*/}
+        {/*)}*/}
       </div>
 
       <div className={classes.right}>
