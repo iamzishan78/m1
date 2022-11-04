@@ -23,6 +23,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 //Components
 import SearchField from "./SearchField";
+import { statusData } from "components/Table/Revenue/RevenuePropertiesTable";
 
 // Hooks
 import { useMutation } from "@apollo/client";
@@ -31,14 +32,19 @@ import { useMutation } from "@apollo/client";
 import { UPSERT_WELL_DESCRIPTOR } from "graphQL/useMutationWellDescriptor";
 
 const propertyParams = [
-  { type: "text", label: "Well NRI", key: "wellNRI" },
-  { type: "text", label: "Pay Status", key: "payStatus" },
+  { type: "text", label: "Well NRI", key: "interestAmount" },
+  { type: "text", label: "Interest Type", key: "interestType" },
+  {
+    type: "text",
+    label: "Pay Status",
+    key: "status",
+    valueFormatter: (value) => statusData.find((sd) => sd.value === value)?.label ?? value,
+  },
   { type: "text", label: "Cost Free", key: "costFree" },
   { type: "text", label: "Div Order Status", key: "divOrderStatus" },
   { type: "text", label: "Internal Company", key: "internalCompany" },
   { type: "text", label: "Acquisition ID", key: "acquisitionID" },
   { type: "text", label: "Prospect ID", key: "prospectID" },
-  { type: "text", label: "Classification", key: "classification" },
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -252,7 +258,14 @@ const ReveueProperties = ({ platformWell, properties }) => {
                   <div>
                     {propertyParams.map((param, index) => (
                       <React.Fragment key={index}>
-                        <TextField margin="dense" label={param.label} value={property[param.key]} fullWidth defaultValue="" disabled />
+                        <TextField
+                          margin="dense"
+                          label={param.label}
+                          value={param.valueFormatter ? param.valueFormatter(property[param.key]) : property[param.key]}
+                          fullWidth
+                          defaultValue=""
+                          disabled
+                        />
                       </React.Fragment>
                     ))}
                   </div>
