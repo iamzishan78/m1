@@ -180,7 +180,7 @@ export default function DealComment({
   const [nameAutValue, setNameAutValue] = useState({});
   const [showCommentTypeDialog, setShowCommentTypeDialog] = useState(false);
   const [selectedCommentType, setSelectedCommentType] = useState("General");
-
+  const [commentTypeDialogBox,setCommentTypeDialogBox] = useState(false);
   (function () {
     var target = $("#colorText");
     const scrollDiv = function () {
@@ -272,9 +272,15 @@ export default function DealComment({
     setComment(value + `{{${act._id}}}`);
     setIsSelected(true);
   };
-
+  const openDialogBox = (e) => {
+    console.log("outer div!!!!!!");
+    setCommentTypeDialogBox(false);
+    e.stopPropagation();
+  }
   return (
-    <>
+    <div
+
+    >
       <Autocomplete
         onFocus={() => {
           setShowCommentTypeDialog(false);
@@ -342,6 +348,7 @@ export default function DealComment({
               size="small"
             />
             <div
+              // onClick={()=>openDialogBox()}
               id="colorText"
               className={`${comment || showActions ? classes.commentInputFocusIn : classes.commentInputFocusOut} ${classes.textDiv
                 } hideScroll`}
@@ -357,7 +364,12 @@ export default function DealComment({
             alignItems: "center",
           }}
         >
-          <CommentType showCommentType={props.showCommentType} setSelectedCommentType={setSelectedCommentType} />
+          <CommentType
+              showCommentType={props.showCommentType}
+              setSelectedCommentType={setSelectedCommentType}
+              setCommentTypeDialogBox={setCommentTypeDialogBox}
+              commentTypeDialogBox={commentTypeDialogBox}
+          />
           {showActions && (
             <Button
               className={classes.commentBtn}
@@ -402,7 +414,7 @@ export default function DealComment({
           </Button>
         </>
       )}
-    </>
+    </div>
   );
 }
 
