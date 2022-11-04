@@ -4,6 +4,7 @@ import { history } from "store";
 
 import Typography from "@material-ui/core/Typography";
 import vf_number from "components/Shared/valueformatters/vf_number";
+import { statusData } from "components/Table/Revenue/RevenuePropertiesTable";
 
 const wellsColumnHeaders = [
   {
@@ -133,7 +134,7 @@ const wellsColumnHeaders = [
     },
   },
   {
-    name: "field",
+    name: "Field",
     label: "Field",
     esKey: "wellData.field.keyword",
     options: {
@@ -198,7 +199,7 @@ const wellsColumnHeaders = [
   {
     name: "permitApprovedDate",
     label: "Permit Date",
-    esKey: "wellData.permitApprovedDate.keyword",
+    esKey: "wellData.permitApprovedDate",
     options: {
       sort: true,
       filter: true,
@@ -211,7 +212,7 @@ const wellsColumnHeaders = [
   {
     name: "spudDate",
     label: "Spud Date",
-    esKey: "wellData.spudDate.keyword",
+    esKey: "wellData.spudDate",
     options: {
       sort: true,
       filter: true,
@@ -224,7 +225,7 @@ const wellsColumnHeaders = [
   {
     name: "completionDate",
     label: "Completion Date",
-    esKey: "wellData.completionDate.keyword",
+    esKey: "wellData.completionDate",
     options: {
       sort: true,
       filter: true,
@@ -238,7 +239,7 @@ const wellsColumnHeaders = [
   {
     name: "firstProdDate",
     label: "First Prod Date",
-    esKey: "wellData.FirstProdDate.keyword",
+    esKey: "wellData.FirstProdDate",
     options: {
       sort: true,
       filter: true,
@@ -251,7 +252,7 @@ const wellsColumnHeaders = [
   {
     name: "measuredDepth",
     label: "Measured Depth",
-    esKey: "wellData.measuredDepth.keyword",
+    esKey: "wellData.measuredDepth",
     options: {
       sort: true,
       filter: true,
@@ -294,7 +295,9 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (values) => (
+        <p>{values?.length ? values.map((value) => statusData.find((sd) => sd.value === value)?.label).join(", ") : null}</p>
+      ),
     },
   },
   {
@@ -330,7 +333,7 @@ const wellsColumnHeaders = [
   {
     name: "effectiveDate",
     label: "Effective Date",
-    esKey: "properties.effectiveDate.keyword",
+    esKey: "properties.effectiveDate",
     options: {
       sort: true,
       filter: true,
