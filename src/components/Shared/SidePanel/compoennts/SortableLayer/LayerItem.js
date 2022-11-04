@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/styles";
-import * as turf from '@turf/turf'
+import * as turf from "@turf/turf";
 import { Box, CircularProgress, Grid, ListItemIcon } from "@material-ui/core";
 
 import { Flipped } from "react-flip-toolkit";
@@ -135,7 +135,7 @@ const LayerItem = React.memo((props) => {
               [bbox[0], bbox[1]], // southwestern corner of the bounds
               [bbox[2], bbox[3]] // northeastern corner of the bounds
             ],
-            { padding: { top: 40, bottom: 40, left: 40, right: 40 } }
+            { padding: { top: 40, bottom: 40, left: 40, right: 40 }, easing: () => 1, }
           )
         })
         .catch((error) => {
