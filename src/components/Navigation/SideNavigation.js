@@ -11,7 +11,11 @@ import Drawer from "@material-ui/core/Drawer";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import PersonIcon from "@material-ui/icons/Person";
 import DescriptionIcon from "@material-ui/icons/Description";
+// import AdminPanelSettingsIcon from '@material-ui/icons/AdminPanelSettings';
 // import ImageOutlinedIcon from '@material-ui/icons/ImageOutlined';
+// import AdminPanelSettingsIcon from "@material-ui/icons/Dashboard";
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -40,6 +44,13 @@ const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   padding-left: 10px;
   padding-right: 15px;
 `;
+
+//#263451
+const style = {
+  adminDevider:{
+    borderTop:'0.5px solid #43454D',
+  }
+}
 
 const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handleListItemClick, handleDrawerClose, handleDrawerOpen }) => {
   const [stateApp] = useContext(AppContext);
@@ -285,7 +296,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                 {/* <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
                   beta
                 </Button>*/}
-              </ListItemSecondaryAction> 
+              </ListItemSecondaryAction>
             </div>
           </ListItem>
 
@@ -483,7 +494,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               }));
               handleListItemClick("/analytics");
             }}
-            key="analytics"
+            key="Analytics"
           >
             <div className={classes.tabContent}>
               <Tooltip title="Analytics" placement="right" classes={{ tooltip: classes.iconTooltip }}>
@@ -500,6 +511,46 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             </div>
           </ListItem>
 
+
+
+          <ListItem
+              classes={{
+                root: classes.menuListItem,
+                selected: classes.menuListItemSelected,
+              }}
+              button
+              selected={stateNav.selectedMenuIndexAdmin === 1}
+              onClick={(event) => {
+                setStateApp((stateApp) => ({
+                  ...stateApp,
+                  selectedContact: null,
+                  contactSearchQuery: null,
+                }));
+                setStateNav((stateApp) => ({
+                  ...stateApp,
+                  contactFromMap: false,
+                }));
+                handleListItemClick("/admin");
+              }}
+              key="Admin"
+              style={style.adminDevider}
+          >
+            <div className={classes.tabContent}>
+              <Tooltip
+                  title="Admin"
+                  placement="right"
+                  classes={{ tooltip: classes.iconTooltip }}
+              >
+                <ListItemIcon className={classes.sideNavIcon}>
+                  <AdminPanelSettingsIcon />
+                </ListItemIcon>
+              </Tooltip>
+              <ListItemText
+                  className={`${classes.sideNavText} uppercase`}
+                  primary="Admin"
+              />
+            </div>
+          </ListItem>
 
         </List>
       </Drawer>
