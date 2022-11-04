@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     overflow: "auto",
     padding: "14px 0px",
-    maxHeight: "calc(100vh - 780px)",
+    maxHeight: "calc(100vh - 891px)",
   }),
   hideMenuIcon: {
     visibility: "hidden"
