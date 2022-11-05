@@ -144,6 +144,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   // function states
   const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
 
+  const [oneTimeMapBounds, setOneTimeMapBounds] = useState(null);
+
   // styles
   let classes = useStyles({
     drawingCircle: stateApp.draw && stateApp.draw.getMode() === "drag_circle" ? true : false,
@@ -462,9 +464,24 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       jsonLayer.layer = { id: layer.customLayer.layer };
       jsonLayer.id = layer.customLayer._id;
 
+      if (!oneTimeMapBounds) {
+        const bound = findBoundsMap([jsonLayer], map, layerPadding, true);
+    
+        setOneTimeMapBounds({
+          bounds: [
+            [bound.minLong, bound.minLat],
+            [bound.maxLong, bound.maxLat],
+          ],
+          options: {
+            easing: () => 1,
+            padding: layerPadding
+              ? layerPadding
+              : { top: 200, bottom: 200, left: 1200, right: 0, linear: true },
+          },
+        });
+      }
+    
       if (!loading) {
-        findBoundsMap([jsonLayer], map, layerPadding);
-
         drawBoundary(map, jsonLayer);
       }
 
@@ -947,12 +964,12 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
         if (prop.paintProps) layerConfig.paint = prop.paintProps;
         if (prop.filter) layerConfig.filter = prop.filter;
-        
+
         // Incase of group we have one datasource but we filter by layerShapeName ( i.e file name)
-        if (config.layerShapeName && config.groupId) 
+        if (config.layerShapeName && config.groupId)
           layerConfig.filter = ['all', ["==", "layerShapeName", config.layerShapeName], ["==", "layerGeometry", config.layerGeometry]];
         else if (config.layerGeometry && config.groupId) layerConfig.filter = ["==", "layerGeometry", config.layerGeometry];
-        
+
         if (prop.minZoom) {
           layerConfig.minzoom = prop.minZoom;
         }
@@ -1614,8 +1631,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   //// remove the layer and it's source from the map after it's deleted
   const removeLayer = (layer) => {
     const paintProps = layer.layerPaintProps;
-    if(!paintProps?.length) return
-    
+    if (!paintProps?.length) return
+
     for (let i = paintProps.length - 1; i >= 0; i--) {
       const prop = paintProps[i];
 
@@ -4630,10 +4647,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         ...stateApp,
         mapVars: stateApp.defaultMapVars,
       }));
-      map.flyTo({
+      map.jumpTo({
         center: [stateApp.defaultMapVars.center.lng, stateApp.defaultMapVars.center.lat],
         zoom: stateApp.defaultMapVars.zoom,
-        speed: 0.5,
+        // flyTo v
+        // speed: 0.5,
       });
     }
   }, [stateApp.defaultMapVars]);
@@ -4935,8 +4953,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   }
 
   useEffect(() => {
-    if (mapStyles.length > 0) {
+      if (mapStyles.length <= 0) return;
       // const SET_INITIAL_MAP_STYLE = "Satellite";
+
+      if (paramId && type !== 'wells' && !oneTimeMapBounds) return;
 
       const initializeMap = ({ setMap, mapEl, setStateApp, setDraw }) => {
         let id = mapEl.current.id;
@@ -4996,12 +5016,13 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         });
         newMap.addControl(geoLocate, "bottom-right");
         geoLocate.on("geolocate", function (e) {
-          newMap.flyTo({
+          newMap.jumpTo({
             center: [e.coords.longitude, e.coords.latitude],
             zoom: 14,
             pitch: 80,
             bearing: 20,
-            speed: 0.4,
+            // flyTo v
+            // speed: 0.4,
           });
         });
 
@@ -5289,6 +5310,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           setMap(newMap);
           setLoading(false);
         });
+        
+        if (oneTimeMapBounds) {
+          newMap.fitBounds(oneTimeMapBounds.bounds, oneTimeMapBounds.options);
+          setOneTimeMapBounds(null);
+        }
       };
 
       if (!map) {
@@ -5297,12 +5323,13 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         // map.on("mousemove", mapMouseMove);
         // map.on("zoom", mapZoom);
       }
-    }
   }, [
     map,
     setStateApp,
     mapStyles,
     // stateApp.checkedLayersInteraction,
+    oneTimeMapBounds,
+    paramId,
   ]);
 
   // VIEWPORT REMOVE
@@ -5498,10 +5525,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       }));
 
       !stateApp.activateWellDetailsFromTable &&
-        map.flyTo({
+        map.jumpTo({
           center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
           zoom: stateApp.flyTo.zoom ? stateApp.flyTo.zoom : zVal,
-          speed: 0.5,
+          // flyTo v
+          // speed: 0.5,
         });
     }
   }, [map, stateApp.flyTo]);
@@ -5522,7 +5550,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         map.fitBounds([
           [bounds.minLong, bounds.minLat],
           [bounds.maxLong, bounds.maxLat],
-        ]);
+        ], {
+          easing: () => 1,
+        });
     }
   }, [map, stateApp.fitBounds]);
 
@@ -5577,7 +5607,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         }));
       } else {
         if (stateApp.wellListFromSearch[0] && stateApp.wellListFromSearch[0].latitude && stateApp.wellListFromSearch[0].longitude) {
-          map.flyTo({
+          map.jumpTo({
             center: {
               lng: stateApp.wellListFromSearch[0].longitude,
               lat: stateApp.wellListFromSearch[0].latitude,
@@ -5628,12 +5658,13 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   useEffect(() => {
     if (map && stateApp.toggleZoomOut) {
       if (stateApp.toggleZoomOut === true) {
-        map.flyTo({
+        map.jumpTo({
           center: stateApp.defaultMapVars.center,
           zoom: stateApp.defaultMapVars.zoom,
           pitch: stateApp.defaultMapVars.pitch,
           bearing: stateApp.defaultMapVars.bearing,
-          speed: 0.5,
+          // flyTo v
+          // speed: 0.5,
         });
 
         let flying = null;
@@ -6053,8 +6084,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
         // map may be null when wellDetailCard is launched from somewhere else
         map?.fitBounds(bbox, {
-          speed: 0.75,
-          linear: true,
+          easing: () => 1,
         });
       }
       // setStateApp((state) => ({

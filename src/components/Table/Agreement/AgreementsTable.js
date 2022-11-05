@@ -4,7 +4,7 @@ import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import Agreements from "components/Shared/svgIcons/agreements";
 
-import { deepEqualObjects, copy } from "components/Shared/functions";
+import { deepEqualObjects, copy, esExtentedSearch } from "components/Shared/functions";
 import { HeaderComponent } from "components/Table/helpers";
 
 // Header Schemas
@@ -93,8 +93,8 @@ function AgreementsTable(props) {
     props.setInitialFilters(formatedFilter);
     setTableMeta({
       // addableName: "Unit",
-      extendSearchQuery: props.landSearchQuery || searchInput ? `*${searchInput}*` : '' || '',
-      // selectedGridView: GridViewModule || defaultView,
+      extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
+      selectedGridView: GridViewModule || defaultView,
       customDataESKey: 'shapeJson.properties.custom_data',
       // searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
