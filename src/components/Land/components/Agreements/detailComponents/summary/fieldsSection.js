@@ -25,6 +25,8 @@ import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { showInfoMessage } from "actions";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
+import StateField from "components/Revenue/components/Properties/DetailComponents/State";
+import CountyField from "components/Revenue/components/Properties/DetailComponents/County";
 
 const useStyles = makeStyles((theme) => ({
   valueOveridden: {
@@ -48,6 +50,8 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   const [fieldsList, setFieldsList] = useState([]);
   const [editIconState, setEditIconState] = useState({});
   const [agreementDetailCopied, setAgreementCopied] = useState();
+  const [state, setState] = useState();
+  const [county, setCounty] = useState();
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -94,6 +98,12 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   useEffect(() => {
     const customData = getCustomMetaFields(agreementDetails, metaDataRes);
     setFieldsList([...fieldsData(stateApp.user), ...customData]);
+    if(agreementDetails?.originalProperties?.State  || agreementDetails?.originalProperties?.StateAbbreviation){
+      setState(agreementDetails.originalProperties.State  || agreementDetails.originalProperties.StateAbbreviation)
+    }
+    if(agreementDetails?.originalProperties?.County){
+      setCounty(agreementDetails.originalProperties.County)
+    }
   }, [metaDataRes, agreementDetails]);
 
   const onGlobalKeyDown = (e) => {
@@ -362,6 +372,29 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                         }}
                       />
                     )}
+                  />
+                )}
+                {field.key === 'state' && (
+                  <StateField
+                    // label="State"
+                    shrink
+                    value={state}
+                    onStateChange={(selectedState) =>{
+                      setState(selectedState.acronym)
+                      updateAgreement("state", selectedState.acronym, false)
+                    }}
+                  />
+                )}
+                {field.key === 'county' && (
+                  <CountyField
+                    // label="County"
+                    shrink
+                    value={county}
+                    state={state}
+                    onCountyChange={(selectedCounty) =>{
+                      setCounty(selectedCounty.county)
+                      updateAgreement('county', selectedCounty.county, false)
+                    }}
                   />
                 )}
               </Fragment>
