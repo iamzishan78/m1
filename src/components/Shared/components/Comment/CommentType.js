@@ -175,6 +175,7 @@ export default function CommentType(props) {
 
   const [selectedTab, setSelectedTab] = useState("Existing");
   const [selectedCommentType, setSelectedCommentType] = useState("General");
+  const [isMenuOpen,setIsMenuOpen] = useState(false);
   const [commentTypeData, setCommentTypeData] = useState({
     commentType: "",
     category: "",
@@ -229,8 +230,7 @@ export default function CommentType(props) {
 
 
   const openDialogBox = (e) => {
-    console.log("Inner div!!!!!!");
-    props.setCommentTypeDialogBox((o) => !o);
+    props.setCommentTypeDialogBox(true);
     e.stopPropagation();
   }
   return (
@@ -258,7 +258,7 @@ export default function CommentType(props) {
             position: "absolute",
             bottom: selectedTab === "New Comment Type" ? "25px" : "69px",
             background: "white",
-            zIndex: "9999",
+            zIndex: `${isMenuOpen ? '0' :'9999'}`,
             boxShadow: "0 10px 40px 0 rgb(0 0 0 / 15%)",
             padding: "15px",
             width: "315px",
@@ -276,7 +276,6 @@ export default function CommentType(props) {
               </span>
               <span
                 className={`${classes.tab} ${selectedTab === "New Comment Type" ? classes.selectedTab : ""}`}
-                onClick={() => setSelectedTab("New Comment Type")}
               >
                 New Comment Type
               </span>
@@ -289,11 +288,14 @@ export default function CommentType(props) {
                 variant="outlined"
                 value={selectedCommentType}
                 onChange={(e) => {
-
+                  console.log("event fire")
                   setSelectedCommentType(e.target.value);
                   props.setSelectedCommentType(e.target.value);
+                  props.setCommentTypeDialogBox(false);
+                }}
+                onClick={(e)=>{
+                  setIsMenuOpen((prev)=> !prev);
                   e.stopPropagation();
-                  // props.setCommentTypeDialogBox(false);
                 }}
               >
                 {commentTypes.map((obj) => (

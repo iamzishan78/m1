@@ -273,13 +273,12 @@ export default function DealComment({
     setIsSelected(true);
   };
   const openDialogBox = (e) => {
-    console.log("outer div!!!!!!");
-    setCommentTypeDialogBox(false);
     e.stopPropagation();
+    setCommentTypeDialogBox(false);
   }
   return (
     <div
-
+      onClick={(e)=>openDialogBox(e)}
     >
       <Autocomplete
         onFocus={() => {
@@ -348,7 +347,6 @@ export default function DealComment({
               size="small"
             />
             <div
-              // onClick={()=>openDialogBox()}
               id="colorText"
               className={`${comment || showActions ? classes.commentInputFocusIn : classes.commentInputFocusOut} ${classes.textDiv
                 } hideScroll`}
