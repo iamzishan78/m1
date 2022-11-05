@@ -109,5 +109,15 @@ const tableData = [
     type: "autocomplete",
     key: "approvalStatus",
   },
+  {
+    label: "State",
+    type: "state",
+    key: "state"
+  },
+  {
+    label: "County",
+    type: "county",
+    key: "county"
+  },
 ];
 export default tableData;

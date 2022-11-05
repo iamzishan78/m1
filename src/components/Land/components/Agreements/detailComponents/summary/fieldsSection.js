@@ -25,6 +25,8 @@ import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { showInfoMessage } from "actions";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
+import StateField from "components/Revenue/components/Properties/DetailComponents/State";
+import CountyField from "components/Revenue/components/Properties/DetailComponents/County";
 
 const useStyles = makeStyles((theme) => ({
   valueOveridden: {
@@ -48,6 +50,8 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   const [fieldsList, setFieldsList] = useState([]);
   const [editIconState, setEditIconState] = useState({});
   const [agreementDetailCopied, setAgreementCopied] = useState();
+  const [state, setState] = useState();
+  const [county, setCounty] = useState();
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -94,6 +98,12 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   useEffect(() => {
     const customData = getCustomMetaFields(agreementDetails, metaDataRes);
     setFieldsList([...fieldsData(stateApp.user), ...customData]);
+    if(agreementDetails?.originalProperties?.State  || agreementDetails?.originalProperties?.StateAbbreviation){
+      setState(agreementDetails.originalProperties.State  || agreementDetails.originalProperties.StateAbbreviation)
+    }
+    if(agreementDetails?.originalProperties?.County){
+      setCounty(agreementDetails.originalProperties.County)
+    }
   }, [metaDataRes, agreementDetails]);
 
   const onGlobalKeyDown = (e) => {
@@ -122,10 +132,10 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   };
 
   return (
-    <Grid container direction="row" display="flex" justify="flex-start" alignItems="center" spacing={1} className={classes.fieldsSection}>
+    <Grid container direction="row" display="flex" justify="space-between" alignItems="center" className={classes.fieldsSection}>
       {fieldsList.map((field, index) => (
         <Grid item xs={12} key={index}>
-          <Grid container className={classes.gridStyle}>
+          <Grid container className={classes.gridStyle} style={{display:'flex',justifyContent:'space-between'}}>
             <Grid
               item
               xs={3}
@@ -335,7 +345,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                         onWheel={(e) => e.target.blur()}
                         onChange={(e) => {
                           const toFixedValue = parseFloat(e.target.value).toFixed(2)
-                          const calculatedAcquisitionCost = parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2);
+                          const calculatedAcquisitionCost = parseFloat(agreementDetails?.calculated?.totalAcquisitionCost || 0).toFixed(2);
                           props.onChange(toFixedValue);
                           setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost);
                         }}
@@ -348,7 +358,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                 <IconButton
                                   aria-label="toggle royality-acres"
                                   onClick={() => {
-                                    const totalAcquisitionCost = parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2);
+                                    const totalAcquisitionCost = parseFloat(agreementDetails?.calculated?.totalAcquisitionCost || 0).toFixed(2);
                                     props.onChange(totalAcquisitionCost);
                                     offClickHandler(field.key, Number(totalAcquisitionCost));
                                     setIsAcquisitionCostOverridden(false);
@@ -362,6 +372,29 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                         }}
                       />
                     )}
+                  />
+                )}
+                {field.key === 'state' && (
+                  <StateField
+                    // label="State"
+                    shrink
+                    value={state}
+                    onStateChange={(selectedState) =>{
+                      setState(selectedState.acronym)
+                      updateAgreement("state", selectedState.acronym, false)
+                    }}
+                  />
+                )}
+                {field.key === 'county' && (
+                  <CountyField
+                    // label="County"
+                    shrink
+                    value={county}
+                    state={state}
+                    onCountyChange={(selectedCounty) =>{
+                      setCounty(selectedCounty.county)
+                      updateAgreement('county', selectedCounty.county, false)
+                    }}
                   />
                 )}
               </Fragment>
