@@ -31,9 +31,6 @@ function NumberFormatCustom(props) {
           },
         });
       }}
-      // thousandSeparator
-      // isNumericString
-      // prefix="$"
     />
   );
 }
@@ -228,15 +225,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
           </FormControl>
         )}
 
-        <h4
-          style={
-            {
-              //margin: "0 0 15px 0",
-              //float: "left",
-              //fontSize: "1.1rem",
-            }
-          }
-        >
+        <h4>
           Selected well and lease information
         </h4>
         {wellParams.map((param, index) => (
@@ -253,7 +242,15 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                   InputLabelProps={{ shrink: true }}
                   fullWidth
                   defaultValue=""
-                  value={param.type === "text" ? params.value : params.value ? moment(new Date(params.value)).format("MM/DD/YYYY") : ""}
+                  value={
+                    param.type === "text"
+                      ? params.value
+                      : params.value
+                        ? moment(new Date(params.value)).format("MM/DD/YYYY") === "Invalid date"
+                          ? ""
+                          : moment(new Date(params.value)).format("MM/DD/YYYY")
+                        : ""
+                  }
                   onChange={(event) => {
                     const value = event.target.value;
                     params.onChange(value);

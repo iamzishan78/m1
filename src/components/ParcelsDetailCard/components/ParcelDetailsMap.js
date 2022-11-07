@@ -153,7 +153,8 @@ export default function ParcelDetailsMap(props) {
             return bounds.extend(coord);
           }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
           newMap.fitBounds(bounds, {
-            padding: 50
+            padding: 50,
+            easing: () => 1,
           });
           setMap(newMap);
         });

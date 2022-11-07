@@ -125,7 +125,6 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [tractValue, setTractValue] = useState({ name: "", _id: null });
   const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
   const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
-
   const tract = watch("tract", {});
   const state = watch("tract.state", '');
   const nra = watch("nra", '');
@@ -170,24 +169,30 @@ function AddAgreementOwnerAndTractDialog(props) {
   }, [nra]);
 
   useEffect(() => {
-    if (tract.state && isNewTract) {
-      (async () => {
-        const { data: tractShape } = await client.query({
-          query: GET_TRACT_ABSTRACT_SHAPE,
-          variables: {
-            tract
+    try{
+      if (tract.state && isNewTract) {
+        (async () => {
+          const { data: tractShape } = await client.query({
+            query: GET_TRACT_ABSTRACT_SHAPE,
+            variables: {
+              tract
+            }
+          });
+          if (tractShape?.getTractAbstractShape?.data?.properties?.shapeArea) {
+            setValue('tract.shapeArea', tractShape?.getTractAbstractShape?.data.properties?.shapeArea)
+            if (newTractError) { setNewTractError(null) }
+          } else {
+            setNewTractError(tractShape?.getTractAbstractShape)
           }
-        });
-        if (tractShape?.getTractAbstractShape?.data?.properties?.shapeArea) {
-          setValue('tract.shapeArea', tractShape?.getTractAbstractShape?.data.properties?.shapeArea)
-          if (newTractError) { setNewTractError(null) }
-        } else {
-          setNewTractError(tractShape?.getTractAbstractShape)
-        }
-      })()
-    } else {
-      if (newTractError) { setNewTractError(null) }
+        })();
+        setIsNewTract(false);
+      } else {
+        if (newTractError) { setNewTractError(null) }
+      }
+    }catch (error){
+        console.log("%c Fetch track with newState","color:red",error);
     }
+
   }, [tract]);
 
   const parcelOwnersRadioBValue = watch("parcelOwnersRadioBValue", "true");
@@ -326,7 +331,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       return;
     }
     const ownerToAdd = getValues();
-    
+
     ownerToAdd.acquisition_nra = Number(ownerToAdd.acquisition_nra);
     ownerToAdd.acquisition_cost = Number(ownerToAdd.acquisition_cost);
     ownerToAdd.isTractOwner = isTractOwner;
@@ -1097,19 +1102,20 @@ function AddAgreementOwnerAndTractDialog(props) {
         />
       </Grid>
       <Grid item xs={6}>
-        <FormControl variant="outlined" fullWidth margin="dense" inputRef={register()} name="countAcres">
-          <InputLabel id="countAcres">Count Acres</InputLabel>
-          <Controller
-            control={control}
-            name="countAcres"
-            render={({ onChange, value }) => (
-              <Select labelId="countAcres" label="Count Acres" value={value} onChange={onChange}>
+        <Controller
+          control={control}
+          name="countAcres"
+          defaultValue={''}
+          render={({ onChange, value }) => (
+            <FormControl variant="outlined" fullWidth margin="dense">
+              <InputLabel id="countAcres-label">Count Acres</InputLabel>
+              <Select id="countAcres" labelId="countAcres-label" label='Count Acres' value={value} onChange={onChange}>
                 <MenuItem value="Yes">Yes</MenuItem>
                 <MenuItem value="No">No</MenuItem>
               </Select>
-            )}
-          />
-        </FormControl>
+            </FormControl>
+          )}
+        />
       </Grid>
     </Grid>
 

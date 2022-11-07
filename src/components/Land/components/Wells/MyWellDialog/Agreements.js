@@ -131,6 +131,7 @@ const Agreements = ({ platformWell, agreements }) => {
         wellInterest: {
           ...platformWell,
           globalWellId: platformWell.id,
+          Id: platformWell.id,
           userId: stateApp.user.mongoId,
           shapeType: "Agreement",
           shapeId: shapeId,
@@ -182,7 +183,7 @@ const Agreements = ({ platformWell, agreements }) => {
                       setSearchState(false);
                     }, 300)
                   }
-                  onChange={(evt) => {}}
+                  onChange={(evt) => { }}
                 />
               </div>
             </Grid>

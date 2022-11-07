@@ -96,7 +96,13 @@ const RelatedAgreements = (props) => {
           <Grid container direction="column" alignItems="center" spacing={4} style={{ display: "block" }}>
             {uniObj?._id && (
               <Grid item xs={12} style={{ padding: "35px 20px 0px 0px" }}>
-                <RelatedAgreementsTable dense moduleId={customLayerId} setDrawer={props.setDrawer} setCounter={setCounter} />
+                <RelatedAgreementsTable
+                  dense
+                  moduleId={customLayerId}
+                  setDrawer={props.setDrawer}
+                  setCounter={setCounter}
+                  targetLabel="Shape"
+                />
               </Grid>
             )}
           </Grid>

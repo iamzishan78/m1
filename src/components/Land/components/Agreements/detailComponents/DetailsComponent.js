@@ -376,6 +376,21 @@ export function DetailComponents(props) {
     if (field === "agreementType") {
       customLayer.layer = value;
     }
+    if(field === "state"){
+      if(shape.properties.originalProperties){
+        shape.properties.originalProperties.State = value;  
+        shape.properties.originalProperties.StateAbbreviation = value;  
+      }else{
+        shape.properties.originalProperties = { State:value, StateAbbreviation:value }
+      }
+    }
+    if(field === "county"){
+      if(shape.properties.originalProperties){
+        shape.properties.originalProperties.County = value;  
+      }else{
+        shape.properties.originalProperties = { County:value }
+      }
+    }
 
     shape.properties.shapeLabel = shapeLabel;
     shape.name = shapeLabel;
@@ -517,7 +532,7 @@ export function DetailComponents(props) {
               >
                 Map View
               </Button>
-              <Button startIcon={<InfoOutlinedIcon />} className={classes.metaButton} onClick={handleMetaToggle}>
+              <Button id="metaDataButton" startIcon={<InfoOutlinedIcon />} className={classes.metaButton} onClick={handleMetaToggle}>
                 Metadata
               </Button>
               <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
@@ -681,7 +696,7 @@ export function DetailComponents(props) {
           onClose={() => setOpenDialog(false)}
           deleteFunc={handleDeleteAgreement}
           m1nSelectedRowsIds={null}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={() => { }}
         >
           Are you sure you want to delete this agreement?
         </DeleteConfirmationDialogContent>

@@ -235,7 +235,7 @@ export default function CommentComponent(props) {
             user: { name: element.ownerName, email: element.ownerName },
             activityData: element,
             comment: element.notes,
-            ts: new Date(Number(element._ts)).getTime(),
+            ts: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime(),
             isActivity: true,
             isEdited: false,
             public: true,
@@ -308,21 +308,21 @@ export default function CommentComponent(props) {
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")
+        .split("\n")
+        .map((line) => {
+          if (line.trim() !== ".") {
+            return line.trim();
+          }
+        })
+        .join("\n")
       : `${value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")}`;
+        .split("\n")
+        .map((line) => {
+          if (line.trim() !== ".") {
+            return line.trim();
+          }
+        })
+        .join("\n")}`;
 
   const updateComment = (value) => {
     setLoadingComments(true);
@@ -411,7 +411,7 @@ export default function CommentComponent(props) {
     <SizeMe>
       {({ size }) => (
         <div className={classes.container}>
-          <div className={classes.comment}>
+          <div className={classes.comment} id="commentsContainer">
             {!loadingComments ? (
               <>
                 {!showAllComments && commentsArray.length > 3 && (
@@ -459,7 +459,7 @@ export default function CommentComponent(props) {
                           <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
                             <div>
                               <span className={classes.bold}>{eachComment?.user?.name}</span>
-                              {<ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />}
+                              {!isNaN(eachComment.ts) && <ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />}
                               {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
                               {eachComment?.user?.email === stateApp.user.email &&
                                 showCommentActionId === eachComment._id &&
@@ -520,7 +520,7 @@ export default function CommentComponent(props) {
                 <Grid item style={{ maxWidth: "55px" }}>
                   <IconButton
                     className={classes.commentView}
-                    // style={{ top: "3px" }}
+                  // style={{ top: "3px" }}
                   >
                     {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
                   </IconButton>
@@ -550,7 +550,7 @@ export default function CommentComponent(props) {
                           setComment={setComment}
                           upsertComment={addNewComment}
                           showCommentType={props.showCommentType}
-                          // fieldWidth={`${size - 23}px`}
+                        // fieldWidth={`${size - 23}px`}
                         />
                       </div>
                     )}
@@ -638,6 +638,7 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
         transformOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <MenuItem
+          id="editComment"
           onClick={(event) => {
             setEditCommentId(eachComment._id);
             setEditComment(eachComment.comment);

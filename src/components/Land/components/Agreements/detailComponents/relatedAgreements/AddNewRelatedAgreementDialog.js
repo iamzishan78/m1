@@ -122,6 +122,8 @@ const calcScoreOpacity = (maxMin, score) => {
 
 const AddNewRelatedAgreementDialog = (props) => {
   const classes = useStyles();
+  const { customLayerId, setDrawer, parentType } = props;
+
   const [getCustomLayer, { data: agreement }] = useLazyQuery(CUSTOMLAYER);
   const [upsertRelatedAgreementDescriptor, { loading: upsertLoading }] = useMutation(UPSERT_RELATED_AGREEMENT_DESSCRIPTOR, {
     fetchPolicy: "no-cache",
@@ -131,8 +133,6 @@ const AddNewRelatedAgreementDialog = (props) => {
       }
     },
   });
-
-  const { customLayerId, setDrawer, parentType } = props;
 
   const selectedAgreement = useMemo(() => get(agreement, "customLayer.shapeJson.properties"), [agreement]);
 
@@ -153,6 +153,7 @@ const AddNewRelatedAgreementDialog = (props) => {
         relatedObject: get(agreement, "customLayer._id"),
         descriptorType: parentType,
         relatedObjectType: "Agreement",
+        isDeleted: false,
       },
       refetchQueries: ["getESSimpleSearch"],
       awaitRefetchQueries: true,
@@ -271,7 +272,7 @@ const AddNewRelatedAgreementDialog = (props) => {
                     value={
                       param.type === "date"
                         ? get(selectedAgreement, param.key)
-                          ? moment(get(selectedAgreement, param.key)).format("DD/MM/YYYY")
+                          ? moment(get(selectedAgreement, param.key)).format("MM/DD/YYYY")
                           : ""
                         : param.formatValue
                         ? param.formatValue(get(selectedAgreement, param.key, ""))
