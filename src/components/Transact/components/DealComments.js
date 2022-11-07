@@ -22,6 +22,7 @@ import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import { dateIsValid } from "utils/helper";
+import moment from "moment";
 import { CommonCommentText } from "components/Shared/CommentComponent";
 
 TimeAgo.addDefaultLocale(en);
@@ -103,13 +104,18 @@ const useStyles = makeStyles((theme) => ({
   inlineFlex: {
     display: "inline-flex",
   },
+  containerWrapper:{
+    display:'flex',
+    justifyContent:'flex-start',
+    alignItems:'center',
+    gap:'10px'
+  }
 }));
 
 export default function DealComment(props) {
-  const { targetSourceId } = props;
+  const { targetSourceId,contactData } = props;
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
-
   const [users, setUsers] = useState([]);
   const [comment, setComment] = useState("");
   const [editCommentId, setEditCommentId] = useState("");
@@ -317,6 +323,39 @@ export default function DealComment(props) {
     return indexToShow;
   };
 
+
+  useEffect(() => {
+    try {
+      setLoadingComments(true);
+      const activity = stateApp.activeDeal.activity;
+      if (dataComments && dataComments.commentsByObjectId) {
+        if (activity && activity.length > 0) {
+          let activittyData = [];
+          activity.forEach((element) => {
+            activittyData.push({
+              user: { name: element.ownerName, email: element.ownerName },
+              activityData: element,
+              comment: element.notes,
+              ts: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime(),
+              isActivity: true,
+              isEdited: false,
+              public: true,
+              __typename: "Comment",
+            });
+          });
+          let tempArray = dataComments.commentsByObjectId.concat(activittyData);
+          setCommentsArray(sortArrayBasedOnTs([...tempArray]));
+        } else {
+          setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
+        }
+      }
+    }catch (e){
+      console.log("modifying the Comment Error",e);
+    }finally {
+      setLoadingComments(false);
+    }
+  }, [stateApp.activeDeal.activity,dataComments]);
+
   return (
     <div className={classes.container}>
       <div className={classes.comment}>
@@ -365,17 +404,33 @@ export default function DealComment(props) {
                       </Grid>
                       <Grid item className={classes.paddingCreateTask}>
                         <div>
-                          <span className={classes.bold}>{eachComment.user?.name}</span>
+                          <div className={classes.containerWrapper}>
+                            <span className={classes.bold}>{eachComment.user?.name}</span>
+                            <span>{
+                              <ReactTimeAgo
+                                  className={classes.commentTime}
+                                  date={
+                                    new Date(Number(eachComment.ts))
+                                  }
+                                  locale="en-US"
+                              />
+                            }</span>
+                          </div>
+                          {eachComment.isActivity === true && (
+                              <>
+                                <div className={`${classes.whiteSpace}`}>
+                                  {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
+                                </div>
+                                <div className={`${classes.whiteSpace}`}>
+                                  START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
+                                </div>
+                                <div className={`${classes.whiteSpace}`}>
+                                  END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
+                                </div>
+                              </>
+                          )}
                           {eachComment.isPinned && <span> created this task.</span>}
-                          {
-                            <ReactTimeAgo
-                              className={classes.commentTime}
-                              date={
-                                new Date(Number(eachComment.ts))
-                              }
-                              locale="en-US"
-                            />
-                          }
+
                           {!eachComment.isPinned && (
                             <>
                               {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
