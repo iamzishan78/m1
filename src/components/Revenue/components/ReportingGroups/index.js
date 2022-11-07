@@ -92,6 +92,7 @@ export default function ReportingGroups() {
           startPaginationAt={startPaginationAt}
           revenueSearchQuery={stateApp.revenueSearchQuery}
           actionColumns={[" ", "Tags", "Comments", "Status"]}
+          isReportingGroup
         />
       </div>
     </div>

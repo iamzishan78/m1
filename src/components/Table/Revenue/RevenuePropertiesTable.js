@@ -62,7 +62,7 @@ function RevenuePropertiesTable(props) {
     props.setTableMeta({
       extendSearchQuery: props.revenueSearchQuery,
       searchFields: ["name^4", "_all"],
-      TableHeader: copy(TableHeader),
+      TableHeader: copy(TableHeader(!!props.isReportingGroup)),
       esIndex: esIndex,
       filters: fixedFilters,
       selectedGridView: { filters: [] },

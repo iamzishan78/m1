@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     border: "none",
   },
   search: {
-    maxHeight: "217px",
+    maxHeight: "211px",
     width: "100%",
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
@@ -83,6 +83,7 @@ const useStyles = makeStyles((theme) => ({
   commentBtn: {
     float: "right",
     right: "15px",
+    zIndex: "999"
   },
   dialog: {
     "&.MuiDialog-root": {

@@ -418,7 +418,12 @@ export default function MetadataDrawer(props) {
               setUploadedFileData={setUploadedFileData}
           />
         </div>
-        <div style={{ maxWidth: props.commentsWidth }}>
+        <div style={{
+          width: props.commentsWidth,
+          position: "absolute",
+          bottom: "10px",
+
+        }}>
           <CommentComponent
             targetLabel={targetLabel}
             targetSourceId={targetSourceId}
