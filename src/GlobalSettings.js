@@ -64,7 +64,7 @@ const GlobalSettings = {
         maxWidth: "492px",
         whiteSpace: "pre-wrap",
         position: "sticky",
-        left: "124px",
+        left: "108px",
         zIndex: 200,
         boxShadow: "inset -1px 0px 0px 0px lightgrey",
         padding: "0px 25px 0px 0px",
@@ -76,7 +76,7 @@ const GlobalSettings = {
       style: {
         position: "sticky",
         zIndex: 201,
-        left: "124px",
+        left: "108px",
         paddingLeft: "25px !important",
       },
     }),
@@ -144,26 +144,30 @@ const GlobalSettings = {
   },
 };
 
-export const GlobalStickyStyles = ({ setCellProps, setCellHeaderProps }) => {
+export const GlobalStickyStyles = ({ setCellProps = {}, setCellHeaderProps = {} }) => {
   return {
     setCellProps: () => ({
       style: {
+        maxWidth: "450px",
+        minWidth: setCellProps?.maxWidth || "450px",
         whiteSpace: "pre-wrap",
         position: "sticky",
-        left: "77px",
+        left: "108px",
         zIndex: 200,
         boxShadow: "inset -1px 0px 0px 0px lightgrey",
         padding: "0px 25px 0px 0px",
-        minWidth: setCellProps.maxWidth,
         ...setCellProps,
       },
     }),
     // styling props applied to the column header cell
     setCellHeaderProps: () => ({
       style: {
+        maxWidth: "450px",
+        minWidth: setCellProps?.maxWidth || "450px",
         position: "sticky",
+        paddingLeft: '35px',
         zIndex: 201,
-        left: "77px",
+        left: "108px",
         ...setCellHeaderProps,
       },
     }),
