@@ -12,7 +12,7 @@ import { IconButton } from "@material-ui/core";
 // import DeleteIcon from "@material-ui/icons/Delete";
 import { useLazyQuery } from "@apollo/client";
 import { GET_MY_WELL_BY_GLOBAL_ID } from "graphQL/useQueryMyWellByGlobalId";
-import { TENANTWELL } from "graphQL/useQueryTenantWell";
+import { WELL_SUMMARY_WITH_HEADER } from "graphQL/useQueryWellWithHeader";
 
 // Components
 import AddMyWell from "./AddMyWell";
@@ -150,17 +150,13 @@ const anchor = "right";
 export default function MyWellDialog(props) {
   const classes = useStyles();
   const [activePanel, setPanel] = useState("Add New Well");
-  // const [state, setState] = useState({right: false});
-  // const [anchorEl, setAnchorEl] = useState();
-
-  // const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [platformWell, setPlatformWell] = useState();
 
   const { id: globalWellId } = useParams();
   const history = useHistory();
 
   const [getMyWellByGlobalId, { data: myWellData }] = useLazyQuery(GET_MY_WELL_BY_GLOBAL_ID);
-  const [getTenantWell, { data: dataTenantWell }] = useLazyQuery(TENANTWELL, {
+  const [getWellSummaryWithHeader, { data: dataWell }] = useLazyQuery(WELL_SUMMARY_WITH_HEADER, {
     // must be network-only to trigger state change for field updates
     fetchPolicy: "network-only",
   });
@@ -171,15 +167,11 @@ export default function MyWellDialog(props) {
   };
 
   useEffect(() => {
-    if (!dataTenantWell?.tenantWell) return;
+    if (!dataWell?.wellSummaryWithHeaderDetails) return;
 
-    const { tenantWell } = dataTenantWell;
-    setPlatformWell(tenantWell);
-  }, [dataTenantWell]);
-
-  // const handleMenuClose = () => {
-  //   setAnchorEl(null);
-  // };
+    const { wellSummaryWithHeaderDetails } = dataWell;
+    setPlatformWell(wellSummaryWithHeaderDetails);
+  }, [dataWell]);
 
   useEffect(() => {
     if (globalWellId) {
@@ -205,7 +197,7 @@ export default function MyWellDialog(props) {
 
   const handleWellDetail = (well) => {
     if (well) {
-      getTenantWell({
+      getWellSummaryWithHeader({
         variables: {
           globalWellId: well.Id,
         },
@@ -268,29 +260,6 @@ export default function MyWellDialog(props) {
                   <IconButton size="small" onClick={handleCloseDialog}>
                     <CloseIcon />
                   </IconButton>
-                  {/* <Menu
-                  id="dealMenu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleMenuClose}
-                  className={classes.menu}
-                  getContentAnchorEl={null}
-                  anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-                  transformOrigin={{ vertical: "top", horizontal: "center" }}
-                >
-                  <MenuItem
-                    onClick={() => {
-                      setOpenDeleteConfirmDialog(true);
-                      handleMenuClose();
-                    }}
-                  >
-                    <ListItemIcon>
-                      <DeleteIcon size="medium" />
-                    </ListItemIcon>
-                    <ListItemText>Delete</ListItemText>
-                  </MenuItem>
-                </Menu> */}
                 </div>
               </div>
             </div>
@@ -306,7 +275,7 @@ export default function MyWellDialog(props) {
                   // Add My Well fields component here
                   <AddMyWell
                     handleWellDetail={handleWellDetail}
-                    platformWell={{ ...get(myWellData, "myWellByGlobalId.myWell.wellData", {}), ...platformWell }}
+                    platformWell={{ ...platformWell, ...get(myWellData, "myWellByGlobalId.myWell.wellData", {}) }}
                     showSearch={!globalWellId}
                   />
                 )}

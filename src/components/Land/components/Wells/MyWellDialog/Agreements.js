@@ -131,6 +131,7 @@ const Agreements = ({ platformWell, agreements }) => {
         wellInterest: {
           ...platformWell,
           globalWellId: platformWell.id,
+          Id: platformWell.id,
           userId: stateApp.user.mongoId,
           shapeType: "Agreement",
           shapeId: shapeId,
@@ -182,7 +183,7 @@ const Agreements = ({ platformWell, agreements }) => {
                       setSearchState(false);
                     }, 300)
                   }
-                  onChange={(evt) => {}}
+                  onChange={(evt) => { }}
                 />
               </div>
             </Grid>
@@ -193,7 +194,14 @@ const Agreements = ({ platformWell, agreements }) => {
             {/* <WellSearchApiFieldES getSelectedWell={getSelectedWell} /> */}
             <SearchField
               esIndex="shapes_flat"
-              fields={["name^4", "_all"]}
+              fields={[
+                "name",
+                "shapeJson.properties.shapeLabel",
+                "state",
+                "shapeJson.properties.originalProperties.County",
+                "shapeJson.properties.agreementNumber",
+                "shapeJson.properties.agreementType",
+              ]}
               filters={[{ field: "shapeJson.properties.type", value: "agreement" }]}
               optionsParams={["name", "internalID"]}
               targetLabel="agreement"

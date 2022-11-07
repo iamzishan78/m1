@@ -85,7 +85,7 @@ const fieldsList = (activeUser) => {
       label: "Bonus Payment",
       type: "text",
       key: "bounusPayment",
-      formatValue: (value) => (value ? `$ ${value}` : ""),
+      // formatValue: (value) => (value ? `$ ${value}` : ""),
       InputProps: {
         startAdornment: <InputAdornment position="start">$</InputAdornment>,
       },
@@ -123,6 +123,16 @@ const fieldsList = (activeUser) => {
       label: "Internal Company",
       type: "autocomplete",
       key: "internalCompany",
+    },
+    {
+      label: "State",
+      type: "state",
+      key: "state"
+    },
+    {
+      label: "County",
+      type: "county",
+      key: "county"
     },
   ];
 }

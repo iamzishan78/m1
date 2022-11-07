@@ -170,6 +170,38 @@ export const contactManagementRoutes = {
   },
 };
 
+export const analyticsManagementRoutes = {
+  ACTIVITY: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "CRM",
+    link: "/analytics",
+    component: "ActivitiesDashboard",
+    value: "Activities",
+    search: true,
+    isDefault: true,
+  },
+  LEADS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Land",
+    link: "/analytics/land",
+    component: "Land",
+    value: "Activities",
+    search: false,
+    isDefault: true,
+  },
+  PROSPECTS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Revenue",
+    link: "/analytics/revenue",
+    component: "Revenue",
+    filterValue: "Prospect",
+    showAnalytics: true,
+    value: "Prospects",
+    search: false,
+    isDefault: true,
+  },
+};
+
 export const contactsAnalyticsCards = [
   {
     heading: "Total Contacts",

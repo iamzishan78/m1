@@ -23,8 +23,8 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
   }, [tract.state])
 
   useEffect(() => {
-    getautoCompleteListBasin({ variables: { type: "AgreementShapeOwner", data: { key: "basin" } } });
-    getautoCompleteListField({ variables: { type: "AgreementShapeOwner", data: { key: "field" } } });
+    getautoCompleteListBasin({ variables: { type: "AgreementShapeOwner", data: { key: "basin", inTract: true } } });
+    getautoCompleteListField({ variables: { type: "AgreementShapeOwner", data: { key: "field", inTract: true } } });
   }, []);
 
   const getDependencies = useCallback((deps) => {
@@ -92,7 +92,8 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 
       <Controller
         control={control}
-        name={`basin`}
+        name={`${prefix}basin`}
+        defaultValue={tract?.basin || ''}
         render={({ onChange, value, ref }) => (
           <AutoCompleteWithNewOption
             margin="dense"
@@ -102,7 +103,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             options={autoCompleteListBasin}
             value={value}
             onChange={(_, value) => {
-              value && onChange(value.name);
+              onChange(value?.name ?? "");
             }}
           />
         )}
@@ -110,7 +111,8 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 
       <Controller
         control={control}
-        name={`field`}
+        name={`${prefix}field`}
+        defaultValue={tract?.field || ''}
         render={({ onChange, value, ref }) => (
           <AutoCompleteWithNewOption
             margin="dense"
@@ -120,7 +122,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             options={autoCompleteListField}
             value={value}
             onChange={(_, value) => {
-              value && onChange(value.name);
+              onChange(value?.name ?? "");
             }}
           />
         )}

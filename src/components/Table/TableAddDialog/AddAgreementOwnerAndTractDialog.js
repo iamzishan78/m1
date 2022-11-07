@@ -125,7 +125,6 @@ function AddAgreementOwnerAndTractDialog(props) {
   const [tractValue, setTractValue] = useState({ name: "", _id: null });
   const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
   const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
-
   const tract = watch("tract", {});
   const state = watch("tract.state", '');
   const nra = watch("nra", '');
@@ -166,28 +165,34 @@ function AddAgreementOwnerAndTractDialog(props) {
 
   useEffect(() => {
     if (!isAcquisitionCostOverridden)
-      setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra));
+      setValue("acquisition_cost", calculateAcquisitionCost(nra, getValues().acquisition_nra));
   }, [nra]);
 
   useEffect(() => {
-    if (tract.state && isNewTract) {
-      (async () => {
-        const { data: tractShape } = await client.query({
-          query: GET_TRACT_ABSTRACT_SHAPE,
-          variables: {
-            tract
+    try{
+      if (tract.state && isNewTract) {
+        (async () => {
+          const { data: tractShape } = await client.query({
+            query: GET_TRACT_ABSTRACT_SHAPE,
+            variables: {
+              tract
+            }
+          });
+          if (tractShape?.getTractAbstractShape?.data?.properties?.shapeArea) {
+            setValue('tract.shapeArea', tractShape?.getTractAbstractShape?.data.properties?.shapeArea)
+            if (newTractError) { setNewTractError(null) }
+          } else {
+            setNewTractError(tractShape?.getTractAbstractShape)
           }
-        });
-        if (tractShape?.getTractAbstractShape?.data?.properties?.shapeArea) {
-          setValue('tract.shapeArea', tractShape?.getTractAbstractShape?.data.properties?.shapeArea)
-          if (newTractError) { setNewTractError(null) }
-        } else {
-          setNewTractError(tractShape?.getTractAbstractShape)
-        }
-      })()
-    } else {
-      if (newTractError) { setNewTractError(null) }
+        })();
+        setIsNewTract(false);
+      } else {
+        if (newTractError) { setNewTractError(null) }
+      }
+    }catch (error){
+        console.log("%c Fetch track with newState","color:red",error);
     }
+
   }, [tract]);
 
   const parcelOwnersRadioBValue = watch("parcelOwnersRadioBValue", "true");
@@ -283,6 +288,8 @@ function AddAgreementOwnerAndTractDialog(props) {
       const shapeArea = selectedShapeLayer?.shapeJson?.properties?.shapeArea || "";
       const legalDescription = selectedShapeLayer?.shapeJson?.properties?.legalDescription || "";
       const mapStatus = selectedShapeLayer?.shapeJson?.properties?.mapStatus || "";
+      const basin = selectedShapeLayer?.shapeJson?.properties?.basin || "";
+      const field = selectedShapeLayer?.shapeJson?.properties?.field || "";
       selectedShapeLayer.parcelId = selectedShapeLayer._id;
 
       setTractValue({ _id: selectedShapeLayer._id, name: selectedShapeLayer.name });
@@ -297,6 +304,8 @@ function AddAgreementOwnerAndTractDialog(props) {
           shapeArea,
           legalDescription,
           mapStatus,
+          basin,
+          field,
           ...originalProperties,
           qtrQtrSelection: selectedShapeLayer.qtrQtrSelection,
         },
@@ -322,11 +331,14 @@ function AddAgreementOwnerAndTractDialog(props) {
       return;
     }
     const ownerToAdd = getValues();
+
+    ownerToAdd.acquisition_nra = Number(ownerToAdd.acquisition_nra);
+    ownerToAdd.acquisition_cost = Number(ownerToAdd.acquisition_cost);
     ownerToAdd.isTractOwner = isTractOwner;
     ownerToAdd.tract = tract;
 
     Object.keys(ownerToAdd).forEach((key) => {
-      if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'nra', 'company_net_acres'].includes(key) && ownerToAdd[key]) ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(8));
+      if (["mineral_interest", "royalty_interest", "orri", "net_acres", 'nra', 'company_net_acres', 'lease_royalty_interest'].includes(key) && ownerToAdd[key]) ownerToAdd[key] = addTrailingZeros(parseFloat(ownerToAdd[key]).toFixed(8));
     });
 
     if (ownerToAdd.parcelOwnersRadioBValue === "true") {
@@ -346,7 +358,6 @@ function AddAgreementOwnerAndTractDialog(props) {
             {
               shapeId: props.shapeId,
               ...ownerToAdd,
-              acquisition_cost: Number(parseFloat(ownerToAdd.nra * ownerToAdd.acquisition_nra).toFixed(2))
             },
           ],
           shapeType: props.shapeType,
@@ -362,7 +373,6 @@ function AddAgreementOwnerAndTractDialog(props) {
           shapeOwner: {
             shapeId: props.shapeId,
             ...ownerToAdd,
-            acquisition_cost: Number(parseFloat(ownerToAdd.nra * ownerToAdd.acquisition_nra).toFixed(2))
           },
         },
         refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
@@ -417,7 +427,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     if (!nra && !aquisitionNra) return null;
     const aquisitionCost = parseFloat(nra || 0) * (parseFloat(aquisitionNra || 0));
 
-    return Number(aquisitionCost.toFixed(2))
+    return aquisitionCost.toFixed(2)
   };
 
   useEffect(() => {
@@ -540,6 +550,7 @@ function AddAgreementOwnerAndTractDialog(props) {
               onClick={() => {
                 setIsNewTract(false);
               }}
+              id="existingTractTab"
               className={!isNewTract ? classes.selectedType : classes.unSelectedType}
               style={{ marginLeft: "20px" }}
             >
@@ -586,6 +597,7 @@ function AddAgreementOwnerAndTractDialog(props) {
         <Grid item xs={3}>
           <Autocomplete
             options={qtrOptions}
+            id="autocompleteQTR2"
             getOptionLabel={(option) => option}
             value={tract?.qtrQtrSelection?.selectedQtr?.[1] ?? ""}
             onChange={(e, newInputValue) => {
@@ -723,6 +735,7 @@ function AddAgreementOwnerAndTractDialog(props) {
     ) : (
       <AutocompEntityNamesList
         variant="outlined"
+        id="AutocompEntityNamesList"
         placeholder="Search for owner by name"
         nameAutValue={nameAutValue}
         setNameAutValue={setNameAutValue}
@@ -759,6 +772,28 @@ function AddAgreementOwnerAndTractDialog(props) {
               const nra = !isNraOverridden ? calculateNRA(getValues().royalty_interest, getValues().orri, net_acres) : getValues().nra
               setValue('net_acres', net_acres)
               setValue('nra', nra)
+            }}
+          />
+        )}
+      />
+    )}
+
+    {interestMapping?.['Lease Royalty Interest']?.includes(layerType) && (
+      <Controller
+        control={control}
+        name="lease_royalty_interest"
+        render={({ onChange, value }) => (
+          <TextField
+            variant="outlined"
+            InputLabelProps={{ shrink: true }}
+            margin="dense"
+            value={value}
+            type="number"
+            label={'Lease Royalty Interest'}
+            fullWidth
+            onWheel={(e) => e.target.blur()}
+            onChange={(e) => {
+              onChange(e.target.value)
             }}
           />
         )}
@@ -933,6 +968,72 @@ function AddAgreementOwnerAndTractDialog(props) {
 
     <Controller
       control={control}
+      name="acquisition_nra"
+      render={(props) => (
+        <TextField
+          label="Acquisition $/NRA"
+          variant="outlined"
+          margin="dense"
+          value={parseFloat(props.value).toFixed(2)}
+          inputRef={props.ref}
+          onWheel={(e) => e.target.blur()}
+          onChange={(e) => {
+            props.onChange(parseFloat(e.target.value).toFixed(2));
+            if (!isAcquisitionCostOverridden)
+              setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, e.target.value));
+          }}
+          InputProps={{
+            inputComponent: CurrencyFormatCustom,
+          }}
+          fullWidth
+          defaultValue=""
+        />
+      )}
+    />
+
+    <Controller
+      control={control}
+      name="acquisition_cost"
+      render={(props) => (
+        <TextField
+          label="Acquisition Cost"
+          variant="outlined"
+          margin="dense"
+          value={parseFloat(props.value).toFixed(2)}
+          inputRef={props.ref}
+          onWheel={(e) => e.target.blur()}
+          className={isAcquisitionCostOverridden ? classes.netAcresOveridden : classes.netAcresNormal}
+          onChange={(e) => {
+            const toFixedValue = parseFloat(e.target.value).toFixed(2)
+            props.onChange(toFixedValue);
+            const acquisition_cost = calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra);
+            setIsAcquisitionCostOverridden(acquisition_cost !== toFixedValue)
+          }}
+          InputProps={{
+            inputComponent: CurrencyFormatCustom,
+            endAdornment: (
+              <InputAdornment position="end">
+                {isAcquisitionCostOverridden && (
+                  <IconButton
+                    aria-label="toggle royality-acres"
+                    onClick={() => {
+                      setValue("acquisition_cost", calculateAcquisitionCost(getValues().nra, getValues().acquisition_nra));
+                      setIsAcquisitionCostOverridden(false)
+                    }}
+                  >
+                    <AutorenewIcon />
+                  </IconButton>
+                )}
+              </InputAdornment>
+            ),
+          }}
+          fullWidth
+          defaultValue=""
+        />
+      )}
+    />
+    <Controller
+      control={control}
       name={`parcelOwnersRadioBValue`}
       render={({ onChange, value, ref }) => (
         <RadioGroup
@@ -1001,19 +1102,20 @@ function AddAgreementOwnerAndTractDialog(props) {
         />
       </Grid>
       <Grid item xs={6}>
-        <FormControl variant="outlined" fullWidth margin="dense" inputRef={register()} name="countAcres">
-          <InputLabel id="countAcres">Count Acres</InputLabel>
-          <Controller
-            control={control}
-            name="countAcres"
-            render={({ onChange, value }) => (
-              <Select labelId="countAcres" label="Count Acres" value={value} onChange={onChange}>
+        <Controller
+          control={control}
+          name="countAcres"
+          defaultValue={''}
+          render={({ onChange, value }) => (
+            <FormControl variant="outlined" fullWidth margin="dense">
+              <InputLabel id="countAcres-label">Count Acres</InputLabel>
+              <Select id="countAcres" labelId="countAcres-label" label='Count Acres' value={value} onChange={onChange}>
                 <MenuItem value="Yes">Yes</MenuItem>
                 <MenuItem value="No">No</MenuItem>
               </Select>
-            )}
-          />
-        </FormControl>
+            </FormControl>
+          )}
+        />
       </Grid>
     </Grid>
 
@@ -1034,6 +1136,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       <Button
         variant="contained"
         color="secondary"
+        id="saveButton"
         size="medium"
         disableElevation
         onClick={() => {

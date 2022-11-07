@@ -4,7 +4,7 @@ import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import Agreements from "components/Shared/svgIcons/agreements";
 
-import { deepEqualObjects, copy } from "components/Shared/functions";
+import { deepEqualObjects, copy, esExtentedSearch } from "components/Shared/functions";
 import { HeaderComponent } from "components/Table/helpers";
 
 // Header Schemas
@@ -45,7 +45,6 @@ function AgreementsTable(props) {
   const [updateGridView] = useMutation(UPDATE_GRID_VIEW);
 
   const classes = usetableStyles({ isFullHeight: true, isAgreementsTable: true });
-
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
   const GridViewModule = userGridViewSettings[`Agreements`];
@@ -73,8 +72,6 @@ function AgreementsTable(props) {
       hit.effectiveDate = hit.effectiveDate ? convert_date(hit.effectiveDate) : null;
       hit.expirationDate = hit.expirationDate ? convert_date(hit.expirationDate) : null;
       hit.extensionDate = hit.extensionDate ? convert_date(hit.extensionDate) : null;
-      hit.State = hit?.originalProperties?.State;
-      hit.County = hit?.originalProperties?.County;
       hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       // hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
@@ -91,13 +88,12 @@ function AgreementsTable(props) {
     props.setSelectedGridView(AgreementsGridView || defaultView);
   }, [AgreementsGridView]);
 
-  console.log(props.landSearchQuery || "empty", searchInput || "empty");
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : [];
     props.setInitialFilters(formatedFilter);
     setTableMeta({
       // addableName: "Unit",
-      extendSearchQuery: props.landSearchQuery || searchInput || '',
+      extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
       selectedGridView: GridViewModule || defaultView,
       customDataESKey: 'shapeJson.properties.custom_data',
       // searchFields: ["*"],
@@ -125,10 +121,6 @@ function AgreementsTable(props) {
   useEffect(() => {
     props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);
   }, [props?.options?.count]);
-  useEffect(() => {
-    props.setTableMeta((tableMeta) => ({ ...tableMeta, selectedGridView: GridViewModule || defaultView }));
-    // eslint-disable-next-line
-  }, [GridViewModule]);
 
   useEffect(() => {
     setESFilters && setESFilters(props.initialFilters);
@@ -137,7 +129,7 @@ function AgreementsTable(props) {
 
   useEffect(() => {
     props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);
-  }, [props?.options?.count])
+  }, [props?.options?.count]);
 
   const onCustomKeyChange = (value = null, index, key) => {
     const rows = JSON.parse(JSON.stringify(props.rows));

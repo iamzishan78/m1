@@ -83,12 +83,14 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   infoSection: {
-    maxWidth: "50%",
+    flex:'1',
+    minWidth:'540px',
   },
   mapSection: {
     height: "382px",
-    width: "45%",
-    margin: "10px 10px 0px 0px",
+    minWidth:'540px',
+    flex:'1',
+    margin: "10px 0px 0px 0px",
   },
   adornmentAutocomplete: {
     "& .MuiAutocomplete-endAdornment": {

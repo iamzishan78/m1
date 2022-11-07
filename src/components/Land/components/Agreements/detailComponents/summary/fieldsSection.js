@@ -16,8 +16,6 @@ import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoComple
 import MetaField from "components/Table/helpers/MetaField";
 import { copy } from "utils/helper";
 import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
-// import CustomFieldSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldSelect";
-// import CustomFieldMultiSelect from "components/Shared/M1nTable/components/SubComponents/CustomFieldMultiSelect";
 
 import { AppContext } from "AppContext";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
@@ -27,6 +25,8 @@ import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { showInfoMessage } from "actions";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
+import StateField from "components/Revenue/components/Properties/DetailComponents/State";
+import CountyField from "components/Revenue/components/Properties/DetailComponents/County";
 
 const useStyles = makeStyles((theme) => ({
   valueOveridden: {
@@ -50,22 +50,24 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   const [fieldsList, setFieldsList] = useState([]);
   const [editIconState, setEditIconState] = useState({});
   const [agreementDetailCopied, setAgreementCopied] = useState();
+  const [state, setState] = useState();
+  const [county, setCounty] = useState();
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const [isAcquisitionCostOverridden, setIsAcquisitionCostOverridden] = useState(agreementDetails?.totalAcquisitionCost !== agreementDetails?.calculated?.totalAcquisitionCost);
+  const [isAcquisitionCostOverridden, setIsAcquisitionCostOverridden] = useState(
+    agreementDetails?.totalAcquisitionCost !== agreementDetails?.calculated?.totalAcquisitionCost
+  );
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
   useEffect(() => {
     document.addEventListener("keydown", onGlobalKeyDown, false);
-    document.addEventListener("blur", (e) => {
-    });
+    document.addEventListener("blur", (e) => {});
   }, []);
 
   useEffect(() => {
-    if (agreementDetails?._id && !agreementDetails?.agreementNumber)
-      dispatch(showInfoMessage("Agreement Number is required"));
+    if (agreementDetails?._id && !agreementDetails?.agreementNumber) dispatch(showInfoMessage("Agreement Number is required"));
   }, [agreementDetails?._id]);
 
   useEffect(() => {
@@ -96,6 +98,12 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   useEffect(() => {
     const customData = getCustomMetaFields(agreementDetails, metaDataRes);
     setFieldsList([...fieldsData(stateApp.user), ...customData]);
+    if(agreementDetails?.originalProperties?.State  || agreementDetails?.originalProperties?.StateAbbreviation){
+      setState(agreementDetails.originalProperties.State  || agreementDetails.originalProperties.StateAbbreviation)
+    }
+    if(agreementDetails?.originalProperties?.County){
+      setCounty(agreementDetails.originalProperties.County)
+    }
   }, [metaDataRes, agreementDetails]);
 
   const onGlobalKeyDown = (e) => {
@@ -124,10 +132,10 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   };
 
   return (
-    <Grid container direction="row" display="flex" justify="flex-start" alignItems="center" spacing={1} className={classes.fieldsSection}>
+    <Grid container direction="row" display="flex" justify="space-between" alignItems="center" className={classes.fieldsSection}>
       {fieldsList.map((field, index) => (
         <Grid item xs={12} key={index}>
-          <Grid container className={classes.gridStyle}>
+          <Grid container className={classes.gridStyle} style={{display:'flex',justifyContent:'space-between'}}>
             <Grid
               item
               xs={3}
@@ -139,7 +147,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
               }}
               style={{ display: "flex" }}
             >
-              <div className={classes.fieldLabel}>{field.key !== 'approvalStatus' && field.label}</div>
+              <div className={classes.fieldLabel}>{field.key !== "approvalStatus" && field.label}</div>
               {field.isCustom && editIconState[`${field.key}key`] && (
                 <Tooltip title={"Edit"} placement="top">
                   <CreateTwoToneIcon
@@ -162,14 +170,13 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                   field.type === "dropdown" ||
                   field.type === "multiselect" ||
                   field.type === "select") && (
-                    <Controller
-                      control={control}
-                      name={field.key}
-                      render={(params) => {
-
-                        return (
-                          <Fragment>
-                            {/* {field.type === "text" && field.key === 'bounusPayment' && (
+                  <Controller
+                    control={control}
+                    name={field.key}
+                    render={(params) => {
+                      return (
+                        <Fragment>
+                          {/* {field.type === "text" && field.key === 'bounusPayment' && (
                               <TextField
                                 {...params}
                                 id={`field-${index}`}
@@ -196,84 +203,84 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                 disabled={field.disabled}
                               />
                             )} */}
-                            {field.type === "text" && (
-                              <TextField
-                                {...params}
-                                id={`field-${index}`}
-                                variant="outlined"
-                                margin="dense"
-                                type="text"
-                                fullWidth
-                                InputLabelProps={{
-                                  shrink: true,
-                                }}
-                                InputProps={field.InputProps}
-                                onBlur={(event) => offClickHandler(field.key, event.target.value)}
-                              />
-                            )}
-                            {field.type === "number" && (
-                              <NumberField
-                                index={index}
-                                field={field}
-                                offClickHandler={(key, value) => {
-                                  offClickHandler(key, value);
-                                }}
-                                {...params}
-                              />
-                            )}
-                            {field.type === "dropdown" && (
-                              <ReactSelectField
-                                isSingleSelect={true}
-                                fullWidth
-                                variant="outlined"
-                                index={`field-${index}`}
-                                dropdownOptions={field.options}
-                                column={field}
-                                onCustomKeyChange={(value) => {
-                                  offClickHandler(field.key, value, field.isCustom)
-                                }}
-                                disabled={field.disabled}
-                                value={get(agreementDetails, `${field.key}`, "")}
-                              />
-                            )}
-                            {field.type === "select" && (
-                              <Select
-                                {...params}
-                                id={`field-${index}`}
-                                variant="outlined"
-                                margin="dense"
-                                fullWidth
-                                InputLabelProps={{
-                                  shrink: true,
-                                }}
-                                onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
-                                disabled={field.disabled}
-                                value={get(agreementDetails, `${field.key}`, "")}
-                              >
-                                {field.options.map((option) => (
-                                  <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
-                                ))}
-                              </Select>
-                            )}
-                            {field.type === "multiselect" && (
-                              <ReactSelectField
-                                id={`field-${index}`}
-                                variant="outlined"
-                                margin="dense"
-                                fullWidth
-                                dropdownOptions={field.options}
-                                column={field}
-                                value={get(agreementDetails, `${field.key}`) ?? []}
-                                onCustomKeyChange={(value) => {
-                                  offClickHandler(field.key, value, field.isCustom);
-                                }}
-                              />
-                            )}
-                          </Fragment>
-                        );
-                      }}
-                    />
-                  )}
+                          {field.type === "text" && (
+                            <TextField
+                              {...params}
+                              id={`field-${index}`}
+                              variant="outlined"
+                              margin="dense"
+                              type="text"
+                              fullWidth
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              InputProps={field.InputProps}
+                              onBlur={(event) => offClickHandler(field.key, event.target.value)}
+                            />
+                          )}
+                          {field.type === "number" && (
+                            <NumberField
+                              index={index}
+                              field={field}
+                              offClickHandler={(key, value) => {
+                                offClickHandler(key, value);
+                              }}
+                              {...params}
+                            />
+                          )}
+                          {field.type === "dropdown" && (
+                            <ReactSelectField
+                              isSingleSelect={true}
+                              fullWidth
+                              variant="outlined"
+                              index={`field-${index}`}
+                              dropdownOptions={field.options}
+                              column={field}
+                              onCustomKeyChange={(value) => {
+                                offClickHandler(field.key, value, field.isCustom);
+                              }}
+                              disabled={field.disabled}
+                              value={get(agreementDetails, `${field.key}`, "")}
+                            />
+                          )}
+                          {field.type === "select" && (
+                            <Select
+                              {...params}
+                              id={`field-${index}`}
+                              variant="outlined"
+                              margin="dense"
+                              fullWidth
+                              InputLabelProps={{
+                                shrink: true,
+                              }}
+                              onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
+                              disabled={field.disabled}
+                              value={get(agreementDetails, `${field.key}`, "")}
+                            >
+                              {field.options.map((option) => (
+                                <MenuItem value={option.value ? option.value : option}>{option.label ? option.label : option}</MenuItem>
+                              ))}
+                            </Select>
+                          )}
+                          {field.type === "multiselect" && (
+                            <ReactSelectField
+                              id={`field-${index}`}
+                              variant="outlined"
+                              margin="dense"
+                              fullWidth
+                              dropdownOptions={field.options}
+                              column={field}
+                              value={get(agreementDetails, `${field.key}`) ?? []}
+                              onCustomKeyChange={(value) => {
+                                offClickHandler(field.key, value, field.isCustom);
+                              }}
+                            />
+                          )}
+                        </Fragment>
+                      );
+                    }}
+                  />
+                )}
                 {field.type === "date" && (
                   <TextField
                     autoOk
@@ -281,12 +288,14 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     variant="outlined"
                     margin="normal"
                     fullWidth
-                    value={agreementDetailCopied?.[field.key] ? moment(agreementDetailCopied[field.key]).utc(true).format("yyyy-MM-DD") : ""}
+                    value={
+                      agreementDetailCopied?.[field.key] ? moment(agreementDetailCopied[field.key]).utc(true).format("yyyy-MM-DD") : ""
+                    }
                     onChange={(event) => {
-                      setAgreementCopied({ ...agreementDetailCopied, [field.key]: event ? event?.target?.value : "" })
+                      setAgreementCopied({ ...agreementDetailCopied, [field.key]: event?.target?.value || null })
                     }}
                     onBlur={(event) => {
-                      offClickHandler(field.key, event ? event?.target?.value : "");
+                      offClickHandler(field.key, event?.target?.value || null);
                     }}
                     InputLabelProps={{
                       shrink: true,
@@ -297,7 +306,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     PopoverProps={{ disablePortal: false }}
                     InputProps={{
                       endAdornment: (
-                        <IconButton onClick={(event) => offClickHandler(field.key, "")}>
+                        <IconButton onClick={(event) => offClickHandler(field.key, null)}>
                           <Clear style={{ height: 22, width: 22 }} />
                         </IconButton>
                       ),
@@ -307,13 +316,13 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     }}
                   />
                 )}
-                {field.type === "autocomplete" && field.key !== 'approvalStatus' && (
+                {field.type === "autocomplete" && field.key !== "approvalStatus" && (
                   <AutoCompleteTypeComponent
                     value={agreementDetails?.[field.key]}
                     shapeType="Agreement"
                     typeKey={field.key}
                     variant="outlined"
-                    onChange={() => { }}
+                    onChange={() => {}}
                     onBlur={(event) => offClickHandler(field.key, event.target.value)}
                     autoFocus={false}
                     id={`field-${index}`}
@@ -327,6 +336,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                       <TextField
                         {...props}
                         id={`field-${index}`}
+                        value={parseFloat(props.value).toFixed(2)}
                         className={isAcquisitionCostOverridden ? overrideClasses.valueOveridden : overrideClasses.valueNormal}
                         variant="outlined"
                         margin="dense"
@@ -334,12 +344,12 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                         inputRef={props.ref}
                         onWheel={(e) => e.target.blur()}
                         onChange={(e) => {
-                          const toFixedValue = Number(parseFloat(e.target.value).toFixed(2))
-                          const calculatedAcquisitionCost = Number(parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2))
+                          const toFixedValue = parseFloat(e.target.value).toFixed(2)
+                          const calculatedAcquisitionCost = parseFloat(agreementDetails?.calculated?.totalAcquisitionCost || 0).toFixed(2);
                           props.onChange(toFixedValue);
-                          setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost)
+                          setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost);
                         }}
-                        onBlur={(e) => offClickHandler(field.key, props.value)}
+                        onBlur={(e) => offClickHandler(field.key, Number(props.value))}
                         InputProps={{
                           ...field.InputProps,
                           endAdornment: (
@@ -348,10 +358,10 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                 <IconButton
                                   aria-label="toggle royality-acres"
                                   onClick={() => {
-                                    const totalAcquisitionCost = Number(parseFloat(agreementDetails.calculated.totalAcquisitionCost).toFixed(2))
-                                    props.onChange(totalAcquisitionCost)
-                                    offClickHandler(field.key, totalAcquisitionCost)
-                                    setIsAcquisitionCostOverridden(false)
+                                    const totalAcquisitionCost = parseFloat(agreementDetails?.calculated?.totalAcquisitionCost || 0).toFixed(2);
+                                    props.onChange(totalAcquisitionCost);
+                                    offClickHandler(field.key, Number(totalAcquisitionCost));
+                                    setIsAcquisitionCostOverridden(false);
                                   }}
                                 >
                                   <AutorenewIcon />
@@ -364,12 +374,43 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     )}
                   />
                 )}
+                {field.key === 'state' && (
+                  <StateField
+                    // label="State"
+                    shrink
+                    value={state}
+                    onStateChange={(selectedState) =>{
+                      setState(selectedState.acronym)
+                      updateAgreement("state", selectedState.acronym, false)
+                    }}
+                  />
+                )}
+                {field.key === 'county' && (
+                  <CountyField
+                    // label="County"
+                    shrink
+                    value={county}
+                    state={state}
+                    onCountyChange={(selectedCounty) =>{
+                      setCounty(selectedCounty.county)
+                      updateAgreement('county', selectedCounty.county, false)
+                    }}
+                  />
+                )}
               </Fragment>
             </Grid>
           </Grid>
         </Grid>
       ))}
-      {stateApp.showFieldModal && <MetaField customDataPrefix='shapeJson.properties.custom_data' customDataPostfix='.keyword' columns={[]} category="Agreement" updateColumnSorting={addAgreementCustomData} />}
+      {stateApp.showFieldModal && (
+        <MetaField
+          customDataPrefix="shapeJson.properties.custom_data"
+          customDataPostfix=".keyword"
+          columns={[]}
+          category="Agreement"
+          updateColumnSorting={addAgreementCustomData}
+        />
+      )}
       {stateApp.user?.rolePrivileges !== "READ_ONLY" && (
         <Grid item>
           <Button

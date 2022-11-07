@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 // context
 
 import { Button, Container, Dialog } from "@material-ui/core";
@@ -6,19 +6,21 @@ import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 
 // QUERIES
-import { useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 
 import { deepEqualObjects } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 // Header Schemas
-import TableHeader from "components/Table/constants/unit-owners-tracts-header-schema.js";
+import getTableHeader from "components/Table/constants/unit-owners-tracts-header-schema.js";
 
 // Utilities
 import { usetableStyles } from "../Styles";
 import AddAgreementOwnerAndTractDialog from "components/Table/TableAddDialog/AddAgreementOwnerAndTractDialog";
 import { DrawerContext } from "components/Land/components/Agreements/detailComponents/DrawerContext";
+import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+import _ from "lodash";
 
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
@@ -78,19 +80,44 @@ function AgreementOwnersTractsTable(props) {
     }
   };
 
+  const layerType  = useMemo(() => {
+    let layerType = _.upperFirst(props.customLayer.layer)
+    layerType = layerType === 'Surface' ? 'Surface/ROW' : layerType
+    return layerType
+  }, [props.customLayer.layer])
+
+  const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
+
   useEffect(() => {
-    if (props.customLayer?._id)
+    getMetaData({
+      variables: {
+        category: "Agreement",
+      },
+    });
+  }, [getMetaData])
+
+  const interestMapping = useMemo(() => {
+    if (!metaDataRes) return
+
+    const { metaData } = metaDataRes.getMetaData
+    const interestMetaData = metaData.filter(data => data.esKey === 'custom_data.interest_type')[0]
+
+    return interestMetaData.mapping.reduce((acc, val) => ({ ...acc, [val.from]: val.to }), {})
+  }, [metaDataRes])
+
+  useEffect(() => {
+    if (props.customLayer?._id && interestMapping && layerType)
       props.setTableMeta({
         shapeType: props.shapeType,
         addableName: "Tract",
         searchFields: ["contact.entityDetail.name", "_all"],
         filters: [{ field: "shape._id", value: props.customLayer._id }],
-        TableHeader: TableHeader,
+        TableHeader: getTableHeader({interestMapping, layerType}),
         esIndex: "shapeowners_flat",
         startPaginationAt: 25,
         formatHits
       });
-  }, [props.customLayer]);
+  }, [props.customLayer, interestMapping, layerType]);
 
   useEffect(() => {
     if (props.setTractsNumber) props.setTractsNumber(props.rows.length);

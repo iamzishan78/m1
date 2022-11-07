@@ -62,6 +62,26 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     },
   },
   {
+    name: "State", label: "State", esKey: [
+      'shapeJson.properties.originalProperties.State.keyword',
+      'shapeJson.properties.originalProperties.StateAbbreviation.keyword'
+    ],
+    options: {
+      dbName: "shapeJson.properties.originalProperties.0?.State?.StateAbbreviation?",
+      sort: true,
+      filter: true
+    },
+    custom: {
+      multi_filter_keys: true,
+    },
+  },
+  {
+    name: "County", label: "County", esKey: 'shapeJson.properties.originalProperties.County.keyword',
+    options: {
+      dbName: "shapeJson.properties.originalProperties.0?.County",
+    }
+  },
+  {
     name: "agreementSubtype",
     label: "Subtype",
     esKey: "shapeJson.properties.agreementSubtype.keyword",
@@ -315,6 +335,21 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       print: false,
       viewColumns: false,
     },
+  },
+  {
+    name: "name-elasticsearch",
+    esKey: 'name.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+  },
+  {
+    name: "shapeLabel-elasticsearch",
+    esKey: 'shapeJson.properties.shapeLabel.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+  },
+  {
+    name: "state-elasticsearch",
+    esKey: 'state.keyword',
+    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
   },
   // {
   //   name: "mapFlyTo",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
   Grid,
@@ -20,31 +20,31 @@ import Link from "@material-ui/core/Link";
 import AddIcon from "@material-ui/icons/Add";
 import IconButton from "@material-ui/core/IconButton";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-
-//Contexts
-import { AppContext } from "AppContext";
 
 //Components
 import SearchField from "./SearchField";
+import { statusData } from "components/Table/Revenue/RevenuePropertiesTable";
 
 // Hooks
 import { useMutation } from "@apollo/client";
 
 // Mutations
-import { ADD_WELL_TO_FILE_DESCRIPTOR } from "graphQL/useMutationAddWellToFileDescriptor";
-import { DELETE_WELL_DESCRIPTOR, UPSERT_WELL_DESCRIPTOR } from "graphQL/useMutationWellDescriptor";
+import { UPSERT_WELL_DESCRIPTOR } from "graphQL/useMutationWellDescriptor";
 
 const propertyParams = [
-  { type: "text", label: "Well NRI", key: "wellNRI" },
-  { type: "text", label: "Pay Status", key: "payStatus" },
+  { type: "text", label: "Well NRI", key: "interestAmount" },
+  { type: "text", label: "Interest Type", key: "interestType" },
+  {
+    type: "text",
+    label: "Pay Status",
+    key: "status",
+    valueFormatter: (value) => statusData.find((sd) => sd.value === value)?.label ?? value,
+  },
   { type: "text", label: "Cost Free", key: "costFree" },
   { type: "text", label: "Div Order Status", key: "divOrderStatus" },
   { type: "text", label: "Internal Company", key: "internalCompany" },
   { type: "text", label: "Acquisition ID", key: "acquisitionID" },
   { type: "text", label: "Prospect ID", key: "prospectID" },
-  { type: "text", label: "Classification", key: "classification" },
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -132,6 +132,9 @@ const useStyles = makeStyles((theme) => ({
   accordion: {
     "& .MuiIconButton-root": {
       padding: 0,
+    },
+    "& .MuiInputBase-root.Mui-disabled:before": {
+      borderBottom: "1px solid",
     },
   },
 }));
@@ -258,8 +261,7 @@ const ReveueProperties = ({ platformWell, properties }) => {
                         <TextField
                           margin="dense"
                           label={param.label}
-                          value={property[param.key]}
-                          InputLabelProps={{ shrink: true }}
+                          value={param.valueFormatter ? param.valueFormatter(property[param.key]) : property[param.key]}
                           fullWidth
                           defaultValue=""
                           disabled

@@ -73,11 +73,12 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
 
   // const offClickHandler = (key, value) => updateAgreement(key, value);
 
-  const handleKeyDown = (e) => {
-    if (e.keyCode === 38 || e.keyCode === 40) {
-      e.preventDefault();
-    }
-  };
+  // const handleKeyDown = (e) => {
+  //   console.log(e.keyCode);
+  //   if (e.keyCode === 38 || e.keyCode === 40) {
+  //     e.preventDefault();
+  //   }
+  // };
 
   return (
     <div className={classes.root}>
@@ -88,7 +89,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
               <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
-          onClick={(e) => { }}
+          onClick={(e) => {}}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>
@@ -120,7 +121,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
                   dense
                   commentType="Ownership"
                   targetLabel="Tract"
-                  portal={'#agreementDetailsDrawer'}
+                  portal={"#agreementDetailsDrawer"}
                 />
               </Grid>
             )}

@@ -60,16 +60,18 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     title: "Reporting Groups",
     link: "/land/reporting-groups",
     component: "ReportingGroups",
+    hideSearch: true,
   },
   ADMIN_SETTINGS: {
     featureFlag: "LANDMODULE",
     title: "Admin Settings",
     link: "/land/admin-settings",
     component: "AdminSettings",
+    hideSearch: true,
   },
 };
 
-export default function Revenue() {
+export default function Land() {
   const location = useLocation();
   const dispatch = useDispatch();
   const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);

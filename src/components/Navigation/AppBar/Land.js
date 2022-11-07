@@ -86,7 +86,7 @@ export default function LandAppBar(props) {
           </Grid>
 
           {(
-            activeModule.title !== SIDE_PANEL_MENU_ITEMS_LIST.REPORTING_GROUPS.title
+            !activeModule.hideSearch
           ) && (
               <Grid item md={5} style={{ marginLeft: "20px" }}>
                 <LandSearch activeModule={activeModule} />
