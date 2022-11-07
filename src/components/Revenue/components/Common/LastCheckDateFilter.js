@@ -36,141 +36,141 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFilterToggle, extraFitlers= [] }) => {
-    const classes = useStyles();
+const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFilterToggle, extraFitlers = [] }) => {
+  const classes = useStyles();
 
-    const [selectedFilter, setSelectedFilter] = useState('');
-    const [fromDate, setFromDate] = React.useState(null);
-    const [toDate, setToDate] = React.useState(null);
-    const [lastCheckMinDate, setLastCheckMinDate] = useState('');
-    const [status, setStatus] = useState('ALL');
-    const [propertyFilter, setPropertyFilter] = useState([]);
+  const [selectedFilter, setSelectedFilter] = useState('');
+  const [fromDate, setFromDate] = React.useState(null);
+  const [toDate, setToDate] = React.useState(null);
+  const [lastCheckMinDate, setLastCheckMinDate] = useState('');
+  const [status, setStatus] = useState('ALL');
+  const [propertyFilter, setPropertyFilter] = useState([]);
 
-    const propertiesReportGroup = useSelector(
-      ({ Revenue }) => Revenue.propertiesReportGroup
-    );
+  const propertiesReportGroup = useSelector(
+    ({ Revenue }) => Revenue.propertiesReportGroup
+  );
 
-    const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
-        fetchPolicy: "no-cache",
-        onCompleted: (data) => {
-            if (data?.getESMinValue) {
-                setLastCheckMinDate(data?.getESMinValue);
-                // setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
-                // setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
-            }
-        },
-    });
-    useEffect(() => {
-        setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
-        setToDate(moment().subtract(0, 'months').endOf('month').format('yyyy-MM-DD'));
-    }, []);
-    useEffect(() => {
-        getESMinValue({
-            variables: {
-                esIndex,
-                field,
-                value_as_string: true
-            }
-        })
-    }, [getESMinValue])
-
-
-    useEffect(() => {
-      updateFilters();
-    }, [toDate, fromDate, status, propertyFilter]);
-
-    const updateFilters = () => {
-      const filters = [];
-
-      filters.push({
+  const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
+    fetchPolicy: "no-cache",
+    onCompleted: (data) => {
+      if (data?.getESMinValue) {
+        setLastCheckMinDate(data?.getESMinValue);
+        // setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
+        // setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
+      }
+    },
+  });
+  useEffect(() => {
+    setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
+    setToDate(moment().subtract(0, 'months').endOf('month').format('yyyy-MM-DD'));
+  }, []);
+  useEffect(() => {
+    getESMinValue({
+      variables: {
+        esIndex,
         field,
-        value: {
-          range: {
-            [field]: {
-              gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
-              lte: toDate ? `${toDate}T00:00:00.000Z` : null,
-            },
+        value_as_string: true
+      }
+    })
+  }, [getESMinValue])
+
+
+  useEffect(() => {
+    updateFilters();
+  }, [toDate, fromDate, status, propertyFilter]);
+
+  const updateFilters = () => {
+    const filters = [];
+
+    filters.push({
+      field,
+      value: {
+        range: {
+          [field]: {
+            gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
+            lte: toDate ? `${toDate}T00:00:00.000Z` : null,
           },
         },
-        includeEmpty: selectedFilter === "All Dates" ? true : undefined,
+      },
+      includeEmpty: selectedFilter === "All Dates" ? true : undefined,
+    });
+
+    if (propertyFilter[0]) {
+      filters.push(propertyFilter[0]);
+    }
+
+    if (status !== "ALL") {
+      filters.push({
+        field: "status.keyword",
+        value: status,
       });
+    }
 
-      if (propertyFilter[0]) {
-        filters.push(propertyFilter[0]);
-      }
+    setESFilters(filters);
+    setFilterToggle(!filterToggle);
+  };
 
-      if (status !== "ALL") {
-        filters.push({
-          field: "status.keyword",
-          value: status,
-        });
-      }
-
-      setESFilters(filters);
-      setFilterToggle(!filterToggle);
-    };
-
-    return (
-      <div className={classes.actionBar}>
-        <Grid
-          container
-          alignItems="center"
-          // justifyContent="space-between"
-          spacing={2}
-          style={{ padding: "0px 36px 0px 45px" }}
-        >
-          <CustomDates
-            fromDate={fromDate}
-            setFromDate={setFromDate}
-            toDate={toDate}
-            setToDate={setToDate}
-            //label="Last Check"
-            isProperties
-            lastCheckMinDate={lastCheckMinDate}
-            onChange={setSelectedFilter}
-            datesInputWidth={2}
-          />
-          <Grid item xs md={2}>
-            {extraFitlers.includes("propertyGroup") && (
-              <ReportGroupHeader
-                type="Properties"
-                esFilters={propertiesReportGroup || []}
-                setESFilters={(value) => setPropertyFilter(value)}
-                setFilterToggle={() => {}}
-                isBackground={false}
-                noUpdate={true}
-                strechedWidth
-                isShrink
-                noPadding
-              />
-            )}
-          </Grid>
-          <Grid item xs md={2}>
-            {extraFitlers.includes("status") && (
-              <MuiThemeProvider>
-                <FormControl variant="outlined" className={classes.formControl}>
-                  <InputLabel id="status-outlined-label">Status</InputLabel>
-
-                  <Select
-                    fullWidth
-                    labelId="status-outlined-label"
-                    id="status-filter"
-                    value={status ? status : ""}
-                    className={classes.viewSwitcher}
-                    onChange={(e) => setStatus(e.target.value)}
-                  >
-                    <MenuItem value="ALL">All</MenuItem>
-                    <MenuItem value="InPay">In Pay</MenuItem>
-                    <MenuItem value="NotInPay">Not In Pay</MenuItem>
-                  </Select>
-                </FormControl>
-              </MuiThemeProvider>
-            )}
-          </Grid>
-
+  return (
+    <div className={classes.actionBar}>
+      <Grid
+        container
+        alignItems="center"
+        // justifyContent="space-between"
+        spacing={2}
+        style={{ padding: "0px 36px 0px 45px", width: "Z" }}
+      >
+        <CustomDates
+          fromDate={fromDate}
+          setFromDate={setFromDate}
+          toDate={toDate}
+          setToDate={setToDate}
+          //label="Last Check"
+          isProperties
+          lastCheckMinDate={lastCheckMinDate}
+          onChange={setSelectedFilter}
+          datesInputWidth={2}
+        />
+        <Grid item xs md={2}>
+          {extraFitlers.includes("propertyGroup") && (
+            <ReportGroupHeader
+              type="Properties"
+              esFilters={propertiesReportGroup || []}
+              setESFilters={(value) => setPropertyFilter(value)}
+              setFilterToggle={() => { }}
+              isBackground={false}
+              noUpdate={true}
+              strechedWidth
+              isShrink
+              noPadding
+            />
+          )}
         </Grid>
-      </div>
-    );
+        <Grid item xs md={2}>
+          {extraFitlers.includes("status") && (
+            <MuiThemeProvider>
+              <FormControl variant="outlined" className={classes.formControl}>
+                <InputLabel id="status-outlined-label">Status</InputLabel>
+
+                <Select
+                  fullWidth
+                  labelId="status-outlined-label"
+                  id="status-filter"
+                  value={status ? status : ""}
+                  className={classes.viewSwitcher}
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <MenuItem value="ALL">All</MenuItem>
+                  <MenuItem value="InPay">In Pay</MenuItem>
+                  <MenuItem value="NotInPay">Not In Pay</MenuItem>
+                </Select>
+              </FormControl>
+            </MuiThemeProvider>
+          )}
+        </Grid>
+
+      </Grid>
+    </div>
+  );
 }
 
 export default LastCheckDateFilter
