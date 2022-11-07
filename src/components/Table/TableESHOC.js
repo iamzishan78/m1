@@ -298,6 +298,18 @@ export const TableESHOC = (Component) => {
                         ...column.options,
                     };
                 }
+                else {
+                    column.options = {
+                        ...GlobalSettings.muiGridStandardOptions,
+                        ...column.options,
+                    }
+                }
+                /// apply global settings unless ignored
+                if (column?.options?.ignoreGlobal || props.actionColumns.includes(column.label) || props.actionColumns.includes(column.name)) {
+                    column.options = {
+                        ...column.options,
+                    };
+                }
 
                 if (column?.options?.filter) {
                     const custom = column.custom;
