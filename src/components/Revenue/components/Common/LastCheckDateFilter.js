@@ -117,7 +117,7 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
         alignItems="center"
         // justifyContent="space-between"
         spacing={2}
-        style={{ padding: "0px 36px 0px 45px", width: "Z" }}
+        style={{ padding: "0px 36px 0px 45px", width: "100%" }}
       >
         <CustomDates
           fromDate={fromDate}
