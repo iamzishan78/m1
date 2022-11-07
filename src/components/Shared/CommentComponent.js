@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     overflow: "auto",
     padding: "14px 0px",
-    maxHeight: "calc(100vh - 891px)",
+    maxHeight: "calc(100vh - 897px)",
   }),
   hideMenuIcon: {
     visibility: "hidden"
@@ -430,7 +430,7 @@ export default function CommentComponent(props) {
           <div className={classes.comment} id="commentsContainer">
             {!loadingComments ? (
               <>
-                {!showAllComments && commentsArray.length > 5 && (
+                {!showAllComments && commentsArray.length > 7 && (
                   <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
                     <span
                       onClick={() => {
@@ -441,14 +441,14 @@ export default function CommentComponent(props) {
                     </span>
                   </div>
                 )}
-                {showAllComments && commentsArray.length > 5 && (
+                {showAllComments && commentsArray.length > 7 && (
                   <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
                     <span onClick={() => setShowAllComments(false)}>Hide Earlier Comments</span>
                   </div>
                 )}
 
                 {commentsArray.map((eachComment, index) => {
-                  let indexToShow = commentsArray.length > 5 ? commentsArray.length - 5 : 0;
+                  let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
                   return (
                     <Fragment key={index}>
                       {(showAllComments || index >= indexToShow) && (
