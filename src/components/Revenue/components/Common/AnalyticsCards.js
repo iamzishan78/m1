@@ -8,6 +8,7 @@ import { useLazyQuery } from "@apollo/client";
 
 import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 import FilterIcon from "components/Common/SvgIcons/Filter";
+import { copy } from "components/Shared/functions";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -107,13 +108,25 @@ export default function AnalyticsCards({
   const [cards, setCards] = useState(cardsDefault);
 
   const updateFilters = () => {
-    const filters = [];
+    let filters = copy(esFilters);
+
+    const findIndex = esFilters.findIndex(f => f.field === "wells" && !f.value)
 
     if(isFiltered){
-      filters.push({
-        field: "wells",
-        value: null
-      })
+
+      if(findIndex === -1){
+
+        filters.push({
+          field: "wells",
+          value: null
+        })
+      } else {
+        return
+      }
+    } else {
+      if(findIndex > -1){
+        filters = filters.filter((_,index) => index !== findIndex)
+      }
     }
 
     setESFilters(filters);
@@ -123,7 +136,7 @@ export default function AnalyticsCards({
 
   useEffect(()=>{
     updateFilters();
-  },[isFiltered]);
+  },[isFiltered, esFilters]);
 
   const setCardPoint = (count, index) => {
     const newCards = JSON.parse(JSON.stringify(cards));
