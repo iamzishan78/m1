@@ -81,6 +81,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Properties() {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const [isFiltered, setFiltered] = useState(null);
   // redux
   const [filterToggle, setFilterToggle] = React.useState(false);
 
@@ -89,8 +90,8 @@ export default function Properties() {
   const esIndex = "properties_flat";
   const startPaginationAt = 50;
 
-  const [propertiesCount, setPropertiesCount] = useState(0);
   const [esFilters, ESFilters] = useState([]);
+  const [propertiesCount, setPropertiesCount] = useState(0);
 
   // waypointKey should any key of Table Header which do not have customRender in schema file
   const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 347px)' }
@@ -135,8 +136,10 @@ export default function Properties() {
     },
     {
       heading: "Unmapped",
+      key: "unmapped",
       points: 0,
       type: "warning",
+      filterable:true,
     },
   ]
 
@@ -145,6 +148,7 @@ export default function Properties() {
       <LastCheckDateFilter
         field={"lastCheck.checkDate"}
         esIndex={esIndex}
+        esFilters={esFilters}
         setESFilters={setESFilters}
         setFilterToggle={setFilterToggle}
         filterToggle={filterToggle}
@@ -158,6 +162,11 @@ export default function Properties() {
         cardsDefault={cardsDefault}
         totalCount={propertiesCount}
         landSearchQuery={stateApp.revenueSearchQuery}
+        isFiltered={isFiltered}
+        setFiltered={setFiltered}
+        setESFilters={setESFilters}
+        filterToggle={filterToggle}
+        setFilterToggle={setFilterToggle}
         unmappedPropertyCount={getUnmappedPropertyCountResult?.getUnmappedPropertyCount?.unmappedCount}
       />
       {/* use propertyTableContainer class as container if not using infinite scroll */}

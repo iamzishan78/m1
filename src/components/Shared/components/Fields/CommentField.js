@@ -369,8 +369,7 @@ export default function DealComment({
               setCommentTypeDialogBox={setCommentTypeDialogBox}
               commentTypeDialogBox={commentTypeDialogBox}
           />
-          {showActions && (
-            <Button
+          <Button
               className={classes.commentBtn}
               variant="contained"
               color="primary"
@@ -381,10 +380,9 @@ export default function DealComment({
                   setNameAutValue({});
                 }
               }}
-            >
-              Comment
-            </Button>
-          )}
+          >
+            Comment
+          </Button>
         </div>
       ) : (
         <>
@@ -399,7 +397,7 @@ export default function DealComment({
           >
             Save Changes
           </Button>
-
+          {showActions &&
           <Button
             className={classes.commentBtn}
             style={{ marginRight: "10px", marginBottom: "10px" }}
@@ -410,7 +408,7 @@ export default function DealComment({
             }}
           >
             Cancel
-          </Button>
+          </Button>}
         </>
       )}
     </div>

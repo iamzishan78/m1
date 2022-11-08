@@ -391,7 +391,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                 className={`${classes.sideNavText} uppercase`}
                 primary="Files"
               />
-              <ListItemSecondaryAction className={classes.sideNavAction}>
+              {/* <ListItemSecondaryAction className={classes.sideNavAction}>
                 <Button
                   disabled
                   className={`${classes.betaSideNav3} uppercase`}
@@ -400,7 +400,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                 >
                   beta
                 </Button>
-              </ListItemSecondaryAction>
+              </ListItemSecondaryAction> */}
             </div>
           </ListItem>
           <ListItem
