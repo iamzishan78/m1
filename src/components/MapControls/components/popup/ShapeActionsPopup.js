@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState, Fragment } from "react";
+import React, { useEffect, useContext, useState, Fragment, useRef } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import get from "lodash/get";
 import { useHistory } from "react-router-dom";
@@ -140,6 +140,14 @@ const ShapeActionsPopup = (props) => {
       updateSelectedLayerFeature(customLayer);
     },
   });
+
+  const addShapeToLayerButton = useRef()
+
+  useEffect(()=> {
+    if(!props.onlyAddShape) return
+
+    setAnchorEl(addShapeToLayerButton.current)
+  }, [props.onlyAddShape])
 
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER, {
     update(
@@ -774,10 +782,10 @@ const ShapeActionsPopup = (props) => {
           ) : (
             <>
               <FeatureFlag feature={FEATURES.MAPSHAPEEXPORT}>
-                <Tooltip title="Bulk Actions" className={enableEditOnly && classes.disableAction}>
+                <Tooltip title="Bulk Actions" className={props.onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
                   <IconButton
                     size="small"
-                    disabled={enableEditOnly}
+                    disabled={props.onlyAddShape ? true : enableEditOnly}
                     aria-label="Parcel"
                     id="convert-button"
                     aria-controls="convert-button"
@@ -792,18 +800,18 @@ const ShapeActionsPopup = (props) => {
                 </Tooltip>
               </FeatureFlag>
 
-              <Tooltip title="Grid" className={enableEditOnly && classes.disableAction}>
-                <IconButton disabled={enableEditOnly} size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
+              <Tooltip title="Grid" className={props.onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
+                <IconButton disabled={props.onlyAddShape ? true : enableEditOnly} size="small" onClick={actionShowWellsAndOwners} aria-label="Grid">
                   <GridOnIcon className={mapGridCardActivated ? "selected" : ""} />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Filter" className={enableEditOnly && classes.disableAction}>
-                <IconButton size="small" disabled={enableEditOnly} onClick={actionFilter} aria-label="Filter">
+              <Tooltip title="Filter" className={props.onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
+                <IconButton size="small" disabled={props.onlyAddShape ? true : enableEditOnly} onClick={actionFilter} aria-label="Filter">
                   <FilterAltIcon className={stateApp.shapeActionsFilterSelected ? "selected" : ""} />
                 </IconButton>
               </Tooltip>
 
-              <Tooltip title="Add Shape to Layer" className={enableEditOnly && classes.disableAction}>
+              <Tooltip title="Add Shape to Layer" className={enableEditOnly ? classes.disableAction : anchorEl?.getAttribute('id') === 'parcel-button' ? classes.selectedAction : ''}>
                 <IconButton
                   size="small"
                   disabled={enableEditOnly}
@@ -812,15 +820,19 @@ const ShapeActionsPopup = (props) => {
                   aria-controls="parcel-button"
                   aria-haspopup="true"
                   aria-expanded={isCreateParcelMenu ? "true" : undefined}
-                  onClick={(event) => setAnchorEl(event.currentTarget)}
-                >
-                  <LayerIcon color="secondary" />
+                  ref={addShapeToLayerButton}
+                  onClick={(event) => {
+                    console.log(1, event.currentTarget.getAttributeNames())
+                    setAnchorEl(event.currentTarget)}}
+                  >
+                  {/* <LayerIcon color={addShapeToLayerButton.current?.title === 'Add Shape to Layer' ? 'primary' : "secondary"} /> */}
+                  <LayerIcon color='secondary' />
                 </IconButton>
               </Tooltip>
 
-              <Tooltip title="Area of Interest" className={enableEditOnly && classes.disableAction}>
-                <IconButton size="small" disabled={enableEditOnly} onClick={actionAOI} aria-label="Area of Interest">
-                  <span style={{ color: "white" }}>AOI</span>
+              <Tooltip title="Area of Interest" className={props.onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
+                <IconButton size="small" disabled={props.onlyAddShape ? true : enableEditOnly} onClick={actionAOI} aria-label="Area of Interest">
+                  <span style={{ "& svg":{color: "white"} }}>AOI</span>
                 </IconButton>
               </Tooltip>
             </>
@@ -828,10 +840,11 @@ const ShapeActionsPopup = (props) => {
 
           <span className={classes.divider}></span>
           {stateApp.currentFeature && (
-            <Tooltip title="Add shape" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
+            <Tooltip title="Add shape" className={props.onlyAddShape || selectedAction === "edit-aoi" ? classes.disableAction : ""}>
               <IconButton
                 size="small"
                 aria-label="Add shape"
+                disabled={props.onlyAddShape}
                 onClick={() => {
                   stateApp.draw.changeMode("static");
                   setStateApp((state) => ({
@@ -845,8 +858,9 @@ const ShapeActionsPopup = (props) => {
             </Tooltip>
           )}
 
-          <Tooltip title="Edit Active Shape" className={selectedAction === "edit-aoi" ? classes.disableAction : ""}>
-            <IconButton size="small" aria-label="Edit Active Shape" onClick={() => {
+          <Tooltip title="Edit Active Shape" className={props.onlyAddShape || selectedAction === "edit-aoi" ? classes.disableAction : ""}>
+            <IconButton size="small" aria-label="Edit Active Shape" disabled={props.onlyAddShape} onClick={() => {
+              console.log('gg')
               if (!isShapeResizeMode) {
                 actionEdit();
               }
@@ -856,10 +870,11 @@ const ShapeActionsPopup = (props) => {
           </Tooltip>
 
           {stateApp.currentFeature.properties.shapeLabel && !enableEditOnly && (
-            <Tooltip title="Delete Active Shape" className={!stateApp.currentFeature.properties.shapeLabel ? classes.disableAction : ""}>
+            <Tooltip title="Delete Active Shape" className={props.onlyAddShape || !stateApp.currentFeature.properties.shapeLabel ? classes.disableAction : ""}>
               <IconButton
                 size="small"
                 aria-label="Delete Active Shape"
+                disabled={props.onlyAddShape}
                 onClick={() => {
                   if (!!stateApp.currentFeature.properties.shapeLabel) {
                     handleDeleteAoiModal();
@@ -878,6 +893,7 @@ const ShapeActionsPopup = (props) => {
                   <IconButton
                     size="small"
                     aria-label="Set Boundary"
+                  disabled={props.onlyAddShape}
                     onClick={() => {
                       if (selectedAction === "edit-aoi") confirmEditing();
                       else if (selectedAction === "edit-shape" || (stateApp.shapeEditMode === 'redraw')) confirmShapeEditing();
