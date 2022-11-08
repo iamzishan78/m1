@@ -80,18 +80,19 @@ export default function CardDetailsMap() {
   }
 
   useEffect(() => {
-    map.flyTo({
+    map.jumpTo({
       center: [
         stateApp.selectedWell.longitude,
         stateApp.selectedWell.latitude,
       ],
       zoom: 16,
-      speed: 0.4,
       bearing: -10,
-      //duration: 10000,
-      easing: function (t) {
-        return Math.sin((t * Math.PI) / 2);
-      },
+      // flyTo v
+      // speed: 0.4,
+      // duration: 10000,
+      // easing: function (t) {
+      //   return Math.sin((t * Math.PI) / 2);
+      // },
     });
 
     setFlyVar1(false);
@@ -105,18 +106,19 @@ export default function CardDetailsMap() {
         //                       stateApp.selectedWell.latitude,
         //                     ]
       ) {
-        map.flyTo({
+        map.jumpTo({
           center: [
             stateApp.selectedWell?.longitude,
             stateApp.selectedWell?.latitude,
           ],
           zoom: 16,
-          //speed: 0.4,
           bearing: 540,
-          duration: 100000,
-          easing: function (t) {
-            return Math.sin((t * Math.PI) / 2);
-          },
+          // flyTo v
+          // speed: 0.4,
+          // duration: 100000,
+          // easing: function (t) {
+          //   return Math.sin((t * Math.PI) / 2);
+          // },
         });
       }
     });
@@ -221,43 +223,46 @@ export default function CardDetailsMap() {
         )
           setFlyVar1(true);
 
-        // map.flyTo({
+        // map.jumpTo({
         //     center: [
         //       stateApp.selectedWell.longitude,
         //       stateApp.selectedWell.latitude,
         //     ],
         //     // zoom: 16,
-        //     // speed: 0.4,
         //     bearing: 540,
-        //     duration: 10000,
+        //     // flyTo v
+        //     // speed: 0.4,
+        //     // duration: 10000,
         //   });
 
         // map.on("click", function (e) {
         //   map.rotateTo.disable()
         // });
 
-        //   map.on("flyend", function (e) {
-        //     // map.flyTo({
+        // map.on("flyend", function (e) {
+        //     // map.jumpTo({
         //     //   center: [
         //     //     stateApp.selectedWell.longitude,
         //     //     stateApp.selectedWell.latitude,
         //     //   ],
         //     //   //zoom: 16,
-        //     //   //speed: 0.0001,
         //     //   bearing: 180,
-        //     //   screenSpeed: 0.001,
+        //     //   // flyTo v
+        //     //   // speed: 0.0001,
+        //     //   // screenSpeed: 0.001,
         //     // });
-        //     map.flyTo({
+        //     map.jumpTo({
         //       // center: [
         //       //   stateApp.selectedWell.longitude,
         //       //   stateApp.selectedWell.latitude,
         //       // ],
         //       // //zoom: 16,
-        //       // //speed: 0.0001,
         //       bearing: 540,
-        //       //duration: 10000,
         //       //essential: false,
-        //       // screenSpeed: 0.001,
+        //       // // flyTo v
+        //       // // speed: 0.0001,
+        //       // // duration: 10000,
+        //       // // screenSpeed: 0.001,
         //     });
         // });
       }

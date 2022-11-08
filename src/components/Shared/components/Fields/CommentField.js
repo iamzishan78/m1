@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     border: "none",
   },
   search: {
-    maxHeight: "217px",
+    maxHeight: "211px",
     width: "100%",
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
@@ -83,6 +83,7 @@ const useStyles = makeStyles((theme) => ({
   commentBtn: {
     float: "right",
     right: "15px",
+    zIndex: "999"
   },
   dialog: {
     "&.MuiDialog-root": {
@@ -180,7 +181,7 @@ export default function DealComment({
   const [nameAutValue, setNameAutValue] = useState({});
   const [showCommentTypeDialog, setShowCommentTypeDialog] = useState(false);
   const [selectedCommentType, setSelectedCommentType] = useState("General");
-
+  const [commentTypeDialogBox,setCommentTypeDialogBox] = useState(false);
   (function () {
     var target = $("#colorText");
     const scrollDiv = function () {
@@ -272,9 +273,14 @@ export default function DealComment({
     setComment(value + `{{${act._id}}}`);
     setIsSelected(true);
   };
-
+  const openDialogBox = (e) => {
+    e.stopPropagation();
+    setCommentTypeDialogBox(false);
+  }
   return (
-    <>
+    <div
+      onClick={(e)=>openDialogBox(e)}
+    >
       <Autocomplete
         onFocus={() => {
           setShowCommentTypeDialog(false);
@@ -331,6 +337,7 @@ export default function DealComment({
               style={{
                 margin: 0,
               }}
+              id="commentBox"
               fullWidth
               rows={isEdit || showActions ? 2 : 1}
               rowsMax={2}
@@ -342,9 +349,8 @@ export default function DealComment({
             />
             <div
               id="colorText"
-              className={`${comment || showActions ? classes.commentInputFocusIn : classes.commentInputFocusOut} ${
-                classes.textDiv
-              } hideScroll`}
+              className={`${comment || showActions ? classes.commentInputFocusIn : classes.commentInputFocusOut} ${classes.textDiv
+                } hideScroll`}
             ></div>
           </>
         )}
@@ -357,22 +363,26 @@ export default function DealComment({
             alignItems: "center",
           }}
         >
-          <CommentType showCommentType={props.showCommentType} setSelectedCommentType={setSelectedCommentType} />
-          {showActions && (
-            <Button
+          <CommentType
+              showCommentType={props.showCommentType}
+              setSelectedCommentType={setSelectedCommentType}
+              setCommentTypeDialogBox={setCommentTypeDialogBox}
+              commentTypeDialogBox={commentTypeDialogBox}
+          />
+          <Button
               className={classes.commentBtn}
               variant="contained"
               color="primary"
+              id="commentButton"
               onClick={() => {
                 if (!showCommentTypeDialog) {
                   upsertComment({ comment, commentType: selectedCommentType });
                   setNameAutValue({});
                 }
               }}
-            >
-              Comment
-            </Button>
-          )}
+          >
+            Comment
+          </Button>
         </div>
       ) : (
         <>
@@ -387,7 +397,7 @@ export default function DealComment({
           >
             Save Changes
           </Button>
-
+          {showActions &&
           <Button
             className={classes.commentBtn}
             style={{ marginRight: "10px", marginBottom: "10px" }}
@@ -398,10 +408,10 @@ export default function DealComment({
             }}
           >
             Cancel
-          </Button>
+          </Button>}
         </>
       )}
-    </>
+    </div>
   );
 }
 

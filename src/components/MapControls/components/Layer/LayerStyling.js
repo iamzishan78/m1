@@ -100,7 +100,7 @@ function LayerStyling(props) {
                   <Box borderColor={getLayerColor(layer, "layer", {})} borderLeft={4} style={{ padding: "0 0 0 16px" }}>
                   </Box>
                   <Box display='inline'>
-                    <Typography variant="h6" noWrap>
+                    <Typography className={classes.fileName} variant="h6" noWrap>
                       {fileName}
                     </Typography>
                     <Typography id={layer.fileName} noWrap>

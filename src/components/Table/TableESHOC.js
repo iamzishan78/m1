@@ -100,7 +100,6 @@ export const TableESHOC = (Component) => {
         const tableData = elasticData?.getESSimpleSearch || {}
 
         const updateColumnsOnGridViewChange = (metaDatas) => {
-            console.log('Outside Columns', columns)
             Columns((cols) => {
                 if (cols?.length > 0) {
                     console.log('Inside Columns', cols)
@@ -292,12 +291,6 @@ export const TableESHOC = (Component) => {
 
             tableCols.forEach((column, index) => {
                 /// apply global settings unless ignored
-                const setCellProps = column.options?.setCellProps
-                if (isFiniteScroll && rows.length && setCellProps
-                    && findInFunction("sticky", setCellProps) && column.name !== '_id') {
-                    column.options.setCellProps = GlobalSettings.muiGridInfScrollOptions.setCellProps
-                    column.options.setCellHeaderProps = GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps
-                }
 
                 /// apply global settings unless ignored
                 if (column?.options?.ignoreGlobal || props.actionColumns.includes(column.label) || props.actionColumns.includes(column.name)) {
@@ -310,6 +303,12 @@ export const TableESHOC = (Component) => {
                         ...GlobalSettings.muiGridStandardOptions,
                         ...column.options,
                     }
+                }
+                /// apply global settings unless ignored
+                if (column?.options?.ignoreGlobal || props.actionColumns.includes(column.label) || props.actionColumns.includes(column.name)) {
+                    column.options = {
+                        ...column.options,
+                    };
                 }
 
                 if (column?.options?.filter) {
@@ -785,6 +784,8 @@ export const TableESHOC = (Component) => {
                     && props.targetLabel !== "unit"
                     && props.targetLabel !== "operator"
                     && props.targetLabel !== "owner"
+                    && props.targetLabel !== "parcel"
+                    && props.targetLabel !== "agreement"
                     && (
                         <div style={{ height: "48px", display: "flex" }}>
                             <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>

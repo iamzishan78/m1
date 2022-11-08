@@ -19,6 +19,23 @@ const DocumentsHeadCells = [
     label: "File Name",
     esKey: 'name.keyword',
     options: {
+      setCellProps: () => ({
+        style: {
+          minWidth: "150px",
+          whiteSpace: "pre-wrap",
+          position: "sticky",
+          left: "77px",
+          zIndex: 200
+        }
+      }),
+      setCellHeaderProps: () => ({
+        style: {
+          position: "sticky",
+          minWidth: "150px",
+          left: "77px",
+          zIndex: 201
+        }
+      }),
       filter: true
     }
   },
