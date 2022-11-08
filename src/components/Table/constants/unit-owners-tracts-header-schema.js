@@ -45,6 +45,18 @@ const getHeaders = ({interestMapping, layerType}) => {
       options: { sort: true, filter: true },
     },
     {
+      name: "basin",
+      label: "Basin",
+      esKey: "tract.basin.keyword",
+      options: { sort: true, filter: true },
+    },
+    {
+      name: "field",
+      label: "Field",
+      esKey: "tract.field.keyword",
+      options: { sort: true, filter: true },
+    },
+    {
       name: "SurveyMeridian",
       label: "Survey/ Meridian",
       esKey: ["tract.rurvey.keyword", "tract.meridian.keyword"],
