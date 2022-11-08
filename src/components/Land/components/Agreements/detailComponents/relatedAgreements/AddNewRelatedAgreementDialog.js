@@ -272,7 +272,7 @@ const AddNewRelatedAgreementDialog = (props) => {
                     value={
                       param.type === "date"
                         ? get(selectedAgreement, param.key)
-                          ? moment(get(selectedAgreement, param.key)).format("DD/MM/YYYY")
+                          ? moment(get(selectedAgreement, param.key)).format("MM/DD/YYYY")
                           : ""
                         : param.formatValue
                         ? param.formatValue(get(selectedAgreement, param.key, ""))
