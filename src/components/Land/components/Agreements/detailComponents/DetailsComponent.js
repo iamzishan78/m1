@@ -376,6 +376,21 @@ export function DetailComponents(props) {
     if (field === "agreementType") {
       customLayer.layer = value;
     }
+    if(field === "state"){
+      if(shape.properties.originalProperties){
+        shape.properties.originalProperties.State = value;  
+        shape.properties.originalProperties.StateAbbreviation = value;  
+      }else{
+        shape.properties.originalProperties = { State:value, StateAbbreviation:value }
+      }
+    }
+    if(field === "county"){
+      if(shape.properties.originalProperties){
+        shape.properties.originalProperties.County = value;  
+      }else{
+        shape.properties.originalProperties = { County:value }
+      }
+    }
 
     shape.properties.shapeLabel = shapeLabel;
     shape.name = shapeLabel;

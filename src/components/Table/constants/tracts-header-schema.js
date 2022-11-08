@@ -1,5 +1,5 @@
 import { history } from "store";
-import GlobalSettings from "..//..//..//GlobalSettings.js";
+import { GlobalStickyStyles } from "GlobalSettings";
 import GlobalStyles from "..//..//..//GlobalStyles.js";
 import Typography from "@material-ui/core/Typography";
 
@@ -18,7 +18,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: 'name.keyword',
 
     options: {
-      ...GlobalSettings.muiGridControlOptions,
+      ...GlobalStickyStyles({}),
       dbName: "name",
 
       customRender: (value, tableMeta) => {

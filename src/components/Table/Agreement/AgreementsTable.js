@@ -4,7 +4,7 @@ import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import Agreements from "components/Shared/svgIcons/agreements";
 
-import { deepEqualObjects, copy } from "components/Shared/functions";
+import { deepEqualObjects, copy, esExtentedSearch } from "components/Shared/functions";
 import { HeaderComponent } from "components/Table/helpers";
 
 // Header Schemas
@@ -72,8 +72,6 @@ function AgreementsTable(props) {
       hit.effectiveDate = hit.effectiveDate ? convert_date(hit.effectiveDate) : null;
       hit.expirationDate = hit.expirationDate ? convert_date(hit.expirationDate) : null;
       hit.extensionDate = hit.extensionDate ? convert_date(hit.extensionDate) : null;
-      hit.State = hit?.originalProperties?.State;
-      hit.County = hit?.originalProperties?.County;
       hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       // hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
@@ -95,8 +93,8 @@ function AgreementsTable(props) {
     props.setInitialFilters(formatedFilter);
     setTableMeta({
       // addableName: "Unit",
-      extendSearchQuery: props.landSearchQuery || searchInput ? `*${searchInput}*` : '' || '',
-      // selectedGridView: GridViewModule || defaultView,
+      extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
+      selectedGridView: GridViewModule || defaultView,
       customDataESKey: 'shapeJson.properties.custom_data',
       // searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
