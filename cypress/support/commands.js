@@ -28,7 +28,7 @@
 
 import { deepEqualObjects } from "../../src/components/Shared/functions";
 import { baseUrls, basic_timeouts, loginCredential } from "../cypressUtils/data";
-import { findInObject, isApiWithSearchString } from "../cypressUtils/helper";
+import { findInObject, isSearchStringMatched } from "../cypressUtils/helper";
 
 // Constants
 const workSpace = Cypress.env('WORK_SPACE') || "enerx"
@@ -69,7 +69,7 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
         if (req.body.operationName === operationName) {
             if (payloadKey) {
                 const { variables } = req.body
-                if (payloadKey.searchString && isApiWithSearchString(payloadKey.searchString, variables))
+                if (payloadKey.searchString && isSearchStringMatched(payloadKey.searchString, variables))
                     req.alias = `${operationName}WithSearchStringApi`;
                 else if (payloadKey?.sortOrder && variables?.sort?.order === payloadKey.sortOrder) {
                     req.alias = `${operationName}WithSortOrderApi`;
