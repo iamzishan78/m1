@@ -47,11 +47,10 @@ function RevenuePropertiesTable(props) {
   };
 
   useEffect(() => {
-    const formatedFilter = esFilters ? copy(esFilters) : [];
-    const fixedFilters = [];
-    if (formatedFilter[0] && formatedFilter[0].value.range) {
-      formatedFilter[0].type = "range";
-      formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field];
+    const formatedFilter = esFilters ? copy(esFilters) : []
+    const fixedFilters = []
+       
+    if (formatedFilter[0] && formatedFilter[0].type === "range") {
       fixedFilters.push(formatedFilter[0]);
     }
 
@@ -62,7 +61,7 @@ function RevenuePropertiesTable(props) {
     props.setTableMeta({
       extendSearchQuery: props.revenueSearchQuery,
       searchFields: ["name^4", "_all"],
-      TableHeader: copy(TableHeader),
+      TableHeader: copy(TableHeader(!!props.isReportingGroup)),
       esIndex: esIndex,
       filters: fixedFilters,
       selectedGridView: { filters: [] },
