@@ -12,7 +12,7 @@ const wellsColumnHeaders = [
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-    name: "wellName",
+    name: "WellName",
     label: "Well Name",
     esKey: "wellData.wellName.keyword",
     options: {

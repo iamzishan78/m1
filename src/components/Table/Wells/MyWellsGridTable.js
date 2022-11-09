@@ -20,6 +20,7 @@ import { usetableStyles } from "../Styles";
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 
 const startPaginationAt = 50;
+
 function MyWellsGridTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
@@ -29,7 +30,7 @@ function MyWellsGridTable(props) {
       filters: props.filters,
       addBtnText: "WELLS",
       extendSearchQuery: stateApp.landSearchQuery,
-      searchFields: ["wellData.wellName", "wellData.api"],
+      searchFields: ["wellData.wellName", "wellData.api", "wellData.WellName", "wellData.ApiNumber"],
       TableHeader: copy(TableHeader),
       esIndex: "mywells_flat",
       startPaginationAt,

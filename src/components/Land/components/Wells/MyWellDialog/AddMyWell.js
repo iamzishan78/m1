@@ -13,6 +13,8 @@ import NumberFormat from "react-number-format";
 import { wellParams } from "./helpers";
 import { addMyWellStyles as useStyles } from "./styles";
 
+import _ from "underscore";
+
 import { UPSERT_MY_WELL } from "graphQL/useMutationUpsertMyWell";
 import { useMutation } from "@apollo/client";
 
@@ -72,6 +74,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
   const classes = useStyles();
 
   const [foundWells, setFoundWells] = useState([]);
+  const [wells, setWells] = useState();
   const [upsertMyWell, { loading: upsertWellLoading }] = useMutation(UPSERT_MY_WELL);
 
   const { control, reset } = useForm();
@@ -79,6 +82,23 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
   useEffect(() => {
     if (platformWell) reset(platformWell);
   }, [platformWell, reset]);
+
+
+  useEffect(() => {
+    if (wells && !_.isEmpty(platformWell)) {
+      console.log("platformWell in: ", platformWell)
+      console.log("wells in: ", wells)
+      upsertMyWell({
+        variables: {
+          myWell: { ...wells, ...platformWell, _id: platformWell.id }
+        },
+        refetchQueries: ["getESSimpleSearch"],
+        awaitRefetchQueries: true,
+      });
+
+      setWells(null)
+    }
+  }, [wells, platformWell]);
 
   const callWellSearch2 = React.useMemo(
     () =>
@@ -133,13 +153,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
               options={foundWells || []}
               onChange={(e, well) => {
                 handleWellDetail(well);
-                upsertMyWell({
-                  variables: {
-                    myWell: well,
-                  },
-                  refetchQueries: ["getESSimpleSearch"],
-                  awaitRefetchQueries: true,
-                });
+                setWells(well)
               }}
               disabled={!!upsertWellLoading}
               value={platformWell}
