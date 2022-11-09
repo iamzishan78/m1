@@ -176,7 +176,7 @@ export const analyticsManagementRoutes = {
     title: "CRM",
     link: "/analytics",
     component: "ActivitiesDashboard",
-    value: "Activities",
+    value: "CRM",
     search: true,
     isDefault: true,
   },
@@ -185,9 +185,9 @@ export const analyticsManagementRoutes = {
     title: "Land",
     link: "/analytics/land",
     component: "Land",
-    value: "Activities",
+    value: "Land",
     search: false,
-    isDefault: true,
+    isDefault: false,
   },
   PROSPECTS: {
     featureFlag: "CONTACTSUBMENU",
@@ -196,9 +196,9 @@ export const analyticsManagementRoutes = {
     component: "Revenue",
     filterValue: "Prospect",
     showAnalytics: true,
-    value: "Prospects",
+    value: "Revenue",
     search: false,
-    isDefault: true,
+    isDefault: false,
   },
 };
 
