@@ -378,6 +378,7 @@ export function DetailComponents(props) {
     }
     if(field === "state"){
       if(shape.properties.originalProperties){
+        shape.properties.originalProperties.County = '';
         shape.properties.originalProperties.State = value;  
         shape.properties.originalProperties.StateAbbreviation = value;  
       }else{
