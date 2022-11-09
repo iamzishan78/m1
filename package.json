@@ -148,6 +148,7 @@
   "scripts": {
     "cypress:open": "cypress open",
     "cy:run": "cypress run",
+    "cy:report": "cypress run --spec 'cypress/e2e/Document/documentGrid.cy.js'  --browser chrome",
     "legacy-start": "react-scripts start",
     "start": "craco start",
     "legacy-build": "react-scripts build",
