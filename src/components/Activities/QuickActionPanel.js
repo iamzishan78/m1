@@ -17,8 +17,8 @@ import moment from 'moment';
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import { ActivitiesContext } from "./ActivitiesContext";
-import Calendar from 'react-calendar';
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
     padding: "16px",
@@ -64,9 +64,6 @@ const useToolbarStyles = makeStyles((theme) => ({
     marginLeft: 8,
   },
   centerNav: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: 'space-between',
     padding: '5px'
   },
 }));
@@ -80,43 +77,14 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
 
   const [value, onChange] = useState(new Date());
 
-
-  const goToBack = (date) => {
-      let current = date
-      if (date.getMonth() === 1){
-        current = new Date(date.getFullYear() - 1, 0, 1);
-      } else{
-        current = new Date(date.getFullYear(), date.getMonth() - 1, 1);
-      }
-    setActivityApp({...activityApp,selectedDate:current});
-  };
-  const goToNext = (date) => {
-    let current = date;
-    if (date.getMonth() === 11){
-      current = new Date(date.getFullYear() + 1, 0, 1);
-    } else{
-      current = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-    }
-
-    setActivityApp({...activityApp,selectedDate:current});
-  };
-
-  const handleChangeCalender = (e) =>{
-    let date = e.activeStartDate;
-    if(e.action === 'next'){
-      goToNext(date);
-    }else if(e.action === 'prev'){
-      goToBack(date);
-    }
-  }
   const handleMenuItemClick = (path) => {
     history.push(path);
   };
 
-  const handleDayChange = (e) => {
-    setActivityApp({...activityApp,selectedDate:e});
-  }
 
+  const handleCalender = (date) => {
+    setActivityApp({...activityApp,selectedDate:date});
+  }
   return (
       <>
         <Drawer
@@ -169,12 +137,10 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
                 )}
           </StyledMenu>
           <div className={calenderClasses.centerNav}>
-            <Calendar
-                onActiveStartDateChange={(e)=>handleChangeCalender(e)}
-                next2Label={null}
-                prev2Label={null}
-                value={activityApp?.selectedDate}
-                onChange={(e)=>handleDayChange(e)}
+            <DatePicker
+                selected={activityApp?.selectedDate}
+                inline
+                onMonthChange={(e)=>handleCalender(e)}
             />
           </div>
         </Drawer>
