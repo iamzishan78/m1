@@ -470,8 +470,8 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           value={state}
                           onStateChange={(selectedState) =>{
                             setState(selectedState.acronym)
+                            setCounty('')
                             updateProperties(null, 'state', selectedState.acronym);
-                            // updateAgreement("state", selectedState.acronym, false)
                           }}
                         />
                       </>
@@ -483,9 +483,8 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                         value={county}
                         state={state}
                         onCountyChange={(selectedCounty) =>{
-                          setCounty(selectedCounty.county)
-                          updateProperties(null, 'county', selectedCounty.county);
-                          // updateAgreement('county', selectedCounty.county, false)
+                          setCounty(selectedCounty ? selectedCounty.county : '')
+                          updateProperties(null, 'county', selectedCounty ? selectedCounty.county : '')
                         }}
                       />
                     )}
@@ -516,7 +515,11 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             data.type !== "comma-number" &&
                             data.type !== "multiselect" &&
                             data.type !== 'calculation' &&
+                            data.type !== 'state' &&
+                            data.type !== 'county' &&
                             (data.value || get(properties, `${data.key}`, "-"))}
+                          {data.type === "state" && (get(properties, 'originalProperties.StateAbbreviation', '') || get(properties, 'originalProperties.State', '') || '-')}
+                          {data.type === "county" && (get(properties,'originalProperties.County','-'))}
                           {data.type === "multiselect" && (get(properties, `${data.key}`) ?? []).join(", ")}
                           {data.type === "currency" && (vf_currency(data.value) || vf_currency(properties[data.key]) || "-")}
                           {data.type === "comma-number" && (vf_number(data.value) || vf_number(properties[data.key]) || "-")}

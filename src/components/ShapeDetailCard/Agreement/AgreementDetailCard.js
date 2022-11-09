@@ -145,8 +145,9 @@ export default function AgreementDetailCard(props) {
     }
     if(field === "state"){
       if(shape.properties.originalProperties){
-        shape.properties.originalProperties.State = value;  
-        shape.properties.originalProperties.StateAbbreviation = value;  
+        shape.properties.originalProperties.County = undefined;
+        shape.properties.originalProperties.State = value;
+        shape.properties.originalProperties.StateAbbreviation = value;
       }else{
         shape.properties.originalProperties = { State:value, StateAbbreviation:value }
       }
