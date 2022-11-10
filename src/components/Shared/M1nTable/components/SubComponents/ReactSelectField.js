@@ -68,7 +68,8 @@ const ReactSelectField = ({
   showUnderline,
   showChevron,
   variant,
-  tooltipView
+  tooltipView,
+  ...rest
 }) => {
   if (!isSingleSelect && !Array.isArray(value) && value) {
     value = [value]
@@ -113,6 +114,7 @@ const ReactSelectField = ({
       <components.Option {...props}>
         {props.value === "editOption" ? (
           <Grid
+            id={props}
             style={{
               "flex-wrap": "nowrap",
               marginTop: "5px",
@@ -348,9 +350,11 @@ const ReactSelectField = ({
     }
     return candidate.value.toLowerCase().includes(input?.toLowerCase())
   };
+
   return (
     <>
       <div
+        id={rest.id || "checkif"}
         ref={wrapperRef}
         className={classes.root}
         style={{
