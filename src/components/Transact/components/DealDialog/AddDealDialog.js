@@ -1051,14 +1051,14 @@ function AddDealDialog(props) {
 
   const refetchDeal = () => {
     getDeal({
-      variables: { id: stateApp.activeDeal.cardId },
+      variables: { id: stateApp?.activeDeal?.cardId },
     });
   };
 
 
   useEffect(()=>{
     refetchDeal();
-  },[stateApp.activeDeal.cardId]);
+  },[stateApp?.activeDeal?.cardId]);
   const addSelectedContactToDeal = (contact) => {
     upsertDealDescriptor({
       variables: {
@@ -1075,6 +1075,7 @@ function AddDealDialog(props) {
       });
     });
   };
+
   useEffect(() => {
     if (getDealResult?.deal?.deal?.contacts) {
       setStateApp((stateApp) => ({

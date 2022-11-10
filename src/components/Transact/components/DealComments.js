@@ -319,7 +319,7 @@ export default function DealComment(props) {
   };
 
   const getCount = () => {
-    let indexToShow = commentsArray.length > 3 ? commentsArray.length - 3 : 0;
+    let indexToShow = commentsArray.length > 3 ? commentsArray?.length - 3 : 0;
     return indexToShow;
   };
 
@@ -354,8 +354,7 @@ export default function DealComment(props) {
     }finally {
       setLoadingComments(false);
     }
-  }, [stateApp.activeDeal.activity,dataComments]);
-
+  }, [stateApp?.activeDeal?.activity,dataComments]);
   return (
     <div className={classes.container}>
       <div className={classes.comment}>
