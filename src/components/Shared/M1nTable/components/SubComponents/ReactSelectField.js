@@ -382,7 +382,7 @@ const ReactSelectField = ({
                 justifyContent: "space-between",
               }}
             >
-              <span class="colorText" id="selectedValues">
+              <span className="colorText" id="selectedValues">
                 <MultSelectValues
                   tooltipView={tooltipView}
                   value={value}
@@ -462,7 +462,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
   }
 
   const Badge = ({ badgeValue, index }) => <span
-    class="colorText"
+    className="colorText"
     style={getCss(badgeValue)}
   >
     <span id="badgeValue">{badgeValue}</span>
@@ -490,7 +490,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
         }
       >
         <span
-          class="colorText"
+          className="colorText"
           style={{
             borderRadius: '20px',
             whiteSpace: "nowrap",
@@ -533,12 +533,12 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
         <>
           {value && typeof value === 'string' ? (
             <span
-              class="colorText"
+              className="colorText"
               style={getCss(value)}
             >
               <span>{value}</span>
             </span>
-          ) : (<span class="colorText">--</span>)}
+          ) : (<span className="colorText">--</span>)}
         </>
       )}
     </span>

@@ -62,7 +62,7 @@ const AutoCompleteField = ({ placeholder, value, onChange, column, query, extend
   };
 
   const getFiltersAction = (search) => {
-    if (search) search = type === "number" ? search : `${search}*`;
+    if (search) search = type === "number" ? search : search.includes('-') ? `"*${search}*"` : `*${search}*`;
     getFilters({
       variables: {
         esIndex,
