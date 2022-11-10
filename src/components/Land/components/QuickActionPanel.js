@@ -13,6 +13,7 @@ import { useStyles, StyledMenu, StyledMenuItem } from "components/Land/style";
 
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
+import AdvanceSearch from "components/Land/components/AdvanceSearch";
 
 export default function QuickActionsPanel({ children, title, actions, handlePanelStateChange, quickActionsPanelState, activeModule }) {
   const classes = useStyles();
@@ -33,7 +34,7 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
         }}
       >
         <Grid container direction="row" justify="space-between" display="flex" className={classes.header}>
-          <Grid item style={{ alignItems: "center",paddingLeft:'23px' }}>
+          <Grid item style={{ alignItems: "center", paddingLeft: "23px" }}>
             <Typography variant="h5" style={{ fontWeight: "normal" }}>
               {title}
             </Typography>
@@ -48,32 +49,33 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
           </Grid>
         </Grid>
         <Divider />
-        <div style={{paddingLeft:'23px'}}>
+        <div style={{ paddingLeft: "23px" }}>
           <Typography variant="body2" className={classes.quickActionText}>
             Quick Actions
           </Typography>
           <StyledMenu>
             {Object.keys(actions)
-                .filter((key) => !actions[key].isExcluded)
-                .map(
-                    (key, index) =>
-                        actions[key].featureFlag && (
-                            <FeatureFlag feature={FEATURES[actions[key].featureFlag]} noCheck={actions[key].noCheck}>
-                              <StyledMenuItem
-                                  onClick={() => handleMenuItemClick(actions[key].link)}
-                                  key={index}
-                                  isSelected
-                                  style={{
-                                    backgroundColor: activeModule.title === actions[key].title ? "#4B618F" : "",
-                                  }}
-                              >
-                                <ListItemText id={`${actions[key].title} 101`}>{actions[key].title}</ListItemText>
-                              </StyledMenuItem>
-                            </FeatureFlag>
-                        )
-                )}
+              .filter((key) => !actions[key].isExcluded)
+              .map(
+                (key, index) =>
+                  actions[key].featureFlag && (
+                    <FeatureFlag feature={FEATURES[actions[key].featureFlag]} noCheck={actions[key].noCheck}>
+                      <StyledMenuItem
+                        onClick={() => handleMenuItemClick(actions[key].link)}
+                        key={index}
+                        isSelected
+                        style={{
+                          backgroundColor: activeModule.title === actions[key].title ? "#4B618F" : "",
+                        }}
+                      >
+                        <ListItemText id={`${actions[key].title} 101`}>{actions[key].title}</ListItemText>
+                      </StyledMenuItem>
+                    </FeatureFlag>
+                  )
+              )}
           </StyledMenu>
         </div>
+        <AdvanceSearch activeModule={activeModule} />
       </Drawer>
       <FeatureFlag feature={FEATURES[activeModule.featureFlag]} noCheck={activeModule.noCheck}>
         <div
