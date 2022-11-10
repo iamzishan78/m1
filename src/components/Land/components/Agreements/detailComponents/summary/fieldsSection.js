@@ -96,7 +96,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   }, [history, agreementDetails]);
 
   useEffect(() => {
-    debugger
     const customData = getCustomMetaFields(agreementDetails, metaDataRes);
     setFieldsList([...fieldsData(stateApp.user), ...customData]);
     if (agreementDetails?.originalProperties?.State || agreementDetails?.originalProperties?.StateAbbreviation) {
