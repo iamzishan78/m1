@@ -144,6 +144,12 @@ const useStyles = makeStyles({
   contentRoot: {
     maxHeight: "calc(100vh - 310px)",
   },
+  detailsFileWrapper:{
+    display:'flex !important',
+    flexDirection:'column !important',
+    height:'93vh !important',
+    marginRight:'60px !important'
+  }
 });
 
 export default function DocumentDrawer(props) {
@@ -381,7 +387,7 @@ export default function DocumentDrawer(props) {
         </div>
         <div className={classes.contentRoot}>
           {!props.isRelatedDocuments && <RightActionsPanel activePanel={activePanel} setPanel={setPanel} wellsCount={wells?.length} />}
-          <div style={{ marginRight: !props.isRelatedDocuments ? "60px" : "" }}>
+          <div className={!props.isRelatedDocuments ? classes.detailsFileWrapper : ""}>
             {activePanel === "Home" && (
               <DetailsPanel
                 newDocument={newDocument}
