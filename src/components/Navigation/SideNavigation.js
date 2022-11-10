@@ -465,41 +465,43 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             </div>
           </ListItem> */}
 
-          <ListItem
-            classes={{
-              root: classes.menuListItem,
-              selected: classes.menuListItemSelected,
-            }}
-            button
-            selected={stateNav.selectedMenuIndexAnalytics === 1}
-            onClick={(event) => {
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                selectedContact: null,
-                contactSearchQuery: null,
-              }));
-              setStateNav((stateApp) => ({
-                ...stateApp,
-                contactFromMap: false,
-              }));
-              handleListItemClick("/analytics");
-            }}
-            key="analytics"
-          >
-            <div className={classes.tabContent}>
-              <Tooltip title="Analytics" placement="right" classes={{ tooltip: classes.iconTooltip }}>
-                <ListItemIcon className={classes.sideNavIcon}>
-                <Analytics />
-                </ListItemIcon>
-              </Tooltip>
-              <ListItemText className={`${classes.sideNavText} uppercase`} primary="Analytics" />
-              <ListItemSecondaryAction className={classes.sideNavAction}>
-                <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
-                  beta
-                </Button>
-              </ListItemSecondaryAction>
-            </div>
-          </ListItem>
+          <FeatureFlag feature={FEATURES.ANALYTICS}>
+            <ListItem
+              classes={{
+                root: classes.menuListItem,
+                selected: classes.menuListItemSelected,
+              }}
+              button
+              selected={stateNav.selectedMenuIndexAnalytics === 1}
+              onClick={(event) => {
+                setStateApp((stateApp) => ({
+                  ...stateApp,
+                  selectedContact: null,
+                  contactSearchQuery: null,
+                }));
+                setStateNav((stateApp) => ({
+                  ...stateApp,
+                  contactFromMap: false,
+                }));
+                handleListItemClick("/analytics");
+              }}
+              key="analytics"
+            >
+              <div className={classes.tabContent}>
+                <Tooltip title="Analytics" placement="right" classes={{ tooltip: classes.iconTooltip }}>
+                  <ListItemIcon className={classes.sideNavIcon}>
+                  <Analytics />
+                  </ListItemIcon>
+                </Tooltip>
+                <ListItemText className={`${classes.sideNavText} uppercase`} primary="Analytics" />
+                <ListItemSecondaryAction className={classes.sideNavAction}>
+                  <Button disabled className={`${classes.betaSideNav3} uppercase`} edge="start" aria-label="beta">
+                    beta
+                  </Button>
+                </ListItemSecondaryAction>
+              </div>
+            </ListItem>
+          </FeatureFlag>
 
 
         </List>
