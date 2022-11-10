@@ -8,7 +8,7 @@ import { isEmpty } from "lodash";
 
 import { AppContext } from "AppContext";
 
-import { copy, deepEqual, setStateIfDeepEqual } from "components/Shared/functions";
+import { copy, deepEqual, getSearchFields, setStateIfDeepEqual } from "components/Shared/functions";
 import { TAGSAMPLES } from "graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "graphQL/useQueryCommentsCounter";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
@@ -100,7 +100,6 @@ export const TableESHOC = (Component) => {
         const tableData = elasticData?.getESSimpleSearch || {}
 
         const updateColumnsOnGridViewChange = (metaDatas) => {
-            console.log('Outside Columns', columns)
             Columns((cols) => {
                 if (cols?.length > 0) {
                     console.log('Inside Columns', cols)
@@ -202,8 +201,10 @@ export const TableESHOC = (Component) => {
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
         useEffect(() => {
-            if (tableMeta?.esIndex) {
+            // New code added to only search on table related fields to avoid api crash
+            if (!tableMeta.searchFields && tableMeta.TableHeader) tableMeta.searchFields = getSearchFields(tableMeta.TableHeader)
 
+            if (tableMeta?.esIndex) {
                 if (tableMeta.modifySelectedGridView) {
                     tableMeta.modifySelectedGridView(selectedGridView)
                 }
@@ -290,12 +291,6 @@ export const TableESHOC = (Component) => {
 
             tableCols.forEach((column, index) => {
                 /// apply global settings unless ignored
-                const setCellProps = column.options?.setCellProps
-                if (isFiniteScroll && rows.length && setCellProps
-                    && findInFunction("sticky", setCellProps) && column.name !== '_id') {
-                    column.options.setCellProps = GlobalSettings.muiGridInfScrollOptions.setCellProps
-                    column.options.setCellHeaderProps = GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps
-                }
 
                 /// apply global settings unless ignored
                 if (column?.options?.ignoreGlobal || props.actionColumns.includes(column.label) || props.actionColumns.includes(column.name)) {
@@ -308,6 +303,12 @@ export const TableESHOC = (Component) => {
                         ...GlobalSettings.muiGridStandardOptions,
                         ...column.options,
                     }
+                }
+                /// apply global settings unless ignored
+                if (column?.options?.ignoreGlobal || props.actionColumns.includes(column.label) || props.actionColumns.includes(column.name)) {
+                    column.options = {
+                        ...column.options,
+                    };
                 }
 
                 if (column?.options?.filter) {
@@ -700,8 +701,7 @@ export const TableESHOC = (Component) => {
                 case "filterChange":
                 case "resetFilters":
                 case "changeRowsPerPage":
-                    // updateGridViewRedux(tableState)
-                    setSearch(tableState.searchText);
+                    if (action === "search") setSearch(tableState.searchText);
                     if (isFiniteScroll) {
                         const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]")
                         if (tableClass.length > 0) tableClass[0].scrollTop = 0;
@@ -784,6 +784,8 @@ export const TableESHOC = (Component) => {
                     && props.targetLabel !== "unit"
                     && props.targetLabel !== "operator"
                     && props.targetLabel !== "owner"
+                    && props.targetLabel !== "parcel"
+                    && props.targetLabel !== "agreement"
                     && (
                         <div style={{ height: "48px", display: "flex" }}>
                             <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>

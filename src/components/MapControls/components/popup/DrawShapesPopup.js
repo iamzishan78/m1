@@ -161,7 +161,7 @@ const DrawShapesPopup = (props) => {
 
   return (
     <Fragment>
-      <span class={classes.label}>
+      <span className={classes.label}>
         {stateApp.selectedAbstracts.length > 0 ? `${`${stateApp.selectedAbstracts.length} ${parcelLabel}`} selected` : "Tooltip"}
       </span>
       <span className={classes.actions}>

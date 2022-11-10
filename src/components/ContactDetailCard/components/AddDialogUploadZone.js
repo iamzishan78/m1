@@ -25,6 +25,9 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 const useStyles = makeStyles((theme) => ({
   root: {
     // backgroundColor: "#fff",
+    "& .MuiCardContent-root": {
+      padding: 0,
+    },
   },
   timelineItemRight: {
     "&:before": {
@@ -294,12 +297,12 @@ const Documents = memo((props) => {
             }}
           />
 
-          <Grid container display="flex" direction="row" spacing={1}>
+          <Grid container display="flex" direction="row" spacing={1} style={{width:'100%'}}>
             {recentFiles?.map((value, key) => {
               let fileExtension = value?.name?.slice(value.name.lastIndexOf(".") + 1)?.toLowerCase();
               if (key <= 2) {
                 return (
-                  <Grid item key={key} className="">
+                  <Grid id={value?.name} item key={key} className="">
                     <LightTooltip
                       title={
                         <div className={classes.IconSection}>
@@ -310,7 +313,7 @@ const Documents = memo((props) => {
                               setFileIdToDelete(files?.getFileDescriptors[key].descriptorId);
                             }}
                           >
-                            <DeleteIcon />
+                            <DeleteIcon id="deleteIcon" />
                           </IconButton>
 
                           <IconButton
@@ -349,7 +352,7 @@ const Documents = memo((props) => {
               }
             })}
             <Grid item xs={4}>
-              <div className={classes.Uploadcomp}>
+              <div id="uploadZone" className={classes.Uploadcomp}>
                 <UploadZone
                   style={{ width: "150px", height: "150px" }}
                   setUploadedFileData={props.setUploadedFileData}

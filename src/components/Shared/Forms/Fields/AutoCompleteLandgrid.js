@@ -38,7 +38,6 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
         if (label === 'Range') {
           if (compoundValue)
             hits = hits.filter((hit) => hit.key.includes(compoundValue))
-          console.log(compoundValue)
           hits = uniqBy(hits.map((hit) => ({ ...hit, key: hit.key.split(" ")[1] })), 'key')
         }
 
@@ -67,12 +66,12 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
         filterKey: typeof filterKey === 'string' ? filterKey : undefined,
         search: { query: "", fields: ["*"] },
         extendSearchQuery,
-        size: 70,
+        size: label === 'County' ?  1000 : 70,
         filterAggs: {
           query: rawSearch,
           field: typeof filterKey === 'string' ? filterKey : undefined,
           fields: typeof filterKey !== 'string' ? filterKey : undefined,
-          size: 70
+          size: label === 'County' ?  1000 : 70,
         }
       },
     });

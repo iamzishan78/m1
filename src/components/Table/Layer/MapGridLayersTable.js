@@ -88,27 +88,46 @@ function MapGridLayersTable(props) {
   }
 
   useEffect(() => {
-    console.log('stateApp.selectedLayer', stateApp.selectedLayer)
+    let mustQuery =[]
+    if(stateApp.selectedLayer?.layerShapeName){
+      mustQuery = [{
+        "term": { "properties.layerShapeName.keyword": stateApp.selectedLayer?.layerShapeName }
+      }]
+    }
     props.setTableMeta({
       extendSearchQuery: searchInput,
       advanceSearch: stateApp.selectedLayer?.layerGeometry === 'Polygon' ? [{
         "bool": {
-          "should": [
+          "must":[
+            ...mustQuery,
             {
-              "term": { "properties.layerGeometry.keyword": "Polygon" }
-            },
-            {
-              "term": { "properties.layerGeometry.keyword": "MultiPolygon" }
+              "bool": {
+              "should": [
+                {
+                  "term": { "properties.layerGeometry.keyword": "Polygon" }
+                },
+                {
+                  "term": { "properties.layerGeometry.keyword": "MultiPolygon" }
+                },
+              ]
             }
-          ]
+          }
+          ],
         }
       }] : [{
         "bool": {
-          "should": [
+          "must":[
+            ...mustQuery,
             {
-              "term": { "properties.layerGeometry.keyword": stateApp.selectedLayer?.layerGeometry }
+              "bool": {
+              "should": [
+                {
+                  "term": { "properties.layerGeometry.keyword": stateApp.selectedLayer?.layerGeometry }
+                },
+              ]
             }
-          ]
+          }
+          ],
         }
       }],
       searchFields: ['*'],

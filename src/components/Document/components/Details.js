@@ -6,6 +6,7 @@ import ListItem from "@material-ui/core/ListItem";
 import { AppContext } from "AppContext";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
+import get from "lodash/get";
 
 import { IconButton, TextField, withStyles } from "@material-ui/core";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
@@ -19,6 +20,8 @@ import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 import { useLazyQuery } from "@apollo/client";
 import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+
+
 
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
@@ -259,19 +262,6 @@ export default function DocumentDetails(props) {
     }
   }, [fileData]);
 
-  useEffect(() => {
-    if (viewFileResult?.viewFile?.uri) {
-      let a = document.createElement("a");
-      a.href = viewFileResult.viewFile.uri;
-      a.download = viewFileResult.viewFile.name;
-
-      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
-      // a.target = "_blank";
-
-      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
-      a.click();
-    }
-  }, [viewFileResult]);
 
   const sortFields = (gridViews) => {
     const metaData = [];
@@ -334,10 +324,35 @@ export default function DocumentDetails(props) {
       });
     }
   };
-  const handleViewFile = async (id) => {
-    viewFile({ variables: { fileId: id } });
-    if (viewFileLoading) {
-    }
+
+  const handleViewFile = async (id, isPdf = false) => {
+    let selectedDocument = stateApp.selectedDocument
+
+    viewFile({ variables: { fileId: selectedDocument._id } }).then((response) => {
+      const viewFileData = get(response, "data.viewFile", {})
+
+      if (isPdf) {
+        setStateApp((state) => ({
+          ...state,
+          viewDoc: {
+            uri: viewFileData.uri,
+            name: viewFileData.name,
+          },
+        }));
+      }
+      else {
+        let a = document.createElement("a");
+        a.href = viewFileData.uri;
+        a.download = viewFileData.name;
+
+        // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
+        // a.target = "_blank";
+
+        // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
+        a.click();
+      }
+
+    })
   };
 
   const onFileUpload = (file) => {
@@ -507,7 +522,7 @@ export default function DocumentDetails(props) {
 
           <ListItem
             className={classes.listItem}
-            style={{ flexDirection: 'row'}}
+            style={{ flexDirection: 'row' }}
           >
             <div style={{
               marginRight: "15px",
@@ -681,7 +696,7 @@ export default function DocumentDetails(props) {
                               onClick={() => {
                                 setReplaceFile('INITIATE')
                                 setOpenDeleteConfirmDialog(true);
-                                setFileIdToDelete(stateApp.selectedDocument.fileId);
+                                setFileIdToDelete(stateApp?.selectedDocument?.fileId || stateApp?.selectedDocument?._id);
                                 // setStateApp((state) => ({ ...state, selectedDocument: { ...state.selectedDocument, fileId: null } }))
                                 // setFileData(null)
                               }}
@@ -710,7 +725,9 @@ export default function DocumentDetails(props) {
                             <div
                               className={classes.forImageContainer}
                               onClick={() => {
-                                if (fileExtension === "pdf") {
+                                const isPdf = fileExtension === "pdf"
+
+                                if (isPdf && stateApp?.selectedDocument.viewToken) {
                                   setStateApp((state) => ({
                                     ...state,
                                     viewDoc: {
@@ -723,7 +740,7 @@ export default function DocumentDetails(props) {
                                   //   pdfView: stateApp.selectedDocument,
                                   // }));
                                 } else {
-                                  handleViewFile(stateApp.selectedDocument.fileId);
+                                  handleViewFile(stateApp.selectedDocument.fileId, isPdf);
                                 }
                               }}
                             >

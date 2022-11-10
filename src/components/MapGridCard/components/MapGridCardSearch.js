@@ -13,13 +13,6 @@ import debounce from "lodash/debounce";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import { setMapGridCardState } from "../../../actions";
 
-import { useLazyQuery } from "@apollo/client";
-import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
-
-const leaseIndexName = 'lease-index-v2';
-const operatorIndexName = 'operator-index';
-const wellCogIndexName = "wellheader-index";
-
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -42,22 +35,18 @@ const useStyles = makeStyles((theme) => ({
 function MapGridCardSearch(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { searchInputValue, searchloading, searchResultData } = useSelector(
+  const { searchInputValue } = useSelector(
     ({ MapGridCard }) => MapGridCard,
     shallowEqual
   );
 
   // contexts 
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [stateGrid, setStateGrid] = useContext(MapGridContext);
+  const [stateApp] = useContext(AppContext);
+  const [, setStateGrid] = useContext(MapGridContext);
 
 
   // function states 
   const [searchTop] = React.useState(100);
-
-  const [getESSimpleSearch, { data: esSearchData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });
-
-  const startPaginationAt = 50;
 
   const setSearchInputValue = React.useMemo(
     () =>
@@ -65,73 +54,16 @@ function MapGridCardSearch(props) {
         dispatch(
           setMapGridCardState({
             searchloading: true,
-            searchInputValue: request,
+            searchInputValue: `${request}`,
           })
         );
         setStateGrid((state) => ({
           ...state,
-          gridSearchTarget: request,
+          gridSearchTarget: `${request}`,
         }));
       }, 500),
     []
   );
-
-  const esCallData = React.useMemo(
-    () => ({
-      "well": {
-        esIndex: "platformData:wells",
-        search: (request) => `${request.input}`,
-        formatOptions: (data) => {
-          return { ...data, Source: wellCogIndexName, Primary: data.WellName, Secondary: data.ApiNumber }
-        }
-      },
-      "contacts": {
-        esIndex: "contacts_flat",
-        search: (request) => `${request.input}`,
-        formatOptions: (data) => {
-          return {
-            ...data, ...data.node, Primary: data.name || "--",
-            Secondary: data.address1 || data.city || data.state ? data.address1 + ' ' + data.city + ', ' + data.state + ' ' + data.zip : "--"
-          }
-        }
-      },
-      "owner": {
-        esIndex: "platformData:globalowner",
-        search: (request) => request.input ? `ownerName:*${request.input}*` : '',
-        formatOptions: (data) => {
-          return {
-            ...data, Source: 'globalowner-index', Primary: data.OwnerName, Secondary: `${data.StreetAddress}\n${data.City}\n${data.State}\n${data.Zip}`,
-          }
-        }
-      },
-      "operator": {
-        esIndex: "platformData:operator",
-        search: (request) => request.input ? `operator:*${request.input}*` : '',
-
-        formatOptions: (data) => {
-          return { ...data, Source: operatorIndexName, Primary: data.Operator, Secondary: null }
-        }
-      },
-      "lease": {
-        esIndex: "platformData:lease",
-        search: (request) => request.input ? `lease:*${request.input}*` : '',
-        formatOptions: (data) => {
-          return {
-            ...data, Source: leaseIndexName, Primary: data.Lease && ["", "N/A", "(N/A)"].includes(data.Lease) ? "--" : data.Lease,
-            Secondary: data.LeaseId && ["", "N/A", "(N/A)"].includes(data.LeaseId) ? null : data.LeaseId
-          }
-        }
-      },
-      "unit": {
-        esIndex: "shapes_flat",
-        search: (request) => request.input ? `layer:unit AND name:*${request.input}*` : '',
-        formatOptions: (data) => {
-          return {
-            ...data, Source: 'shapes_flat', Primary: data.name, Secondary: null
-          }
-        }
-      }
-    }), [props.searchOption]);
 
   const callMapboxSearch = React.useMemo(
     () =>
@@ -160,25 +92,6 @@ function MapGridCardSearch(props) {
       }, 500),
     []
   );
-
-  useEffect(() => {
-    let newOptions = []
-    if (esSearchData) {
-      const { formatOptions } = esCallData[props.searchOption]
-      newOptions = [
-        ...esSearchData.getESSimpleSearch.hits.map((result) => {
-          return formatOptions(result);
-        }),
-      ];
-      dispatch(
-        setMapGridCardState({
-          searchResultData: [...newOptions],
-          searchloading: false,
-        })
-      );
-    }
-  }, [esSearchData])
-
 
   useEffect(() => {
     if (props.searchOption === "location") {

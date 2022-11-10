@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   loader: {},
 }));
 
-export default function FilterCountyName({ value, state, onCountyChange, label, variant }) {
+export default function FilterCountyName({ value, state, onCountyChange, label, variant, shrink }) {
   const classes = useStyles();
 
   const [countyList, setCountyList] = useState([]);
@@ -63,6 +63,7 @@ export default function FilterCountyName({ value, state, onCountyChange, label, 
         <Autocomplete
           className={classes.autoC}
           options={countyList}
+          size={shrink ? 'small' : 'medium'}
           value={value ? { county: value } : ''}
           getOptionLabel={(option) => (option && option.county ? option.county : option ? option : "")}
           autoComplete

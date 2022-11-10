@@ -170,6 +170,38 @@ export const contactManagementRoutes = {
   },
 };
 
+export const analyticsManagementRoutes = {
+  ACTIVITY: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "CRM",
+    link: "/analytics",
+    component: "ActivitiesDashboard",
+    value: "CRM",
+    search: true,
+    isDefault: true,
+  },
+  LEADS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Land",
+    link: "/analytics/land",
+    component: "Land",
+    value: "Land",
+    search: false,
+    isDefault: false,
+  },
+  PROSPECTS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Revenue",
+    link: "/analytics/revenue",
+    component: "Revenue",
+    filterValue: "Prospect",
+    showAnalytics: true,
+    value: "Revenue",
+    search: false,
+    isDefault: false,
+  },
+};
+
 export const contactsAnalyticsCards = [
   {
     heading: "Total Contacts",
@@ -262,6 +294,25 @@ export const tractFilterColumnsHeader = [
     name: "department",
     disabled: true
   }]
+
+export const wellsFilterColumnsHeader = [
+  // Ali - Commenting this as we don't have this existing functionality
+  // {
+  //   label: "Classification",
+  //   filterKey: 'wellData.classification.keyword',
+  //   name: "classification"
+  // },
+  {
+    label: "Internal Company",
+    filterKey: 'properties.internalCompany.keyword',
+    name: "internalCompany"
+  },
+  {
+    label: "Pay Status",
+    filterKey: 'properties.status.keyword',
+    name: "payStatus"
+  }
+]
 
 export const tractInterestFilterColumnsHeader = [
   {

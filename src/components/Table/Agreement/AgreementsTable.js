@@ -1,10 +1,10 @@
 import React, { useEffect, useContext, useState } from "react";
-import { Container, Dialog } from "@material-ui/core";
+import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import Agreements from "components/Shared/svgIcons/agreements";
 
-import { deepEqualObjects, copy } from "components/Shared/functions";
+import { deepEqualObjects, copy, esExtentedSearch } from "components/Shared/functions";
 import { HeaderComponent } from "components/Table/helpers";
 
 // Header Schemas
@@ -27,7 +27,7 @@ import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import GridView from "components/Shared/GridView";
 
-// value formatters 
+// value formatters
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 
 function AgreementsTable(props) {
@@ -42,18 +42,18 @@ function AgreementsTable(props) {
 
   // queries
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
-  const [updateGridView, { data: updatedGridView }] = useMutation(UPDATE_GRID_VIEW);
+  const [updateGridView] = useMutation(UPDATE_GRID_VIEW);
 
   const classes = usetableStyles({ isFullHeight: true, isAgreementsTable: true });
+  const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
+  const GridViewModule = userGridViewSettings[`Agreements`];
   const { Agreements: AgreementsGridView } = useSelector(({ session }) => session.userGridViewSettings);
 
-  const searchInput = useSelector(
-    (state) => state.MapGridCard.searchInputValue
-  );
+  const searchInput = useSelector((state) => state.MapGridCard.searchInputValue);
   const { setESFilters } = props;
 
-  const esFilters = props.esFilters ? props.esFilters : []
+  const esFilters = props.esFilters ? props.esFilters : [];
 
   const setTableMeta = React.useMemo(
     () =>
@@ -65,40 +65,38 @@ function AgreementsTable(props) {
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
-      hit.agreementId = hit._id
+      hit.agreementId = hit._id;
       hit.agreementType = agreementTypes.find((type) => type.value === hit.agreementType || type.label === hit.agreementType)?.label;
       hit.agreementDate = hit.agreementDate ? convert_date(hit.agreementDate) : null;
       hit.acquisitionDate = hit.acquisitionDate ? convert_date(hit.acquisitionDate) : null;
       hit.effectiveDate = hit.effectiveDate ? convert_date(hit.effectiveDate) : null;
       hit.expirationDate = hit.expirationDate ? convert_date(hit.expirationDate) : null;
       hit.extensionDate = hit.extensionDate ? convert_date(hit.extensionDate) : null;
-      hit.State = hit?.originalProperties?.State;
-      hit.County = hit?.originalProperties?.County;
       hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       // hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
       return hit;
     });
-    return hits
-  }
+    return hits;
+  };
 
   useEffect(() => {
-    if (props.landSearchQuery)
-      setStateApp((stateApp) => ({ ...stateApp, landSearchQuery: '' }))
-  }, [])
+    if (props.landSearchQuery) setStateApp((stateApp) => ({ ...stateApp, landSearchQuery: "" }));
+  }, []);
 
   useEffect(() => {
     props.setSelectedGridView(AgreementsGridView || defaultView);
   }, [AgreementsGridView]);
 
   useEffect(() => {
-    const formatedFilter = esFilters ? copy(esFilters) : []
-    props.setInitialFilters(formatedFilter)
+    const formatedFilter = esFilters ? copy(esFilters) : [];
+    props.setInitialFilters(formatedFilter);
     setTableMeta({
       // addableName: "Unit",
-      extendSearchQuery: props.landSearchQuery || searchInput || '',
+      extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
+      selectedGridView: GridViewModule || defaultView,
       customDataESKey: 'shapeJson.properties.custom_data',
-      searchFields: ["*"],
+      // searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
       startPaginationAt: 50,
@@ -109,11 +107,11 @@ function AgreementsTable(props) {
           value: "agreement",
         },
       ],
-      defaultSort: { field: '_ts', order: 'desc' },
+      defaultSort: { field: "_ts", order: "desc" },
       polygon: stateApp?.currentFeature?.geometry && {
         type: "geo_intersects",
         field: "shapeGeometry",
-        value: stateApp?.currentFeature?.geometry
+        value: stateApp?.currentFeature?.geometry,
       },
       formatHits,
     });
@@ -122,12 +120,16 @@ function AgreementsTable(props) {
 
   useEffect(() => {
     props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);
-  }, [props?.options?.count])
+  }, [props?.options?.count]);
 
   useEffect(() => {
-    setESFilters && setESFilters(props.initialFilters)
+    setESFilters && setESFilters(props.initialFilters);
     // eslint-disable-next-line
   }, [props.initialFilters]);
+
+  useEffect(() => {
+    props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);
+  }, [props?.options?.count]);
 
   const onCustomKeyChange = (value = null, index, key) => {
     const rows = JSON.parse(JSON.stringify(props.rows));
@@ -143,18 +145,17 @@ function AgreementsTable(props) {
         properties: {
           ...props.rows[index].shapeJson.properties,
           custom_data: { [`${key}`]: value },
-        }
-      }
-    }
+        },
+      },
+    };
 
     updateCustomLayer({
       variables: {
         customLayerId: props.rows[index]._id,
-        customLayer: customLayer
+        customLayer: customLayer,
       },
       refetchQueries: ["customLayer"],
     });
-
   };
 
   const handleDefaultView = (view, user) => {
@@ -174,11 +175,7 @@ function AgreementsTable(props) {
   };
 
   return (
-    <Container
-      maxWidth={false}
-      className={classes.container}
-      id={props.id ? props.id : props.parent}
-    >
+    <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       {/* <Dialog
         open={props.openDialog ? true : false}
         onClose={() => props.setOpenDialog(null)}
@@ -219,7 +216,15 @@ function AgreementsTable(props) {
         />
       )}
 
-      {stateApp.showFieldModal && <MetaField customDataPrefix='shapeJson.properties.custom_data' customDataPostfix='.keyword' columns={props.columns} category="Agreement" updateColumnSorting={props.updateColumnSorting} />}
+      {stateApp.showFieldModal && (
+        <MetaField
+          customDataPrefix="shapeJson.properties.custom_data"
+          customDataPostfix=".keyword"
+          columns={props.columns}
+          category="Agreement"
+          updateColumnSorting={props.updateColumnSorting}
+        />
+      )}
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
@@ -251,4 +256,4 @@ function AgreementsTable(props) {
   );
 }
 
-export default React.memo(TableESHOC(AgreementsTable, "Agreement"), deepEqualObjects)
+export default React.memo(TableESHOC(AgreementsTable, "Agreement"), deepEqualObjects);

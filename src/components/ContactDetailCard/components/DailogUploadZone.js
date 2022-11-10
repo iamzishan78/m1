@@ -42,7 +42,7 @@ export default function UploadZone(props) {
   const [inputFile, setInputFile] = useState(null);
   const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(ADDDESCRIPTORFILE);
 
-  useEffect(() => {
+  const handleUploadFile = (addFileData) => {
     if (addFileData && addFileData?.addFileDescriptor?.success) {
       const uri = addFileData.addFileDescriptor.file.uri;
       const interal_key = addFileData.addFileDescriptor.file.internalKey;
@@ -72,7 +72,7 @@ export default function UploadZone(props) {
           .catch((err) => console.log(err));
       }
     }
-  }, [addFileData]);
+  };
 
   const handleFileInput = (files) => {
     if (Array.isArray(files)) {
@@ -81,7 +81,6 @@ export default function UploadZone(props) {
 
       if (inputFile && fileName) {
         setInputFile(inputFile);
-
         addFile({
           variables: {
             fileName,
@@ -91,6 +90,8 @@ export default function UploadZone(props) {
           },
           refetchQueries: ["getRecentContactFiles", "getParcelFiles", "getParcelFilesCount"],
           awaitRefetchQueries: true,
+        }).then(res => {
+          handleUploadFile(res.data)
         });
       }
     }
@@ -156,9 +157,9 @@ export default function UploadZone(props) {
 
         maxFileSize={104857600}
         dropzoneClass={classes.dropzoneClass}
-        // getFileAddedMessage={(value) => {
-        // 	alert("File is been added", value);
-        // }}
+      // getFileAddedMessage={(value) => {
+      // 	alert("File is been added", value);
+      // }}
       ></DropzoneAreaBase>
       {(props.loading || addFileLoading) && (
         <div style={{ display: "flex", justifyContent: "center" }}>

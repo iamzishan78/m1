@@ -25,7 +25,7 @@ const DocumentsHeadCells = [
           minWidth: "150px",
           whiteSpace: "pre-wrap",
           position: "sticky",
-          left: "77px",
+          left: "125px",
           zIndex: 200
         }
       }),
@@ -33,7 +33,7 @@ const DocumentsHeadCells = [
         style: {
           position: "sticky",
           minWidth: "150px",
-          left: "77px",
+          left: "125px",
           zIndex: 201
         }
       }),

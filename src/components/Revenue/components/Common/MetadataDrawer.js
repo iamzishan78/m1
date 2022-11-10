@@ -16,7 +16,7 @@ import UsersListWithIcon from "components/Shared/UsersListWithIcon";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
-    marginLeft: 16,
+    // marginLeft: 16,
   },
   metaPanelCloseIcon: {
     "& svg": {
@@ -105,7 +105,7 @@ const useStyles = makeStyles((theme) => ({
   },
   viewAll: {
     textDecoration: "underline",
-    margin: "0 0 8px 0",
+    // margin: "0 0 8px 0",
     float: "right",
     color: theme.palette.secondary.main,
     cursor: "pointer",
@@ -138,7 +138,6 @@ export default function MetadataDrawer(props) {
   // Props
   const { setCollapse, targetSourceId, targetLabel, viewAllDocuments, ownerTitle, ownerPlaceHolder, isApproval, isOwner, isSource, data } =
     props;
-
   // Queries and Mutations
   const [getRecentFiles, { data: files }] = useLazyQuery(GETRECENTCONTACTFILES, {
     fetchPolicy: "cache-and-network",
@@ -238,7 +237,7 @@ export default function MetadataDrawer(props) {
     <div
       className="flex column justifyStart alignStart w-100"
       style={{
-        padding: "16px 10px",
+        padding: "15px 25px 0",
         background: "#ffffff",
         borderRadius: 8,
         overflow: "auto",
@@ -252,7 +251,6 @@ export default function MetadataDrawer(props) {
           className={classes.titleText}
           style={{
             fontWeight: "bold",
-            marginLeft: "5px",
             fontSize: 19,
           }}
         >
@@ -270,7 +268,7 @@ export default function MetadataDrawer(props) {
       <div className={classes.contentRoot}>
         <div>
           {(isOwner || isApproval || isSource) && (
-            <div style={{ marginTop: 10, marginLeft: 4 }}>
+            <div style={{ marginTop: 10 }}>
               <FormControl variant="outlined" fullWidth size="small">
                 {isOwner && (
                   <UsersListWithIcon
@@ -397,8 +395,8 @@ export default function MetadataDrawer(props) {
           {` Add`}
         </div> */}
 
-          <div className="flex justifyBetween alignCenter" style={{ padding: "20px 16px", marginBottom: -56 }}>
-            <h4 style={{ margin: "0 0 8px 0", float: "left" }}>{props.documentsTitle}</h4>
+          <div className="flex justifyBetween alignCenter" style={{ padding: "20px 10px 16px 0px", marginBottom: -56 }}>
+            <h4 style={{padding:'0px'}}>{props.documentsTitle}</h4>
             {viewAllDocuments && (
               <h4
                 id="viewAllDocuments"
@@ -412,21 +410,26 @@ export default function MetadataDrawer(props) {
               </h4>
             )}
           </div>
-
           <AddDialogeUploadZone
-            filesData={viewFileResult}
-            id={targetSourceId}
-            loading={viewFileLoading}
-            targetLabel={targetLabel}
-            setUploadedFileData={setUploadedFileData}
+              filesData={viewFileResult}
+              id={targetSourceId}
+              loading={viewFileLoading}
+              targetLabel={targetLabel}
+              setUploadedFileData={setUploadedFileData}
           />
         </div>
-        <div style={{ width: props.commentsWidth }}>
+        <div style={{
+          width: props.commentsWidth,
+          position: "absolute",
+          bottom: "10px",
+
+        }}>
           <CommentComponent
             targetLabel={targetLabel}
             targetSourceId={targetSourceId}
             commentsHeight={targetLabel === "Contact" ? "580px" : null}
             activityLog={props.activityLog}
+            showCommentType={props.showCommentType}
           />
         </div>
       </div>

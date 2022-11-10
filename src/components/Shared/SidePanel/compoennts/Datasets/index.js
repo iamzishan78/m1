@@ -32,8 +32,10 @@ const useStyles = makeStyles((theme) => ({
     root: (props) => ({
         background: '#0e111a',
         overflow: 'auto',
-        height: '274px',
+        maxHeight: '274px',
         paddingTop: '10px',
+        borderBottom:'1px solid #263451',
+        paddingBottom:'20px',
         ...scrollbarStyle,
 
         "& .item": {
@@ -49,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
             cursor: "pointer",
             paddingLeft: '10px',
             marginBottom: '15px',
+            paddingBottom: "10px"
         },
 
         "& .dIcon": {

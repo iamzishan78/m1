@@ -6,7 +6,7 @@ import { AppContext } from "AppContext";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHeader from "components/Table/constants/tract-interests-header-schema";
 import TableESHOC from "components/Table/TableESHOC";
-import { deepEqualObjects, copy } from "components/Shared/functions";
+import { deepEqualObjects, copy, esExtentedSearch } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 
 const genericDataActions = ['tags', 'comments', 'tracks']
@@ -48,8 +48,7 @@ function TractInterestTable(props) {
 
   useEffect(() => {
     setTableMeta({
-      // addableName: "Unit",
-      extendSearchQuery: props.landSearchQuery || searchInput || '',
+      extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
       searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: "shapeowners_flat",

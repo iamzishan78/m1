@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import PropertyInterestDetailsTable from "components/Table/Revenue/PropertyInterestDetailsTable";
 import PropertyRevenueDetailsTable from "components/Table/Revenue/PropertyRevenueDetailsTable";
-import PropertyWellProductionTable from "components/Table/Revenue/PropertyWellProductionTable";
-import TabButtons from "components/Shared/TabPanels/TabButtons"
+// import PropertyWellProductionTable from "components/Table/Revenue/PropertyWellProductionTable";
+import TabButtons from "components/Shared/TabPanels/TabButtons";
+import RelatedAgreementsTable from "components/Land/components/Agreements/detailComponents/relatedAgreements/RelatedAgreementsTable";
 
 const useStyles = makeStyles(() => ({
   sectionCard: {
@@ -24,15 +25,16 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDetails, setSelectedInterest }) => {
+const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDetails, setSelectedInterest, setNewAgmtState }) => {
   const classes = useStyles();
-  const [selectedTab, setSelectedTab] = useState(0)
+  const [selectedTab, setSelectedTab] = useState(0);
 
   const Header = () => (
     <TabButtons
       labels={[
         "Interest Details",
         "Revenue Details",
+        "Related Agreements",
         // "Well Production"
       ]}
       value={selectedTab}
@@ -41,7 +43,6 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
       }}
     />
   );
-
 
   return (
     <div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
@@ -66,6 +67,9 @@ const PropertyInterestDetailsSection = ({ propertyId, onClickAdd, showInterestDe
           header={<Header />}
           propertyId={propertyId}
         />
+      )}
+      {selectedTab === 2 && (
+        <RelatedAgreementsTable header={<Header />} moduleId={propertyId} dense setDrawer={(value) => setNewAgmtState(value === "agrmt")} />
       )}
       {/* {selectedTab === 2 && (
         <PropertyWellProductionTable

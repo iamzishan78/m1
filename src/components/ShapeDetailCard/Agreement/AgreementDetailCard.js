@@ -51,7 +51,6 @@ export default function AgreementDetailCard(props) {
 
   useEffect(() => {
     return history.listen((location) => {
-      console.log(`You changed the page to: ${location.pathname}`);
       if (!properties?.agreementNumber && !location.includes(uniObj._id)) {
         setStateApp((state) => ({
           ...state,
@@ -144,6 +143,22 @@ export default function AgreementDetailCard(props) {
         shape.properties.expirationDate = moment(value).add(parseInt(shape.properties.agreementTerm), 'months').toDate();
       }
     }
+    if(field === "state"){
+      if(shape.properties.originalProperties){
+        shape.properties.originalProperties.State = value;  
+        shape.properties.originalProperties.StateAbbreviation = value;  
+      }else{
+        shape.properties.originalProperties = { State:value, StateAbbreviation:value }
+      }
+    }
+    if(field === "county"){
+      if(shape.properties.originalProperties){
+        shape.properties.originalProperties.County = value;  
+      }else{
+        shape.properties.originalProperties = { County:value }
+      }
+    }
+
 
     // if (field ==='agreementTerm' || field ==='effectiveDate') {
     //   if (field ==='agreementTerm') {
@@ -278,6 +293,8 @@ export default function AgreementDetailCard(props) {
                           shapeType="Agreement"
                           header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
                           dense
+                          commentType="Ownership"
+                          targetLabel="Tract"
                         />
                       </div>,
                       <div className={showSummary ? classes.subContent : classes.subContent2}>

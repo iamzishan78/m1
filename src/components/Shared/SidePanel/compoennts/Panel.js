@@ -322,10 +322,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     filterLayers(value);
   };
 
-  const layerGroups = useMemo(() => {
-    return panelItems.filter(item => item.type === "group");
-  }, [panelItems])
-
   const secondaryPanelState = React.useMemo(() => {
     if (stateMapControls.addLayer || stateMapControls.selectedLayer || stateMapControls.manageTransferData || stateMapControls.manageSourceLayer || stateMapControls.manageLayer) {
       return true;
@@ -353,7 +349,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
           open={Boolean(stateMapControls.selectedControl)}
         >
           <StyledMenuHeaderItem disableRipple key="subheader" role={undefined} dense className={classes.subHeaderItem}>
-            <ListItemText primary="Find Map" />
+            <ListItemText primary="Map" />
           </StyledMenuHeaderItem>
 
           {/* Layer Icons */}
@@ -421,7 +417,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
                 <ListItemText primary={title} />
                 {
                   type === "layer" &&
-                    <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} layerGroups={layerGroups} />
+                    <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} />
                 }
               </div>
               {headerButton && (

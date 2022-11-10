@@ -203,10 +203,9 @@ const ReactSelectField = ({
               alignItems="center"
             >
               <Grid style={{ "flex-grow": 1, width: "fit-content" }} item xs>
-                <span
-                  style={{
+                <Tooltip title={props.value} placement="top">
+                  <Typography style={{
                     width: "100%",
-                    // display: "inline-block",
                     fontWeight: 400,
                     backgroundColor: pallete?.color,
                     color: pallete?.textColor,
@@ -216,10 +215,14 @@ const ReactSelectField = ({
                     overflow: "hidden",
                     "white-space": "nowrap",
                     "text-overflow": "ellipsis",
-                  }}
-                >
-                  {props.value}
-                </span>
+                    textOverflow: 'ellipsis',
+                    maxWidth: "187px"
+                  }}>
+                    {props.value
+                    }</Typography>
+
+                </Tooltip>
+
               </Grid>
             </Grid>
           </Grid>
@@ -379,7 +382,7 @@ const ReactSelectField = ({
                 justifyContent: "space-between",
               }}
             >
-              <span class="colorText" id="selectedValues">
+              <span className="colorText" id="selectedValues">
                 <MultSelectValues
                   tooltipView={tooltipView}
                   value={value}
@@ -459,7 +462,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
   }
 
   const Badge = ({ badgeValue, index }) => <span
-    class="colorText"
+    className="colorText"
     style={getCss(badgeValue)}
   >
     <span id="badgeValue">{badgeValue}</span>
@@ -487,7 +490,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
         }
       >
         <span
-          class="colorText"
+          className="colorText"
           style={{
             borderRadius: '20px',
             whiteSpace: "nowrap",
@@ -530,12 +533,12 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
         <>
           {value && typeof value === 'string' ? (
             <span
-              class="colorText"
+              className="colorText"
               style={getCss(value)}
             >
               <span>{value}</span>
             </span>
-          ) : (<span class="colorText">--</span>)}
+          ) : (<span className="colorText">--</span>)}
         </>
       )}
     </span>

@@ -23,6 +23,9 @@ import ReactSelectField from "components/Shared/M1nTable/components/SubComponent
 import { copy } from "components/Shared/functions";
 import { AppContext } from "AppContext";
 import { Clear } from "@material-ui/icons";
+import StateField from "components/Revenue/components/Properties/DetailComponents/State";
+import CountyField from "components/Revenue/components/Properties/DetailComponents/County";
+
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
   const classes = summaryTableStyles();
@@ -92,6 +95,8 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
   const [, setStateApp] = useContext(AppContext);
   const [tableDataState, setTableDataState] = useState({});
   const [editIconState, setEditIconState] = useState({});
+  const [state, setState] = useState();
+  const [county, setCounty] = useState();
 
   const [filteredTableData, setFilteredTableData] = useState(tableData);
 
@@ -120,6 +125,12 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
     setFilteredTableData(filteredKeys);
     setTableTempProperties(copy(tableTempProperties));
     setTableDataState({});
+    if(properties?.originalProperties?.State  || properties?.originalProperties?.StateAbbreviation){
+      setState(properties.originalProperties.State  || properties.originalProperties.StateAbbreviation)
+    }
+    if(properties?.originalProperties?.County){
+      setCounty(properties.originalProperties.County)
+    }
   }, [properties, metaData]);
 
   useEffect(() => {
@@ -443,7 +454,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                       <>
                         {["qualifier", "reviewer"].includes(data.key) && (
                           <UserList
-                            id={data.key+"Input"}
+                            id={data.key + "Input"}
                             value={properties[data.key]}
                             setValue={(user) => {
                               updateProperties(null, data.key, user);
@@ -451,6 +462,32 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           />
                         )}
                       </>
+                    )}
+                    {data.type === "state" && (
+                      <>
+                        <StateField
+                          shrink
+                          value={state}
+                          onStateChange={(selectedState) =>{
+                            setState(selectedState.acronym)
+                            updateProperties(null, 'state', selectedState.acronym);
+                            // updateAgreement("state", selectedState.acronym, false)
+                          }}
+                        />
+                      </>
+                    )}
+                    {data.type === 'county' && (
+                      <CountyField
+                        // label="County"
+                        shrink
+                        value={county}
+                        state={state}
+                        onCountyChange={(selectedCounty) =>{
+                          setCounty(selectedCounty.county)
+                          updateProperties(null, 'county', selectedCounty.county);
+                          // updateAgreement('county', selectedCounty.county, false)
+                        }}
+                      />
                     )}
                   </>
                 ) : (
@@ -467,7 +504,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                       ) : (
                         <Grid item style={{ width: '100%' }}>
                           {data.type === "date" &&
-                            (properties[data.key] ? moment.parseZone(new Date(properties[data.key])).format("MM/DD/yyyy") : "-")}
+                            (properties[data.key] ? moment(properties[data.key]).utc(true).format("MM/DD/yyyy") : "-")}
                           {data.type === "custom" && (
                             <>
                               {["qualifier", "reviewer"].includes(data.key) && (properties[data.key]?.name || "-")}

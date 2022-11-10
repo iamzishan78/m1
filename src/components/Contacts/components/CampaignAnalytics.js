@@ -123,12 +123,8 @@ export default function CampaignAnalytics({ appliedFilters, contactSearchQuery }
             <Typography variant="h6" component="div" className={classes.cardHeaderTypography}>
               Total NRA
             </Typography>
-            <Typography
-              variant="h6"
-              component="div"
-              className={classes.cardNumberTypography}
-            >
-              {Math.round(get(analyticsData, "totalNra", 0))}
+            <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
+              {vf_number(Math.round(get(analyticsData, "totalNra", 0)))}
             </Typography>
           </CardContent>
         </Card>

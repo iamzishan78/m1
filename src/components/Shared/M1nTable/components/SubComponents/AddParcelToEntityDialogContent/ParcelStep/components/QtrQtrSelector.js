@@ -98,8 +98,6 @@ export default function QtrQtrSelector({ parcelData, setQtrQtr }) {
 
   const [qtr, setQtr] = useState(["", "", "", ""])
 
-  console.log(parcelData)
-
   return (
     <div>
       <p className="formLabel" style={{ marginTop: "0" }}>

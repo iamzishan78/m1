@@ -109,7 +109,19 @@ const tableData = [
         type: "autocomplete",
         key: "mapStatus",
         edit: true,
-    }
+    },
+    {
+        label: "Basin",
+        type: "autocomplete",
+        key: "basin",
+        edit: true,
+    },
+    {
+        label: "Field",
+        type: "autocomplete",
+        key: "field",
+        edit: true,
+    },
 ];
 
 export default tableData;

@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(2),
     // paddingLeft: "38px",
     // paddingRight: "38px",
-    marginLeft: '-10px',
+    // marginLeft: '-10px',
     marginTop: theme.spacing(2),
   },
 }));
@@ -49,7 +49,7 @@ export default function ReportingGroups() {
         // className={classes.propertyTableContainer}
         style={{
           marginTop: "25px",
-          marginLeft: "-10px"
+          // marginLeft: "-10px"
         }}
       >
         <AgreementsTable

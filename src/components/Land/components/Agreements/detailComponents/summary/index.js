@@ -64,7 +64,7 @@ export default function Summary({
                 <ExpandMoreIcon fontSize="large" />
               </IconButton>
             }
-            onClick={(e) => {}}
+            onClick={(e) => { }}
           >
             <Grid
               container
@@ -82,7 +82,7 @@ export default function Summary({
                   justify="flex-start"
                   className={classes.summaryHeaderIcons}
                 >
-                 
+
                   <Grid item>
                     <div className={classes.summaryValue}>
                       {" "}
@@ -126,8 +126,8 @@ export default function Summary({
             <Grid
               container
               direction="row"
-              justify="space-between"
-              style={{ padding: "10px 0px" }}
+              justify="flex-start"
+              style={{ padding: "10px 0px",display:'flex',gap:'40px' }}
             >
               <Grid item className={classes.infoSection}>
                 <FieldsSection
@@ -186,8 +186,9 @@ export default function Summary({
                     </Grid>
                   </Grid>
                 </Grid>
-                <Acreage properties={agreementDetails} />
-
+                <div style={{ padding: "0px 5px 5px 5px", backgroundColor: '#F6F8F9' }}>
+                  <Acreage properties={agreementDetails} />
+                </div>
                 <Grid item className={classes.descriptionInput}>
                   <TextField
                     id="outlined-multiline-static"

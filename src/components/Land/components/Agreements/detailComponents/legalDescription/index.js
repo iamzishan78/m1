@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import _ from "underscore";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { makeStyles } from "@material-ui/styles";
-import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton, TextField } from "@material-ui/core";
+import { Typography, Accordion, AccordionSummary, AccordionDetails, Grid, Chip, IconButton } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon } from "@material-ui/icons";
 import { useStyles as customStyles } from "../style";
 
@@ -71,14 +71,14 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
     if (!_.isEmpty(agreementDetails)) reset(agreementDetails);
   }, [reset, agreementDetails]);
 
-  const offClickHandler = (key, value) => updateAgreement(key, value);
+  // const offClickHandler = (key, value) => updateAgreement(key, value);
 
-  const handleKeyDown = (e) => {
-    console.log(e.keyCode);
-    if (e.keyCode === 38 || e.keyCode === 40) {
-      e.preventDefault();
-    }
-  };
+  // const handleKeyDown = (e) => {
+  //   console.log(e.keyCode);
+  //   if (e.keyCode === 38 || e.keyCode === 40) {
+  //     e.preventDefault();
+  //   }
+  // };
 
   return (
     <div className={classes.root}>
@@ -89,7 +89,7 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
               <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
-          onClick={(e) => { }}
+          onClick={(e) => {}}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>
@@ -103,17 +103,25 @@ export default function LagalDescription({ agreementDetails, uniObj, updateAgree
         <AccordionDetails className={classes.accordionDetails}>
           <Grid container direction="column" alignItems="center" spacing={4} style={{ display: "block" }}>
             <Grid item xs={12} style={{ padding: "0px 50px 0px 0px" }}>
-              <AgreementLegalDescriptionFields agreementDetails={agreementDetails} updateAgreement={updateAgreement} tractOwners={tractOwners} />
+              <AgreementLegalDescriptionFields
+                agreementDetails={agreementDetails}
+                updateAgreement={updateAgreement}
+                tractOwners={tractOwners}
+              />
             </Grid>
             {uniObj && (
               <Grid item xs={12} style={{ padding: "35px 20px 0px 0px" }}>
                 <AgreementOwnersTractsTable
+                  id="AgreementOwnersTractsTable"
                   setRecord={setTractOwners}
                   customLayer={uniObj}
                   shapeType="Agreement"
                   header={"Tracts"}
                   setTractsNumber={setTractsNumber}
                   dense
+                  commentType="Ownership"
+                  targetLabel="Tract"
+                  portal={"#agreementDetailsDrawer"}
                 />
               </Grid>
             )}

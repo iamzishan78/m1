@@ -43,7 +43,7 @@ export const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
     flexShrink: 0,
     "& .MuiDrawer-paperAnchorLeft": {
-      left: "52px",
+      left: "60px",
     },
     "& .MuiDivider-root": {
       backgroundColor: "#263451",
@@ -61,7 +61,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   revenueRootExpanded: {
     marginLeft: "425px !important",
-    width: "calc(100% - 425px)",
+    width: "calc(100% - 435px)",
   },
   revenueRootCollapsed: {
     marginLeft: "0px !important",
@@ -97,6 +97,7 @@ export const StyledMenuItem = withStyles((theme) => ({
     fontFamily: "Poppins",
     display: "block",
     color: "white",
+    paddingLeft: '10px',
     "&:hover": {
       background: "#808080",
     },

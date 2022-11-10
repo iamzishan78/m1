@@ -8,7 +8,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import {
   Grid,
   TextField,
-  Button,
   Select,
   MenuItem,
   IconButton,
@@ -17,7 +16,6 @@ import {
 import { Clear } from "@material-ui/icons";
 import { Autocomplete, createFilterOptions } from "@material-ui/lab";
 import loadashFilter from "lodash/filter";
-import { KeyboardDatePicker } from "@material-ui/pickers";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import StateField from "./State";
 import CountyField from "./County";
@@ -29,11 +27,9 @@ import { AppContext } from "AppContext";
 
 import { CONTACT_ENTITY } from "graphQL/useQueryContactEntity";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
-// import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { GET_AUTOCOMPLETE_PROPERTY_LIST } from "graphQL/useQueryGetProperty";
-import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import { useDispatch } from "react-redux";
 import { showInfoMessage } from "actions";
@@ -137,7 +133,6 @@ const useStyles = makeStyles((theme) => ({
 export default function HeaderSection(props) {
   const classes = useStyles();
   let history = useHistory();
-  const location = useLocation();
   const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
   const { control, setValue, watch, register, reset } = useForm();
@@ -147,24 +142,12 @@ export default function HeaderSection(props) {
 
   const [getOperatorList, { data: operatorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
   const [getContactEntity, { data: contactEntityData }] = useLazyQuery(CONTACT_ENTITY);
-  const {
-    data: acquisitionOptions,
-    loading,
-    error,
-  } = useQuery(GET_AUTOCOMPLETE_PROPERTY_LIST, { variables: { key: "acquisitionID" } });
-  const {
-    data: prospectOptions,
-    loading: prospectOptionsLoading,
-    error: prospectOptionsError,
-  } = useQuery(GET_AUTOCOMPLETE_PROPERTY_LIST, {
+  const { data: acquisitionOptions } = useQuery(GET_AUTOCOMPLETE_PROPERTY_LIST, { variables: { key: "acquisitionID" } });
+  const { data: prospectOptions } = useQuery(GET_AUTOCOMPLETE_PROPERTY_LIST, {
     variables: { key: "prospectID" },
   });
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
 
-  // console.log('operatorList', operatorList, get(operatorList,'getESFilterList.hits',[])?.map((campaign) => ({
-  //   _id: campaign.key,
-  //   name: campaign.key,
-  // })))
   useEffect(() => {
     return () => {
       const number = watch("number");
@@ -680,7 +663,7 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-         
+
 
           {/* <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>

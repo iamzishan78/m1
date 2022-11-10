@@ -105,6 +105,37 @@ ListboxComponent.propTypes = {
 };
 
 const useStyles = makeStyles({
+  inputRoot: (props) =>
+    props.darkCard
+      ? {
+        backgroundColor: "#273551",
+        color: "#ffffff",
+        "& .MuiSvgIcon-root": {
+          fill: "#ffffff",
+        },
+      }
+      : {
+        backgroundColor: "#ffffff",
+        color: "grey",
+        "& .MuiSvgIcon-root": {
+          fill: "grey",
+        },
+      },
+  listbox: {
+    boxSizing: "border-box",
+    "& ul": {
+      padding: 0,
+      margin: 0,
+    },
+  },
+});
+
+const paramUseStyles = makeStyles({
+  contactCardIcon: {
+    position: "absolute",
+    right: "12px !important",
+    marginTop: "4px !important",
+  },
   adornmentAutocomplete: {
     "& .MuiAutocomplete-endAdornment": {
       right: "60px !important",
@@ -114,34 +145,6 @@ const useStyles = makeStyles({
       "& .MuiAutocomplete-popupIndicator": {
         display: "none",
       },
-    },
-  },
-  contactCardIcon: {
-    position: "absolute",
-    right: "12px !important",
-    marginTop: "4px !important",
-  },
-  inputRoot: (props) =>
-    props.darkCard
-      ? {
-          backgroundColor: "#273551",
-          color: "#ffffff",
-          "& .MuiSvgIcon-root": {
-            fill: "#ffffff",
-          },
-        }
-      : {
-          backgroundColor: "#ffffff",
-          color: "grey",
-          "& .MuiSvgIcon-root": {
-            fill: "grey",
-          },
-        },
-  listbox: {
-    boxSizing: "border-box",
-    "& ul": {
-      padding: 0,
-      margin: 0,
     },
   },
 });
@@ -168,6 +171,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   } = props;
 
   const classes = useStyles(props);
+  const paramClasses = paramUseStyles();
   let history = useHistory();
 
   const [, setStateApp] = React.useContext(AppContext);
@@ -182,7 +186,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
 
   const loadMoreItems = async (startIndex, stopIndex) => {
     if (isNextPageLoading || !hasNextPage) {
-      return () => {};
+      return () => { };
     } else {
       return loadNextPage({
         variables: {
@@ -216,58 +220,59 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   const getParams = (params) => {
     return props.withContactCard
       ? {
-          InputLabelProps: {
-            ...params.InputLabelProps,
-            shrink: true,
-          },
-          InputProps: {
-            ...params.InputProps,
-            endAdornment: (
-              <React.Fragment>
-                {params.InputProps.endAdornment}
-                <IconButton
-                  style={{ padding: 0 }}
-                  size={"medium"}
-                  color={nameAutValue?._id ? "primary" : "secondary"}
-                  className={classes.contactCardIcon}
-                  onClick={(e) => {
-                    if (nameAutValue?._id) {
-                      e.stopPropagation();
-                      history.push(`/contact/details/${nameAutValue._id}`);
-                      setStateApp((stateApp) => ({
-                        ...stateApp,
-                        selectedContact: nameAutValue._id,
-                      }));
-                    }
-                  }}
-                  aria-label="show contact"
-                >
-                  {nameAutValue?._id ? <ContactCardIcon /> : <ContactCardDisabledIcon />}
-                </IconButton>
-              </React.Fragment>
-            ),
-          },
-        }
+        InputLabelProps: {
+          ...params.InputLabelProps,
+          shrink: true,
+        },
+        InputProps: {
+          ...params.InputProps,
+          endAdornment: (
+            <React.Fragment>
+              {params.InputProps.endAdornment}
+              <IconButton
+                style={{ padding: 0 }}
+                size={"medium"}
+                color={nameAutValue?._id ? "primary" : "secondary"}
+                className={paramClasses.contactCardIcon}
+                onClick={(e) => {
+                  if (nameAutValue?._id) {
+                    e.stopPropagation();
+                    history.push(`/contact/details/${nameAutValue._id}`);
+                    setStateApp((stateApp) => ({
+                      ...stateApp,
+                      selectedContact: nameAutValue._id,
+                    }));
+                  }
+                }}
+                aria-label="show contact"
+              >
+                {nameAutValue?._id ? <ContactCardIcon /> : <ContactCardDisabledIcon />}
+              </IconButton>
+            </React.Fragment>
+          ),
+        },
+      }
       : {
-          InputProps: {
-            ...params.InputProps,
-            ...props.InputProps,
-            endAdornment: (
-              <>
-                {isNextPageLoading ? <CircularProgress color="inherit" size={20} /> : null}
-                {params.InputProps.endAdornment}
-              </>
-            ),
-          },
-        };
+        InputProps: {
+          ...params.InputProps,
+          ...props.InputProps,
+          endAdornment: (
+            <>
+              {isNextPageLoading ? <CircularProgress color="inherit" size={20} /> : null}
+              {params.InputProps.endAdornment}
+            </>
+          ),
+        },
+      };
   };
   return (
     <Autocomplete
+      id="autocompEntityNamesVirtualizeList"
       defaultValue={nameAutValue}
       value={nameAutValue}
       disableListWrap
       classes={classes}
-      className={props.withContactCard ? classes.adornmentAutocomplete : ""}
+      className={props.withContactCard ? paramUseStyles.adornmentAutocomplete : ""}
       ListboxComponent={ListboxComponent}
       ListboxProps={ListboxProps}
       options={mongoEntitiesArray}
@@ -344,7 +349,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
           variant={variant}
           {...getParams(params)}
           size={size}
-          // placeholder="E.g. Jacob"
+        // placeholder="E.g. Jacob"
         />
       )}
       {...other}

@@ -223,8 +223,6 @@ function SourceManager(props) {
 
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const { stateApp, setStateApp } = props;
-
-  console.log('stateApp', stateApp)
   const [openM1, setOpenM1] = React.useState(true);
   const [openDataSets, setOpenDataSets] = React.useState({});
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
@@ -330,19 +328,14 @@ function SourceManager(props) {
       if (!feature.properties) {
         feature.properties = {};
       }
-      feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type };
+      const layerShapeName = `${geo.fileName || name} - ${feature.geometry.type === 'MultiPolygon' ? 'Polygon' : feature.geometry.type}`
+      feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type, layerShapeName };
       if (!layerTypes.includes(feature.geometry.type) && feature.geometry.type !== 'MultiPolygon') {
         layerTypes.push(feature.geometry.type);
       }
     });
     layerTypes.forEach((layerType) => {
       fileNames.push(`${geo.fileName || name} - ${layerType}`);
-
-      // if (layerTypes.length > 1) {
-      //   fileNames.push(`${geo.fileName || name} - ${layerType}`);
-      // } else {
-      //   fileNames.push(`${geo.fileName || name} `);
-      // }
     });
     return { layerTypes, fileNames };
   };

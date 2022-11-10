@@ -26,7 +26,7 @@ import { UPDATEWELLINTEREST } from "graphQL/useMutationUpdateWellInterest";
 import { REMOVEWELLINTEREST } from "graphQL/useMutationRemoveWellInterest";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
-// contexts 
+// contexts
 import { WellCardContext } from "components/WellCard/WellCardContext";
 import { AppContext } from "AppContext";
 
