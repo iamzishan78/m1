@@ -1,7 +1,7 @@
 import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 import { GlobalStickyStyles } from "GlobalSettings";
 
-const getHeaders = ({interestMapping, layerType}) => {
+const getHeaders = ({ interestMapping, layerType }) => {
   const UnitOwnersTractHeadCells = [
     {
       name: "_id",
@@ -15,9 +15,11 @@ const getHeaders = ({interestMapping, layerType}) => {
         ...GlobalStickyStyles({
           setCellProps: {
             maxWidth: "250px",
+            left: "77px"
           },
           setCellHeaderProps: {
             paddingLeft: "24px",
+            left: "77px"
           },
         }),
         sort: true,
@@ -72,7 +74,7 @@ const getHeaders = ({interestMapping, layerType}) => {
     //   esKey: "tract.meridian.keyword",
     //   options: { sort: true, filter: true },
     // },
-  
+
     {
       name: "BlockTownship",
       label: "Block/ Township",
@@ -83,14 +85,14 @@ const getHeaders = ({interestMapping, layerType}) => {
         filter: true,
       },
     },
-  
+
     // {
     //   name: "township",
     //   label: "Township",
     //   esKey: "tract.township.keyword",
     //   options: { sort: true, filter: true },
     // },
-  
+
     {
       name: "SectionRange",
       label: "Section/ Range",
@@ -101,14 +103,14 @@ const getHeaders = ({interestMapping, layerType}) => {
         filter: true,
       },
     },
-  
+
     // {
     //   name: "section",
     //   label: "Section",
     //   esKey: "tract.section.keyword",
     //   options: { sort: true, filter: true },
     // },
-  
+
     {
       name: "AbstractSection",
       label: "Abstract/ Section",
@@ -119,7 +121,7 @@ const getHeaders = ({interestMapping, layerType}) => {
         filter: true,
       },
     },
-  
+
     // {
     //   name: "range",
     //   label: "Range",
@@ -149,7 +151,7 @@ const getHeaders = ({interestMapping, layerType}) => {
       options: { sort: true, filter: true },
     },
     ...(interestMapping?.['Mineral Interest']?.includes(layerType) ? [{ name: "mineral_interest", esKey: "mineral_interest", type: "number", label: "MI", options: { filter: true } }] : []),
-     ...(interestMapping?.['Lease Royalty Interest']?.includes(layerType) ? [{ name: "lease_royalty_interest", esKey: "lease_royalty_interest", type: "number", label: "Lease RI", options: { filter: true } }] : []),
+    ...(interestMapping?.['Lease Royalty Interest']?.includes(layerType) ? [{ name: "lease_royalty_interest", esKey: "lease_royalty_interest", type: "number", label: "Lease RI", options: { filter: true } }] : []),
     ...(interestMapping?.['Royalty Interest']?.includes(layerType) ? [{ name: "royalty_interest", esKey: "royalty_interest", type: "number", label: "Actual RI", options: { filter: true } }] : []),
     ...(interestMapping?.['Overriding Royalty Interest (ORRI)']?.includes(layerType) ? [{
       name: "orri",
@@ -167,7 +169,7 @@ const getHeaders = ({interestMapping, layerType}) => {
     { name: "net_acres", esKey: "net_acres", label: "Net Acres", type: "number", options: { filter: true } },
     { name: "company_net_acres", esKey: "company_net_acres", label: "Co Net Acres", type: "number", options: { filter: true } },
     { name: "nra", esKey: "nra", label: "NRA", type: "number", options: { filter: true } },
-    { name: "acquisition_nra", esKey: "acquisition_nra", label: "Acquisition $/NRA", type: "number", options: { editable:false,filter: true, customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>, } },
+    { name: "acquisition_nra", esKey: "acquisition_nra", label: "Acquisition $/NRA", type: "number", options: { editable: false, filter: true, customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>, } },
     { name: "acquisition_cost", esKey: "acquisition_cost", label: "Acquisition Cost", type: "number", options: { filter: true, customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>, } },
     {
       name: "depthFrom",
@@ -199,7 +201,7 @@ const getHeaders = ({interestMapping, layerType}) => {
       },
     },
   ];
-  
+
   UnitOwnersTractHeadCells.forEach((cell) => {
     if (!cell.options.setCellProps && cell.options.display !== false) {
       cell.options.setCellProps = () => ({
