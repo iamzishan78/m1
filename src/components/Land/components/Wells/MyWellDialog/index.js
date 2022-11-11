@@ -164,9 +164,9 @@ export default function MyWellDialog(props) {
   const history = useHistory();
   const client = useApolloClient();
 
-const [deleteMyWell, { loading }] = useMutation(DELETE_MY_WELL);
-  
-const toggleDrawer = (anchor, open) => (event) => {
+  const [deleteMyWell, { loading }] = useMutation(DELETE_MY_WELL);
+
+  const toggleDrawer = (anchor, open) => (event) => {
     if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
     }
@@ -190,22 +190,35 @@ const toggleDrawer = (anchor, open) => (event) => {
 
   const handleWellDetail = async (well) => {
     if (well) {
-      const { data:dataWell } = await client.query({
+      const wellHeader = client.query({
         query: WELL_SUMMARY_WITH_HEADER,
         variables: {
           globalWellId: well.Id,
         },
       });
-      if(dataWell?.wellSummaryWithHeaderDetails)
-      setPlatformWell(dataWell.wellSummaryWithHeaderDetails);
-    
-      const { data: myWellData } = await client.query({
+
+      const myWell = client.query({
         query: GET_MY_WELL_BY_GLOBAL_ID,
         variables: {
           wellId: well.Id,
         },
       });
-      setMyWellData(myWellData)
+
+      const promises = await Promise.all([wellHeader, myWell])
+      const { data: dataWell } = promises[0]
+      let platformWellData = {}
+      if (dataWell?.wellSummaryWithHeaderDetails)
+        platformWellData = { ...dataWell.wellSummaryWithHeaderDetails }
+      const { data: wellDataResp } = promises[1]
+      platformWellData = { ...platformWellData, ...get(wellDataResp, "myWellByGlobalId.myWell.wellData", {}), ...well }
+
+      platformWellData.permitApprovedDate = platformWellData.PermitDate
+      platformWellData.spudDate = platformWellData.SpudDate
+      platformWellData.firstProductionDate = platformWellData.FirstProdDate
+      platformWellData.completionDate = platformWellData.CompletionDate
+
+      setPlatformWell(platformWellData);
+      return platformWellData
     }
   };
 
@@ -320,7 +333,7 @@ const toggleDrawer = (anchor, open) => (event) => {
                   // Add My Well fields component here
                   <AddMyWell
                     handleWellDetail={handleWellDetail}
-                    platformWell={{ ...platformWell, ...get(myWellData, "myWellByGlobalId.myWell.wellData", {}) }}
+                    platformWell={{ ...platformWell }}
                     showSearch={!globalWellId}
                   />
                 )}

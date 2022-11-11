@@ -74,31 +74,12 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
   const classes = useStyles();
 
   const [foundWells, setFoundWells] = useState([]);
-  // const [wells, setWells] = useState();
   const [upsertMyWell, { loading: upsertWellLoading }] = useMutation(UPSERT_MY_WELL);
 
   const { control, reset } = useForm();
-
   useEffect(() => {
     if (platformWell) reset(platformWell);
   }, [platformWell, reset]);
-
-
-  // useEffect(() => {
-  //   if (wells && !_.isEmpty(platformWell)) {
-  //     console.log("platformWell in: ", platformWell)
-  //     console.log("wells in: ", wells)
-  //     upsertMyWell({
-  //       variables: {
-  //         myWell: { ...wells, ...platformWell, _id: platformWell.id }
-  //       },
-  //       refetchQueries: ["getESSimpleSearch"],
-  //       awaitRefetchQueries: true,
-  //     });
-
-  //     setWells(null)
-  //   }
-  // }, [wells, platformWell]);
 
   const callWellSearch2 = React.useMemo(
     () =>
@@ -151,16 +132,13 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
           <FormControl variant="outlined" fullWidth size="small">
             <Autocomplete
               options={foundWells || []}
-              onChange={(e, well) => {
+              onChange={async (e, well) => {
+                const myWell = await handleWellDetail(well);
                 upsertMyWell({
-                  variables: {
-                    myWell: well,
-                  },
+                  variables: { myWell },
                   refetchQueries: ["getESSimpleSearch"],
                   awaitRefetchQueries: true,
-                }).then(()=>{
-                  handleWellDetail(well);
-                });
+                })
               }}
               disabled={!!upsertWellLoading}
               value={platformWell}
@@ -275,7 +253,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                   onChange={(event) => {
                     const value = event.target.value;
                     params.onChange(value);
-                    handleSave(param.esKey ?? param.key, value);
+                    handleSave(param.esKey ?? param.key, param.type === "date" ? new Date(value) : value);
                   }}
                   disabled={upsertWellLoading}
                 />
