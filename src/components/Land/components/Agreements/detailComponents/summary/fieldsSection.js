@@ -1,6 +1,7 @@
 import React, { useEffect, useState, Fragment, useContext } from "react";
 import moment from "moment";
 import { get } from "lodash";
+import uniqBy from "lodash/uniqBy";
 import { useLazyQuery } from "@apollo/client";
 import { Controller } from "react-hook-form";
 import { Grid, TextField, Button, Select, MenuItem, Tooltip, IconButton, makeStyles, InputAdornment } from "@material-ui/core";
@@ -96,7 +97,8 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   }, [history, agreementDetails]);
 
   useEffect(() => {
-    const customData = getCustomMetaFields(agreementDetails, metaDataRes);
+    let customData = getCustomMetaFields(agreementDetails, metaDataRes);
+    customData = uniqBy(customData, 'esKey');
     setFieldsList([...fieldsData(stateApp.user), ...customData]);
     if (agreementDetails?.originalProperties?.State || agreementDetails?.originalProperties?.StateAbbreviation) {
       setState(agreementDetails.originalProperties.State || agreementDetails.originalProperties.StateAbbreviation)
