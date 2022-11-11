@@ -408,6 +408,8 @@ export default function DrawShapes() {
       shapeGridOwnersCount: 0,
       changeDrawShapeType: false,
       reDrawShape: false,
+      currentFeature: state.showAddShapePopup ? undefined : state.currentFeature,
+      showAddShapePopup: false,
       ...additionalProps
     }));
     dispatch(
