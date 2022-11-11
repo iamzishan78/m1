@@ -184,6 +184,7 @@ export default function RevenueAnalytics() {
                 setToDate={setToDate}
                 isProperties={true}
                 lastCheckMinDate={lastCheckMinDate}
+                datesInputWidth={4}
               />
             </Grid>
           </Grid>
