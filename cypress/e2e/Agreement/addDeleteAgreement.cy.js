@@ -6,7 +6,7 @@ describe('Add And Delete Agreement Spec', () => {
     it('passes', () => {
         const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
 
-        cy.viewport(1400, 900)
+        cy.viewport(1536, 960)
         cy.visit('http://localhost:3000/land/agreements')
 
         cy.checkAndLogin()
@@ -20,7 +20,9 @@ describe('Add And Delete Agreement Spec', () => {
         cy.get(agreementObj.agreementNumber.id, { timeout: longTimeout }).should('be.visible').type(agreementObj.agreementNumber.value)
 
         cy.log('==== STEP: ADD AGREEMENT NAME ====')
-        cy.get(agreementObj.agreementName.id).type(agreementObj.agreementName.value)
+        cy.interceptApi('updateCustomLayer')
+        cy.get(agreementObj.agreementName.id, { timeout: longTimeout }).should('be.visible').wait(200).type(agreementObj.agreementName.value)
+        cy.verifyApiResponse('@updateCustomLayerApi')
 
         cy.log('==== STEP: ADD AGREEMENT TYPE ====')
         cy.agreementFieldSelect(agreementObj.agreementType)
@@ -80,6 +82,59 @@ describe('Add And Delete Agreement Spec', () => {
         cy.get("[id='field-Project Name']").click()
         cy.get('body').type("{downArrow}{downArrow}{enter}")
 
+        cy.get("#menuIcon").click()
+        cy.log('==== STEP: ADD AGREEMENT DESCRIPTION ====')
+        cy.get(agreementObj.description.id).scrollIntoView().type(`${agreementObj.description.value}{enter}`, { force: true })
+
+        cy.log('==== STEP: CLICK ON META DETA BUTTON ====')
+        cy.get("#metaDataButton").scrollIntoView()
+        cy.get("#metaDataButton", { timeout: longTimeout }).trigger("click")
+
+        cy.log('==== STEP: ADD ASSIGN APPROVER ====')
+        cy.typeAndSelect(agreementObj.Approver.id, agreementObj.Approver.value)
+
+        cy.log('==== STEP: ADD AGREEMENT TYPE ====')
+        cy.agreementFieldSelect(agreementObj.approvalStatus)
+
+        cy.log('==== STEP: ADD DOCUMENT ====')
+        cy.addDocument(agreementObj.file.address)
+        cy.get(agreementObj.file.fileId, { timeout: longTimeout }).should('exist')
+
+        cy.log('==== STEP: ADD COMMENT ====')
+        cy.addComment()
+
+        cy.verifyApiResponse('@UpsertCommentApi', { responseTimeout: longTimeout }).then(response => {
+            const commentId = response.response.body.data.upsertComment.comment._id
+            cy.get(`#${commentId}`).should('exist')
+        })
+
+        cy.interceptApi('getESSimpleSearch')
+        cy.visit('http://localhost:3000/land/agreements')
+        cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
+
+
+        cy.gridSearch(agreementObj.agreementName.value, 'getESSimpleSearch').then(response => {
+            const hits = response.response.body.data.getESSimpleSearch.hits
+            console.log("hits : ", hits)
+            const cypressAgreement = hits.find(hit => hit.agreementName === agreementObj.agreementName.value)
+            console.log("cypressAgreement : ", cypressAgreement)
+
+            if (!cypressAgreement)
+                throw new Error('Sample Agreement added by cypress not found');
+
+            const indexOfcypressAgreement = hits.findIndex(hit => hit._id === cypressAgreement._id) + 1
+            console.log("indexOfcypressAgreement : ", indexOfcypressAgreement)
+            cy.getTableCell("Agreement", 1).then(($agreementNameCell) => {
+                cy.wrap($agreementNameCell).scrollIntoView().click()
+                cy.wrap($agreementNameCell).contains(`${agreementObj.agreementNumber.value} - ${agreementObj.agreementName.value}`).click()
+                cy.get(agreementObj.agreementNumber.id, { timeout: longTimeout }).should('be.visible')
+
+                cy.get("#moreHorizIcon").children().click()
+                cy.interceptApi('updateCustomLayer')
+                cy.deleteConfirmation()
+                cy.verifyApiResponse('@updateCustomLayerApi')
+            })
+        })
     })
 
 })

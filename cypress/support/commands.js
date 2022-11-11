@@ -107,7 +107,7 @@ Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
 
 Cypress.Commands.add('deleteConfirmation', () => {
     cy.log('==== STEP: CLICKING ON HORIZON ICON ====')
-    cy.get(".MuiTypography-root").contains('Delete').click()
+    cy.get(".MuiTypography-root", { timeout: longTimeout }).contains('Delete', { timeout: longTimeout }).click()
 
     cy.log('==== STEP: CLICKING ON DELETE FROM CONFIRMATION DIALOGUE BOX  ====')
     cy.get(".MuiButton-label").contains('Delete', { timeout: longTimeout }).should('be.visible').click()
@@ -360,9 +360,15 @@ Cypress.Commands.add('addTract', (tractName) => {
     cy.verifyApiResponse('@addOwnerToAShapeApi', { responseTimeout: longTimeout })
 })
 
-// ContactGrid Commands
+// AgreementGrid Commands
 
 Cypress.Commands.add('agreementFieldSelect', (field) => {
     cy.get(field.id).click()
     cy.get('.MuiMenuItem-root').contains(field.value).click()
+})
+Cypress.Commands.add('addComment', () => {
+    cy.interceptApi('UpsertComment')
+    cy.get("#txtArea", { timeout: longTimeout }).should('be.visible').type("A cypress comment")
+    cy.get("#commentButton").click()
+
 })

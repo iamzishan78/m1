@@ -24,12 +24,11 @@ describe('Add and Remove Comments Spec', () => {
 
                 cy.get('.MuiTypography-root', { timeout: longTimeout }).contains('lease').should('be.visible')
                 cy.get("#metaDataButton").scrollIntoView()
-
                 cy.get("#metaDataButton", { timeout: longTimeout }).trigger("click")
-                cy.interceptApi('UpsertComment')
 
-                cy.get("#txtArea", { timeout: longTimeout }).should('be.visible').type("A cypress comment")
-                cy.get("#commentButton").click()
+                cy.log('==== STEP: ADD COMMENT ====')
+                cy.addComment()
+
                 cy.verifyApiResponse('@UpsertCommentApi', { responseTimeout: longTimeout }).then(response => {
                     const commentId = response.response.body.data.upsertComment.comment._id
 
