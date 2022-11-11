@@ -156,7 +156,7 @@
     "legacy-build": "react-scripts build",
     "build": "craco build",
     "legacy-test": "react-scripts test",
-    "test2": "craco test",
+    "test": "craco test",
     "eject": "react-scripts eject",
     "ci:start-server": "http-server -p 3000",
     "ci:cy-run": "start-server-and-test start http://localhost:3000 cy:run",
