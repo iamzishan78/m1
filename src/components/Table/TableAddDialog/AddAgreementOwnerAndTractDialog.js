@@ -169,7 +169,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   }, [nra]);
 
   useEffect(() => {
-    try{
+    try {
       if (tract.state && isNewTract) {
         (async () => {
           const { data: tractShape } = await client.query({
@@ -185,12 +185,11 @@ function AddAgreementOwnerAndTractDialog(props) {
             setNewTractError(tractShape?.getTractAbstractShape)
           }
         })();
-        setIsNewTract(false);
       } else {
         if (newTractError) { setNewTractError(null) }
       }
-    }catch (error){
-        console.log("%c Fetch track with newState","color:red",error);
+    } catch (error) {
+      console.log("%c Fetch track with newState", "color:red", error);
     }
 
   }, [tract]);

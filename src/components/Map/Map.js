@@ -1094,6 +1094,14 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   // }, [permitData]);
 
   useEffect(() => {
+    if (
+      permitRecentSubmittedData &&
+      permitRecentSubmittedData.recent_submitted_permits &&
+      permitRecentSubmittedData.recent_submitted_permits.length > 0
+    ) {
+      const nextOffset = recent_submitted_permits.length + permitRecentSubmittedData.recent_submitted_permits.length;
+      setRecentSubmittedPermitData([...recent_submitted_permits, ...permitRecentSubmittedData.recent_submitted_permits]);
+    }
   }, [permitRecentSubmittedData]);
 
   useEffect(() => {
