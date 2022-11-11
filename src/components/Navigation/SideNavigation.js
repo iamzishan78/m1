@@ -11,11 +11,6 @@ import Drawer from "@material-ui/core/Drawer";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import PersonIcon from "@material-ui/icons/Person";
 import DescriptionIcon from "@material-ui/icons/Description";
-// import AdminPanelSettingsIcon from '@material-ui/icons/AdminPanelSettings';
-// import ImageOutlinedIcon from '@material-ui/icons/ImageOutlined';
-// import AdminPanelSettingsIcon from "@material-ui/icons/Dashboard";
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -38,6 +33,7 @@ import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import WorkspaceEditModal from "components/Navigation/components/WorkSpaceEditModal";
 import Analytics from "components/Shared/svgIcons/analytics";
+import AdminIcon from '.././Shared/svgIcons/admin-setting';
 
 const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   width: 260px;
@@ -542,7 +538,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                   classes={{ tooltip: classes.iconTooltip }}
               >
                 <ListItemIcon className={classes.sideNavIcon}>
-                  <AdminPanelSettingsIcon />
+                  <AdminIcon />
                 </ListItemIcon>
               </Tooltip>
               <ListItemText
