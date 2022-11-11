@@ -37,6 +37,7 @@ describe('Add And Delete Agreement Spec', () => {
         cy.typeAndSelect(agreementObj.agreementStatus.id, agreementObj.agreementStatus.value)
 
         cy.log('==== STEP: ADD AGREEMENT LESSEE ====')
+        cy.get('body').type("{esc}")
         cy.get(agreementObj.Lessee.id).type(agreementObj.Lessee.value)
 
         cy.log('==== STEP: ADD AGREEMENT DATE ====')
@@ -115,9 +116,7 @@ describe('Add And Delete Agreement Spec', () => {
 
         cy.gridSearch(agreementObj.agreementName.value, 'getESSimpleSearch').then(response => {
             const hits = response.response.body.data.getESSimpleSearch.hits
-            console.log("hits : ", hits)
             const cypressAgreement = hits.find(hit => hit.agreementName === agreementObj.agreementName.value)
-            console.log("cypressAgreement : ", cypressAgreement)
 
             if (!cypressAgreement)
                 throw new Error('Sample Agreement added by cypress not found');
@@ -130,9 +129,21 @@ describe('Add And Delete Agreement Spec', () => {
                 cy.get(agreementObj.agreementNumber.id, { timeout: longTimeout }).should('be.visible')
 
                 cy.get("#moreHorizIcon").children().click()
+                cy.interceptApi('getESSimpleSearch')
                 cy.interceptApi('updateCustomLayer')
                 cy.deleteConfirmation()
                 cy.verifyApiResponse('@updateCustomLayerApi')
+
+                cy.verifyApiResponse('@getESSimpleSearchApi').then(response => {
+                    const hits = response.response.body.data.getESSimpleSearch.hits
+                    const agreementName = hits[0].agreementName
+
+                    if (agreementName === agreementObj.agreementName.value)
+                        throw new Error('Agreement still exist');
+
+                    cy.wait(500)
+                })
+
             })
         })
     })
