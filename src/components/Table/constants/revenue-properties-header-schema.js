@@ -1,6 +1,4 @@
-import GlobalSettings from "..//..//..//GlobalSettings.js";
-import GlobalStyles from "..//..//..//GlobalStyles.js";
-import Typography from "@material-ui/core/Typography";
+import { GlobalStickyStyles } from "GlobalSettings";
 import WellIcon from '../../../components/Shared/svgIcons/well.js';
 import { ErrorOutline } from "@material-ui/icons";
 import React from 'react';
@@ -63,7 +61,7 @@ const ComponentPropertyName = ({ value, tableMeta }) => {
 // viewColumns: false,
 // display: true,
 
-const RevenuePropertiesHeadCells = [
+const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
   {
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
@@ -74,9 +72,14 @@ const RevenuePropertiesHeadCells = [
     label: "Property",
     esKey: "number.keyword",
     options: {
-      ...GlobalSettings.muiGridControlOptions,
-      ignoreGlobal: true,
-
+      ...GlobalStickyStyles({
+        setCellProps: {
+          left: isReportingGroup ? "77px" : "108px",
+        },
+        setCellHeaderProps: {
+          left: isReportingGroup ? "77px" : "108px",
+        }
+      }),
 
       // setCellProps: () => ({
       //   style: {

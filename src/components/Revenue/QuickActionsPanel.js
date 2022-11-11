@@ -33,7 +33,7 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
       >
         <Grid container direction="row" justify="space-between" display="flex" className={classes.header}>
           <Grid item style={{ alignItems: "center" }}>
-            <Typography variant="h5" style={{ fontWeight: "normal" }}>
+            <Typography variant="h5" style={{ fontWeight: "normal",paddingLeft:'23px' }}>
               Revenue
             </Typography>
           </Grid>
@@ -47,22 +47,24 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
           </Grid>
         </Grid>
         <Divider />
-        <Typography variant="body2" className={classes.quickActionText}>
-          Quick Actions
-        </Typography>
-        <StyledMenu>
-          {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST)
-            .filter((key) => !SIDE_PANEL_MENU_ITEMS_LIST[key].isExcluded)
-            .map((key, index) => (
-              <StyledMenuItem
-                onClick={() => handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)}
-                key={index}
-                style={{ backgroundColor: activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST[key].title ? "#4B618F" : "" }}
-              >
-                <ListItemText>{SIDE_PANEL_MENU_ITEMS_LIST[key].title}</ListItemText>
-              </StyledMenuItem>
-            ))}
-        </StyledMenu>
+        <div style={{paddingLeft:'23px'}}>
+          <Typography variant="body2" className={classes.quickActionText}>
+            Quick Actions
+          </Typography>
+          <StyledMenu>
+            {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST)
+                .filter((key) => !SIDE_PANEL_MENU_ITEMS_LIST[key].isExcluded)
+                .map((key, index) => (
+                    <StyledMenuItem
+                        onClick={() => handleMenuItemClick(SIDE_PANEL_MENU_ITEMS_LIST[key].link)}
+                        key={index}
+                        style={{ backgroundColor: activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST[key].title ? "#4B618F" : "" }}
+                    >
+                      <ListItemText>{SIDE_PANEL_MENU_ITEMS_LIST[key].title}</ListItemText>
+                    </StyledMenuItem>
+                ))}
+          </StyledMenu>
+        </div>
       </Drawer>
       <div
         className={clsx({

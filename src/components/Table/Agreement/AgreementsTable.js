@@ -72,8 +72,6 @@ function AgreementsTable(props) {
       hit.effectiveDate = hit.effectiveDate ? convert_date(hit.effectiveDate) : null;
       hit.expirationDate = hit.expirationDate ? convert_date(hit.expirationDate) : null;
       hit.extensionDate = hit.extensionDate ? convert_date(hit.extensionDate) : null;
-      hit.State = hit?.originalProperties?.State;
-      hit.County = hit?.originalProperties?.County;
       hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       // hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);

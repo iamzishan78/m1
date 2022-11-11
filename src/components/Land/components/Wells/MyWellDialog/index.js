@@ -3,21 +3,26 @@ import { useParams, useHistory } from "react-router-dom";
 import clsx from "clsx";
 import get from "lodash/get";
 import { makeStyles } from "@material-ui/core/styles";
-import { /*Menu, MenuItem, ListItemIcon, ListItemText,*/ Typography } from "@material-ui/core";
+import { Menu, MenuItem, ListItemIcon, ListItemText, Typography, Dialog, DialogTitle, CircularProgress } from "@material-ui/core";
 import Drawer from "@material-ui/core/Drawer";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import RightActionsPanel from "./RightActionsPanel";
 import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 
 import { IconButton } from "@material-ui/core";
 // import DeleteIcon from "@material-ui/icons/Delete";
 import { useApolloClient } from "@apollo/client";
+import DeleteIcon from "@material-ui/icons/Delete";
+import { useMutation } from "@apollo/client";
 import { GET_MY_WELL_BY_GLOBAL_ID } from "graphQL/useQueryMyWellByGlobalId";
 import { WELL_SUMMARY_WITH_HEADER } from "graphQL/useQueryWellWithHeader";
+import { DELETE_MY_WELL } from "graphQL/useMutationDeleteMyWell";
 
 // Components
 import AddMyWell from "./AddMyWell";
 import RevenueProperties from "./RevenueProperties";
 import Agreements from "./Agreements";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 const useStyles = makeStyles({
   drawer: {
@@ -152,11 +157,16 @@ export default function MyWellDialog(props) {
   const [activePanel, setPanel] = useState("Add New Well");
   const [platformWell, setPlatformWell] = useState();
   const [myWellData, setMyWellData] = useState();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
+
   const { id: globalWellId } = useParams();
   const history = useHistory();
   const client = useApolloClient();
 
-  const toggleDrawer = (anchor, open) => (event) => {
+const [deleteMyWell, { loading }] = useMutation(DELETE_MY_WELL);
+  
+const toggleDrawer = (anchor, open) => (event) => {
     if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
     }
@@ -204,25 +214,55 @@ export default function MyWellDialog(props) {
     history.push("/land/wells");
   };
 
+  const handleDeleteAccept = () => {
+    // Delete Document Logic goes here
+    deleteMyWell({
+      variables: {
+        myWellId: get(myWellData, "myWellByGlobalId.myWell._id")
+      },
+      refetchQueries: ["getESSimpleSearch"],
+      awaitRefetchQueries: true,
+    });
+    handleCloseDialog();
+  };
+
   return (
     <div>
       <Drawer className={classes.drawer} anchor={"right"} open>
-        {/* <Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
+        <Dialog open={openDeleteConfirmDialog} onClose={() => setOpenDeleteConfirmDialog(false)} style={{ zIndex: 99999999999 }}>
           <DeleteConfirmationDialogContent
             header="Delete Document"
-            onClose={handleDeleteCancel}
+            onClose={() => setOpenDeleteConfirmDialog(false)}
             deleteFunc={handleDeleteAccept}
             m1nSelectedRowsIds={[document._id]}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
-            Do you want to delete the selected documents?
+            Do you want to delete the selected my well?
           </DeleteConfirmationDialogContent>
         </Dialog>
-        <Dialog open={loader} style={{ zIndex: 99999999999 }}>
+        <Dialog open={loading} style={{ zIndex: 99999999999 }}>
           <DialogTitle id="alert-dialog-title">
             <CircularProgress />
           </DialogTitle>
-        </Dialog> */}
+        </Dialog>
+        <Menu
+          id="dealMenu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={() => setAnchorEl(null)}
+          className={classes.menu}
+          getContentAnchorEl={null}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          transformOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <MenuItem onClick={() => setOpenDeleteConfirmDialog(true)}>
+            <ListItemIcon>
+              <DeleteIcon size="medium" />
+            </ListItemIcon>
+            <ListItemText>Delete</ListItemText>
+          </MenuItem>
+        </Menu>
 
         <div
           style={{ width: "500px" }}
@@ -250,6 +290,18 @@ export default function MyWellDialog(props) {
                   </Typography>
                 </div>
                 <div style={{ cursor: "pointer" }}>
+                  <IconButton
+                    size="small"
+                    component="span"
+                    style={{
+                      background: "transparent",
+                      paddingLeft: "10px",
+                      align: "center",
+                    }}
+                    onClick={(event) => setAnchorEl(event.currentTarget)}
+                  >
+                    <MoreHorizIcon size="medium" />
+                  </IconButton>
                   <IconButton size="small" onClick={handleCloseDialog}>
                     <CloseIcon />
                   </IconButton>

@@ -1,4 +1,4 @@
-import GlobalSettings from "..//..//..//GlobalSettings.js";
+import { GlobalStickyStyles } from "GlobalSettings";
 import GlobalStyles from "..//..//..//GlobalStyles.js";
 import { history } from "store";
 
@@ -12,12 +12,18 @@ const wellsColumnHeaders = [
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-    name: "wellName",
+    name: "WellName",
     label: "Well Name",
     esKey: "wellData.wellName.keyword",
     options: {
-      ...GlobalSettings.muiGridInfScrollOptions,
-      ignoreGlobal: true,
+      ...GlobalStickyStyles({
+        setCellProps: {
+          left: '125px',
+        },
+        setCellHeaderProps: {
+          left: '125px',
+        }
+      }),
       sort: true,
       filter: true,
       customRender: (value, tableMeta) => {
@@ -69,7 +75,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -79,7 +85,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -250,7 +256,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value ? vf_number(Math.floor(value)) : null}</p>,
+      customRender: (value) => <p>{value ? vf_number(Math.floor(value)) : "--"}</p>,
     },
   },
   {
@@ -260,7 +266,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value ? vf_number(Math.floor(value)) : null}</p>,
+      customRender: (value) => <p>{value ? vf_number(Math.floor(value)) : "--"}</p>,
     },
   },
   {
@@ -270,7 +276,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value ? vf_number(Math.floor(value)) : null}</p>,
+      customRender: (value) => <p>{value ? vf_number(Math.floor(value)) : "--"}</p>,
     },
   },
   {
@@ -290,7 +296,7 @@ const wellsColumnHeaders = [
       sort: true,
       filter: true,
       customRender: (values) => (
-        <p>{values?.length ? values.map((value) => statusData.find((sd) => sd.value === value)?.label).join(", ") : null}</p>
+        <p>{values?.length ? values.map((value) => statusData.find((sd) => sd.value === value)?.label).join(", ") : "--"}</p>
       ),
     },
   },
@@ -301,7 +307,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -311,7 +317,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -321,7 +327,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -331,7 +337,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -350,7 +356,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -360,7 +366,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -370,7 +376,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {

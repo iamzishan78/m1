@@ -55,13 +55,13 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     component: "Wells",
     isExcluded: true,
   },
-  REPORTING_GROUPS: {
-    featureFlag: "LANDREPORTINGGROUPS",
-    title: "Reporting Groups",
-    link: "/land/reporting-groups",
-    component: "ReportingGroups",
-    hideSearch: true,
-  },
+  // REPORTING_GROUPS: {
+  //   featureFlag: "LANDREPORTINGGROUPS",
+  //   title: "Reporting Groups",
+  //   link: "/land/reporting-groups",
+  //   component: "ReportingGroups",
+  //   hideSearch: true,
+  // },
   ADMIN_SETTINGS: {
     featureFlag: "LANDMODULE",
     title: "Admin Settings",
