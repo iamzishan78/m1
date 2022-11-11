@@ -149,7 +149,7 @@ const ShapeActionsPopup = (props) => {
     setAnchorEl(addShapeToLayerButton.current)
   }, [props.onlyAddShape])
 
-  const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER, {
+  const [deleteCustomLayer] = useMutation(UPDATECUSTOMLAYER, {
     update(
       cache,
       {
@@ -168,6 +168,8 @@ const ShapeActionsPopup = (props) => {
       });
     },
   });
+
+  const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
 
   const updateSelectedLayerFeature = (customLayer) => {
     setStateApp((state) => ({
@@ -582,7 +584,7 @@ const ShapeActionsPopup = (props) => {
         feature: jsonLayer,
         id: layerData._id,
       },
-      customLayers: layers,
+      // customLayers: layers,
     }));
 
     popupCloseAction();
@@ -595,7 +597,7 @@ const ShapeActionsPopup = (props) => {
 
     // Delete request for actual AOI
     const { selectedAoi } = stateApp;
-    updateCustomLayer({
+    deleteCustomLayer({
       variables: {
         customLayerId: selectedAoi.id || selectedAoi._id,
         customLayer: {
