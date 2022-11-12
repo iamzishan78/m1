@@ -159,7 +159,7 @@
     "test": "craco test",
     "eject": "react-scripts eject",
     "ci:start-server": "http-server -p 3000",
-    "ci:cy-run": "start-server-and-test start http://localhost:3000 cy:report",
+    "ci:cy-run": "start-server-and-test start http://localhost:3000 cy:run",
     "cy:ci": "START_SERVER_AND_TEST_INSECURE=1 start-server-and-test start https-get://localhost:3000 cy:run"
   },
   "eslintConfig": {
