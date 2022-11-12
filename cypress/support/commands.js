@@ -52,7 +52,7 @@ Cypress.Commands.add("checkAndLogin", () => {
 
 // This command is to type  in autocomplete search bar and then select first matched option
 Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId = null) => {
-    cy.get(searchId).wait(300).type(stringToType)
+    cy.get(searchId, { timeout: longTimeout }).type(stringToType)
 
     if (optionId)
         cy.get(`[id="${optionId}"]`, { timeout: longTimeout }).should('be.visible')
@@ -106,7 +106,6 @@ Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
 })
 
 Cypress.Commands.add('deleteConfirmation', () => {
-    cy.log('==== STEP: CLICKING ON HORIZON ICON ====')
     cy.get(".MuiTypography-root", { timeout: longTimeout }).contains('Delete', { timeout: longTimeout }).click()
 
     cy.log('==== STEP: CLICKING ON DELETE FROM CONFIRMATION DIALOGUE BOX  ====')
@@ -363,7 +362,7 @@ Cypress.Commands.add('addTract', (tractName) => {
 // AgreementGrid Commands
 
 Cypress.Commands.add('agreementFieldSelect', (field) => {
-    cy.get(field.id).click()
+    cy.get(field.id).click({ force: true })
     cy.get('.MuiMenuItem-root').contains(field.value).click()
 })
 Cypress.Commands.add('addComment', () => {
