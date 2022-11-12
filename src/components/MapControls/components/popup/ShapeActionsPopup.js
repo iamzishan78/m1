@@ -45,8 +45,7 @@ import { FEATURES } from "components/Shared/FeatureFlag/common";
 import { copy, getPolygonString } from "components/Shared/functions";
 import { calculateLandArea } from "components/Shared/functions/shapeLayer";
 import ShapeEditActions from "components/MapControls/components/popup/ShapeEditActions";
-import AgreementTypeMenu from "./AgreementTypeMenu";
-import { capitalize } from "lodash"
+import ShapeTypeMenu from "./ShapeTypeMenu";
 
 
 const useStyles = makeStyles({
@@ -96,6 +95,8 @@ const ShapeActionsPopup = (props) => {
   const [exportCSVModal, setExportCSVModal] = useState(false);
   const [showConvertMenu, setShowConvertMenu] = useState(false);
   const [agreementAnchorEl, setAgreementAnchorEl] = useState(null);
+  const [tractAnchorEl, setTractAnchorEl] = useState(null);
+  const [unitAnchorEl, setUnitAnchorEl] = useState(null);
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(USERBYEMAIL);
   const [getAbstractGeoContains] = useLazyQuery(ABSTRACTGEOCONTAINSQUERY);
   const [upsertCustomLayer, { data: customLayerInsertedData }] = useMutation(UPSERTCUSTOMLAYER, {
@@ -527,6 +528,8 @@ const ShapeActionsPopup = (props) => {
       user: user._id,
     };
 
+    console.log({customLayerData, newShapeFeature, currentFeature: stateApp.currentFeature})
+
     upsertCustomLayer({
       variables: { customLayer: customLayerData },
     });
@@ -734,8 +737,18 @@ const ShapeActionsPopup = (props) => {
         <FeatureFlag feature={FEATURES.AGREEMENT_LAYER}>
           <MenuItem id="agreementItem" onClick={(event) => setAgreementAnchorEl(event.currentTarget)}>Agreement</MenuItem>
         </FeatureFlag>
-        <MenuItem id="tractItem" onClick={saveAndOpenParcelDetail}>Tract</MenuItem>
-        <MenuItem id="unitBoundaryItem" onClick={() => saveAndOpenShapeDetail("unit")}>Unit Boundary</MenuItem>
+        <MenuItem id="tractItem" 
+          onClick={e => {
+            if(stateApp.showAddShapePopup) setTractAnchorEl(e.currentTarget)
+            else saveAndOpenParcelDetail()
+          }}
+        >Tract</MenuItem>
+        <MenuItem id="unitBoundaryItem" 
+          onClick={(e) => {
+            if(stateApp.showAddShapePopup) setUnitAnchorEl(e.currentTarget)
+            else saveAndOpenShapeDetail('unit')
+          }}
+        >Unit Boundary</MenuItem>
       </Menu>
       <Menu
         id="convert-button"
@@ -772,8 +785,11 @@ const ShapeActionsPopup = (props) => {
         </MenuItem>
       </Menu>
 
-      <AgreementTypeMenu classes={classes} agreementAnchorEl={agreementAnchorEl}
-        saveAndOpenShapeDetail={saveAndOpenShapeDetail} updateAndOpenShapeDetail={updateAndOpenShapeDetail} setAgreementAnchorEl={setAgreementAnchorEl} />
+      <ShapeTypeMenu type='agreement' classes={classes} shapeAnchorEl={agreementAnchorEl} saveAndOpenShapeDetail={saveAndOpenShapeDetail} updateAndOpenShapeDetail={updateAndOpenShapeDetail} setShapeAnchorEl={setAgreementAnchorEl} />
+
+      <ShapeTypeMenu type='tract' classes={classes} shapeAnchorEl={tractAnchorEl} saveAndOpenShapeDetail={saveAndOpenParcelDetail} updateAndOpenShapeDetail={updateAndOpenShapeDetail} setShapeAnchorEl={setTractAnchorEl} />
+
+      <ShapeTypeMenu type='unit' classes={classes} shapeAnchorEl={unitAnchorEl} saveAndOpenShapeDetail={saveAndOpenShapeDetail} updateAndOpenShapeDetail={updateAndOpenShapeDetail} setShapeAnchorEl={setUnitAnchorEl} />
 
       <Fragment>
         <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span>{" "}
