@@ -52,6 +52,9 @@ const useStyles = makeStyles((theme) => ({
     color: "#FFFFFF",
     fontSize: "11px",
   },
+  headerContainer: {
+    wordBreak: 'break-word',
+  },
   content: {
     backgroundColor: "#fffff",
     transition: "height 0.1s",
@@ -219,9 +222,11 @@ function UdLayerCard(props) {
     <React.Fragment>
       <Card className={classes.card}>
         <CardHeader
+        id='gggggggg'
           classes={{ title: classes.title, subheader: classes.subheader }}
+          className={classes.headerContainer}
           action={
-            <div className={classes.headerIcons}>
+            <div id='hhhhhhhh' className={classes.headerIcons}>
               <Tooltip title={"Add Shape to Layer"} placement="top">
                 <IconButton size={"small"} onClick={(e) => handleAddShapeClick(e, 'draw')} aria-label="close" className={classes.icons}>
                   <LayerIcon color="secondary" />

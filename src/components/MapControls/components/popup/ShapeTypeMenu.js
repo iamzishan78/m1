@@ -28,19 +28,37 @@ const useStyles = makeStyles({
 
 const OPTIONS = {
   agreement: {
-    label: 'Agreement'
+    label: 'Agreement',
+    types: [
+      { value: 'contract', label: 'Contract', },
+      { value: 'deed', label: 'Deed', },
+      { value: 'lease', label: 'Lease', },
+      { value: 'surface', label: 'Surface/Row', },
+    ],
+    selectedType: 'lease',
+    layerType: 'agreement',
   },
   tract: {
-    label: 'Tract'
+    label: 'Tract',
+    types: [
+      { value: 'parcel', label: 'Tract', }
+    ],
+    selectedType: 'parcel',
+    layerType: 'parcel',
   },
   unit: {
-    label: 'Unit'
+    label: 'Unit',
+    types: [
+      { value: 'unit', label: 'Unit', }
+    ],
+    selectedType: 'unit',
+    layerType: 'unit',
   },
 }
 
 const ShapeTypeMenu = ({ shapeAnchorEl, setShapeAnchorEl, saveAndOpenShapeDetail, updateAndOpenShapeDetail, classes, type }) => {
   const [selectedType, setSelectedType] = useState("new");
-  const [selectedShapeType, setSelectedShapeType] = useState('lease');
+  const [selectedShapeType, setSelectedShapeType] = useState(OPTIONS[type].selectedType);
   const [selectedShape, setSelectedShape] = useState();
   const shapeActionClasses = useStyles();
 
@@ -106,10 +124,9 @@ const ShapeTypeMenu = ({ shapeAnchorEl, setShapeAnchorEl, saveAndOpenShapeDetail
                 onChange={(e) => { setSelectedShapeType(e.target.value) }}
                 label={`${OPTIONS[type].label} Type`}
               >
-                <MenuItem value={"contract"} >Contract</MenuItem>
-                <MenuItem value={"deed"} >Deed</MenuItem>
-                <MenuItem value={"lease"} >Lease</MenuItem>
-                <MenuItem value={"surface"} >Surface/Row</MenuItem>
+                {OPTIONS[type].types.map(({value, label}) => (
+                  <MenuItem value={value}>{label}</MenuItem>
+                ))}
               </Select>
             </FormControl>
           </>
@@ -117,7 +134,7 @@ const ShapeTypeMenu = ({ shapeAnchorEl, setShapeAnchorEl, saveAndOpenShapeDetail
         {
           selectedType === 'existing' && <>
             <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
-              <AutoCompleteESShapeLayer label={`${OPTIONS[type].label} Search`} filters={[{ "field": "shapeJson.properties.type", "value": type }]} setSelectedShapeLayer={setSelectedShape} />
+              <AutoCompleteESShapeLayer label={`${OPTIONS[type].label} Search`} filters={[{ "field": "shapeJson.properties.type", "value": OPTIONS[type].layerType }]} setSelectedShapeLayer={setSelectedShape} />
             </FormControl>
           </>
         }
