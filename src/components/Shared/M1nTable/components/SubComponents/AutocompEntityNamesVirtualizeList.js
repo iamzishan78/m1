@@ -105,22 +105,6 @@ ListboxComponent.propTypes = {
 };
 
 const useStyles = makeStyles({
-  adornmentAutocomplete: {
-    "& .MuiAutocomplete-endAdornment": {
-      right: "60px !important",
-      "& .MuiAutocomplete-clearIndicator": {
-        // display: "none"
-      },
-      "& .MuiAutocomplete-popupIndicator": {
-        display: "none",
-      },
-    },
-  },
-  contactCardIcon: {
-    position: "absolute",
-    right: "12px !important",
-    marginTop: "4px !important",
-  },
   inputRoot: (props) =>
     props.darkCard
       ? {
@@ -142,6 +126,25 @@ const useStyles = makeStyles({
     "& ul": {
       padding: 0,
       margin: 0,
+    },
+  },
+});
+
+const paramUseStyles = makeStyles({
+  contactCardIcon: {
+    position: "absolute",
+    right: "12px !important",
+    marginTop: "4px !important",
+  },
+  adornmentAutocomplete: {
+    "& .MuiAutocomplete-endAdornment": {
+      right: "60px !important",
+      "& .MuiAutocomplete-clearIndicator": {
+        // display: "none"
+      },
+      "& .MuiAutocomplete-popupIndicator": {
+        display: "none",
+      },
     },
   },
 });
@@ -168,6 +171,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
   } = props;
 
   const classes = useStyles(props);
+  const paramClasses = paramUseStyles();
   let history = useHistory();
 
   const [, setStateApp] = React.useContext(AppContext);
@@ -229,7 +233,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
                 style={{ padding: 0 }}
                 size={"medium"}
                 color={nameAutValue?._id ? "primary" : "secondary"}
-                className={classes.contactCardIcon}
+                className={paramClasses.contactCardIcon}
                 onClick={(e) => {
                   if (nameAutValue?._id) {
                     e.stopPropagation();
@@ -268,7 +272,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       value={nameAutValue}
       disableListWrap
       classes={classes}
-      className={props.withContactCard ? classes.adornmentAutocomplete : ""}
+      className={props.withContactCard ? paramUseStyles.adornmentAutocomplete : ""}
       ListboxComponent={ListboxComponent}
       ListboxProps={ListboxProps}
       options={mongoEntitiesArray}

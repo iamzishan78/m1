@@ -37,6 +37,8 @@ const filterKey = [
   "shapeJson.properties.agreementName.keyword",
   "shapeJson.properties.agreementNumber.keyword",
   "shapeJson.properties.layerSubType.keyword",
+  'name.keyword',
+  'shapeJson.properties.shapeLabel.keyword'
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -275,8 +277,8 @@ const AddNewRelatedAgreementDialog = (props) => {
                           ? moment(get(selectedAgreement, param.key)).format("MM/DD/YYYY")
                           : ""
                         : param.formatValue
-                        ? param.formatValue(get(selectedAgreement, param.key, ""))
-                        : get(selectedAgreement, param.key, "")
+                          ? param.formatValue(get(selectedAgreement, param.key, ""))
+                          : get(selectedAgreement, param.key, "")
                     }
                     fullWidth
                     disabled
