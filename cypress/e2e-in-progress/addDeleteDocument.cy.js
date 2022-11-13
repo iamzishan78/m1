@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { basic_timeouts, documentObj } from "../../cypressUtils/data"
+import { basic_timeouts, documentObj } from "../cypressUtils/data"
 
 describe('Add & Delete Document Spec', () => {
     it('passes', () => {
