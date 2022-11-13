@@ -11,6 +11,7 @@ import { GET_COMMENT_TYPES, UPSERTCOMMENTTYPE } from "graphQL/useQueryCommentTyp
 import { useMutation, useQuery } from "@apollo/client";
 import { showInfoMessage } from "actions";
 import { useDispatch } from "react-redux";
+import _ from 'lodash';
 
 const useStyles = makeStyles((theme) => ({
   noBorder: {
@@ -116,6 +117,10 @@ const useStyles = makeStyles((theme) => ({
   selectCommentType: {
     width: "100%",
     height: "40px",
+    "& .MuiPopover-paper": {
+      height:'450px !important',
+      marginTop:'60px !important'
+    },
   },
   formLabel: {
     "&.MuiFormLabel-root": {
@@ -163,14 +168,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const CategoryList = ["All", "Agreement", "Contact", "Document", "Flow", "Revenue", "Tract", "Unit"];
-
+// setCommentTypeDialogBox,commentTypeDialogBox
 export default function CommentType(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
 
   const [selectedTab, setSelectedTab] = useState("Existing");
-  const [showCommentTypeDialog, setShowCommentTypeDialog] = useState(false);
   const [selectedCommentType, setSelectedCommentType] = useState("General");
+  const [isMenuOpen,setIsMenuOpen] = useState(false);
   const [commentTypeData, setCommentTypeData] = useState({
     commentType: "",
     category: "",
@@ -182,7 +187,11 @@ export default function CommentType(props) {
 
   useEffect(() => {
     if (data && Array.isArray(data.commentsType)) {
-      setCommentTypes(data.commentsType);
+      const commentsType = data.commentsType
+      const uniqueCommonType = _.uniqBy(commentsType, function (e) {
+        return e.commentType;
+      });
+      setCommentTypes(uniqueCommonType);
     }
   }, [data]);
 
@@ -209,7 +218,7 @@ export default function CommentType(props) {
       awaitRefetchQueries: false,
     });
 
-    setShowCommentTypeDialog(false);
+    props.setCommentTypeDialogBox(false);
     setSelectedCommentType(commentTypeData.commentType);
     props.setSelectedCommentType(commentTypeData.commentType);
     setSelectedTab("Existing");
@@ -218,6 +227,12 @@ export default function CommentType(props) {
       category: "",
     });
   };
+
+
+  const openDialogBox = (e) => {
+    props.setCommentTypeDialogBox(true);
+    e.stopPropagation();
+  }
 
   return (
     <>
@@ -229,22 +244,22 @@ export default function CommentType(props) {
           alignItems: "center",
           color: "#949494",
         }}
-        onClick={() => setShowCommentTypeDialog((o) => !o)}
+        onClick={(e) => openDialogBox(e)}
       >
         {props.showCommentType && (
           <>
-            <EditNoteIcon fill={showCommentTypeDialog ? "black" : ""} />
+            <EditNoteIcon fill={props.commentTypeDialogBox ? "black" : ""} />
             <span style={{ marginLeft: "1px" }}>{selectedCommentType}</span>
           </>
         )}
       </div>
-      {showCommentTypeDialog && (
+      {props.commentTypeDialogBox && (
         <div
           style={{
             position: "absolute",
             bottom: selectedTab === "New Comment Type" ? "25px" : "69px",
             background: "white",
-            zIndex: "9999",
+            zIndex: `${isMenuOpen ? '0' :'9999'}`,
             boxShadow: "0 10px 40px 0 rgb(0 0 0 / 15%)",
             padding: "15px",
             width: "315px",
@@ -256,13 +271,19 @@ export default function CommentType(props) {
             <div>
               <span
                 className={`${classes.tab} ${selectedTab === "Existing" ? classes.selectedTab : ""}`}
-                onClick={() => setSelectedTab("Existing")}
+                onClick={(e) => {
+                  setSelectedTab("Existing");
+                  e.stopPropagation();
+                }}
               >
                 Existing
               </span>
               <span
                 className={`${classes.tab} ${selectedTab === "New Comment Type" ? classes.selectedTab : ""}`}
-                onClick={() => setSelectedTab("New Comment Type")}
+                onClick={(e) => {
+                  setSelectedTab("New Comment Type")
+                  e.stopPropagation();
+                }}
               >
                 New Comment Type
               </span>
@@ -277,7 +298,11 @@ export default function CommentType(props) {
                 onChange={(e) => {
                   setSelectedCommentType(e.target.value);
                   props.setSelectedCommentType(e.target.value);
-                  setShowCommentTypeDialog(false);
+                  props.setCommentTypeDialogBox(false);
+                }}
+                onClick={(e)=>{
+                  setIsMenuOpen((prev)=> !prev);
+                  e.stopPropagation();
                 }}
               >
                 {commentTypes.map((obj) => (
@@ -296,7 +321,9 @@ export default function CommentType(props) {
                     label="Comment Type"
                     onChange={(e) => {
                       setCommentTypeData((prev) => ({ ...prev, commentType: e.target.value }));
+                      e.stopPropagation();
                     }}
+                    onClick={(e)=>e.stopPropagation()}
                   />
                 </FormControl>
                 <FormControl className={classes.formControlCommentType} variant="outlined" fullWidth>
@@ -310,6 +337,11 @@ export default function CommentType(props) {
                     value={commentTypeData.category}
                     onChange={(e) => {
                       setCommentTypeData((prev) => ({ ...prev, category: e.target.value }));
+                      e.stopPropagation();
+                    }}
+                    onClick={(e)=> {
+                      e.stopPropagation();
+                      setIsMenuOpen((prev)=> !prev);
                     }}
                   >
                     {CategoryList.map((category) => (
@@ -331,9 +363,10 @@ export default function CommentType(props) {
                 style={{
                   margin: "0px 15px 0px 0px",
                 }}
-                onClick={() => {
-                  setShowCommentTypeDialog(false);
+                onClick={(e) => {
+                  props.setCommentTypeDialogBox(false);
                   setSelectedTab("Existing");
+                  e.stopPropagation();
                 }}
               >
                 Cancel

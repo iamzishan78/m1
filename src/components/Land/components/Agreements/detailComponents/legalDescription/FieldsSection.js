@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
       margin: 0,
     },
   },
-  fieldContainer: {opacity: 0.7},
+  fieldContainer: { opacity: 0.7 },
   fieldText: {
     fontSize: '15px',
     fontWeight: 'bold'
@@ -46,6 +46,7 @@ const ChangeDetectionNumberField = ({ name, label, control, offClickHandler, han
     <Controller
       control={control}
       name={name}
+      defaultValue={0}
       render={(params) => {
         const isChanged = (calculatedValues[name] && params.value && parseFloat(params.value) !== parseFloat(calculatedValues[name])) || isOverridden
         return (
@@ -53,7 +54,7 @@ const ChangeDetectionNumberField = ({ name, label, control, offClickHandler, han
             type="number"
             label={label}
             variant="outlined"
-            defaultValue={get(params, "value", 0)}
+            defaultValue={get(params, "value", 0) || 0}
             value={get(params, "value", 0)}
             onWheel={(e) => e.target.blur()}
             onBlur={(event) => offClickHandler(name, event.target.value)}
@@ -137,27 +138,27 @@ export default function LagalDescription({ agreementDetails = {}, updateAgreemen
       <Grid item xs={8}>
         <Grid container display="row" alignItems="center" justify="center" spacing={3}>
           <Grid item xs={12}>
-              <Grid container display="row" alignItems="center" justify="space-between" spacing={3}>
-                <Grid item xs={3}>
-                </Grid>
-                <Grid item xs={3} className={classes.fieldContainer}>
-                  <Typography variant="h5" className={classes.fieldText}>
-                    Total
-                  </Typography>
-                </Grid>
-                <Grid item xs={3} className={classes.fieldContainer}>
-                  <Typography variant="h5" className={classes.fieldText}>
-                    Developed
-                  </Typography>
-                </Grid>
-                <Grid item xs={3} className={classes.fieldContainer}>
-                  <Typography variant="h5" className={classes.fieldText}>
-                    Undeveloped
-                  </Typography>
-                </Grid>
+            <Grid container display="row" alignItems="center" justify="space-between" spacing={3}>
+              <Grid item xs={3}>
               </Grid>
+              <Grid item xs={3} className={classes.fieldContainer}>
+                <Typography variant="h5" className={classes.fieldText}>
+                  Total
+                </Typography>
+              </Grid>
+              <Grid item xs={3} className={classes.fieldContainer}>
+                <Typography variant="h5" className={classes.fieldText}>
+                  Developed
+                </Typography>
+              </Grid>
+              <Grid item xs={3} className={classes.fieldContainer}>
+                <Typography variant="h5" className={classes.fieldText}>
+                  Undeveloped
+                </Typography>
+              </Grid>
+            </Grid>
           </Grid>
-          
+
           <Grid item xs={12}>
             <Grid container display="row" alignItems="center" justify="space-between" spacing={3}>
               <Grid item xs={3} className={classes.fieldContainer}>
