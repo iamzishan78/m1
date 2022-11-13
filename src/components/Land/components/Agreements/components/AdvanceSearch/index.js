@@ -6,13 +6,13 @@ import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from "@material-ui
 import * as FilterComponents from "./searchComponents";
 
 const filterTypes = {
-  // Summary: { component: "GeographyFilter", countKey: "geographyFilterCount" },
-  // "Related Parties": { component: "WellFilter", countKey: "wellFilterCount" },
+  // Summary: { component: "ProvisionFilters", countKey: "geographyFilterCount" },
+  // "Related Parties": { component: "ProvisionFilters", countKey: "wellFilterCount" },
   Provisions: { component: "ProvisionFilters", countKey: "productionFilterCount" },
-  // "Legal Description": { component: "OwnershipFilter", countKey: "ownershipFilterCount" },
-  // Wells: { component: "TagsFilter", countKey: "tagFilterCount" },
-  // Documents: { component: "TagsFilter", countKey: "tagFilterCount" },
-  // "Related Agreements": { component: "TagsFilter", countKey: "tagFilterCount" },
+  // "Legal Description": { component: "ProvisionFilters", countKey: "ownershipFilterCount" },
+  // Wells: { component: "ProvisionFilters", countKey: "tagFilterCount" },
+  // Documents: { component: "ProvisionFilters", countKey: "tagFilterCount" },
+  // "Related Agreements": { component: "ProvisionFilters", countKey: "tagFilterCount" },
 };
 
 const useStyles = makeStyles(() => ({
