@@ -332,7 +332,6 @@ function AddDealDialog(props) {
   const [getDeal, { data: getDealResult }] = useLazyQuery(GETDEAL, {
     fetchPolicy: "no-cache",
   });
-
   const [addContact, { data: addContactData, loading: addContactLoading }] = useMutation(ADDCONTACT);
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
@@ -1052,10 +1051,14 @@ function AddDealDialog(props) {
 
   const refetchDeal = () => {
     getDeal({
-      variables: { id: stateApp.activeDeal.cardId },
+      variables: { id: stateApp?.activeDeal?.cardId },
     });
   };
 
+
+  useEffect(()=>{
+    refetchDeal();
+  },[stateApp?.activeDeal?.cardId]);
   const addSelectedContactToDeal = (contact) => {
     upsertDealDescriptor({
       variables: {
@@ -1080,6 +1083,7 @@ function AddDealDialog(props) {
         activeDeal: {
           ...stateApp.activeDeal,
           contacts: [...getDealResult.deal.deal.contacts.map((c) => c)],
+          activity:getDealResult.deal.deal.activity
         },
       }));
     }
