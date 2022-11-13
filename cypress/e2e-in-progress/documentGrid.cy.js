@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { basic_timeouts } from "../../cypressUtils/data"
+import { basic_timeouts } from "../cypressUtils/data"
 
 describe('Document Grid Spec', () => {
     it('passes', () => {
