@@ -3,7 +3,7 @@ import { Container } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHeader from "components/Table/constants/analytics-land-exhibita-schema";
-
+import get from 'lodash/get';
 // QUERIES
 import { deepEqualObjects, copy } from "components/Shared/functions";
 // Utilities
@@ -11,6 +11,7 @@ import { usetableStyles } from "components/Table/Styles";
 // actions
 import { setRevenuePropertyData } from "actions";
 import TableESHOC from "components/Table/TableESHOC";
+import convert_date from "components/Shared/valueformatters/convert_date.js";
 
 function ExhibitATable(props) {
   const classes = usetableStyles();
@@ -22,7 +23,23 @@ function ExhibitATable(props) {
   const esFilters = props.esFilters ? props.esFilters : [];
 
   const formatHits = (hits) => {
+    
     hits = hits.map((hit) => {
+      hit.agreementNumber = hit.shape.shapeJson.properties.agreementNumber;
+      hit.grantor = hit.shape.shapeJson.properties.grantor;
+      hit.grantee = hit.shape.shapeJson.properties.grantee;
+      hit.agreementDate = hit.shape.shapeJson.properties.agreementDate ? convert_date(hit.shape.shapeJson.properties.agreementDate) : null
+      hit.effectiveDate = hit.shape.shapeJson.properties.effectiveDate ? convert_date(hit.shape.shapeJson.properties.effectiveDate) : null
+      hit.tractState = hit.parcel.shapeJson.properties.originalProperties.State || hit.parcel.shapeJson.properties.originalProperties.StateAbbreviation
+      hit.tractCounty = hit.parcel.shapeJson.properties.originalProperties.County
+      hit.tractName = hit.parcel.name;
+      hit.legalDesctiption = hit.shape.shapeJson.properties.legalDesctiption;
+      hit.internalCompany = hit.shape.shapeJson.properties.internalCompany;
+      hit.prospectID = hit.shape.shapeJson.properties.prospectID;
+      hit.acquisitionID = hit.shape.shapeJson.properties.acquisitionID;
+      hit.blockTownship =  get(hit, 'parcel.shapeJson.properties.originalProperties.Block', undefined) || get(hit, 'parcel.shapeJson.properties.originalProperties.Township', undefined);
+      hit.sectionRange =  get(hit, 'parcel.shapeJson.properties.originalProperties.Section', undefined) || get(hit, 'parcel.shapeJson.properties.originalProperties.Range', undefined);
+      hit.abstractSection =  get(hit, 'parcel.shapeJson.properties.originalProperties.AbstractName', undefined) || get(hit, 'parcel.shapeJson.properties.originalProperties.ShortName', undefined);
       return hit;
     });
     return hits;
@@ -33,14 +50,12 @@ function ExhibitATable(props) {
     const fixedFilters = [];
     if (formatedFilter[0] && formatedFilter[0].value.range) {
       formatedFilter[0].type = "range";
-      formatedFilter[0].value =
-        formatedFilter[0].value.range[formatedFilter[0].field];
+      formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field];
       fixedFilters.push(formatedFilter[0]);
     }
-
-    // fixedFilters[1].type = "value";
-    // fixedFilters[1].value = "";
-
+    fixedFilters.push({ field: "shape.shapeJson.properties.type", value: 'agreement' });
+    fixedFilters.push({ field: "shape._id", value: '637180f3ddaf4a47251a35b5' });
+    
     props.setInitialFilters(formatedFilter);
     props.setTableMeta({
       extendSearchQuery: props.landSearchQuery || "",
@@ -50,7 +65,7 @@ function ExhibitATable(props) {
       filters: fixedFilters,
       selectedGridView: { filters: [] },
       startPaginationAt: 25,
-      defaultSort: { field: "name.keyword", order: "asc" },
+      // defaultSort: { field: "name.keyword", order: "asc" },
       formatHits,
     });
     // eslint-disable-next-line
