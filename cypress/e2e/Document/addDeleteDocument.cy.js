@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-const { basic_timeouts, documentObj } = require("../cypressUtils/data")
+const { basic_timeouts, documentObj } = require("../../cypressUtils/data")
 
 
 describe('Add & Delete Document Spec', () => {
