@@ -144,8 +144,8 @@ const ShapeActionsPopup = (props) => {
 
   const addShapeToLayerButton = useRef()
 
-  useEffect(()=> {
-    if(!props.onlyAddShape) return
+  useEffect(() => {
+    if (!props.onlyAddShape) return
 
     setAnchorEl(addShapeToLayerButton.current)
   }, [props.onlyAddShape])
@@ -396,6 +396,7 @@ const ShapeActionsPopup = (props) => {
   };
 
   const getParcelAndShapeName = (abstractShape) => {
+    debugger
     const properties = abstractShape?.properties;
     let township = properties?.Township;
     let range = properties?.Range;
@@ -406,6 +407,9 @@ const ShapeActionsPopup = (props) => {
     } else if (township && range && section) {
       parcelName = `T${township} R${range} — Section ${section}`;
     } else {
+      parcelName = "PLSS Default Name";
+    }
+    if (parcelName.includes('undefined')) {
       parcelName = "PLSS Default Name";
     }
     return parcelName;
@@ -487,15 +491,15 @@ const ShapeActionsPopup = (props) => {
     let shapeName = getParcelAndShapeName(abstractShape);
     const state = abstractShape?.properties?.State || abstractShape?.properties?.StateAbbreviation;
     const section = abstractShape?.properties?.Section || abstractShape?.properties?.ShortName;
-    let blockTownship = `BLK ${abstractShape?.properties?.Block}`;
-    if (!abstractShape?.properties?.Block && abstractShape?.properties?.Township) {
-      blockTownship = `TOWN ${abstractShape?.properties?.Township}`;
+    let blockTownship = `BLK ${abstractShape?.properties?.Block || ''}`;
+    if (!abstractShape?.properties?.Block && (abstractShape?.properties?.Township || '')) {
+      blockTownship = `TOWN ${abstractShape?.properties?.Township || ''}`;
     }
     if (abstractShape?.properties?.County && state) {
       if (layerType === "unit") {
         if (abstractShape.properties.State === "TX")
-          shapeSubtitle = `${abstractShape?.properties?.County}, ${state} - ${blockTownship}${section ? `, SEC ${section}` : ""}`;
-        else shapeSubtitle = `${abstractShape?.properties?.County}, ${state} - ${shapeName}`;
+          shapeSubtitle = `${abstractShape?.properties?.County}, ${state || ''} - ${blockTownship}${section ? `, SEC ${section}` : ""}`;
+        else shapeSubtitle = `${abstractShape?.properties?.County}, ${state || ''} - ${shapeName}`;
       }
       if (layerType === "agreement") shapeSubtitle = `${abstractShape?.properties?.County}, ${state}`;
     }
@@ -527,8 +531,6 @@ const ShapeActionsPopup = (props) => {
       name: shapeName,
       user: user._id,
     };
-
-    console.log({customLayerData, newShapeFeature, currentFeature: stateApp.currentFeature})
 
     upsertCustomLayer({
       variables: { customLayer: customLayerData },
@@ -737,15 +739,15 @@ const ShapeActionsPopup = (props) => {
         <FeatureFlag feature={FEATURES.AGREEMENT_LAYER}>
           <MenuItem id="agreementItem" onClick={(event) => setAgreementAnchorEl(event.currentTarget)}>Agreement</MenuItem>
         </FeatureFlag>
-        <MenuItem id="tractItem" 
+        <MenuItem id="tractItem"
           onClick={e => {
-            if(stateApp.showAddShapePopup) setTractAnchorEl(e.currentTarget)
+            if (stateApp.showAddShapePopup) setTractAnchorEl(e.currentTarget)
             else saveAndOpenParcelDetail()
           }}
         >Tract</MenuItem>
-        <MenuItem id="unitBoundaryItem" 
+        <MenuItem id="unitBoundaryItem"
           onClick={(e) => {
-            if(stateApp.showAddShapePopup) setUnitAnchorEl(e.currentTarget)
+            if (stateApp.showAddShapePopup) setUnitAnchorEl(e.currentTarget)
             else saveAndOpenShapeDetail('unit')
           }}
         >Unit Boundary</MenuItem>
@@ -841,8 +843,9 @@ const ShapeActionsPopup = (props) => {
                   ref={addShapeToLayerButton}
                   onClick={(event) => {
                     console.log(1, event.currentTarget.getAttributeNames())
-                    setAnchorEl(event.currentTarget)}}
-                  >
+                    setAnchorEl(event.currentTarget)
+                  }}
+                >
                   {/* <LayerIcon color={addShapeToLayerButton.current?.title === 'Add Shape to Layer' ? 'primary' : "secondary"} /> */}
                   <LayerIcon color='secondary' />
                 </IconButton>
@@ -850,7 +853,7 @@ const ShapeActionsPopup = (props) => {
 
               <Tooltip title="Area of Interest" className={props.onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
                 <IconButton size="small" disabled={props.onlyAddShape ? true : enableEditOnly} onClick={actionAOI} aria-label="Area of Interest">
-                  <span style={{ "& svg":{color: "white"} }}>AOI</span>
+                  <span style={{ "& svg": { color: "white" } }}>AOI</span>
                 </IconButton>
               </Tooltip>
             </>
@@ -911,7 +914,7 @@ const ShapeActionsPopup = (props) => {
                   <IconButton
                     size="small"
                     aria-label="Set Boundary"
-                  disabled={props.onlyAddShape}
+                    disabled={props.onlyAddShape}
                     onClick={() => {
                       if (selectedAction === "edit-aoi") confirmEditing();
                       else if (selectedAction === "edit-shape" || (stateApp.shapeEditMode === 'redraw')) confirmShapeEditing();
