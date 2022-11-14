@@ -67,6 +67,7 @@ function TractInterestOwnerTable(props) {
     return hits.map((hit) => {
       hit.ownershipType = hit?.contact?.ownerType;
       hit.isPurchased = hit?.contact?.isPurchased;
+      hit.name = hit?.contact?.entityDetail?.name;
       if (hit.cost_bearing_high_value) {
         hit.cost_bearing_high_value =
           typeof hit?.cost_bearing_high_value === "number"
