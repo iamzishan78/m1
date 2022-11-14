@@ -391,7 +391,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange }) => {
           );
           return (
             <span
-              class="colorText"
+              className="colorText"
               style={{
                 whiteSpace: "nowrap",
                 backgroundColor: pallete?.color,
