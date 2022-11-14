@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 
-import { basic_timeouts, documentObj } from "../cypressUtils/data"
+const { basic_timeouts, documentObj } = require("../cypressUtils/data")
+
 
 describe('Add & Delete Document Spec', () => {
     it('passes', () => {
@@ -38,40 +39,48 @@ describe('Add & Delete Document Spec', () => {
         cy.contains('State').click({ force: true })
 
         cy.log('==== STEP: ADD DOCUMENT ====')
-        cy.addDocument(documentObj.fileAddress)
+        cy.addDocument(documentObj.fileAddress).then(response => {
+            const documentId = response.response.body.data.addFileDescriptor.file.id
 
-        cy.log('==== STEP: DELETE DOCUMENT ====')
-        cy.detachDocument()
+            cy.log('==== STEP: DELETE DOCUMENT ====')
+            cy.wait(2000)
+            cy.detachDocument()
 
-        cy.log('==== STEP: ADD DOCUMENT AGAIN ====')
-        cy.addDocument(documentObj.fileAddress)
+            cy.log('==== STEP: ADD DOCUMENT AGAIN ====')
+            cy.addDocument(documentObj.fileAddress)
 
-        cy.interceptApi('updateDocument')
-        cy.interceptApi('getESDocuments')
+            cy.interceptApi('updateDocument')
+            cy.interceptApi('getESDocuments')
 
-        cy.wait(4000)
-        cy.get("#documentSaveButton", { timeout: shorTimeout }).should('be.visible').trigger("click");
+            cy.wait(4000)
+            cy.get("#documentSaveButton", { timeout: shorTimeout }).should('be.visible').trigger("click");
 
-        cy.get('#documentSaveButton')
-            .then($button => {
-                if ($button.is(':visible')) {
-                    $button.click()
-                } else {
-                    cy.verifyApiResponse('@updateDocumentApi')
+            cy.get('#documentSaveButton')
+                .then($button => {
+                    if ($button.is(':visible')) {
+                        $button.click()
+                    } else {
+                        cy.verifyApiResponse('@updateDocumentApi')
 
-                    cy.log('==== STEP: DELETING RECENTLY ADDED DOCUMENT ====')
+                        cy.log('==== STEP: DELETING RECENTLY ADDED DOCUMENT ====')
 
-                    cy.log('==== STEP: OPENING FILE DETAIL DRAWER ====')
-                    cy.get('table').contains('td', documentObj.fileNumber, { timeout: extraTimeout }).click();
+                        cy.gridSearch(documentId, 'getESDocuments')
+                        cy.get('#addDocument', { timeout: longTimeout }).should('be.visible')
 
-                    cy.log('==== STEP: CLICKING ON HORIZON ICON ====')
-                    cy.get("#fileDetailHorzIcon").click()
+                        cy.log('==== STEP: OPENING FILE DETAIL DRAWER ====')
+                        cy.getTableCell("File Number", 1).click();
 
-                    cy.interceptApi('updateDocument')
-                    cy.deleteConfirmation()
-                    cy.verifyApiResponse('@updateDocumentApi')
-                }
-            })
+                        cy.log('==== STEP: CLICKING ON HORIZON ICON ====')
+                        cy.get("#fileDetailHorzIcon").click()
+
+                        cy.interceptApi('updateDocument')
+                        cy.deleteConfirmation()
+                        cy.verifyApiResponse('@updateDocumentApi')
+                    }
+                })
+        })
+
+
     })
 
 })
