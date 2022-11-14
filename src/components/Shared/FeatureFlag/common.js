@@ -18,5 +18,6 @@ export const FEATURES = {
     CONTACTGRIDEXPORT: 'ContactGridExport',
     EDITABLE_WORKSPACE: 'editableWorkspaceName',
     SHOWUSERPRIVILEGES: 'showUserPrivileges',
-    AGREEMENT_LAYER: 'AgreementLayer'
+    AGREEMENT_LAYER: 'AgreementLayer',
+    ANALYTICS: 'analyticsModule',
 }

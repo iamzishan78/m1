@@ -81,19 +81,12 @@ export default function Analytics() {
 
   useEffect(() => {
     const allPaths = JSON.parse(JSON.stringify(analyticsManagementRoutes));
-    const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.CONTACTSUBMENU);
-    // const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICSSUBMENU);
+    const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICS);
     const allAllowedPaths = {}
     if(feature?.JSON){
       const data = JSON.parse(feature.JSON)
       Object.keys(allPaths).forEach(path => {
         if(data.options.includes(allPaths[path].value)){
-          allAllowedPaths[path] = allPaths[path]
-        }
-      })
-    }else{
-      Object.keys(allPaths).forEach(path => {
-        if(allPaths[path].isDefault){
           allAllowedPaths[path] = allPaths[path]
         }
       })
@@ -103,8 +96,7 @@ export default function Analytics() {
 
   return (
     <>
-      <FeatureFlag feature={FEATURES.CONTACTSUBMENU}>
-        {/* <FeatureFlag feature={FEATURES.ANALYTICSSUBMENU}> */}
+      <FeatureFlag feature={FEATURES.ANALYTICS}>
         <QuickActionPanel
           title="Analytics"
           handlePanelStateChange={handlePanelStateChange}
@@ -122,17 +114,6 @@ export default function Analytics() {
             </Switch>
           ))}
         </QuickActionPanel>
-      </FeatureFlag>
-      <FeatureFlag feature={FEATURES.CONTACTSUBMENU} noAccess>
-        {/* <FeatureFlag feature={FEATURES.ANALYTICSSUBMENU} noAccess> */}
-        <div className={classes.root}>
-          <ContactsTable
-            parent="Analytics"
-            headerLabel="Analytics"
-            contactSearchQuery={stateApp.contactSearchQuery}
-            userId={stateApp.user.mongoId}
-          />
-        </div>
       </FeatureFlag>
     </>
   );

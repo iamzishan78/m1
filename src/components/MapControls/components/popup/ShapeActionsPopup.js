@@ -792,7 +792,7 @@ const ShapeActionsPopup = (props) => {
       <ShapeTypeMenu type='unit' classes={classes} shapeAnchorEl={unitAnchorEl} saveAndOpenShapeDetail={saveAndOpenShapeDetail} updateAndOpenShapeDetail={updateAndOpenShapeDetail} setShapeAnchorEl={setUnitAnchorEl} />
 
       <Fragment>
-        <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span>{" "}
+        <span className={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span>{" "}
         {calculateLandArea(props.selectedFeature)}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
           {isShapeResizeMode ? (

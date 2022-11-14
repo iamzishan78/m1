@@ -59,6 +59,7 @@
     "graphql": "^15.5.0",
     "graphql-tag": "^2.11.0",
     "hat": "^0.0.3",
+    "http-server": "^14.1.1",
     "immutability-helper": "^3.1.1",
     "immutable": "^4.0.0-rc.12",
     "javascript-time-ago": "^2.3.8",
@@ -78,6 +79,7 @@
     "material-ui-popup-state": "^1.8.4",
     "moment": "^2.29.1",
     "mui-datatables": "^3.7.7",
+    "my-server": "^2.0.7",
     "npm": "^7.20.1",
     "parse-link-header": "^1.0.1",
     "polylabel": "^1.1.0",
@@ -147,14 +149,18 @@
   },
   "scripts": {
     "cypress:open": "cypress open",
-    "cy:run": "cypress run",
+    "cy:run": "cypress run --headless --browser chrome",
+    "cy:report": "cypress run --headless --browser chrome --spec 'cypress/e2e/Activities/verifyActivityCompleted.cy.js'  --browser chrome",
     "legacy-start": "react-scripts start",
     "start": "craco start",
     "legacy-build": "react-scripts build",
     "build": "craco build",
     "legacy-test": "react-scripts test",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "ci:start-server": "http-server -p 3000",
+    "ci:cy-run": "start-server-and-test start http://localhost:3000 cy:run",
+    "cy:ci": "START_SERVER_AND_TEST_INSECURE=1 start-server-and-test start https-get://localhost:3000 cy:run"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -186,6 +192,7 @@
   "license": "ISC",
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
-    "cypress": "^10.6.0"
+    "cypress": "^10.6.0",
+    "start-server-and-test": "^1.14.0"
   }
 }
