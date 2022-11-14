@@ -62,7 +62,7 @@ export const agreementObj = {
     effectiveDate: { value: "2022-01-01", id: "#field-effectiveDate" },
     agreementTerm: { value: "3", id: "#field-agreementTerm" },
     expirationDate: { value: "2022-01-01", id: "#field-expirationDate" },
-    extensionDate: { value: "2022-01-01", id: "#field-extensionDate" },
+    extensionDate: { value: "2022-01-04", id: "#field-extensionDate" },
     bounusPayment: { value: "1000", id: "#field-bounusPayment" },
     acquisitionID: { value: "103 - Meiners", id: "#field-acquisitionID" },
     acquisitionDate: { value: "2022-01-01", id: "#field-acquisitionDate" },

@@ -20,12 +20,13 @@ describe('Add And Delete Agreement Spec', () => {
             cy.get(agreementObj.agreementNumber.id, { timeout: longTimeout }).should('be.visible')
 
             cy.log('==== STEP: ADD AGREEMENT NUMBER ====')
+            cy.interceptApi('updateCustomLayer')
             cy.get(agreementObj.agreementNumber.id, { timeout: longTimeout }).should('be.visible').type(agreementObj.agreementNumber.value)
+            cy.get(".MuiGrid-item").contains('Agreement Number').click()
+            cy.verifyApiResponse('@updateCustomLayerApi')
 
             cy.log('==== STEP: ADD AGREEMENT NAME ====')
-            cy.interceptApi('updateCustomLayer')
             cy.get(agreementObj.agreementName.id, { timeout: longTimeout }).should('be.visible').wait(200).type(agreementObj.agreementName.value)
-            cy.verifyApiResponse('@updateCustomLayerApi')
 
             cy.log('==== STEP: ADD AGREEMENT TYPE ====')
             cy.agreementFieldSelect(agreementObj.agreementType)
@@ -138,8 +139,9 @@ describe('Add And Delete Agreement Spec', () => {
                     cy.deleteConfirmation()
                     cy.verifyApiResponse('@updateCustomLayerApi')
 
-                    cy.log('==== STEP: VERIFY AGREEMENT DELETED OR NOT ====')
-                    cy.verifyApiResponse('@getESSimpleSearchApi').then(response => {
+                    cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
+
+                    cy.gridSearch(agreementObj.agreementName.value, 'getESSimpleSearch').then(response => {
                         const hits = response.response.body.data.getESSimpleSearch.hits
                         const isAggreementExist = hits.some(hit => hit.id === cypressAgreementId)
 

@@ -106,10 +106,11 @@ Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
 })
 
 Cypress.Commands.add('deleteConfirmation', () => {
-    cy.get(".MuiTypography-root", { timeout: longTimeout }).contains('Delete', { timeout: longTimeout }).click()
+    cy.get(".MuiTypography-root", { timeout: longTimeout }).contains('Delete', { timeout: longTimeout }).scrollIntoView().click({ force: true })
 
+    cy.wait(2000)
     cy.log('==== STEP: CLICKING ON DELETE FROM CONFIRMATION DIALOGUE BOX  ====')
-    cy.get(".MuiButton-label").contains('Delete', { timeout: longTimeout }).should('be.visible').click()
+    cy.get("#deleteButton", { timeout: longTimeout }).should('be.visible').trigger("click")
 })
 
 /*This command will take css id and containing string to click on action

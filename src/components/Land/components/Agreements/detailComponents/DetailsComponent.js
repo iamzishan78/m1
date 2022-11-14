@@ -683,7 +683,7 @@ export function DetailComponents(props) {
           <ListItemIcon>
             <DeleteIcon size="medium" />
           </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
+          <ListItemText id="deleteItem">Delete</ListItemText>
         </MenuItem>
       </Menu>
 
