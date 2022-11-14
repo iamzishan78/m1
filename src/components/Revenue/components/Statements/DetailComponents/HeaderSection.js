@@ -161,7 +161,7 @@ function HeaderFunction(props) {
   };
 
   const isEqualCheckAmount = (checkAmount) => {
-    if(isNaN(elasticData?.getESAggsList?.aggregations?.totalNetOwnerValue?.value) || isNaN(checkAmount))
+    if (isNaN(elasticData?.getESAggsList?.aggregations?.totalNetOwnerValue?.value) || isNaN(checkAmount))
       return true
 
     const totalSum = formatter.format(
@@ -228,6 +228,7 @@ function HeaderFunction(props) {
                       if (value?._id)
                         params.onChange({ _id: value._id, name: value.name });
                       else params.onChange({});
+                      if (value?._id === "newEntity") delete value._id;
                       handleUpdateCheck({
                         payor: {
                           ...check.payor,
