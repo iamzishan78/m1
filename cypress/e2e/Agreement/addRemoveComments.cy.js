@@ -25,7 +25,6 @@ describe('Add and Remove Comments Spec', () => {
                 cy.get('.MuiTypography-root', { timeout: longTimeout }).contains('Summary').should('be.visible')
                 cy.get("#metaDataButton", { timeout: longTimeout }).scrollIntoView().wait(1000).click()
 
-
                 cy.interceptApi('UpsertComment')
 
                 cy.log('==== STEP: ADD COMMENT ====')

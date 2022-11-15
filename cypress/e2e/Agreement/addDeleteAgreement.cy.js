@@ -110,7 +110,7 @@ describe('Add And Delete Agreement Spec', () => {
 
             cy.verifyApiResponse('@UpsertCommentApi', { responseTimeout: longTimeout }).then(response => {
                 const commentId = response.response.body.data.upsertComment.comment._id
-                cy.get(`#${commentId}`).should('exist')
+                cy.get(`#${commentId}`, {timeout:longTimeout}).should('exist')
             })
 
             cy.interceptApi('getESSimpleSearch')
