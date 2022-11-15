@@ -7,7 +7,7 @@ describe('Add and Remove Comments Spec', () => {
         // Constants 
         const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
 
-        cy.viewport(1400, 900)
+        cy.viewport(1536, 960)
 
         cy.interceptApi('getESSimpleSearch')
         cy.visit('http://localhost:3000/land/agreements')
@@ -18,13 +18,15 @@ describe('Add and Remove Comments Spec', () => {
 
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
 
-            cy.getTableCell('Agreement', 1).then(($row) => {
-                cy.log('==== STEP: OPEN TAGGER ====')
+            cy.getTableCell('Agreement', 3).then(($row) => {
+                cy.log('==== STEP: OPEN Agreement ====')
                 cy.wrap($row).click()
 
-                cy.get('.MuiTypography-root', { timeout: longTimeout }).contains('lease').should('be.visible')
-                cy.get("#metaDataButton").scrollIntoView()
-                cy.get("#metaDataButton", { timeout: longTimeout }).trigger("click")
+                cy.get('.MuiTypography-root', { timeout: longTimeout }).contains('Summary').should('be.visible')
+                cy.get("#metaDataButton", { timeout: longTimeout }).scrollIntoView().wait(1000).click()
+
+
+                cy.interceptApi('UpsertComment')
 
                 cy.log('==== STEP: ADD COMMENT ====')
                 cy.addComment()
