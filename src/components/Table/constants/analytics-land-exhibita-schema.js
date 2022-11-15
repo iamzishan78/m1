@@ -105,33 +105,33 @@ const AcerageSummaryHeadCells = [
     esKey: "shape.shapeJson.properties.legalDesctiption.keyword",
     options: { sort: true, filter: true },
   },
-  {
-    name: "recDate",
-    label: "Rec Date",
-    esKey: "recDate.keyword",
-    options: { sort: true, filter: true },
-    custom: {
-      isDate: true,
-    },
-  },
-  {
-    name: "book",
-    label: "Book",
-    esKey: "book.keyword",
-    options: { sort: true, filter: true },
-  },
-  {
-    name: "page",
-    label: "Page",
-    esKey: "page.keyword",
-    options: { sort: true, filter: true },
-  },
-  {
-    name: "instrumentNumber",
-    label: "Instrument #",
-    esKey: "instrumentNumber.keyword",
-    options: { sort: true, filter: true },
-  },
+  // {
+  //   name: "recDate",
+  //   label: "Rec Date",
+  //   esKey: "recDate.keyword",
+  //   options: { sort: true, filter: true },
+  //   custom: {
+  //     isDate: true,
+  //   },
+  // },
+  // {
+  //   name: "book",
+  //   label: "Book",
+  //   esKey: "book.keyword",
+  //   options: { sort: true, filter: true },
+  // },
+  // {
+  //   name: "page",
+  //   label: "Page",
+  //   esKey: "page.keyword",
+  //   options: { sort: true, filter: true },
+  // },
+  // {
+  //   name: "instrumentNumber",
+  //   label: "Instrument #",
+  //   esKey: "instrumentNumber.keyword",
+  //   options: { sort: true, filter: true },
+  // },
   {
     name: "internalCompany",
     label: "Internal Company",

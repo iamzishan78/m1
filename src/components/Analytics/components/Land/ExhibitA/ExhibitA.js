@@ -54,12 +54,11 @@ function ExhibitATable(props) {
       fixedFilters.push(formatedFilter[0]);
     }
     fixedFilters.push({ field: "shape.shapeJson.properties.type", value: 'agreement' });
-    fixedFilters.push({ field: "shape._id", value: '637180f3ddaf4a47251a35b5' });
+    // fixedFilters.push({ field: "shape._id", value: '637180f3ddaf4a47251a35b5' });
     
     props.setInitialFilters(formatedFilter);
     props.setTableMeta({
       extendSearchQuery: props.landSearchQuery || "",
-      searchFields: ["*"],
       TableHeader: copy(TableHeader),
       esIndex: esIndex,
       filters: fixedFilters,
