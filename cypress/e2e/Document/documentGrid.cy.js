@@ -1,6 +1,8 @@
 /* eslint-disable no-undef */
 
-import { basic_timeouts } from "../../cypressUtils/data"
+const { basic_timeouts } = require("../../cypressUtils/data")
+
+
 
 describe('Document Grid Spec', () => {
     it('passes', () => {
@@ -31,14 +33,14 @@ describe('Document Grid Spec', () => {
         cy.log('==== STEP: UPDATE STATE ====')
         cy.interceptApi('updateDocument')
         cy.getTableCell('State', 1).then(($state) => {
-            cy.wrap($state).get("#badgeValue").click()
+            cy.wrap($state).click()
 
             cy.get('.react-select__menu-list').children().eq(2).trigger("click", { force: true })
             cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: shorTimeout })
 
             cy.get('.react-select__menu-list').children().eq(3).trigger("click", { force: true })
             cy.scrollGridTo('right', '#Documents')
-            cy.wrap($state).get("#badgeValue").click()
+            cy.wrap($state).click()
             cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: shorTimeout })
         })
 

@@ -26,8 +26,8 @@ const useStyles = makeStyles({
 const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant }) => {
   const classes = useStyles();
 
-  const onInputChange = (event, value) => {
-    if (onSearch) onSearch(value);
+  const onInputChange = (event) => {
+    if (onSearch) onSearch(event.target.value);
   };
 
   return (
@@ -62,7 +62,8 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant })
       }}
       onInputChange={onInputChange}
       filterOptions={(options, params) => {
-        let inputValue = value ? JSON.parse(JSON.stringify(value)) : "";
+        const { inputValue } = params;
+        // let inputValue = value ? JSON.parse(JSON.stringify(value)) : "";
         // if (typeof inputValue.name === "string") {
         //   inputValue = inputValue.name;
         // }
