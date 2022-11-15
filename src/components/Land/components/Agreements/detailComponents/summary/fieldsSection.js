@@ -351,7 +351,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                           props.onChange(toFixedValue);
                           setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost);
                         }}
-                        onBlur={(e) => offClickHandler(field.key, Number(props.value))}
+                        onBlur={(e) => offClickHandler(field.key, {value: Number(props.value), overridden: isAcquisitionCostOverridden})}
                         InputProps={{
                           ...field.InputProps,
                           endAdornment: (
@@ -362,7 +362,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                   onClick={() => {
                                     const totalAcquisitionCost = parseFloat(agreementDetails?.calculated?.totalAcquisitionCost || 0).toFixed(2);
                                     props.onChange(totalAcquisitionCost);
-                                    offClickHandler(field.key, Number(totalAcquisitionCost));
+                                    offClickHandler(field.key, {value: Number(totalAcquisitionCost), overridden: isAcquisitionCostOverridden});
                                     setIsAcquisitionCostOverridden(false);
                                   }}
                                 >
