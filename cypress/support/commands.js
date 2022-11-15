@@ -208,7 +208,7 @@ Cypress.Commands.add('addDocument', (fileAddress) => {
 
 //Remove Document
 Cypress.Commands.add('detachDocument', () => {
-    cy.get('#attachedDocument').trigger('mouseover')
+    cy.get('#attachedDocument', { timeout: longTimeout }).should('be.visible').trigger('mouseover')
     cy.get('#documentDeleteIcon').click({ force: true })
     cy.interceptApi('updateDocument')
     cy.get(".MuiButton-label").contains('Delete').click()

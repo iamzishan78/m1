@@ -13,6 +13,8 @@ import NumberFormat from "react-number-format";
 import { wellParams } from "./helpers";
 import { addMyWellStyles as useStyles } from "./styles";
 
+import _ from "underscore";
+
 import { UPSERT_MY_WELL } from "graphQL/useMutationUpsertMyWell";
 import { useMutation } from "@apollo/client";
 
@@ -75,7 +77,6 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
   const [upsertMyWell, { loading: upsertWellLoading }] = useMutation(UPSERT_MY_WELL);
 
   const { control, reset } = useForm();
-
   useEffect(() => {
     if (platformWell) reset(platformWell);
   }, [platformWell, reset]);
@@ -131,15 +132,13 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
           <FormControl variant="outlined" fullWidth size="small">
             <Autocomplete
               options={foundWells || []}
-              onChange={(e, well) => {
-                handleWellDetail(well);
+              onChange={async (e, well) => {
+                const myWell = await handleWellDetail(well);
                 upsertMyWell({
-                  variables: {
-                    myWell: well,
-                  },
+                  variables: { myWell },
                   refetchQueries: ["getESSimpleSearch"],
                   awaitRefetchQueries: true,
-                });
+                })
               }}
               disabled={!!upsertWellLoading}
               value={platformWell}
@@ -254,7 +253,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                   onChange={(event) => {
                     const value = event.target.value;
                     params.onChange(value);
-                    handleSave(param.esKey ?? param.key, value);
+                    handleSave(param.esKey ?? param.key, param.type === "date" ? new Date(value) : value);
                   }}
                   disabled={upsertWellLoading}
                 />
