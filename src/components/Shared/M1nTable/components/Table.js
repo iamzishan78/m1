@@ -2431,7 +2431,8 @@ function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
                   const docInfo = row_line;
-                  let docExtention = row_line?.fileName?.split(".")?.[1]?.toLowerCase();
+                  const splittedStrings = row_line?.fileName?.split(".");
+                  let docExtention = splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
                   return (
                     <div
                       style={{
