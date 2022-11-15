@@ -89,6 +89,7 @@ export default function CommentsWithIcon(props) {
           color="secondary"
         >
           <IconButton
+            id="commentIcon"
             size={props.iconZiseSmall ? "small" : "medium"}
             color="primary"
             className={`${classes.icons} ${openDialog ? classes.iconSelected : ""}`}
