@@ -396,7 +396,6 @@ const ShapeActionsPopup = (props) => {
   };
 
   const getParcelAndShapeName = (abstractShape) => {
-    debugger
     const properties = abstractShape?.properties;
     let township = properties?.Township;
     let range = properties?.Range;

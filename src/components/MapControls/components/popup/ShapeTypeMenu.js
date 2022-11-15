@@ -37,6 +37,7 @@ const OPTIONS = {
     ],
     selectedType: 'lease',
     layerType: 'agreement',
+    layerKey: 'shapeJson.properties.type',
   },
   tract: {
     label: 'Tract',
@@ -45,6 +46,7 @@ const OPTIONS = {
     ],
     selectedType: 'parcel',
     layerType: 'parcel',
+    layerKey: 'layer',
   },
   unit: {
     label: 'Unit',
@@ -53,6 +55,7 @@ const OPTIONS = {
     ],
     selectedType: 'unit',
     layerType: 'unit',
+    layerKey: 'shapeJson.properties.type',
   },
 }
 
@@ -132,11 +135,15 @@ const ShapeTypeMenu = ({ shapeAnchorEl, setShapeAnchorEl, saveAndOpenShapeDetail
           </>
         }
         {
-          selectedType === 'existing' && <>
-            <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
-              <AutoCompleteESShapeLayer label={`${OPTIONS[type].label} Search`} filters={[{ "field": "shapeJson.properties.type", "value": OPTIONS[type].layerType }]} setSelectedShapeLayer={setSelectedShape} />
-            </FormControl>
-          </>
+          selectedType === 'existing' && <div 
+              onKeyDown={e => {
+                if(e.key === 'n')
+                  e.stopPropagation()
+              }}>
+                <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
+                  <AutoCompleteESShapeLayer label={`${OPTIONS[type].label} Search`} filters={[{ "field": OPTIONS[type].layerKey, "value": OPTIONS[type].layerType }]} setSelectedShapeLayer={setSelectedShape} />
+                </FormControl>
+            </div>
         }
 
         <div className={shapeActionClasses.dialogFooter}>
