@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { basic_timeouts } from "../cypressUtils/data"
+import { basic_timeouts } from "../../cypressUtils/data"
 
 describe('Add And Remove Tract Spec', () => {
     it('passes', () => {
@@ -17,7 +17,7 @@ describe('Add And Remove Tract Spec', () => {
 
         cy.drawMapShape()
 
-        cy.createShapeLayer("#tractItem")
+        cy.createShapeLayer("#unitBoundaryItem")
 
         cy.get('#expandIcon').click()
 
