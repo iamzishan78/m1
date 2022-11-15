@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 
-import { basic_timeouts } from "../../cypressUtils/data"
-import { isArraysEqual } from "../../cypressUtils/helper"
+import { basic_timeouts } from "../cypressUtils/data"
+import { isArraysEqual } from "../cypressUtils/helper"
 
 describe('Verify QTR Calls Spec', () => {
     it('passes', () => {
