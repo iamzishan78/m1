@@ -3,6 +3,7 @@ import { FormControl, InputLabel, ListItem, ListItemText, Menu, MenuItem, Select
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/styles";
 import AutoCompleteESShapeLayer from "components/Shared/Forms/Fields/AutoCompleteESShapeLayer";
+import { SHAPE_TYPE } from "components/Navigation/components/Utils/consts";
 
 const useStyles = makeStyles({
   selectedType: {
@@ -38,6 +39,7 @@ const OPTIONS = {
     selectedType: 'lease',
     layerType: 'agreement',
     layerKey: 'shapeJson.properties.type',
+    searchFields: SHAPE_TYPE['agreements'].SEARCH_FIELDS,
   },
   tract: {
     label: 'Tract',
@@ -47,6 +49,7 @@ const OPTIONS = {
     selectedType: 'parcel',
     layerType: 'parcel',
     layerKey: 'layer',
+    searchFields: SHAPE_TYPE['tracts'].SEARCH_FIELDS,
   },
   unit: {
     label: 'Unit',
@@ -56,6 +59,7 @@ const OPTIONS = {
     selectedType: 'unit',
     layerType: 'unit',
     layerKey: 'shapeJson.properties.type',
+    searchFields: SHAPE_TYPE['units'].SEARCH_FIELDS,
   },
 }
 
@@ -141,7 +145,7 @@ const ShapeTypeMenu = ({ shapeAnchorEl, setShapeAnchorEl, saveAndOpenShapeDetail
                   e.stopPropagation()
               }}>
                 <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
-                  <AutoCompleteESShapeLayer label={`${OPTIONS[type].label} Search`} filters={[{ "field": OPTIONS[type].layerKey, "value": OPTIONS[type].layerType }]} setSelectedShapeLayer={setSelectedShape} />
+                  <AutoCompleteESShapeLayer label={`${OPTIONS[type].label} Search`} filters={[{ "field": OPTIONS[type].layerKey, "value": OPTIONS[type].layerType }]} setSelectedShapeLayer={setSelectedShape} searchFields={OPTIONS[type].searchFields} />
                 </FormControl>
             </div>
         }
