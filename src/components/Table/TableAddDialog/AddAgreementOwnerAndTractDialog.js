@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import ReactDOM from 'react-dom';
+import get from "lodash/get";
 import { useApolloClient, useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -178,7 +179,10 @@ function AddAgreementOwnerAndTractDialog(props) {
               tract
             }
           });
-          if (tractShape?.getTractAbstractShape?.data?.properties?.shapeArea) {
+          if (
+            tractShape?.getTractAbstractShape?.data?.properties?.shapeArea &&
+            tract.shapeArea !== get(tractShape, "getTractAbstractShape.data.properties.shapeArea")
+          ) {
             setValue('tract.shapeArea', tractShape?.getTractAbstractShape?.data.properties?.shapeArea)
             if (newTractError) { setNewTractError(null) }
           } else {
