@@ -357,7 +357,7 @@ export default function DealComment(props) {
   }, [stateApp?.activeDeal?.activity,dataComments]);
   return (
     <div className={classes.container}>
-      <div className={classes.comment}>
+      <div className={classes.comment} id="commentsContainer">
         {!loadingComments ? (
           <>
             {!showAllComments && commentsArray.length > 3 && (
@@ -532,7 +532,7 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
 
   return (
     <>
-      <ExpandMoreIcon aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} />
+      <ExpandMoreIcon id="expandIcon" aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} />
       <Menu
         style={{ zIndex: "1305" }}
         id={eachComment._id}
@@ -553,7 +553,7 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
         >
           Edit Comment
         </MenuItem>
-        <MenuItem textcolor="red" onClick={() => deleteComment(eachComment._id)}>
+        <MenuItem textcolor="red" id="deleteComment" onClick={() => deleteComment(eachComment._id)}>
           Delete Comment
         </MenuItem>
       </Menu>
