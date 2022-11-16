@@ -42,7 +42,7 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
             <IconButton className={classes.iconArrow} color="secondary" onClick={() => handlePanelStateChange(false)}>
               <>
                 <ChevronLeftIcon />
-                <MenuIcon className={classes.menuIcon} />
+                <MenuIcon id="menuIcon" className={classes.menuIcon} />
               </>
             </IconButton>
           </Grid>
