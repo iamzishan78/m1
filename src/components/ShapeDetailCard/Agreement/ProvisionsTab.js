@@ -324,7 +324,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                       )}
                     />
                   </Grid>
-                  <Grid id="applicable" item md={2}>
+                  <Grid id={`applicable-${index}`} item md={2}>
                     <Controller
                       control={control}
                       name={`provisions[${index}].applicable`}
@@ -423,7 +423,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                     />
                   </Grid>
 
-                  <Grid item md={2}>
+                  <Grid item md={2}    id={`frequency-${index}`}>
                     <Controller
                       control={control}
                       name={`provisions[${index}].frequency`}
@@ -443,7 +443,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                     />
                   </Grid>
 
-                  <Grid id="partyName" item md={4}>
+                  <Grid id={`partyName-${index}`}item md={4}>
                     <Controller
                       control={control}
                       name={`provisions[${index}].parties`}
@@ -500,7 +500,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                               onClick={(event) => setAnchorEl(event.currentTarget)}
                               {...bindTrigger(popupState)}
                             >
-                              <MoreVertIcon size="medium" />
+                              <MoreVertIcon size="medium" id="moreVertIconProvision" />
                             </IconButton>
                             <Popover
                               {...bindPopover(popupState)}
@@ -524,7 +524,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                                   <ListItemIcon>
                                     <DeleteIcon size="medium" />
                                   </ListItemIcon>
-                                  <ListItemText>Delete Provision/Obligation</ListItemText>
+                                  <ListItemText id="deleteProvision">Delete Provision/Obligation</ListItemText>
                                 </ListItem>
                               </List>
                             </Popover>
@@ -540,7 +540,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 
               <Grid item>
                 <TextField
-                  id="provisionDescription"
+                  id={`provisionDescription-${index}`}
                   label="Full Description"
                   variant="outlined"
                   fullWidth

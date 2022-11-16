@@ -26,17 +26,17 @@ describe('Agreement Provisions Spec', () => {
 
                 cy.get("#provisionsTab").click()
 
-                cy.get("[id='Pugh - Vertical']", { timeout: longTimeout }).click()
+                cy.get("[id='Pugh - Vertical']", { timeout: longTimeout }).scrollIntoView().check({force:true})
 
                 cy.get("[id='provision-value-0']", { timeout: longTimeout }).clear().type("$1,000/acre per year")
 
-                cy.get("[id='start-date-picker-0']", { timeout: longTimeout }).type("07/22/2022", { force: true })
-                cy.get("[id='last-date-picker-0']", { timeout: longTimeout }).type("07/31/2022", { force: true })
+                cy.get("[id='start-date-picker-0']", { timeout: longTimeout }).clear().wait(3000).type("06/ 12/2022")
+                cy.get("[id='last-date-picker-0']", { timeout: longTimeout }).clear().wait(3000).type("07/29/2022")
 
-                cy.get("[id='autocompleteWithNewOptions']").click().type("{downArrow}{enter}")
+                cy.get("[id='frequency-0']").click().type("{downArrow}{downArrow}{enter}")
                 cy.wait(5000)
-                cy.get("[id='partyName']").click().type("{downArrow}{enter}")
-                cy.get("[id='provisionDescription']").clear().type("A cypress description")
+                cy.get("[id='partyName-0']").click().type("{downArrow}{enter}")
+                cy.get("[id='provisionDescription-0']").clear().type("A cypress description")
 
                 cy.get("#commentIcon").click()
                 cy.get("#commentInput").type("A cypress comment {enter}")
@@ -46,8 +46,33 @@ describe('Agreement Provisions Spec', () => {
 
                 cy.get("#provisionType").type("rental{downArrow}{downArrow}{enter}")
 
-                cy.get("#applicable").click()
+                cy.get("#applicable-1").click()
                 cy.get('body').type('{upArrow}{enter}')
+
+                cy.get("[id='provision-value-1']", { timeout: longTimeout }).clear().type("$1,000/acre per year")
+
+                cy.get("[id='start-date-picker-1']", { timeout: longTimeout }).clear().wait(3000).type("06/ 12/2022")
+                cy.get("[id='last-date-picker-1']", { timeout: longTimeout }).clear().wait(3000).type("07/29/2022")
+
+                cy.get("[id='frequency-1']").click().type("{downArrow}{downArrow}{enter}")
+
+                cy.get("[id='partyName-1']").click().type("{downArrow}{enter}")
+
+                cy.get("[id='provisionDescription-1']").clear().type("A cypress description 2")
+
+                cy.get("#applicable-1").scrollIntoView().click()
+
+                cy.interceptApi('upsertAgreementProvision')
+                cy.get("[id='frequency-1']").scrollIntoView().trigger('mouseover')
+                cy.get("#moreVertIconProvision").scrollIntoView().click()
+                cy.get("#deleteProvision", {timeout:longTimeout}).click()
+                cy.verifyApiResponse('@upsertAgreementProvisionApi', { responseTimeout: longTimeout })
+
+                cy.interceptApi('upsertAgreementProvision')
+                cy.get("[id='frequency-0']").scrollIntoView().trigger('mouseover')
+                cy.get("#moreVertIconProvision").scrollIntoView().click()
+                cy.get("#deleteProvision", {timeout:longTimeout}).click()
+                cy.verifyApiResponse('@upsertAgreementProvisionApi', { responseTimeout: longTimeout })
             })
         })
 
