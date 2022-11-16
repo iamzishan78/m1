@@ -155,8 +155,8 @@ function AddAgreementOwnerAndTractDialog(props) {
   useEffect(() => {
     if (isNewTract) {
       const form = getValues();
-      form.tract = { state }
-      reset(form)
+      form.tract = { tractName: form.tract.tractName, state };
+      reset(form);
     }
   }, [state]);
 
@@ -233,7 +233,6 @@ function AddAgreementOwnerAndTractDialog(props) {
   });
 
   useEffect(() => {
-    console.log({ so: props.seletedOwner })
     if (props.seletedOwner) {
       props.seletedOwner.realtedObject = props.seletedOwner?.contact?._id;
       props.seletedOwner.ownerEntity = props.seletedOwner.realtedObject;
