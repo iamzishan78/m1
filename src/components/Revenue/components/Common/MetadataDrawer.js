@@ -396,7 +396,7 @@ export default function MetadataDrawer(props) {
         </div> */}
 
           <div className="flex justifyBetween alignCenter" style={{ padding: "20px 10px 16px 0px", marginBottom: -56 }}>
-            <h4 style={{padding:'0px'}}>{props.documentsTitle}</h4>
+            <h4 style={{ padding: '0px' }}>{props.documentsTitle}</h4>
             {viewAllDocuments && (
               <h4
                 id="viewAllDocuments"
@@ -411,11 +411,11 @@ export default function MetadataDrawer(props) {
             )}
           </div>
           <AddDialogeUploadZone
-              filesData={viewFileResult}
-              id={targetSourceId}
-              loading={viewFileLoading}
-              targetLabel={targetLabel}
-              setUploadedFileData={setUploadedFileData}
+            filesData={viewFileResult}
+            id={targetSourceId}
+            loading={viewFileLoading}
+            targetLabel={targetLabel}
+            setUploadedFileData={setUploadedFileData}
           />
         </div>
         <div style={{
