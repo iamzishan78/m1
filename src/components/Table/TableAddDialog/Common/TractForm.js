@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useCallback, useState, useMemo } from "react";
 
 import TextField from "@material-ui/core/TextField";
 import { Controller } from "react-hook-form";
@@ -59,6 +59,47 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
     () => dataAutoCompleteListField?.autoCompleteList || [],
     [dataAutoCompleteListField?.autoCompleteList]
   );
+
+  const filters = useMemo(() => {
+    return {
+      'state': { "field": "level1Type.keyword", "value": "State" },
+      'county': [{ "field": "level2Type.keyword", "value": "County" }, ...getDependencies(['state'])],
+      'meridian': [
+        { "field": "level3Type.keyword", "value": "Meridian" },
+        ...getDependencies(['state', 'county'])
+      ],
+      'township': [
+        { "field": "level5Type.keyword", "value": "TownshipRange" },
+        ...getDependencies(['state', 'county', 'meridian'])
+      ],
+      'range': [
+        { "field": "level5Type.keyword", "value": "TownshipRange" },
+        ...getDependencies(['state', 'county', 'meridian'])
+      ],
+
+      'section': [
+        { "field": "level6Type.keyword", "value": "Section" },
+        ...getDependencies(['state', 'county', 'meridian', 'townshipRange'])
+      ],
+      'survey': [
+        { "field": "level3Type.keyword", "value": "Survey" },
+        ...getDependencies(['state', 'county'])
+      ],
+      'block': [
+        { "field": "level4Type.keyword", "value": "Block" },
+        ...getDependencies(['state', 'county', 'survey'])
+      ],
+      'sectiontx': [
+        { "field": "level5Type.keyword", "value": "Section" },
+        ...getDependencies(['state', 'county', 'survey', 'block'])
+      ],
+
+      'abstract': [
+        { "field": "level6Type.keyword", "value": "Abstract" },
+        ...getDependencies(['state', 'county', 'survey', 'block', 'section'])
+      ]
+    }
+  }, [tract.state, tract.county, tract.township, tract.range, tract.section, tract.survey, tract.block, tract.sectiontx, tract.abstract])
 
   return (
     <>
