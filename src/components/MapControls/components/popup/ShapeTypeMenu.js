@@ -83,6 +83,7 @@ const ShapeTypeMenu = ({ shapeAnchorEl, setShapeAnchorEl, saveAndOpenShapeDetail
         PaperProps={{
           style: {
             marginLeft: '173px',
+            minWidth: '334px'
           },
         }}
         open={Boolean(shapeAnchorEl)}
