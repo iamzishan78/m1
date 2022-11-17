@@ -142,12 +142,13 @@ export default function AgreementDetailCard(props) {
         shape.properties.expirationDate = moment(value).add(parseInt(shape.properties.agreementTerm), "months").toDate();
       }
     }
-    if (field === "state") {
-      if (shape.properties.originalProperties) {
+    if(field === "state"){
+      if(shape.properties.originalProperties){
+        shape.properties.originalProperties.County = undefined;
         shape.properties.originalProperties.State = value;
         shape.properties.originalProperties.StateAbbreviation = value;
-      } else {
-        shape.properties.originalProperties = { State: value, StateAbbreviation: value };
+      }else{
+        shape.properties.originalProperties = { State:value, StateAbbreviation:value }
       }
     }
     if (field === "county") {

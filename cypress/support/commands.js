@@ -52,7 +52,7 @@ Cypress.Commands.add("checkAndLogin", () => {
 
 // This command is to type  in autocomplete search bar and then select first matched option
 Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId = null) => {
-    cy.get(searchId).type(stringToType)
+    cy.get(searchId, { timeout: longTimeout }).type(stringToType)
 
     if (optionId)
         cy.get(`[id="${optionId}"]`, { timeout: longTimeout }).should('be.visible')
@@ -106,11 +106,11 @@ Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
 })
 
 Cypress.Commands.add('deleteConfirmation', () => {
-    cy.log('==== STEP: CLICKING ON HORIZON ICON ====')
-    cy.get(".MuiTypography-root").contains('Delete').click()
+    cy.get(".MuiTypography-root", { timeout: longTimeout }).contains('Delete', { timeout: longTimeout }).scrollIntoView().click({ force: true })
 
+    cy.wait(2000)
     cy.log('==== STEP: CLICKING ON DELETE FROM CONFIRMATION DIALOGUE BOX  ====')
-    cy.get(".MuiButton-label").contains('Delete', { timeout: longTimeout }).should('be.visible').click()
+    cy.get("#deleteButton", { timeout: longTimeout }).should('be.visible').trigger("click")
 })
 
 /*This command will take css id and containing string to click on action
@@ -358,4 +358,17 @@ Cypress.Commands.add('addTract', (tractName) => {
     cy.interceptApi('addOwnerToAShape')
     cy.get("#saveButton").click()
     cy.verifyApiResponse('@addOwnerToAShapeApi', { responseTimeout: longTimeout })
+})
+
+// AgreementGrid Commands
+
+Cypress.Commands.add('agreementFieldSelect', (field) => {
+    cy.get(field.id).click({ force: true })
+    cy.get('.MuiMenuItem-root').contains(field.value).click()
+})
+Cypress.Commands.add('addComment', () => {
+    cy.interceptApi('UpsertComment')
+    cy.get("#txtArea", { timeout: longTimeout }).should('be.visible').type("A cypress comment")
+    cy.get("#commentButton").click()
+
 })

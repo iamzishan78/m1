@@ -2,34 +2,28 @@
 
 import { basic_timeouts } from "../../cypressUtils/data"
 
-describe('Add and Remove Comments Spec', () => {
+describe('Add and Remove Comments on Flow Deal Spec', () => {
     it('passes', () => {
+
         // Constants 
         const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
 
-        cy.viewport(1536, 960)
+        cy.viewport(1400, 900)
 
-        cy.interceptApi('getESSimpleSearch')
-        cy.visit('http://localhost:3000/land/agreements')
+        cy.interceptApi('getPipeline')
+        cy.visit('http://localhost:3000/flow')
 
         cy.checkAndLogin()
 
-        cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
+        cy.get('article', { timeout: longTimeout }).should('be.visible')
 
-        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
+        cy.verifyApiResponse('@getPipelineApi', { responseTimeout: longTimeout }).then(response => {
+            console.log(" Response ", response);
+            cy.get("article").first().trigger("click");
+            cy.interceptApi('UpsertComment')
 
-            cy.getTableCell('Agreement', 3).then(($row) => {
-                cy.log('==== STEP: OPEN Agreement ====')
-                cy.wrap($row).click()
-
-                cy.get('.MuiTypography-root', { timeout: longTimeout }).contains('Summary').should('be.visible')
-                cy.get("#metaDataButton", { timeout: longTimeout }).scrollIntoView().wait(1000).click()
-
-                cy.interceptApi('UpsertComment')
-
-                cy.log('==== STEP: ADD COMMENT ====')
-                cy.addComment()
-
+                cy.get("#txtArea", { timeout: longTimeout }).should('be.visible').type("A cypress comment")
+                cy.get("#commentButton").click()
                 cy.verifyApiResponse('@UpsertCommentApi', { responseTimeout: longTimeout }).then(response => {
                     const commentId = response.response.body.data.upsertComment.comment._id
 
@@ -53,8 +47,6 @@ describe('Add and Remove Comments Spec', () => {
                     cy.get(`#${commentId}`).should('not.exist');
 
                 })
-
-            })
         })
 
     })
