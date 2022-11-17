@@ -386,6 +386,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     value={state}
                     onStateChange={(selectedState) => {
                       setState(selectedState.acronym)
+                      setCounty('')
                       updateAgreement("state", selectedState.acronym, false)
                     }}
                   />
@@ -396,9 +397,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     shrink
                     value={county}
                     state={state}
-                    onCountyChange={(selectedCounty) => {
-                      setCounty(selectedCounty.county)
-                      updateAgreement('county', selectedCounty.county, false)
+                    onCountyChange={(selectedCounty) =>{
+                      setCounty(selectedCounty ? selectedCounty.county : '')
+                      updateAgreement('county', selectedCounty ? selectedCounty.county : '', false)
                     }}
                   />
                 )}
