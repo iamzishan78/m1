@@ -192,7 +192,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       console.log("%c Fetch track with newState", "color:red", error);
     }
 
-  }, [tract]);
+  }, [tract.state, tract.county, tract.township, tract.range, tract.section, tract.survey, tract.block, tract.sectiontx, tract.abstract])
 
   const parcelOwnersRadioBValue = watch("parcelOwnersRadioBValue", "true");
 
