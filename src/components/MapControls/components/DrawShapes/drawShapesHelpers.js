@@ -80,7 +80,7 @@ export const createShapeLabelLayer = feature => {
 };
 export const drawWellBoundary = (map, coordinates) => {
   if (map.getLayer("well-point")) map.removeLayer("well-point");
-  if (map.getSource("well-select-point")) map.removeSource("well-select-point");
+  if (map?.getSource("well-select-point")) map.removeSource("well-select-point");
   if (coordinates.length > 0) {
     map.addSource("well-select-point", {
       type: "geojson",
