@@ -79,43 +79,44 @@ export default function ProvisionType() {
           <CircularProgress color="secondary" className={classes.loader} size={28} />
         </div>
       ) : (
-        <Autocomplete
-          className={classes.autoC}
-          options={countyList}
-          getOptionLabel={(option) => (option && option.county ? option.county : option ? option : "")}
-          disabled={!stateNav.stateName || countyList.length === 0}
-          autoComplete
-          autoSelect
-          disableListWrap
-          includeInputInList
-          value={countyList.length === 0 ? "" : stateNav.countyName}
-          onChange={(event, newValue) => {
-            handleCountyNameChange(event, newValue);
-          }}
-          onKeyDown={(event) => onEnterKey(event)}
-          renderInput={(params) => (
-            <form autoComplete="off">
-              <TextField {...params} fullWidth label="County" variant="outlined" />
-            </form>
-          )}
-          renderOption={(option) => <Typography>{option && option.county ? option.county : option ? option : ""}</Typography>}
-        />
-        // <AutoCompleteESField
-        //   label={"Type"}
-        //   value=""
-        //   column={{
-        //     label: "Type",
-        //     filterKey: "provisions.partyName.keyword",
+        // <Autocomplete
+        //   className={classes.autoC}
+        //   options={countyList}
+        //   getOptionLabel={(option) => (option && option.county ? option.county : option ? option : "")}
+        //   disabled={!stateNav.stateName || countyList.length === 0}
+        //   autoComplete
+        //   autoSelect
+        //   disableListWrap
+        //   includeInputInList
+        //   value={countyList.length === 0 ? "" : stateNav.countyName}
+        //   onChange={(event, newValue) => {
+        //     handleCountyNameChange(event, newValue);
         //   }}
-        //   index={"shapes_flat"}
-        //   onChange={onChange}
-        //   query={GET_ES_SIMPLE_FILTER}
-        //   esIndex={"shapes_flat"}
-        //   variant="outlined"
+        //   onKeyDown={(event) => onEnterKey(event)}
+        //   renderInput={(params) => (
+        //     <form autoComplete="off">
+        //       <TextField {...params} fullWidth label="County" variant="outlined" />
+        //     </form>
+        //   )}
+        //   renderOption={(option) => <Typography>{option && option.county ? option.county : option ? option : ""}</Typography>}
         // />
+        <AutoCompleteESField
+          label={"Type"}
+          value=""
+          column={{
+            label: "Type",
+            filterKey: ["shapeJson.properties.name"],
+          }}
+          index={"shapes_flat"}
+          onChange={onChange}
+          query={GET_ES_FILTER_LIST}
+          esIndex={"shapes_flat"}
+          variant="outlined"
+          extendSearchQuery="*"
+        />
         // <AutoCompleteFilter
         //   esIndex={"shapes_flat"}
-        //   // variant="outlined"
+        //   variant="outlined"
         //   setFilters={() => {}}
         //   filterList={["", "", "", ""]}
         //   column={{
