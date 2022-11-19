@@ -185,7 +185,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           ) {
             setValue('tract.shapeArea', tractShape?.getTractAbstractShape?.data.properties?.shapeArea)
             if (newTractError) { setNewTractError(null) }
-          } else {
+          } else if (!get(tractShape, "getTractAbstractShape.data.properties.shapeArea")) {
             setNewTractError(tractShape?.getTractAbstractShape)
           }
         })();
