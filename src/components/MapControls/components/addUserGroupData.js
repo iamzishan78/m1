@@ -193,7 +193,8 @@ export default function AddUserGroupData(props) {
               const layerName = layerNames[index]
               const layerShapeName = fileContent.fileNames[index]
               const defaultSettings = getDefaultSettings(type, layerName, sourceProps)
-              addLayer({
+              await client.mutate({
+                mutation: ADDLAYER,
                 variables: {
                   layer: {
                     layerName,
@@ -214,6 +215,28 @@ export default function AddUserGroupData(props) {
                 refetchQueries: index === fileContent.featureTypes.length - 1 ? ["getAllLayerSettingsByUser"] : [],
                 awaitRefetchQueries: true,
               });
+
+              // addLayer({
+              //   variables: {
+              //     layer: {
+              //       layerName,
+              //       layerShapeName,
+              //       groupName: fileContent.featureTypes.length === 1 ? null : groupName,
+              //       groupId: fileContent.featureTypes.length === 1 ? null : groupId,
+              //       layerGeometry: type,
+              //       identifier: layerName + uuid(),
+              //       layerType: "file layer",
+              //       layerCategory: "UD layer",
+              //       public: true,
+              //       createBy: stateApp.user.mongoId,
+              //       file: file_id,
+              //       originalFile: originalFileId,
+              //       defaultSettings,
+              //     },
+              //   },
+              //   refetchQueries: index === fileContent.featureTypes.length - 1 ? ["getAllLayerSettingsByUser"] : [],
+              //   awaitRefetchQueries: true,
+              // });
 
               if (index === fileContent.featureTypes.length - 1) {
 
@@ -279,7 +302,7 @@ export default function AddUserGroupData(props) {
         },
       });
 
-      console.log({inAdd:stateMapControls.fileUploadedContent})
+      console.log({ inAdd: stateMapControls.fileUploadedContent })
 
       await addDataset({
         variables: {
