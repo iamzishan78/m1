@@ -33,14 +33,6 @@ function AgreementDocumentsTable(props) {
     },
     onError: (err) => { },
   }, { refetchQueries: ["getESSimpleSearch"], awaitRefetchQueries: true });
-  // const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
-  //   onCompleted: () => {
-  //     props.setLoading(false);
-  //     props.setSelectedRows([]);
-  //     setResetSelectedRow(!resetSelectedRow)
-  //   },
-  //   onError: (err) => { },
-  // });
 
   const options = {
     ...props.options,
