@@ -123,7 +123,7 @@ import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
-import Link from "@material-ui/core/Link";
+// import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
@@ -131,7 +131,7 @@ import ReactSelectField from "./SubComponents/ReactSelectField";
 import TableBody from "./MUIDataTable/TableBody";
 import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOfferPrice";
 
-
+import {Link} from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
 import GlobalStyles from "GlobalStyles";
 
@@ -1418,26 +1418,27 @@ function SubTable(props) {
                           size="35"
                           round
                         />
+                        <Link
+                            to={`/contact/details/${tableMeta.rowData[0]}`}
+                            className={classes.clickableCell}
+                        >
                         <p
-                          className={classes.clickableCell}
+
                           style={{
                             display: "flex",
                             flexDirection: "row",
                             alignItems: "center",
                             minWidth: "300px",
                           }}
-                          onClick={() => {
-                            history.push(`/contact/details/${tableMeta.rowData[0]}`);
-                          }}
                         >
                           {tableMeta.rowData[nameIndex]}
-
                           {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
                             <FeatureFlag feature={FEATURES.IDICORE}>
                               <MonetizationOnIcon className={classes.monetizationIcon} />
                             </FeatureFlag>
                           )}
                         </p>
+                        </Link>
                       </div>
                     );
                   } else {
@@ -2276,7 +2277,7 @@ function SubTable(props) {
                           <Convert_contact style={{ margin: "4px" }} />
                         ) : (
                           <Link
-                            href={
+                            to={
                               window.location.origin
                               +
                               `/contact/details/${value}/?tenant=${window.sessionStorage.getItem("tenantName")}`
