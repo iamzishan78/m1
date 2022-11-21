@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import ReactDOM from 'react-dom';
+import get from "lodash/get";
 import { useApolloClient, useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -154,8 +155,8 @@ function AddAgreementOwnerAndTractDialog(props) {
   useEffect(() => {
     if (isNewTract) {
       const form = getValues();
-      form.tract = { state }
-      reset(form)
+      form.tract = { tractName: form.tract.tractName, state };
+      reset(form);
     }
   }, [state]);
 
@@ -169,7 +170,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   }, [nra]);
 
   useEffect(() => {
-    try{
+    try {
       if (tract.state && isNewTract) {
         (async () => {
           const { data: tractShape } = await client.query({
@@ -178,22 +179,24 @@ function AddAgreementOwnerAndTractDialog(props) {
               tract
             }
           });
-          if (tractShape?.getTractAbstractShape?.data?.properties?.shapeArea) {
+          if (
+            tractShape?.getTractAbstractShape?.data?.properties?.shapeArea &&
+            tract.shapeArea !== get(tractShape, "getTractAbstractShape.data.properties.shapeArea")
+          ) {
             setValue('tract.shapeArea', tractShape?.getTractAbstractShape?.data.properties?.shapeArea)
             if (newTractError) { setNewTractError(null) }
-          } else {
+          } else if (!get(tractShape, "getTractAbstractShape.data.properties.shapeArea")) {
             setNewTractError(tractShape?.getTractAbstractShape)
           }
         })();
-        setIsNewTract(false);
       } else {
         if (newTractError) { setNewTractError(null) }
       }
-    }catch (error){
-        console.log("%c Fetch track with newState","color:red",error);
+    } catch (error) {
+      console.log("%c Fetch track with newState", "color:red", error);
     }
 
-  }, [tract]);
+  }, [tract.state, tract.county, tract.township, tract.range, tract.section, tract.survey, tract.block, tract.sectiontx, tract.abstract])
 
   const parcelOwnersRadioBValue = watch("parcelOwnersRadioBValue", "true");
 
@@ -230,7 +233,6 @@ function AddAgreementOwnerAndTractDialog(props) {
   });
 
   useEffect(() => {
-    console.log({ so: props.seletedOwner })
     if (props.seletedOwner) {
       props.seletedOwner.realtedObject = props.seletedOwner?.contact?._id;
       props.seletedOwner.ownerEntity = props.seletedOwner.realtedObject;

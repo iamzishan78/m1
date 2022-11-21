@@ -126,7 +126,7 @@ export const detailCardStyles = makeStyles((theme) => ({
   },
   maxWidth: {
     width: "100%",
-  }
+  },
 }));
 
 export const summaryStyles = makeStyles((theme) => ({
@@ -184,7 +184,7 @@ export const summaryStyles = makeStyles((theme) => ({
     },
   },
   commentSection: {
-    padding: "0px !important"
+    padding: "0px !important",
   },
   icon: {
     color: "#757575",
@@ -347,16 +347,16 @@ export const summaryTableStyles = makeStyles((theme) => ({
   },
   positionRenewIcon: {
     position: "absolute",
-    right: '17%',
-    bottom: '0px',
-    top: '0px'
+    right: "17%",
+    bottom: "0px",
+    top: "0px",
   },
   baseValueChanged: {
     width: "100%",
     "& .MuiInputBase-input": {
       color: "dodgerblue",
       fontWeight: "bold",
-      fontSize: '14px'
+      fontSize: "14px",
     },
   },
   foodText: {

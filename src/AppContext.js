@@ -157,6 +157,7 @@ const AppProvider = (props) => {
     revenueSearchQuery: "",
     filtersData: [],
     shapeEditMode: "",
+    landSearchFilters: [],
 
     toggleLayersActivity: (identifier, activityValue) => {
       if (identifier) {

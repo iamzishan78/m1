@@ -11,7 +11,7 @@ const NumberField = (props) => {
 
   return (
     <TextField
-      id={`field-${props?.index}`}
+      id={props.id || `field-${props?.index}`}
       variant="outlined"
       margin="dense"
       type="text"

@@ -92,11 +92,9 @@ function AgreementsTable(props) {
     const formatedFilter = esFilters ? copy(esFilters) : [];
     props.setInitialFilters(formatedFilter);
     setTableMeta({
-      // addableName: "Unit",
       extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
       selectedGridView: GridViewModule || defaultView,
       customDataESKey: 'shapeJson.properties.custom_data',
-      // searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
       startPaginationAt: 50,
@@ -106,6 +104,7 @@ function AgreementsTable(props) {
           field: "shapeJson.properties.type.keyword",
           value: "agreement",
         },
+        ...(stateApp.landSearchFilters ?? [])
       ],
       defaultSort: { field: "_ts", order: "desc" },
       polygon: stateApp?.currentFeature?.geometry && {
@@ -116,7 +115,7 @@ function AgreementsTable(props) {
       formatHits,
     });
     // eslint-disable-next-line
-  }, [searchInput, props.landSearchQuery, props.filterToggle]);
+  }, [searchInput, props.landSearchQuery, props.filterToggle, stateApp.landSearchFilters]);
 
   useEffect(() => {
     props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);

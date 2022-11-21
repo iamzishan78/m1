@@ -135,30 +135,29 @@ export default function AgreementDetailCard(props) {
       history.location.pathname !== newPath && history.replace(newPath);
     }
 
-
-    if (field === 'agreementTerm' || field === 'effectiveDate') {
-      if (field === 'agreementTerm') {
-        shape.properties.expirationDate = moment(shape.properties.effectiveDate).add(parseInt(value), 'months').toDate();
+    if (field === "agreementTerm" || field === "effectiveDate") {
+      if (field === "agreementTerm") {
+        shape.properties.expirationDate = moment(shape.properties.effectiveDate).add(parseInt(value), "months").toDate();
       } else {
-        shape.properties.expirationDate = moment(value).add(parseInt(shape.properties.agreementTerm), 'months').toDate();
+        shape.properties.expirationDate = moment(value).add(parseInt(shape.properties.agreementTerm), "months").toDate();
       }
     }
     if(field === "state"){
       if(shape.properties.originalProperties){
-        shape.properties.originalProperties.State = value;  
-        shape.properties.originalProperties.StateAbbreviation = value;  
+        shape.properties.originalProperties.County = undefined;
+        shape.properties.originalProperties.State = value;
+        shape.properties.originalProperties.StateAbbreviation = value;
       }else{
         shape.properties.originalProperties = { State:value, StateAbbreviation:value }
       }
     }
-    if(field === "county"){
-      if(shape.properties.originalProperties){
-        shape.properties.originalProperties.County = value;  
-      }else{
-        shape.properties.originalProperties = { County:value }
+    if (field === "county") {
+      if (shape.properties.originalProperties) {
+        shape.properties.originalProperties.County = value;
+      } else {
+        shape.properties.originalProperties = { County: value };
       }
     }
-
 
     // if (field ==='agreementTerm' || field ==='effectiveDate') {
     //   if (field ==='agreementTerm') {
@@ -167,7 +166,6 @@ export default function AgreementDetailCard(props) {
     //     shape.properties.expirationDate = moment(value, 'YYYY-MM-DD').add(parseInt(shape.properties.agreementTerm), 'months').format('YYYY-MM-DD');
     //   }
     // }
-
 
     shape.properties.shapeLabel = shapeLabel;
     shape.name = shapeLabel;
@@ -201,7 +199,7 @@ export default function AgreementDetailCard(props) {
     // Used for Agreement nra, net_acres and grossAcres overidden
     if (value?.overridden?.toString()) {
       set(properties, `overridden.${key}`, value.overridden);
-      value = value.value
+      value = value.value;
     }
     set(properties, `${key}`, value);
     properties.custom_data_arr?.forEach((data) => {
@@ -263,83 +261,94 @@ export default function AgreementDetailCard(props) {
           openTabIdex={selectedTab}
           whichTapIsActive={(value) => setSelectedTab(value)}
           tabPanels={[
-            <AgreementSummary
-              properties={properties}
-              setProperties={setProperties}
-              updateProperties={updateProperties}
-              updateCustomProperties={updateCustomProperties}
-              id={props.id}
-              provisions={agreementProvisions?.getAgreementProvisions || []}
-              standardProvisions={dataStandardProvisions?.getStandardProvisions || []}
-            />,
-            <ProvisionsTab
-              provisions={agreementProvisions?.getAgreementProvisions || []}
-              standardProvisions={dataStandardProvisions?.getStandardProvisions || []}
-              id={props.id}
-            />,
-            <Grid container direction="column" alignItems="center" style={{ display: "block", padding: "20px 20px 0px 20px" }}>
-              <Grid item xs={12} style={{ padding: "15px 5px 25px 0px" }}>
-                <AgreementLegalDescriptionFields tractOwners={tractOwners} agreementDetails={uniObj?.shape?.properties} updateAgreement={updateCustomProperties} />
-              </Grid>
-              {uniObj && (
-                <Grid item xs={12}>
-                  <TabPanels
-                    value={selectedTractTab}
-                    panels={[
-                      <div className={showSummary ? classes.agreementSubContent : classes.subContent2}>
-                        <AgreementOwnersTractsTable
-                          setRecord={setTractOwners}
-                          customLayer={uniObj}
-                          shapeType="Agreement"
-                          header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                          dense
-                          commentType="Ownership"
-                          targetLabel="Tract"
-                        />
-                      </div>,
-                      <div className={showSummary ? classes.subContent : classes.subContent2}>
-                        <AssociatedTractsShapeTable
-                          customLayer={uniObj}
-                          shapeType="Agreement"
-                          header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                          setSelectedTab={setTractSelectedTab}
-                          dense
-                        />
-                      </div>,
-                    ]}
+            <div style={{ overflow: "overlay", maxHeight: "calc(100vh - 285px)" }}>
+              <AgreementSummary
+                properties={properties}
+                setProperties={setProperties}
+                updateProperties={updateProperties}
+                updateCustomProperties={updateCustomProperties}
+                id={props.id}
+                provisions={agreementProvisions?.getAgreementProvisions || []}
+                standardProvisions={dataStandardProvisions?.getStandardProvisions || []}
+              />
+            </div>,
+            <div style={{ overflow: "overlay", maxHeight: "calc(100vh - 285px)" }}>
+              <ProvisionsTab
+                provisions={agreementProvisions?.getAgreementProvisions || []}
+                standardProvisions={dataStandardProvisions?.getStandardProvisions || []}
+                id={props.id}
+              />
+            </div>,
+            <div style={{ overflow: "overlay", maxHeight: "calc(100vh - 285px)" }}>
+              <Grid container direction="column" alignItems="center" style={{ display: "block", padding: "20px 20px 0px 20px" }}>
+                <Grid item xs={12} style={{ padding: "15px 5px 25px 0px" }}>
+                  <AgreementLegalDescriptionFields
+                    tractOwners={tractOwners}
+                    agreementDetails={uniObj?.shape?.properties}
+                    updateAgreement={updateCustomProperties}
                   />
                 </Grid>
-              )}
-            </Grid>,
-            <TabPanels
-              value={selectedWellTab}
-              panels={[
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <ShapeWellInterestTable
-                    customLayer={uniObj}
-                    shapeType="Agreement"
-                    parent="associatedWellsPerUnits"
-                    targetLabel="well"
-                    header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
-                    showTracks
-                    dense
-                  />
-                </div>,
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <AssociatedWellsShapeTable
-                    customLayer={uniObj}
-                    shapeType="Agreement"
-                    parent="associatedWellsPerUnits"
-                    targetLabel="well"
-                    header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
-                    showTracks
-                    setSelectedTab={setWellSelectedTab}
-                    dense
-                  />
-                </div>,
-              ]}
-            />,
-
+                {uniObj && (
+                  <Grid item xs={12}>
+                    <TabPanels
+                      value={selectedTractTab}
+                      panels={[
+                        <div className={showSummary ? classes.agreementSubContent : classes.subContent2}>
+                          <AgreementOwnersTractsTable
+                            setRecord={setTractOwners}
+                            customLayer={uniObj}
+                            shapeType="Agreement"
+                            header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                            dense
+                            commentType="Ownership"
+                            targetLabel="Tract"
+                          />
+                        </div>,
+                        <div className={showSummary ? classes.subContent : classes.subContent2}>
+                          <AssociatedTractsShapeTable
+                            customLayer={uniObj}
+                            shapeType="Agreement"
+                            header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                            setSelectedTab={setTractSelectedTab}
+                            dense
+                          />
+                        </div>,
+                      ]}
+                    />
+                  </Grid>
+                )}
+              </Grid>
+            </div>,
+            <div style={{ overflow: "overlay", maxHeight: "calc(100vh - 285px)" }}>
+              <TabPanels
+                value={selectedWellTab}
+                panels={[
+                  <div className={showSummary ? classes.subContent : classes.subContent2}>
+                    <ShapeWellInterestTable
+                      customLayer={uniObj}
+                      shapeType="Agreement"
+                      parent="associatedWellsPerUnits"
+                      targetLabel="well"
+                      header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
+                      showTracks
+                      dense
+                    />
+                  </div>,
+                  <div className={showSummary ? classes.subContent : classes.subContent2}>
+                    <AssociatedWellsShapeTable
+                      customLayer={uniObj}
+                      shapeType="Agreement"
+                      parent="associatedWellsPerUnits"
+                      targetLabel="well"
+                      header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
+                      showTracks
+                      setSelectedTab={setWellSelectedTab}
+                      dense
+                    />
+                  </div>,
+                ]}
+              />
+            </div>,
             <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
               <RelatedDetailsDocumentTable
                 customLayer={uniObj}

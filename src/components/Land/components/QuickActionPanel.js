@@ -34,7 +34,7 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
         }}
       >
         <Grid container direction="row" justify="space-between" display="flex" className={classes.header}>
-          <Grid item style={{ alignItems: "center", paddingLeft: "23px" }}>
+          <Grid item style={{ alignItems: "center", paddingLeft: '23px' }}>
             <Typography variant="h5" style={{ fontWeight: "normal" }}>
               {title}
             </Typography>
@@ -43,13 +43,13 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
             <IconButton className={classes.iconArrow} color="secondary" onClick={() => handlePanelStateChange(false)}>
               <>
                 <ChevronLeftIcon />
-                <MenuIcon className={classes.menuIcon} />
+                <MenuIcon id="menuIcon" className={classes.menuIcon} />
               </>
             </IconButton>
           </Grid>
         </Grid>
         <Divider />
-        <div style={{ paddingLeft: "23px" }}>
+        <div style={{ paddingLeft: '23px' }}>
           <Typography variant="body2" className={classes.quickActionText}>
             Quick Actions
           </Typography>
