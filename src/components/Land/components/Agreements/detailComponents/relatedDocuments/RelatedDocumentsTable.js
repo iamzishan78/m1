@@ -24,7 +24,7 @@ function AgreementDocumentsTable(props) {
   const [isDeletePopup, setDeletePopup] = useState(false);
   const [resetSelectedRow, setResetSelectedRow] = useState(false);
   const { moduleId } = props;
-  console.log(props)
+
   const [updateParcelDocument] = useMutation(DELETEDESCRIPTORRELATEDFILE, {
     onCompleted: () => {
       props.setLoading(false);
@@ -84,7 +84,6 @@ function AgreementDocumentsTable(props) {
   const formatHits = (hits) => {
     return hits;
   };
-  console.log("check : ", props.selectedRows)
   const deleteFunc = (ids) => {
     props.setLoading(true);
     for (let i = 0; i < ids.length; i++) {
