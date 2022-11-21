@@ -22,12 +22,14 @@ import { DELETEDESCRIPTORRELATEDFILE } from "graphQL/useMutationDeleteDescriptor
 function AgreementDocumentsTable(props) {
   const classes = usetableStyles();
   const [isDeletePopup, setDeletePopup] = useState(false);
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
   const { moduleId } = props;
   console.log(props)
   const [updateParcelDocument] = useMutation(DELETEDESCRIPTORRELATEDFILE, {
     onCompleted: () => {
       props.setLoading(false);
       props.setSelectedRows([]);
+      setResetSelectedRow(!resetSelectedRow)
     },
     onError: (err) => { },
   }, { refetchQueries: ["getESSimpleSearch"], awaitRefetchQueries: true });
@@ -95,6 +97,8 @@ function AgreementDocumentsTable(props) {
         awaitRefetchQueries: true,
       });
     }
+
+    props.setSelectedRows([]);
   };
 
   useEffect(() => {
@@ -140,6 +144,7 @@ function AgreementDocumentsTable(props) {
         total={false}
         loading={props.loading}
         targetLabel={props.targetLabel}
+        resetSelectedRow={resetSelectedRow}
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={false}
