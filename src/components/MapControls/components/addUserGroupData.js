@@ -72,8 +72,6 @@ export default function AddUserGroupData(props) {
     awaitRefetchQueries: true,
   });
 
-  const [addLayer] = useMutation(ADDLAYER);
-
   const groupId = uuid()
 
   useEffect(() => {
@@ -189,10 +187,13 @@ export default function AddUserGroupData(props) {
               const layerGroup = { name: groupName, groupId: groupId, createBy: stateApp.user.mongoId }
               addLayerGroup({ variables: { userId: stateApp.user.mongoId, layerGroup } })
             }
-            fileContent.featureTypes.forEach(async (type, index) => {
+            for (let index = 0; index < fileContent.featureTypes.length; index++) {
+              const type = fileContent.featureTypes[index];
+              
               const layerName = layerNames[index]
               const layerShapeName = fileContent.fileNames[index]
               const defaultSettings = getDefaultSettings(type, layerName, sourceProps)
+
               await client.mutate({
                 mutation: ADDLAYER,
                 variables: {
@@ -216,34 +217,11 @@ export default function AddUserGroupData(props) {
                 awaitRefetchQueries: true,
               });
 
-              // addLayer({
-              //   variables: {
-              //     layer: {
-              //       layerName,
-              //       layerShapeName,
-              //       groupName: fileContent.featureTypes.length === 1 ? null : groupName,
-              //       groupId: fileContent.featureTypes.length === 1 ? null : groupId,
-              //       layerGeometry: type,
-              //       identifier: layerName + uuid(),
-              //       layerType: "file layer",
-              //       layerCategory: "UD layer",
-              //       public: true,
-              //       createBy: stateApp.user.mongoId,
-              //       file: file_id,
-              //       originalFile: originalFileId,
-              //       defaultSettings,
-              //     },
-              //   },
-              //   refetchQueries: index === fileContent.featureTypes.length - 1 ? ["getAllLayerSettingsByUser"] : [],
-              //   awaitRefetchQueries: true,
-              // });
-
               if (index === fileContent.featureTypes.length - 1) {
-
                 await SimpleOrShapeFileImport({ stateApp, setStateApp, client, file_id, sourceProps })
                 handleClose();
               }
-            })
+            }
           }
 
           else {
@@ -438,7 +416,7 @@ export default function AddUserGroupData(props) {
               endAdornment: (
                 <InputAdornment position="end">
                   <Button
-                    disabled={!url || url == "" ? true : false}
+                    disabled={!url || url === "" ? true : false}
                     variant="contained"
                     size="small"
                     color="secondary"
