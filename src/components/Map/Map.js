@@ -4655,6 +4655,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         ...stateApp,
         mapVars: stateApp.defaultMapVars,
       }));
+      // console.log('LOGGING', stateApp.defaultMapVars);
       map.jumpTo({
         center: [stateApp.defaultMapVars.center.lng, stateApp.defaultMapVars.center.lat],
         zoom: stateApp.defaultMapVars.zoom,
@@ -5532,6 +5533,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         wellSelectedCoordinates: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
       }));
 
+      console.log('LOGGING', stateApp.flyTo)
+
       !stateApp.activateWellDetailsFromTable &&
         map.jumpTo({
           center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
@@ -5665,6 +5668,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
   useEffect(() => {
     if (map && stateApp.toggleZoomOut) {
+      console.log('LOGGING', stateApp.toggleZoomOut)
+
       if (stateApp.toggleZoomOut === true) {
         map.jumpTo({
           center: stateApp.defaultMapVars.center,
