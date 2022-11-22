@@ -295,6 +295,7 @@ const AddNewRelatedAgreementDialog = (props) => {
           Cancel
         </Button>
         <Button
+          id="addAgreementButton"
           className={classes.secondary}
           color="secondary"
           style={{ marginBottom: "40px", marginRight: "20px" }}
