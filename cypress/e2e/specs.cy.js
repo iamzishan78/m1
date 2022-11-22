@@ -2,8 +2,6 @@
 
 const { basic_timeouts } = require("../cypressUtils/data")
 
-
-
 describe('Agreement Tracts Spec', () => {
   it('passes', () => {
     // Constants 
