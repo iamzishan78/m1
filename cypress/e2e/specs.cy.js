@@ -1,6 +1,2 @@
-describe('empty spec', () => {
-  it('passes', () => {
-    // eslint-disable-next-line no-undef
-    cy.visit('https://example.cypress.io')
-  })
-})
+import '../e2e-combined-specs/agreementTract/existingTract.cy'
+import '../e2e-combined-specs/agreementTract/newTract.cy'

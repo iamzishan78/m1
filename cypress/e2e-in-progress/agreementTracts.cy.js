@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
 
-import { basic_timeouts } from "../../cypressUtils/data"
+import { basic_timeouts } from "../cypressUtils/data"
 
-describe('Agreement Provisions Spec', () => {
+describe('Agreement Tracts Spec', () => {
     it('passes', () => {
         // Constants 
         const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
@@ -19,7 +19,7 @@ describe('Agreement Provisions Spec', () => {
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
             const tractName = "FRASER, BURR & OLYPHANT A-1393"
 
-            cy.getTableCell('Agreement', 5).then(($row) => {
+            cy.getTableCell('Agreement', 3).then(($row) => {
                 cy.log('==== STEP: OPEN Agreement ====')
                 cy.wrap($row).scrollIntoView().children().eq(1).children().children().children().click()
 
