@@ -30,6 +30,7 @@ import moment from "moment";
 
 import GlobalSettings from "..//..//GlobalSettings.js";
 
+
 export const TableESHOC = (Component) => {
     const HocWithDefaultProps = function HOC(props) {
         const { stateApp, setStateApp, loadMore } = props
@@ -54,6 +55,7 @@ export const TableESHOC = (Component) => {
         const [searchedRows, setSearchedRows] = useState([])
 
         const [selectedRows, setSelectedRows] = useState([]);
+        const [allRowsSelected, setAllRowsSelected] = useState(false);
         const [initialFilters, setInitialFilters] = useState([]);
 
         const [selectedGridView, setSelectedGridView] = useState();
@@ -709,6 +711,17 @@ export const TableESHOC = (Component) => {
                     tableActions.genericESAction();
                     break;
                 case "rowSelectionChange":
+                    if (tableState.selectedRows.data.length === tableState.data.length) {
+                        const rowsSelected = []
+                        for (let i = 0; i < tableState.count; i++) { rowsSelected.push(i) }
+                        if (!allRowsSelected || allRowsSelected?.length === 0)
+                            setAllRowsSelected(rowsSelected)
+                        else {
+                            tableState.selectedRows.data = []
+                            setAllRowsSelected([])
+                        }
+                    } else setAllRowsSelected(undefined)
+
                     setSelectedRows(tableState.selectedRows.data)
                     break;
                 case "changePage":
@@ -876,6 +889,9 @@ export const TableESHOC = (Component) => {
                     selectedGridView={selectedGridView}
                     setSelectedGridView={setSelectedGridView}
                     esHocProps={esHocProps}
+
+                    allRowsSelected={allRowsSelected}
+                    setAllRowsSelected={setAllRowsSelected}
                 />
             </span>
         );

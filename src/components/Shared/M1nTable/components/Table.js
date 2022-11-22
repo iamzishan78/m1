@@ -4438,7 +4438,8 @@ function SubTable(props) {
           m1nSelectedRowsIds,
           m1nSelectedRowsIndexes,
           setSelectedRow,
-          searchData
+          searchData,
+          setM1nSelectedRowsIndexes
         });
       }
     },

@@ -112,6 +112,7 @@ function ContactsTable(props) {
   delete props.options.customToolbarSelect;
   delete props.options.onRowClick;
   props.options.search = false;
+  props.options.rowsSelected = props.allRowsSelected
 
   return (
     <>
