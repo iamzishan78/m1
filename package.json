@@ -192,7 +192,7 @@
   "license": "ISC",
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
-    "cypress": "^10.11.0",
+    "cypress": "^11.1.0",
     "start-server-and-test": "^1.14.0"
   }
 }
