@@ -672,7 +672,7 @@ export const TableESHOC = (Component) => {
             updateColumnSorting: (columns) => updateGridViewRedux({ columns }),
         }), [selectedGridView, updateGridViewRedux])
 
-        const onTableChange = (action, tableState, rows, meta) => {
+        const onTableChange = async (action, tableState, rows, meta) => {
             tableState.esIndex = tableMeta.esIndex;
             // tableState.filters = tableMeta.filters ? tableMeta.filters : [];
             tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
@@ -720,8 +720,23 @@ export const TableESHOC = (Component) => {
                             tableState.selectedRows.data = []
                             setAllRowsSelected([])
                         }
-                    } else setAllRowsSelected(undefined)
+                        const pageESVariables = copy(tableActions.pageESVariables)
+                        pageESVariables.variables.pagination = {
+                            first: tableState.count,
+                            after: null,
+                        }
+                        const allSelectedRows = await client.query({
+                            ...pageESVariables,
+                            query: GET_ES_SIMPLE_SEARCH,
+                        });
 
+                        tableState.selectedRows.data = allSelectedRows?.data?.getESSimpleSearch.hits
+                        meta.setSelectedRows(allSelectedRows?.data?.getESSimpleSearch.hits)
+                    } else {
+                        if (meta?._selectedRows?.length > 0)
+                            meta.setSelectedRows([])
+                        setAllRowsSelected(undefined)
+                    }
                     setSelectedRows(tableState.selectedRows.data)
                     break;
                 case "changePage":
