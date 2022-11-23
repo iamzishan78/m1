@@ -88,7 +88,7 @@ const AutoCompleteField = ({ placeholder, value, onChange, column, query, extend
 
   return (
     <Autocomplete
-      id={`filter-autocomplete-${label}`}
+      id={`filter-autocomplete-${label || "es-field"}`}
       PopperComponent={PopperMy}
       open={open}
       onOpen={() => {

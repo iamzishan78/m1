@@ -28,17 +28,17 @@ function AgreementOwnersTractsTable(props) {
   const [drawer, setDrawer] = useContext(DrawerContext);
 
   useEffect(() => {
-    if(props.portal){
+    if (props.portal) {
       const ele = document.querySelector(props.portal);
 
-      if(ele){
+      if (ele) {
         setDrawerContainer(ele);
       }
     }
   }, [props.portal])
 
   useEffect(() => {
-    if(props.addToTable){
+    if (props.addToTable) {
       setDrawer('tract')
     } else {
       setDrawer(null)
@@ -81,7 +81,7 @@ function AgreementOwnersTractsTable(props) {
     }
   };
 
-  const layerType  = useMemo(() => {
+  const layerType = useMemo(() => {
     let layerType = _.upperFirst(props.customLayer.layer)
     layerType = layerType === 'Surface' ? 'Surface/ROW' : layerType
     return layerType
@@ -113,7 +113,7 @@ function AgreementOwnersTractsTable(props) {
         addableName: "Tract",
         searchFields: ["contact.entityDetail.name", "_all"],
         filters: [{ field: "shape._id", value: props.customLayer._id }],
-        TableHeader: getTableHeader({interestMapping, layerType}),
+        TableHeader: getTableHeader({ interestMapping, layerType }),
         esIndex: "shapeowners_flat",
         startPaginationAt: 25,
         formatHits
