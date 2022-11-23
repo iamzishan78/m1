@@ -52,7 +52,7 @@ Cypress.Commands.add("checkAndLogin", () => {
 
 // This command is to type  in autocomplete search bar and then select first matched option
 Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId = null) => {
-    cy.get(searchId, { timeout: longTimeout }).type(stringToType)
+    cy.get(searchId, { timeout: longTimeout }).type(stringToType).wait(3000)
 
     if (optionId)
         cy.get(`[id="${optionId}"]`, { timeout: longTimeout }).should('be.visible')
@@ -87,6 +87,22 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
     });
 })
 
+Cypress.Commands.add('interceptApiByIndex', (operationName, esIndex) => {
+    console.log("interceptApiByIndex")
+    console.log("operationName : ", operationName)
+    console.log("esIndex : ", esIndex)
+
+    cy.intercept('POST', baseUrls[workSpace], req => {
+        console.log("req.body : ", req.body)
+        if (req.body.operationName === operationName && req.body.variables.index === esIndex) {
+            req.alias = `${operationName}ApiByIndex`;
+
+            console.log(" req.alias : ", req.alias)
+            console.log(`${operationName}ApiByIndex`)
+        }
+    });
+})
+
 // This command is to check api was successful or not
 Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
     cy.wait(apiTitle, { timeout: longTimeout }).then((interception) => {
@@ -96,6 +112,8 @@ Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
         if (typeof response === 'string')
             throw new Error(response)
 
+        if (response?.success === false)
+            throw new Error("Api Failed")
         const errors = interception?.response?.body?.errors
         if (errors)
             throw new Error(`Api returned error: ${JSON.stringify(errors)}`)
@@ -191,7 +209,7 @@ Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
             cy.get('tr')
                 .eq(rowIndex)
                 .within((row) => {
-                    cy.get('td').eq(colIndex).as('cell')
+                    cy.get('td', { timeout: longTimeout }).eq(colIndex).as('cell')
                 })
             cy.get('@cell')   // last command, it's result will be returned
         });
@@ -370,5 +388,36 @@ Cypress.Commands.add('addComment', () => {
     cy.interceptApi('UpsertComment')
     cy.get("#txtArea", { timeout: longTimeout }).should('be.visible').type("A cypress comment")
     cy.get("#commentButton").click()
+})
 
+// This command will delete tract (related tract to agreement) and then will verify it
+Cypress.Commands.add('deleteTractAndVerify', (tractName) => {
+    cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(response => {
+        cy.get("#legalDescriptionTab").click()
+
+        // cy.get('.MuiTableCell-body', { timeout: longTimeout }).contains(tractName, { timeout: longTimeout }).scrollIntoView()
+        const hits = response.response.body.data.getESSimpleSearch.hits
+        const tractId = hits.find(hit => hit?.tract?.tractName === tractName)?.tractId
+        const indexOfSampleContact = hits.findIndex(hit => hit?.tract?.tractName === tractName) + 1
+
+        cy.wait(5000)
+        cy.get("#AgreementOwnersTractsTable").scrollIntoView()
+        cy.wait(1000)
+        cy.get("#AgreementOwnersTractsTable").scrollIntoView()
+        cy.get("#AgreementOwnersTractsTable", { timeout: longTimeout }).scrollIntoView().getTableCell('State', indexOfSampleContact).scrollIntoView().click()
+
+        cy.interceptApiByIndex('getESSimpleSearch', 'shapeowners_flat')
+        cy.interceptApi('updateShapeOwners')
+        cy.get("#tractMoreHorizIcon", { timeout: longTimeout }).click()
+        cy.get("#deleteTract", { timeout: longTimeout }).click()
+
+        cy.verifyApiResponse('@updateShapeOwnersApi', { responseTimeout: longTimeout })
+
+        cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(response => {
+            const hits = response.response.body.data.getESSimpleSearch.hits
+
+            if (hits.some(hit => hit?.tractId === tractId))
+                throw new Error("Tract still exist after delete")
+        })
+    })
 })
