@@ -5328,6 +5328,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       if (!map) {
         initializeMap({ setMap, mapEl, setStateApp, setDraw });
       } else {
+        if (oneTimeMapBounds) {
+          map.fitBounds(oneTimeMapBounds.bounds, oneTimeMapBounds.options);
+          setOneTimeMapBounds(null);
+        }
         // map.on("mousemove", mapMouseMove);
         // map.on("zoom", mapZoom);
       }
