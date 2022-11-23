@@ -5320,7 +5320,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         });
         
         if (oneTimeMapBounds) {
-          newMap.fitBounds(oneTimeMapBounds.bounds, oneTimeMapBounds.options);
+          const {bounds, options} = oneTimeMapBounds
+          const invalidCoordinate = bounds.find((coord) => isNaN(parseInt(coord[0])) || isNaN(parseInt(coord[1])))
+          if(!invalidCoordinate) 
+              newMap.fitBounds(bounds, options);
           setOneTimeMapBounds(null);
         }
       };
@@ -5329,7 +5332,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         initializeMap({ setMap, mapEl, setStateApp, setDraw });
       } else {
         if (oneTimeMapBounds) {
-          map.fitBounds(oneTimeMapBounds.bounds, oneTimeMapBounds.options);
+          const {bounds, options} = oneTimeMapBounds
+          const invalidCoordinate = bounds.find((coord) => isNaN(parseInt(coord[0])) || isNaN(parseInt(coord[1])))
+          if(!invalidCoordinate) 
+              map.fitBounds(bounds, options);
           setOneTimeMapBounds(null);
         }
         // map.on("mousemove", mapMouseMove);
