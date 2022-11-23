@@ -100,11 +100,11 @@ function AgreementsTable(props) {
       startPaginationAt: 50,
       typeKeyword: { gridViewCategory: "Agreements", metaModule: "Agreement" },
       filters: [
+        ...getAdvanceSearchFilters(),
         {
           field: "shapeJson.properties.type.keyword",
           value: "agreement",
         },
-        ...(stateApp.landSearchFilters ?? [])
       ],
       defaultSort: { field: "_ts", order: "desc" },
       polygon: stateApp?.currentFeature?.geometry && {
@@ -156,6 +156,14 @@ function AgreementsTable(props) {
       refetchQueries: ["customLayer"],
     });
   };
+
+  const getAdvanceSearchFilters = () => {
+    let filters = [];
+    Object.values(stateApp.landSearchFilters).forEach(filter => {
+      filters = [...filters, ...filter];
+    });
+    return filters;
+  }
 
   const handleDefaultView = (view, user) => {
     return view;

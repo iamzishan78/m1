@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/styles";
 import { IconButton } from "@material-ui/core";
-import { Divider, Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Chip } from "@material-ui/core";
+import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Chip } from "@material-ui/core";
 import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from "@material-ui/icons";
 import * as FilterComponents from "./searchComponents";
+import { AppContext } from "AppContext";
 
 const filterTypes = {
   // Summary: { component: "ProvisionFilters", countKey: "geographyFilterCount" },
   // "Related Parties": { component: "ProvisionFilters", countKey: "wellFilterCount" },
-  Provisions: { component: "ProvisionFilters", countKey: "productionFilterCount" },
+  Provisions: { component: "ProvisionFilters", countKey: "provisions" },
   // "Legal Description": { component: "ProvisionFilters", countKey: "ownershipFilterCount" },
   // Wells: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // Documents: { component: "ProvisionFilters", countKey: "tagFilterCount" },
@@ -109,6 +110,27 @@ const useStyles = makeStyles(() => ({
 
 export default function QuickActionsPanel({ children, title, actions, handlePanelStateChange, quickActionsPanelState, activeModule }) {
   const classes = useStyles();
+  const [stateApp, setStateApp] = useContext(AppContext);
+
+  useEffect(() => {
+    return () => {
+      let landFilters = { ...stateApp.landSearchFilters };
+      Object.keys(landFilters).forEach(filterType => {
+        landFilters[filterType] = [];
+      })
+      setStateApp(stateApp => ({
+        ...stateApp,
+        landSearchFilters: landFilters
+      }));
+    }
+  }, []);
+
+  const clearFilters = (filter) => {
+    setStateApp(stateApp => ({
+      ...stateApp,
+      landSearchFilters: { ...stateApp.landSearchFilters, [filter.countKey]: [] }
+    }));
+  }
 
   return (
     <div className={classes.root}>
@@ -119,20 +141,19 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
             id="panel1a-header"
             expandIcon={<ExpandMoreIcon />}
             defaultExpanded={index === 0}
-            // style={{ borderLeft: stateNav[filterTypes[filterType].countKey] > 0 ? "5px solid #18aadd" : "transparent" }}
             style={{ borderLeft: "5px solid #18aadd" }}
           >
             <Grid container direction="row" justify="space-between" alignItems="center">
               <Grid item className={classes.accordionHeading}>
                 <Typography style={{ padding: "15px 5px" }}>{filterType}</Typography>
-                <Chip color="info" label={1} />
+                <Chip color="info" label={stateApp.landSearchFilters[filterTypes[filterType].countKey].length} />
               </Grid>
               <Grid item className={classes.clearIcon}>
                 <IconButton
                   size="small"
                   onClick={(event) => {
                     event.stopPropagation();
-                    // clearFilters(filterType);
+                    clearFilters(filterTypes[filterType]);
                   }}
                 >
                   <ClearButton />

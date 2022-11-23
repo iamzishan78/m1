@@ -24,9 +24,9 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
   multiple,
   ...others
 }) {
-  const filterValue = multiple ? filterList[index].map((key) => ({ key })) : { key: filterList[index]?.[0] };
+  const filterValue = multiple ? filterList[index].map((key) => ({ key })) : filterList[index]?.[0] ? { key: filterList[index]?.[0] } : "";
   const [open, setOpen] = useState(false);
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [, setStateApp] = useContext(AppContext);
   const [options, setOptions] = useState([]);
   const [value, setValue] = useState(filterValue);
   const [search, setSearch] = useState(filterList[index][0]);
@@ -191,6 +191,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
           }}
         />
       )}
+      {...others}
     />
   );
 });
