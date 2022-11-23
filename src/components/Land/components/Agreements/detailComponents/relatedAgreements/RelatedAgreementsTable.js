@@ -34,6 +34,7 @@ function AgreementOwnersTractsTable(props) {
       return (
         <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
           <Button
+            id="addRelatedAgreementBtn"
             color="secondary"
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {
@@ -51,6 +52,7 @@ function AgreementOwnersTractsTable(props) {
           <div style={{ marginTop: "6px", height: "35px", display: "flex" }}>
             <Tooltip title={"Delete"}>
               <IconButton
+                id="deleteAgreementIcon"
                 size="medium"
                 style={{ margin: "0 5px" }}
                 aria-label="delete"
@@ -126,9 +128,8 @@ function AgreementOwnersTractsTable(props) {
           m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
-          {`Do you want to delete the selected related agreement${
-            props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
-          }?`}
+          {`Do you want to delete the selected related agreement${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+            }?`}
         </DeleteConfirmationDialogContent>
       </Dialog>
 

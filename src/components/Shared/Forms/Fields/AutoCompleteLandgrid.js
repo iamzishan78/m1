@@ -64,7 +64,7 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
         filters,
         filterKeys: typeof filterKey !== 'string' ? filterKey : undefined,
         filterKey: typeof filterKey === 'string' ? filterKey : undefined,
-        search: { query: `"*${rawSearch}*"`, fields: [filterKey.replace('.keyword', '')] },
+        search: { query: rawSearch, fields: [filterKey.replace('.keyword', '')] },
         extendSearchQuery,
         size: label === 'County' ? 1000 : 70,
         filterAggs: {
