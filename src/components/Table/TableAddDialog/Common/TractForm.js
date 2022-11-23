@@ -106,6 +106,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
       {!isNewTract && <AutoCompleteShapeLayer value={tractValue} shapeType="parcel" setSelectedShapeLayer={setSelectedShapeLayer} />}
       <Controller
         as={TextField}
+        id="tractName"
         style={{ display: isNewTract ? "inherit" : "none" }}
         control={control}
         variant="outlined"
@@ -140,6 +141,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
       <Controller
         control={control}
         name={`${prefix}county`}
+        id="tractCounty"
         defaultValue={tract?.county || ""}
         render={(props) => (
           <AutoCompleteLandgrid
@@ -339,6 +341,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 
           <Controller
             control={control}
+            id="tractAbstract"
             name={`${prefix}abstract`}
             defaultValue={tract?.abstract || ""}
             render={(props) => (
@@ -363,6 +366,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 
       <Controller
         as={TextField}
+        id="tractDescription"
         control={control}
         variant="outlined"
         margin="dense"

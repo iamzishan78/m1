@@ -376,13 +376,13 @@ export function DetailComponents(props) {
     if (field === "agreementType") {
       customLayer.layer = value;
     }
-    if(field === "state"){
-      if(shape.properties.originalProperties){
+    if (field === "state") {
+      if (shape.properties.originalProperties) {
         shape.properties.originalProperties.County = undefined;
-        shape.properties.originalProperties.State = value;  
-        shape.properties.originalProperties.StateAbbreviation = value;  
-      }else{
-        shape.properties.originalProperties = { State:value, StateAbbreviation:value }
+        shape.properties.originalProperties.State = value;
+        shape.properties.originalProperties.StateAbbreviation = value;
+      } else {
+        shape.properties.originalProperties = { State: value, StateAbbreviation: value }
       }
     }
     if (field === "county") {
@@ -504,11 +504,11 @@ export function DetailComponents(props) {
               >
                 <StyledTab label="Summary" />
                 <StyledTab label="Parties" />
-                <StyledTab label="Provisions" />
-                <StyledTab label="Legal Description" />
+                <StyledTab id="provisionsTab" label="Provisions" />
+                <StyledTab id="legalDescriptionTab" label="Legal Description" />
                 <StyledTab label="Wells" />
                 <StyledTab label="Documents" />
-                <StyledTab label="Related Agreements" />
+                <StyledTab id="relatedAgreementsTab" label="Related Agreements" />
                 {/* <StyledTab label="Related Info" /> */}
               </StyledTabs>
             </div>
