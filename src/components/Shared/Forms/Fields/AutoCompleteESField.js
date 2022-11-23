@@ -100,7 +100,16 @@ const AutoCompleteField = ({ placeholder, value, onChange, column, query, extend
       value={value}
       inputValue={search}
       getOptionSelected={(option, value) => option?.key === value.key}
-      getOptionLabel={(option) => (typeof option.key === "string" ? option : option?.key?.join(" - "))}
+      getOptionLabel={(option) =>{
+        if(typeof option.key === "string"){
+          return option
+        }else {
+
+          // const spliteData = option?.key.split(" ");
+          const filterSpace = option.key.filter((item)=>item !== '');
+          return  `#-${filterSpace[0]}`
+        }
+      }}
       onChange={(e, value, reason) => {
         if (reason === "clear" || !value?.key) setSearch("");
         else {
