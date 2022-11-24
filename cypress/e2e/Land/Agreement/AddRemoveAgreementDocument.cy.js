@@ -51,38 +51,47 @@ describe("Add Agreement Spec", () => {
         cy.get("#addFile").click();
 
         cy.verifyApiResponse("@AddDescriptorFileApi").then((response) => {
-            let fileId1 = response.response?.body?.data?.createFileDescriptor?.file?.id
+          let fileId1 =
+            response.response?.body?.data?.createFileDescriptor?.file?.id;
           cy.get("button", { timeout: shorTimeout })
             .contains("+ ADD DOCUMENT")
             .click();
 
           cy.get("#existinTab", { timeout: shorTimeout }).click();
           cy.get("#seletExistingDoc").click().type("demo_png.png");
-          cy.get(".MuiAutocomplete-popper ul li")
-            .first()
-            .trigger("click");
+          cy.get(".MuiAutocomplete-popper ul li").first().trigger("click");
+          cy.interceptApi("getParcelFiles");
 
-            cy.get("#addFile").click();
-            cy.interceptApi("getParcelFiles");
-            cy.verifyApiResponse("@AddDescriptorFileApi").then((response2) => {
-                let fileId2 = response2.response?.body?.data?.createFileDescriptor?.file?.id;
+          cy.get("#addFile").click();
+          cy.verifyApiResponse("@AddDescriptorFileApi").then((response2) => {
+            let fileId2 =
+              response2.response?.body?.data?.createFileDescriptor?.file?.id;
 
-                cy.verifyApiResponse("@getParcelFilesApi").then(() => {
+            cy.verifyApiResponse("@getParcelFilesApi").then(() => {
+              cy.interceptApi("deleteFileDescriptor");
 
-                    cy.get("#related-docs-div tbody tr:first-child td:first-child input").click();
-                    cy.get("#related-docs-div tbody tr:nth-child(2) td:first-child input").click();
-    
-                    cy.interceptApi("getParcelFiles");
-                    cy.get("#related-docs-div button[aria-label=delete]").click();
-    
-                    cy.verifyApiResponse("@getParcelFilesApi").then(result => {
-                        const filesIds = result.response?.body?.data?.getParcelFiles?.map(file => file.fileId);
-    
-                        cy.log(filesIds);
-                    })
-                })
-            })
+              cy.get(
+                "#related-docs-div tbody tr:first-child td:first-child input"
+              ).click();
+              cy.get(
+                "#related-docs-div tbody tr:nth-child(2) td:first-child input"
+              ).click();
 
+              cy.get("#related-docs-div button[aria-label=delete]").click();
+              cy.get("#deleteButton").click();
+                cy.wait(shorTimeout);
+                cy.verifyApiResponse("@getParcelFilesApi").then((result) => {
+                  const filesIds =
+                    result.response?.body?.data?.getParcelFiles?.map(
+                      (file) => file.fileId
+                    );
+
+                  cy.log(JSON.stringify(filesIds));
+                  expect(filesIds).to.not.include(fileId1);
+                  expect(filesIds).to.not.include(fileId2);
+                });
+            });
+          });
         });
       });
     });
