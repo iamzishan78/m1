@@ -159,6 +159,7 @@ export default function AcerageDetailTabPanel() {
         esFilters={esFilters}
         targetLabel="acerage"
         parent="AcerageDetail"
+        esIndex="shapetracts_flat"
         setESFilters={setESFilters}
       />
     </>
