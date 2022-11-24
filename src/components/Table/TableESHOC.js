@@ -26,6 +26,7 @@ import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
 import { handleSelectedGridChange, setColumnDisplayAndFilter } from "./helpers";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { findInFunction, formattingGridView, sortColumns } from "utils/helper";
+import { DrawerContext } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import moment from "moment";
 
 import GlobalSettings from "..//..//GlobalSettings.js";
@@ -33,6 +34,7 @@ import GlobalSettings from "..//..//GlobalSettings.js";
 export const TableESHOC = (Component) => {
     const HocWithDefaultProps = function HOC(props) {
         const { stateApp, setStateApp, loadMore } = props
+      const [drawer, setDrawer] = useContext(DrawerContext);
         const dispatch = useDispatch();
         const client = useApolloClient();
         const [tableMeta, setTableMeta] = useState([]);
@@ -109,7 +111,7 @@ export const TableESHOC = (Component) => {
                     let filterColumns = cols.filter((col) => !col._id && !props.actionColumns.includes(col.label) && !props.actionColumns.includes(col.name));
                     let actionColumns = cols.filter((col) => props.actionColumns.includes(col.label) || props.actionColumns.includes(col.name));
 
-                    // Excluding actionColumns from veiw Columns 
+                    // Excluding actionColumns from veiw Columns
                     actionColumns = actionColumns.map(aC => ({ ...aC, options: { ...aC.options, viewColumns: false } }))
 
                     let columnsData = [...filterColumns, ...copy(metaDatas), ...actionColumns]
@@ -799,7 +801,11 @@ export const TableESHOC = (Component) => {
                     )
             },
             onRowClick: (rowData, { dataIndex, rowIndex }) => {
-                setAddToTable('update')
+                // setAddToTable('update');
+                // if(drawer === "wells"){
+                //   setDrawer(null);
+                // }
+                setDrawer("tract");
                 setClickedRow({ ...rows[dataIndex] })
             }
         }
