@@ -711,32 +711,37 @@ export const TableESHOC = (Component) => {
                     tableActions.genericESAction();
                     break;
                 case "rowSelectionChange":
-                    if (tableState.selectedRows.data.length === tableState.data.length) {
-                        const rowsSelected = []
-                        for (let i = 0; i < tableState.count; i++) { rowsSelected.push(i) }
-                        if (!allRowsSelected || allRowsSelected?.length === 0)
-                            setAllRowsSelected(rowsSelected)
-                        else {
-                            tableState.selectedRows.data = []
-                            setAllRowsSelected([])
-                        }
-                        const pageESVariables = copy(tableActions.pageESVariables)
-                        pageESVariables.variables.pagination = {
-                            first: tableState.count,
-                            after: null,
-                        }
-                        const allSelectedRows = await client.query({
-                            ...pageESVariables,
-                            query: GET_ES_SIMPLE_SEARCH,
-                        });
+                    if (tableMeta.isSelectedAllAllowed)
+                        if (tableState.selectedRows.data.length === tableState.data.length || tableState.selectedRows.data.length > tableState.data.length) {
+                            const isSelectAll = tableState.selectedRows.data.length === tableState.data.length
+                            const rowsSelected = []
+                            const total = isSelectAll ? tableState.count : tableState.selectedRows.data.length
 
-                        tableState.selectedRows.data = allSelectedRows?.data?.getESSimpleSearch.hits
-                        meta.setSelectedRows(allSelectedRows?.data?.getESSimpleSearch.hits)
-                    } else {
-                        if (meta?._selectedRows?.length > 0)
-                            meta.setSelectedRows([])
-                        setAllRowsSelected(undefined)
-                    }
+                            for (let i = 0; i < total; i++) { rowsSelected.push(isSelectAll ? i : tableState.selectedRows.data[i].index) }
+
+                            if (!allRowsSelected || allRowsSelected?.length === 0 || total !== tableState.count)
+                                setAllRowsSelected(rowsSelected)
+                            else {
+                                tableState.selectedRows.data = []
+                                setAllRowsSelected([])
+                            }
+                            const pageESVariables = copy(tableActions.pageESVariables)
+                            pageESVariables.variables.pagination = {
+                                first: total,
+                                after: null,
+                            }
+                            const allSelectedRows = await client.query({
+                                ...pageESVariables,
+                                query: GET_ES_SIMPLE_SEARCH,
+                            });
+
+                            tableState.selectedRows.data = allSelectedRows?.data?.getESSimpleSearch.hits
+                            meta.setSelectedRows(allSelectedRows?.data?.getESSimpleSearch.hits)
+                        } else {
+                            if (meta?._selectedRows?.length > 0)
+                                meta.setSelectedRows([])
+                            setAllRowsSelected(undefined)
+                        }
                     setSelectedRows(tableState.selectedRows.data)
                     break;
                 case "changePage":

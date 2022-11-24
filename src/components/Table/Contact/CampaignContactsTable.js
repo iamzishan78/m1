@@ -71,6 +71,7 @@ function ContactsTable(props) {
       },
     ]);
     props.setTableMeta({
+      isSelectedAllAllowed: true,
       addableName: "Contact",
       extendSearchQuery: null,
       searchFields: ["name^4", "_all"],
