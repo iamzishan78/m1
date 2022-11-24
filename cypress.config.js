@@ -7,7 +7,7 @@ module.exports = defineConfig({
   video: true,
   videoCompression: 32,
   videoUploadOnPasses: false,
-  retries: 3,
+  // retries: 3,
 
   e2e: {
     setupNodeEvents(on, config) {

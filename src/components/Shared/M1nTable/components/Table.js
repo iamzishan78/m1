@@ -3599,7 +3599,7 @@ function SubTable(props) {
                       }}
                       aria-label="delete"
                     >
-                      <DeleteIcon />
+                      <DeleteIcon id="deleteWellInterest" />
                     </IconButton>
                   </Tooltip>
                 </div>
