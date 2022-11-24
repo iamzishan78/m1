@@ -301,7 +301,7 @@ export default function OwnerDetailsCardMap(props) {
 
         var clusterId = features[0].properties.cluster_id;
         map
-          .getSource("wells")
+          ?.getSource("wells")
           .getClusterExpansionZoom(clusterId, function (err, zoom) {
             if (err) return;
             map.jumpTo({

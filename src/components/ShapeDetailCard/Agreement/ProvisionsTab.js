@@ -239,6 +239,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                       className={isFound ? classes.checked : classes.unchecked}
                       control={
                         <Checkbox
+                          id={provision.type}
                           checked={isFound}
                           color="default"
                           onChange={(e) => {
@@ -292,7 +293,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                               <InputLabel id="provision-type-label">Provision Type</InputLabel>
                               <Select
                                 labelId="provision-type-label"
-                                id="provision-type-label"
+                                id={`provision-type-label-${index}`}
                                 label="Provision Type"
                                 onChange={(value) => {
                                   onChange(value);
@@ -310,6 +311,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                           ) : (
                             <AutoCompleteWithNewOption
                               variant="outlined"
+                              id="provisionType"
                               options={provisionAutoCompleteList}
                               value={value}
                               onChange={(_, value) => {
@@ -322,7 +324,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                       )}
                     />
                   </Grid>
-                  <Grid item md={2}>
+                  <Grid id={`applicable-${index}`} item md={2}>
                     <Controller
                       control={control}
                       name={`provisions[${index}].applicable`}
@@ -341,7 +343,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                             inputRef={ref}
                             value={value}
                           >
-                            <MenuItem value={true}>Yes</MenuItem>
+                            <MenuItem id="menuItemYes" value={true}>Yes</MenuItem>
                             <MenuItem value={false}>No</MenuItem>
                           </Select>
                         </FormControl>
@@ -352,7 +354,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                     <FormControl variant="outlined" fullWidth>
                       <TextField
                         fullWidth
-                        id="p-value"
+                        id={`provision-value-${index}`}
                         label="Provision Value"
                         variant="outlined"
                         name={`provisions[${index}].value`}
@@ -381,7 +383,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                           variant="inline"
                           format="MM/DD/YYYY"
                           margin="normal"
-                          id="date-picker-outlined"
+                          id={`start-date-picker-${index}`}
                           ref={ref}
                           value={value || null}
                           onChange={(date) => {
@@ -408,7 +410,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                           variant="inline"
                           format="MM/DD/YYYY"
                           margin="normal"
-                          id="date-picker-outlined"
+                          id={`last-date-picker-${index}`}
                           ref={ref}
                           value={value || null}
                           onChange={(date) => {
@@ -421,7 +423,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                     />
                   </Grid>
 
-                  <Grid item md={2}>
+                  <Grid item md={2}    id={`frequency-${index}`}>
                     <Controller
                       control={control}
                       name={`provisions[${index}].frequency`}
@@ -441,13 +443,14 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                     />
                   </Grid>
 
-                  <Grid item md={4}>
+                  <Grid id={`partyName-${index}`}item md={4}>
                     <Controller
                       control={control}
                       name={`provisions[${index}].parties`}
                       defaultValue={getParty(item)}
                       render={({ onChange, value, ref }) => (
                         <AutocompEntityNamesList
+
                           variant="outlined"
                           margin=""
                           size=""
@@ -497,7 +500,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                               onClick={(event) => setAnchorEl(event.currentTarget)}
                               {...bindTrigger(popupState)}
                             >
-                              <MoreVertIcon size="medium" />
+                              <MoreVertIcon size="medium" id="moreVertIconProvision" />
                             </IconButton>
                             <Popover
                               {...bindPopover(popupState)}
@@ -521,7 +524,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
                                   <ListItemIcon>
                                     <DeleteIcon size="medium" />
                                   </ListItemIcon>
-                                  <ListItemText>Delete Provision/Obligation</ListItemText>
+                                  <ListItemText id="deleteProvision">Delete Provision/Obligation</ListItemText>
                                 </ListItem>
                               </List>
                             </Popover>
@@ -537,7 +540,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
 
               <Grid item>
                 <TextField
-                  id="p-value"
+                  id={`provisionDescription-${index}`}
                   label="Full Description"
                   variant="outlined"
                   fullWidth
@@ -554,6 +557,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
         })}
         <Grid item>
           <Button
+            id="addProvisionButton"
             variant="contained"
             onClick={() => {
               addRemoveProvision(true, {});

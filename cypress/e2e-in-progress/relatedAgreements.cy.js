@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-const { basic_timeouts } = require("../../cypressUtils/data")
+const { basic_timeouts } = require("../cypressUtils/data")
 
 
 describe('Related Agreements Spec', () => {
