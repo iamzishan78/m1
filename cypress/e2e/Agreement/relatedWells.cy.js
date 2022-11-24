@@ -2,8 +2,7 @@
 
 const { basic_timeouts } = require("../../cypressUtils/data")
 
-
-describe('Related Wells Spec', () => {
+describe('Related Wells Spec', { scrollBehavior: false }, () => {
     it('passes', () => {
         // Constants 
         const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
@@ -18,12 +17,19 @@ describe('Related Wells Spec', () => {
         cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
 
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
+            let hits = response.response.body.data.getESSimpleSearch.hits
+            hits = hits.slice(1, 16);
+
+            const agreement = hits.find(hit => hit?.agreementNumber)
+            const agreementLabel = `${agreement.agreementNumber} - ${agreement.agreementName}`
+
             const wellApiUrl = "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2020-06-30&queryType=full&count=true&%24filter=Latitude%20ne%20null%20and%20Longitude%20ne%20null&searchFields=WellName%2CApiNumber&$top=50&search=BRIT.-AMER.%20%26%20BOLSA~%20CHICA%2C%20%C3%82%E2%82%AC%C2%A6%201~"
             const relatedWellName = "BRIT.-AMER. & BOLSA CHICA, Â€¦ 1"
 
-            cy.getTableCell('Agreement', 4).then(($row) => {
+            cy.getTableCell('Agreement', 1).then(($cell) => {
                 cy.log('==== STEP: OPEN AGREEMENT ====')
-                cy.wrap($row).scrollIntoView().children().eq(1).children().children().children().click()
+
+                cy.get('.MuiBox-root', { timeout: longTimeout }).contains(agreementLabel, { timeout: longTimeout }).click()
 
                 cy.get('.MuiTypography-root', { timeout: longTimeout }).contains('Summary').should('be.visible')
 
@@ -42,7 +48,6 @@ describe('Related Wells Spec', () => {
                 cy.wait('@wellAPi', { responseTimeout: longTimeout }).then((interception) => {
                     assert.isNotNull(interception.response.body, '1st API call has data')
                 })
-
 
                 cy.interceptApi('getTenantWell')
                 cy.get('body').type("{downArrow}{enter}")
@@ -63,9 +68,9 @@ describe('Related Wells Spec', () => {
                         if (indexOfRelatedWell < 0)
                             throw new Error("Related Well not found")
 
+                        cy.wait(5000)
                         cy.log('==== STEP: CLICK ON CHECKBOX OF WELL ====')
-                        cy.get("#associatedWellsPerUnits").get(`[id=MUIDataTableSelectCell-${indexOfRelatedWell}]`).scrollIntoView().check()
-
+                        cy.get("#associatedWellsPerUnits").get(`[id=MUIDataTableSelectCell-${indexOfRelatedWell}]`).check({ force: true })
 
                         cy.interceptApi('getESPaginatedList')
 
@@ -74,7 +79,6 @@ describe('Related Wells Spec', () => {
                         cy.get("#deleteWellInterest", { timeout: longTimeout }).click()
                         cy.get("#deleteButton", { timeout: longTimeout }).click()
                         cy.verifyApiResponse('@UpdateShapeWellInterestApi', { responseTimeout: longTimeout })
-
 
                         cy.log('==== STEP: VERIFY IF RELATED WELL WAS DELETED ====')
                         cy.verifyApiResponse('@getESPaginatedListApi', { responseTimeout: longTimeout }).then(response => {
