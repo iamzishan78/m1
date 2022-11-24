@@ -30,6 +30,7 @@ import moment from "moment";
 
 import GlobalSettings from "..//..//GlobalSettings.js";
 
+
 export const TableESHOC = (Component) => {
     const HocWithDefaultProps = function HOC(props) {
         const { stateApp, setStateApp, loadMore } = props
@@ -54,6 +55,7 @@ export const TableESHOC = (Component) => {
         const [searchedRows, setSearchedRows] = useState([])
 
         const [selectedRows, setSelectedRows] = useState([]);
+        const [allRowsSelected, setAllRowsSelected] = useState(false);
         const [initialFilters, setInitialFilters] = useState([]);
 
         const [selectedGridView, setSelectedGridView] = useState();
@@ -670,7 +672,7 @@ export const TableESHOC = (Component) => {
             updateColumnSorting: (columns) => updateGridViewRedux({ columns }),
         }), [selectedGridView, updateGridViewRedux])
 
-        const onTableChange = (action, tableState, rows, meta) => {
+        const onTableChange = async (action, tableState, rows, meta) => {
             tableState.esIndex = tableMeta.esIndex;
             // tableState.filters = tableMeta.filters ? tableMeta.filters : [];
             tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
@@ -709,6 +711,37 @@ export const TableESHOC = (Component) => {
                     tableActions.genericESAction();
                     break;
                 case "rowSelectionChange":
+                    if (tableMeta.isSelectedAllAllowed)
+                        if (tableState.selectedRows.data.length === tableState.data.length || tableState.selectedRows.data.length > tableState.data.length) {
+                            const isSelectAll = tableState.selectedRows.data.length === tableState.data.length
+                            const rowsSelected = []
+                            const total = isSelectAll ? tableState.count : tableState.selectedRows.data.length
+
+                            for (let i = 0; i < total; i++) { rowsSelected.push(isSelectAll ? i : tableState.selectedRows.data[i].index) }
+
+                            if (!allRowsSelected || allRowsSelected?.length === 0 || total !== tableState.count)
+                                setAllRowsSelected(rowsSelected)
+                            else {
+                                tableState.selectedRows.data = []
+                                setAllRowsSelected([])
+                            }
+                            const pageESVariables = copy(tableActions.pageESVariables)
+                            pageESVariables.variables.pagination = {
+                                first: total,
+                                after: null,
+                            }
+                            const allSelectedRows = await client.query({
+                                ...pageESVariables,
+                                query: GET_ES_SIMPLE_SEARCH,
+                            });
+
+                            tableState.selectedRows.data = allSelectedRows?.data?.getESSimpleSearch.hits
+                            meta.setSelectedRows(allSelectedRows?.data?.getESSimpleSearch.hits)
+                        } else {
+                            if (meta?._selectedRows?.length > 0)
+                                meta.setSelectedRows([])
+                            setAllRowsSelected(undefined)
+                        }
                     setSelectedRows(tableState.selectedRows.data)
                     break;
                 case "changePage":
@@ -876,6 +909,9 @@ export const TableESHOC = (Component) => {
                     selectedGridView={selectedGridView}
                     setSelectedGridView={setSelectedGridView}
                     esHocProps={esHocProps}
+
+                    allRowsSelected={allRowsSelected}
+                    setAllRowsSelected={setAllRowsSelected}
                 />
             </span>
         );
