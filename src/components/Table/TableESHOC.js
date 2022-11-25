@@ -735,7 +735,7 @@ export const TableESHOC = (Component) => {
                                 query: GET_ES_SIMPLE_SEARCH,
                             });
 
-                            tableState.selectedRows.data = allSelectedRows?.data?.getESSimpleSearch.hits
+                            tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
                             meta.setSelectedRows(allSelectedRows?.data?.getESSimpleSearch.hits)
                         } else {
                             if (meta?._selectedRows?.length > 0)
