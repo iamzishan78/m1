@@ -839,17 +839,17 @@ export const TableESHOC = (Component) => {
         options.page = page
 
         const onInfiniteScroll = () => {
-            setCurrentRowsLength(currentRowsLength => {
+            setCurrentRowsLength(_currentRowsLength => {
                 Loading((loading) => {
-                    setRows(rows => {
-                        if (rows.length < currentRowsLength && !loading) {
+                    setRows(tableRows => {
+                        if (tableRows.length < _currentRowsLength && !loading) {
                             document.getElementById('pagination-next').click()
                         }
-                        return rows
+                        return tableRows;
                     })
-                    return loading
+                    return loading;
                 })
-                return currentRowsLength
+                return _currentRowsLength;
             })
         }
 
