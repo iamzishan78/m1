@@ -43,6 +43,7 @@ import Add from "@material-ui/icons/Add";
 import ActivitySearch from "./components/ActivitySearch";
 import ActivityDashboardSearch from "./components/ActivityDashboardSearch";
 import DocumentSearch from "./components/DocumentSearch";
+import AnalyticsSearch from "./components/AnalyticsSearch";
 import ContactSearch from "./components/ContactSearch";
 import ContactBreadcrumbs from "./components/ContactBreadcrumbs";
 import SideNavigation from "./SideNavigation";
@@ -479,7 +480,9 @@ export default function Navigation(props) {
               {["/analytics/revenue", "/analytics/land"].includes(
                 location.pathname
               ) && (
-                <Typography
+                <AnalyticsSearch classes={classes} user={stateApp.user} />
+              )}
+                              {/* <Typography
                   variant="h4"
                   style={{
                     color: "black",
@@ -488,8 +491,7 @@ export default function Navigation(props) {
                   }}
                 >
                   {_.capitalize(location.pathname.split("/").pop())} Analytics
-                </Typography>
-              )}
+                </Typography> */}
 
               {location.pathname.startsWith("/flow") && <DealSearch />}
               {location.pathname === "/dashboard" && (

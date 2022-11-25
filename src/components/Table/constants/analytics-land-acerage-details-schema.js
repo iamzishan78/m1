@@ -25,9 +25,9 @@ const AcerageSummaryHeadCells = [
   {
     name: "agreementName",
     label: "Agreement Name",
-    esKey: "shapeJson.properties.agreementName.keyword",
+    esKey: "shape.shapeJson.properties.agreementName.keyword",
     options: {
-      dbName: "shapeJson.properties.agreementName",
+      dbName: "shape.shapeJson.properties.agreementName",
       display: false,
       viewColumns: true,
     },
@@ -35,19 +35,19 @@ const AcerageSummaryHeadCells = [
   {
     name: "layerSubType",
     label: "Agreement Type",
-    esKey: "shapeJson.properties.layerSubType.keyword",
+    esKey: "shape.shapeJson.properties.layerSubType.keyword",
     options: { sort: true, filter: true, display: true },
   },
   {
     name: "agreementSubtype",
     label: "Agreement Subtype",
-    esKey: "shapeJson.properties.agreementSubtype.keyword",
+    esKey: "shape.shapeJson.properties.agreementSubtype.keyword",
     options: { sort: true, filter: true, display: true },
   },
   {
     name: "rightsType",
     label: "Rights",
-    esKey: "shapeJson.properties.rightsType.keyword",
+    esKey: "shape.shapeJson.properties.rightsType.keyword",
     options: { sort: true, filter: true, display: true },
   },
   {
@@ -69,7 +69,7 @@ const AcerageSummaryHeadCells = [
   {
     name: "tractName",
     label: "Tract Name",
-    esKey: "tractName.keyword",
+    esKey: "parcel.name.keyword",
     options: { sort: true, filter: true },
   },
 

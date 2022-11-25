@@ -3,7 +3,7 @@ import { Container } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHeader from "components/Table/constants/analytics-land-acerage-details-schema";
-import get from 'lodash/get';
+import { esExtentedSearch } from "components/Shared/functions";
 // QUERIES
 import { deepEqualObjects, copy } from "components/Shared/functions";
 // Utilities
@@ -11,7 +11,6 @@ import { usetableStyles } from "components/Table/Styles";
 // actions
 import { setRevenuePropertyData } from "actions";
 import TableESHOC from "components/Table/TableESHOC";
-import convert_date from "components/Shared/valueformatters/convert_date.js";
 
 function AcerageDetail(props) {
   const classes = usetableStyles();
@@ -25,6 +24,7 @@ function AcerageDetail(props) {
   const formatHits = (hits) => {
     
     hits = hits.map((hit) => {
+      hit._id = hit.shape._id;
       hit.agreementNumber = hit.shape.shapeJson.properties.agreementNumber;
       hit.agreementName = hit.shape.shapeJson.properties.agreementName;
       hit.agreementSubtype = hit.shape.shapeJson.properties.agreementSubtype;
@@ -61,7 +61,7 @@ function AcerageDetail(props) {
     
     props.setInitialFilters(formatedFilter);
     props.setTableMeta({
-      extendSearchQuery: props.landSearchQuery || "",
+      extendSearchQuery: esExtentedSearch(props.landAnalyticsSearchQuery, ''),
       TableHeader: copy(TableHeader),
       esIndex: esIndex,
       filters: fixedFilters,
@@ -71,7 +71,7 @@ function AcerageDetail(props) {
       formatHits,
     });
     // eslint-disable-next-line
-  }, [props.landSearchQuery, props.filterToggle, refetchData]);
+  }, [props.landAnalyticsSearchQuery, props.filterToggle, refetchData]);
 
   useEffect(() => {
     // setESFilters(props.initialFilters);
