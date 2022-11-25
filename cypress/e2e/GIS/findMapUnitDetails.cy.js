@@ -2,6 +2,11 @@
 
 import { basic_timeouts } from "../../cypressUtils/data"
 
+// Click a unit on the map and open the detail card for Panther 1H (id = 628410d19ec87abf87b956e0)
+// Click the wells tab and scroll the right until the location/flyTo icon appears
+// Click the flyTo icon to ensure the unit detail screen closes and well detail card appears
+// Close out of the well detail card
+
 describe('open well detail card of Unit', () => {
     it('passes', () => {
 
