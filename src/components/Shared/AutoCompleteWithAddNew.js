@@ -27,7 +27,7 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant })
   const classes = useStyles();
 
   const onInputChange = (event) => {
-    if (onSearch) onSearch(event.target.value);
+    if (onSearch) onSearch(event?.target?.value);
   };
 
   return (

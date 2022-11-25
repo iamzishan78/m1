@@ -93,6 +93,7 @@ const LandSearch = () => {
   return (
     <div className={classes.search}>
       <TextField
+        id="searchBar"
         value={search}
         onChange={(e) => {
           setSearch(e.target.value);

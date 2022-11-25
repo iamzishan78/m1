@@ -127,7 +127,7 @@ export default function Summary({
               container
               direction="row"
               justify="flex-start"
-              style={{ padding: "10px 0px",display:'flex',gap:'40px' }}
+              style={{ padding: "10px 0px", display: 'flex', gap: '40px' }}
             >
               <Grid item className={classes.infoSection}>
                 <FieldsSection
