@@ -111,7 +111,7 @@ export default function Taps(props) {
           aria-label="scrollable auto tabs example"
         >
           {tabLabels.map((label, i) => {
-            return <Tab key={i} label={label} {...a11yProps(i)} />;
+            return <Tab key={i} label={label} {...a11yProps(i)} id={`unitWells${i}`}/>;
           })}
         </StyledTabs>
       </AppBar>

@@ -1,5 +1,0 @@
-import './mapSearchAgreements.cy'
-import './mapSearchUnits.cy'
-import './snapGridSearchAgreements.cy'
-import './snapGridSearchUnits.cy'
-import './snapGridSearchTracts.cy'
