@@ -199,7 +199,7 @@ export const TableESHOC = (Component) => {
         }, [stateApp.user, props.targetLabel, props.showTracks]);
 
         useEffect(() => {
-            SetDependencyUpdate(!dependencyUpdate)
+            SetDependencyUpdate(!dependencyUpdate);
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
         useEffect(() => {
