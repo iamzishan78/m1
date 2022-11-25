@@ -31,7 +31,7 @@ describe('Related Agreements Spec', () => {
                 cy.get("#relatedAgreementsTab").click()
 
                 cy.log('==== STEP: CLICK ON ADD RELATED AGREEMENT BUTTON ====')
-                cy.get("#addRelatedAgreementBtn", { timeout: longTimeout }).should('be.visible').click()
+                cy.get("#addRelatedAgreementBtn", { timeout: longTimeout }).scrollIntoView().click({ force: true })
 
                 cy.wait(2000)
 
