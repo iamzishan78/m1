@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { basic_timeouts } from "../../cypressUtils/data"
+import { basic_timeouts } from "../cypressUtils/data"
 
 describe('Add and Remove Comments on Tract Details Spec', () => {
     it('passes', () => {
@@ -16,7 +16,7 @@ describe('Add and Remove Comments on Tract Details Spec', () => {
         
         cy.get('#dataNameSelect', { timeout: longTimeout }).should('be.visible').trigger("click");
         
-        cy.get('#customized-menu .MuiList-root .MuiGrid-root li',{ timeout: shorTimeout }).contains("Tracts").trigger('click')
+        cy.get('#customized-menu .MuiList-root .MuiGrid-root li',{ timeout: shorTimeout }).contains("Units").trigger('click')
         
         cy.interceptApi('getESSimpleSearch')
         cy.get('#cognitive-search-autocomplete').should('be.visible').type("a");
