@@ -143,15 +143,7 @@ function ShapeWellInterestTable(props) {
     }
   }, [props.portal]);
 
-  useEffect(() => {
-    if (addToTable) {
-      setDrawer("wells");
-    } else {
-      setDrawer(null);
-    }
-  }, [addToTable]);
-
-
+    
   ////////////Contact Wells end///////////////////////////////////////////////
 
   const onTableChange = (action, tableState, rows, meta) => {
@@ -189,7 +181,8 @@ function ShapeWellInterestTable(props) {
             color="secondary"
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {
-              setAddToTable(true);
+              // setAddToTable(true);
+              setDrawer("wells");
               selectRow(null);
             }}
           >
@@ -199,7 +192,11 @@ function ShapeWellInterestTable(props) {
       );
     },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
-      setAddToTable(true);
+      // setAddToTable(true);
+      setDrawer("wells");
+      // if(drawer === "tract"){
+      //   setDrawer(null)
+      // }
       selectRow({ ...props.rows[dataIndex] });
     },
   };
@@ -221,14 +218,14 @@ function ShapeWellInterestTable(props) {
   };
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
-      {addToTable && (
+      {drawer === "wells" && (
         <AddUnitInterestDialog
           open={addToTable}
           width="450px"
           shapeId={props.customLayer._id}
           shapeType={props.shapeType}
           wellInterest={selectedRow}
-          onClose={() => setAddToTable(false)}
+          onClose={() => setDrawer(null)}
           drawerContainer={drawerContainer}
         />
       )}
