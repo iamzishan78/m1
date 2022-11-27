@@ -379,6 +379,7 @@ function AddUnitInterestDialog(props) {
           variant="contained"
           color="secondary"
           size="medium"
+          id="saveWellButton"
           disableElevation
           onClick={() => {
             handleValidate() && handleSave();
@@ -414,17 +415,17 @@ function AddUnitInterestDialog(props) {
       )}
       {
         props.drawerContainer &&
-          ReactDOM.createPortal(content, props.drawerContainer)
+        ReactDOM.createPortal(content, props.drawerContainer)
       }
       {
         !props.drawerContainer &&
-          <RightDialog
-            open={props.open}
-            handleClickDialogClose={handleClose}
-            width={props.width}
-          >
-            {content}
-          </RightDialog>
+        <RightDialog
+          open={props.open}
+          handleClickDialogClose={handleClose}
+          width={props.width}
+        >
+          {content}
+        </RightDialog>
       }
     </>
   );
