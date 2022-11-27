@@ -185,6 +185,7 @@ export default function CommentComponent(props) {
   const [profileImage, setProfileImage] = useState(null);
   const [commentsArray, setCommentsArray] = useState([]);
   const [showActions, setShowActions] = useState(false);
+  const [isEdit,setIsEdit] = useState(false);
   const [showCommentActionId, setShowCommentActionId] = useState(null);
   const [loadingComments, setLoadingComments] = useState(true);
   const [scrollIntoView, setScrollIntoView] = useState(false);
@@ -500,6 +501,8 @@ export default function CommentComponent(props) {
                                       setEditCommentId={setEditCommentId}
                                       setEditComment={setEditComment}
                                       deleteComment={deleteComment}
+                                      setShowActions={setShowActions}
+                                      setIsEdit={setIsEdit}
                                     />
                                   </div>
                                 )}
@@ -522,7 +525,7 @@ export default function CommentComponent(props) {
                             ) : (
                               <div className={classes.border}>
                                 <CommentField
-                                  isEdit
+                                  isEdit={isEdit}
                                   profilesInfo={profilesInfo}
                                   users={users}
                                   comment={editComment}
@@ -530,6 +533,8 @@ export default function CommentComponent(props) {
                                   setEditCommentId={setEditCommentId}
                                   setComment={setEditComment}
                                   upsertComment={updateComment}
+                                  setIsEdit={setIsEdit}
+                                  setShowActions={setShowActions}
                                 />
                               </div>
                             )}
@@ -650,7 +655,7 @@ export const CommentText = ({ eachComment, users }) => {
   );
 };
 
-const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment }) => {
+const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment,  setShowActions,setIsEdit }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -680,6 +685,8 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
           onClick={(event) => {
             setEditCommentId(eachComment._id);
             setEditComment(eachComment.comment);
+            setShowActions(true);
+            setIsEdit(true)
             handleClose();
           }}
         >
