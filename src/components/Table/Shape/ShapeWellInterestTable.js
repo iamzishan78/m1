@@ -133,15 +133,15 @@ function ShapeWellInterestTable(props) {
     }
   }, [tableData, props.dependencyUpdate]);
 
-    useEffect(() => {
-      if (props.portal) {
-        const ele = document.querySelector(props.portal);
+  useEffect(() => {
+    if (props.portal) {
+      const ele = document.querySelector(props.portal);
 
-        if (ele) {
-          setDrawerContainer(ele);
-        }
+      if (ele) {
+        setDrawerContainer(ele);
       }
-    }, [props.portal]);
+    }
+  }, [props.portal]);
 
     
   ////////////Contact Wells end///////////////////////////////////////////////
@@ -177,6 +177,7 @@ function ShapeWellInterestTable(props) {
       return (
         <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
           <Button
+            id="addRelatedWellBtn"
             color="secondary"
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {
@@ -210,7 +211,7 @@ function ShapeWellInterestTable(props) {
         })),
       },
       refetchQueries: [
-        "getESPaginatedList", "getESSimpleSearch", "getESFilterList","getShapeSummaryDetails"
+        "getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getShapeSummaryDetails"
       ],
       awaitRefetchQueries: true,
     });
