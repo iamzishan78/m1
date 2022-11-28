@@ -26,6 +26,7 @@ import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
 import { handleSelectedGridChange, setColumnDisplayAndFilter } from "./helpers";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { findInFunction, formattingGridView, sortColumns } from "utils/helper";
+import { DrawerContext } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import moment from "moment";
 
 import GlobalSettings from "..//..//GlobalSettings.js";
@@ -34,6 +35,7 @@ import GlobalSettings from "..//..//GlobalSettings.js";
 export const TableESHOC = (Component) => {
     const HocWithDefaultProps = function HOC(props) {
         const { stateApp, setStateApp, loadMore } = props
+      const [drawer, setDrawer] = useContext(DrawerContext);
         const dispatch = useDispatch();
         const client = useApolloClient();
         const [tableMeta, setTableMeta] = useState([]);
@@ -111,7 +113,7 @@ export const TableESHOC = (Component) => {
                     let filterColumns = cols.filter((col) => !col._id && !props.actionColumns.includes(col.label) && !props.actionColumns.includes(col.name));
                     let actionColumns = cols.filter((col) => props.actionColumns.includes(col.label) || props.actionColumns.includes(col.name));
 
-                    // Excluding actionColumns from veiw Columns 
+                    // Excluding actionColumns from veiw Columns
                     actionColumns = actionColumns.map(aC => ({ ...aC, options: { ...aC.options, viewColumns: false } }))
 
                     let columnsData = [...filterColumns, ...copy(metaDatas), ...actionColumns]
@@ -199,7 +201,7 @@ export const TableESHOC = (Component) => {
         }, [stateApp.user, props.targetLabel, props.showTracks]);
 
         useEffect(() => {
-            SetDependencyUpdate(!dependencyUpdate)
+            SetDependencyUpdate(!dependencyUpdate);
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
         useEffect(() => {
@@ -735,7 +737,7 @@ export const TableESHOC = (Component) => {
                                 query: GET_ES_SIMPLE_SEARCH,
                             });
 
-                            tableState.selectedRows.data = allSelectedRows?.data?.getESSimpleSearch.hits
+                            tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
                             meta.setSelectedRows(allSelectedRows?.data?.getESSimpleSearch.hits)
                         } else {
                             if (meta?._selectedRows?.length > 0)
@@ -832,24 +834,28 @@ export const TableESHOC = (Component) => {
                     )
             },
             onRowClick: (rowData, { dataIndex, rowIndex }) => {
-                setAddToTable('update')
+                // setAddToTable('update');
+                // if(drawer === "wells"){
+                //   setDrawer(null);
+                // }
+                setDrawer("tract");
                 setClickedRow({ ...rows[dataIndex] })
             }
         }
         options.page = page
 
         const onInfiniteScroll = () => {
-            setCurrentRowsLength(currentRowsLength => {
+            setCurrentRowsLength(_currentRowsLength => {
                 Loading((loading) => {
-                    setRows(rows => {
-                        if (rows.length < currentRowsLength && !loading) {
+                    setRows(tableRows => {
+                        if (tableRows.length < _currentRowsLength && !loading) {
                             document.getElementById('pagination-next').click()
                         }
-                        return rows
+                        return tableRows;
                     })
-                    return loading
+                    return loading;
                 })
-                return currentRowsLength
+                return _currentRowsLength;
             })
         }
 

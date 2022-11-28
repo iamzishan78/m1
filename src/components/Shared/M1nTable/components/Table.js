@@ -3600,7 +3600,7 @@ function SubTable(props) {
                       }}
                       aria-label="delete"
                     >
-                      <DeleteIcon />
+                      <DeleteIcon id="deleteWellInterest" />
                     </IconButton>
                   </Tooltip>
                 </div>
@@ -3727,10 +3727,9 @@ function SubTable(props) {
                           className={classes.multiSelectionTopBarButtons}
                           onClick={() => {
                             let owners = [];
+                            const rows = _selectedRows?.length > 0 ? _selectedRows : props.rows
                             for (let i in props.selectedRows) {
-                              owners.push(
-                                props.rows[props.selectedRows[i].dataIndex]
-                              );
+                              owners.push(rows[props.selectedRows[i].dataIndex]);
                             }
                             props.setSelectedRows && props.setSelectedRows(owners);
                             // props.setOpenCustomDialog("exportContacts");
@@ -4742,6 +4741,7 @@ function SubTable(props) {
               rows={expandedObject}
               setRows={setExpandedObject}
               setSelectedRow={setSelectedRow}
+              campaign={props.campaign}
             />
           </RightDialog>
         )}
@@ -5132,6 +5132,7 @@ function SubTable(props) {
                   rows={expandedObject}
                   setRows={setExpandedObject}
                   setSelectedRow={setSelectedRow}
+                  campaign={props.campaign}
                 />
               )}
               {openDialog === "printLabels" && (

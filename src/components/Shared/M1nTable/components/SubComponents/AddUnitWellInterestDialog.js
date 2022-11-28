@@ -379,6 +379,7 @@ function AddUnitInterestDialog(props) {
           variant="contained"
           color="secondary"
           size="medium"
+          id="saveWellButton"
           disableElevation
           onClick={() => {
             handleValidate() && handleSave();
