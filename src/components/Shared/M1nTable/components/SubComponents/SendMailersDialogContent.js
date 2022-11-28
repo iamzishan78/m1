@@ -84,6 +84,11 @@ export default function SendMailersDialogContent(props) {
 
 	const [stateApp] = useContext(AppContext);
 
+    useEffect(()=>{
+      if(props?.campaign?.name !== '' ){
+        setCampaign(props?.campaign?.name);
+      }
+    },[props.campaign]);
 	const runStorefront = () => {
 		if (campaign.trim() === '') {
 			dispatch(showErrorMessage('Please fill Campaign Name'));

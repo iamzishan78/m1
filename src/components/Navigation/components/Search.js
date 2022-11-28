@@ -912,6 +912,7 @@ function Search() {
         forcePopupIcon
         filterOptions={(x) => x}
         options={optionsWithHeader}
+        debug
         groupBy={(option) => {
           if (option?.shapeJson?.properties?.type === "agreement") return "Agreements"
           if (option.Source === ownerCogIndexName) return "Tax Owners";
@@ -1351,12 +1352,12 @@ function Search() {
             )}
           </div>
         )}
-        renderOption={(option) => {
+        renderOption={(option, index) => {
           if (option.Source === "header" || option.group === "loader") return null;
           const parts = parse(option.Primary, Array());
 
           return (
-            <Grid container spacing={0}>
+            <Grid container spacing={0} id={"cognitive-search-options-"+index}>
               <Grid container item xs={11} alignItems="center">
                 <Grid item>
                   {option.Source === ownerCogIndexName && <PersonIcon className={classes.icon} />}

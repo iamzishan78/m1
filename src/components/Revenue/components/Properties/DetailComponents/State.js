@@ -31,6 +31,7 @@ export default function FilterStateName({ value, onStateChange, label, variant, 
   return (
     <FormControl className={classes.formControl}>
       <Autocomplete
+        id="field-state"
         className={classes.autoC}
         options={statesNames}
         size={shrink ? 'small' : 'medium'}

@@ -556,6 +556,7 @@ function SubTable(props) {
   const [year, setYear] = React.useState(2021);
   const [total, Total] = useState(false);
   const [rows, Rows] = useState([]);
+  const [_selectedRows, setSelectedRows] = useState([]);
   const [isSearchOpen, openSearch] = useState(false);
   const [handleSearch, setHandleSearch] = useState(() => () => { });
   const [dataWell, setDataWell] = useState();
@@ -696,6 +697,7 @@ function SubTable(props) {
         link: shapeType === "agreement" ? `/land/agreement/details/${stateApp.selectedShape.id}` : `/map/units/${shapeId[shapeId.length - 1]}`
       } : null
     );
+    dispatch(setMapGridCardState({ mapGridCardActivated: false }));
     setStateApp((stateApp) => ({
       ...stateApp,
       selectedShape: null,
@@ -1846,14 +1848,14 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           // for unit wells we need to use globalWell instead of wellId
-                          if (props.targetLabel === 'owner' || props.targetLabel === 'operator' || props.rows[tableMeta.rowIndex].globalWell)
+                          if (props.targetLabel === 'owner' || props.targetLabel === 'operator' || props.rows[tableMeta.rowIndex].globalWell) {
+                            if (props.targetLabel === "well")
+                              value.wellId = props.rows[tableMeta.rowIndex].globalWell;
                             handleClickFlyToIcon(props.targetLabel, value);
-
-                          else if (props.parent === "UnitsTable" || props.parent === "search") {
+                          } else if (props.parent === "UnitsTable" || props.parent === "search") {
                             const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
                             openUnitDetailCard(row_line._id);
-                          }
-                          else if (props.targetLabel === "well") {
+                          } else if (props.targetLabel === "well") {
                             value.wellId = props.rows[tableMeta.rowIndex].globalWell;
                           }
                         }}
@@ -2430,7 +2432,8 @@ function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
                   const docInfo = row_line;
-                  let docExtention = row_line?.fileName?.split(".")?.[1]?.toLowerCase();
+                  const splittedStrings = row_line?.fileName?.split(".");
+                  let docExtention = splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
                   return (
                     <div
                       style={{
@@ -3597,7 +3600,7 @@ function SubTable(props) {
                       }}
                       aria-label="delete"
                     >
-                      <DeleteIcon />
+                      <DeleteIcon id="deleteWellInterest" />
                     </IconButton>
                   </Tooltip>
                 </div>
@@ -3614,6 +3617,9 @@ function SubTable(props) {
           ) {
             const getSelectedRows = () => {
               const selectedRows = [];
+              if (_selectedRows.length > 0)
+                return _selectedRows;
+
               for (let i = 0; i < m1nSelectedRowsIndexes.length; i++) {
                 selectedRows.push(rows[m1nSelectedRowsIndexes[i]]);
               }
@@ -3721,10 +3727,9 @@ function SubTable(props) {
                           className={classes.multiSelectionTopBarButtons}
                           onClick={() => {
                             let owners = [];
+                            const rows = _selectedRows?.length > 0 ? _selectedRows : props.rows
                             for (let i in props.selectedRows) {
-                              owners.push(
-                                props.rows[props.selectedRows[i].dataIndex]
-                              );
+                              owners.push(rows[props.selectedRows[i].dataIndex]);
                             }
                             props.setSelectedRows && props.setSelectedRows(owners);
                             // props.setOpenCustomDialog("exportContacts");
@@ -4436,7 +4441,10 @@ function SubTable(props) {
           m1nSelectedRowsIds,
           m1nSelectedRowsIndexes,
           setSelectedRow,
-          searchData
+          searchData,
+          setM1nSelectedRowsIndexes,
+          _selectedRows,
+          setSelectedRows
         });
       }
     },
@@ -4733,6 +4741,7 @@ function SubTable(props) {
               rows={expandedObject}
               setRows={setExpandedObject}
               setSelectedRow={setSelectedRow}
+              campaign={props.campaign}
             />
           </RightDialog>
         )}
@@ -5123,6 +5132,7 @@ function SubTable(props) {
                   rows={expandedObject}
                   setRows={setExpandedObject}
                   setSelectedRow={setSelectedRow}
+                  campaign={props.campaign}
                 />
               )}
               {openDialog === "printLabels" && (

@@ -103,14 +103,14 @@ const LayerItem = React.memo((props) => {
 
   const handleLayerZoomClick = (data) => {
     const sourceName = data.layerPaintProps[0].sourceProps
-    let sourceUrl = map.getSource(sourceName)?._data;
+    let sourceUrl = map?.getSource(sourceName)?._data;
     if (sourceUrl) {
       fetchData(sourceUrl, map)
     }
     else {
       setZoomLoading(true)
       const intervalId = setInterval(() => {
-        let sourceUrl = map.getSource(sourceName)?._data;
+        let sourceUrl = map?.getSource(sourceName)?._data;
         if (sourceUrl) {
           fetchData(sourceUrl, map)
           clearInterval(intervalId);
