@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { basic_timeouts } from "../../cypressUtils/data"
+import { basic_timeouts } from "../cypressUtils/data"
 
 describe('Add and Remove Comments on Flow Deal Spec', () => {
     it('passes', () => {
@@ -35,7 +35,7 @@ describe('Add and Remove Comments on Flow Deal Spec', () => {
                     cy.get(`#${commentId}`).should('exist').scrollIntoView().trigger('mouseover')
 
                     cy.log('==== STEP: CLICK ON EXPAND ICON FOR COMMENT ====')
-                    cy.get("#expandIcon").click({ force: true })
+                    cy.get("#expandCommentActionIcon").click({ force: true })
 
                     cy.log('==== STEP:CLICK ON DELTE COMMENT====')
                     cy.get("#deleteComment", { timeout: longTimeout }).click()

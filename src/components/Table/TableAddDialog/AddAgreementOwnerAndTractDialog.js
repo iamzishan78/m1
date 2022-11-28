@@ -496,7 +496,7 @@ function AddAgreementOwnerAndTractDialog(props) {
               }}
               onClick={handleMenuClick}
             >
-              <MoreHorizIcon size="medium" />
+              <MoreHorizIcon id="tractMoreHorizIcon" size="medium" />
             </IconButton>
           </>
         )}
@@ -524,7 +524,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             <ListItemIcon style={{ minWidth: '30px' }}>
               <DeleteIcon size="medium" />
             </ListItemIcon>
-            <ListItemText>Delete</ListItemText>
+            <ListItemText id="deleteTract">Delete</ListItemText>
           </MenuItem>
         </Menu>
       </div>
