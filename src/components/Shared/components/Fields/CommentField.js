@@ -172,6 +172,7 @@ export default function DealComment({
   setEditCommentId,
   fieldWidth,
   setShowActions,
+  setIsEdit,
   ...props
 }) {
   const classes = useStyles({ fieldWidth });
@@ -405,6 +406,8 @@ export default function DealComment({
             onClick={() => {
               setComment("");
               setEditCommentId("");
+              setIsEdit(false);
+              setShowActions(false);
             }}
           >
             Cancel

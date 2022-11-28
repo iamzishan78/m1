@@ -51,7 +51,6 @@ describe('Related Agreements Spec', () => {
                 cy.verifyApiResponse('@upsertRelatedAgreementDescriptorApi', { responseTimeout: longTimeout }).then(response => {
                     const relatedAgreementID = response.response.body.data.upsertRelatedAgreementDescriptor.descriptor.relatedObject
 
-
                     cy.log('==== STEP: VERIFY IF AGREEENT WAS ADDED  ====')
                     cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(response => {
                         const hits = response.response.body.data.getESSimpleSearch.hits
@@ -62,7 +61,7 @@ describe('Related Agreements Spec', () => {
                             throw new Error("Related Agreement not found")
 
                         cy.log('==== STEP: CLICK ON CHECKBOX OF AGREEMENT ====')
-                        cy.get(`[id=MUIDataTableSelectCell-${indexOfRelatedAgreement}]`).scrollIntoView().check()
+                        cy.get("[id='related-agrmt-div']").get(`[id=MUIDataTableSelectCell-${indexOfRelatedAgreement}]`).scrollIntoView().check()
 
                         cy.interceptApiByIndex('getESSimpleSearch', 'shapes_flat')
 
@@ -77,7 +76,7 @@ describe('Related Agreements Spec', () => {
                         cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(response => {
                             const hits = response.response.body.data.getESSimpleSearch.hits
 
-                            if (hits.some(hit => hit?._id === relatedAgreementID))
+                            if (hits && hits.length && hits.some(hit => hit?._id === relatedAgreementID))
                                 throw new Error("Related Agreement still exist after delete")
                         })
                         cy.wait(5000)
