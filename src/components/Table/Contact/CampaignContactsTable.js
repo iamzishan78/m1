@@ -166,6 +166,7 @@ function ContactsTable(props) {
             esIndex: esIndex,
             open: true
           }}
+          campaign={props.campaign}
         />
       </Container>
     </>

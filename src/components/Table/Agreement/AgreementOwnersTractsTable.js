@@ -26,7 +26,6 @@ function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
   const [drawerContainer, setDrawerContainer] = useState(null);
   const [drawer, setDrawer] = useContext(DrawerContext);
-
   useEffect(() => {
     if (props.portal) {
       const ele = document.querySelector(props.portal);
@@ -38,7 +37,7 @@ function AgreementOwnersTractsTable(props) {
   }, [props.portal])
 
   useEffect(() => {
-    if (props.addToTable) {
+    if (props.addToTable === "add") {
       setDrawer('tract')
     } else {
       setDrawer(null)
@@ -147,10 +146,9 @@ function AgreementOwnersTractsTable(props) {
   //     </div>
   //   }
   // }
-
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
-      {props.addToTable && (
+      {drawer === "tract" && (
         <AddAgreementOwnerAndTractDialog
           open={props.addToTable}
           width="450px"
@@ -159,7 +157,7 @@ function AgreementOwnersTractsTable(props) {
           shapeType={props.shapeType}
           seletedOwner={props.clickedRow}
           deleteFunc={deleteFunc}
-          onClose={() => props.setAddToTable(false)}
+          onClose={() => setDrawer(null)}
           drawerContainer={drawerContainer}
         />
       )}
