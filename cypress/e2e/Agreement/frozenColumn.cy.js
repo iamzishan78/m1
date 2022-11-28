@@ -18,18 +18,22 @@ describe('Agreement Provisions Spec', () => {
 
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
 
-        cy.getTableCell('Agreement', 3).then(($agreementCell) => {
-            cy.log('==== STEP: VERIFY FROZEN COLUMN ====');
-            cy.wrap($agreementCell).should('be.visible')
+        cy.getTableCell('Agreement', 6).then(($agreementCell6) => {
+            const agreementName = $agreementCell6.text()
 
-            cy.getTableCell('Status', 3).then(($statusCell) => {
-                cy.wrap($statusCell).scrollIntoView()
+            cy.getTableCell('Agreement', 3).then(($agreementCell3) => {
+                cy.log('==== STEP: VERIFY FROZEN COLUMN ====');
+                cy.wrap($agreementCell3).should('be.visible')
 
-                cy.get('.MuiTableCell-root').contains('Agreement').should('be.visible')
+                cy.getTableCell('Status', 3).then(($statusCell) => {
+                    cy.wrap($statusCell).scrollIntoView()
 
+                    cy.get('.MuiTableCell-root').contains('Agreement').should('be.visible')
+                    cy.get('.MuiTableCell-root').contains(agreementName).should('be.visible')
+
+                })
             })
         })
-
 
     })
 })
