@@ -20,7 +20,7 @@ const RellatedAgreementsHeadCells = [
         style: {
           ...GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps().style,
           left: "77px",
-          padding: "0px 18px"
+          padding: "0px 40px"
         },
       }),
       ignoreGlobal: true,

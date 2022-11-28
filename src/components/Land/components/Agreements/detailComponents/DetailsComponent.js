@@ -376,20 +376,20 @@ export function DetailComponents(props) {
     if (field === "agreementType") {
       customLayer.layer = value;
     }
-    if(field === "state"){
-      if(shape.properties.originalProperties){
+    if (field === "state") {
+      if (shape.properties.originalProperties) {
         shape.properties.originalProperties.County = undefined;
-        shape.properties.originalProperties.State = value;  
-        shape.properties.originalProperties.StateAbbreviation = value;  
-      }else{
-        shape.properties.originalProperties = { State:value, StateAbbreviation:value }
+        shape.properties.originalProperties.State = value;
+        shape.properties.originalProperties.StateAbbreviation = value;
+      } else {
+        shape.properties.originalProperties = { State: value, StateAbbreviation: value }
       }
     }
-    if(field === "county"){
-      if(shape.properties.originalProperties){
-        shape.properties.originalProperties.County = value;  
-      }else{
-        shape.properties.originalProperties = { County:value }
+    if (field === "county") {
+      if (shape.properties.originalProperties) {
+        shape.properties.originalProperties.County = value;
+      } else {
+        shape.properties.originalProperties = { County: value }
       }
     }
 
@@ -502,13 +502,13 @@ export function DetailComponents(props) {
                 }}
                 aria-label="ant example"
               >
-                <StyledTab label="Summary" />
+                <StyledTab id="summaryTab" label="Summary" />
                 <StyledTab label="Parties" />
-                <StyledTab label="Provisions" />
-                <StyledTab label="Legal Description" />
-                <StyledTab label="Wells" />
+                <StyledTab id="provisionsTab" label="Provisions" />
+                <StyledTab id="legalDescriptionTab" label="Legal Description" />
+                <StyledTab id="wellsTab" label="Wells" />
                 <StyledTab label="Documents" />
-                <StyledTab label="Related Agreements" />
+                <StyledTab id="relatedAgreementsTab" label="Related Agreements" />
                 {/* <StyledTab label="Related Info" /> */}
               </StyledTabs>
             </div>
@@ -537,7 +537,7 @@ export function DetailComponents(props) {
                 Metadata
               </Button>
               <IconButton size="small" component="span" className={classes.menuIcon} onClick={handleMenuClick}>
-                <MoreHorizIcon size="medium" />
+                <MoreHorizIcon id="moreHorizIcon" size="medium" />
               </IconButton>
             </div>
           </div>
@@ -684,7 +684,7 @@ export function DetailComponents(props) {
           <ListItemIcon>
             <DeleteIcon size="medium" />
           </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
+          <ListItemText id="deleteItem">Delete</ListItemText>
         </MenuItem>
       </Menu>
 

@@ -1,0 +1,5 @@
+import '../e2e/Searches/mapSearchAgreements.cy'
+import '../e2e/Searches/mapSearchUnits.cy'
+import '../e2e/Searches/snapGridSearchAgreements.cy'
+import '../e2e/Searches/snapGridSearchUnits.cy'
+import '../e2e/Searches/snapGridSearchTracts.cy'
