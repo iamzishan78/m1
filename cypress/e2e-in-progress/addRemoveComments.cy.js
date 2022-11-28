@@ -41,7 +41,7 @@ describe('Add and Remove Comments Spec', () => {
                     cy.get(`#${commentId}`).should('exist').scrollIntoView().trigger('mouseover')
 
                     cy.log('==== STEP: CLICK ON EXPAND ICON FOR COMMENT ====')
-                    cy.get("#expandIcon").click({ force: true })
+                    cy.get("#expandCommentActionIcon").click({ force: true })
 
                     cy.log('==== STEP:CLICK ON DELTE COMMENT====')
                     cy.get("#deleteComment", { timeout: longTimeout }).click()

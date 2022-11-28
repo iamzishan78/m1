@@ -72,8 +72,6 @@ export default function AddUserGroupData(props) {
     awaitRefetchQueries: true,
   });
 
-  const [addLayer] = useMutation(ADDLAYER);
-
   const groupId = uuid()
 
   useEffect(() => {
@@ -189,11 +187,15 @@ export default function AddUserGroupData(props) {
               const layerGroup = { name: groupName, groupId: groupId, createBy: stateApp.user.mongoId }
               addLayerGroup({ variables: { userId: stateApp.user.mongoId, layerGroup } })
             }
-            fileContent.featureTypes.forEach(async (type, index) => {
+            for (let index = 0; index < fileContent.featureTypes.length; index++) {
+              const type = fileContent.featureTypes[index];
+              
               const layerName = layerNames[index]
               const layerShapeName = fileContent.fileNames[index]
               const defaultSettings = getDefaultSettings(type, layerName, sourceProps)
-              addLayer({
+
+              await client.mutate({
+                mutation: ADDLAYER,
                 variables: {
                   layer: {
                     layerName,
@@ -216,11 +218,10 @@ export default function AddUserGroupData(props) {
               });
 
               if (index === fileContent.featureTypes.length - 1) {
-
                 await SimpleOrShapeFileImport({ stateApp, setStateApp, client, file_id, sourceProps })
                 handleClose();
               }
-            })
+            }
           }
 
           else {
@@ -279,7 +280,7 @@ export default function AddUserGroupData(props) {
         },
       });
 
-      console.log({inAdd:stateMapControls.fileUploadedContent})
+      console.log({ inAdd: stateMapControls.fileUploadedContent })
 
       await addDataset({
         variables: {
@@ -415,7 +416,7 @@ export default function AddUserGroupData(props) {
               endAdornment: (
                 <InputAdornment position="end">
                   <Button
-                    disabled={!url || url == "" ? true : false}
+                    disabled={!url || url === "" ? true : false}
                     variant="contained"
                     size="small"
                     color="secondary"

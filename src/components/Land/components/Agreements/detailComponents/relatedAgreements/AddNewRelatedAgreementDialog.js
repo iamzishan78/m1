@@ -216,9 +216,8 @@ const AddNewRelatedAgreementDialog = (props) => {
                   }}
                   renderOption={(option) => {
                     if (option.id === "newEntity") return;
-                    let parts = parse([option.key[1], option.key[0]], Array());
+                    let parts = parse([option.key[4],option.key[3], option.key[2],option.key[1], option.key[0]], Array());
                     const type = get(option, `key[${2}]`) && agreementTypes.find((type) => type.value === option.key[2]);
-
                     return (
                       <Grid container spacing={0}>
                         <Grid container item xs={11} alignItems="center">
@@ -295,6 +294,7 @@ const AddNewRelatedAgreementDialog = (props) => {
           Cancel
         </Button>
         <Button
+          id="addAgreementButton"
           className={classes.secondary}
           color="secondary"
           style={{ marginBottom: "40px", marginRight: "20px" }}

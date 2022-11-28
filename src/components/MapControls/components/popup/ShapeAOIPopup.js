@@ -60,7 +60,7 @@ export default function ShapeAOIPopup(props) {
 
   const updateSourceAndAoiLayer = (currentFeature) => {
     const { map, draw } = stateApp;
-    stateApp.map.getSource("aoi_label_source").setData({
+    stateApp.map?.getSource("aoi_label_source").setData({
       type: "FeatureCollection",
       features: [currentFeature],
     });

@@ -27,6 +27,7 @@ const AutoCompleteWithNewOption = ({ options, onChange, value, shapeType, typeKe
             defaultValue={{ _id: value, name: value }}
             value={value ? { _id: value, name: value } : null}
             disableListWrap
+            id={rest?.id || "autocompleteWithNewOptions"}
             classes={classes}
             onBlur={onBlur}
             options={options?.map((type) => {
