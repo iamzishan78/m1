@@ -50,6 +50,11 @@ Cypress.Commands.add("checkAndLogin", () => {
     })
 })
 
+//This command will set visbility to hidden for css element
+Cypress.Commands.add('hide', { prevSubject: 'element' }, (subject) => {
+    subject.css('visibility', 'hidden');
+})
+
 // This command is to type  in autocomplete search bar and then select first matched option
 Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId = null) => {
     cy.get(searchId, { timeout: longTimeout }).type(stringToType).wait(3000)
