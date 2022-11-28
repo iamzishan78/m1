@@ -1419,7 +1419,7 @@ function SubTable(props) {
                           round
                         />
                         <Link
-                            to={`/contact/details/${tableMeta.rowData[0]}`}
+                            to={`/contact/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
                             className={classes.clickableCell}
                         >
                         <p
