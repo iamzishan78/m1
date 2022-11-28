@@ -4741,6 +4741,7 @@ function SubTable(props) {
               rows={expandedObject}
               setRows={setExpandedObject}
               setSelectedRow={setSelectedRow}
+              campaign={props.campaign}
             />
           </RightDialog>
         )}
@@ -5131,6 +5132,7 @@ function SubTable(props) {
                   rows={expandedObject}
                   setRows={setExpandedObject}
                   setSelectedRow={setSelectedRow}
+                  campaign={props.campaign}
                 />
               )}
               {openDialog === "printLabels" && (
