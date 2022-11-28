@@ -1840,7 +1840,7 @@ function SubTable(props) {
 
                     <Tooltip title="Fly To Map" placement="top" style={{ marginRight: "10px" }}>
                       <IconButton
-                        id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                        id={`map-fly-to-${tableMeta.rowData[0]}`}
                         size={props.dense ? "small" : "medium"}
                         color="secondary"
                         className={`${classes.icons}`}

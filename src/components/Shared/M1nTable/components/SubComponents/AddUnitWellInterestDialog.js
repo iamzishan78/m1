@@ -414,17 +414,17 @@ function AddUnitInterestDialog(props) {
       )}
       {
         props.drawerContainer &&
-          ReactDOM.createPortal(content, props.drawerContainer)
+        ReactDOM.createPortal(content, props.drawerContainer)
       }
       {
         !props.drawerContainer &&
-          <RightDialog
-            open={props.open}
-            handleClickDialogClose={handleClose}
-            width={props.width}
-          >
-            {content}
-          </RightDialog>
+        <RightDialog
+          open={props.open}
+          handleClickDialogClose={handleClose}
+          width={props.width}
+        >
+          {content}
+        </RightDialog>
       }
     </>
   );
