@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import { get } from "lodash";
 import { Grid, TextField, InputAdornment } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -7,7 +7,7 @@ import { useLazyQuery } from "@apollo/client";
 
 import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
-
+import _ from 'lodash';
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 const useStyles = makeStyles((theme) => ({
@@ -48,8 +48,8 @@ const useStyles = makeStyles((theme) => ({
 const RevenueStatementInfoForm = ({ statementInfo, setStatementsInfo, ...rest }) => {
   const classes = useStyles();
   const { control, watch, getValues, reset } = rest;
-
-  const [getPayorList, { data: payorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  const [payorList,setPayyorList] = useState([]);
+  const [getPayorList, { data: payorListData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
     reset(statementInfo);
@@ -69,6 +69,15 @@ const RevenueStatementInfoForm = ({ statementInfo, setStatementsInfo, ...rest })
       },
     });
   }, [getPayorList]);
+
+  useEffect(()=>{
+    const sortList = _.orderBy(payorListData?.getESFilterList?.hits,"key","asc");
+    if(sortList?.length > 0){
+      setPayyorList(sortList);
+    }else {
+      setPayyorList([]);
+    }
+  },[payorListData])
 
   return (
     <div className={classes.root}>
@@ -90,7 +99,7 @@ const RevenueStatementInfoForm = ({ statementInfo, setStatementsInfo, ...rest })
                       value={get(params, "value.name", "")}
                       variant="outlined"
                       setValue={params.onChange}
-                      options={get(payorList, "getESFilterList.hits", [])?.map((payor) => ({
+                      options={payorList?.map((payor) => ({
                         _id: get(payor, `original.hits.hits.${0}._id`),
                         name: payor.key,
                       }))}
