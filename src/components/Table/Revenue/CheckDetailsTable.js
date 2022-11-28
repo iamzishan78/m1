@@ -7,6 +7,8 @@ import { deepEqualObjects, copy } from "components/Shared/functions";
 import TableHeader from 'components/Table/constants/check-details-header-schema';
 import { history } from "store";
 
+// value formatters
+import convert_date from "components/Shared/valueformatters/convert_date.js";
 
 function CheckDetailsTable(props) {
     const classes = usetableStyles();
@@ -18,6 +20,7 @@ function CheckDetailsTable(props) {
             hit.name = hit?.property?.name;
             hit.state = hit.property?.state;
             hit.county = hit.property?.county;
+            hit.date = hit.date ? convert_date(hit.date) : null;
             return hit;
         });
     };

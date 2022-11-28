@@ -503,11 +503,11 @@ export function DetailComponents(props) {
                 }}
                 aria-label="ant example"
               >
-                <StyledTab label="Summary" />
+                <StyledTab id="summaryTab" label="Summary" />
                 <StyledTab label="Parties" />
                 <StyledTab id="provisionsTab" label="Provisions" />
                 <StyledTab id="legalDescriptionTab" label="Legal Description" />
-                <StyledTab label="Wells" />
+                <StyledTab id="wellsTab" label="Wells" />
                 <StyledTab label="Documents" />
                 <StyledTab id="relatedAgreementsTab" label="Related Agreements" />
                 {/* <StyledTab label="Related Info" /> */}
