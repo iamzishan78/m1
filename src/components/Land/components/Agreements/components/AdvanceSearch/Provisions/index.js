@@ -61,7 +61,7 @@ const provisionFilters = [
   },
 ];
 
-const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index }) => {
+const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, appliedFilters }) => {
   const params = {
     esIndex: "shapes_flat",
     variant: "outlined",
@@ -75,7 +75,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index }) 
     onChange,
     query: GET_ES_SIMPLE_FILTER,
     searchFields: filter.searchFields,
-    filters: [{ field: "shapeJson.properties.type.keyword", value: "agreement" }],
+    filters: [{ field: "shapeJson.properties.type.keyword", value: "agreement" }, ...appliedFilters.filter((af, i) => i < index)],
     extendSearchQuery: "",
     custom: filter.custom,
   };
@@ -135,6 +135,7 @@ export default function ProvisionsFilters(props) {
             filter={filter}
             filterList={filterList}
             index={index}
+            appliedFilters={stateApp.landSearchFilters.provisions}
           />
         </Grid>
       ))}
