@@ -71,6 +71,7 @@ function ContactsTable(props) {
       },
     ]);
     props.setTableMeta({
+      isSelectedAllAllowed: true,
       addableName: "Contact",
       extendSearchQuery: null,
       searchFields: ["name^4", "_all"],
@@ -112,6 +113,7 @@ function ContactsTable(props) {
   delete props.options.customToolbarSelect;
   delete props.options.onRowClick;
   props.options.search = false;
+  props.options.rowsSelected = props.allRowsSelected
 
   return (
     <>
@@ -164,6 +166,7 @@ function ContactsTable(props) {
             esIndex: esIndex,
             open: true
           }}
+          campaign={props.campaign}
         />
       </Container>
     </>
