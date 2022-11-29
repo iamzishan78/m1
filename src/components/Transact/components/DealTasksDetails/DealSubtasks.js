@@ -177,6 +177,7 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
                 )}
               </>
             ) : (
+              <Grid item>
               <TextField
                 size="small"
                 variant="outlined"
@@ -197,6 +198,7 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
                 onClick={(event) => event.stopPropagation()}
                 onBlur={() => setEdit({ isEditing: false, index: -1 })}
               />
+              </Grid>
             )}
           </Grid>
           </Grid>
