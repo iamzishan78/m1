@@ -516,9 +516,8 @@ function SourceManager(props) {
   }
 
   return (
-    <div style={{ height: "100%", display: "flex", width: "100%" }}>
-      <DropzoneAreaBase
-        onAdd={handleFileInput}
+    <div id="sourceManagerDiv" style={{ height: "100%", display: "flex", width: "100%" }}>
+      <DropzoneAreaBase onAdd={handleFileInput}
         onDelete={(fileObj) => { }}
         onAlert={(message, variant) => { }}
         filesLimit={1}
