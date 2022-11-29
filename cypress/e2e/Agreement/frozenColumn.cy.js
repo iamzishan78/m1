@@ -31,13 +31,6 @@ describe('Agreement Provisions Spec', () => {
                     cy.get('.MuiTableCell-root').contains('Agreement').should('be.visible')
                     cy.get('.MuiTableCell-root').contains(agreementName).should('be.visible')
 
-                    cy.interceptApi('viewFiles')
-                    cy.interceptApi('AddDescriptorFile')
-                    cy.get("#searchDocumentList").click()
-                    cy.get('body').type("{downArrow}{downArrow}{enter}")
-                    cy.verifyApiResponse('@viewFilesApi', { responseTimeout: longTimeout })
-                    cy.verifyApiResponse('@AddDescriptorFileApi', { responseTimeout: longTimeout })
-
                 })
             })
         })
