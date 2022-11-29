@@ -38,6 +38,7 @@ import AutoCompleteDocumentList from "components/Shared/Forms/Fields/AutoComplet
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
 import { grey600, grey400 } from "material-ui/styles/colors";
+import { GET_PARCELS_FILES } from "graphQL/useQueryGetParcelFiles";
 
 const filter = createFilterOptions();
 
@@ -204,6 +205,8 @@ export default function RelatedFile(props) {
     _id: null,
   });
 
+  const [getAllFiles, { data: dataParcelFiles, loading }] = useLazyQuery(GET_PARCELS_FILES);
+
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
@@ -215,7 +218,7 @@ export default function RelatedFile(props) {
     fetchPolicy: "no-cache",
   });
   const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(CREATEDESCRIPTORFILE, {
-    refetchQueries: ["getRecentContactFiles", "shapeSummaryDetails"],
+    refetchQueries: ["getRecentContactFiles", "shapeSummaryDetails", "getESSimpleSearch"],
     awaitRefetchQueries: true,
   });
 
@@ -321,8 +324,9 @@ export default function RelatedFile(props) {
           fileId: fileId || newDocument.fileId,
         },
       },
-      refetchQueries: ["getParcelFiles"],
+      refetchQueries: ["getParcelFiles", "getESSimpleSearch"],
       awaitRefetchQueries: true,
+
     }).then(() => {
       if (props.relatedObjectId && props.relatedObjectType) {
         addExistingDocument()
@@ -355,13 +359,8 @@ export default function RelatedFile(props) {
         relatedObjectType: props.relatedObjectType,
       },
     }).then(() => {
-      props.getAllFiles({
-        variables: {
-          relatedObjectId: props.relatedObjectId,
-          relatedObjectType: props.relatedObjectType,
-        },
-      });
-      props.setShowDocumentSlider(false);
+
+      props.setShowDocumentSlider("");
       setNameAutValueParty1({ name: "", _id: null });
       setNameAutValueParty2({ name: "", _id: null });
       setNewDocument(documentInitial);
@@ -396,7 +395,7 @@ export default function RelatedFile(props) {
             isDeleted: true,
           },
         },
-        refetchQueries: ["getDocuments", "shapeSummaryDetails"],
+        refetchQueries: ["getDocuments", "shapeSummaryDetails", "getESSimpleSearch"],
         awaitRefetchQueries: true,
       }).then(() => {
         setStateApp({
