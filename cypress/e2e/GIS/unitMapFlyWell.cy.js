@@ -16,10 +16,13 @@ describe('Unit Map Fly To Spec', () => {
         cy.searchOnMap('Units', 'u')
         cy.verifyApiResponse('@getCustomLayerApi', { responseTimeout: longTimeout })
 
+        cy.get("#expandIcon").click()
+        cy.wait(2000)
+
         cy.log(`==== STEP:CLICK ON WELL TAB ====`)
         cy.interceptApi('tracksByObjectType')
         cy.interceptApi('getESPaginatedList')
-        cy.get("[id='scrollable-auto-tab-3']").click()
+        cy.get(".MuiTab-wrapper", { timeout: longTimeout }).contains('Wells').click()
         cy.verifyApiResponse('@tracksByObjectTypeApi', { responseTimeout: longTimeout })
         cy.verifyApiResponse('@getESPaginatedListApi', { responseTimeout: longTimeout }).then((esPaginatedListResponse) => {
             const hit = esPaginatedListResponse.response.body.data.getESPaginatedList.hits[0]
