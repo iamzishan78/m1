@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from "react";
+import get from "lodash/get";
 import { makeStyles } from "@material-ui/styles";
 import { IconButton } from "@material-ui/core";
 import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Chip } from "@material-ui/core";
@@ -14,6 +15,7 @@ const filterTypes = {
   // Wells: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // Documents: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // "Related Agreements": { component: "ProvisionFilters", countKey: "tagFilterCount" },
+  // "Remarks Types": { component: "RemarksTypes", countKey: "remarksTypes" },
 };
 
 const useStyles = makeStyles(() => ({
@@ -115,22 +117,22 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
   useEffect(() => {
     return () => {
       let landFilters = { ...stateApp.landSearchFilters };
-      Object.keys(landFilters).forEach(filterType => {
+      Object.keys(landFilters).forEach((filterType) => {
         landFilters[filterType] = [];
-      })
-      setStateApp(stateApp => ({
+      });
+      setStateApp((stateApp) => ({
         ...stateApp,
-        landSearchFilters: landFilters
+        landSearchFilters: landFilters,
       }));
-    }
+    };
   }, []);
 
   const clearFilters = (filter) => {
-    setStateApp(stateApp => ({
+    setStateApp((stateApp) => ({
       ...stateApp,
-      landSearchFilters: { ...stateApp.landSearchFilters, [filter.countKey]: [] }
+      landSearchFilters: { ...stateApp.landSearchFilters, [filter.countKey]: [] },
     }));
-  }
+  };
 
   return (
     <div className={classes.root}>
@@ -146,7 +148,7 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
             <Grid container direction="row" justify="space-between" alignItems="center">
               <Grid item className={classes.accordionHeading}>
                 <Typography style={{ padding: "15px 5px" }}>{filterType}</Typography>
-                <Chip color="info" label={stateApp.landSearchFilters[filterTypes[filterType].countKey].length} />
+                <Chip color="info" label={get(stateApp, `landSearchFilters[${filterTypes[filterType].countKey}].length`, 0)} />
               </Grid>
               <Grid item className={classes.clearIcon}>
                 <IconButton

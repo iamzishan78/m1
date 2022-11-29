@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { makeStyles } from "@material-ui/styles";
 
 import AgreementAdvanceSearch from "components/Land/components/Agreements/components/AdvanceSearch/";
@@ -14,12 +14,18 @@ const useStyles = makeStyles(() => ({
 export default function AdvanceSearch({ activeModule }) {
   const classes = useStyles();
 
+  const isASActive = useMemo(() => activeModule.title === "Agreements", [activeModule]);
+
   return (
     <>
-      <Divider />
-      <Typography className={classes.title}>Advance Search</Typography>
-      {activeModule.title === "Agreements" && <AgreementAdvanceSearch />}
-      <Divider />
+      {isASActive && (
+        <>
+          <Divider />
+          <Typography className={classes.title}>Advance Search</Typography>
+          {activeModule.title === "Agreements" && <AgreementAdvanceSearch />}
+          <Divider />
+        </>
+      )}
     </>
   );
 }

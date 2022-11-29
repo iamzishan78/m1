@@ -1,9 +1,8 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import debounce from "lodash/debounce";
-import { copy } from "components/Shared/functions";
 
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
@@ -24,40 +23,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const provisionFilters = [
+const remartsTypeFilters = [
   {
-    label: "Type",
-    filterKey: "provisions.type.keyword",
-    searchFields: ["provisions.type"],
-  },
-  {
-    label: "Applicable",
-    filterKey: "provisions.applicable",
-    searchFields: ["provisions.applicable"],
-    customOnChange: (value) => (value ? (value === "Yes" ? true : false) : null),
-    custom: {
-      key_as_string: true,
-      formatedFilterOptions: [
-        {
-          label: "Yes",
-          value: "true",
-        },
-        {
-          label: "No",
-          value: "false",
-        },
-      ],
-    },
-  },
-  {
-    label: "Provision Value",
-    filterKey: "provisions.value.keyword",
-    searchFields: ["provisions.value"],
-  },
-  {
-    label: "Party Name",
-    filterKey: "provisions.partyName.keyword",
-    searchFields: ["provisions.partyName"],
+    label: "Remark Type",
+    filterKey: "comments.commentType.keyword",
+    searchFields: ["comments.commentType"],
   },
 ];
 
@@ -77,7 +47,6 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index }) 
     searchFields: filter.searchFields,
     filters: [{ field: "shapeJson.properties.type.keyword", value: "agreement" }],
     extendSearchQuery: "",
-    custom: filter.custom,
   };
   if (filter.getOptionLabel) params["getOptionLabel"] = filter.getOptionLabel;
   return (
@@ -92,46 +61,37 @@ export default function ProvisionsFilters(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [filterList, setFilterList] = useState([[], [], [], []]);
 
-  useEffect(() => {
-    if (stateApp.landSearchFilters.provisions?.length === 0 && filterList.find((fl) => fl.length !== 0)) {
-      setFilterList([[], [], [], []]);
-    }
-  }, [stateApp.landSearchFilters.provisions]);
-
-  const changeLandProvisions = React.useMemo(
+  const onFilterChange = React.useMemo(
     () =>
       debounce((request, callback, index) => {
         const { filterKey } = callback;
         const landProvisionsFilters = [...stateApp.landSearchFilters.provisions];
         const _index = landProvisionsFilters.findIndex((f) => f.field === filterKey);
-        if (_index === -1 && request[0] !== null) landProvisionsFilters.push({ field: filterKey, value: request[0] });
-        else if (request.length > 0 && request[0] !== null) landProvisionsFilters[_index].value = request[0];
+        if (_index === -1 && request[0]) landProvisionsFilters.push({ field: filterKey, value: request[0] });
+        else if (request.length > 0 && request[0]) landProvisionsFilters[_index].value = request[0];
         else if (_index !== -1) landProvisionsFilters.splice(_index, 1);
         setStateApp((stateApp) => ({
           ...stateApp,
           landSearchFilters: { ...stateApp.landSearchFilters, provisions: landProvisionsFilters },
         }));
+
+        let _filterList = [...filterList];
+        _filterList[index] = request;
+        setFilterList(_filterList);
       }, 1000),
-    [setStateApp, stateApp.landSearchFilters.provisions]
+    [stateApp.landSearchFilters.provisions]
   );
-
-  const onFilterChange = (request, callback, filter, index) => {
-    let _filterList = [...filterList];
-    _filterList[index] = request;
-    setFilterList(_filterList);
-
-    const _request = copy(request);
-    if (filter.customOnChange) _request[0] = filter.customOnChange(_request[0]);
-    changeLandProvisions(_request, callback, index);
-  };
 
   return (
     <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
-      {provisionFilters.map((filter, index) => (
+      {remartsTypeFilters.map((filter, index) => (
         <Grid item key={index} sm={12} className={classes.gridItem}>
           <AutoCompleteDropdown
             classes={classes}
-            onChange={(request, top, callback) => onFilterChange(request, callback, filter, index)}
+            onChange={(request, top, callback) => {
+              if (filter.customOnChange) request[0] = filter.customOnChange(request[0]);
+              //   onFilterChange(request, callback, index);
+            }}
             filter={filter}
             filterList={filterList}
             index={index}
