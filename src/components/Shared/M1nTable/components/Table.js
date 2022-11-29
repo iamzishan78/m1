@@ -563,7 +563,6 @@ function SubTable(props) {
   const [defaultActivityType, setDefaultAcitivityType] = useState("call");
   const [contact, setContact] = useState(null);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
-
   // deep state
   const setFirstMount = (newState) => {
     setStateIfDeepEqual(FirstMount, newState);
