@@ -214,6 +214,12 @@ const AddNewRelatedAgreementDialog = (props) => {
                   filterOptions={(options, params) => {
                     return options;
                   }}
+                  filters={[
+                    {
+                        field: "shapeJson.properties.type.keyword",
+                        value: "agreement"
+                    }
+                  ]}
                   renderOption={(option) => {
                     if (option.id === "newEntity") return;
                     let parts = parse([option.key[4],option.key[3], option.key[2],option.key[1], option.key[0]], Array());
