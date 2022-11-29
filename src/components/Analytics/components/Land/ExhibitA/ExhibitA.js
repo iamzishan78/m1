@@ -48,11 +48,11 @@ function ExhibitATable(props) {
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : [];
     const fixedFilters = [];
-    if (formatedFilter[0] && formatedFilter[0].value.range) {
-      formatedFilter[0].type = "range";
-      formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field];
-      fixedFilters.push(formatedFilter[0]);
-    }
+    // if (formatedFilter[0] && formatedFilter[0].value.range) {
+    //   formatedFilter[0].type = "range";
+    //   formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field];
+    //   fixedFilters.push(formatedFilter[0]);
+    // }
     fixedFilters.push({ field: "shape.shapeJson.properties.type", value: 'agreement' });
     // fixedFilters.push({ field: "shape._id", value: '637180f3ddaf4a47251a35b5' });
     
@@ -66,14 +66,11 @@ function ExhibitATable(props) {
       startPaginationAt: 25,
       // defaultSort: { field: "name.keyword", order: "asc" },
       formatHits,
+      setAppliedFilters: props.filterChange
     });
     // eslint-disable-next-line
-  }, [props.landSearchQuery, props.filterToggle, refetchData]);
+  }, [props.landSearchQuery, props.filterToggle, refetchData, esFilters]);
 
-  useEffect(() => {
-    // setESFilters(props.initialFilters);
-    // eslint-disable-next-line
-  }, [props.initialFilters]);
 
   useEffect(() => {
     dispatch(

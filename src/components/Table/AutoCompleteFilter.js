@@ -3,6 +3,7 @@ import moment from "moment";
 // QUERIES
 import { AppContext } from "AppContext";
 import { useLazyQuery } from "@apollo/client";
+import uniqBy from "lodash/uniqBy";
 
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -52,7 +53,18 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
     if (filtersData) {
       const keys = Object.keys(filtersData);
       if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits) {
-        if (custom?.isDate) {
+        if(custom?.isState){
+          let hits = filtersData[keys[0]].hits.map((hit) => {
+            const keys = hit.key_as_string.split('|')
+            return ({
+              ...hit,
+              key: keys[0] || keys[1],
+              key_as_string: hit.key_as_string || hit.key,
+            })
+          });
+          hits = uniqBy(hits, "key")
+          setOptions(hits);
+        } else if (custom?.isDate) {
           filtersData[keys[0]].hits = filtersData[keys[0]]?.hits.filter((hit) => hit.key);
           const hits = filtersData[keys[0]].hits.map((hit) => ({
             ...hit,
@@ -174,6 +186,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
       renderInput={(params) => (
         <TextField
           {...params}
+          size={others.inputSize ? others.inputSize : undefined}
           variant={others?.variant ? others?.variant : "standard"}
           style={{ background: "white" }}
           label={custom?.filterLabel || label}

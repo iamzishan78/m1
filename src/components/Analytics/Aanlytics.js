@@ -113,7 +113,7 @@ export default function Analytics() {
           quickActionsPanelState={quickActionsPanelState}
           activeModule={activeModule}
           actions={sidePanelOptions}
-          PanelAction={PanelAction}
+          // PanelAction={PanelAction}
         >
           {Object.keys(allowedPaths).map((option) => (
             <Switch>

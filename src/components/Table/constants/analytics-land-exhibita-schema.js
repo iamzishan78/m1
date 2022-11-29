@@ -54,7 +54,8 @@ const AcerageSummaryHeadCells = [
     options: {
       sort: true,
       filter: true
-    }
+    },
+    custom: { isState: true }
   },
 
   {

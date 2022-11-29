@@ -378,6 +378,8 @@ export const TableESHOC = (Component) => {
                                 value = moment(new Date(value)).format("MM/DD/YYYY HH:mm:ss.SSS")
                         }
                         filterList = [value];
+                    }else if(Array.isArray(value)){
+                        filterList = value.filter(v => v)
                     }
                     // if (column?.options?.filter) {
                     column.options.filterList = filterList;
@@ -678,13 +680,14 @@ export const TableESHOC = (Component) => {
             tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
             const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch, selectedGridView)
             activeSearchRef.current = tableActions.pageESVariables.variables.search;
-            activeFiltersRef.current = handleMultiFieldFilter(tableActions.pageESVariables.variables.filters.concat(tableMeta.filters));
+            const existingFilter = tableMeta.filters ? tableMeta.filters : []
+            activeFiltersRef.current = handleMultiFieldFilter(existingFilter.concat(tableActions.pageESVariables.variables.filters));
             selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
             tableStateRef.current = tableState
 
 
             if (action === 'filterChange' && tableMeta.setAppliedFilters) {
-                // tableMeta.setAppliedFilters(activeFiltersRef.current);
+                tableMeta.setAppliedFilters(activeFiltersRef.current);
             }
             if (['filterChange', 'resetFilters'].includes(action)) {
                 if (isFiniteScroll) {
