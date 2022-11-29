@@ -157,7 +157,7 @@ const useStyles = makeStyles({
   optionNumber: {
     fontSize: "12px",
   },
-  closeButton:{
+  closeButton: {
     "& svg": {
       fill: grey400,
       "&:hover": {
@@ -533,6 +533,7 @@ export default function RelatedFile(props) {
                   New Document
                 </h4>
                 <h4
+                  id="existingDocumentTab"
                   onClick={() => {
                     setSelectedType("existing");
                   }}

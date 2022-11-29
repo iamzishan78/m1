@@ -507,7 +507,7 @@ export function DetailComponents(props) {
                 <StyledTab id="provisionsTab" label="Provisions" />
                 <StyledTab id="legalDescriptionTab" label="Legal Description" />
                 <StyledTab id="wellsTab" label="Wells" />
-                <StyledTab label="Documents" />
+                <StyledTab id="documentsTab" label="Documents" />
                 <StyledTab id="relatedAgreementsTab" label="Related Agreements" />
                 {/* <StyledTab label="Related Info" /> */}
               </StyledTabs>
