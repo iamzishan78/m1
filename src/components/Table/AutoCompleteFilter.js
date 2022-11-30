@@ -170,7 +170,11 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
             setSearch(value2[value2.length - 1]?.key);
           } else {
             filterList[index][0] = typeof value2.key === "string" ? value2.key.replace(/^\,|\,$/gm, "") : value2.key;
-            setSearch(value2.key);
+            if (custom?.initialCapitalization) {
+              setSearch(capitalizeFirstLetter(value2.key));
+            } else {
+              setSearch(value2.key);
+            }
           }
 
           setValue(value2);

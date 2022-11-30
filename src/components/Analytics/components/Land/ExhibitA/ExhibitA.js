@@ -28,6 +28,7 @@ function ExhibitATable(props) {
       hit.agreementNumber = hit.shape.shapeJson.properties.agreementNumber;
       hit.grantor = hit.shape.shapeJson.properties.grantor;
       hit.grantee = hit.shape.shapeJson.properties.grantee;
+      // hit.layerSubType = hit.shape.shapeJson.properties.layerSubType;
       hit.agreementDate = hit.shape.shapeJson.properties.agreementDate ? convert_date(hit.shape.shapeJson.properties.agreementDate) : null
       hit.effectiveDate = hit.shape.shapeJson.properties.effectiveDate ? convert_date(hit.shape.shapeJson.properties.effectiveDate) : null
       hit.tractState = hit.parcel.shapeJson.properties.originalProperties.State || hit.parcel.shapeJson.properties.originalProperties.StateAbbreviation

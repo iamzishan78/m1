@@ -61,6 +61,7 @@ const filterColumnsHeader = [
     label: "Agreement Type",
     filterKey: "shape.shapeJson.properties.layerSubType.keyword",
     name: "layerSubType",
+    custom: { initialCapitalization: true }
 
   },
   {
