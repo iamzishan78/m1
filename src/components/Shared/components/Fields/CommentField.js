@@ -173,6 +173,8 @@ export default function DealComment({
   fieldWidth,
   setShowActions,
   setIsEdit,
+  isMinimize = false,
+  setIsMinimize,
   ...props
 }) {
   const classes = useStyles({ fieldWidth });
@@ -184,12 +186,14 @@ export default function DealComment({
   const [selectedCommentType, setSelectedCommentType] = useState("General");
   const [commentTypeDialogBox,setCommentTypeDialogBox] = useState(false);
   (function () {
-    var target = $("#colorText");
-    const scrollDiv = function () {
-      target.prop("scrollTop", this.scrollTop).prop("scrollLeft", this.scrollLeft);
-    };
-    $(".MuiOutlinedInput-input").scroll(scrollDiv);
-    $(".MuiOutlinedInput-input").resize(scrollDiv);
+    if(isMinimize){
+      var target = $("#colorText");
+      const scrollDiv = function () {
+        target.prop("scrollTop", this.scrollTop).prop("scrollLeft", this.scrollLeft);
+      };
+      $(".MuiOutlinedInput-input").scroll(scrollDiv);
+      $(".MuiOutlinedInput-input").resize(scrollDiv);
+    }
   })();
 
   const checkIfShowUsers = (comment) => {
@@ -211,29 +215,31 @@ export default function DealComment({
   };
 
   useEffect(() => {
-    let value = JSON.parse(JSON.stringify(comment));
-    if (checkIfShowUsers(value)) {
-      setShowOptions(true);
-    } else {
-      setShowOptions(false);
-    }
-    if (comment.includes("{{") && comment.includes("}}")) {
-      let updatedValue = JSON.parse(JSON.stringify(comment));
-      for (let i = 0; i < users.length; i++) {
-        if (updatedValue.includes(users[i]._id)) {
-          updatedValue = replaceAllWith(updatedValue, users[i]._id, `@${users[i].name}`);
-          value = replaceAllWith(value, `{{${users[i]._id}}}`, ` <span class='blue'>@${users[i].name}</span>`);
-        }
+    if(isMinimize === true && comment !== ""){
+      let value = JSON.parse(JSON.stringify(comment));
+      if (checkIfShowUsers(value)) {
+        setShowOptions(true);
+      } else {
+        setShowOptions(false);
       }
-      setNameAutValue({ name: updatedValue, _id: "" });
-    } else {
-      setNameAutValue({ name: comment, _id: "" });
+      if (comment.includes("{{") && comment.includes("}}")) {
+        let updatedValue = JSON.parse(JSON.stringify(comment));
+        for (let i = 0; i < users.length; i++) {
+          if (updatedValue.includes(users[i]._id)) {
+            updatedValue = replaceAllWith(updatedValue, users[i]._id, `@${users[i].name}`);
+            value = replaceAllWith(value, `{{${users[i]._id}}}`, ` <span class='blue'>@${users[i].name}</span>`);
+          }
+        }
+        setNameAutValue({ name: updatedValue, _id: "" });
+      } else {
+        setNameAutValue({ name: comment, _id: "" });
+      }
+      if (value.includes("\n")) {
+        value = value.replace(/\n/g, "<br>");
+      }
+      document.getElementById("colorText").innerHTML = value;
     }
-    if (value.includes("\n")) {
-      value = value.replace(/\n/g, "<br>");
-    }
-    document.getElementById("colorText").innerHTML = value;
-  }, [comment, users]);
+  }, [comment, users, isMinimize]);
 
   const replaceAllWith = (_string, replaceFrom, replaceWith) => {
     return _string.replace(/{{([^{{]+)}}/g, (match, key) => {
@@ -278,8 +284,15 @@ export default function DealComment({
     e.stopPropagation();
     setCommentTypeDialogBox(false);
   }
-  return (
-    <div
+
+  useEffect(()=>{
+    if(isEdit){
+      setIsMinimize(true);
+    }
+  },[isEdit])
+
+  return (<>
+      {isMinimize ? <div
       onClick={(e)=>openDialogBox(e)}
     >
       <Autocomplete
@@ -379,6 +392,7 @@ export default function DealComment({
                 if (!showCommentTypeDialog) {
                   upsertComment({ comment, commentType: selectedCommentType });
                   setNameAutValue({});
+                  setIsMinimize(false);
                 }
               }}
           >
@@ -394,6 +408,7 @@ export default function DealComment({
             color="primary"
             onClick={() => {
               upsertComment({ comment, commentType: selectedCommentType });
+              setIsMinimize(false);
             }}
           >
             Save Changes
@@ -408,14 +423,29 @@ export default function DealComment({
               setEditCommentId("");
               setIsEdit(false);
               setShowActions(false);
+              setIsMinimize(false);
             }}
           >
             Cancel
           </Button>}
         </>
       )}
-    </div>
-  );
+    </div>:
+      <TextField
+          margin="dense"
+          style={{
+            margin: 0,
+          }}
+          fullWidth
+          placeholder="Add a question or post an update"
+          variant="outlined"
+          size="small"
+          onClick={(e)=>{
+            setIsMinimize(true);
+            e.stopPropagation();
+          }}
+      />}
+  </>);
 }
 
 DealComment.defaultProps = {

@@ -189,9 +189,9 @@ export default function CommentComponent(props) {
   const [showCommentActionId, setShowCommentActionId] = useState(null);
   const [loadingComments, setLoadingComments] = useState(true);
   const [scrollIntoView, setScrollIntoView] = useState(false);
+  const [isMinimize,setIsMinimize] = useState(false);
 
   const commentContainerRef = useRef(null);
-
   const [removeComment] = useMutation(REMOVECOMMENT);
   const [upsertComment, { data: newlyAddedComment }] = useMutation(UPSERTCOMMENT);
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
@@ -432,7 +432,10 @@ export default function CommentComponent(props) {
     <SizeMe>
       {({ size }) => (
         <div className={classes.container}>
-          <div className={classes.comment} id="commentsContainer">
+          <div className={classes.comment} id="commentsContainer" onClick={(e)=>{
+            setIsMinimize(false);
+            e.stopPropagation();
+          }}>
             {!loadingComments ? (
               <>
                 {!showAllComments && commentsArray.length > 7 && (
@@ -535,6 +538,8 @@ export default function CommentComponent(props) {
                                   upsertComment={updateComment}
                                   setIsEdit={setIsEdit}
                                   setShowActions={setShowActions}
+                                  isMinimize={isMinimize}
+                                  setIsMinimize={setIsMinimize}
                                 />
                               </div>
                             )}
@@ -550,7 +555,7 @@ export default function CommentComponent(props) {
             )}
             <div id="checkIf" ref={commentContainerRef} />
           </div>
-          {!editCommentId && (
+          {(!editCommentId && !isEdit) && (
             <div
               style={{
                 paddingBottom: "20px",
@@ -573,7 +578,7 @@ export default function CommentComponent(props) {
                     {({ size }) => (
                       <div
                         className={classes.border}
-                        style={{ paddingBottom: "20px" }}
+                        // style={{ paddingBottom: "20px" }}
                         onClick={() => {
                           if (!showActions) {
                             setShowActions(true);
@@ -594,6 +599,8 @@ export default function CommentComponent(props) {
                           upsertComment={addNewComment}
                           showCommentType={props.showCommentType}
                           // fieldWidth={`${size - 23}px`}
+                          isMinimize={isMinimize}
+                          setIsMinimize={setIsMinimize}
                         />
                       </div>
                     )}
