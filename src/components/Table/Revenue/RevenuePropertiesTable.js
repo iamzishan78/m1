@@ -70,7 +70,7 @@ function RevenuePropertiesTable(props) {
       esIndex: esIndex,
       filters: fixedFilters,
       selectedGridView: { filters: [] },
-      startPaginationAt: 25,
+      startPaginationAt: 50,
       defaultSort: { field: "name.keyword", order: "asc" },
       formatHits,
       // initializeGenericData: { key: "_id", actions: genericDataActions },

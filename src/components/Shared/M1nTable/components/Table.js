@@ -563,7 +563,6 @@ function SubTable(props) {
   const [defaultActivityType, setDefaultAcitivityType] = useState("call");
   const [contact, setContact] = useState(null);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
-
   // deep state
   const setFirstMount = (newState) => {
     setStateIfDeepEqual(FirstMount, newState);
@@ -1840,7 +1839,7 @@ function SubTable(props) {
 
                     <Tooltip title="Fly To Map" placement="top" style={{ marginRight: "10px" }}>
                       <IconButton
-                        id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                        id={`map-fly-to-${tableMeta.rowData[0]}`}
                         size={props.dense ? "small" : "medium"}
                         color="secondary"
                         className={`${classes.icons}`}
