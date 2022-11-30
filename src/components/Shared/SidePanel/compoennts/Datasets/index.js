@@ -253,7 +253,7 @@ function Datasets({ headerButton, search, stateApp, setStateApp }) {
                                             }}>{sourceName}</Typography>
                                         </Grid>
                                         <Grid item className='actionIcons'>
-                                            <GridOnIcon className='actionIcon' />
+                                            <GridOnIcon id={"grid-icon-" + sourceName} className='actionIcon' />
                                             {sourceName === 'M1 Platform' && <Box paddingRight='24px' />}
                                             {sourceName !== 'M1 Platform' && <DatasetMenu setChangedDataset={setChangedDataset} handleRemove={handleRemove} handleTransfer={handleTransfer} dataset={{ sourceName, Icon, categories, ...rest }} />}
                                         </Grid>

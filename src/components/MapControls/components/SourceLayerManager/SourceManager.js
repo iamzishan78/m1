@@ -677,6 +677,7 @@ function SourceManager(props) {
                         {
                           dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 className={openDataSets[dataset.sourceName] ? 'isOpen' : ''} style={{ paddingLeft: '0px' }} button onClick={() => setOpenDataSets({ ...openDataSets, [dataset.sourceName]: !openDataSets[dataset.sourceName] })}>
                             <Checkbox
+                              id={"source-checkbox-" + dataset.sourceName}
                               checked={dataset.visibility}
                               color="darkgray"
                               onClick={(e) => e.stopPropagation()}
@@ -685,7 +686,7 @@ function SourceManager(props) {
                             />
                             <EditableTextField onChange={datasetNameChange} item={dataset} name={dataset.sourceName} isEditable={true} openEditField={openEditField(dataset.sourceName)} />
                             {/* <ListItemText primary={dataset.sourceName} /> */}
-                            <MoreHorizIcon aria-controls={"source-menu"} className={"moreSourceIcon " + classes.moreSourceIcon} onClick={(e) => { e.stopPropagation(); handleClick(e); setActionItem({ dataset }) }} />
+                            <MoreHorizIcon id={"more-horiz-" + dataset.sourceName} aria-controls={"source-menu"} className={"moreSourceIcon " + classes.moreSourceIcon} onClick={(e) => { e.stopPropagation(); handleClick(e); setActionItem({ dataset }) }} />
                             {openDataSets[dataset.sourceName] ? <ExpandLess /> : <ExpandMore />}
                           </StyledListItem2>
                             <Collapse in={openDataSets[dataset.sourceName]} timeout="auto" unmountOnExit>
@@ -714,6 +715,7 @@ function SourceManager(props) {
           </>
         }
       />
+
       {/* //// delete confirmation dialog */}
 
 
@@ -727,7 +729,7 @@ function SourceManager(props) {
               <ClickAwayListener onClickAway={handleMenuClose}>
                 <MenuList autoFocusItem={Boolean(anchorEl)} id="menu-list-grow">
                   <MenuItem onClick={(e) => { e.stopPropagation(); setActionItem((actionItem) => ({ ...actionItem, type: 'editName' })); handleMenuClose() }}><EditIcon /> Edit Name</MenuItem>
-                  <MenuItem onClick={(e) => { e.stopPropagation(); setOpenDeleteDialog(actionItem); handleMenuClose() }}><DeleteIcon /> Delete</MenuItem>
+                  <MenuItem id="deleteSource" onClick={(e) => { e.stopPropagation(); setOpenDeleteDialog(actionItem); handleMenuClose() }}><DeleteIcon /> Delete</MenuItem>
                 </MenuList>
               </ClickAwayListener>
             </Paper>

@@ -189,7 +189,7 @@ export default function AddUserGroupData(props) {
             }
             for (let index = 0; index < fileContent.featureTypes.length; index++) {
               const type = fileContent.featureTypes[index];
-              
+
               const layerName = layerNames[index]
               const layerShapeName = fileContent.fileNames[index]
               const defaultSettings = getDefaultSettings(type, layerName, sourceProps)
@@ -450,6 +450,7 @@ export default function AddUserGroupData(props) {
           Cancel
         </Button>
         <Button
+          id="createSourceButton"
           disabled={!groupName || layerNames.includes("") || !inputFiles}
           autoFocus
           onClick={handleApplyChanges}
