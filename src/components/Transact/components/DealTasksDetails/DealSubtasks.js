@@ -21,9 +21,11 @@ const useStyles = makeStyles((theme) => ({
     zIndex: props.muted ? 1 : 0,
   }),
   subTaskLeftGrid: {
-    display: "flex",
-    width: "80%",
-    alignItems: "center",
+    // alignItems: "left",
+    // display: "flex",
+    // width: "80%",
+    // justifyContent: "flex-start",
+    // alignItems: "left",
     "& .MuiFormControlLabel-root": {
       marginRight: 0,
     },
@@ -31,8 +33,8 @@ const useStyles = makeStyles((theme) => ({
   subTaskRightGrid: (props) => ({
     alignItems: "right",
     textAlign: "right",
-    maxWidth: 200,
-    width: '20%',
+    // maxWidth: 200,
+    // width: '20%',
     "& .MuiIconButton-root": {
       height: "25px",
       width: "25px",
@@ -116,16 +118,29 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
           container
           direction="row"
           justify="space-between"
+          // justify="flex-start"
           alignItems="center"
           onMouseEnter={() => setEdit({ ...isEdit, index: task.index, showIcon: true })}
           onMouseLeave={() => setEdit({ ...isEdit, index: -1, showIcon: false })}
         >
+          <Grid  item justify="flex-start"
+          // container direction = "row" xs={6} 
+          // justify={"flex-start"} 
+          className={classes.subTaskLeftGrid}
+          >
+
+          <Grid container direction="row" justify="flex-start" alignItems="center">
+
+          <Grid item>
           {canDrag && (
-            <ListItemIcon ref={drag} style={{ minWidth: 0 }}>
+            <ListItemIcon ref={drag} style={{ display: 'flex', alignItems: "center", minWidth: 0 }}>
               <DragIndicator style={{ cursor: "move" }} />
             </ListItemIcon>
           )}
-          <Grid item className={classes.subTaskLeftGrid}>
+          </Grid>
+
+
+          <Grid item>
             <FormControlLabel
               control={
                 <Checkbox
@@ -142,6 +157,9 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
                 />
               }
             />
+            </Grid>
+
+
             {!isEdit.isEditing ? (
               <>
                 <Tooltip title={task.name} placement="top">
@@ -159,6 +177,7 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
                 )}
               </>
             ) : (
+              <Grid item>
               <TextField
                 size="small"
                 variant="outlined"
@@ -179,9 +198,17 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
                 onClick={(event) => event.stopPropagation()}
                 onBlur={() => setEdit({ isEditing: false, index: -1 })}
               />
+              </Grid>
             )}
           </Grid>
-          <Grid item className={classes.subTaskRightGrid}>
+          </Grid>
+
+          <Grid item 
+          // container xs={6} 
+          // justify={"flex-end"}
+          className={classes.subTaskRightGrid}
+          
+          >
             <Grid container direction="row" justify="flex-end" alignItems="center">
               <Grid item>
                 {isTemplate ? (

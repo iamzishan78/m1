@@ -588,10 +588,10 @@ function ExpandableCard(props) {
             <Typography
               // className={classes.prevlocation}
               color="inherit"
-              // onClick={() => {
-              //   setStateApp({ ...stateApp, DocumentDrawer: true });
-              //   history.push("/documents");
-              // }}
+            // onClick={() => {
+            //   setStateApp({ ...stateApp, DocumentDrawer: true });
+            //   history.push("/documents");
+            // }}
             >
               Wells
             </Typography>
@@ -618,14 +618,14 @@ function ExpandableCard(props) {
             onClose={() => setOpenDialog(false)}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Are you sure you want to delete the selected {targetLabel === "expandedParcel" ? "parcel" : targetLabel}?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
 
-      <Card className={classes.card}>
+      <Card id="expandableCard" className={classes.card}>
         {/* Modal popup for reporting bugs on expandable card  */}
         <ReportBugModal open={openBugModal} onClose={() => setOpenBugModal(false)} />
         {(history.location?.state?.fromShapeDetail || breadcrumbs) && <DisplayBreadCrums />}
@@ -723,12 +723,12 @@ function ExpandableCard(props) {
 
               {stateExpandableCard.expanded && targetLabel !== "activity" && targetLabel !== "contact" && parent !== "table" ? (
                 parent !== "table" &&
-                targetLabel !== "well" &&
-                targetLabel !== "expandedWell" &&
-                targetLabel !== "parcel" &&
-                !stateApp.selectedShape &&
-                targetLabel !== "expandedParcel" &&
-                targetLabel !== "recent_submitted_permits" ? (
+                  targetLabel !== "well" &&
+                  targetLabel !== "expandedWell" &&
+                  targetLabel !== "parcel" &&
+                  !stateApp.selectedShape &&
+                  targetLabel !== "expandedParcel" &&
+                  targetLabel !== "recent_submitted_permits" ? (
                   <Tooltip title={"Shrink"} placement="top">
                     <IconButton color="secondary" onClick={handleShrink} aria-label="shrink" className={classes.icons}>
                       <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
@@ -826,7 +826,7 @@ function ExpandableCard(props) {
         />
 
         <CardContent className={classes.content}>
-          <div id="cardContent">{props.component}</div>
+          <div id="cardContentData">{props.component}</div>
         </CardContent>
       </Card>
     </React.Fragment>

@@ -100,22 +100,29 @@ const AutoCompleteField = ({ placeholder, value, onChange, column, query, extend
       value={value}
       inputValue={search}
       getOptionSelected={(option, value) => option?.key === value.key}
-      getOptionLabel={(option) => (typeof option.key === "string" ? option : option?.key?.join(" - "))}
-      onChange={(e, value, reason) => {
-        if (reason === "clear" || !value?.key) setSearch("");
-        else {
-          let key = "",
-            index = 0;
-          if (typeof value.key === "string") {
-            key = value.key;
-            setSearch(key);
-            onChange(key);
-          } else {
-            if (!value.key[0] && value.key[1]) index = 1;
-            setSearch(value.key[index]);
-            onChange(value.key[index], index);
-          }
+      getOptionLabel={(option) =>{
+        if(typeof option.key === "string"){
+          return option
+        }else {
+
+          // const spliteData = option?.key.split(" ");
+          const filterSpace = option.key.filter((item)=>item !== '');
+          return  `#-${filterSpace[0]}`
         }
+      }}
+      onChange={(e, value, reason) => {
+        if (reason === "clear" || !value?.key) return setSearch("");
+
+        if (typeof value.key === "string") {
+          setSearch(value.key);
+          onChange(value.key);
+          return
+        }
+
+        const val = value.key.find(val => val !== '') || ''
+        const index = value.key.indexOf(val)
+        setSearch(val);
+        onChange(val, index >= 0 ? index : 0);
       }}
       fullWidth
       autoHighlight

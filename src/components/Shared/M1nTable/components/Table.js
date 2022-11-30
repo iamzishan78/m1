@@ -563,7 +563,6 @@ function SubTable(props) {
   const [defaultActivityType, setDefaultAcitivityType] = useState("call");
   const [contact, setContact] = useState(null);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
-
   // deep state
   const setFirstMount = (newState) => {
     setStateIfDeepEqual(FirstMount, newState);
@@ -1840,7 +1839,7 @@ function SubTable(props) {
 
                     <Tooltip title="Fly To Map" placement="top" style={{ marginRight: "10px" }}>
                       <IconButton
-                        id={id + tableMeta.rowData[0] + tableMeta.rowIndex}
+                        id={`map-fly-to-${tableMeta.rowData[0]}`}
                         size={props.dense ? "small" : "medium"}
                         color="secondary"
                         className={`${classes.icons}`}
@@ -3600,7 +3599,7 @@ function SubTable(props) {
                       }}
                       aria-label="delete"
                     >
-                      <DeleteIcon />
+                      <DeleteIcon id="deleteWellInterest" />
                     </IconButton>
                   </Tooltip>
                 </div>
@@ -3727,10 +3726,9 @@ function SubTable(props) {
                           className={classes.multiSelectionTopBarButtons}
                           onClick={() => {
                             let owners = [];
+                            const rows = _selectedRows?.length > 0 ? _selectedRows : props.rows
                             for (let i in props.selectedRows) {
-                              owners.push(
-                                props.rows[props.selectedRows[i].dataIndex]
-                              );
+                              owners.push(rows[props.selectedRows[i].dataIndex]);
                             }
                             props.setSelectedRows && props.setSelectedRows(owners);
                             // props.setOpenCustomDialog("exportContacts");
@@ -4743,6 +4741,7 @@ function SubTable(props) {
               rows={expandedObject}
               setRows={setExpandedObject}
               setSelectedRow={setSelectedRow}
+              campaign={props.campaign}
             />
           </RightDialog>
         )}
@@ -5133,6 +5132,7 @@ function SubTable(props) {
                   rows={expandedObject}
                   setRows={setExpandedObject}
                   setSelectedRow={setSelectedRow}
+                  campaign={props.campaign}
                 />
               )}
               {openDialog === "printLabels" && (

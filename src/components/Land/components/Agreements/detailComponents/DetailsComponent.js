@@ -41,6 +41,8 @@ import DeleteConfirmationDialogContent from "components/Shared/M1nTable/componen
 import MapImgViewIcon from "components/Shared/svgIcons/MapImgViewIcon";
 import MapProvider from "components/Map/MapProvider";
 import { DrawerContext } from "./DrawerContext";
+import RelatedDocumets from "./relatedDocuments";
+import RelatedFile from "components/Document/components/RelatedFile";
 
 const useStyles = makeStyles((theme) => ({
   mapProvider: {
@@ -502,11 +504,11 @@ export function DetailComponents(props) {
                 }}
                 aria-label="ant example"
               >
-                <StyledTab label="Summary" />
+                <StyledTab id="summaryTab" label="Summary" />
                 <StyledTab label="Parties" />
                 <StyledTab id="provisionsTab" label="Provisions" />
                 <StyledTab id="legalDescriptionTab" label="Legal Description" />
-                <StyledTab label="Wells" />
+                <StyledTab id="wellsTab" label="Wells" />
                 <StyledTab label="Documents" />
                 <StyledTab id="relatedAgreementsTab" label="Related Agreements" />
                 {/* <StyledTab label="Related Info" /> */}
@@ -611,7 +613,7 @@ export function DetailComponents(props) {
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
               <div id="related-docs-div" className={classes.tabDetailSection} ref={tab === 5 ? selectedTabRef : null}>
-                <Documents uniObj={uniObj} />
+                <RelatedDocumets uniObj={uniObj} setDrawer={setDrawer} />
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
               <div id="related-agrmt-div" className={classes.tabDetailSection} ref={tab === 6 ? selectedTabRef : null}>
@@ -656,6 +658,14 @@ export function DetailComponents(props) {
               customLayerId={get(dataCustomLayer, "customLayer._id")}
               setDrawer={setDrawer}
               parentType="Agreement"
+            />
+          )}
+
+          {drawer === "dcmnt" && (
+            <RelatedFile
+              relatedObjectType="Shape"
+              relatedObjectId={get(dataCustomLayer, "customLayer._id")}
+              setShowDocumentSlider={setDrawer}
             />
           )}
         </div>
