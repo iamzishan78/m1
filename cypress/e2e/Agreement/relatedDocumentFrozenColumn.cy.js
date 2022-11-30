@@ -16,8 +16,7 @@ describe('Related Document Frozen Column Spec', () => {
         cy.checkAndLogin()
 
         cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
-        // cy.get("#searchBar").type("113-100001-L1 - JOHNSON JOHN JR")
-        // cy.wait(9000)
+
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
 
             cy.getTableCell('Agreement', 1).then(($row) => {
