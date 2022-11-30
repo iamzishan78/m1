@@ -16,10 +16,11 @@ describe('Related Document Frozen Column Spec', () => {
         cy.checkAndLogin()
 
         cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
-
+        // cy.get("#searchBar").type("113-100001-L1 - JOHNSON JOHN JR")
+        // cy.wait(9000)
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
 
-            cy.getTableCell('Agreement', 3).then(($row) => {
+            cy.getTableCell('Agreement', 1).then(($row) => {
                 cy.log('==== STEP: OPEN Agreement ====')
                 cy.interceptApiByIndex('getESSimpleSearch', 'documents_flat')
                 cy.wrap($row).scrollIntoView().children().eq(1).children().children().children().click()
@@ -29,6 +30,7 @@ describe('Related Document Frozen Column Spec', () => {
                 cy.log('==== STEP: CLICK ON DOCUMENTS TAB ====')
                 cy.wait(10000)
                 cy.get("#documentsTab").click()
+                cy.get("#addRelatedDcmnButton").scrollIntoView()
 
                 cy.log('==== STEP: ADD DOCUMENT IF NONE ====')
                 cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(relatedDocumentsResponse => {
@@ -43,7 +45,9 @@ describe('Related Document Frozen Column Spec', () => {
                         cy.interceptApi('viewFiles')
                         cy.interceptApi('AddDescriptorFile')
                         cy.get("#searchDocumentList").type(documentName)
+                        cy.wait(5000)
                         cy.get('body').type("{downArrow}{enter}")
+                        cy.get('#saveDocumentButton', { timeout: longTimeout }).click()
                         cy.verifyApiResponse('@viewFilesApi', { responseTimeout: longTimeout })
                         cy.verifyApiResponse('@AddDescriptorFileApi', { responseTimeout: longTimeout })
                     }
