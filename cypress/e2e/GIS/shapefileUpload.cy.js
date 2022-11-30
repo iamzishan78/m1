@@ -74,6 +74,8 @@ describe('Shape File Upload Spec', () => {
             cy.verifyApiResponse('@AddFileApi', { responseTimeout: longTimeout })
             cy.verifyApiResponse('@addDatasetApi', { responseTimeout: longTimeout })
 
+            cy.get('#createSourceButton', { timeout: longTimeout }).should('not.be.visible');
+
             cy.log('==== STEP: Wait for Layers ===')
             cy.wait(3000)
             cy.verifyApiResponse('@getDatasetsApi', { responseTimeout: longTimeout }).then(result => {
@@ -102,6 +104,9 @@ describe('Shape File Upload Spec', () => {
                 cy.interceptApi('getAllMongoUsers')
                 cy.interceptApi('getESSimpleSearch')
                 cy.get("[id='grid-icon-cypressford']", { timeout: longTimeout }).scrollIntoView().click({ force: true })
+
+                cy.log('==== STEP: WAITING ===')
+                cy.wait(10000)
                 cy.verifyApiResponse('@getOpenDealsApi', { responseTimeout: longTimeout })
                 cy.verifyApiResponse('@getAllMongoUsersApi', { responseTimeout: longTimeout })
                 cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
