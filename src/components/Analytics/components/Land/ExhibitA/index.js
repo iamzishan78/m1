@@ -70,7 +70,9 @@ const filterColumnsHeader = [
       'parcel.shapeJson.properties.originalProperties.State.keyword',
       'parcel.shapeJson.properties.originalProperties.StateAbbreviation.keyword'
     ],
-    custom: { multi_filter_keys: true, isState: true },
+    custom: {
+      oRFilter: true
+    },
     name: "state"
   },
   {
@@ -105,20 +107,17 @@ export default function ExhibitATabPanel() {
   const onChange = (filter, index, column, esKey) => {
     const newFilters = JSON.parse(JSON.stringify(esFilters))
 
-    if(column.name === 'state'){
-      for(let i = 0; i < column.filterKey.length; i++){
-        if(column?.filterList[0]){
-          if(newFilters.find(filter => filter.field === column?.filterKey[i])){
-            const index = newFilters.findIndex(filter => filter.field === column?.filterKey[i])
-            newFilters[index] = { field: column?.filterKey[i], value: [ column?.filterList[0], ""], includeEmpty: true }
-          }else{
-            newFilters.push({ field: column?.filterKey[i], value: [ "" ,column?.filterList[0] ], includeEmpty: true  })
-          }
+    if(column?.custom?.oRFilter){
+      if(column?.filterList[0]){
+        if(newFilters.find(filter => filter.field.includes(column?.filterKey[0]))){
+          newFilters[index] = { field: JSON.stringify(column?.filterKey), value: column?.filterList[0], oRFilter: true }
         }else{
-          const index = newFilters.findIndex(filter => filter.field === column?.filterKey[i])
-          if(index > -1){
-            newFilters.splice(index,1)
-          }
+          newFilters.push({ field: JSON.stringify(column?.filterKey), value: column?.filterList[0], oRFilter: true })
+        }
+      }else{
+        const index = newFilters.find(filter => filter.field.includes(column?.filterKey[0]))
+        if(index > -1){
+          newFilters.splice(index,1)
         }
       }
     }
@@ -173,10 +172,10 @@ export default function ExhibitATabPanel() {
                   if (stateFilter)
                     appliedFilters.push(stateFilter)
                 }
-              }else if(Array.isArray(filterColumn.filterKey)){
-                const gridViewFilter = esFilters.find(filter => filter.field === filterColumn?.filterKey[0])
+              }else if(filterColumn?.custom?.oRFilter){
+                const gridViewFilter = esFilters.find(filter => filter.field.includes(filterColumn?.filterKey[0]))
                 if (gridViewFilter)
-                  filterList[index] = [gridViewFilter?.value[0] || gridViewFilter?.value[1]]
+                  filterList[index] = [gridViewFilter?.value]
               }
 
               return (

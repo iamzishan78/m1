@@ -55,7 +55,9 @@ const AcerageSummaryHeadCells = [
       sort: true,
       filter: true
     },
-    custom: { isState: true }
+    custom: {
+      oRFilter: true
+    }
   },
 
   {
@@ -78,6 +80,9 @@ const AcerageSummaryHeadCells = [
       sort: true,
       filter: true,
     },
+    custom: {
+      oRFilter: true
+    }
   },
   {
     name: "sectionRange",
@@ -90,6 +95,9 @@ const AcerageSummaryHeadCells = [
       sort: true,
       filter: true,
     },
+    custom: {
+      oRFilter: true
+    }
   },
   {
     name: "abstractSection",
@@ -99,6 +107,9 @@ const AcerageSummaryHeadCells = [
       'parcel.shapeJson.properties.originalProperties.ShortName.keyword'
     ],
     options: { sort: true, filter: true },
+    custom: {
+      oRFilter: true
+    }
   },
   {
     name: "legalDesctiption",

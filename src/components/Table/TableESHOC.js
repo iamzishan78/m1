@@ -366,7 +366,9 @@ export const TableESHOC = (Component) => {
                     if (selectedGridView)
                         setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
                     let value
-                    if (Array.isArray(column.esKey)) value = get(allFilters.find((filter) => { return column.esKey.includes(filter.field) }), "value", "");
+                    if(column?.custom?.oRFilter){
+                        value = get(allFilters.find(filtr => filtr.field.includes(column.esKey[0])),  "value", "")
+                    }else if (Array.isArray(column.esKey)) value = get(allFilters.find((filter) => { return column.esKey.includes(filter.field) }), "value", "");
                     else value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
 
                     let filterList = Array.isArray(column.esKey) ? [] : [];
@@ -514,7 +516,9 @@ export const TableESHOC = (Component) => {
             // const filterHistory = {}
             if (esFilter) {
                 esFilter.forEach((filter) => {
-                    if (typeof filter?.field === 'string') {
+                    if(filter.oRFilter){
+                        filters.push({ field: Array.isArray(filter.field) ? JSON.stringify(filter.field): filter.field, value: filter.value, oRFilter: filter.oRFilter })
+                    }else if (typeof filter?.field === 'string') {
                         // if (!filterHistory[filter.field])
                         filters.push(filter)
                         // filterHistory[filter.field] = true
@@ -561,7 +565,7 @@ export const TableESHOC = (Component) => {
                 },
             };
 
-            const manageAppliedFilter = (value, index) => {
+            const manageAppliedFilter = (value, index, oRFilter) => {
                 const gridViewfilters = selectedGridView.filters
                 const gridViewEsKey = gridViewfilters && gridViewfilters.find(filter => filter.value === value)?.field
 
@@ -572,19 +576,20 @@ export const TableESHOC = (Component) => {
                 else if (Array.isArray(columnEsKey) && gridViewEsKey) field = gridViewEsKey
                 else field = columnEsKey
 
-                return { field: field, value: value }
+                return { field: field, value: value, oRFilter }
             }
 
             tableState.filterList.forEach((val, index) => {
+                const oRFilter = columns[index].custom?.oRFilter
                 if (val.length > 0 && columns[index]) {
                     if (columns[index].custom?.isDate || columns[index].custom?.isDateTime) {
                         const filterData = stateApp.filtersData[columns[index].name];
                         if (filterData) {
                             const data = filterData.find(f => f.key === val[0] || f.key_as_string === val[0])
-                            pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
+                            pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string, oRFilter });
                         }
                     } else if (columns[index].custom?.filterOptions?.length > 0) {
-                        pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0] })
+                        pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0], oRFilter })
                     } else if (columns[index].custom?.formatedFilterOptions?.length > 0) {
                         let value = val[0];
                         const filterData = columns[index].custom?.formatedFilterOptions;
@@ -592,14 +597,14 @@ export const TableESHOC = (Component) => {
                         if (data) {
                             value = data.value
                         }
-                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value })
+                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value, oRFilter })
                     } else if (columns[index].custom?.formatedFilterOptions?.length > 0 && columns[index].custom?.isPurchased) {
                         let value = val[0];
                         const filterData = columns[index].custom?.formatedFilterOptions;
                         const data = filterData.find(f => f.label === value)
-                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string })
+                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string, oRFilter })
                     } else {
-                        pageESVariables.variables.filters.push(manageAppliedFilter(val[0], index))
+                        pageESVariables.variables.filters.push(manageAppliedFilter(val[0], index, oRFilter))
                     }
 
                 }
