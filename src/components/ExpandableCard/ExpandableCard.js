@@ -59,11 +59,7 @@ function ExpandableCard(props) {
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [
-    stateExpandableCard,
-    setStateExpandableCard,
-    handleCloseExpandableCard,
-  ] = useContext(ExpandableCardContext);
+  const [stateExpandableCard, setStateExpandableCard, handleCloseExpandableCard] = useContext(ExpandableCardContext);
 
   // States
   const [openBugModal, setOpenBugModal] = useState(false);
@@ -100,37 +96,32 @@ function ExpandableCard(props) {
   };
 
   // Mutation
-  const [, { loading: isDeletingCustomLayer }] = useMutation(
-    UPDATECUSTOMLAYER,
-    {
-      update(
-        cache,
-        {
-          data: {
-            updateCustomLayer: { customLayer },
+  const [, { loading: isDeletingCustomLayer }] = useMutation(UPDATECUSTOMLAYER, {
+    update(
+      cache,
+      {
+        data: {
+          updateCustomLayer: { customLayer },
+        },
+      }
+    ) {
+      cache.modify({
+        _id: cache.identify(customLayer),
+        fields: {
+          allCustomLayers(existingCustomLayerRefs, { readField }) {
+            return existingCustomLayerRefs.filter((customLayerRef) => customLayer._id !== readField("_id", customLayerRef));
           },
-        }
-      ) {
-        cache.modify({
-          _id: cache.identify(customLayer),
-          fields: {
-            allCustomLayers(existingCustomLayerRefs, { readField }) {
-              return existingCustomLayerRefs.filter(
-                (customLayerRef) =>
-                  customLayer._id !== readField("_id", customLayerRef)
-              );
-            },
-          },
-        });
-      },
-    }
-  );
+        },
+      });
+    },
+  });
 
   // Queries
   const [trackByObjectId, { data: dataTrack }] = useLazyQuery(TRACKBYOBJECTID);
 
-  const { backgroundColor, headerIcons, icons, headerLabelColor } =
-    modifyExandableCardStyle(stateApp.selectedShape || stateApp.selectedParcel);
+  const { backgroundColor, headerIcons, icons, headerLabelColor } = modifyExandableCardStyle(
+    stateApp.selectedShape || stateApp.selectedParcel
+  );
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -155,6 +146,7 @@ function ExpandableCard(props) {
       },
       "& .MuiCardHeader-root": {
         borderBottom: "1px solid rgba(224, 224, 224, 1)",
+        // padding: "25px 16px !important",
       },
       zIndex: 1222, // https://material-ui.com/customization/z-index/
     },
@@ -162,14 +154,7 @@ function ExpandableCard(props) {
       fontFamily: "Poppins",
       color: "#FFFFFF",
 
-      fontSize: [
-        "Contact",
-        "Contact Details",
-        "Add Activity",
-        "Activity Details",
-      ].includes(title)
-        ? "20px"
-        : "15px",
+      fontSize: ["Contact", "Contact Details", "Add Activity", "Activity Details"].includes(title) ? "20px" : "15px",
     },
     headerIcons: {
       "& .MuiBadge-anchorOriginTopRightRectangle": {
@@ -215,9 +200,7 @@ function ExpandableCard(props) {
         backgroundColor: "#929292",
         borderRadius: 5,
       },
-      height: stateExpandableCard.expanded
-        ? "calc(100% - 72px)"
-        : "fit-content",
+      height: stateExpandableCard.expanded ? "calc(100% - 72px)" : "fit-content",
     },
     icons: {
       "&:hover": {
@@ -300,15 +283,10 @@ function ExpandableCard(props) {
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search?.replace("?", ""));
-    const paramBreadCrumbs = searchParams.get("breadcrumbs")
+    const paramBreadCrumbs = searchParams.get("breadcrumbs");
 
-    if (paramBreadCrumbs === 'Documents')
-      setBreadcrumbs([
-        { title: "Documents", url: "/documents" },
-      ])
-    else if (history.location?.state?.showWellBreadcrumb)
-      setBreadcrumbs(history.location?.state?.breadcrumbs)
-
+    if (paramBreadCrumbs === "Documents") setBreadcrumbs([{ title: "Documents", url: "/documents" }]);
+    else if (history.location?.state?.showWellBreadcrumb) setBreadcrumbs(history.location?.state?.breadcrumbs);
   }, [history.location?.state?.breadcrumbs, history?.location?.state?.showWellBreadcrumb]);
 
   useEffect(() => {
@@ -324,8 +302,7 @@ function ExpandableCard(props) {
   }, [stateApp.user.mongoId, targetSourceId]);
 
   useEffect(() => {
-    if (dataTrack)
-      setTarget({ isTracked: dataTrack.trackByObjectId ? true : false });
+    if (dataTrack) setTarget({ isTracked: dataTrack.trackByObjectId ? true : false });
   }, [dataTrack]);
 
   // useEffect(() => { setZidx(props.zIndex); }, [props.zIndex]);
@@ -374,10 +351,7 @@ function ExpandableCard(props) {
         wellDetailCardOpen: true,
         popupOpen: false,
       }));
-    } else if (
-      props.targetLabel === "parcel" ||
-      props.targetLabel === "expandedParcel"
-    ) {
+    } else if (props.targetLabel === "parcel" || props.targetLabel === "expandedParcel") {
       setStateApp((state) => ({
         ...state,
         parcelDetailCardOpen: true,
@@ -405,10 +379,7 @@ function ExpandableCard(props) {
 
   const handleClose = () => {
     if (parent === "map") {
-      if (
-        stateApp?.selectedShape?.type === "agreement" &&
-        !stateApp?.selectedShape?.feature?.properties?.agreementNumber
-      ) {
+      if (stateApp?.selectedShape?.type === "agreement" && !stateApp?.selectedShape?.feature?.properties?.agreementNumber) {
         dispatch(showInfoMessage("Agreement Number is required"));
         return;
       }
@@ -459,74 +430,41 @@ function ExpandableCard(props) {
         }}
       >
         {stateApp.selectedShape ? (
-          <Grid
-            container
-            spacing={2}
-            alignItems="center"
-            className={classes.unitTitle}
-          >
+          <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
             <Grid item>
               <Avatar color="#1a2341">
                 <FolderIcon fontColor="#1a2341" />
               </Avatar>
             </Grid>
             <Grid item>
-              <Box className="name">
-                {title.length > 30
-                  ? `${title.substr(0, 35).toUpperCase()}...`
-                  : title.toUpperCase()}
-              </Box>
+              <Box className="name">{title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}</Box>
               <Box className="description">{subTitle}</Box>
-              {stateApp.selectedShape.type === "unit" && (
-                <Box className="type">Unit</Box>
-              )}
+              {stateApp.selectedShape.type === "unit" && <Box className="type">Unit</Box>}
               {stateApp.selectedShape.type === "agreement" && (
-                <Box className="type">
-                  {agreementTypes.find(
-                    (at) => at.value === stateApp.selectedShape?.agreementType
-                  )?.label || ""}
-                </Box>
+                <Box className="type">{agreementTypes.find((at) => at.value === stateApp.selectedShape?.agreementType)?.label || ""}</Box>
               )}
             </Grid>
           </Grid>
         ) : (
           <>
             {" "}
-            {targetLabel !== "contact" && targetLabel !== "parcel" && (
-              <div>
-                {title.length > 30 ? `${title.substr(0, 35)}...` : title}
-              </div>
-            )}
+            {targetLabel !== "contact" && targetLabel !== "parcel" && <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>}
             {targetLabel === "parcel" && props.expanded === true && (
-              <Grid
-                container
-                spacing={2}
-                alignItems="center"
-                className={classes.unitTitle}
-              >
+              <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
                 <Grid item>
                   <Avatar color="#1a2341">
                     <FolderIcon fontColor="#1a2341" />
                   </Avatar>
                 </Grid>
                 <Grid item>
-                  <Box className="name">
-                    {title.length > 30
-                      ? `${title.substr(0, 35).toUpperCase()}...`
-                      : title.toUpperCase()}
-                  </Box>
+                  <Box className="name">{title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}</Box>
                   {subTitle && <Box className="description">{subTitle}</Box>}
                   <Box className="type">Tract</Box>
                 </Grid>
               </Grid>
             )}
             {targetLabel === "parcel" && props.expanded === false && (
-              <Grid
-                container
-                spacing={2}
-                alignItems="center"
-                className={classes.unitTitle}
-              >
+              <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
                 <Box
                   className="name"
                   style={{
@@ -534,20 +472,12 @@ function ExpandableCard(props) {
                     marginTop: -6,
                   }}
                 >
-                  {title.length > 30
-                    ? `${title.substr(0, 35).toUpperCase()}...`
-                    : title.toUpperCase()}
+                  {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
                 </Box>
               </Grid>
             )}
-            {targetLabel === "contact" && parent !== "table" && (
-              <ContactSearch />
-            )}
-            {targetLabel === "contact" && parent !== "table" && (
-              <div>
-                {title.length > 30 ? `${title.substr(0, 35)}...` : title}
-              </div>
-            )}
+            {targetLabel === "contact" && parent !== "table" && <ContactSearch />}
+            {targetLabel === "contact" && parent !== "table" && <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>}
           </>
         )}
       </div>
@@ -559,11 +489,7 @@ function ExpandableCard(props) {
   };
 
   const deleteFunc = async () => {
-    if (
-      targetLabel === "parcel" ||
-      stateApp.selectedShape ||
-      targetLabel === "expandedParcel"
-    ) {
+    if (targetLabel === "parcel" || stateApp.selectedShape || targetLabel === "expandedParcel") {
       setDeleteLoading(true);
       await deleteCustomLayer();
       setDeleteLoading(false);
@@ -575,10 +501,7 @@ function ExpandableCard(props) {
 
       for (let i = 0; i < stateApp.selectedAbstracts.length; i++) {
         const id = stateApp.selectedAbstracts[i].properties.Id;
-        map.setFeatureState(
-          { source: "abstract_geo_source", id },
-          { click: false }
-        );
+        map.setFeatureState({ source: "abstract_geo_source", id }, { click: false });
       }
       setStateApp((state) => ({
         ...state,
@@ -606,12 +529,9 @@ function ExpandableCard(props) {
       popupOpen: false,
       expandedCard: false,
       showDrawShapesPopup: true,
-      selectedUserDefinedLayer:
-        state.selectedParcel?.feature || state.selectedShape?.feature,
-      currentFeature:
-        state.selectedParcel?.feature || state.selectedShape?.feature,
-      featureToEdit:
-        state.selectedParcel?.feature || state.selectedShape?.feature,
+      selectedUserDefinedLayer: state.selectedParcel?.feature || state.selectedShape?.feature,
+      currentFeature: state.selectedParcel?.feature || state.selectedShape?.feature,
+      featureToEdit: state.selectedParcel?.feature || state.selectedShape?.feature,
       openDrawShapesControl: true,
       editParcelAndShape: true,
       editDraw: true,
@@ -625,10 +545,7 @@ function ExpandableCard(props) {
     return (
       <div className={classes.breadcrumContainer}>
         {history.location?.state?.fromShapeDetail && (
-          <Breadcrumbs
-            separator={<NavigateNextIcon fontSize="small" />}
-            aria-label="breadcrumb"
-          >
+          <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
             <Typography className={classes.unClickable} color="inherit">
               {history.location?.state?.shapeType}
             </Typography>
@@ -650,17 +567,11 @@ function ExpandableCard(props) {
             <Typography className={classes.unClickable} color="inherit">
               Wells
             </Typography>
-            <Typography className={classes.currentLocation}>
-              {" "}
-              {title.toUpperCase()}
-            </Typography>
+            <Typography className={classes.currentLocation}> {title.toUpperCase()}</Typography>
           </Breadcrumbs>
         )}
         {breadcrumbs && (
-          <Breadcrumbs
-            separator={<NavigateNextIcon fontSize="small" />}
-            aria-label="breadcrumb"
-          >
+          <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
             {breadcrumbs.map((breadcrumb, index) => (
               <Typography
                 key={index}
@@ -684,10 +595,7 @@ function ExpandableCard(props) {
             >
               Wells
             </Typography>
-            <Typography className={classes.currentLocation}>
-              {" "}
-              {title.toUpperCase()}
-            </Typography>
+            <Typography className={classes.currentLocation}> {title.toUpperCase()}</Typography>
           </Breadcrumbs>
         )}
       </div>
@@ -706,76 +614,55 @@ function ExpandableCard(props) {
           maxWidth="sm"
         >
           <DeleteConfirmationDialogContent
-            header={`Delete ${targetLabel === "expandedParcel" ? "parcel" : targetLabel
-              }`}
+            header={`Delete ${targetLabel === "expandedParcel" ? "parcel" : targetLabel}`}
             onClose={() => setOpenDialog(false)}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
             setM1nSelectedRowsIndexes={() => { }}
           >
-            Are you sure you want to delete the selected{" "}
-            {targetLabel === "expandedParcel" ? "parcel" : targetLabel}?
+            Are you sure you want to delete the selected {targetLabel === "expandedParcel" ? "parcel" : targetLabel}?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
 
-      <Card className={classes.card}>
+      <Card id="expandableCard" className={classes.card}>
         {/* Modal popup for reporting bugs on expandable card  */}
-        <ReportBugModal
-          open={openBugModal}
-          onClose={() => setOpenBugModal(false)}
-        />
-        {(history.location?.state?.fromShapeDetail ||
-          breadcrumbs) && <DisplayBreadCrums />}
+        <ReportBugModal open={openBugModal} onClose={() => setOpenBugModal(false)} />
+        {(history.location?.state?.fromShapeDetail || breadcrumbs) && <DisplayBreadCrums />}
 
-        {(history.location?.state?.showAgreementBreadcrumb ||
-          history.location?.state?.showTractsBreadcrumb) && (
-            <Grid
-              container
-              spacing={2}
-              alignItems="center"
-              className={classes.breadcrumb}
-            >
-              <Breadcrumbs
-                separator={<NavigateNextIcon fontSize="small" />}
-                aria-label="breadcrumb"
+        {(history.location?.state?.showAgreementBreadcrumb || history.location?.state?.showTractsBreadcrumb) && (
+          <Grid container spacing={2} alignItems="center" className={classes.breadcrumb}>
+            <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
+              <Typography
+                style={{
+                  marginLeft: "10px",
+                  fontSize: "16px",
+                }}
+                color="inherit"
               >
-                <Typography
-                  style={{
-                    marginLeft: "10px",
-                    fontSize: "16px",
-                  }}
-                  color="inherit"
-                >
-                  {history.location?.state?.showAgreementBreadcrumb && (
-                    <div
-                      className={classes.agreementLink}
-                      onClick={() => history.push("/land/agreements")}
-                    >
-                      Agreements
-                    </div>
-                  )}
-                  {history.location?.state?.showTractsBreadcrumb && (
-                    <div
-                      className={classes.agreementLink}
-                      onClick={() => history.push("/land/tracts")}
-                    >
-                      Tracts
-                    </div>
-                  )}
-                </Typography>
-                <Typography
-                  style={{
-                    marginLeft: "10px",
-                    fontSize: "16px",
-                  }}
-                  color="inherit"
-                >
-                  <div className={classes.breadcrumbDiv}>{title}</div>
-                </Typography>
-              </Breadcrumbs>
-            </Grid>
-          )}
+                {history.location?.state?.showAgreementBreadcrumb && (
+                  <div className={classes.agreementLink} onClick={() => history.push("/land/agreements")}>
+                    Agreements
+                  </div>
+                )}
+                {history.location?.state?.showTractsBreadcrumb && (
+                  <div className={classes.agreementLink} onClick={() => history.push("/land/tracts")}>
+                    Tracts
+                  </div>
+                )}
+              </Typography>
+              <Typography
+                style={{
+                  marginLeft: "10px",
+                  fontSize: "16px",
+                }}
+                color="inherit"
+              >
+                <div className={classes.breadcrumbDiv}>{title}</div>
+              </Typography>
+            </Breadcrumbs>
+          </Grid>
+        )}
         <CardHeader
           classes={{ title: classes.title, subheader: classes.subheader }}
           action={
@@ -793,16 +680,13 @@ function ExpandableCard(props) {
                   </IconButton>
                 </Tooltip>
               )}
-              {targetLabel !== "activity" &&
-                targetLabel !== "contact" &&
-                targetLabel !== "parcel" &&
-                !stateApp?.selectedShape && (
-                  <CommentsWithIcon
-                    objectId={targetSourceId.toLowerCase()}
-                    targetLabel={props.targetLabel}
-                    iconZiseSmall={!stateExpandableCard.expanded}
-                  />
-                )}
+              {targetLabel !== "activity" && targetLabel !== "contact" && targetLabel !== "parcel" && !stateApp?.selectedShape && (
+                <CommentsWithIcon
+                  objectId={targetSourceId.toLowerCase()}
+                  targetLabel={props.targetLabel}
+                  iconZiseSmall={!stateExpandableCard.expanded}
+                />
+              )}
 
               {targetLabel !== "activity" &&
                 targetLabel !== "contact" &&
@@ -837,12 +721,7 @@ function ExpandableCard(props) {
                   />
                 )}
 
-
-
-              {stateExpandableCard.expanded &&
-                targetLabel !== "activity" &&
-                targetLabel !== "contact" &&
-                parent !== "table" ? (
+              {stateExpandableCard.expanded && targetLabel !== "activity" && targetLabel !== "contact" && parent !== "table" ? (
                 parent !== "table" &&
                   targetLabel !== "well" &&
                   targetLabel !== "expandedWell" &&
@@ -851,12 +730,7 @@ function ExpandableCard(props) {
                   targetLabel !== "expandedParcel" &&
                   targetLabel !== "recent_submitted_permits" ? (
                   <Tooltip title={"Shrink"} placement="top">
-                    <IconButton
-                      color="secondary"
-                      onClick={handleShrink}
-                      aria-label="shrink"
-                      className={classes.icons}
-                    >
+                    <IconButton color="secondary" onClick={handleShrink} aria-label="shrink" className={classes.icons}>
                       <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
                     </IconButton>
                   </Tooltip>
@@ -874,12 +748,7 @@ function ExpandableCard(props) {
                   </Tooltip>
                 ) : (
                   <Tooltip title={"Shrink"} placement="top">
-                    <IconButton
-                      color="secondary"
-                      onClick={handleExpand}
-                      aria-label="shrink"
-                      className={classes.icons}
-                    >
+                    <IconButton color="secondary" onClick={handleExpand} aria-label="shrink" className={classes.icons}>
                       <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
                     </IconButton>
                   </Tooltip>
@@ -904,39 +773,36 @@ function ExpandableCard(props) {
                 )
               )}
               {stateExpandableCard.expanded &&
-                (["activity", "parcel", "expandedParcel"].includes(
-                  targetLabel
-                ) ||
-                  stateApp.selectedShape) &&
+                (["activity", "parcel", "expandedParcel"].includes(targetLabel) || stateApp.selectedShape) &&
                 title !== "Add Activity" && (
                   <Tooltip title={`Delete ${targetLabel}`} placement="top">
                     {isDeletingCustomLayer || deleteLoading ? (
                       <CircularProgress size={20} color="secondary" />
                     ) : (
-                      <> {
-                        (targetLabel == 'parcel' || targetLabel == 'unit' || targetLabel == 'agreement') && <> <IconButton
-                          size="small"
-                          component="span"
-                          onClick={handleMenuClick}
-                        >
-                          <MoreVertIcon id="expandCardVertIcon" size="medium" />
-                        </IconButton>
-                          <Menu
-                            id="dealMenu"
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={handleMenuClose}
-                            className={classes.menu}
-                          >
-                            <MenuItem onClick={openConfirmationDialog}>
-                              <ListItemIcon>
-                                <DeleteIcon size="medium" />
-                              </ListItemIcon>
-                              <ListItemText>Delete</ListItemText>
-                            </MenuItem>
-                          </Menu></>
-                      }
-
+                      <>
+                        {" "}
+                        {(targetLabel == "parcel" || targetLabel == "unit" || targetLabel == "agreement") && (
+                          <>
+                            {" "}
+                            <IconButton size="small" component="span" onClick={handleMenuClick}>
+                              <MoreVertIcon id="expandCardVertIcon" size="medium" />
+                            </IconButton>
+                            <Menu
+                              id="dealMenu"
+                              anchorEl={anchorEl}
+                              open={Boolean(anchorEl)}
+                              onClose={handleMenuClose}
+                              className={classes.menu}
+                            >
+                              <MenuItem onClick={openConfirmationDialog}>
+                                <ListItemIcon>
+                                  <DeleteIcon size="medium" />
+                                </ListItemIcon>
+                                <ListItemText>Delete</ListItemText>
+                              </MenuItem>
+                            </Menu>
+                          </>
+                        )}
                       </>
                     )}
                   </Tooltip>
@@ -956,17 +822,11 @@ function ExpandableCard(props) {
           // Expandable Card Title
           title={getTitle()}
           // Expandable Card Secondary Header
-          subheader={
-            subTitle
-              ? subTitle.length > 35
-                ? `${subTitle.substr(0, 35)}...`
-                : subTitle
-              : ""
-          }
+          subheader={subTitle ? (subTitle.length > 35 ? `${subTitle.substr(0, 35)}...` : subTitle) : ""}
         />
 
         <CardContent className={classes.content}>
-          <div id="cardContent">{props.component}</div>
+          <div id="cardContentData">{props.component}</div>
         </CardContent>
       </Card>
     </React.Fragment>

@@ -36,16 +36,15 @@ const useStyles = makeStyles((theme) => ({
     },
     height: "auto",
     minHeight: "200px",
-
   },
   comment: ({ commentsHeight }) => ({
     position: "relative",
     overflow: "auto",
     padding: "14px 0px",
-    maxHeight: "calc(100vh - 897px)",
+    maxHeight: "calc(100vh - 916px)",
   }),
   hideMenuIcon: {
-    visibility: "hidden"
+    visibility: "hidden",
   },
   noBorder: {
     border: "none",
@@ -186,8 +185,10 @@ export default function CommentComponent(props) {
   const [profileImage, setProfileImage] = useState(null);
   const [commentsArray, setCommentsArray] = useState([]);
   const [showActions, setShowActions] = useState(false);
+  const [isEdit,setIsEdit] = useState(false);
   const [showCommentActionId, setShowCommentActionId] = useState(null);
   const [loadingComments, setLoadingComments] = useState(true);
+  const [scrollIntoView, setScrollIntoView] = useState(false);
 
   const commentContainerRef = useRef(null);
 
@@ -243,7 +244,7 @@ export default function CommentComponent(props) {
             user: { name: element.ownerName, email: element.ownerName },
             activityData: element,
             comment: element.notes,
-            ts: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime(),
+            ts: new Date(element._ts.includes("GMT") ? element._ts : Number(element._ts)).getTime(),
             isActivity: true,
             isEdited: false,
             public: true,
@@ -316,21 +317,21 @@ export default function CommentComponent(props) {
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value
-        .split("\n")
-        .map((line) => {
-          if (line.trim() !== ".") {
-            return line.trim();
-          }
-        })
-        .join("\n")
+          .split("\n")
+          .map((line) => {
+            if (line.trim() !== ".") {
+              return line.trim();
+            }
+          })
+          .join("\n")
       : `${value
-        .split("\n")
-        .map((line) => {
-          if (line.trim() !== ".") {
-            return line.trim();
-          }
-        })
-        .join("\n")}`;
+          .split("\n")
+          .map((line) => {
+            if (line.trim() !== ".") {
+              return line.trim();
+            }
+          })
+          .join("\n")}`;
 
   const updateComment = (value) => {
     setLoadingComments(true);
@@ -372,12 +373,13 @@ export default function CommentComponent(props) {
   };
 
   useEffect(() => {
-    commentContainerRef?.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-      inline: "start",
-    })
-  }, [commentsArray])
+    if (commentsArray?.length > 0 && scrollIntoView)
+      commentContainerRef?.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "start",
+      });
+  }, [commentsArray, scrollIntoView]);
 
   const addNewComment = (value) => {
     const userDetails = stateApp.user;
@@ -399,6 +401,7 @@ export default function CommentComponent(props) {
       state.push(newComment);
       return state;
     });
+    setScrollIntoView(true);
 
     upsertComment({
       variables: {
@@ -413,6 +416,8 @@ export default function CommentComponent(props) {
       },
       refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
       awaitRefetchQueries: true,
+    }).then((result) => {
+      setScrollIntoView(false);
     });
     setShowActions(false);
     setComment("");
@@ -475,19 +480,29 @@ export default function CommentComponent(props) {
                           <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
                             <div>
                               <span className={classes.bold}>{eachComment?.user?.name}</span>
-                              {!isNaN(eachComment.ts) && <ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />}
+                              {!isNaN(eachComment.ts) && (
+                                <ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />
+                              )}
                               {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
                               {eachComment?.user?.email === stateApp.user.email &&
                                 showCommentActionId === eachComment._id &&
                                 editCommentId !== eachComment._id && (
-                                  <div className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(eachComment?.user?.email === stateApp.user.email &&
-                                    showCommentActionId === eachComment._id &&
-                                    editCommentId !== eachComment._id) && classes.hideMenuIcon}`}>
+                                  <div
+                                    className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${
+                                      !(
+                                        eachComment?.user?.email === stateApp.user.email &&
+                                        showCommentActionId === eachComment._id &&
+                                        editCommentId !== eachComment._id
+                                      ) && classes.hideMenuIcon
+                                    }`}
+                                  >
                                     <ActionMenu
                                       eachComment={eachComment}
                                       setEditCommentId={setEditCommentId}
                                       setEditComment={setEditComment}
                                       deleteComment={deleteComment}
+                                      setShowActions={setShowActions}
+                                      setIsEdit={setIsEdit}
                                     />
                                   </div>
                                 )}
@@ -510,7 +525,7 @@ export default function CommentComponent(props) {
                             ) : (
                               <div className={classes.border}>
                                 <CommentField
-                                  isEdit
+                                  isEdit={isEdit}
                                   profilesInfo={profilesInfo}
                                   users={users}
                                   comment={editComment}
@@ -518,6 +533,8 @@ export default function CommentComponent(props) {
                                   setEditCommentId={setEditCommentId}
                                   setComment={setEditComment}
                                   upsertComment={updateComment}
+                                  setIsEdit={setIsEdit}
+                                  setShowActions={setShowActions}
                                 />
                               </div>
                             )}
@@ -534,17 +551,19 @@ export default function CommentComponent(props) {
             <div id="checkIf" ref={commentContainerRef} />
           </div>
           {!editCommentId && (
-            <div style={{
-              paddingBottom: "20px",
-              // position: "absolute",
-              // bottom: "0px",
-              width: "100%"
-            }}>
+            <div
+              style={{
+                paddingBottom: "20px",
+                // position: "absolute",
+                // bottom: "0px",
+                width: "100%",
+              }}
+            >
               <Grid container>
                 <Grid item style={{ maxWidth: "55px" }}>
                   <IconButton
                     className={classes.commentView}
-                  // style={{ top: "3px" }}
+                    // style={{ top: "3px" }}
                   >
                     {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
                   </IconButton>
@@ -574,7 +593,7 @@ export default function CommentComponent(props) {
                           setComment={setComment}
                           upsertComment={addNewComment}
                           showCommentType={props.showCommentType}
-                        // fieldWidth={`${size - 23}px`}
+                          // fieldWidth={`${size - 23}px`}
                         />
                       </div>
                     )}
@@ -636,7 +655,7 @@ export const CommentText = ({ eachComment, users }) => {
   );
 };
 
-const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment }) => {
+const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment,  setShowActions,setIsEdit }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -649,7 +668,7 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
 
   return (
     <>
-      <ExpandMoreIcon id="expandIcon" aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} />
+      <ExpandMoreIcon id="expandCommentActionIcon" aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} />
       <Menu
         style={{ zIndex: "1305" }}
         id={eachComment._id}
@@ -666,6 +685,8 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
           onClick={(event) => {
             setEditCommentId(eachComment._id);
             setEditComment(eachComment.comment);
+            setShowActions(true);
+            setIsEdit(true)
             handleClose();
           }}
         >

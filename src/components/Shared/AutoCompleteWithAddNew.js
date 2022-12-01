@@ -23,11 +23,12 @@ const useStyles = makeStyles({
   },
 });
 
-const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant }) => {
+const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, type }) => {
   const classes = useStyles();
 
   const onInputChange = (event, value) => {
-    if (onSearch) onSearch(value);
+    const _value = event?.target?.value ?? value;
+    if (onSearch) onSearch(_value);
   };
 
   return (
@@ -62,7 +63,8 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant })
       }}
       onInputChange={onInputChange}
       filterOptions={(options, params) => {
-        let inputValue = value ? JSON.parse(JSON.stringify(value)) : "";
+        const { inputValue } = params;
+        // let inputValue = value ? JSON.parse(JSON.stringify(value)) : "";
         // if (typeof inputValue.name === "string") {
         //   inputValue = inputValue.name;
         // }

@@ -62,6 +62,7 @@ export default function FilterCountyName({ value, state, onCountyChange, label, 
       ) : (
         <Autocomplete
           className={classes.autoC}
+          id="field-county"
           options={countyList}
           size={shrink ? 'small' : 'medium'}
           value={value ? { county: value } : ''}

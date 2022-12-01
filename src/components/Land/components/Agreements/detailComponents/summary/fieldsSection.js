@@ -1,6 +1,7 @@
 import React, { useEffect, useState, Fragment, useContext } from "react";
 import moment from "moment";
 import { get } from "lodash";
+import uniqBy from "lodash/uniqBy";
 import { useLazyQuery } from "@apollo/client";
 import { Controller } from "react-hook-form";
 import { Grid, TextField, Button, Select, MenuItem, Tooltip, IconButton, makeStyles, InputAdornment } from "@material-ui/core";
@@ -96,7 +97,8 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
   }, [history, agreementDetails]);
 
   useEffect(() => {
-    const customData = getCustomMetaFields(agreementDetails, metaDataRes);
+    let customData = getCustomMetaFields(agreementDetails, metaDataRes);
+    customData = uniqBy(customData, 'esKey');
     setFieldsList([...fieldsData(stateApp.user), ...customData]);
     if (agreementDetails?.originalProperties?.State || agreementDetails?.originalProperties?.StateAbbreviation) {
       setState(agreementDetails.originalProperties.State || agreementDetails.originalProperties.StateAbbreviation)
@@ -206,7 +208,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                             {field.type === "text" && (
                               <TextField
                                 {...params}
-                                id={`field-${index}`}
+                                id={`field-${field.key}`}
                                 variant="outlined"
                                 margin="dense"
                                 type="text"
@@ -220,6 +222,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                             )}
                             {field.type === "number" && (
                               <NumberField
+                                id={`field-${field.key}`}
                                 index={index}
                                 field={field}
                                 offClickHandler={(key, value) => {
@@ -230,10 +233,10 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                             )}
                             {field.type === "dropdown" && (
                               <ReactSelectField
+                                id={`field-${field.title}`}
                                 isSingleSelect={true}
                                 fullWidth
                                 variant="outlined"
-                                index={`field-${index}`}
                                 dropdownOptions={field.options}
                                 column={field}
                                 onCustomKeyChange={(value) => {
@@ -246,7 +249,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                             {field.type === "select" && (
                               <Select
                                 {...params}
-                                id={`field-${index}`}
+                                id={`field-${field.key}`}
                                 variant="outlined"
                                 margin="dense"
                                 fullWidth
@@ -264,7 +267,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                             )}
                             {field.type === "multiselect" && (
                               <ReactSelectField
-                                id={`field-${index}`}
+                                id={`field-${field.key}`}
                                 variant="outlined"
                                 margin="dense"
                                 fullWidth
@@ -283,6 +286,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                   )}
                 {field.type === "date" && (
                   <TextField
+                    id={`field-${field.key}`}
                     autoOk
                     type="date"
                     variant="outlined"
@@ -325,7 +329,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     onChange={() => { }}
                     onBlur={(event) => offClickHandler(field.key, event.target.value)}
                     autoFocus={false}
-                    id={`field-${index}`}
+                    id={`field-${field.key}`}
                   />
                 )}
                 {field.key === "totalAcquisitionCost" && (
@@ -335,7 +339,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     render={(props) => (
                       <TextField
                         {...props}
-                        id={`field-${index}`}
+                        id={`field-${field.key}`}
                         value={parseFloat(props.value).toFixed(2)}
                         className={isAcquisitionCostOverridden ? overrideClasses.valueOveridden : overrideClasses.valueNormal}
                         variant="outlined"
@@ -349,7 +353,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                           props.onChange(toFixedValue);
                           setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost);
                         }}
-                        onBlur={(e) => offClickHandler(field.key, Number(props.value))}
+                        onBlur={(e) => offClickHandler(field.key, {value: Number(props.value), overridden: isAcquisitionCostOverridden})}
                         InputProps={{
                           ...field.InputProps,
                           endAdornment: (
@@ -360,7 +364,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                   onClick={() => {
                                     const totalAcquisitionCost = parseFloat(agreementDetails?.calculated?.totalAcquisitionCost || 0).toFixed(2);
                                     props.onChange(totalAcquisitionCost);
-                                    offClickHandler(field.key, Number(totalAcquisitionCost));
+                                    offClickHandler(field.key, {value: Number(totalAcquisitionCost), overridden: isAcquisitionCostOverridden});
                                     setIsAcquisitionCostOverridden(false);
                                   }}
                                 >
@@ -377,10 +381,12 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                 {field.key === 'state' && (
                   <StateField
                     // label="State"
+                    id={`field-${field.key}`}
                     shrink
                     value={state}
                     onStateChange={(selectedState) => {
                       setState(selectedState.acronym)
+                      setCounty('')
                       updateAgreement("state", selectedState.acronym, false)
                     }}
                   />
@@ -391,9 +397,9 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     shrink
                     value={county}
                     state={state}
-                    onCountyChange={(selectedCounty) => {
-                      setCounty(selectedCounty.county)
-                      updateAgreement('county', selectedCounty.county, false)
+                    onCountyChange={(selectedCounty) =>{
+                      setCounty(selectedCounty ? selectedCounty.county : '')
+                      updateAgreement('county', selectedCounty ? selectedCounty.county : '', false)
                     }}
                   />
                 )}

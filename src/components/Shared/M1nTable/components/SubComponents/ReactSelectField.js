@@ -68,7 +68,8 @@ const ReactSelectField = ({
   showUnderline,
   showChevron,
   variant,
-  tooltipView
+  tooltipView,
+  ...rest
 }) => {
   if (!isSingleSelect && !Array.isArray(value) && value) {
     value = [value]
@@ -113,6 +114,7 @@ const ReactSelectField = ({
       <components.Option {...props}>
         {props.value === "editOption" ? (
           <Grid
+            id={props}
             style={{
               "flex-wrap": "nowrap",
               marginTop: "5px",
@@ -348,9 +350,11 @@ const ReactSelectField = ({
     }
     return candidate.value.toLowerCase().includes(input?.toLowerCase())
   };
+
   return (
     <>
       <div
+        id={rest.id || "checkif"}
         ref={wrapperRef}
         className={classes.root}
         style={{
@@ -450,13 +454,15 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
       (pallete) => pallete.id === opt?.palleteId
     );
     return {
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
+      // whiteSpace: 'nowrap',
+      // overflow: 'hidden',
+      // textOverflow: 'ellipsis',
       maxWidth: '150px',
       backgroundColor: pallete?.color,
       color: pallete?.textColor,
-      // display: "flex",
+      display: "flex",
+      justifyContent:'space-between',
+      alignItems:'center',
       margin: '0px 2px',
     }
   }
@@ -465,10 +471,21 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
     className="colorText"
     style={getCss(badgeValue)}
   >
-    <span id="badgeValue">{badgeValue}</span>
+    <div 
+    style={{
+      maxWidth:'100px',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    }}>
+    <span 
+    id="badgeValue" 
+    >{badgeValue}</span>
+    </div>
+   
     {isSingleSelect || (
       <CloseIcon
-        style={{ fontSize: 13, marginLeft: 10 }}
+        style={{ fontSize: 13, marginLeft: 10,cursor:'pointer' }}
         onClick={(e) => {
           e.stopPropagation();
           const newValue = copy(value)
@@ -527,7 +544,7 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
 
       {value && value.length > 0 && Array.isArray(value) ? (
         <>
-          {tooltipView ? <ToolTipView /> : <MultiSelectView />}
+        {tooltipView ? <ToolTipView /> : <MultiSelectView />}
         </>
       ) : (
         <>
