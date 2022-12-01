@@ -1009,6 +1009,7 @@ export default function RelatedFile(props) {
         </Button>
 
         <Button
+          id="saveDocumentButton"
           variant="contained"
           color="secondary"
           size="medium"
