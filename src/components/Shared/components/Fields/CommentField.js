@@ -166,7 +166,7 @@ export default function DealComment({
   showActions,
   setComment,
   upsertComment,
-  isEdit,
+  isEdit = false,
   users,
   profilesInfo,
   setEditCommentId,
@@ -299,6 +299,12 @@ export default function DealComment({
         onFocus={() => {
           setShowCommentTypeDialog(false);
         }}
+        onBlur={(e)=>{
+          if(comment === ''){
+            e.stopPropagation();
+            setIsMinimize(false);
+          }
+        }}
         id="txtArea"
         className={classes.search}
         style={{
@@ -345,6 +351,7 @@ export default function DealComment({
         renderInput={(params) => (
           <>
             <TextField
+              autoFocus={true}
               classes={{ root: classes.customTextField }}
               margin="dense"
               {...params}
@@ -360,6 +367,7 @@ export default function DealComment({
               placeholder="Add a question or post an update"
               variant="outlined"
               size="small"
+              auto
             />
             <div
               id="colorText"
@@ -388,8 +396,10 @@ export default function DealComment({
               variant="contained"
               color="primary"
               id="commentButton"
-              onClick={() => {
+              style={{ marginBottom: "10px" }}
+              onClick={(e) => {
                 if (!showCommentTypeDialog) {
+                  e.stopPropagation();
                   upsertComment({ comment, commentType: selectedCommentType });
                   setNameAutValue({});
                   setIsMinimize(false);
@@ -403,12 +413,14 @@ export default function DealComment({
         <>
           <Button
             className={classes.commentBtn}
-            style={{ marginBottom: "10px" }}
+            style={{ marginBottom: "15px" }}
             variant="contained"
             color="primary"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               upsertComment({ comment, commentType: selectedCommentType });
               setIsMinimize(false);
+              setIsEdit(false);
             }}
           >
             Save Changes
@@ -418,12 +430,13 @@ export default function DealComment({
             className={classes.commentBtn}
             style={{ marginRight: "10px", marginBottom: "10px" }}
             variant="contained"
-            onClick={() => {
+            onClick={(e) => {
               setComment("");
               setEditCommentId("");
               setIsEdit(false);
               setShowActions(false);
               setIsMinimize(false);
+              e.stopPropagation()
             }}
           >
             Cancel
@@ -440,9 +453,14 @@ export default function DealComment({
           placeholder="Add a question or post an update"
           variant="outlined"
           size="small"
-          onClick={(e)=>{
+          onFocus={(e)=>{
             setIsMinimize(true);
             e.stopPropagation();
+          }}
+          onBlur={()=>{
+            console.log("console log")
+            // setIsMinimize(false);
+            // e.stopPropagation();
           }}
       />}
   </>);

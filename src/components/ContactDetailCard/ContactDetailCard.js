@@ -799,7 +799,7 @@ function ContactDetailCard(props) {
                 showDescription={false}
                 targetLabel="Contact"
                 ownerTitle="Contact Owner"
-                commentsWidth="25vw"
+                commentsWidth="23vw"
                 viewAllDocuments
                 menuComponent={
                   <IconButton className={classes.menuIcon} onClick={handleClick}>
