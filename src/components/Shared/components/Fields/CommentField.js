@@ -457,6 +457,7 @@ export default function DealComment({
           :
           <div>
             <TextField
+                value={nameAutValue.name}
                 margin="dense"
                 style={{
                   margin: 0,
