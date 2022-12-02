@@ -20,14 +20,15 @@ describe("Add Agreement Spec", () => {
     cy.verifyApiResponse("@getESSimpleSearchApi").then(() => {
       cy.getTableCell("Agreement", 1).then(($tableCell) => {
         cy.wrap($tableCell).click("left");
+        cy.wait(shorTimeout);
         cy.get("#header-tabs", { timeout: longTimeout })
           .should("be.visible")
           .contains("Documents")
           .click();
         cy.wait(4000);
         cy.get("button", { timeout: longTimeout })
-          .contains("+ ADD DOCUMENT")
-          .click();
+          .contains("+ ADD RELATED DCMNT")
+          .click({ force: true });
         cy.get("input[type=file]", { force: true }).selectFile(
           "cypress/files/sample.pdf",
           {
@@ -53,42 +54,44 @@ describe("Add Agreement Spec", () => {
         cy.verifyApiResponse("@AddDescriptorFileApi").then((response) => {
           let fileId1 =
             response.response?.body?.data?.createFileDescriptor?.file?.id;
+          cy.wait(2000);
           cy.get("button", { timeout: shorTimeout })
-            .contains("+ ADD DOCUMENT")
+            .contains("+ ADD RELATED DCMNT")
             .click();
-
+          cy.wait(2000);
           cy.get("#existinTab", { timeout: shorTimeout }).click();
           cy.get("#seletExistingDoc").click().type("demo_png.png");
           cy.get(".MuiAutocomplete-popper ul li").first().trigger("click");
-          cy.interceptApi("getParcelFiles");
+          cy.interceptApiByIndex("getESSimpleSearch", "documents_flat");
 
           cy.get("#addFile").click();
           cy.verifyApiResponse("@AddDescriptorFileApi").then((response2) => {
             let fileId2 =
               response2.response?.body?.data?.createFileDescriptor?.file?.id;
 
-            cy.verifyApiResponse("@getParcelFilesApi").then(() => {
+            cy.verifyApiResponse("@getESSimpleSearchApi").then(() => {
               cy.interceptApi("deleteFileDescriptor");
-
+              cy.wait(shorTimeout);
               cy.get(
                 "#related-docs-div tbody tr:first-child td:first-child input"
-              ).click();
+              ).click({ force: true });
               cy.get(
                 "#related-docs-div tbody tr:nth-child(2) td:first-child input"
-              ).click();
+              ).click({force: true});
 
               cy.get("#related-docs-div button[aria-label=delete]").click();
               cy.get("#deleteButton").click();
                 cy.wait(shorTimeout);
-                cy.verifyApiResponse("@getParcelFilesApi").then((result) => {
+                cy.verifyApiResponse("@getESSimpleSearchApi").then((result) => {
                   const filesIds =
-                    result.response?.body?.data?.getParcelFiles?.map(
+                    result.response?.body?.data?.getESSimpleSearch?.hits?.map(
                       (file) => file.fileId
                     );
 
-                  cy.log(JSON.stringify(filesIds));
-                  expect(filesIds).to.not.include(fileId1);
-                  expect(filesIds).to.not.include(fileId2);
+                    cy.log("-*--* fileIDS -*-*-", filesIds)
+                    cy.log("-*--* fileID1, fileID2 -*-*-", fileId1, fileId2)
+                  cy.expect(filesIds).to.not.include(fileId1);
+                  cy.expect(filesIds).to.not.include(fileId2);
                 });
             });
           });
