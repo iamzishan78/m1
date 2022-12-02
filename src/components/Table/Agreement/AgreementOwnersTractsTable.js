@@ -36,13 +36,6 @@ function AgreementOwnersTractsTable(props) {
     }
   }, [props.portal])
 
-  useEffect(() => {
-    if (props.addToTable === "add") {
-      setDrawer('tract')
-    } else {
-      setDrawer(null)
-    }
-  }, [props.addToTable])
   const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
@@ -127,25 +120,24 @@ function AgreementOwnersTractsTable(props) {
 
   const tableOptions = {
     ...props.options,
+    customToolbar: () => {
+      return (
+        <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
+          <Button
+            id="addTractToAgreementBtn"
+            color="secondary"
+            className={classes.multiSelectionTopBarButtons}
+            onClick={() => {
+              setDrawer("tract");
+            }}
+          >
+            + ADD TRACT TO AGREEMENT
+          </Button>
+        </div>
+      );
+    },
   }
 
-
-  // if(props.customToolbar){
-  //   tableOptions.customToolbar = () => {
-
-  //     return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-  //       <Button
-  //         color="secondary"
-  //         variant="contained"
-  //         className={classes.multiSelectionTopBarButtons}
-  //         // disabled={true}
-  //       onClick={() => setDrawer("tract")}
-  //       >
-  //         + ADD TRACT TO AGREEMENT
-  //       </Button>
-  //     </div>
-  //   }
-  // }
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       {drawer === "tract" && (
