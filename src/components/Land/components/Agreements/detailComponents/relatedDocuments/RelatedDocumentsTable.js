@@ -73,7 +73,7 @@ function AgreementDocumentsTable(props) {
               if (props.setDrawer) props.setDrawer("dcmnt");
             }}
           >
-            + ADD RELATED DOCUMENT
+            + ADD DOCUMENT
           </Button>
         </div>
       );
