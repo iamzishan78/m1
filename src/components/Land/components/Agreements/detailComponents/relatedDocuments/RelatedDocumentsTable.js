@@ -8,25 +8,31 @@ import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 
 // QUERIES
-import { DELETE_RELATED_AGREEMENTS } from "graphQL/useMutationsRelatedAgreement";
 
 import { deepEqualObjects } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 // Header Schemas
-import TableHeader from "components/Table/constants/related-agreements-header-schema";
+import TableHeader from "components/Table/constants/parcel-documents-header-schema.js";
 
 // Utilities
 import { usetableStyles } from "./style";
-import convert_date from "components/Shared/valueformatters/convert_date";
-import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
+import { DELETEDESCRIPTORRELATEDFILE } from "graphQL/useMutationDeleteDescriptorFile";
 
-function AgreementOwnersTractsTable(props) {
+function AgreementDocumentsTable(props) {
   const classes = usetableStyles();
   const [isDeletePopup, setDeletePopup] = useState(false);
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
   const { moduleId } = props;
 
-  const [deleteRelatedAgreements] = useMutation(DELETE_RELATED_AGREEMENTS);
+  const [updateParcelDocument] = useMutation(DELETEDESCRIPTORRELATEDFILE, {
+    onCompleted: () => {
+      props.setLoading(false);
+      props.setSelectedRows([]);
+      setResetSelectedRow(!resetSelectedRow)
+    },
+    onError: (err) => { },
+  }, { refetchQueries: ["getESSimpleSearch"], awaitRefetchQueries: true });
 
   const options = {
     ...props.options,
@@ -34,14 +40,13 @@ function AgreementOwnersTractsTable(props) {
       return (
         <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
           <Button
-            id="addRelatedAgreementBtn"
             color="secondary"
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {
-              if (props.setDrawer) props.setDrawer("agrmt");
+              if (props.setDrawer) props.setDrawer("dcmnt");
             }}
           >
-            + ADD RELATED AGMT
+            + ADD RELATED DCMNT
           </Button>
         </div>
       );
@@ -52,7 +57,6 @@ function AgreementOwnersTractsTable(props) {
           <div style={{ marginTop: "6px", height: "35px", display: "flex" }}>
             <Tooltip title={"Delete"}>
               <IconButton
-                id="deleteAgreementIcon"
                 size="medium"
                 style={{ margin: "0 5px" }}
                 aria-label="delete"
@@ -70,33 +74,22 @@ function AgreementOwnersTractsTable(props) {
   };
 
   const formatHits = (hits) => {
-    return hits.map((hit) => {
-      if (hit?.tract?.tractName) hit.tractName = hit?.tract?.tractName;
-      const isTX = hit.state === "TX";
-      hit.SurveyMeridian = isTX ? hit.survey : hit.meridian;
-      hit.BlockTownship = isTX ? hit.block : hit.township;
-      hit.SectionRange = isTX ? hit.section : hit.range;
-      hit.AbstractSection = isTX ? hit.abstract : hit.section;
-      hit.agreementDate = hit.agreementDate ? convert_date(hit.agreementDate) : null;
-      hit.effectiveDate = hit.effectiveDate ? convert_date(hit.effectiveDate) : null;
-      hit.expirationDate = hit.expirationDate ? convert_date(hit.expirationDate) : null;
-      hit.extensionDate = hit.extensionDate ? convert_date(hit.extensionDate) : null;
-      hit.agreementType = agreementTypes.find((type) => type.value === hit.agreementType || type.label === hit.agreementType)?.label;
-      return hit;
-    });
+    return hits;
   };
-
   const deleteFunc = (ids) => {
-    if (ids.length > 0) {
-      deleteRelatedAgreements({
+    props.setLoading(true);
+    for (let i = 0; i < ids.length; i++) {
+      updateParcelDocument({
         variables: {
-          currentAgreementId: moduleId,
-          agreementIds: ids,
+          descriptorObjectId: ids[i],
+          relatedObjectId: moduleId
         },
         refetchQueries: ["getESSimpleSearch"],
         awaitRefetchQueries: true,
       });
     }
+
+    props.setSelectedRows([]);
   };
 
   useEffect(() => {
@@ -104,10 +97,10 @@ function AgreementOwnersTractsTable(props) {
       props.setTableMeta({
         shapeType: props.shapeType,
         addableName: "Tract",
-        searchFields: ["contact.entityDetail.name", "_all"],
-        filters: [{ field: "relatedAgreements._id", value: moduleId }],
+        searchFields: ["*"],
+        filters: [{ field: "shapeObj._id", value: moduleId }],
         TableHeader: TableHeader,
-        esIndex: "shapes_flat",
+        esIndex: "documents_flat",
         startPaginationAt: 25,
         formatHits,
       });
@@ -121,26 +114,28 @@ function AgreementOwnersTractsTable(props) {
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       <Dialog open={isDeletePopup} onClose={() => setDeletePopup(false)} fullWidth={true} maxWidth={"sm"}>
+
         <DeleteConfirmationDialogContent
-          header={`Delete Related Agreement(s)`}
+          header={`Delete Related Document(s)`}
           onClose={() => setDeletePopup(false)}
           deleteFunc={deleteFunc}
           m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
-          {`Do you want to delete the selected related agreement${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+          {`Do you want to delete the selected related document${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
             }?`}
         </DeleteConfirmationDialogContent>
       </Dialog>
 
       <Table
         style={{ backgroundColor: "#fff" }}
-        header={props.header ?? "Related Agreements"}
+        header={props.header ?? "Related Documents"}
         columns={props.columns}
         rows={props.rows}
         total={false}
         loading={props.loading}
         targetLabel={props.targetLabel}
+        resetSelectedRow={resetSelectedRow}
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={false}
@@ -155,4 +150,4 @@ function AgreementOwnersTractsTable(props) {
   );
 }
 
-export default React.memo(TableESHOC(AgreementOwnersTractsTable), deepEqualObjects);
+export default React.memo(TableESHOC(AgreementDocumentsTable), deepEqualObjects);
