@@ -603,7 +603,7 @@ function ContactDetailCard(props) {
   const togglePullout = () => dispatch(toggleRightColumn());
 
   return contactData ? (
-    <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)", width: "100%", backgroundColor: "#F2F2F2" }}>
+    <div style={{ position: "absolute", top: "41px", maxHeight: "calc(100vh - 64px)", width: "100%", backgroundColor: "#F2F2F2" }}>
       {/**
        * Detail title section
        */}

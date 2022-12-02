@@ -34,15 +34,18 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiFormControl-marginDense": {
       margin: "0px !important",
     },
-    height: "auto",
-    minHeight: "200px",
+    display:'flex',
+    flexDirection:'column',
+    justifyContent:'space-between',
+    /*minHeight: "200px",*/
+    height: "100%",
   },
   comment: ({ commentsHeight }) => ({
     position: "relative",
     overflow: "auto",
     padding: "14px 0px",
-    // maxHeight: "calc(100vh - 916px)",
-    maxHeight:'250px'
+    maxHeight: "calc(100vh - 630px)",
+    // maxHeight:'250px'
   }),
   hideMenuIcon: {
     visibility: "hidden",
@@ -54,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
     border: "1px solid #EBEBEB",
     background: "white",
     overflow: "auto",
+    position: "relative"
   },
   commentBtn: {
     float: "right",
@@ -430,8 +434,8 @@ export default function CommentComponent(props) {
   };
 
   return (
-    <SizeMe>
-      {({ size }) => (
+    // <SizeMe>
+    //   {({ size }) => (
         <div className={classes.container}>
           <div className={classes.comment} id="commentsContainer" onClick={(e)=>{
             setIsMinimize(false);
@@ -524,26 +528,27 @@ export default function CommentComponent(props) {
                                 </div>
                               </>
                             )}
-                            {editCommentId !== eachComment._id ? (
+                            {editCommentId !== eachComment._id && (
                               <CommonCommentText users={users} eachComment={eachComment} />
-                            ) : (
-                              <div className={classes.border}>
-                                <CommentField
-                                  isEdit={isEdit}
-                                  profilesInfo={profilesInfo}
-                                  users={users}
-                                  comment={editComment}
-                                  showActions={showActions}
-                                  setEditCommentId={setEditCommentId}
-                                  setComment={setEditComment}
-                                  upsertComment={updateComment}
-                                  setIsEdit={setIsEdit}
-                                  setShowActions={setShowActions}
-                                  isMinimize={isMinimize}
-                                  setIsMinimize={setIsMinimize}
-                                />
-                              </div>
-                            )}
+                            ) }
+                            {/*: (*/}
+                            {/*  <div className={classes.border}>*/}
+                            {/*    <CommentField*/}
+                            {/*      isEdit={isEdit}*/}
+                            {/*      profilesInfo={profilesInfo}*/}
+                            {/*      users={users}*/}
+                            {/*      comment={editComment}*/}
+                            {/*      showActions={showActions}*/}
+                            {/*      setEditCommentId={setEditCommentId}*/}
+                            {/*      setComment={setEditComment}*/}
+                            {/*      upsertComment={updateComment}*/}
+                            {/*      setIsEdit={setIsEdit}*/}
+                            {/*      setShowActions={setShowActions}*/}
+                            {/*      isMinimize={isMinimize}*/}
+                            {/*      setIsMinimize={setIsMinimize}*/}
+                            {/*    />*/}
+                            {/*  </div>*/}
+                            {/*)}*/}
                           </Grid>
                         </Grid>
                       )}
@@ -556,13 +561,15 @@ export default function CommentComponent(props) {
             )}
             <div id="checkIf" ref={commentContainerRef} />
           </div>
-          {(!editCommentId && !isEdit) && (
+          
+          {/*{(!editCommentId && !isEdit) && (*/}
             <div
               style={{
                 paddingBottom: "20px",
-                // position: "absolute",
-                // bottom: "0px",
-                width: "100%",
+                position: "absolute",
+                bottom: "0",
+                width: "23vw",
+                backgroundColor: "#F6F8F9",
               }}
             >
               <Grid container>
@@ -575,44 +582,47 @@ export default function CommentComponent(props) {
                   </IconButton>
                 </Grid>
                 <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
-                  <SizeMe>
-                    {({ size }) => (
+                  {/*<SizeMe>*/}
+                  {/*  {({ size }) => (*/}
                       <div
                         className={classes.border}
                         // style={{ paddingBottom: "20px" }}
-                        onClick={() => {
-                          if (!showActions) {
-                            setShowActions(true);
-                          }
-                        }}
-                        onBlur={() => {
-                          if (showActions && !comment) {
-                            setShowActions(false);
-                          }
-                        }}
+                        // onClick={() => {
+                        //   if (!showActions) {
+                        //     setShowActions(true);
+                        //   }
+                        // }}
+                        // onBlur={() => {
+                        //   if (showActions && !comment) {
+                        //     setShowActions(false);
+                        //   }
+                        // }}
                       >
                         <CommentField
                           profilesInfo={profilesInfo}
                           users={users}
-                          comment={comment}
+                          comment={editComment !== "" ? editComment : comment}
                           showActions={showActions}
-                          setComment={setComment}
-                          upsertComment={addNewComment}
+                          setComment={editComment !== "" ? setEditComment : setComment}
+                          upsertComment={editComment !== "" ? updateComment : addNewComment}
                           showCommentType={props.showCommentType}
-                          // fieldWidth={`${size - 23}px`}
                           isMinimize={isMinimize}
                           setIsMinimize={setIsMinimize}
+                          isEdit={isEdit}
+                          setEditCommentId={setEditCommentId}
+                          setIsEdit={setIsEdit}
+                          setShowActions={setShowActions}
                         />
                       </div>
-                    )}
-                  </SizeMe>
+                  {/*  )}*/}
+                  {/*</SizeMe>*/}
                 </Grid>
               </Grid>
             </div>
-          )}
+          {/*)}*/}
         </div>
-      )}
-    </SizeMe>
+    //   )}
+    // </SizeMe>
   );
 }
 

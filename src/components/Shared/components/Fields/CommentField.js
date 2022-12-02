@@ -8,6 +8,7 @@ import Button from "@material-ui/core/Button";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/core/styles";
 import CommentType from "components/Shared/components/Comment/CommentType";
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 const filter = createFilterOptions();
 
@@ -166,12 +167,14 @@ export default function DealComment({
   showActions,
   setComment,
   upsertComment,
+  updateCommentData,
   isEdit = false,
   users,
   profilesInfo,
   setEditCommentId,
   fieldWidth,
   setShowActions,
+  setEditComment,
   setIsEdit,
   isMinimize = false,
   setIsMinimize,
@@ -286,25 +289,32 @@ export default function DealComment({
   }
 
   useEffect(()=>{
-    if(isEdit){
+    if(isEdit === true){
       setIsMinimize(true);
     }
   },[isEdit])
 
+  useEffect(()=>{
+    if(!showActions || !isEdit){
+      setComment("");
+    }
+  },[showActions,isEdit])
   return (<>
+    <ClickAwayListener onClickAway={()=> setIsMinimize(false)}>
       {isMinimize ? <div
       onClick={(e)=>openDialogBox(e)}
+      // onBlur={(e)=>{
+      //   if(comment === ''){
+      //     e.stopPropagation();
+      //     setIsMinimize(false);
+      //   }
+      // }}
     >
       <Autocomplete
         onFocus={() => {
           setShowCommentTypeDialog(false);
         }}
-        onBlur={(e)=>{
-          if(comment === ''){
-            e.stopPropagation();
-            setIsMinimize(false);
-          }
-        }}
+
         id="txtArea"
         className={classes.search}
         style={{
@@ -418,7 +428,7 @@ export default function DealComment({
             color="primary"
             onClick={(e) => {
               e.stopPropagation();
-              upsertComment({ comment, commentType: selectedCommentType });
+              updateCommentData({ comment, commentType: selectedCommentType });
               setIsMinimize(false);
               setIsEdit(false);
             }}
@@ -430,39 +440,40 @@ export default function DealComment({
             className={classes.commentBtn}
             style={{ marginRight: "10px", marginBottom: "10px" }}
             variant="contained"
-            onClick={(e) => {
-              setComment("");
-              setEditCommentId("");
+            onClick={() => {
               setIsEdit(false);
               setShowActions(false);
               setIsMinimize(false);
-              e.stopPropagation()
+              setComment("");
+              setEditCommentId("");
+              // setEditComment("");
             }}
           >
             Cancel
           </Button>}
         </>
       )}
-    </div>:
-      <TextField
-          margin="dense"
-          style={{
-            margin: 0,
-          }}
-          fullWidth
-          placeholder="Add a question or post an update"
-          variant="outlined"
-          size="small"
-          onFocus={(e)=>{
-            setIsMinimize(true);
-            e.stopPropagation();
-          }}
-          onBlur={()=>{
-            console.log("console log")
-            // setIsMinimize(false);
-            // e.stopPropagation();
-          }}
-      />}
+    </div>
+          :
+          <div>
+            <TextField
+                margin="dense"
+                style={{
+                  margin: 0,
+                }}
+                fullWidth
+                placeholder="Add a question or post an update"
+                variant="outlined"
+                size="small"
+
+                onFocus={(e)=>{
+                  setIsMinimize(true);
+                  e.stopPropagation();
+                }}
+            />
+          </div>
+      }
+    </ClickAwayListener>
   </>);
 }
 
