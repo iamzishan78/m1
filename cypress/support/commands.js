@@ -37,6 +37,7 @@ const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
 // Common Commands
 Cypress.Commands.add("checkAndLogin", () => {
     //This command will logged in if it is not already logged in
+    cy.log('==== STEP: LOGGING IN ===')
     cy.get('body').then(($body) => {
         if ($body.find('#workSpaceSignin').length) {
             cy.get('input').type(workSpace)
@@ -203,7 +204,7 @@ Cypress.Commands.add('clickWellIcon', (wellName) => {
 })
 
 Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
-    cy.contains('th', columnName)
+    cy.contains('th', columnName, { timeout: longTimeout })
         .invoke('index')
         .then(colIndex => {
             cy.get('tr')
