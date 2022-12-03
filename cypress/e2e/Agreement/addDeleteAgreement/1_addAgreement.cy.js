@@ -83,9 +83,9 @@ describe('Add Agreement Spec', () => {
             cy.log('==== STEP: ADD AGREEMENT COUNTY ====')
             cy.typeAndSelect(agreementObj.county.id, agreementObj.county.value)
 
-            cy.log('==== STEP: ADD AGREEMENT COUNTY ====')
-            cy.get("[id='field-Project Name']",{ timeout: longTimeout }).click()
-            cy.get('body').type("{downArrow}{downArrow}{enter}")
+            // cy.log('==== STEP: ADD AGREEMENT COUNTY ====')
+            // cy.get("[id='field-Project Name']",{ timeout: longTimeout }).click()
+            // cy.get('body').type("{downArrow}{downArrow}{enter}")
 
             
         })
