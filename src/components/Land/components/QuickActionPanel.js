@@ -52,7 +52,9 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
           <Typography variant="body2" className={classes.quickActionText}>
             Quick Actions
           </Typography>
-          <StyledMenu>
+          <StyledMenu
+          id="quickActionPanel"
+          >
             {Object.keys(actions)
               .filter((key) => !actions[key].isExcluded)
               .map(
