@@ -41,12 +41,12 @@ function AgreementDocumentsTable(props) {
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
-  const handleViewFile = async (id) => {    
+  const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
   };
 
-  useEffect(() => {    
-    if (viewFileResult?.viewFile?.uri) {      
+  useEffect(() => {
+    if (viewFileResult?.viewFile?.uri) {
       let a = document.createElement("a");
       a.href = viewFileResult.viewFile.uri;
       a.download = viewFileResult.viewFile.name;
@@ -100,7 +100,7 @@ function AgreementDocumentsTable(props) {
     },
     onRowClick: (_, { rowIndex }) => {
       const row = props.rows[rowIndex]
-      
+
       const type = row.fileName?.split(".")[row.fileName?.split(".").length - 1]?.toLowerCase();
       if (type === "pdf") {
         if (props.addAble?.type === "document") {
