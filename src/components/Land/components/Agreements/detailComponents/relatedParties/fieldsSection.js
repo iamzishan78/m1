@@ -139,7 +139,7 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
   return (
     <>
       <Grid container display="flex" direction="row">
-        <Grid item xs={12} display="flex" style={{ margin: "20px 0px 35px" }}>
+        <Grid id="rp-row-container" item xs={12} display="flex" style={{ margin: "20px 0px 35px" }}>
           {fields.map((item, index) => (
             <Grid item xs={12} onMouseEnter={() => setHoverParty(index)} onMouseLeave={() => setHoverParty(-1)}>
               <Grid container className={customClasses.gridStyle}>
@@ -148,6 +148,7 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
                 </Grid>
                 <Grid item xs={4}>
                   <AutoComplete
+                    debug
                     defaultValue={item.type ?? ""}
                     value={item.type ?? ""}
                     options={partyTypes}
@@ -313,7 +314,7 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
           ))}
         </Grid>
         <Grid item>
-          <Button variant="contained" color="primary" className={customClasses.addDataButton} startIcon={<AddIcon />} onClick={addNewParty}>
+          <Button variant="contained" color="primary" id="addPartyButton" className={customClasses.addDataButton} startIcon={<AddIcon />} onClick={addNewParty}>
             Add Another Party
           </Button>
         </Grid>
