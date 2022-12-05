@@ -107,7 +107,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
       <Controller
         as={TextField}
         id="tractName"
-        style={{ display: isNewTract ? "inherit" : "none" }}
+        // style={{ display: isNewTract ? "inherit" : "none" }}
         control={control}
         variant="outlined"
         margin="dense"
