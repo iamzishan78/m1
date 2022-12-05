@@ -5,7 +5,7 @@ import { basic_timeouts } from "../../cypressUtils/data"
 describe('Add and Remove Comments on Flow Deal Spec', () => {
     it('passes', () => {
 
-        // Constants 
+        // Constants
         const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
 
         cy.viewport(1400, 900)
@@ -27,7 +27,7 @@ describe('Add and Remove Comments on Flow Deal Spec', () => {
                 cy.verifyApiResponse('@UpsertCommentApi', { responseTimeout: longTimeout }).then(response => {
                     const commentId = response.response.body.data.upsertComment.comment._id
 
-                    cy.get('#commentsContainer').scrollTo('bottom')
+                    cy.get('#commentsContainer').scrollTo('bottom',{ ensureScrollable: false })
 
                     cy.interceptApi('removeComment')
                     cy.interceptApi('getCommentsByObjectId')
