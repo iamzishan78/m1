@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, TextField } from "@material-ui/core";
+import { Grid, TextField,  } from "@material-ui/core";
 import $ from "jquery";
 
 import Avatar from "react-avatar";
@@ -175,7 +175,6 @@ export default function DealComment({
   setIsEdit,
   ...props
 }) {
-  const classes = useStyles({ fieldWidth });
   const [filterValue, setFilterValue] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
@@ -183,6 +182,7 @@ export default function DealComment({
   const [showCommentTypeDialog, setShowCommentTypeDialog] = useState(false);
   const [selectedCommentType, setSelectedCommentType] = useState("General");
   const [commentTypeDialogBox,setCommentTypeDialogBox] = useState(false);
+  const classes = useStyles({ fieldWidth, commentTypeDialogBox });
   (function () {
     var target = $("#colorText");
     const scrollDiv = function () {
@@ -283,9 +283,6 @@ export default function DealComment({
       onClick={(e)=>openDialogBox(e)}
     >
       <Autocomplete
-        onFocus={() => {
-          setShowCommentTypeDialog(false);
-        }}
         id="txtArea"
         className={classes.search}
         style={{
@@ -341,7 +338,7 @@ export default function DealComment({
               id="commentBox"
               fullWidth
               rows={isEdit || showActions ? 2 : 1}
-              rowsMax={2}
+              maxRows={2}
               multiline
               className={classes.activitySearchField}
               placeholder="Add a question or post an update"
@@ -364,12 +361,12 @@ export default function DealComment({
             alignItems: "center",
           }}
         >
-          <CommentType
-              showCommentType={props.showCommentType}
-              setSelectedCommentType={setSelectedCommentType}
-              setCommentTypeDialogBox={setCommentTypeDialogBox}
-              commentTypeDialogBox={commentTypeDialogBox}
-          />
+            <CommentType
+                showCommentType={props.showCommentType}
+                setSelectedCommentType={setSelectedCommentType}
+                setCommentTypeDialogBox={setCommentTypeDialogBox}
+                commentTypeDialogBox={commentTypeDialogBox}
+            />
           <Button
               className={classes.commentBtn}
               variant="contained"
