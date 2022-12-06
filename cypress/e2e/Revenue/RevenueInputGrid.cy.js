@@ -22,7 +22,7 @@ describe('Open Revenue Property Detail Card  Spec', () => {
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
 
             cy.log('==== STEP: OPEN REVENUE CHECK DETAIL ===')
-            cy.getTableCell('Check Number', 1).then(($row) => {
+            cy.getTableCell('Check Number', 3).then(($row) => {
                 cy.wrap($row).scrollIntoView().children().eq(1).children().click()
 
                 cy.log('==== STEP: CLICKING ON INPUT BUTTON ===')
@@ -107,6 +107,11 @@ describe('Open Revenue Property Detail Card  Spec', () => {
                         cy.get("#inputModeButton", { timeout: longTimeout }).scrollIntoView().click()
                         cy.wait(5000)
 
+                        cy.log('==== STEP: CLOSE PDF ===')
+                        cy.get("#closePdfIcon", { timeout: longTimeout }).click()
+
+                        cy.get("#checkDetailGrid").scrollIntoView()
+
                         cy.verifyApiResponse('@getESPaginatedListApiByIndex', { responseTimeout: longTimeout })
                         cy.verifyApiResponse('@getESPaginatedListApiByIndex', { responseTimeout: longTimeout }).then(paginatedApiResult => {
                             const lastHit = paginatedApiResult.response.body.data.getESPaginatedList.hits[index - 1]
@@ -142,12 +147,25 @@ describe('Open Revenue Property Detail Card  Spec', () => {
                                 cy.verifyField(cy.wrap($checkDetailRow).children().children().eq(1))
                             })
 
-                            cy.log('==== STEP: DELETE CHECK ===')
-                            cy.interceptApi('updateCheckDetail')
-                            cy.get(`[id="${index - 1}-18"]`).invoke('show').click()
-                            cy.get("#deleteLineItem", { timeout: longTimeout }).scrollIntoView().click({ force: true })
-                            cy.get('body').type("{enter}")
-                            cy.verifyApiResponse('@updateCheckDetailApi', { responseTimeout: longTimeout })
+                            cy.getTableCell("Owner Net Revenue", index - 1).then(($checkDetailRow) => {
+                                cy.wrap($checkDetailRow).trigger('mouseover')
+
+                                cy.log('==== STEP: DELETE CHECK ===')
+                                cy.interceptApi('updateCheckDetail', null, "updateCheckDetailDeleteApi")
+                                cy.get(`[id="${index - 2}-18"]`).invoke('show').scrollIntoView().click()
+
+                                cy.wait(2000)
+                                cy.get('body').type("{enter}")
+                                cy.get('body').type("{enter}")
+                                cy.wait(5000)
+                                cy.get('body').type("{enter}")
+                                cy.verifyApiResponse('@updateCheckDetailDeleteApi', { responseTimeout: longTimeout }).then(result => {
+                                    const isDeleted = result.response.body.data.updateCheckDetail?.updatedCheckDetail.IsDeleted
+
+                                    if (!isDeleted)
+                                        throw new Error("Check Not Deleted !!!")
+                                })
+                            })
 
                         })
                     })
