@@ -100,7 +100,7 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-export default function M1neralHeaders(props) {
+export default function M1neralHeaders() {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
 
@@ -162,7 +162,6 @@ export default function M1neralHeaders(props) {
   const changeDataToSendState = async () => {
     let headers = stateApp.mappedHeadersFromCSV;
     let arr_data = stateApp.csvDataList;
-    // let filtered_data_to_send = arr_data.map((obj) => {
     let filtered_data_to_send = [];
     for await (const obj of arr_data) {
       let return_obj = {};
@@ -359,7 +358,7 @@ export default function M1neralHeaders(props) {
                   value={stateApp.selectedShapeLayerOption}
                   dense
                   fullWidth
-                  onChange={(e) => { 
+                  onChange={(e) => {
                     setStateApp((state) => ({ ...state, selectedShapeLayerOption: e.target.value }));
                   }}
                 >
@@ -371,7 +370,7 @@ export default function M1neralHeaders(props) {
                 *Note: Existing agreements will be matched on M1neral ID or Agreement Number
               </div>
             </>
-            
+
           ) : ['AGREEMENT_PROVISIONS'].includes(stateApp.jobType) ? (
             <>
               <div style={{ ...medium_text, ...padding_div_top }}>
@@ -396,7 +395,7 @@ export default function M1neralHeaders(props) {
                 *Note: Existing agreements will be matched on M1neral ID or Agreement Number
               </div>
 
-          </>
+            </>
           ) : ['AGREEMENT_COMMENTS'].includes(stateApp.jobType) ? (
             <div>
               * Comment will be tied to agreement when match on Agreement System ID or Agreement Number is made
