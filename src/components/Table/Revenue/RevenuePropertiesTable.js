@@ -41,6 +41,11 @@ function RevenuePropertiesTable(props) {
       hit.amount = hit?.lastCheck?.netOwnerValue;
       hit.type = hit?.lastCheck?.interestType[0];
       hit.lastChecked = hit?.lastCheck?.checkDate ? new Date(hit?.lastCheck?.checkDate).toLocaleDateString() : "";
+      hit.tags =
+        hit?.tags?.length > 0
+          ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+          : [[], 0];
+      hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       return hit;
     });
     return hits;
@@ -49,7 +54,7 @@ function RevenuePropertiesTable(props) {
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : []
     const fixedFilters = []
-       
+
     if (formatedFilter[0] && formatedFilter[0].type === "range") {
       fixedFilters.push(formatedFilter[0]);
     }
@@ -65,10 +70,10 @@ function RevenuePropertiesTable(props) {
       esIndex: esIndex,
       filters: fixedFilters,
       selectedGridView: { filters: [] },
-      startPaginationAt: 25,
+      startPaginationAt: 50,
       defaultSort: { field: "name.keyword", order: "asc" },
       formatHits,
-      initializeGenericData: { key: "_id", actions: genericDataActions },
+      // initializeGenericData: { key: "_id", actions: genericDataActions },
     });
     // eslint-disable-next-line
   }, [props.revenueSearchQuery, props.filterToggle, refetchData]);

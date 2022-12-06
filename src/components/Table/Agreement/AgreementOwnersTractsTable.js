@@ -26,19 +26,18 @@ function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
   const [drawerContainer, setDrawerContainer] = useState(null);
   const [drawer, setDrawer] = useContext(DrawerContext);
-
   useEffect(() => {
-    if(props.portal){
+    if (props.portal) {
       const ele = document.querySelector(props.portal);
 
-      if(ele){
+      if (ele) {
         setDrawerContainer(ele);
       }
     }
   }, [props.portal])
 
   useEffect(() => {
-    if(props.addToTable){
+    if (props.addToTable === "add") {
       setDrawer('tract')
     } else {
       setDrawer(null)
@@ -81,7 +80,7 @@ function AgreementOwnersTractsTable(props) {
     }
   };
 
-  const layerType  = useMemo(() => {
+  const layerType = useMemo(() => {
     let layerType = _.upperFirst(props.customLayer.layer)
     layerType = layerType === 'Surface' ? 'Surface/ROW' : layerType
     return layerType
@@ -113,7 +112,7 @@ function AgreementOwnersTractsTable(props) {
         addableName: "Tract",
         searchFields: ["contact.entityDetail.name", "_all"],
         filters: [{ field: "shape._id", value: props.customLayer._id }],
-        TableHeader: getTableHeader({interestMapping, layerType}),
+        TableHeader: getTableHeader({ interestMapping, layerType }),
         esIndex: "shapeowners_flat",
         startPaginationAt: 25,
         formatHits
@@ -147,10 +146,9 @@ function AgreementOwnersTractsTable(props) {
   //     </div>
   //   }
   // }
-
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
-      {props.addToTable && (
+      {drawer === "tract" && (
         <AddAgreementOwnerAndTractDialog
           open={props.addToTable}
           width="450px"
@@ -159,7 +157,7 @@ function AgreementOwnersTractsTable(props) {
           shapeType={props.shapeType}
           seletedOwner={props.clickedRow}
           deleteFunc={deleteFunc}
-          onClose={() => props.setAddToTable(false)}
+          onClose={() => setDrawer(null)}
           drawerContainer={drawerContainer}
         />
       )}
