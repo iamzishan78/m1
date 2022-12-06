@@ -53,7 +53,7 @@ function AgreementDocumentsTable(props) {
               setStateApp(stateApp => ({...stateApp, selectedDocument: null}))
             }}
           >
-            + ADD RELATED DOCUMENT
+            + ADD DOCUMENT
           </Button>
         </div>
       );
