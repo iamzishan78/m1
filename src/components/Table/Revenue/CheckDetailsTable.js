@@ -41,6 +41,7 @@ function CheckDetailsTable(props) {
     props.options.customToolbar = () => {
         return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
             <Button
+                id="inputModeButton"
                 color="secondary"
                 className={classes.multiSelectionTopBarButtons}
                 onClick={() => {

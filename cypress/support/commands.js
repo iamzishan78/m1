@@ -95,7 +95,7 @@ Cypress.Commands.add('interceptApiByIndex', (operationName, esIndex) => {
 
     cy.intercept('POST', baseUrls[workSpace], req => {
         console.log("req.body : ", req.body)
-        if (req.body.operationName === operationName && req.body.variables.index === esIndex) {
+        if (req.body.operationName === operationName && (req.body.variables.index === esIndex || req.body.variables.esIndex === esIndex)) {
             req.alias = `${operationName}ApiByIndex`;
 
             console.log(" req.alias : ", req.alias)
