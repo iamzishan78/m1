@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 
 // context
 import { Container, Dialog, Button, IconButton, Tooltip } from "@material-ui/core";
@@ -19,13 +19,14 @@ import TableHeader from "components/Table/constants/parcel-documents-header-sche
 import { usetableStyles } from "./style";
 import { DELETEDESCRIPTORRELATEDFILE } from "graphQL/useMutationDeleteDescriptorFile";
 import { AppContext } from "AppContext";
-import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
+import { DrawerContext } from "../DrawerContext";
 
 function AgreementDocumentsTable(props) {
   const classes = usetableStyles();
   const [isDeletePopup, setDeletePopup] = useState(false);
   const [resetSelectedRow, setResetSelectedRow] = useState(false);
   const { moduleId } = props;
+  const [, setDrawer] = useContext(DrawerContext);
 
   const [updateParcelDocument] = useMutation(DELETEDESCRIPTORRELATEDFILE, {
     onCompleted: () => {
@@ -38,29 +39,6 @@ function AgreementDocumentsTable(props) {
 
   const [, setStateApp] = useContext(AppContext)
 
-  const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
-    fetchPolicy: "no-cache",
-  });
-  const handleViewFile = async (id) => {    
-    viewFile({ variables: { fileId: id } });
-  };
-
-  useEffect(() => {    
-    if (viewFileResult?.viewFile?.uri) {      
-      let a = document.createElement("a");
-      a.href = viewFileResult.viewFile.uri;
-      a.download = viewFileResult.viewFile.name;
-      // selectors
-      // const { searchloading } = useSelector(({ MapGridCard }) => MapGridCard);
-
-      // if for some reason we want to download (or open depending on x-ms-blob-content-disposition) in a new tab
-      // a.target = "_blank";
-
-      // file download on click is not 100% guranteed if the x-ms-blob-content-disposition is not set to attachment
-      a.click();
-    }
-  }, [viewFileResult]);
-
   const options = {
     ...props.options,
     customToolbar: () => {
@@ -70,7 +48,9 @@ function AgreementDocumentsTable(props) {
             color="secondary"
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {
-              if (props.setDrawer) props.setDrawer("dcmnt");
+              if (!props.setDrawer)return
+              props.setDrawer("dcmnt");
+              setStateApp(stateApp => ({...stateApp, selectedDocument: null}))
             }}
           >
             + ADD RELATED DOCUMENT
@@ -98,26 +78,10 @@ function AgreementDocumentsTable(props) {
         </div>
       );
     },
-    onRowClick: (_, { rowIndex }) => {
-      const row = props.rows[rowIndex]
-      
-      const type = row.fileName?.split(".")[row.fileName?.split(".").length - 1]?.toLowerCase();
-      if (type === "pdf") {
-        if (props.addAble?.type === "document") {
-          window.history.pushState("", "", `/documents/${row._id}/view`);
-        }
-        // const selectedRow = rows.find((curRow) => curRow._id === row._id);
-        setStateApp((state) => ({
-          ...state,
-          pdfView: row,
-          viewDoc: {
-            uri: row.viewToken,
-            name: row.fileName,
-          },
-        }));
-      } else {
-        handleViewFile(row._id);
-      }
+    onRowClick: (_, { dataIndex }) => {
+      setDrawer('dcmnt')
+
+      setStateApp(stateApp => ({...stateApp, selectedDocument: props.rows[dataIndex]}))
     }
   };
 
