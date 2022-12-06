@@ -25,6 +25,13 @@ import _ from "lodash";
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
   const [drawerContainer, setDrawerContainer] = useState(null);
+  const [selectredTract, setSelectredTract] = useState(props.clickedRow)
+
+  useEffect(() => {
+    setSelectredTract(props.clickedRow)
+  }, [props.clickedRow])
+  
+  
   const [drawer, setDrawer] = useContext(DrawerContext);
   useEffect(() => {
     if (props.portal) {
@@ -129,6 +136,7 @@ function AgreementOwnersTractsTable(props) {
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {
               setDrawer("tract");
+              setSelectredTract(null)
             }}
           >
             + ADD TRACT TO AGREEMENT
@@ -147,7 +155,7 @@ function AgreementOwnersTractsTable(props) {
           shapeId={props.customLayer._id}
           layerType={props.customLayer.layer}
           shapeType={props.shapeType}
-          seletedOwner={props.clickedRow}
+          seletedOwner={selectredTract}
           deleteFunc={deleteFunc}
           onClose={() => setDrawer(null)}
           drawerContainer={drawerContainer}
