@@ -19,10 +19,13 @@ describe('Open Revenue Property Detail Card  Spec', () => {
         cy.log('==== STEP: CLOSE THE SIDE BAR ===')
         cy.get("#menuIcon").click()
 
-        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
+        cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(esSimpleSearchResult => {
+            const simpleSearchHits = esSimpleSearchResult.response.body.data.getESSimpleSearch.hits
+            const indexOfStatement = simpleSearchHits.findIndex(hit => hit?.checkDetail?.lines < 5) + 1
+
 
             cy.log('==== STEP: OPEN REVENUE CHECK DETAIL ===')
-            cy.getTableCell('Check Number', 3).then(($row) => {
+            cy.getTableCell('Check Number', indexOfStatement).then(($row) => {
                 cy.wrap($row).scrollIntoView().children().eq(1).children().click()
 
                 cy.log('==== STEP: CLICKING ON INPUT BUTTON ===')
@@ -122,6 +125,7 @@ describe('Open Revenue Property Detail Card  Spec', () => {
                                 throw new Error("Check not appear in input mode grid")
                             }
 
+                            cy.wait(5000)
                             cy.log('==== STEP: VERIFY PROPERTY FIELD DATA IN GRID ===')
                             cy.getTableCell('Property #', index).then(($checkDetailRow) => {
                                 cy.verifyField(cy.wrap($checkDetailRow).children().children().eq(1))
