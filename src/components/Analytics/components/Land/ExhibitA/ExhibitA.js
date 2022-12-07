@@ -23,7 +23,6 @@ function ExhibitATable(props) {
   const esFilters = props.esFilters ? props.esFilters : [];
 
   const formatHits = (hits) => {
-    
     hits = hits.map((hit) => {
       hit.agreementNumber = hit.shape.shapeJson.properties.agreementNumber;
       hit.grantor = hit.shape.shapeJson.properties.grantor;
@@ -31,11 +30,11 @@ function ExhibitATable(props) {
       // hit.layerSubType = hit.shape.shapeJson.properties.layerSubType;
       hit.agreementDate = hit.shape.shapeJson.properties.agreementDate ? convert_date(hit.shape.shapeJson.properties.agreementDate) : null
       hit.effectiveDate = hit.shape.shapeJson.properties.effectiveDate ? convert_date(hit.shape.shapeJson.properties.effectiveDate) : null
-      hit.tractState = hit.parcel.shapeJson.properties.originalProperties.State || hit.parcel.shapeJson.properties.originalProperties.StateAbbreviation
-      hit.tractCounty = hit.parcel.shapeJson.properties.originalProperties.County
-      hit.tractName = hit.parcel.name;
-      hit.legalDesctiption = hit.shape.shapeJson.properties.legalDesctiption;
-      hit.internalCompany = hit.shape.shapeJson.properties.internalCompany;
+      hit.tractState = get(hit,'parcel.shapeJson.properties.originalProperties.State','') || get(hit,'parcel.shapeJson.properties.originalProperties.StateAbbreviation','')
+      hit.tractCounty = get(hit, 'parcel.shapeJson.properties.originalProperties.County','')
+      hit.tractName = get(hit,'parcel.name','');
+      hit.legalDesctiption = get(hit,'shape.shapeJson.properties.legalDesctiption','');
+      hit.internalCompany = get(hit,'shape.shapeJson.properties.internalCompany','');
       hit.prospectID = hit.shape.shapeJson.properties.prospectID;
       hit.acquisitionID = hit.shape.shapeJson.properties.acquisitionID;
       hit.blockTownship =  get(hit, 'parcel.shapeJson.properties.originalProperties.Block', undefined) || get(hit, 'parcel.shapeJson.properties.originalProperties.Township', undefined);
@@ -67,6 +66,7 @@ function ExhibitATable(props) {
       startPaginationAt: 25,
       // defaultSort: { field: "name.keyword", order: "asc" },
       formatHits,
+      exportPx:"121px",
       setAppliedFilters: props.filterChange
     });
     // eslint-disable-next-line
@@ -87,9 +87,6 @@ function ExhibitATable(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props?.total, props.dependencyUpdate]);
 
-  delete props.options.customToolbar;
-  delete props.options.customToolbarSelect;
-  delete props.options.onRowClick;
   props.options.search = props.searchBar;
 
   return (

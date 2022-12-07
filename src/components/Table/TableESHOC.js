@@ -7,6 +7,7 @@ import { useHistory } from "react-router-dom";
 import { isEmpty } from "lodash";
 
 import { AppContext } from "AppContext";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 import { copy, deepEqual, getSearchFields, setStateIfDeepEqual } from "components/Shared/functions";
 import { TAGSAMPLES } from "graphQL/useQueryTagSamples";
@@ -681,6 +682,79 @@ export const TableESHOC = (Component) => {
             updateColumnSorting: (columns) => updateGridViewRedux({ columns }),
         }), [selectedGridView, updateGridViewRedux])
 
+        const getCSVData = (data, sampleCsv) => {
+            let csv = ''
+            for(let i=0; i<sampleCsv.length; i++){
+                csv = `${i !==0 ? csv+',': ''}${sampleCsv[i].label}`
+            }
+            csv = `${csv}\n`;
+        
+            for(let i=0; i<data?.length; i++){
+                for(let j=0; j<sampleCsv.length; j++){
+                    let updatedData = get(data[i], sampleCsv[j].name, '')
+                    if(updatedData?.includes(',')){
+                        updatedData = updatedData.replace(',',' ')
+                    }
+                    csv = `${j !==0 ? csv+',': csv}${updatedData}`
+                }
+                csv = `${csv}\n`;
+            }
+            return csv
+        }
+
+        const onDownload = async () => {
+            
+            const pageESVariables = {
+                variables: {
+                    index: tableMeta.esIndex,
+                    search: {
+                        query: typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText,
+                        fields: tableMeta.searchFields,
+                        advanceSearch: tableMeta.advanceSearch,
+                    },
+                    pagination: {
+                        first: tableStateRef.current.count,
+                        after: null,
+                    },
+                    ...(!isEmpty(tableStateRef.current.sortOrder) && tableStateRef.current.sortOrder.direction !== 'none') ? {
+                        sort: (() => {
+                            let field = columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.esKey ||
+                                columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.name;
+                            return {
+                                field: Array.isArray(field) ? field[0] : field,
+                                order: tableStateRef.current.sortOrder?.direction
+                            }
+
+                        })()
+                    } : { sort: tableMeta.defaultSort },
+
+                    filters: selectedFilters.current ? [...selectedFilters.current] : [],
+                    customFilters: []
+                },
+            }
+            const allSelectedRows = await client.query({
+                ...pageESVariables,
+                variables: {
+                    ...pageESVariables.variables,
+                    filters: handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters))
+                },
+                query: GET_ES_SIMPLE_SEARCH,
+            });
+            
+            const hits = tableMeta.formatHits(copy(allSelectedRows.data.getESSimpleSearch.hits))
+            
+            const csvData = getCSVData(hits, columns.filter(c => c.options.display))
+
+            var blob = new Blob([csvData]);
+            var url = URL.createObjectURL(blob);
+
+            // Create a link to download it
+            var pom = document.createElement('a');
+            pom.href = url;
+            pom.setAttribute('download', 'tableData.csv');
+            pom.click();
+        }
+
         const onTableChange = async (action, tableState, rows, meta) => {
             tableState.esIndex = tableMeta.esIndex;
             // tableState.filters = tableMeta.filters ? tableMeta.filters : [];
@@ -794,33 +868,53 @@ export const TableESHOC = (Component) => {
             // filter: true,
             searchText: tableMeta.extendSearchQuery || undefined,
             searchFields: tableMeta.searchFields,
-            customToolbar: (tableMeta.addBtnText || tableMeta.addableName) ? () => {
-                return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-                    {
-                        tableMeta.addWithInput ?
-                            <Button
-                                color="secondary"
-                                className={classes.multiSelectionTopBarButtons}
-                                onClick={() => {
-                                    if (tableMeta.inputModeType === "revenueStatementDetails")
-                                        history.push(`/revenue/statement/${window.location.search.replace('?id=', '')}/line-item`);
-                                }}
-                            >
-                                {tableMeta.addBtnText}
-                            </Button>
-                            :
-                            <Button
-                                color="secondary"
-                                className={classes.multiSelectionTopBarButtons}
-                                onClick={() => { setAddToTable('add'); setClickedRow(null) }}
-                            >
-                                {tableMeta.addBtnText ?
-                                    `+ ADD ${tableMeta.addBtnText}` :
-                                    `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
-                            </Button>
-                    }
+            customToolbar: (tableMeta.addBtnText || tableMeta.addableName || tableMeta.exportPx) ? () => {
+                return (
+                    <>
+                        {tableMeta.exportPx && (
+                            <div style={{ 
+                                    display: "inline", 
+                                    position: "absolute",
+                                    right: tableMeta.exportPx,
+                                }}>
+                                <IconButton onClick={onDownload}>
+                                    <Tooltip title="Download CSV" aria-label="add">
+                                        <CloudDownloadIcon />
+                                    </Tooltip>
+                                </IconButton>
+                            </div>
+                        )}
+                        {(tableMeta.addBtnText || tableMeta.addableName) && (
+                            <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
+                            {
+                                tableMeta.addWithInput ?
+                                    <Button
+                                        color="secondary"
+                                        className={classes.multiSelectionTopBarButtons}
+                                        onClick={() => {
+                                            if (tableMeta.inputModeType === "revenueStatementDetails")
+                                                history.push(`/revenue/statement/${window.location.search.replace('?id=', '')}/line-item`);
+                                        }}
+                                    >
+                                        {tableMeta.addBtnText}
+                                    </Button>
+                                    :
+                                    <Button
+                                        color="secondary"
+                                        className={classes.multiSelectionTopBarButtons}
+                                        onClick={() => { setAddToTable('add'); setClickedRow(null) }}
+                                    >
+                                        {tableMeta.addBtnText ?
+                                            `+ ADD ${tableMeta.addBtnText}` :
+                                            `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
+                                    </Button>
+                            }
+        
+                        </div>
 
-                </div>
+                        )}
+                    </>
+                )
             } : undefined,
             customToolbarSelect: ({ data }) => {
                 return props.targetLabel !== "well"
