@@ -29,6 +29,7 @@ describe('Add and Remove Comments on Tract Details Spec', () => {
             cy.get("#expandIcon").should("be.visible").trigger("click");
             cy.get("#txtArea", { timeout: longTimeout }).should('exist').scrollIntoView().type("A cypress comment")
             cy.get("#commentButton").click()
+            cy.wait(10000)
             cy.verifyApiResponse('@UpsertCommentApi', { responseTimeout: longTimeout }).then(response => {
                 const commentId = response.response.body.data.upsertComment.comment._id
     
