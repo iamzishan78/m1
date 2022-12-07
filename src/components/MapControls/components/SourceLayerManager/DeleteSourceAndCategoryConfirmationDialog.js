@@ -67,7 +67,7 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
     }
     updateDataset({ variables: { dataset: props.actionItem.dataset } })
     if (layers.length > 0) {
-      if(layers[0].groupId) {
+      if (layers[0].groupId) {
         removeLayerGroup({
           variables: {
             userId: stateApp.user.mongoId,
@@ -112,6 +112,7 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
           Cancel
         </Button>
         <Button
+          id="deleteConfirmation"
           onClick={() => {
             handleAccept();
           }}
