@@ -1992,19 +1992,18 @@ function SubTable(props) {
                             </Box>
                           </Typography> */}
 
-
+                          <Link
+                             href={
+                              (isSnapGrid && tableMeta.rowData[3]) ?
+                                `/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`
+                              :(!isSnapGrid) &&
+                              `/land/agreement/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`
+                            }
+                            onClick={(e) => e.preventDefault()}
+                          >
                           <Box
                             onClick={(e) => {
                               e.stopPropagation();
-
-                              if (isSnapGrid && tableMeta.rowData[3])
-                                history.push(`/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}`,
-                                  { showAgreementBreadcrumb: false }
-                                );
-                              else if (!isSnapGrid)
-                                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
-                                  { showAgreementBreadcrumb: true }
-                                );
                             }}
 
                             sx={{
@@ -2027,7 +2026,7 @@ function SubTable(props) {
                               ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
                               : tableMeta?.rowData[2]}
                           </Box>
-
+                          </Link>
                         </Grid>
 
                         {/* <Grid item>
