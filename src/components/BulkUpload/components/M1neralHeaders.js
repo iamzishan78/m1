@@ -400,7 +400,7 @@ export default function M1neralHeaders() {
             <div>
               * Comment will be tied to agreement when match on Agreement System ID or Agreement Number is made
             </div>
-          ) : (
+          ) : !['CHECKDETAILS'].includes(stateApp.jobType) && (
             <div style={{ ...text_grey }}>
               *First Name or Last Name is required to be mapped <br /> before
               uploading contacts.
