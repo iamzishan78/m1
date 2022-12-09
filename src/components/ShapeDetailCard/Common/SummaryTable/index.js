@@ -128,10 +128,10 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
     setFilteredTableData(filteredKeys);
     setTableTempProperties(copy(tableTempProperties));
     setTableDataState({});
-    if(properties?.originalProperties?.State  || properties?.originalProperties?.StateAbbreviation){
-      setState(properties.originalProperties.State  || properties.originalProperties.StateAbbreviation)
+    if (properties?.originalProperties?.State || properties?.originalProperties?.StateAbbreviation) {
+      setState(properties.originalProperties.State || properties.originalProperties.StateAbbreviation)
     }
-    if(properties?.originalProperties?.County){
+    if (properties?.originalProperties?.County) {
       setCounty(properties.originalProperties.County)
     }
   }, [properties, metaData]);
@@ -232,13 +232,13 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
   }
 
   const getDependencies = useCallback(
-    (deps) => {        
+    (deps) => {
       const dependency = {
         state: { field: "level1Name.keyword", value: US_STATES_CODES[get(properties, filterConsts.state.key)] },
         county: { field: "level2Name.keyword", value: get(properties, filterConsts.county.key) },
         survey: { field: "level3Name.keyword", value: get(properties, filterConsts.survey.key) },
         meridian: { field: "level3Name.keyword", value: get(properties, filterConsts.meridian.key) },
-        block: { field:  "level4Name.keyword", value: get(properties, filterConsts.block.key) },
+        block: { field: "level4Name.keyword", value: get(properties, filterConsts.block.key) },
         section: { field: "level5Name.keyword", value: get(properties, filterConsts.section.key) },
         townshipRange: { field: "level5Name.keyword", value: get(properties, filterConsts.township.key) && get(properties, filterConsts.township.key) ? `${get(properties, filterConsts.township.key)} ${get(properties, filterConsts.range.key)}` : "" },
         abstract: { field: "level6Name.keyword", value: get(properties, filterConsts.abstract.key) },
@@ -248,7 +248,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
       deps?.forEach((dep) => {
         if (dependency[dep].value) dependencies.push(dependency[dep]);
       });
-      
+
       return dependencies;
     },
     [properties]
@@ -485,11 +485,11 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           label={upperFirst(data.mongoKey)}
                           onChange={(e, value) => {
                             e.keyCode = 13;
-                            if (value?.key && e.keyCode===13) updateProperties(e, data.key, value.key);
+                            if (value?.key && e.keyCode === 13) updateProperties(e, data.key, value.key);
                           }}
                           autoFocus={false}
-                          newOptions
-                          newOptionFilters={data.dependencyArray.reduce((acc, val) => ({...acc, [val]: get(properties, filterConsts[val].key)}), {})}
+                          newOptions={data.newOptions !== false}
+                          newOptionFilters={data.dependencyArray.reduce((acc, val) => ({ ...acc, [val]: get(properties, filterConsts[val].key) }), {})}
                         />
                       </>
                     )}
@@ -511,7 +511,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                         <StateField
                           shrink
                           value={state}
-                          onStateChange={(selectedState) =>{
+                          onStateChange={(selectedState) => {
                             setState(selectedState.acronym)
                             setCounty('')
                             updateProperties(null, 'state', selectedState.acronym);
@@ -525,7 +525,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                         shrink
                         value={county}
                         state={state}
-                        onCountyChange={(selectedCounty) =>{
+                        onCountyChange={(selectedCounty) => {
                           setCounty(selectedCounty ? selectedCounty.county : '')
                           updateProperties(null, 'county', selectedCounty ? selectedCounty.county : '')
                         }}
@@ -562,7 +562,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             data.type !== 'county' &&
                             (data.value || get(properties, `${data.key}`, "-"))}
                           {data.type === "state" && (get(properties, 'originalProperties.StateAbbreviation', '') || get(properties, 'originalProperties.State', '') || '-')}
-                          {data.type === "county" && (get(properties,'originalProperties.County','-'))}
+                          {data.type === "county" && (get(properties, 'originalProperties.County', '-'))}
                           {data.type === "multiselect" && (get(properties, `${data.key}`) ?? []).join(", ")}
                           {data.type === "currency" && (vf_currency(data.value) || vf_currency(properties[data.key]) || "-")}
                           {data.type === "comma-number" && (vf_number(data.value) || vf_number(properties[data.key]) || "-")}

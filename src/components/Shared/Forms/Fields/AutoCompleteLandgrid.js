@@ -13,13 +13,13 @@ import loadashFilter from "lodash/filter";
 
 const newOptionsParams = {
   renderOption: (option) => {
-    if (option._id === 'newEntity') return <Typography style={{color: 'midnightblue'}}>Add '{option.key}'</Typography>
+    if (option._id === 'newEntity') return <Typography style={{ color: 'midnightblue' }}>Add '{option.key}'</Typography>
 
     return (
       <Grid container spacing={0}>
         <Grid container item xs={12} alignItems="center">
           <Grid item xs>
-            <span style={{fontWeight: 400}}>{option.key}</span>
+            <span style={{ fontWeight: 400 }}>{option.key}</span>
 
             {/* <Typography variant="body2" color="textSecondary">
                       {option}
@@ -31,9 +31,9 @@ const newOptionsParams = {
   },
   filterOptions: (options, params) => {
     const inputValue = params.inputValue
-    const filtered = createFilterOptions()(options, {...params, inputValue})
+    const filtered = createFilterOptions()(options, { ...params, inputValue })
     const isExist = loadashFilter(filtered, (filter) => {
-      return filter._id === inputValue
+      return filter?.key?.toLowerCase() === inputValue?.toLowerCase()
     })
     // Suggest the creation of a new value
     if (inputValue !== '' && (!isExist || isExist.length === 0)) {
@@ -55,13 +55,10 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
 
   const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
 
-  const condition = useMemo(() => Object.entries(newOptionFilters||{}).reduce((acc, [key, val]) => ({...acc, [`tract.${key}`]: val}), {}), [newOptionFilters])  
-  
+  const condition = useMemo(() => Object.entries(newOptionFilters || {}).reduce((acc, [key, val]) => ({ ...acc, [`tract.${key}`]: val }), {}), [newOptionFilters])
   useEffect(() => {
-    if(!newOptions) return
+    if (!newOptions) return
 
-    console.log(1,condition)
-    
     getautoCompleteList({ variables: { type: "AgreementShapeOwner", data: { key: label.toLowerCase(), inTract: true, condition } } });
   }, [label, condition]);
 
@@ -79,7 +76,7 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
   }, [filters, compoundValue]);
 
   useEffect(() => {
-    if(!filtersData) return
+    if (!filtersData) return
 
     const keys = Object.keys(filtersData)
     if (!keys || !filtersData[keys[0]] || !filtersData[keys[0]]?.hits) return
@@ -97,16 +94,16 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
         hits = hits.filter((hit) => hit.key.includes(compoundValue))
       hits = uniqBy(hits.map((hit) => ({ ...hit, key: hit.key.split(" ")[1] })), 'key')
     }
-    
-    if(!autoCompleteList) return setOptions(hits)
+
+    if (!autoCompleteList) return setOptions(hits)
 
     const uniqueVals = [...new Set([...hits.map((hit) => hit.key?.toLowerCase()), ...autoCompleteList.map((val) => val?.toLowerCase())])]
 
-    const hitsObj = hits.reduce((acc, val) => ({...acc, ...(val?.key ? {[val.key.toLowerCase()]: val} : {})}), {})
-    const autoCompleteListObj = autoCompleteList.reduce((acc, val) => ({...acc, ...(val ? {[val.toLowerCase()]: {key: val}} : {})}), {})
+    const hitsObj = hits.reduce((acc, val) => ({ ...acc, ...(val?.key ? { [val.key.toLowerCase()]: val } : {}) }), {})
+    const autoCompleteListObj = autoCompleteList.reduce((acc, val) => ({ ...acc, ...(val ? { [val.toLowerCase()]: { key: val } } : {}) }), {})
 
     const combinedHits = uniqueVals.map((val) => hitsObj[val] || autoCompleteListObj[val]).filter(val => val)
-    
+
     setOptions(combinedHits)
   }, [filtersData, compoundValue]);
 
@@ -121,8 +118,6 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
     const rawSearch = search
     if (search)
       search = type === 'number' ? search : `${search}*`
-    console.log(2,search)
-    
     getFilters({
       variables: {
         esIndex,
@@ -153,7 +148,7 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
       onClose={() => {
         setOpen(false);
       }}
-      value={{ key: value, _id: value }}
+      // value={{ key: value, _id: value }}
       inputValue={search?.toString()}
       getOptionSelected={(option, value) => option.key === value.key}
       getOptionLabel={(option) => option?.key?.toString().replace(/^\,|\,$/gm, "")}
@@ -188,7 +183,7 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
           }}
         />
       )}
-      {...(newOptions? newOptionsParams : {})}
+      {...(newOptions ? newOptionsParams : {})}
     />
   );
 })
