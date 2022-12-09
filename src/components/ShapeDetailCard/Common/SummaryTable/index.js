@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { set, get } from "lodash";
+import { set, get, upperFirst } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import moment from "moment";
 import { IconButton, Grid, Table, TableCell, TableBody, FormControl } from "@material-ui/core";
@@ -25,6 +25,9 @@ import { AppContext } from "AppContext";
 import { Clear } from "@material-ui/icons";
 import StateField from "components/Revenue/components/Properties/DetailComponents/State";
 import CountyField from "components/Revenue/components/Properties/DetailComponents/County";
+import { AutoCompleteLandgrid } from "components/Shared/Forms/Fields/AutoCompleteLandgrid";
+import { US_STATES_CODES } from "utils/data";
+import filterConsts from "components/Table/TableAddDialog/Common/filterConsts";
 
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
@@ -227,6 +230,29 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
       return true
     return false
   }
+
+  const getDependencies = useCallback(
+    (deps) => {        
+      const dependency = {
+        state: { field: "level1Name.keyword", value: US_STATES_CODES[get(properties, filterConsts.state.key)] },
+        county: { field: "level2Name.keyword", value: get(properties, filterConsts.county.key) },
+        survey: { field: "level3Name.keyword", value: get(properties, filterConsts.survey.key) },
+        meridian: { field: "level3Name.keyword", value: get(properties, filterConsts.meridian.key) },
+        block: { field:  "level4Name.keyword", value: get(properties, filterConsts.block.key) },
+        section: { field: "level5Name.keyword", value: get(properties, filterConsts.section.key) },
+        townshipRange: { field: "level5Name.keyword", value: get(properties, filterConsts.township.key) && get(properties, filterConsts.township.key) ? `${get(properties, filterConsts.township.key)} ${get(properties, filterConsts.range.key)}` : "" },
+        abstract: { field: "level6Name.keyword", value: get(properties, filterConsts.abstract.key) },
+        sectionNTX: { field: "level6Name.keyword", value: get(properties, filterConsts.sectiontx.key) },
+      };
+      const dependencies = [];
+      deps?.forEach((dep) => {
+        if (dependency[dep].value) dependencies.push(dependency[dep]);
+      });
+      
+      return dependencies;
+    },
+    [properties]
+  );
 
   return (
     <Table className={classes.table} size="small" aria-label="unit table">
@@ -447,6 +473,23 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                             e.keyCode = 13;
                             if (value?.name) updateProperties(e, data.key, value.name);
                           }}
+                        />
+                      </>
+                    )}
+                    {data.type === "autocompletelandgrid" && (
+                      <>
+                        <AutoCompleteLandgrid
+                          value={properties[data.key]}
+                          filterKey={data.filterKey}
+                          filters={[{ field: data.filterField, value: upperFirst(data.mongoKey) }, ...getDependencies(data.dependencyArray)]}
+                          label={upperFirst(data.mongoKey)}
+                          onChange={(e, value) => {
+                            e.keyCode = 13;
+                            if (value?.key && e.keyCode===13) updateProperties(e, data.key, value.key);
+                          }}
+                          autoFocus={false}
+                          newOptions
+                          newOptionFilters={data.dependencyArray.reduce((acc, val) => ({...acc, [val]: get(properties, filterConsts[val].key)}), {})}
                         />
                       </>
                     )}

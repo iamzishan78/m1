@@ -9,30 +9,17 @@ import { upperFirst } from "lodash";
 import { GET_AUTOCOMPLETE_LIST } from "graphQL/useQueryGetAutoCompleteList";
 import { useLazyQuery } from "@apollo/client";
 import AutoCompleteWithNewOption from "components/Shared/Forms/Fields/AutoCompleteWithNewOption";
+import filterConsts from "./filterConsts";
 
 function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, control, prefix = "" }) {
   const [stateName, setStateName] = useState(tract.state);
 
   const [getautoCompleteListBasin, { data: dataAutoCompleteListBasin = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
   const [getautoCompleteListField, { data: dataAutoCompleteListField = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
-  const [getautoCompleteListMeridian, { data: dataAutoCompleteListMeridian = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
-  const [getautoCompleteListTownship, { data: dataAutoCompleteListTownship = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
-  const [getautoCompleteListRange, { data: dataAutoCompleteListRange = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
-  const [getautoCompleteListSection, { data: dataAutoCompleteListSection = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
-  const [getautoCompleteListSurvey, { data: dataAutoCompleteListSurvey = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
-  const [getautoCompleteListBlock, { data: dataAutoCompleteListBlock = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
-  const [getautoCompleteListAbstract, { data: dataAutoCompleteListAbstract = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
   
   useEffect(() => {
     getautoCompleteListBasin({ variables: { type: "AgreementShapeOwner", data: { key: "basin", inTract: true } } });
     getautoCompleteListField({ variables: { type: "AgreementShapeOwner", data: { key: "field", inTract: true } } });
-    getautoCompleteListMeridian({ variables: { type: "AgreementShapeOwner", data: { key: "meridian", inTract: true } } });
-    getautoCompleteListTownship({ variables: { type: "AgreementShapeOwner", data: { key: "township", inTract: true } } });
-    getautoCompleteListRange({ variables: { type: "AgreementShapeOwner", data: { key: "township", inTract: true } } });
-    getautoCompleteListSurvey({ variables: { type: "AgreementShapeOwner", data: { key: "survey", inTract: true } } });
-    getautoCompleteListBlock({ variables: { type: "AgreementShapeOwner", data: { key: "block", inTract: true } } });
-    getautoCompleteListSection({ variables: { type: "AgreementShapeOwner", data: { key: "section", inTract: true } } });
-    getautoCompleteListAbstract({ variables: { type: "AgreementShapeOwner", data: { key: "abstract", inTract: true } } });
   }, []);
 
   const autoCompleteListBasin = React.useMemo(
@@ -43,38 +30,11 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
     () => dataAutoCompleteListField?.autoCompleteList || [],
     [dataAutoCompleteListField?.autoCompleteList],
     );
-  const autoCompleteListMeridian = React.useMemo(
-      () => dataAutoCompleteListMeridian?.autoCompleteList || [],
-      [dataAutoCompleteListMeridian?.autoCompleteList]
-    );
-  const autoCompleteListTownship = React.useMemo(
-      () => dataAutoCompleteListTownship?.autoCompleteList || [],
-      [dataAutoCompleteListTownship?.autoCompleteList]
-    );
-  const autoCompleteListRange = React.useMemo(
-      () => dataAutoCompleteListRange?.autoCompleteList || [],
-      [dataAutoCompleteListRange?.autoCompleteList]
-    );
-  const autoCompleteListSurvey = React.useMemo(
-      () => dataAutoCompleteListSurvey?.autoCompleteList || [],
-      [dataAutoCompleteListSurvey?.autoCompleteList]
-    );
-  const autoCompleteListBlock = React.useMemo(
-      () => dataAutoCompleteListBlock?.autoCompleteList || [],
-      [dataAutoCompleteListBlock?.autoCompleteList]
-    );
-  const autoCompleteListSection = React.useMemo(
-      () => dataAutoCompleteListSection?.autoCompleteList || [],
-      [dataAutoCompleteListSection?.autoCompleteList]
-    );
-  const autoCompleteListAbstract = React.useMemo(
-      () => dataAutoCompleteListAbstract?.autoCompleteList || [],
-      [dataAutoCompleteListAbstract?.autoCompleteList]
-    );
   
   useEffect(() => {
     if (tract.state && tract.state !== stateName) setStateName(tract.state);
   }, [tract.state]);
+
 
   const getDependencies = useCallback(
     (deps) => {
@@ -104,45 +64,21 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 
   const filters = useMemo(() => {
     return {
-      'state': { "field": "level1Type.keyword", "value": "State" },
-      'county': [{ "field": "level2Type.keyword", "value": "County" }, ...getDependencies(['state'])],
-      'meridian': [
-        { "field": "level3Type.keyword", "value": "Meridian" },
-        ...getDependencies(['state', 'county'])
-      ],
-      'township': [
-        { "field": "level5Type.keyword", "value": "TownshipRange" },
-        ...getDependencies(['state', 'county', 'meridian'])
-      ],
-      'range': [
-        { "field": "level5Type.keyword", "value": "TownshipRange" },
-        ...getDependencies(['state', 'county', 'meridian'])
-      ],
-
-      'section': [
-        { "field": "level6Type.keyword", "value": "Section" },
-        ...getDependencies(['state', 'county', 'meridian', 'townshipRange'])
-      ],
-      'survey': [
-        { "field": "level3Type.keyword", "value": "Survey" },
-        ...getDependencies(['state', 'county'])
-      ],
-      'block': [
-        { "field": "level4Type.keyword", "value": "Block" },
-        ...getDependencies(['state', 'county', 'survey'])
-      ],
-      'sectiontx': [
-        { "field": "level5Type.keyword", "value": "Section" },
-        ...getDependencies(['state', 'county', 'survey', 'block'])
-      ],
-
-      'abstract': [
-        { "field": "level6Type.keyword", "value": "Abstract" },
-        ...getDependencies(['state', 'county', 'survey', 'block', 'section'])
-      ]
+      state: {field: filterConsts.state.filterField, value: 'State'},
+      county: [{field: filterConsts.county.filterField, value: 'County'}, ...getDependencies(filterConsts.county.dependencyArray)],
+      meridian: [{field: filterConsts.meridian.filterField, value: 'Meridian'}, ...getDependencies(filterConsts.meridian.dependencyArray)],
+      township: [{field: filterConsts.township.filterField, value: 'TownshipRange'}, ...getDependencies(filterConsts.township.dependencyArray)],
+      range: [{field: filterConsts.range.filterField, value: 'TownshipRange'}, ...getDependencies(filterConsts.range.dependencyArray)],
+  
+      section: [{field: filterConsts.section.filterField, value: 'Section'}, ...getDependencies(filterConsts.section.dependencyArray)],
+      survey: [{field: filterConsts.survey.filterField, value: 'Survey'}, ...getDependencies(filterConsts.survey.dependencyArray)],
+      block: [{field: filterConsts.block.filterField, value: 'Block'}, ...getDependencies(filterConsts.block.dependencyArray)],
+      sectiontx: [{field: filterConsts.sectiontx.filterField, value: 'Section'}, ...getDependencies(filterConsts.sectiontx.dependencyArray)],
+  
+      abstract: [{field: filterConsts.abstract.filterField, value: 'Abstract'}, ...getDependencies(filterConsts.abstract.dependencyArray)],
     }
   }, [tract.state, tract.county, tract.township, tract.range, tract.section, tract.survey, tract.block, tract.sectiontx, tract.abstract])
-
+  
   return (
     <>
       {!isNewTract && <AutoCompleteShapeLayer value={tractValue} shapeType="parcel" setSelectedShapeLayer={setSelectedShapeLayer} />}
@@ -167,11 +103,11 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
           <AutoCompleteLandgrid
             {...props}
             value={props.value}
-            filterKey="level1Name.keyword"
-            filters={{ field: "level1Type.keyword", value: "State" }}
+            filterKey={filterConsts.state.filterKey}
+            filters={{ field: filterConsts.state.filterField, value: "State" }}
             label="State"
             variant="outlined"
-            onChange={(value) => {
+            onChange={(e, value) => {
               props.onChange(value.key);
               setStateName(value.key);
             }}
@@ -188,11 +124,11 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
         render={(props) => (
           <AutoCompleteLandgrid
             value={props.value}
-            filterKey="level2Name.keyword"
-            filters={[{ field: "level2Type.keyword", value: "County" }, ...getDependencies(["state"])]}
+            filterKey={filterConsts.county.filterKey}
+            filters={[{ field: filterConsts.county.filterField, value: "County" }, ...getDependencies(filterConsts.county.dependencyArray)]}
             label="County"
             variant="outlined"
-            onChange={(value) => {
+            onChange={(e, value) => {
               props.onChange(value.key);
             }}
             autoFocus={false}
@@ -245,17 +181,18 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             name={`${prefix}meridian`}
             defaultValue={tract?.meridian || ""}
             render={(props) => (
-              <AutoCompleteWithNewOption
+              <AutoCompleteLandgrid
                 value={props.value}
-                options={autoCompleteListMeridian}
-                filterKey="level3Name.keyword"
-                filters={[{ field: "level3Type.keyword", value: "Meridian" }, ...getDependencies(["state", "county"])]}
+                filterKey={filterConsts.meridian.filterKey}
+                filters={[{ field: filterConsts.meridian.filterField, value: "Meridian" }, ...getDependencies(filterConsts.meridian.dependencyArray)]}
                 label="Meridian"
                 variant="outlined"
-                onChange={(_, value) => {
-                  props.onChange(value?.name ?? "");
+                onChange={(e, value) => {
+                  props.onChange(value.key);
                 }}
                 autoFocus={false}
+                newOptions
+                newOptionFilters={{state: tract.state, county: tract.county}}
               />
             )}
           />
@@ -265,17 +202,18 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             name={`${prefix}township`}
             defaultValue={tract?.township || ""}
             render={(props) => (
-              <AutoCompleteWithNewOption
+              <AutoCompleteLandgrid
                 value={props.value}
-                options={autoCompleteListTownship}
-                filterKey="level5Name.keyword"
-                filters={[{ field: "level5Type.keyword", value: "TownshipRange" }, ...getDependencies(["state", "county", "meridian"])]}
+                filterKey={filterConsts.township.filterKey}
+                filters={[{ field: filterConsts.township.filterField, value: "TownshipRange" }, ...getDependencies(filterConsts.township.dependencyArray)]}
                 label="Township"
                 variant="outlined"
-                onChange={(_, value) => {
-                  props.onChange(value?.name ?? "");
+                onChange={(e, value) => {
+                  props.onChange(value.key);
                 }}
                 autoFocus={false}
+                newOptions
+                newOptionFilters={{state: tract.state, county: tract.county, meridian: tract.meridian}}
               />
             )}
           />
@@ -285,18 +223,19 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             name={`${prefix}range`}
             defaultValue={tract?.range || ""}
             render={(props) => (
-              <AutoCompleteWithNewOption
+              <AutoCompleteLandgrid
                 value={props.value}
-                options={autoCompleteListRange}
-                filterKey="level5Name.keyword"
+                filterKey={filterConsts.range.filterKey}
                 compoundValue={tract.township}
-                filters={[{ field: "level5Type.keyword", value: "TownshipRange" }, ...getDependencies(["state", "county", "meridian"])]}
+                filters={[{ field: filterConsts.range.filterField, value: "TownshipRange" }, ...getDependencies(filterConsts.range.dependencyArray)]}
                 label="Range"
                 variant="outlined"
-                onChange={(_, value) => {
-                  props.onChange(value?.name ?? "");
+                onChange={(e, value) => {
+                  props.onChange(value.key);
                 }}
                 autoFocus={false}
+                newOptions
+                newOptionFilters={{state: tract.state, county: tract.county, meridian: tract.meridian}}
               />
             )}
           />
@@ -306,20 +245,21 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             name={`${prefix}section`}
             defaultValue={tract?.section || ""}
             render={(props) => (
-              <AutoCompleteWithNewOption
+              <AutoCompleteLandgrid
                 value={props.value}
-                options={autoCompleteListSection}
-                filterKey="level6Name.keyword"
+                filterKey={filterConsts.section.filterKey}
                 filters={[
-                  { field: "level6Type.keyword", value: "Section" },
-                  ...getDependencies(["state", "county", "meridian", "townshipRange"]),
+                  { field: filterConsts.section.filterField, value: "Section" },
+                  ...getDependencies(filterConsts.section.dependencyArray),
                 ]}
                 label="Section"
                 variant="outlined"
-                onChange={(_, value) => {
-                  props.onChange(value?.name ?? "");
+                onChange={(e, value) => {
+                  props.onChange(value.key);
                 }}
                 autoFocus={false}
+                newOptions
+                newOptionFilters={{state: tract.state, county: tract.county, meridian: tract.meridian, township: tract.township, range: tract.range}}
               />
             )}
           />
@@ -333,17 +273,18 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             name={`${prefix}survey`}
             defaultValue={tract?.survey || ""}
             render={(props) => (
-              <AutoCompleteWithNewOption
+              <AutoCompleteLandgrid
                 value={props.value}
-                options={autoCompleteListSurvey}
-                filterKey="level3Name.keyword"
-                filters={[{ field: "level3Type.keyword", value: "Survey" }, ...getDependencies(["state", "county"])]}
+                filterKey={filterConsts.survey.filterKey}
+                filters={[{ field: filterConsts.survey.filterField, value: "Survey" }, ...getDependencies(filterConsts.survey.dependencyArray)]}
                 label="Survey"
                 variant="outlined"
-                onChange={(_, value) => {                  
-                  props.onChange(value?.name ?? "");
+                onChange={(e, value) => {
+                  props.onChange(value.key);
                 }}
                 autoFocus={false}
+                newOptions
+                newOptionFilters={{state: tract.state, county: tract.county}}
               />
             )}
           />
@@ -353,17 +294,18 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             name={`${prefix}block`}
             defaultValue={tract?.block || ""}
             render={(props) => (
-              <AutoCompleteWithNewOption
+              <AutoCompleteLandgrid
                 value={props.value}
-                options={autoCompleteListBlock}
-                filterKey="level4Name.keyword"
-                filters={[{ field: "level4Type.keyword", value: "Block" }, ...getDependencies(["state", "county", "survey"])]}
+                filterKey={filterConsts.block.filterKey}
+                filters={[{ field: filterConsts.block.filterField, value: "Block" }, ...getDependencies(filterConsts.block.dependencyArray)]}
                 label="Block"
                 variant="outlined"
-                onChange={(_, value) => {
-                  props.onChange(value?.name ?? "");
+                onChange={(e, value) => {
+                  props.onChange(value.key);
                 }}
                 autoFocus={false}
+                newOptions
+                newOptionFilters={{state: tract.state, county: tract.county, survey: tract.survey}}
               />
             )}
           />
@@ -373,17 +315,18 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             name={`${prefix}section`}
             defaultValue={tract?.section || ""}
             render={(props) => (
-              <AutoCompleteWithNewOption
+              <AutoCompleteLandgrid
                 value={props.value}
-                options={autoCompleteListSection}
-                filterKey="level5Name.keyword"
-                filters={[{ field: "level5Type.keyword", value: "Section" }, ...getDependencies(["state", "county", "survey", "block"])]}
+                filterKey={filterConsts.section.filterKey}
+                filters={[{ field: filterConsts.section.filterField, value: "Section" }, ...getDependencies(filterConsts.section.dependencyArray)]}
                 label="Section"
                 variant="outlined"
-                onChange={(_, value) => {
-                  props.onChange(value?.name ?? "");
+                onChange={(e, value) => {
+                  props.onChange(value.key);
                 }}
                 autoFocus={false}
+                newOptions
+                newOptionFilters={{state: tract.state, county: tract.county, survey: tract.survey, block: tract.block}}
               />
             )}
           />
@@ -394,20 +337,21 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             name={`${prefix}abstract`}
             defaultValue={tract?.abstract || ""}
             render={(props) => (
-              <AutoCompleteWithNewOption
+              <AutoCompleteLandgrid
                 value={props.value}
-                options={autoCompleteListAbstract}
-                filterKey="level6Name.keyword"
+                filterKey={filterConsts.abstract.filterKey}
                 filters={[
-                  { field: "level6Type.keyword", value: "Abstract" },
-                  ...getDependencies(["state", "county", "survey", "block", "section"]),
+                  { field: filterConsts.abstract.filterField, value: "Abstract" },
+                  ...getDependencies(filterConsts.abstract.dependencyArray),
                 ]}
                 label="Abstract"
                 variant="outlined"
-                onChange={(_, value) => {
-                  props.onChange(value?.name ?? "");
+                onChange={(e, value) => {
+                  props.onChange(value.key);
                 }}
                 autoFocus={false}
+                newOptions
+                newOptionFilters={{state: tract.state, county: tract.county, survey: tract.survey, block: tract.block, section: tract.section}}
               />
             )}
           />
