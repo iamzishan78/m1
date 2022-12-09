@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import moment from "moment";
 import PropTypes from "prop-types";
 import { set, get } from "lodash";
 import { useForm } from "react-hook-form";
@@ -313,7 +314,7 @@ export default function CustomizedSteppers(props) {
           setValue(element, "check.payee", statementInfo.payee);
           setValue(element, "check.checkNumber", statementInfo.checkNumber);
           setValue(element, "check.checkAmount", statementInfo.checkAmount);
-          setValue(element, "check.checkDate", statementInfo.checkDate);
+          setValue(element, "check.checkDate", moment(statementInfo.checkDate).format("MM/DD/YYYY"));
           setValue(element, "check.sourceId", statementInfo.sourceId);
           setValue(element, "check.importType", statementInfo.importType);
           if (props.selectedJob.type === "UNITS") {
