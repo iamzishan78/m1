@@ -251,7 +251,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
             </Grid>
           </Grid>
           <Grid item sm={12} md={12}>
-            <Grid container className={classes.gridStyle}>
+            <Grid container className={classes.gridStyle} style={{ padding: "8px 0px 0px 0px"}}>
               <Grid item xs={4}>
                 <div className={classes.boldLabel}>Import Type</div>
               </Grid>
