@@ -129,7 +129,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
                   control={control}
                   name="checkNumber"
                   defaultValue={""}
-                  render={(params) => <TextField {...params} fullWidth margin="dense" type="text" variant="outlined" />}
+                  render={(params) => <TextField id="checkNumber" {...params} fullWidth margin="dense" type="text" variant="outlined" />}
                 />
               </Grid>
             </Grid>
@@ -146,6 +146,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
                   defaultValue={""}
                   render={(params) => (
                     <TextField
+                      id="checkAmount"
                       {...params}
                       fullWidth
                       margin="dense"
@@ -172,6 +173,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
                   render={(params) => (
                     <TextField
                       {...params}
+                      id="checkDate"
                       fullWidth
                       type="date"
                       variant="outlined"
@@ -199,7 +201,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
                   control={control}
                   name="payee.number"
                   defaultValue={""}
-                  render={(params) => <TextField {...params} fullWidth margin="dense" type="text" variant="outlined" />}
+                  render={(params) => <TextField id="ownerNumber" {...params} fullWidth margin="dense" type="text" variant="outlined" />}
                 />
               </Grid>
             </Grid>
@@ -245,13 +247,13 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
                   control={control}
                   name="sourceId"
                   defaultValue={""}
-                  render={(params) => <TextField {...params} fullWidth margin="dense" type="text" variant="outlined" />}
+                  render={(params) => <TextField id="sourceId" {...params} fullWidth margin="dense" type="text" variant="outlined" />}
                 />
               </Grid>
             </Grid>
           </Grid>
           <Grid item sm={12} md={12}>
-            <Grid container className={classes.gridStyle} style={{ padding: "8px 0px 0px 0px"}}>
+            <Grid container className={classes.gridStyle} style={{ padding: "8px 0px 0px 0px" }}>
               <Grid item xs={4}>
                 <div className={classes.boldLabel}>Import Type</div>
               </Grid>

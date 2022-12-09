@@ -182,9 +182,15 @@ export default function CustomizedSteppers(props) {
   const history = useHistory();
   const previousRoute = matchRoutes(props.routes, history.pathHistory[1]);
 
+
+
   const [contactList, setContactList] = useState(null);
   const [jobId, setJobId] = useState(null);
   const [processing, setProcessing] = useState(false);
+
+  const [buttonTitle, setButtonTitle] = useState("false");
+
+
 
   const steps = getSteps(stateApp.job);
   const dispatch = useDispatch();
@@ -200,6 +206,14 @@ export default function CustomizedSteppers(props) {
   const payor = watch("payor");
   const checkAmount = watch("checkAmount");
   const checkNumber = watch("checkNumber");
+
+  useEffect(() => {
+    setButtonTitle(stateApp.activeStepNumber >= steps.length - 2
+      ? stateApp.activeStepNumber === steps.length - 1
+        ? "Close"
+        : "Upload"
+      : "Continue")
+  }, []);
 
   useEffect(() => {
     if (createJobData?.createJob && jobId) {
@@ -446,12 +460,8 @@ export default function CustomizedSteppers(props) {
               </Button>
             ) : null}
             {steps[stateApp.activeStepNumber] !== "Select" ? (
-              <Button disabled={isDisabled} variant="contained" color="primary" onClick={handleNext} className={classes.buttonselect}>
-                {stateApp.activeStepNumber >= steps.length - 2
-                  ? stateApp.activeStepNumber === steps.length - 1
-                    ? "Close"
-                    : "Upload"
-                  : "Continue"}
+              <Button id={`${buttonTitle}-button`} disabled={isDisabled} variant="contained" color="primary" onClick={handleNext} className={classes.buttonselect}>
+                {buttonTitle}
               </Button>
             ) : null}
           </div>
