@@ -26,7 +26,7 @@ describe('Revenue Uploader Spec', () => {
             cy.verifyApiResponse('@getPaginatedContactsApi', { responseTimeout: longTimeout })
 
             cy.log('==== STEP: SELECT PAYOR ====')
-            cy.get("#autoCompleteWithAddNew", { timeout: longTimeout }).clear().type("CHEVRON USA INC").wait(3000).type("{downArrow}{downArrow}").wait(2000).type("{enter}")
+            cy.get("#autoCompleteWithAddNew", { timeout: longTimeout }).clear().type("MYSTIC PATH LTD").wait(3000).type("{downArrow}{downArrow}").wait(2000).type("{enter}")
 
             cy.wait(4000)
 
@@ -51,7 +51,7 @@ describe('Revenue Uploader Spec', () => {
             cy.wait(2000)
 
             cy.log('==== STEP: SELECT OWNER ====')
-            cy.get("#autocompEntityNamesVirtualizeList", { timeout: longTimeout }).clear().type("LINDA BARKER FRAZIER").wait(3000).type("{downArrow}{downArrow}").wait(2000).type("{enter}")
+            cy.get("#autocompEntityNamesVirtualizeList", { timeout: longTimeout }).clear().type("MARY KATE NELSON").wait(3000).type("{downArrow}{downArrow}").wait(2000).type("{enter}")
             cy.wait(5000)
 
 
