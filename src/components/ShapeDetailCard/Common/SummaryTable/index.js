@@ -242,7 +242,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
         section: { field: "level5Name.keyword", value: get(properties, filterConsts.section.key) },
         townshipRange: { field: "level5Name.keyword", value: get(properties, filterConsts.township.key) && get(properties, filterConsts.township.key) ? `${get(properties, filterConsts.township.key)} ${get(properties, filterConsts.range.key)}` : "" },
         abstract: { field: "level6Name.keyword", value: get(properties, filterConsts.abstract.key) },
-        sectionNTX: { field: "level6Name.keyword", value: get(properties, filterConsts.sectiontx.key) },
+        sectiontx: { field: "level6Name.keyword", value: get(properties, filterConsts.sectiontx.key) },
       };
       const dependencies = [];
       deps?.forEach((dep) => {
@@ -489,7 +489,14 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           }}
                           autoFocus={false}
                           newOptions={data.newOptions !== false}
-                          newOptionFilters={data.dependencyArray.reduce((acc, val) => ({ ...acc, [val]: get(properties, filterConsts[val].key) }), {})}
+                          newOptionFilters={data.dependencyArray.reduce((acc, val) => {
+                            console.log(val, filterConsts)
+                            if (val === 'townshipRange') {
+                              return ({ ...acc, township: get(properties, 'originalProperties.Township'), range: get(properties, 'originalProperties.Range') })
+                            }
+                            return ({ ...acc, [val]: get(properties, filterConsts[val].key) })
+
+                          }, {})}
                         />
                       </>
                     )}

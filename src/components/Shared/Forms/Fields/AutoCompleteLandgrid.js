@@ -31,6 +31,7 @@ const newOptionsParams = {
   },
   filterOptions: (options, params) => {
     const inputValue = params.inputValue
+    if (!inputValue) return options
     const filtered = createFilterOptions()(options, { ...params, inputValue })
     const isExist = loadashFilter(filtered, (filter) => {
       return filter?.key?.toLowerCase() === inputValue?.toLowerCase()

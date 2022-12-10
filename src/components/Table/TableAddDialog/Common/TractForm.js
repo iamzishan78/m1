@@ -16,7 +16,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 
   const [getautoCompleteListBasin, { data: dataAutoCompleteListBasin = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
   const [getautoCompleteListField, { data: dataAutoCompleteListField = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
-  
+
   useEffect(() => {
     getautoCompleteListBasin({ variables: { type: "AgreementShapeOwner", data: { key: "basin", inTract: true } } });
     getautoCompleteListField({ variables: { type: "AgreementShapeOwner", data: { key: "field", inTract: true } } });
@@ -29,8 +29,8 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
   const autoCompleteListField = React.useMemo(
     () => dataAutoCompleteListField?.autoCompleteList || [],
     [dataAutoCompleteListField?.autoCompleteList],
-    );
-  
+  );
+
   useEffect(() => {
     if (tract.state && tract.state !== stateName) setStateName(tract.state);
   }, [tract.state]);
@@ -51,7 +51,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
         section: { field: "level5Name.keyword", value: tract.section },
         townshipRange: { field: "level5Name.keyword", value: tract.township && tract.range ? `${tract.township} ${tract.range}` : "" },
         abstract: { field: "level6Name.keyword", value: tract.abstract },
-        sectionNTX: { field: "level6Name.keyword", value: tract.section },
+        sectiontx: { field: "level6Name.keyword", value: tract.section },
       };
       const dependencies = [];
       deps?.forEach((dep) => {
@@ -64,21 +64,21 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 
   const filters = useMemo(() => {
     return {
-      state: {field: filterConsts.state.filterField, value: 'State'},
-      county: [{field: filterConsts.county.filterField, value: 'County'}, ...getDependencies(filterConsts.county.dependencyArray)],
-      meridian: [{field: filterConsts.meridian.filterField, value: 'Meridian'}, ...getDependencies(filterConsts.meridian.dependencyArray)],
-      township: [{field: filterConsts.township.filterField, value: 'TownshipRange'}, ...getDependencies(filterConsts.township.dependencyArray)],
-      range: [{field: filterConsts.range.filterField, value: 'TownshipRange'}, ...getDependencies(filterConsts.range.dependencyArray)],
-  
-      section: [{field: filterConsts.section.filterField, value: 'Section'}, ...getDependencies(filterConsts.section.dependencyArray)],
-      survey: [{field: filterConsts.survey.filterField, value: 'Survey'}, ...getDependencies(filterConsts.survey.dependencyArray)],
-      block: [{field: filterConsts.block.filterField, value: 'Block'}, ...getDependencies(filterConsts.block.dependencyArray)],
-      sectiontx: [{field: filterConsts.sectiontx.filterField, value: 'Section'}, ...getDependencies(filterConsts.sectiontx.dependencyArray)],
-  
-      abstract: [{field: filterConsts.abstract.filterField, value: 'Abstract'}, ...getDependencies(filterConsts.abstract.dependencyArray)],
+      state: { field: filterConsts.state.filterField, value: 'State' },
+      county: [{ field: filterConsts.county.filterField, value: 'County' }, ...getDependencies(filterConsts.county.dependencyArray)],
+      meridian: [{ field: filterConsts.meridian.filterField, value: 'Meridian' }, ...getDependencies(filterConsts.meridian.dependencyArray)],
+      township: [{ field: filterConsts.township.filterField, value: 'TownshipRange' }, ...getDependencies(filterConsts.township.dependencyArray)],
+      range: [{ field: filterConsts.range.filterField, value: 'TownshipRange' }, ...getDependencies(filterConsts.range.dependencyArray)],
+
+      section: [{ field: filterConsts.section.filterField, value: 'Section' }, ...getDependencies(filterConsts.section.dependencyArray)],
+      survey: [{ field: filterConsts.survey.filterField, value: 'Survey' }, ...getDependencies(filterConsts.survey.dependencyArray)],
+      block: [{ field: filterConsts.block.filterField, value: 'Block' }, ...getDependencies(filterConsts.block.dependencyArray)],
+      sectiontx: [{ field: filterConsts.sectiontx.filterField, value: 'Section' }, ...getDependencies(filterConsts.sectiontx.dependencyArray)],
+
+      abstract: [{ field: filterConsts.abstract.filterField, value: 'Abstract' }, ...getDependencies(filterConsts.abstract.dependencyArray)],
     }
   }, [tract.state, tract.county, tract.township, tract.range, tract.section, tract.survey, tract.block, tract.sectiontx, tract.abstract])
-  
+
   return (
     <>
       {!isNewTract && <AutoCompleteShapeLayer value={tractValue} shapeType="parcel" setSelectedShapeLayer={setSelectedShapeLayer} />}
@@ -192,7 +192,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
                 }}
                 autoFocus={false}
                 newOptions
-                newOptionFilters={{state: tract.state, county: tract.county}}
+                newOptionFilters={{ state: tract.state, county: tract.county }}
               />
             )}
           />
@@ -213,7 +213,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
                 }}
                 autoFocus={false}
                 newOptions
-                newOptionFilters={{state: tract.state, county: tract.county, meridian: tract.meridian}}
+                newOptionFilters={{ state: tract.state, county: tract.county, meridian: tract.meridian }}
               />
             )}
           />
@@ -235,7 +235,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
                 }}
                 autoFocus={false}
                 newOptions
-                newOptionFilters={{state: tract.state, county: tract.county, meridian: tract.meridian}}
+                newOptionFilters={{ state: tract.state, county: tract.county, meridian: tract.meridian }}
               />
             )}
           />
@@ -259,7 +259,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
                 }}
                 autoFocus={false}
                 newOptions
-                newOptionFilters={{state: tract.state, county: tract.county, meridian: tract.meridian, township: tract.township, range: tract.range}}
+                newOptionFilters={{ state: tract.state, county: tract.county, meridian: tract.meridian, township: tract.township, range: tract.range }}
               />
             )}
           />
@@ -284,7 +284,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
                 }}
                 autoFocus={false}
                 newOptions
-                newOptionFilters={{state: tract.state, county: tract.county}}
+                newOptionFilters={{ state: tract.state, county: tract.county }}
               />
             )}
           />
@@ -305,7 +305,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
                 }}
                 autoFocus={false}
                 newOptions
-                newOptionFilters={{state: tract.state, county: tract.county, survey: tract.survey}}
+                newOptionFilters={{ state: tract.state, county: tract.county, survey: tract.survey }}
               />
             )}
           />
@@ -326,7 +326,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
                 }}
                 autoFocus={false}
                 newOptions
-                newOptionFilters={{state: tract.state, county: tract.county, survey: tract.survey, block: tract.block}}
+                newOptionFilters={{ state: tract.state, county: tract.county, survey: tract.survey, block: tract.block }}
               />
             )}
           />
@@ -351,7 +351,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
                 }}
                 autoFocus={false}
                 newOptions
-                newOptionFilters={{state: tract.state, county: tract.county, survey: tract.survey, block: tract.block, section: tract.section}}
+                newOptionFilters={{ state: tract.state, county: tract.county, survey: tract.survey, block: tract.block, section: tract.section }}
               />
             )}
           />
