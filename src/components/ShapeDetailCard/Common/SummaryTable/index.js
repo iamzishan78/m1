@@ -481,8 +481,8 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                         <AutoCompleteLandgrid
                           value={properties[data.key]}
                           filterKey={data.filterKey}
-                          filters={[{ field: data.filterField, value: upperFirst(data.mongoKey) }, ...getDependencies(data.dependencyArray)]}
-                          label={upperFirst(data.mongoKey)}
+                          filters={[{ field: data.filterField, value: upperFirst(data.esKey) }, ...getDependencies(data.dependencyArray)]}
+                          label={data.label}
                           onChange={(e, value) => {
                             e.keyCode = 13;
                             if (value?.key && e.keyCode === 13) updateProperties(e, data.key, value.key);
@@ -490,7 +490,6 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           autoFocus={false}
                           newOptions={data.newOptions !== false}
                           newOptionFilters={data.dependencyArray.reduce((acc, val) => {
-                            console.log(val, filterConsts)
                             if (val === 'townshipRange') {
                               return ({ ...acc, township: get(properties, 'originalProperties.Township'), range: get(properties, 'originalProperties.Range') })
                             }
