@@ -123,6 +123,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
         defaultValue={tract?.county || ""}
         render={(props) => (
           <AutoCompleteLandgrid
+            {...props}
             value={props.value}
             filterKey={filterConsts.county.filterKey}
             filters={[{ field: filterConsts.county.filterField, value: "County" }, ...getDependencies(filterConsts.county.dependencyArray)]}
