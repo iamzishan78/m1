@@ -27,6 +27,18 @@ const tracts = [
         required: true,
         actual_key: "parcel.name",
     },
+    {
+        label: "Basin",
+        mapped_key: "",
+        required: true,
+        actual_key: "parcel.basin",
+    },
+    {
+        label: "Field",
+        mapped_key: "",
+        required: true,
+        actual_key: "parcel.field",
+    },
     ...copy(landColumns),
     {
         label: "Description",
