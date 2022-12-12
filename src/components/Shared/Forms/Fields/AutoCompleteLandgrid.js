@@ -47,7 +47,7 @@ const newOptionsParams = {
   }
 }
 
-export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ onChange, filterKey, type, extendSearchQuery, esIndex = 'platformData:landgrid', filters, label, value, variant, compoundValue, newOptions, newOptionFilters }) {
+export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ onChange, filterKey, type, extendSearchQuery, esIndex = 'platformData:landgrid', filters, label, value, variant, compoundValue, newOptions, newOptionFilters, onBlur }) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [search, setSearch] = useState(value);
@@ -57,6 +57,7 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
   const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
 
   const condition = useMemo(() => Object.entries(newOptionFilters || {}).reduce((acc, [key, val]) => ({ ...acc, [`tract.${key}`]: val }), {}), [newOptionFilters])
+
   useEffect(() => {
     if (!newOptions) return
 
@@ -169,10 +170,12 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
           {...params}
           label={label}
           margin="dense"
+          value={search}
           variant={variant}
           onChange={(e) => {
             handleChange(e.target.value);
           }}
+          onBlur={onBlur}
           InputProps={{
             ...params.InputProps,
             endAdornment: (

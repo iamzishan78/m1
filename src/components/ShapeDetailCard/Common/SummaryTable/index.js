@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useCallback } from "react";
+import React, { useEffect, useState, useContext, useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { set, get, upperFirst } from "lodash";
 import TextField from "@material-ui/core/TextField";
@@ -254,6 +254,26 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
     [properties]
   );
 
+  const newOptionFilters = useCallback(
+    (data) => {
+      return data.dependencyArray.reduce((acc, val) => {
+        if (val === 'townshipRange') {
+          return ({ ...acc, township: get(properties, 'originalProperties.Township'), range: get(properties, 'originalProperties.Range') })
+        }
+        return ({ ...acc, [val]: get(properties, filterConsts[val].key) })
+
+      }, {});
+    },
+    [properties]
+  );
+
+  const autoCompleteLandgridFilters = useCallback(
+    (data) => {
+      return [{ field: data.filterField, value: upperFirst(data.esKey) }, ...getDependencies(data.dependencyArray)]
+    },
+    [properties]
+  );
+
   return (
     <Table className={classes.table} size="small" aria-label="unit table">
       <TableBody>
@@ -477,27 +497,25 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                       </>
                     )}
                     {data.type === "autocompletelandgrid" && (
-                      <>
-                        <AutoCompleteLandgrid
-                          value={properties[data.key]}
-                          filterKey={data.filterKey}
-                          filters={[{ field: data.filterField, value: upperFirst(data.esKey) }, ...getDependencies(data.dependencyArray)]}
-                          label={data.label}
-                          onChange={(e, value) => {
-                            e.keyCode = 13;
-                            if (value?.key && e.keyCode === 13) updateProperties(e, data.key, value.key);
-                          }}
-                          autoFocus={false}
-                          newOptions={data.newOptions !== false}
-                          newOptionFilters={data.dependencyArray.reduce((acc, val) => {
-                            if (val === 'townshipRange') {
-                              return ({ ...acc, township: get(properties, 'originalProperties.Township'), range: get(properties, 'originalProperties.Range') })
-                            }
-                            return ({ ...acc, [val]: get(properties, filterConsts[val].key) })
+                      <AutoCompleteLandgrid
+                        value={get(properties, data.key)}
+                        filterKey={data.filterKey}
+                        filters={autoCompleteLandgridFilters(data)}
+                        label={data.label}
+                        onBlur={() => {
+                          debugger
+                          setTableDataState({});
+                          setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] });
+                        }}
+                        onChange={(e, value) => {
+                          e.keyCode = 13;
+                          if (value?.key && e.keyCode === 13) updateProperties(e, data.key, value.key);
+                        }}
+                        autoFocus={false}
+                        newOptions={data.newOptions !== false}
+                        newOptionFilters={newOptionFilters(data)}
+                      />
 
-                          }, {})}
-                        />
-                      </>
                     )}
                     {data.type === "custom" && (
                       <>
