@@ -267,6 +267,7 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
                             aria-controls={`party${index}Menu`}
                             aria-haspopup="true"
                             className={classes.menuIcon}
+                            datatest-id="moreOptionsPopper"
                             onClick={(event) => setAnchorEl(event.currentTarget)}
                             {...bindTrigger(popupState)}
                           >
@@ -286,6 +287,7 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
                             <List className={classes.menu}>
                               <ListItem
                                 button
+                                datatest-id="deleteRelatedParty"
                                 onClick={() => {
                                   if (item._id) {
                                     handleUpdateParty({ _id: item?._id, isDeleted: true }, index);

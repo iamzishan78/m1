@@ -1,6 +1,6 @@
 import { basic_timeouts, agreementObj } from "../../../cypressUtils/data";
 
-describe("Add Related Parties Spec", () => {
+describe("Add/Remove Related Parties Spec", () => {
   it("passes", () => {
     const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts;
 
@@ -42,6 +42,16 @@ describe("Add Related Parties Spec", () => {
             const status = response.response.body.data.upsertRelatedParty.status;
   
             cy.expect(status).to.equal(true);
+
+            cy.get("[datatest-id=moreOptionsPopper]", { timeout: longTimeout }).should("be.visible").click({force: true });
+            cy.get("[datatest-id=deleteRelatedParty]", { timeout: shorTimeout }).should("be.visible").click({force: true });
+
+            cy.verifyApiResponse("@upsertRelatedPartyApi").then(response => {
+              const status = response.response.body.data.upsertRelatedParty.status;
+    
+              cy.expect(status).to.equal(true);
+  
+            })
           })
         })
       });
