@@ -271,7 +271,7 @@ export default function M1neralHeaders(props) {
       <div style={padding_div_top}>
         <Paper className={classes.root} style={style_papaer}>
           <TableContainer className={classes.container}>
-            <Table stickyHeader aria-label="sticky table">
+            <Table id="headerTable" stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
                   {columns.map((column) => (
@@ -287,6 +287,7 @@ export default function M1neralHeaders(props) {
                     <TableRow key={index}>
                       <StyledTableCell key={columns[0].label}>
                         <Checkbox
+                          id={`checkbox-${index}`}
                           disabled={row.actual_key === "" ? true : false}
                           checked={row.required}
                           color="default"
@@ -359,11 +360,11 @@ export default function M1neralHeaders(props) {
                   value={stateApp.selectedShapeLayerOption}
                   dense
                   fullWidth
-                  onChange={(e) => { 
+                  onChange={(e) => {
                     setStateApp((state) => ({ ...state, selectedShapeLayerOption: e.target.value }));
                   }}
                 >
-                  {shapeTransferOptions.map((option) => <MenuItem style={{ display: stateApp.selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option.key} >{option.label}</MenuItem>)}
+                  {shapeTransferOptions.map((option) => <MenuItem id={option.label} style={{ display: stateApp.selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option.key} >{option.label}</MenuItem>)}
                 </Select>
               </div>
 
@@ -371,7 +372,7 @@ export default function M1neralHeaders(props) {
                 *Note: Existing agreements will be matched on M1neral ID or Agreement Number
               </div>
             </>
-            
+
           ) : ['AGREEMENT_PROVISIONS'].includes(stateApp.jobType) ? (
             <>
               <div style={{ ...medium_text, ...padding_div_top }}>
@@ -396,7 +397,7 @@ export default function M1neralHeaders(props) {
                 *Note: Existing agreements will be matched on M1neral ID or Agreement Number
               </div>
 
-          </>
+            </>
           ) : ['AGREEMENT_COMMENTS'].includes(stateApp.jobType) ? (
             <div>
               * Comment will be tied to agreement when match on Agreement System ID or Agreement Number is made

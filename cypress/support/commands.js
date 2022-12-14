@@ -63,7 +63,7 @@ Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId = null) 
 
 /*This command is to intercept graphql api by operation name and if searchString is passed it will only
 intercept if api payload has that string in search */
-Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
+Cypress.Commands.add('interceptApi', (operationName, payloadKey = null, alias = null) => {
 
     cy.intercept('POST', baseUrls[workSpace], req => {
 
@@ -71,18 +71,18 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
             if (payloadKey) {
                 const { variables } = req.body
                 if (payloadKey.searchString && isSearchStringMatched(payloadKey.searchString, variables))
-                    req.alias = `${operationName}WithSearchStringApi`;
+                    req.alias = alias || `${operationName}WithSearchStringApi`;
                 else if (payloadKey?.sortOrder && variables?.sort?.order === payloadKey.sortOrder) {
-                    req.alias = `${operationName}WithSortOrderApi`;
+                    req.alias = alias || `${operationName}WithSortOrderApi`;
                 }
                 else if (payloadKey?.filter && variables?.filters.length &&
                     deepEqualObjects(variables.filters[0], payloadKey.filter)) {
-                    req.alias = `${operationName}WithFilterApi`;
+                    req.alias = alias || `${operationName}WithFilterApi`;
                 }
             }
             else {
                 // req.alias will use as api title 
-                req.alias = `${operationName}Api`;
+                req.alias = alias || `${operationName}Api`;
             }
         }
     });
@@ -166,14 +166,14 @@ Cypress.Commands.add('searchOnMap', (data, value) => {
 
 // Command will search and verify results have searched string or not
 Cypress.Commands.add('gridSearch', (searchString, gridOperationName, searchId = null) => {
-    cy.interceptApi(gridOperationName, { searchString: searchString })
+    const apiAlias = searchString.replace(/\s/g, '');
+    cy.interceptApi(gridOperationName, { searchString: searchString }, apiAlias)
 
     const commonSearchClass = ".MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart"
     cy.get(searchId || commonSearchClass).focus().clear().type(searchString)
 
-    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: longTimeout }).then((apiResponse) => {
+    cy.verifyApiResponse(`@${apiAlias}`, { responseTimeout: longTimeout }).then((apiResponse) => {
         let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
-
 
         if (gridOperationName === 'getESDocuments')
             hits = apiResponse.response.body.data.getESFiles.hits
@@ -389,6 +389,49 @@ Cypress.Commands.add('addComment', () => {
     cy.interceptApi('UpsertComment')
     cy.get("#txtArea", { timeout: longTimeout }).should('be.visible').type("A cypress comment")
     cy.get("#commentButton").click()
+})
+
+// This command will delete agreement then will verify too
+Cypress.Commands.add('deleteAndVerifyAgreement', (agreementName, agreementNumber) => {
+    cy.log('==== STEP: SEARCH AGREEMENT ON GRID ====')
+    cy.gridSearch(agreementName, 'getESSimpleSearch').then(response => {
+        const hits = response.response.body.data.getESSimpleSearch.hits
+
+        const cypressAgreement = hits.find(hit => hit.agreementName === agreementName)
+
+        if (!cypressAgreement)
+            throw new Error('Sample Agreement added by cypress not found');
+
+        const cypressAgreementId = cypressAgreement._id
+
+        const indexOfcypressAgreement = hits.findIndex(hit => hit._id === cypressAgreement._id) + 1
+
+        cy.log('==== STEP: OPEN CYPRESS GENERATED AGREEMENT DETAIL  ====')
+        cy.getTableCell("Agreement", indexOfcypressAgreement).then(($agreementNameCell) => {
+            cy.wrap($agreementNameCell).contains(`${agreementNumber} - ${agreementName}`).scrollIntoView().click({ waitForAnimations: false })
+            cy.get("#field-agreementName", { timeout: longTimeout }).should('be.visible')
+
+            cy.log('==== STEP: DELETE AGREEMENT PROCESS START ====')
+            cy.get("#moreHorizIcon", { timeout: longTimeout }).children().click()
+            cy.interceptApi('getESSimpleSearch')
+            cy.interceptApi('updateCustomLayer')
+            cy.deleteConfirmation()
+            cy.verifyApiResponse('@updateCustomLayerApi')
+
+            cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
+
+            cy.gridSearch(agreementName, 'getESSimpleSearch').then(response => {
+                const hits = response.response.body.data.getESSimpleSearch.hits
+                const isAggreementExist = hits.some(hit => hit.id === cypressAgreementId)
+
+                if (isAggreementExist)
+                    throw new Error('Agreement still exist');
+
+                cy.wait(500)
+            })
+
+        })
+    })
 })
 
 // This command will delete tract (related tract to agreement) and then will verify it

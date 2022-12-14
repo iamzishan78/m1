@@ -55,7 +55,7 @@ const ButtonDropDown = ({ options, children, onClick, ...rest }) => {
           aria-haspopup="menu"
           onClick={handleToggle}
         >
-          <ArrowDropDownIcon />
+          <ArrowDropDownIcon id="addButtonArrowIcon" />
         </Button>
       </ButtonGroup>
 
@@ -74,6 +74,7 @@ const ButtonDropDown = ({ options, children, onClick, ...rest }) => {
                     if (option.isShow) {
                       return (
                         <MenuItem
+                          id={`menu-item-${option.text}`}
                           key={option.text}
                           selected={index === selectedIndex}
                           onClick={(event) => handleMenuItemClick(event, index)}

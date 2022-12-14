@@ -433,6 +433,7 @@ export default function CustomizedSteppers(props) {
             ) : null}
             {steps[stateApp.activeStepNumber] !== 'Select' ? (
               <Button
+                id="continueButton"
                 disabled={isDisabled}
                 variant="contained"
                 color="primary"
