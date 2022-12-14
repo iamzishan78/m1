@@ -196,7 +196,8 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
         )}
       />
 
-      {!["TX", "Texas"].includes(stateName) && (
+      {/* {!["TX", "Texas"].includes(stateName) && ( */}
+        <div style={{ display: !["TX", "Texas"].includes(stateName) ? "block"  : "none"}}>
         <>
           <Controller
             control={control}
@@ -256,7 +257,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             )}
           />
 
-          <Controller
+          {/* <Controller
             control={control}
             name={`${prefix}section`}
             defaultValue={tract?.section || ""}
@@ -276,11 +277,13 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
                 autoFocus={false}
               />
             )}
-          />
+          /> */}
         </>
-      )}
+        </div>
+      {/* )} */}
 
-      {["TX", "Texas"].includes(stateName) && (
+      {/* {["TX", "Texas"].includes(stateName) && ( */}
+        <div style={{ display: ["TX", "Texas"].includes(stateName) ? "block"  : "none"}}>
         <>
           <Controller
             control={control}
@@ -320,7 +323,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             )}
           />
 
-          <Controller
+          {/* <Controller
             control={control}
             name={`${prefix}section`}
             defaultValue={tract?.section || ""}
@@ -337,9 +340,9 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
                 autoFocus={false}
               />
             )}
-          />
+          /> */}
 
-          <Controller
+          {/* <Controller
             control={control}
             id="tractAbstract"
             name={`${prefix}abstract`}
@@ -360,9 +363,58 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
                 autoFocus={false}
               />
             )}
-          />
+          /> */}
         </>
-      )}
+        </div>
+      {/* )} */}
+
+      <Controller
+        control={control}
+        name={`${prefix}section`}
+        defaultValue={tract?.section || ""}
+        render={(props) => (
+          <AutoCompleteLandgrid
+            value={props.value}
+            filterKey={["TX", "Texas"].includes(stateName) ? "level5Name.keyword": "level6Name.keyword"}
+            filters={
+              ["TX", "Texas"].includes(stateName) ? 
+                [{ field: "level5Type.keyword", value: "Section" }, ...getDependencies(["state", "county", "survey", "block"])] :
+                [{ field: "level6Type.keyword", value: "Section" }, ...getDependencies(["state", "county", "meridian", "townshipRange"])]
+              }
+            label="Section"
+            variant="outlined"
+            onChange={(value) => {
+              props.onChange(value.key);
+            }}
+            autoFocus={false}
+          />
+        )}
+      /> 
+
+      <div style={{ display: ["TX", "Texas"].includes(stateName) ? "block"  : "none"}}>
+        <Controller
+          control={control}
+          id="tractAbstract"
+          name={`${prefix}abstract`}
+          defaultValue={tract?.abstract || ""}
+          render={(props) => (
+            <AutoCompleteLandgrid
+              value={props.value}
+              filterKey="level6Name.keyword"
+              filters={[
+                { field: "level6Type.keyword", value: "Abstract" },
+                ...getDependencies(["state", "county", "survey", "block", "section"]),
+              ]}
+              label="Abstract"
+              variant="outlined"
+              onChange={(value) => {
+                props.onChange(value.key);
+              }}
+              autoFocus={false}
+            />
+          )}
+        /> 
+      </div>
 
       <Controller
         as={TextField}
