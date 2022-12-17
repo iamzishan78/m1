@@ -30,7 +30,7 @@ import ContactCardIcon from "components/Shared/svgIcons/contact_card";
 import AutoComplete from "components/Shared/components/Fields/AutoComplete";
 import ContactPaginatedAutocomplete from "components/Revenue/components/Common/ContactsPaginatedAutocomplete";
 
-import { UPSERT_RELATED_PARTY } from "graphQL/useMutationRelatedParty";
+import { UPSERT_CONTACT_RELATED_AGREEMENT, UPSERT_RELATED_PARTY } from "graphQL/useMutationRelatedParty";
 
 const useStyles = makeStyles((theme) => ({
   icons: {
@@ -79,7 +79,7 @@ export default function FieldsSection({ relatedParties, agreementId, agreementNa
   const [, setAnchorEl] = useState();
   const [hoverParty, setHoverParty] = useState(-1);
 
-  const [upsertRelatedParty] = useMutation(UPSERT_RELATED_PARTY);
+  const [upsertRelatedParty] = useMutation(UPSERT_CONTACT_RELATED_AGREEMENT);
 
   const [fields, setFields] = useState([]);
 
