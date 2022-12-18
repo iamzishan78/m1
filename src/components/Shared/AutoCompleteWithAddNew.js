@@ -37,6 +37,7 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, t
       value={value}
       disableListWrap
       classes={classes}
+      id="autoCompleteWithAddNew"
       options={options}
       getOptionLabel={(option) => {
         if (typeof option === "string") {
