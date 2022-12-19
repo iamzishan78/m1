@@ -519,6 +519,7 @@ function MapGridCard(props) {
                       )}
                       {searchTapValue.value === "layer" && (
                         <MapGridLayersTable
+                          id="layerSnapGrid"
                           dense
                           parent="search"
                           customOptions={options}
