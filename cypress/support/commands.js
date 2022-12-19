@@ -400,7 +400,7 @@ Cypress.Commands.add('deleteAndVerifyAgreement', (agreementName, agreementNumber
         const cypressAgreement = hits.find(hit => hit.agreementName === agreementName)
 
         if (!cypressAgreement)
-            throw new Error('Sample Agreement added by cypress not found');
+            throw new Error('Agreement added by cypress not found');
 
         const cypressAgreementId = cypressAgreement._id
 

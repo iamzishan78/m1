@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { basic_timeouts } from "../../cypressUtils/data"
+import { basic_timeouts } from "../../../cypressUtils/data"
 
 describe('Agreement Uploader Spec', () => {
     const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
@@ -31,11 +31,11 @@ describe('Agreement Uploader Spec', () => {
                 .then((row) => {
                     const totalRows = row.length - 1
                     //row.length will give you the row count
-                    for (let i = 0; i < totalRows; i++) {
-                        cy.get(`#checkbox-${i}`).scrollIntoView()
-                            .should('not.be.visible') // Passes
-                            .should('be.checked')
-                    }
+                    // for (let i = 0; i < totalRows; i++) {
+                    //     cy.get(`#checkbox-${i}`).scrollIntoView()
+                    //         .should('not.be.visible') // Passes
+                    //         .should('be.checked')
+                    // }
                 });
 
             cy.get("#continueButton", { timeout: longTimeout }).scrollIntoView().should('be.disabled')
@@ -48,7 +48,7 @@ describe('Agreement Uploader Spec', () => {
             cy.get("#continueButton", { timeout: longTimeout }).scrollIntoView().should('not.be.disabled').click()
 
 
-            cy.log('==== STEP: GET AGREEMENT NAMES FROM THE TABLE  ====')
+            cy.log('==== STEP: EXTRACT AGREEMENT DATA FROM THE TABLE  ====')
             cy.get("#materialTable", { timeout: longTimeout }).should("be.visible").get('.MuiTable-root')
                 .find("tr")
                 .then((row) => {
@@ -64,7 +64,7 @@ describe('Agreement Uploader Spec', () => {
                             cy.wrap($tableCell).scrollIntoView().then(function ($cellText) {
                                 cy.getTableCell('Agreement Number', i).then(($tableCell) => {
                                     cy.wrap($tableCell).scrollIntoView().then(function ($numberCellText) {
-                                        agreementData.push({ name: $cellText.text(), number: $numberCellText.text() })
+                                        agreementData.push({ agreementName: $cellText.text(), agreementNumber: $numberCellText.text() })
                                         cy.wrap(agreementData).as('agreementData');
                                     })
 
@@ -85,16 +85,17 @@ describe('Agreement Uploader Spec', () => {
                     cy.wait(5000)
 
                     cy.get('@agreementData').then(agrmntData => {
+                        cy.task('setAgreementData', agrmntData);
 
-                        agrmntData.forEach(data => {
-                            cy.log(`==== STEP: DELETE AGREEMENT : ${data.name} FROM THE GRID ====`)
-                            cy.visit('http://localhost:3000/land/agreements')
+                        // agrmntData.forEach(data => {
+                        //     cy.log(`==== STEP: DELETE AGREEMENT : ${data.name} FROM THE GRID ====`)
+                        //     cy.visit('http://localhost:3000/land/agreements')
 
-                            cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
-                            cy.deleteAndVerifyAgreement(data.name, data.number)
+                        //     cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
+                        //     cy.deleteAndVerifyAgreement(data.name, data.number)
 
-                            cy.wait(5000)
-                        });
+                        //     cy.wait(5000)
+                        // });
                     })
                 });
         })
