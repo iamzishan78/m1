@@ -27,19 +27,6 @@ describe('Agreement Uploader Spec', () => {
                 force: true
             })
 
-            cy.log('==== STEP: CHECK IF ALL FIELDS ARE MAPPED ====')
-            cy.get("#headerTable", { timeout: longTimeout }).should("be.visible")
-                .find("tr")
-                .then((row) => {
-                    const totalRows = row.length - 1
-                    //row.length will give you the row count
-                    // for (let i = 0; i < totalRows; i++) {
-                    //     cy.get(`#checkbox-${i}`).scrollIntoView()
-                    //         .should('not.be.visible') // Passes
-                    //         .should('be.checked')
-                    // }
-                });
-
             cy.get("#continueButton", { timeout: longTimeout }).scrollIntoView().should('be.disabled')
 
             cy.log('==== STEP: SELECT ONLY CREATE ONE OPTION FROM THE FIELD ====')
@@ -58,23 +45,7 @@ describe('Agreement Uploader Spec', () => {
                     cy.log(totalRows)
                     cy.log(row.length)
                     //row.length will give you the row count
-                    let agreementData = []
-
-                    for (let i = 1; i < totalRows; i++) {
-                        // eslint-disable-next-line no-loop-func
-                        cy.getTableCell('Agreement Name', i).then(($tableCell) => {
-                            cy.wrap($tableCell).scrollIntoView().then(function ($cellText) {
-                                cy.getTableCell('Agreement Number', i).then(($tableCell) => {
-                                    cy.wrap($tableCell).scrollIntoView().then(function ($numberCellText) {
-                                        agreementData.push({ agreementName: $cellText.text(), agreementNumber: $numberCellText.text() })
-                                        cy.wrap(agreementData).as('agreementData');
-                                    })
-
-                                })
-                            })
-
-                        })
-                    }
+                    cy.getDataFromGrid('Agreement Name', totalRows)
 
                     cy.log('==== STEP: CLICK ON CONTINUE BUTTON ====')
                     cy.get("#continueButton", { timeout: longTimeout }).scrollIntoView().should('not.be.disabled').click()
@@ -86,8 +57,8 @@ describe('Agreement Uploader Spec', () => {
 
                     cy.wait(5000)
 
-                    cy.get('@agreementData').then(agrmntData => {
-                        cy.task('setAgreementData', agrmntData);
+                    cy.get('@gridData').then(gridData => {
+                        cy.task('setAgreementData', gridData);
 
                         // agrmntData.forEach(data => {
                         //     cy.log(`==== STEP: DELETE AGREEMENT : ${data.name} FROM THE GRID ====`)

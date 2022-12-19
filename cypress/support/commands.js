@@ -28,7 +28,7 @@
 
 import { deepEqualObjects } from "../../src/components/Shared/functions";
 import { baseUrls, basic_timeouts, loginCredential } from "../cypressUtils/data";
-import { findInObject, isSearchStringMatched } from "../cypressUtils/helper";
+import { camelize, findInObject, isSearchStringMatched } from "../cypressUtils/helper";
 
 // Constants
 const workSpace = Cypress.env('WORK_SPACE') || "enerx"
@@ -385,6 +385,7 @@ Cypress.Commands.add('agreementFieldSelect', (field) => {
     cy.get(field.id).click({ force: true })
     cy.get('.MuiMenuItem-root').contains(field.value).click()
 })
+
 Cypress.Commands.add('addComment', () => {
     cy.interceptApi('UpsertComment')
     cy.get("#txtArea", { timeout: longTimeout }).should('be.visible').type("A cypress comment")
@@ -464,4 +465,55 @@ Cypress.Commands.add('deleteTractAndVerify', (tractName) => {
                 throw new Error("Tract still exist after delete")
         })
     })
+})
+
+// AGREEMENT UPLOADERS COMMANDS
+
+//This command will click on import to open uploader will select value from breadcrumb
+Cypress.Commands.add('openAgreementUploader', (breadCrumb) => {
+    cy.log('==== STEP: CLICK ON ARROW ICON ====')
+    cy.get('#addButtonArrowIcon', { timeout: longTimeout }).click()
+
+    cy.log('==== STEP: CLIN ON IMPORT BUTTON  ====')
+    cy.get("[id='menu-item-Import Agreements']", { timeout: longTimeout }).click()
+
+
+    cy.log('==== STEP: SELECT BREADCRUMB  ====')
+    cy.get('.MuiTypography-root', { timeout: longTimeout }).contains("Agreement Upload (Agreement Header Info)", { timeout: longTimeout }).click()
+    cy.get('.MuiListItem-root', { timeout: longTimeout }).contains(breadCrumb, { timeout: longTimeout }).click()
+})
+
+//This command will check all fields are mapped or not
+Cypress.Commands.add('checkFieldsMapping', () => {
+    cy.log('==== STEP: CHECK IF ALL FIELDS ARE MAPPED ====')
+    cy.get("#headerTable", { timeout: longTimeout }).should("be.visible")
+        .find("tr")
+        .then((row) => {
+            const totalRows = row.length - 1
+            //  row.length will give you the row count
+            for (let i = 0; i < totalRows; i++) {
+                cy.get(`#checkbox-${i}`).scrollIntoView()
+                    .should('not.be.visible') // Passes
+                    .should('be.checked')
+            }
+        });
+})
+
+Cypress.Commands.add('getDataFromGrid', (gridField, totalRows) => {
+    let gridData = []
+    for (let i = 1; i < totalRows; i++) {
+        // eslint-disable-next-line no-loop-func
+        cy.getTableCell('Agreement Number', i).then(($tableCell) => {
+            cy.wrap($tableCell).scrollIntoView().then(function ($numberCellText) {
+                cy.getTableCell(gridField, i).then(($tableCell) => {
+                    cy.wrap($tableCell).scrollIntoView().then(function ($nameCellText) {
+                        gridData.push({ agreementNumber: $numberCellText.text(), [camelize(gridField)]: $nameCellText.text(), })
+                        cy.wrap(gridData).as('gridData');
+                    })
+
+                })
+            })
+
+        })
+    }
 })

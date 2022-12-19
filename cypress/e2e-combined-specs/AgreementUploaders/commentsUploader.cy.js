@@ -2,7 +2,7 @@
 
 import { basic_timeouts } from "../../cypressUtils/data"
 
-describe('Related Tracts Uploader Spec', () => {
+describe('Comments Uploader Spec', () => {
     it('passes', () => {
         // Constants 
         const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
@@ -26,14 +26,16 @@ describe('Related Tracts Uploader Spec', () => {
 
             cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
                 cy.log('==== STEP: OPEN UPLOADER ====')
-                cy.openAgreementUploader("Agreement Upload (Related Tracts)")
+
+                cy.openAgreementUploader("Comments Uploader")
 
                 cy.log('==== STEP: UPLOAD FILE ====')
-                cy.get('input[type=file]', { force: true }).selectFile('cypress/files/Sample_AGREEMENT_RELATED_TRACTS_Upload_20221217.csv', {
+                cy.get('input[type=file]', { force: true }).selectFile('cypress/files/Sample_AGREEMENT_COMMENTS_Upload_20221217.csv', {
                     force: true
                 })
 
                 cy.checkFieldsMapping()
+
                 // cy.get("#agreement-outlined", { timeout: longTimeout }).click()
                 // cy.get("[id='Only create new']", { timeout: longTimeout }).click()
 
@@ -46,12 +48,11 @@ describe('Related Tracts Uploader Spec', () => {
                 cy.get("#materialTable", { timeout: longTimeout }).should("be.visible").get('.MuiTable-root')
                     .find("tr")
                     .then((row) => {
-                        const totalRows = row.length - 4
+                        const totalRows = row.length - 1
                         cy.log(totalRows)
                         cy.log(row.length)
                         //row.length will give you the row count
-
-                        cy.getDataFromGrid('Parcel Name', totalRows)
+                        cy.getDataFromGrid('Comment Text', totalRows)
 
                         cy.log('==== STEP: CLICK ON UPLOAD BUTTON ====')
                         cy.get("#continueButton", { timeout: longTimeout }).scrollIntoView().should('not.be.disabled').click()
@@ -59,14 +60,14 @@ describe('Related Tracts Uploader Spec', () => {
                         cy.log('==== STEP: VERIFY EXPORT STATUS ====')
                         cy.get('.MuiTypography-root.MuiTypography-caption', { timeout: extraTimeout }).contains("Export successfully completed", { timeout: longTimeout }).should('be.visible')
 
-                        cy.log('==== STEP: VERIFYING RELATED TRACTS FOR AGREEMENTS ====')
+                        cy.log('==== STEP: VERIFYING COMMENTS FOR AGREEMENTS ====')
                         agreementData.forEach(data => {
                             cy.visit('http://localhost:3000/land/agreements')
 
                             cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
 
                             const { agreementName, agreementNumber } = data
-                            cy.log(`==== STEP: VERIFYING RELATED TRACTS FOR AGREEMENT : ${agreementName} ====`)
+                            cy.log(`==== STEP: VERIFYING COMMENTS FOR AGREEMENT : ${agreementName} ====`)
                             cy.wait(5000)
 
                             cy.gridSearch(agreementName, 'getESSimpleSearch').then(response => {
@@ -81,26 +82,32 @@ describe('Related Tracts Uploader Spec', () => {
 
                                 cy.log('==== STEP: OPEN CYPRESS AGREEMENT DETAIL  ====')
                                 cy.getTableCell("Agreement", indexOfcypressAgreement).then(($agreementNameCell) => {
-                                    cy.interceptApiByIndex('getESSimpleSearch', 'shapeowners_flat')
+                                    cy.interceptApi('getCommentsByObjectId')
                                     cy.wrap($agreementNameCell).contains(`${agreementNumber} - ${agreementName}`).scrollIntoView().click({ waitForAnimations: false })
-                                    cy.get("#legalDescriptionTab", { timeout: longTimeout }).should('be.visible').click()
 
-                                    cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(result => {
-                                        const filesNames =
-                                            result.response?.body?.data?.getESSimpleSearch.hits.map(
-                                                (hit) => hit.name
+                                    cy.wait(10000)
+                                    cy.get("#metaDataButton", { timeout: longTimeout }).should('be.visible').click()
+
+                                    cy.verifyApiResponse('@getCommentsByObjectIdApi', { responseTimeout: longTimeout }).then(result => {
+                                        const apiComments =
+                                            result.response?.body?.data?.commentsByObjectId.map(
+                                                (hit) => hit.comment
                                             )
-                                        cy.log(JSON.stringify(filesNames))
+                                        cy.log(JSON.stringify(apiComments))
 
                                         cy.get('@gridData').then(gridData => {
                                             console.log("agreement final: ", agreementName)
                                             console.log("agreement number final: ", agreementNumber)
                                             console.log("gridData final: ", gridData)
 
-                                            const tractNames = gridData.filter(td => td.agreementNumber === agreementNumber)?.map((tract) => tract.parcelName)
+                                            const comments = gridData.filter(td => td.agreementNumber === agreementNumber)?.map((comment) => comment.commentText)
 
-                                            console.log("tractNames final: ", tractNames)
-                                            expect(filesNames).to.deep.eq(tractNames)
+                                            console.log("comments final: ", comments)
+
+                                            comments.forEach(comment => {
+                                                expect(apiComments).to.include(comment)
+                                            })
+
                                         })
 
 
