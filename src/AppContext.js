@@ -282,7 +282,7 @@ const AppProvider = (props) => {
   );
 };
 
-const apolloClientEndpointDev = "http://192.168.29.166:7071/api/m1graph";
+const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
 const isDev = process.env.NODE_ENV === "development";
 
 const setApolloHeaders = (config, authToken, idToken) => {
