@@ -5,7 +5,7 @@ import { wellsKeys } from "utils/data";
 import { tenantsCredentials } from "components/Login/AADAuthConfig";
 import { addTrailingZeros } from "components/Shared/functions";
 
-const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
+const apolloClientEndpointDev = "http://192.168.29.166:7071/api/m1graph";
 const isDev = process.env.REACT_APP_NODE_ENV === "development";
 
 export const copy = (data) => {
