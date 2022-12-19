@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../../Navigation/NavigationContext";
 import { Button, Grid } from "@material-ui/core";
-import { CSVReader, /* CSVDownloader */ } from "react-papaparse";
-import CSVDownloader from 'react-csv-downloader';
+import { CSVReader /* CSVDownloader */ } from "react-papaparse";
+import CSVDownloader from "react-csv-downloader";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -15,6 +15,7 @@ import Paper from "@material-ui/core/Paper";
 import { useDispatch } from "react-redux";
 import Select from "@material-ui/core/Select";
 import { showErrorMessage } from "../../../actions";
+import M1neral_headers from "../jobHeaders";
 
 const useStyles = makeStyles(() => ({
   table: {
@@ -29,78 +30,52 @@ const useStyles = makeStyles(() => ({
       padding: "50px 0 30px 0 !important",
       borderRadius: "0 !important",
       backgroundColor: disabled ? "#f2f2f2" : "transparent",
-      cursor: disabled ? "not-allowed" : "default"
+      cursor: disabled ? "not-allowed" : "default",
     },
   }),
   linkStyle: {
     fontSize: "15px",
-    cursor: 'pointer',
+    cursor: "pointer",
     "&:hover": {
       textDecorationLine: "underline",
     },
-    color: "rgba(23, 170, 221, 1)"
+    color: "rgba(23, 170, 221, 1)",
   },
   lightblueBtn: ({ disabled }) => ({
     textTransform: "capitalize !important",
     backgroundColor: disabled ? "gray" : "rgba(23, 170, 221, 1)",
-    color: "#fff !important"
-  })
+    color: "#fff !important",
+  }),
 }));
 
-function createData(
-  firstName,
-  lastName,
-  address,
-  city,
-  state,
-  zip,
-  email,
-  phone
-) {
+function createData(firstName, lastName, address, city, state, zip, email, phone) {
   return { firstName, lastName, address, city, state, zip, email, phone };
 }
 
 const rows = [
-  createData(
-    "John",
-    "Doe",
-    "708 Main Street",
-    "Houston",
-    "TX",
-    "77002",
-    "john_doe@domain.com",
-    "123-456-7890"
-  ),
-  createData(
-    "John",
-    "Doe",
-    "708 Main Street",
-    "Houston",
-    "TX",
-    "77002",
-    "john_doe@domain.com",
-    "123-456-7890"
-  ),
-  createData(
-    "John",
-    "Doe",
-    "708 Main Street",
-    "Houston",
-    "TX",
-    "77002",
-    "john_doe@domain.com",
-    "123-456-7890"
-  ),
-  createData(
-    "John",
-    "Doe",
-    "708 Main Street",
-    "Houston",
-    "TX",
-    "77002",
-    "john_doe@domain.com",
-    "123-456-7890"
-  ),
+  createData("John", "Doe", "708 Main Street", "Houston", "TX", "77002", "john_doe@domain.com", "123-456-7890"),
+  createData("John", "Doe", "708 Main Street", "Houston", "TX", "77002", "john_doe@domain.com", "123-456-7890"),
+  createData("John", "Doe", "708 Main Street", "Houston", "TX", "77002", "john_doe@domain.com", "123-456-7890"),
+  createData("John", "Doe", "708 Main Street", "Houston", "TX", "77002", "john_doe@domain.com", "123-456-7890"),
+];
+
+const rowsUpdated = [
+  "0315.001.01",
+  "",
+  "8/1/2022",
+  "GAS",
+  "0.053711",
+  "RO",
+  "4.84",
+  "79.16",
+  "383.51",
+  "0.43",
+  "0.43",
+  "-0.15",
+  "SEVERANCE",
+  "0",
+  "",
+  "1.91",
 ];
 
 const main_div = {
@@ -189,7 +164,7 @@ export default function CSVFileReader(props) {
   const [stateNav] = useContext(NavigationContext);
   const classes = useStyles({ disabled: props.disabled });
   let unmounted = useRef(false);
-  const csvColumns = [Object.fromEntries(stateApp.m1neralHeaders.map((col) => [col.label, ""]))]
+  const csvColumns = [Object.fromEntries(stateApp.m1neralHeaders.map((col) => [col.label, ""]))];
 
   useEffect(() => {
     return () => {
@@ -200,26 +175,32 @@ export default function CSVFileReader(props) {
   let handleOnDrop = (data) => {
     if (!unmounted.current) {
       if (data && data.length <= 10001) {
-        stateNav.bulkUploadFromMap && stateNav.bulkUploadParcel && data.forEach((data) => {
-          Object.assign(data.data, {
-            ...(stateNav.bulkUploadParcel?.id) && { 'Parcel Id': stateNav.bulkUploadParcel?.id },
-            ...(stateNav.bulkUploadParcel?.shapeLabel) && { 'Parcel Name': stateNav.bulkUploadParcel?.shapeLabel }
-          })
-        })
-        stateNav.bulkUploadFromMap && stateNav.bulkUploadShape && data.forEach((data) => {
-          Object.assign(data.data, {
-            ...(stateNav.bulkUploadShape?.id) && { 'Shape Id': stateNav.bulkUploadShape?.id },
-            ...(stateNav.bulkUploadShape?.shapeLabel) && { 'Shape Name': stateNav.bulkUploadShape?.shapeLabel },
-            ...(stateNav.bulkUploadShape?.shapeType) && { 'Shape Type': stateNav.bulkUploadShape?.shapeType }
-          })
-        })
-
-        if(["TRACTS", 'UNITS'].includes(stateApp.jobType) === "TRACTS") {
+        stateNav.bulkUploadFromMap &&
+          stateNav.bulkUploadParcel &&
           data.forEach((data) => {
             Object.assign(data.data, {
-              ...(data.data["PLSS Township"] || data.data["PLSS Range"]) && { "PLSS Township/Range": [data.data["PLSS Township"], data.data["PLSS Range"]].join(" ") }
-            })
-          })
+              ...(stateNav.bulkUploadParcel?.id && { "Parcel Id": stateNav.bulkUploadParcel?.id }),
+              ...(stateNav.bulkUploadParcel?.shapeLabel && { "Parcel Name": stateNav.bulkUploadParcel?.shapeLabel }),
+            });
+          });
+        stateNav.bulkUploadFromMap &&
+          stateNav.bulkUploadShape &&
+          data.forEach((data) => {
+            Object.assign(data.data, {
+              ...(stateNav.bulkUploadShape?.id && { "Shape Id": stateNav.bulkUploadShape?.id }),
+              ...(stateNav.bulkUploadShape?.shapeLabel && { "Shape Name": stateNav.bulkUploadShape?.shapeLabel }),
+              ...(stateNav.bulkUploadShape?.shapeType && { "Shape Type": stateNav.bulkUploadShape?.shapeType }),
+            });
+          });
+
+        if (["TRACTS", "UNITS"].includes(stateApp.jobType) === "TRACTS") {
+          data.forEach((data) => {
+            Object.assign(data.data, {
+              ...((data.data["PLSS Township"] || data.data["PLSS Range"]) && {
+                "PLSS Township/Range": [data.data["PLSS Township"], data.data["PLSS Range"]].join(" "),
+              }),
+            });
+          });
         }
 
         mapped_headers_from_CSV(data);
@@ -240,11 +221,11 @@ export default function CSVFileReader(props) {
 
   const mapped_headers_from_CSV = (data) => {
     if (data.length > 0) {
-      var uniqueKeys = Object.keys(data[0].data);
-      // uniqueKeys = uniqueKeys.sort();
-      let matchedKeys = [...stateApp.m1neralHeaders]
+      let uniqueKeys = Object.keys(data[0].data);
+      let matchedKeys = [...stateApp.m1neralHeaders];
+      uniqueKeys = [...matchedKeys.filter(mk => !uniqueKeys.includes(mk.label)).map(mk => mk.label), ...uniqueKeys];
       for (let index in uniqueKeys) {
-        const matchedKey = matchedKeys.find(el => el?.label === uniqueKeys[index])
+        const matchedKey = matchedKeys.find((el) => el?.label === uniqueKeys[index]);
 
         uniqueKeys[index] = {
           mapped_key: uniqueKeys[index],
@@ -274,13 +255,13 @@ export default function CSVFileReader(props) {
 
   return (
     <div style={main_div}>
-      {props.selectedJob.name === 'Comment Uploader' && (
+      {props.selectedJob.name === "Comment Uploader" && (
         <>
           <label>Begin by selecting the entity in which the comment should be associated</label>
           <div>
             <Select
-              variant='outlined'
-              style={{ width: '400px', marginTop: '10px', marginBottom: '10px', height: 40 }}
+              variant="outlined"
+              style={{ width: "400px", marginTop: "10px", marginBottom: "10px", height: 40 }}
               native
               labelId="activity-type-label"
               id="activity-type-input"
@@ -288,8 +269,8 @@ export default function CSVFileReader(props) {
               onChange={(e) => {
                 props.setSelectedJob({
                   ...props.selectedJob,
-                  type: e.target.value
-                })
+                  type: e.target.value,
+                });
               }}
             >
               <option value={"AGREEMENT_COMMENTS"}>Agreement</option>
@@ -299,24 +280,22 @@ export default function CSVFileReader(props) {
           </div>
         </>
       )}
-      <div style={{ ...big_text, ...padding_div_top }}>
-        Select a File to Import (Max 10,000 rows)
-      </div>
-      <div style={{ ...text_grey, ...padding_div }}>
-        Don't forget to upload CSV with first row containing the column headers
-      </div>
+      <div style={{ ...big_text, ...padding_div_top }}>Select a File to Import (Max 10,000 rows)</div>
+      <div style={{ ...text_grey, ...padding_div }}>Don't forget to upload CSV with first row containing the column headers</div>
       <Grid container spacing={1}>
         <Grid item xs={12}>
           <div className={classes.csvReader}>
             <CSVReader
-              onDrop={(data) => handleOnDrop(data.filter(el => el.errors.length === 0))}
+              onDrop={(data) => handleOnDrop(data.filter((el) => el.errors.length === 0))}
               onError={handleOnError}
               addRemoveButton
               removeButtonColor="#659cef"
               config={{
                 header: true,
-                transform: (value, header) => { return value === "" ? undefined : value },
-                dynamicTyping: true
+                transform: (value, header) => {
+                  return value === "" ? undefined : value;
+                },
+                dynamicTyping: true,
               }}
               onRemoveFile={handleOnRemoveFile}
               style={upload_box}
@@ -332,19 +311,10 @@ export default function CSVFileReader(props) {
       </Grid>
 
       <div style={sample_table_area}>
-        <div style={{ ...big_text, ...padding_div_top }}>
-          Preferred File Setup
-        </div>
+        <div style={{ ...big_text, ...padding_div_top }}>Preferred File Setup</div>
         <div style={mainContent}>
-          <div style={big_grey_text}>
-            A CSV with these columns will yield good results
-          </div>
-          <CSVDownloader
-            datas={csvColumns}
-            filename={`Sample_${stateApp.jobType}_Upload`}
-            type='link'
-            className={classes.linkStyle}
-          >
+          <div style={big_grey_text}>A CSV with these columns will yield good results</div>
+          <CSVDownloader datas={csvColumns} filename={`Sample_${stateApp.jobType}_Upload`} type="link" className={classes.linkStyle}>
             Click this link to download sample CSV template
           </CSVDownloader>
         </div>
@@ -352,38 +322,59 @@ export default function CSVFileReader(props) {
         <div style={{ ...padding_div_top, ...padding_div_bottom }}>
           <TableContainer component={Paper} style={style_papaer}>
             <Table className={classes.table} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell align="left">First Name</StyledTableCell>
-                  <StyledTableCell align="left">Last Name</StyledTableCell>
-                  <StyledTableCell align="left">Street Address</StyledTableCell>
-                  <StyledTableCell align="left">City</StyledTableCell>
-                  <StyledTableCell align="left">State</StyledTableCell>
-                  <StyledTableCell align="left">Zip</StyledTableCell>
-                  <StyledTableCell align="left">Email</StyledTableCell>
-                  <StyledTableCell align="left">Phone Number</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody style={table_body}>
-                {rows.map((row, i) => (
-                  <TableRow key={i + row.first_name}>
-                    <StyledTableCell align="left">
-                      {row.firstName}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {row.lastName}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">
-                      {row.address}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">{row.city}</StyledTableCell>
-                    <StyledTableCell align="left">{row.state}</StyledTableCell>
-                    <StyledTableCell align="left">{row.zip}</StyledTableCell>
-                    <StyledTableCell align="left">{row.email}</StyledTableCell>
-                    <StyledTableCell align="left">{row.phone}</StyledTableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+              {props.importType === "" ? (
+                <>
+                  <TableHead>
+                    <TableRow>
+                      <StyledTableCell align="left">First Name</StyledTableCell>
+                      <StyledTableCell align="left">Last Name</StyledTableCell>
+                      <StyledTableCell align="left">Street Address</StyledTableCell>
+                      <StyledTableCell align="left">City</StyledTableCell>
+                      <StyledTableCell align="left">State</StyledTableCell>
+                      <StyledTableCell align="left">Zip</StyledTableCell>
+                      <StyledTableCell align="left">Email</StyledTableCell>
+                      <StyledTableCell align="left">Phone Number</StyledTableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody style={table_body}>
+                    {rows.map((row, i) => (
+                      <TableRow key={i + row.first_name}>
+                        <StyledTableCell align="left">{row.firstName}</StyledTableCell>
+                        <StyledTableCell align="left">{row.lastName}</StyledTableCell>
+                        <StyledTableCell align="left">{row.address}</StyledTableCell>
+                        <StyledTableCell align="left">{row.city}</StyledTableCell>
+                        <StyledTableCell align="left">{row.state}</StyledTableCell>
+                        <StyledTableCell align="left">{row.zip}</StyledTableCell>
+                        <StyledTableCell align="left">{row.email}</StyledTableCell>
+                        <StyledTableCell align="left">{row.phone}</StyledTableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </>
+              ) : (
+                <>
+                  <TableHead>
+                    <TableRow>
+                      {M1neral_headers[props.selectedJob.type]
+                        .filter((jobKey) => jobKey.showAsSample !== false)
+                        .map((jobKeys, index) => (
+                          <React.Fragment>
+                            <StyledTableCell align="left">{jobKeys.label}</StyledTableCell>
+                          </React.Fragment>
+                        ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody style={table_body}>
+                    <TableRow>
+                      {rowsUpdated.map((row, i) => (
+                        <StyledTableCell key={i + row} align="left">
+                          {row}
+                        </StyledTableCell>
+                      ))}
+                    </TableRow>
+                  </TableBody>
+                </>
+              )}
             </Table>
           </TableContainer>
         </div>
