@@ -89,17 +89,17 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null, alias = 
 })
 
 Cypress.Commands.add('interceptApiByIndex', (operationName, esIndex) => {
-    console.log("interceptApiByIndex")
-    console.log("operationName : ", operationName)
-    console.log("esIndex : ", esIndex)
+    // console.log("interceptApiByIndex")
+    // console.log("operationName : ", operationName)
+    // console.log("esIndex : ", esIndex)
 
     cy.intercept('POST', baseUrls[workSpace], req => {
-        console.log("req.body : ", req.body)
+        // console.log("req.body : ", req.body)
         if (req.body.operationName === operationName && req.body.variables.index === esIndex) {
             req.alias = `${operationName}ApiByIndex`;
 
-            console.log(" req.alias : ", req.alias)
-            console.log(`${operationName}ApiByIndex`)
+            // console.log(" req.alias : ", req.alias)
+            // console.log(`${operationName}ApiByIndex`)
         }
     });
 })

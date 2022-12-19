@@ -11,7 +11,7 @@ export const baseUrls = {
 export const basic_timeouts = {
     shorTimeout: 5000,
     longTimeout: 100000,
-    extraTimeout: 500000
+    extraTimeout: 900000
 }
 
 export const documentObj = {
@@ -78,3 +78,4 @@ export const agreementObj = {
 
     file: { address: "cypress/files/sample.pdf", fileId: "[id='sample.pdf']" }
 }
+

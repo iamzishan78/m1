@@ -2,7 +2,7 @@
 
 import { basic_timeouts } from "../../../cypressUtils/data"
 
-describe('test 2  Spec', () => {
+describe('Related Tracts Uploader Spec', () => {
     it('passes', () => {
         // Constants 
         const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
@@ -18,6 +18,9 @@ describe('test 2  Spec', () => {
 
         cy.task('getGlobalData').then((globalData) => {
             const { agreementData } = globalData
+            // const agreementData = [{ agreementName: 'JOANIE MILLER GREEN', agreementNumber: '100-100-10001' },
+            // { agreementName: 'JIMMY NELSON WHITE', agreementNumber: '100-100-10002' }
+            // ]
 
             console.log("Agreement Data : ", agreementData)
 
@@ -52,18 +55,16 @@ describe('test 2  Spec', () => {
                 // cy.get("#agreement-outlined", { timeout: longTimeout }).click()
                 // cy.get("[id='Only create new']", { timeout: longTimeout }).click()
 
-
                 cy.log('==== STEP: CLICK ON CONTINUE BUTTON ====')
                 cy.get("#continueButton", { timeout: longTimeout }).scrollIntoView().should('not.be.disabled').click()
 
                 cy.wait(5000)
 
-
                 cy.log('==== STEP: EXTRACT TRACT DATA FROM THE TABLE  ====')
                 cy.get("#materialTable", { timeout: longTimeout }).should("be.visible").get('.MuiTable-root')
                     .find("tr")
                     .then((row) => {
-                        const totalRows = row.length - 5
+                        const totalRows = row.length - 4
                         cy.log(totalRows)
                         cy.log(row.length)
                         //row.length will give you the row count
@@ -72,10 +73,10 @@ describe('test 2  Spec', () => {
                         for (let i = 1; i < totalRows; i++) {
                             // eslint-disable-next-line no-loop-func
                             cy.getTableCell('Agreement Number', i).then(($tableCell) => {
-                                cy.wrap($tableCell).scrollIntoView().then(function ($cellText) {
+                                cy.wrap($tableCell).scrollIntoView().then(function ($numberCellText) {
                                     cy.getTableCell('Parcel Name', i).then(($tableCell) => {
-                                        cy.wrap($tableCell).scrollIntoView().then(function ($numberCellText) {
-                                            tractData.push({ agreementName: $cellText.text(), agreementNumber: $numberCellText.text() })
+                                        cy.wrap($tableCell).scrollIntoView().then(function ($nameCellText) {
+                                            tractData.push({ agreementNumber: $numberCellText.text(), parcelName: $nameCellText.text(), })
                                             cy.wrap(tractData).as('tractData');
                                         })
 
@@ -89,17 +90,25 @@ describe('test 2  Spec', () => {
                         cy.get("#continueButton", { timeout: longTimeout }).scrollIntoView().should('not.be.disabled').click()
 
                         cy.log('==== STEP: VERIFY EXPORT STATUS ====')
-                        cy.get('.MuiTypography-root.MuiTypography-caption', { timeout: extraTimeout }).contains("Completed with errors", { timeout: longTimeout }).should('be.visible')
+                        cy.get('.MuiTypography-root.MuiTypography-caption', { timeout: extraTimeout }).contains("Export successfully completed", { timeout: longTimeout }).should('be.visible')
 
+                        cy.log('==== STEP: VERIFYING RELATED TRACTS FOR AGREEMENTS ====')
                         agreementData.forEach(data => {
+                            cy.visit('http://localhost:3000/land/agreements')
+
+                            cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
+
                             const { agreementName, agreementNumber } = data
+                            cy.log(`==== STEP: VERIFYING RELATED TRACTS FOR AGREEMENT : ${agreementName} ====`)
+                            cy.wait(5000)
+
                             cy.gridSearch(agreementName, 'getESSimpleSearch').then(response => {
                                 const hits = response.response.body.data.getESSimpleSearch.hits
 
                                 const cypressAgreement = hits.find(hit => hit.agreementName === agreementName)
 
                                 if (!cypressAgreement)
-                                    throw new Error('Agreement added by cypress not found');
+                                    throw new Error('Agreement added by cypress Uploader not found');
 
                                 const indexOfcypressAgreement = hits.findIndex(hit => hit._id === cypressAgreement._id) + 1
 
@@ -109,8 +118,25 @@ describe('test 2  Spec', () => {
                                     cy.wrap($agreementNameCell).contains(`${agreementNumber} - ${agreementName}`).scrollIntoView().click({ waitForAnimations: false })
                                     cy.get("#legalDescriptionTab", { timeout: longTimeout }).should('be.visible').click()
 
-                                    cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(response => {
-                                        const hits = response.response.body.data.getESSimpleSearch.hits
+                                    cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(result => {
+                                        const filesNames =
+                                            result.response?.body?.data?.getESSimpleSearch.hits.map(
+                                                (hit) => hit.name
+                                            )
+                                        cy.log(JSON.stringify(filesNames))
+
+                                        cy.get('@tractData').then(tractData => {
+                                            console.log("agreement final: ", agreementName)
+                                            console.log("agreement number final: ", agreementNumber)
+                                            console.log("tractData final: ", tractData)
+
+                                            const tractNames = tractData.filter(td => td.agreementNumber === agreementNumber)?.map((tract) => tract.parcelName)
+
+                                            console.log("tractNames final: ", tractNames)
+                                            expect(filesNames).to.deep.eq(tractNames)
+                                        })
+
+
                                     })
                                 })
                             })
