@@ -2,7 +2,7 @@
 
 import { basic_timeouts } from "../../cypressUtils/data"
 
-describe('Related Wells Uploader Spec', () => {
+describe('Agreement Provision Uploader Spec', () => {
     it('passes', () => {
         // Constants 
         const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
@@ -24,14 +24,18 @@ describe('Related Wells Uploader Spec', () => {
 
             cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {
                 cy.log('==== STEP: OPEN UPLOADER ====')
-                cy.openAgreementUploader("Agreement Upload (Related Wells)")
+                cy.openAgreementUploader("Agreement Upload (Agreement Provisions)")
 
                 cy.log('==== STEP: UPLOAD FILE ====')
-                cy.get('input[type=file]', { force: true }).selectFile('cypress/files/Sample_AGREEMENT_RELATED_WELLS_Upload _20221217.csv', {
+                cy.get('input[type=file]', { force: true }).selectFile('cypress/files/Sample_AGREEMENT_PROVISIONS_Upload_20221217.csv', {
                     force: true
                 })
 
                 cy.checkFieldsMapping()
+
+                cy.log('==== STEP: SELECT ONLY CREATE ONE OPTION FROM THE FIELD ====')
+                cy.get("#agreement-outlined", { timeout: longTimeout }).click()
+                cy.get("[id='Only create new']", { timeout: longTimeout }).click()
 
                 cy.log('==== STEP: CLICK ON CONTINUE BUTTON ====')
                 cy.get("#continueButton", { timeout: longTimeout }).scrollIntoView().should('not.be.disabled').click()
@@ -47,7 +51,7 @@ describe('Related Wells Uploader Spec', () => {
                         cy.log(row.length)
                         //row.length will give you the row count
 
-                        cy.getDataFromGrid('API Number (10 digit)', totalRows)
+                        cy.getDataFromGrid('Provision Type', totalRows)
 
                         cy.log('==== STEP: CLICK ON UPLOAD BUTTON ====')
                         cy.get("#continueButton", { timeout: longTimeout }).scrollIntoView().should('not.be.disabled').click()
@@ -77,48 +81,39 @@ describe('Related Wells Uploader Spec', () => {
 
                                 cy.log('==== STEP: OPEN CYPRESS AGREEMENT DETAIL  ====')
                                 cy.getTableCell("Agreement", indexOfcypressAgreement).then(($agreementNameCell) => {
-                                    cy.interceptApi('getESPaginatedList')
+                                    cy.interceptApi('getAgreementProvisions')
                                     cy.wrap($agreementNameCell).contains(`${agreementNumber} - ${agreementName}`).scrollIntoView().click({ waitForAnimations: false })
 
-                                    cy.verifyApiResponse('@getESPaginatedListApi', { responseTimeout: longTimeout }).then(result => {
-                                        const wellApiNumbers =
-                                            result.response?.body?.data?.getESPaginatedList.hits.map(
-                                                (hit) => hit.apiNumber
+                                    cy.verifyApiResponse('@getAgreementProvisionsApi', { responseTimeout: longTimeout }).then(result => {
+                                        const provisionTypes =
+                                            result.response?.body?.data?.getAgreementProvisions.map(
+                                                (hit) => hit.type
                                             )
-                                        cy.log(JSON.stringify(wellApiNumbers))
+                                        cy.log(JSON.stringify(provisionTypes))
 
                                         cy.get('@gridData').then(gridData => {
                                             console.log("agreement final: ", agreementName)
                                             console.log("agreement number final: ", agreementNumber)
-                                            console.log("wellApiNumbers: ", wellApiNumbers)
+                                            console.log("provisionTypes: ", provisionTypes)
                                             console.log("gridData final: ", gridData)
 
-                                            const wellApiNumberByUploader = gridData.filter(td => td.agreementNumber === agreementNumber)?.map((well) => well.apiNumber10Digit)
+                                            const provisionTypeByUploader = gridData.filter(td => td.agreementNumber === agreementNumber)?.map((provision) => provision.provisionType)
 
-                                            console.log("wellApiNumberByUploader final: ", wellApiNumberByUploader)
+                                            console.log("provisionTypeByUploader final: ", provisionTypeByUploader)
 
-                                            if (wellApiNumberByUploader.length > 0)
-                                                wellApiNumberByUploader.forEach(apiNumber => {
-                                                    expect(wellApiNumbers).to.include(apiNumber)
+                                            if (provisionTypeByUploader.length > 0)
+                                                provisionTypeByUploader.forEach(provisionType => {
+                                                    expect(provisionTypes).to.include(provisionType)
                                                 })
 
                                         })
+
 
 
                                     })
                                 })
                             })
                         })
-
-                        agreementData.forEach(data => {
-                            cy.log(`==== STEP: DELETE AGREEMENT : ${data.name} FROM THE GRID ====`)
-                            cy.visit('http://localhost:3000/land/agreements')
-
-                            cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
-                            cy.deleteAndVerifyAgreement(data.name, data.number)
-
-                            cy.wait(5000)
-                        });
                     })
 
             })

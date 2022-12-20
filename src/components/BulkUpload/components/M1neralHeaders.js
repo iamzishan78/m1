@@ -364,7 +364,7 @@ export default function M1neralHeaders(props) {
                     setStateApp((state) => ({ ...state, selectedShapeLayerOption: e.target.value }));
                   }}
                 >
-                  {shapeTransferOptions.map((option) => <MenuItem id={option.label} style={{ display: stateApp.selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option.key} >{option.label}</MenuItem>)}
+                  {shapeTransferOptions.map((option) => <MenuItem id={`${option.label}`} style={{ display: stateApp.selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option.key} >{option.label}</MenuItem>)}
                 </Select>
               </div>
 
@@ -389,7 +389,7 @@ export default function M1neralHeaders(props) {
                   fullWidth
                   onChange={(e) => { setStateApp((state) => ({ ...state, selectedShapeLayerOption: e.target.value })); }}
                 >
-                  {shapeTransferOptions.map((option) => <MenuItem style={{ display: stateApp.selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option.key} >{option.label}</MenuItem>)}
+                  {shapeTransferOptions.map((option) => <MenuItem id={`${option.label}`} style={{ display: stateApp.selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option.key} >{option.label}</MenuItem>)}
                 </Select>
               </div>
 
