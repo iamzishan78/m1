@@ -63,43 +63,42 @@ Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId = null) 
 
 /*This command is to intercept graphql api by operation name and if searchString is passed it will only
 intercept if api payload has that string in search */
-Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
+Cypress.Commands.add('interceptApi', (operationName, payloadKey = null, alias = null) => {
 
     cy.intercept('POST', baseUrls[workSpace], req => {
-
         if (req.body.operationName === operationName) {
             if (payloadKey) {
                 const { variables } = req.body
                 if (payloadKey.searchString && isSearchStringMatched(payloadKey.searchString, variables))
-                    req.alias = `${operationName}WithSearchStringApi`;
+                    req.alias = alias || `${operationName}WithSearchStringApi`;
                 else if (payloadKey?.sortOrder && variables?.sort?.order === payloadKey.sortOrder) {
-                    req.alias = `${operationName}WithSortOrderApi`;
+                    req.alias = alias || `${operationName}WithSortOrderApi`;
                 }
                 else if (payloadKey?.filter && variables?.filters.length &&
                     deepEqualObjects(variables.filters[0], payloadKey.filter)) {
-                    req.alias = `${operationName}WithFilterApi`;
+                    req.alias = alias || `${operationName}WithFilterApi`;
                 }
             }
             else {
                 // req.alias will use as api title 
-                req.alias = `${operationName}Api`;
+                req.alias = alias || `${operationName}Api`;
             }
         }
     });
 })
 
-Cypress.Commands.add('interceptApiByIndex', (operationName, esIndex) => {
+Cypress.Commands.add('interceptApiByIndex', (operationName, esIndex, alias = null) => {
     console.log("interceptApiByIndex")
     console.log("operationName : ", operationName)
     console.log("esIndex : ", esIndex)
 
     cy.intercept('POST', baseUrls[workSpace], req => {
         console.log("req.body : ", req.body)
-        if (req.body.operationName === operationName && req.body.variables.index === esIndex) {
-            req.alias = `${operationName}ApiByIndex`;
+        if (req.body.operationName === operationName && (req.body.variables.index === esIndex || req.body.variables.esIndex === esIndex)) {
+            req.alias = alias || `${operationName}ApiByIndex`;
 
             console.log(" req.alias : ", req.alias)
-            console.log(`${operationName}ApiByIndex`)
+            console.log(alias || `${operationName}ApiByIndex`)
         }
     });
 })
@@ -207,8 +206,8 @@ Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
     cy.contains('th', columnName, { timeout: longTimeout })
         .invoke('index')
         .then(colIndex => {
-            cy.get('tr')
-                .eq(rowIndex)
+            cy.get('tr', { timeout: longTimeout })
+                .eq(rowIndex, { timeout: longTimeout })
                 .within((row) => {
                     cy.get('td', { timeout: longTimeout }).eq(colIndex).as('cell')
                 })
