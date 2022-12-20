@@ -360,7 +360,7 @@ Cypress.Commands.add('createShapeLayer', (shapeLayerItemId) => {
 
 Cypress.Commands.add('addTract', (tractName) => {
     cy.log(`==== STEP: CLICK ON ADD TRACT BUTTON ====`)
-    cy.get(".MuiButtonBase-root").contains('+ ADD Tract To AGREEMENT').click({ force: true })
+    cy.get("#addTractToAgreementBtn").click({ force: true })
 
     cy.log(`==== STEP: CLICK ON EXISTING TRACT TAB ====`)
     cy.get("#existingTractTab").click()
