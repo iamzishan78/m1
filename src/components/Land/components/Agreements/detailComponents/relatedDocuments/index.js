@@ -81,7 +81,7 @@ const RelatedDocumets = (props) => {
               <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
-          onClick={(e) => {}}
+          onClick={(e) => { }}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>
@@ -102,6 +102,7 @@ const RelatedDocumets = (props) => {
                   setDrawer={props.setDrawer}
                   setCounter={setCounter}
                   targetLabel="Shape"
+                  portal={'#agreementDetailsDrawer'}
                 />
               </Grid>
             )}
