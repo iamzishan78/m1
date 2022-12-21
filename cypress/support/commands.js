@@ -53,7 +53,7 @@ Cypress.Commands.add("checkAndLogin", () => {
 
 // This command is to type  in autocomplete search bar and then select first matched option
 Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId = null) => {
-    cy.get(searchId, { timeout: longTimeout }).type(stringToType).wait(3000)
+    cy.get(searchId, { timeout: longTimeout }).clear().type(stringToType).wait(3000)
 
     if (optionId)
         cy.get(`[id="${optionId}"]`, { timeout: longTimeout }).should('be.visible')
@@ -66,7 +66,6 @@ intercept if api payload has that string in search */
 Cypress.Commands.add('interceptApi', (operationName, payloadKey = null, alias = null) => {
 
     cy.intercept('POST', baseUrls[workSpace], req => {
-
         if (req.body.operationName === operationName) {
             if (payloadKey) {
                 const { variables } = req.body
@@ -207,8 +206,8 @@ Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
     cy.contains('th', columnName, { timeout: longTimeout })
         .invoke('index')
         .then(colIndex => {
-            cy.get('tr')
-                .eq(rowIndex)
+            cy.get('tr', { timeout: longTimeout })
+                .eq(rowIndex, { timeout: longTimeout })
                 .within((row) => {
                     cy.get('td', { timeout: longTimeout }).eq(colIndex).as('cell')
                 })
@@ -360,7 +359,7 @@ Cypress.Commands.add('createShapeLayer', (shapeLayerItemId) => {
 
 Cypress.Commands.add('addTract', (tractName) => {
     cy.log(`==== STEP: CLICK ON ADD TRACT BUTTON ====`)
-    cy.get(".MuiButtonBase-root").contains('+ ADD Tract To AGREEMENT').click({ force: true })
+    cy.get("#addTractToAgreementBtn").click({ force: true })
 
     cy.log(`==== STEP: CLICK ON EXISTING TRACT TAB ====`)
     cy.get("#existingTractTab").click()

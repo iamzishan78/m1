@@ -100,7 +100,7 @@ const StyledTableCell = withStyles((theme) => ({
   },
 }))(TableCell);
 
-export default function M1neralHeaders(props) {
+export default function M1neralHeaders() {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
 
@@ -162,7 +162,6 @@ export default function M1neralHeaders(props) {
   const changeDataToSendState = async () => {
     let headers = stateApp.mappedHeadersFromCSV;
     let arr_data = stateApp.csvDataList;
-    // let filtered_data_to_send = arr_data.map((obj) => {
     let filtered_data_to_send = [];
     for await (const obj of arr_data) {
       let return_obj = {};
@@ -402,7 +401,7 @@ export default function M1neralHeaders(props) {
             <div>
               * Comment will be tied to agreement when match on Agreement System ID or Agreement Number is made
             </div>
-          ) : (
+          ) : !['CHECKDETAILS'].includes(stateApp.jobType) && (
             <div style={{ ...text_grey }}>
               *First Name or Last Name is required to be mapped <br /> before
               uploading contacts.
