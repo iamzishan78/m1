@@ -27,43 +27,43 @@ const useStyles = makeStyles((theme) => ({
 const wellsFilters = [
   {
     label: "API Number",
-    filterKey: "",
-    searchFields: [],
+    filterKey: "wells.apiNumber.keyword",
+    searchFields: ["wells.apiNumber"],
   },
   {
     label: "Well Name",
-    filterKey: "",
-    searchFields: [],
+    filterKey: "wells.wellName.keyword",
+    searchFields: ["wells.wellName"],
   },
   {
     label: "Lease/Unit Number",
-    filterKey: "",
-    searchFields: [],
+    filterKey: "wells.leaseId.keyword",
+    searchFields: ["wells.leaseId"],
   },
   {
     label: "Lease/Unit Name",
-    filterKey: "",
-    searchFields: [],
+    filterKey: "wells.lease.keyword",
+    searchFields: ["wells.lease"],
   },
   {
     label: "Operator",
-    filterKey: "",
-    searchFields: [],
+    filterKey: "wells.operator.keyword",
+    searchFields: ["wells.operator"],
   },
   {
     label: "Well Type",
-    filterKey: "",
-    searchFields: [],
+    filterKey: "wells.wellType.keyword",
+    searchFields: ["wells.wellType"],
   },
   {
     label: "Wellbore Profile",
-    filterKey: "",
-    searchFields: [],
+    filterKey: "wells.wellBoreProfile.keyword",
+    searchFields: ["wells.wellBoreProfile"],
   },
   {
     label: "Well Status",
-    filterKey: "",
-    searchFields: [],
+    filterKey: "wells.wellStatus.keyword",
+    searchFields: ["wells.wellStatus"],
   },
 ];
 
