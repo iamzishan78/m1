@@ -25,7 +25,7 @@ const AcerageSummaryHeadCells = [
     name: "agreementDate",
     label: "Agmt Date",
     esKey: "shape.shapeJson.properties.agreementDate.keyword",
-    options: { sort: true, filter: true, display: true },
+    options: { sort: true, filter: true, display: true, setCellProps: () => ({ style: { maxWidth: "150px" } }) },
     custom: {
       isDate: true,
     },
@@ -34,7 +34,7 @@ const AcerageSummaryHeadCells = [
     name: "effectiveDate",
     label: "Efftv Date",
     esKey: "shape.shapeJson.properties.effectiveDate.keyword",
-    options: { sort: true, filter: true, display: true },
+    options: { sort: true, filter: true, display: true, setCellProps: () => ({ style: { maxWidth: "150px" } }) },
     custom: {
       isDate: true,
     },
@@ -56,6 +56,7 @@ const AcerageSummaryHeadCells = [
     options: {
       sort: true,
       filter: true,
+      setCellProps: () => ({ style: { maxWidth: "150px" } }),
     },
     custom: {
       oRFilter: true,
@@ -81,6 +82,7 @@ const AcerageSummaryHeadCells = [
     options: {
       sort: true,
       filter: true,
+      setCellProps: () => ({ style: { maxWidth: "150px" } }),
     },
     custom: {
       oRFilter: true,
@@ -96,6 +98,7 @@ const AcerageSummaryHeadCells = [
     options: {
       sort: true,
       filter: true,
+      setCellProps: () => ({ style: { maxWidth: "150px" } }),
     },
     custom: {
       oRFilter: true,
@@ -108,7 +111,7 @@ const AcerageSummaryHeadCells = [
       "parcel.shapeJson.properties.originalProperties.AbstractName.keyword",
       "parcel.shapeJson.properties.originalProperties.ShortName.keyword",
     ],
-    options: { sort: true, filter: true },
+    options: { sort: true, filter: true, setCellProps: () => ({ style: { maxWidth: "150px" } }) },
     custom: {
       oRFilter: true,
     },
