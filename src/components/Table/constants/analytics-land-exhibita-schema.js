@@ -47,17 +47,19 @@ const AcerageSummaryHeadCells = [
     options: { sort: true, filter: true },
   },
   {
-    name: "tractState", label: "State", esKey: [
-      'parcel.shapeJson.properties.originalProperties.State.keyword',
-      'parcel.shapeJson.properties.originalProperties.StateAbbreviation.keyword'
+    name: "tractState",
+    label: "State",
+    esKey: [
+      "parcel.shapeJson.properties.originalProperties.State.keyword",
+      "parcel.shapeJson.properties.originalProperties.StateAbbreviation.keyword",
     ],
     options: {
       sort: true,
-      filter: true
+      filter: true,
     },
     custom: {
-      oRFilter: true
-    }
+      oRFilter: true,
+    },
   },
 
   {
@@ -73,43 +75,43 @@ const AcerageSummaryHeadCells = [
     name: "blockTownship",
     label: "Block/Twsp",
     esKey: [
-      'parcel.shapeJson.properties.originalProperties.Block.keyword',
-      'parcel.shapeJson.properties.originalProperties.Township.keyword'
+      "parcel.shapeJson.properties.originalProperties.Block.keyword",
+      "parcel.shapeJson.properties.originalProperties.Township.keyword",
     ],
     options: {
       sort: true,
       filter: true,
     },
     custom: {
-      oRFilter: true
-    }
+      oRFilter: true,
+    },
   },
   {
     name: "sectionRange",
     label: "Sec/Range",
     esKey: [
-      'parcel.shapeJson.properties.originalProperties.Section.keyword',
-      'parcel.shapeJson.properties.originalProperties.Range.keyword'
+      "parcel.shapeJson.properties.originalProperties.Section.keyword",
+      "parcel.shapeJson.properties.originalProperties.Range.keyword",
     ],
     options: {
       sort: true,
       filter: true,
     },
     custom: {
-      oRFilter: true
-    }
+      oRFilter: true,
+    },
   },
   {
     name: "abstractSection",
     label: "Abstract/Sec",
     esKey: [
-      'parcel.shapeJson.properties.originalProperties.AbstractName.keyword',
-      'parcel.shapeJson.properties.originalProperties.ShortName.keyword'
+      "parcel.shapeJson.properties.originalProperties.AbstractName.keyword",
+      "parcel.shapeJson.properties.originalProperties.ShortName.keyword",
     ],
     options: { sort: true, filter: true },
     custom: {
-      oRFilter: true
-    }
+      oRFilter: true,
+    },
   },
   {
     name: "legalDesctiption",
@@ -160,6 +162,30 @@ const AcerageSummaryHeadCells = [
     name: "acquisitionID",
     label: "Acquisition",
     esKey: "shape.shapeJson.properties.acquisitionID.keyword",
+    options: { sort: true, filter: true },
+  },
+  {
+    name: "recordedDate",
+    label: "Rec Date",
+    esKey: "shape.shapeJson.properties.recordedDate",
+    options: { sort: true, filter: true },
+  },
+  {
+    name: "recordedBook",
+    label: "Book",
+    esKey: "shape.shapeJson.properties.recordedBook",
+    options: { sort: true, filter: true },
+  },
+  {
+    name: "recordedPage",
+    label: "Page",
+    esKey: "shape.shapeJson.properties.recordedPage",
+    options: { sort: true, filter: true },
+  },
+  {
+    name: "recordedInstrumentNumber",
+    label: "Instrument #",
+    esKey: "shape.shapeJson.properties.recordedInstrumentNumber",
     options: { sort: true, filter: true },
   },
 ];
