@@ -14,7 +14,8 @@ import { useDispatch } from "react-redux";
 import StepConnector from "@material-ui/core/StepConnector";
 import Button from "@material-ui/core/Button";
 import CSVFileReader from "./CSVFileReader";
-import RevenueStatementInfoForm from "./RevenueStatementInfoForm";
+import RevenueStatementInfoForm from "./Fields/RevenueStatementInfoForm";
+import AgreementHeaderForm from "./Fields/AgreementHeaderForm";
 import M1neralHeaders from "./M1neralHeaders";
 import ReviewCSV from "./ReviewCSV";
 import UploadStepperComponent from "./UploadStepperComponent";
@@ -183,15 +184,11 @@ export default function CustomizedSteppers(props) {
   const history = useHistory();
   const previousRoute = matchRoutes(props.routes, history.pathHistory[1]);
 
-
-
   const [contactList, setContactList] = useState(null);
   const [jobId, setJobId] = useState(null);
   const [processing, setProcessing] = useState(false);
 
   const [buttonTitle, setButtonTitle] = useState("false");
-
-
 
   const steps = getSteps(stateApp.job);
   const dispatch = useDispatch();
@@ -209,11 +206,9 @@ export default function CustomizedSteppers(props) {
   const checkNumber = watch("checkNumber");
 
   useEffect(() => {
-    setButtonTitle(stateApp.activeStepNumber >= steps.length - 2
-      ? stateApp.activeStepNumber === steps.length - 1
-        ? "Close"
-        : "Upload"
-      : "Continue")
+    setButtonTitle(
+      stateApp.activeStepNumber >= steps.length - 2 ? (stateApp.activeStepNumber === steps.length - 1 ? "Close" : "Upload") : "Continue"
+    );
   }, []);
 
   useEffect(() => {
@@ -272,7 +267,7 @@ export default function CustomizedSteppers(props) {
   const setValue = (_obj, key, value) => {
     if (_obj[key]) delete _obj[key];
     set(_obj, key, value);
-  }
+  };
 
   const handleNext = async () => {
     if (stateApp.activeStepNumber === steps.length - 2) {
@@ -442,6 +437,9 @@ export default function CustomizedSteppers(props) {
                     revenueStatementInfo={stateApp.revenueStatementInfo}
                   />
                 )}
+                {props.selectedJob.type === "AGREEMENT_HEADER" && (
+                  <AgreementHeaderForm control={control} watch={watch} getValues={getValues} reset={reset} setStateApp={setStateApp} />
+                )}
                 <CSVFileReader
                   importType={getValues().importType}
                   selectedJob={props.selectedJob}
@@ -461,7 +459,14 @@ export default function CustomizedSteppers(props) {
               </Button>
             ) : null}
             {steps[stateApp.activeStepNumber] !== "Select" ? (
-              <Button id={`${buttonTitle}-button`} disabled={isDisabled} variant="contained" color="primary" onClick={handleNext} className={classes.buttonselect}>
+              <Button
+                id={`${buttonTitle}-button`}
+                disabled={isDisabled}
+                variant="contained"
+                color="primary"
+                onClick={handleNext}
+                className={classes.buttonselect}
+              >
                 {buttonTitle}
               </Button>
             ) : null}
