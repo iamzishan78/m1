@@ -120,7 +120,7 @@ const AcerageSummaryHeadCells = [
     name: "legalDesctiption",
     label: "Legal Description",
     esKey: "shape.shapeJson.properties.legalDesctiption.keyword",
-    options: { sort: true, filter: true },
+    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "400px" } }) },
   },
   // {
   //   name: "recDate",
