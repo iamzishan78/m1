@@ -270,7 +270,7 @@ export default function M1neralHeaders() {
       <div style={padding_div_top}>
         <Paper className={classes.root} style={style_papaer}>
           <TableContainer className={classes.container}>
-            <Table stickyHeader aria-label="sticky table">
+            <Table id="headerTable" stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
                   {columns.map((column) => (
@@ -286,6 +286,7 @@ export default function M1neralHeaders() {
                     <TableRow key={index}>
                       <StyledTableCell key={columns[0].label}>
                         <Checkbox
+                          id={`checkbox-${index}`}
                           disabled={row.actual_key === "" ? true : false}
                           checked={row.required}
                           color="default"
@@ -362,7 +363,7 @@ export default function M1neralHeaders() {
                     setStateApp((state) => ({ ...state, selectedShapeLayerOption: e.target.value }));
                   }}
                 >
-                  {shapeTransferOptions.map((option) => <MenuItem style={{ display: stateApp.selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option.key} >{option.label}</MenuItem>)}
+                  {shapeTransferOptions.map((option) => <MenuItem id={`${option.label}`} style={{ display: stateApp.selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option.key} >{option.label}</MenuItem>)}
                 </Select>
               </div>
 
@@ -387,7 +388,7 @@ export default function M1neralHeaders() {
                   fullWidth
                   onChange={(e) => { setStateApp((state) => ({ ...state, selectedShapeLayerOption: e.target.value })); }}
                 >
-                  {shapeTransferOptions.map((option) => <MenuItem style={{ display: stateApp.selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option.key} >{option.label}</MenuItem>)}
+                  {shapeTransferOptions.map((option) => <MenuItem id={`${option.label}`} style={{ display: stateApp.selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option.key} >{option.label}</MenuItem>)}
                 </Select>
               </div>
 
