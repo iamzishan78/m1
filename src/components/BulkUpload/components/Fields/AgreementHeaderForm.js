@@ -47,22 +47,22 @@ const useStyles = makeStyles((theme) => ({
 
 const RevenueStatementInfoForm = ({ ...rest }) => {
   const classes = useStyles();
-  const { control, reset, getValues, setStateApp } = rest;
+  const { control, reset, getValues, setStateApp, uploaderFormValues } = rest;
 
   useEffect(() => {
-    // if (revenueStatementInfo) reset(revenueStatementInfo);
+    if (uploaderFormValues) reset(uploaderFormValues);
     return () => {
       const values = getValues();
-      Object.keys(values).forEach((key) => {
-        if (typeof values[key] === "object") {
-          Object.keys(values[key]).forEach((vk) => {
-            values[`check.${key}.${vk}`] = values[key][vk];
-          });
-        } else {
-          values[`check.${key}`] = values[key];
-        }
-      });
-      setStateApp((stateApp) => ({ ...stateApp, revenueStatementInfo: values }));
+      // Object.keys(values).forEach((key) => {
+      //   if (typeof values[key] === "object") {
+      //     Object.keys(values[key]).forEach((vk) => {
+      //       values[`check.${key}.${vk}`] = values[key][vk];
+      //     });
+      //   } else {
+      //     values[`check.${key}`] = values[key];
+      //   }
+      // });
+      setStateApp((stateApp) => ({ ...stateApp, uploaderFormValues: values }));
     };
   }, []);
 

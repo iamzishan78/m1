@@ -285,7 +285,6 @@ export default function CustomizedSteppers(props) {
             userId: userID,
           },
         });
-
         await client.mutate({
           mutation: CREATE_JOB,
           variables: {
@@ -299,12 +298,13 @@ export default function CustomizedSteppers(props) {
         }));
       } else {
         const changeDate = new Date();
-        const statementInfo = stateApp.revenueStatementInfo;
+        const statementInfo = get(stateApp, "uploaderFormValues", {});
         data_to_send.forEach((element) => {
           element.createBy = userID;
           element.createAt = changeDate;
           element.lastUpdateBy = userID;
           element.lastUpdateAt = changeDate;
+          element = { ...statementInfo, ...element };
           setValue(element, "check.payor", statementInfo.payor);
           setValue(element, "check.payee", statementInfo.payee);
           setValue(element, "check.checkNumber", statementInfo.checkNumber);
@@ -434,11 +434,18 @@ export default function CustomizedSteppers(props) {
                     getValues={getValues}
                     reset={reset}
                     setStateApp={setStateApp}
-                    revenueStatementInfo={stateApp.revenueStatementInfo}
+                    uploaderFormValues={stateApp.uploaderFormValues}
                   />
                 )}
                 {props.selectedJob.type === "AGREEMENT_HEADER" && (
-                  <AgreementHeaderForm control={control} watch={watch} getValues={getValues} reset={reset} setStateApp={setStateApp} />
+                  <AgreementHeaderForm
+                    control={control}
+                    watch={watch}
+                    getValues={getValues}
+                    reset={reset}
+                    setStateApp={setStateApp}
+                    uploaderFormValues={stateApp.uploaderFormValues}
+                  />
                 )}
                 <CSVFileReader
                   importType={getValues().importType}

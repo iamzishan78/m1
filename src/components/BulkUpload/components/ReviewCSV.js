@@ -88,7 +88,7 @@ export default function MaterialTableDemo() {
       temp.leadSource = null;
       temp.tableData = null;
       if (checkProperties(temp) == false) {
-        temp_state.push({ ...element, ...get(stateApp, "revenueStatementInfo", {}) });
+        temp_state.push({ ...element, ...get(stateApp, "uploaderFormValues", {}) });
       }
     });
     setStateApp({
