@@ -138,16 +138,10 @@ const Agreement = [
     actual_key: "acquisitionDate",
   },
   {
-    label: "Prospect",
+    label: "Total Acquisition Cost",
     mapped_key: "",
     required: true,
-    actual_key: "prospectID",
-  },
-  {
-    label: "Internal Company",
-    mapped_key: "",
-    required: true,
-    actual_key: "internalCompany",
+    actual_key: "totalAcquisitionCost",
   },
   {
     label: "State",
@@ -160,6 +154,18 @@ const Agreement = [
     mapped_key: "",
     required: true,
     actual_key: "county",
+  },
+  {
+    label: "Prospect",
+    mapped_key: "",
+    required: true,
+    actual_key: "prospectID",
+  },
+  {
+    label: "Internal Company",
+    mapped_key: "",
+    required: true,
+    actual_key: "internalCompany",
   },
 ];
 export default Agreement;
