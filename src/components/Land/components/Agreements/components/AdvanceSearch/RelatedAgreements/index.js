@@ -27,8 +27,8 @@ const useStyles = makeStyles((theme) => ({
 const relatedAgreementsFilters = [
   {
     label: "Agreements",
-    filterKey: "",
-    searchFields: [],
+    filterKey: "relatedAgreements.name.keyword",
+    searchFields: ["relatedAgreements.name"],
   },
 ];
 
