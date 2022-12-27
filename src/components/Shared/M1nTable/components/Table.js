@@ -196,7 +196,7 @@ const useStyles = makeStyles((theme) => ({
     //   left: props.header !== "Tax Roll Ownership" ? "100px !important" : "0px !important",
     // }),
     "& .MuiTableCell-body": {
-      padding: (props) => (props.dense ? "0px 0px 0px 25px !important" : "0px 0px 0px 25px"),
+      padding: (props) => (props.dense ? "0px 0px 0px 25px !important" : "0px 0px 0px 16px"),
       backgroundColor: "#fff",
     },
     // "& .MuiTableCell-paddingCheckbox": {

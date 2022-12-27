@@ -1,3 +1,5 @@
+import { GlobalStickyStyles } from "GlobalSettings";
+
 const AcerageSummaryHeadCells = [
   {
     name: "_id",
@@ -7,7 +9,20 @@ const AcerageSummaryHeadCells = [
     name: "agreementNumber",
     label: "Agreement #",
     esKey: "shape.shapeJson.properties.agreementNumber.keyword",
-    options: { sort: true, filter: true, display: true },
+    options: {
+      sort: true,
+      filter: true,
+      display: true,
+      ...GlobalStickyStyles({
+        setCellProps: {
+          left: "65px",
+          maxWidth: "492px",
+        },
+        setCellHeaderProps: {
+          left: "65px",
+        },
+      }),
+    },
   },
   {
     name: "grantor",
