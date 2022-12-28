@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import { debounce, get } from "lodash";
 
+import { Grid } from "@material-ui/core";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText, Dialog } from "@material-ui/core";
@@ -12,7 +13,9 @@ import {
   Delete as DeleteIcon,
 } from "@material-ui/icons";
 import moment from "moment";
+import sortBy from 'lodash/sortBy'
 
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
@@ -39,6 +42,7 @@ import WellProdChart from "components/WellProdChart/WellProdChart";
 import TabButtons from "components/Shared/TabPanels/TabButtons";
 import AssociatedWellsProductionTable from "components/Table/Revenue/AssociatedWellsProductionTable";
 import AddNewRelatedAgreementDialog from "components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog";
+import OverShortComparison from 'components/Revenue/components/Properties/DetailComponents/Validation/OverShortComparison'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -405,25 +409,30 @@ export default function DetailComponents(props) {
            * Detail tabs section
            */}
           <div className={classes.tabsSection} style={{ display: stateApp.viewDoc ? "none" : "" }}>
-            <div className={classes.tabsSectionDetails} onScroll={handleScroll}>
-              <div className={classes.headerSection} ref={tab === 0 ? selectedTabRef : null}>
-                <HeaderSection
-                  propertyId={propertyId}
-                  propertyDetails={propertyDetails}
-                  propertyOwnerContact={propertyOwnerContact}
-                  setEntityToConvert={setEntityToConvert}
-                />
+            {tab === 0 && (
+              <div className={classes.tabsSectionDetails}>
+                <div className={classes.headerSection}>
+                  <HeaderSection
+                    propertyId={propertyId}
+                    propertyDetails={propertyDetails}
+                    propertyOwnerContact={propertyOwnerContact}
+                    setEntityToConvert={setEntityToConvert}
+                  />
+                </div>
+                <div>
+                  <PropertyInterestDetailsSection
+                    propertyId={propertyId}
+                    setSelectedInterest={setSelectedInterest}
+                    showInterestDetails={showInterestDetails}
+                    onClickAdd={() => setShowInterestDetails(true)}
+                    setNewAgmtState={setNewAgmtState}
+                  />
+                </div>
               </div>
-              <div ref={tab === 1 ? selectedTabRef : null}>
-                <PropertyInterestDetailsSection
-                  propertyId={propertyId}
-                  setSelectedInterest={setSelectedInterest}
-                  showInterestDetails={showInterestDetails}
-                  onClickAdd={() => setShowInterestDetails(true)}
-                  setNewAgmtState={setNewAgmtState}
-                />
-              </div>
-            </div>
+            )}
+           {tab === 1 && (
+              <Validation propertyId={propertyId} />
+            )}
           </div>
           {stateApp.viewDoc && <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />}
         </div>
@@ -525,7 +534,50 @@ const Validation = ({ propertyId }) => {
   const [esFilters, setESFilters] = useState([]);
   const [filterToggle, setFilterToggle] = useState(false);
   const [associatedWellIds, setAssociatedWellIds] = useState([]);
+  const [wellProductionData, setWellProductionData] = useState([]);
+  const [checkDetailsData, setCheckDetailsData] = useState([]);
   const [startDate, setStartDate] = useState(null);
+
+  const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });
+
+  useEffect(() => {
+    getESSimpleSearch({
+      variables: {
+          index: 'checkdetails_flat',
+          pagination: {
+              first: 10000,
+              after: null
+          },
+          search: {
+              query: "",
+              fields: [],
+          },
+          filters: [
+            {field: "property._id.keyword", value: propertyId },
+            {field: 'date', type: 'range', value: esFilters[0]?.value?.range?.date}
+          ]
+      }
+  })
+  },[esFilters])
+
+  useEffect(() => {
+    if(elasticData?.getESSimpleSearch?.hits?.length > 0){
+      let data = []
+      for(let i = 0; i < elasticData?.getESSimpleSearch?.hits?.length; i++) {
+        const check = elasticData?.getESSimpleSearch?.hits[i]
+        data.push({
+          product: check.product,
+          ReportDate: check.date,
+          oil: check.product === 'OIL' ? check.grossPropertyVolume : 0,
+          gas: check.product === 'GAS' ? check.grossPropertyVolume : 0,
+          water: check.product === 'WATER' ? check.grossPropertyVolume : 0,
+        })
+      }
+      data = sortBy(data, ['ReportDate']);
+      setCheckDetailsData(data)
+    }
+    
+  },[elasticData])
 
   return (
     <div style={{ background: "white", padding: "10px" }}>
@@ -537,26 +589,39 @@ const Validation = ({ propertyId }) => {
         filterToggle={filterToggle}
       />
 
-      <WellCardContextProvider>
-        <WellProdChartContextProvider>
-          <ValidationChart
-            filter={esFilters}
-            propertyId={propertyId}
-            setStartDate={setStartDate}
-            setAssociatedWellIds={setAssociatedWellIds}
-          />
-        </WellProdChartContextProvider>
-      </WellCardContextProvider>
+      <Grid
+        container
+        direction="row"
+        display="flex"
+        justify="space-between"      
+      >
+        <Grid item xs={6}>
+          <WellCardContextProvider>
+            <WellProdChartContextProvider>
+              <ValidationChart
+                filter={esFilters}
+                propertyId={propertyId}
+                setStartDate={setStartDate}
+                wellProductionData={wellProductionData}
+                setWellProductionData={setWellProductionData}
+                setAssociatedWellIds={setAssociatedWellIds}
+              />
+            </WellProdChartContextProvider>
+          </WellCardContextProvider>
+        </Grid>
+        <Grid item xs={6}>
+          <OverShortComparison productionData={wellProductionData} checkData={checkDetailsData}/>
+        </Grid>
+      </Grid>
 
       <ValidationGrids associatedWellIds={associatedWellIds} />
     </div>
   );
 };
 
-const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellIds }) => {
+const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellIds, wellProductionData, setWellProductionData }) => {
   const [, setStateWellCard] = useContext(WellCardContext);
   const [, setStateWellProdChart] = useContext(WellProdChartContext);
-  const [wellProductionData, setWellProductionData] = useState([]);
   const [getAssociatedWellProductionData, { data: associatedWells }] = useLazyQuery(GET_ASSOCIATED_WELL_PRODUCTION_DATA);
 
   useEffect(() => {
@@ -580,18 +645,16 @@ const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellId
       wellData.forEach((data) => {
         wellIds.push(data.well._id);
         if (data.well.productionData.length > 0) {
-          let pData = data.well.productionData;
-
+          let pData = JSON.parse(JSON.stringify(data.well.productionData));
           if (filter[0].value.range.date.lte) {
-            pData = pData.filter((d) => moment(d.ReportDate) <= moment(filter[0].value.range.date.lte));
+            pData = pData.filter((d) => moment(moment(d.data.ReportDate).format('MM/DD/yyyy')) <= moment(moment(filter[0].value.range.date.lte).format('MM/DD/yyyy')));
           }
-
           if (filter[0].value.range.date.gte) {
-            pData = pData.filter((d) => moment(d.ReportDate) >= moment(filter[0].value.range.date.gte));
+            pData = pData.filter((d) => moment(moment(d.data.ReportDate).format('MM/DD/yyyy')) >= moment(moment(filter[0].value.range.date.gte).format('MM/DD/yyyy')));
           }
 
           pData.forEach((production) => {
-            production = production.data;
+            production = JSON.parse(JSON.stringify(production.data));
             const date = moment(production.ReportDate).format("MM/yyyy");
             production.ReportDate = date;
             const index = productionData.findIndex((d) => d.ReportDate === date);
@@ -616,7 +679,6 @@ const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellId
         }
       });
 
-      // console.log('productionData',productionData)
       setAssociatedWellIds(wellIds);
       setWellProductionData(JSON.parse(JSON.stringify(productionData)));
     }
@@ -644,7 +706,6 @@ const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellId
     }
   }, [associatedWells]);
 
-  console.log("associatedWells", associatedWells);
 
   useEffect(() => {
     getAssociatedWellProductionData({
