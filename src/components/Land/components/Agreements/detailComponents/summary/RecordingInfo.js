@@ -101,7 +101,7 @@ const Acreage = ({ properties, updateAgreement }) => {
                       InputProps={{
                         endAdornment: (
                           <IconButton>
-                            <Clear style={{ height: 22, width: 22 }} />
+                            <Clear style={{ height: 22, width: 22 }} onClick={() => params.onChange("")} />
                           </IconButton>
                         ),
                         classes: {
