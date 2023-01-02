@@ -94,6 +94,7 @@ const Acreage = ({ properties, updateAgreement }) => {
                       onBlur={(event) => {
                         offClickHandler("recordedDate", event?.target?.value || null);
                       }}
+                      onChange={params.onChange}
                       disableToolbar
                       KeyboardButtonProps={{ "aria-label": "change date" }}
                       format="MM/DD/YYYY"
@@ -101,7 +102,10 @@ const Acreage = ({ properties, updateAgreement }) => {
                       InputProps={{
                         endAdornment: (
                           <IconButton>
-                            <Clear style={{ height: 22, width: 22 }} onClick={() => params.onChange("")} />
+                            <Clear style={{ height: 22, width: 22 }} onClick={() => {
+                              params.onChange("");
+                              offClickHandler("recordedDate", null);
+                            }} />
                           </IconButton>
                         ),
                         classes: {
