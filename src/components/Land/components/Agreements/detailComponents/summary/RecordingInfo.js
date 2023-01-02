@@ -111,7 +111,6 @@ const Acreage = ({ properties, updateAgreement }) => {
                     />
                   </FormControl>
                 )}
-                disabled
               />
             </Grid>
             <Grid item xs={3}>
