@@ -1,29 +1,5 @@
 const Agreement = [
   {
-    label: "Recording Date",
-    mapped_key: "",
-    required: true,
-    actual_key: "recordedDate",
-  },
-  {
-    label: "Book",
-    mapped_key: "",
-    required: true,
-    actual_key: "recordedBook",
-  },
-  {
-    label: "Page",
-    mapped_key: "",
-    required: true,
-    actual_key: "recordedPage",
-  },
-  {
-    label: "Instrument #",
-    mapped_key: "",
-    required: true,
-    actual_key: "recordedInstrumentNumber",
-  },
-  {
     label: "Agreement System ID",
     mapped_key: "",
     required: true,
@@ -154,6 +130,30 @@ const Agreement = [
     mapped_key: "",
     required: true,
     actual_key: "county",
+  },
+  {
+    label: "Recording Date",
+    mapped_key: "",
+    required: true,
+    actual_key: "recordedDate",
+  },
+  {
+    label: "Book",
+    mapped_key: "",
+    required: true,
+    actual_key: "recordedBook",
+  },
+  {
+    label: "Page",
+    mapped_key: "",
+    required: true,
+    actual_key: "recordedPage",
+  },
+  {
+    label: "Instrument #",
+    mapped_key: "",
+    required: true,
+    actual_key: "recordedInstrumentNumber",
   },
   {
     label: "Prospect",

@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
 import moment from "moment";
 import PropTypes from "prop-types";
 import { set, get } from "lodash";
@@ -15,7 +14,6 @@ import StepConnector from "@material-ui/core/StepConnector";
 import Button from "@material-ui/core/Button";
 import CSVFileReader from "./CSVFileReader";
 import RevenueStatementInfoForm from "./Fields/RevenueStatementInfoForm";
-import AgreementHeaderForm from "./Fields/AgreementHeaderForm";
 import M1neralHeaders from "./M1neralHeaders";
 import ReviewCSV from "./ReviewCSV";
 import UploadStepperComponent from "./UploadStepperComponent";
@@ -429,16 +427,6 @@ export default function CustomizedSteppers(props) {
               <>
                 {props.selectedJob.type === "CHECKDETAILS" && (
                   <RevenueStatementInfoForm
-                    control={control}
-                    watch={watch}
-                    getValues={getValues}
-                    reset={reset}
-                    setStateApp={setStateApp}
-                    uploaderFormValues={stateApp.uploaderFormValues}
-                  />
-                )}
-                {props.selectedJob.type === "AGREEMENT_HEADER" && (
-                  <AgreementHeaderForm
                     control={control}
                     watch={watch}
                     getValues={getValues}
