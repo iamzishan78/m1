@@ -679,8 +679,12 @@ const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellId
         }
       });
 
+      const data = productionData.map(p => {
+        const d = p.ReportDate.split('/')
+        return ({ ...p, ReportDate: new Date(d[0]+'/01/'+d[1])})
+      })
       setAssociatedWellIds(wellIds);
-      setWellProductionData(JSON.parse(JSON.stringify(productionData)));
+      setWellProductionData(JSON.parse(JSON.stringify(sortBy(data, ['ReportDate']).map(d=> ({ ...d, ReportDate: moment(d.ReportDate).format("MM/yyyy")})))));
     }
   }, [associatedWells, filter]);
 
