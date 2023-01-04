@@ -14,6 +14,7 @@ import {
 } from "@material-ui/icons";
 import moment from "moment";
 import sortBy from 'lodash/sortBy'
+import orderBy from 'lodash/orderBy'
 
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
@@ -679,12 +680,12 @@ const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellId
         }
       });
 
-      const data = productionData.map(p => {
+      let data = productionData.map(p => {
         const d = p.ReportDate.split('/')
         return ({ ...p, ReportDate: new Date(d[0]+'/01/'+d[1])})
       })
       setAssociatedWellIds(wellIds);
-      setWellProductionData(JSON.parse(JSON.stringify(sortBy(data, ['ReportDate']).map(d=> ({ ...d, ReportDate: moment(d.ReportDate).format("MM/yyyy")})))));
+      setWellProductionData(JSON.parse(JSON.stringify(orderBy(data, ['ReportDate'],['desc']).map(d=> ({ ...d, ReportDate: moment(d.ReportDate).format("MM/yyyy")})))));
     }
   }, [associatedWells, filter]);
 
