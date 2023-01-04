@@ -103,7 +103,7 @@ export default function MaterialTableDemo() {
         Review the data to be uploaded based on the mapping of M1neral headers
         that were selected.
       </div>
-      <div style={{ ...padding_div_top, ...table }}>
+      <div id="materialTable" style={{ ...padding_div_top, ...table }}>
         <MaterialTable
           title="Contacts"
           icons={tableIcons}
