@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import moment from "moment";
 import _ from "lodash";
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Acreage = ({ properties, updateAgreement }) => {
-  const { control, reset } = useForm();
+  const { control, reset, watch } = useForm();
   const classes = useStyles();
 
   useEffect(() => {
@@ -87,7 +87,7 @@ const Acreage = ({ properties, updateAgreement }) => {
                       variant="outlined"
                       margin="dense"
                       fullWidth
-                      value={params.value ? moment(params.value).utc(true).format("yyyy-MM-DD") : ""}
+                      // value={params.value ? moment(watch("recordedDate")).utc(true).format("yyyy-MM-DD") : ""}
                       InputLabelProps={{
                         shrink: true,
                       }}
