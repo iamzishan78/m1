@@ -691,8 +691,8 @@ export const TableESHOC = (Component) => {
 
             for (let i = 0; i < data?.length; i++) {
                 for (let j = 0; j < sampleCsv.length; j++) {
-                    let updatedData = get(data[i], sampleCsv[j].name, '')
-                    if (updatedData?.includes(',')) {
+                    let updatedData = data[i][sampleCsv[j].name] ?? '';
+                    if (typeof updatedData === "string" && updatedData?.includes(',')) {
                         updatedData = updatedData.replace(',', ' ')
                     }
                     csv = `${j !== 0 ? csv + ',' : csv}${updatedData}`
