@@ -22,7 +22,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
       dbName: "name",
 
       customRender: (value, tableMeta) => {
-        const splitNumber = value?.split("_");
+        const splitNumber = typeof value === 'string' ? value?.split("_") : value
 
         const styles = {
           fontWeight: GlobalStyles.font.boldFontWeight,

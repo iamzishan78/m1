@@ -103,6 +103,7 @@ const RelatedDocumets = (props) => {
                   setDrawer={props.setDrawer}
                   setCounter={setCounter}
                   targetLabel="Shape"
+                  portal={'#agreementDetailsDrawer'}
                 />
               </Grid>
             )}

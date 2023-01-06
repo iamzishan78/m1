@@ -617,7 +617,7 @@ export function DetailComponents(props) {
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
               <div id="related-agrmt-div" className={classes.tabDetailSection} ref={tab === 6 ? selectedTabRef : null}>
-                <RelatedAgreementsTable uniObj={uniObj} setDrawer={setDrawer} />
+                <RelatedAgreementsTable uniObj={uniObj} setDrawer={setDrawer} drawer={drawer} />
               </div>
             </div>
           </div>
