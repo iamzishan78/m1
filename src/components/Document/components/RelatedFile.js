@@ -532,6 +532,7 @@ export default function RelatedFile(props) {
                   New Document
                 </h4>
                 <h4
+                  id="existingDocumentTab"
                   onClick={() => {
                     setSelectedType("existing");
                   }}
@@ -1008,6 +1009,7 @@ export default function RelatedFile(props) {
         </Button>
 
         <Button
+          id="saveDocumentButton"
           variant="contained"
           color="secondary"
           size="medium"

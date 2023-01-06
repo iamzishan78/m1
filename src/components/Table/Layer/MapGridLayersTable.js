@@ -88,45 +88,45 @@ function MapGridLayersTable(props) {
   }
 
   useEffect(() => {
-    let mustQuery =[]
-    if(stateApp.selectedLayer?.layerShapeName){
+    let mustQuery = []
+    if (stateApp.selectedLayer?.layerShapeName) {
       mustQuery = [{
-        "term": { "properties.layerShapeName.keyword": stateApp.selectedLayer?.layerShapeName }
+        "term": { "properties.layerShapeName": stateApp.selectedLayer?.layerShapeName }
       }]
     }
     props.setTableMeta({
       extendSearchQuery: searchInput,
       advanceSearch: stateApp.selectedLayer?.layerGeometry === 'Polygon' ? [{
         "bool": {
-          "must":[
+          "must": [
             ...mustQuery,
             {
               "bool": {
-              "should": [
-                {
-                  "term": { "properties.layerGeometry.keyword": "Polygon" }
-                },
-                {
-                  "term": { "properties.layerGeometry.keyword": "MultiPolygon" }
-                },
-              ]
+                "should": [
+                  {
+                    "term": { "properties.layerGeometry": "Polygon" }
+                  },
+                  {
+                    "term": { "properties.layerGeometry": "MultiPolygon" }
+                  },
+                ]
+              }
             }
-          }
           ],
         }
       }] : [{
         "bool": {
-          "must":[
+          "must": [
             ...mustQuery,
             {
               "bool": {
-              "should": [
-                {
-                  "term": { "properties.layerGeometry.keyword": stateApp.selectedLayer?.layerGeometry }
-                },
-              ]
+                "should": [
+                  {
+                    "term": { "properties.layerGeometry": stateApp.selectedLayer?.layerGeometry }
+                  },
+                ]
+              }
             }
-          }
           ],
         }
       }],

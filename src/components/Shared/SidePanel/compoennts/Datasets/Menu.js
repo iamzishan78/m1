@@ -73,7 +73,7 @@ export default function DatasetMenu({ dataset, handleRemove, handleTransfer }) {
 
     return (
         <div >
-            <MoreVertIcon aria-controls={"dataset-menu " + dataset.sourceName} className='actionIcon' onClick={handleClick} />
+            <MoreVertIcon id={"dataset-morevert-" + dataset.sourceName} aria-controls={"dataset-menu " + dataset.sourceName} className='actionIcon' onClick={handleClick} />
             <Menu
                 id={"dataset-menu " + dataset.sourceName}
                 anchorEl={anchorEl}
@@ -88,7 +88,7 @@ export default function DatasetMenu({ dataset, handleRemove, handleTransfer }) {
                             <ArrowForwardOutlinedIcon />
                             <ListItemText primary="Transfer" />
                         </ListItem>
-                        <ListItem button onClick={(e) => { handleClose(e); handleRemove(dataset, false) }}>
+                        <ListItem id={"remove-source-" + dataset.sourceName} button onClick={(e) => { handleClose(e); handleRemove(dataset, false) }}>
                             <DeleteOutlineOutlinedIcon />
                             <ListItemText primary="Remove" />
                         </ListItem>

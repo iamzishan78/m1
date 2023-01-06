@@ -9,7 +9,7 @@ export function ActionCell({ id, onChange }) {
     return (
         <>
             <Button onClick={(e) => setAnchorEl(e.currentTarget)}>
-                <MoreVertIcon aria-controls={`menu-${id}`} aria-haspopup="true" />
+                <MoreVertIcon id="moreVertActionIcon" aria-controls={`menu-${id}`} aria-haspopup="true" />
             </Button>
 
             <Menu
@@ -39,7 +39,7 @@ export function ActionCell({ id, onChange }) {
                     <ListItemIcon>
                         <DeleteIcon fontSize="small" style={{ color: '#fd0114' }} />
                     </ListItemIcon>
-                    <ListItemText primary="Delete Line Item" />
+                    <ListItemText id="deleteLineItem" primary="Delete Line Item" />
 
                 </MenuItem>
             </Menu></>
