@@ -85,7 +85,7 @@ function MapGridUnitTable(props) {
       extendSearchQuery: searchInput || stateApp.landSearchQuery,
       // selectedGridView: GridViewModule || defaultView,
       // searchFields: ["*"],
-      TableHeader: copy(TableHeader),
+      TableHeader: copy(TableHeader(props.isSnapGrid)),
       esIndex: "shapes_flat",
       startPaginationAt: 50,
       // typeKeyword: { gridViewCategory: "Units", metaModule: "Unit" },
