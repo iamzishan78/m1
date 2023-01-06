@@ -2971,7 +2971,6 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-
                   if (column.isCustom && (column.type === "multiselect" || column.type === "dropdown")) {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
@@ -2986,6 +2985,7 @@ function SubTable(props) {
                           index={tableMeta.rowIndex}
                           column={column}
                           value={value}
+                          id={column.label}
                           onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)}
                         />
                       </div>
