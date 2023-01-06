@@ -170,7 +170,7 @@ export default function DetailTabsSection({ monthsInterval, portfolioSummary }) 
           {/* <StyledTab label="Properties" /> */}
         </StyledTabs>
       </div>
-      <div style={{ overflow: "overlay", backgroundColor: "#f3f3f3", maxHeight: "calc(100vh - 235px)" }} onScroll={handleScroll}>
+      <div style={{ overflow: "overlay", backgroundColor: "#f3f3f3", maxHeight: "calc(100vh - 358px)" }} onScroll={handleScroll}>
         <div className={classes.revenueSection} ref={tab === 0 ? selectedTabRef : null}>
           <RevenueSection monthsInterval={monthsInterval} portfolioSummary={portfolioSummary} adjustmentsRef={adjustmentsRef} netRevenueRef={netRevenueRef} />
         </div>
