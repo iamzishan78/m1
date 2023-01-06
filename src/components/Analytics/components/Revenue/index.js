@@ -3,7 +3,7 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Grid, Button, Divider, Tab, Tabs } from "@material-ui/core";
+import { Grid, Divider, Tab, Tabs } from "@material-ui/core";
 
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
@@ -14,7 +14,7 @@ import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
-    margin: '100px 0 10px'
+    margin: '75px 0 10px'
   },
   actionBar: {
     backgroundColor: "#f7f7f7",
@@ -194,7 +194,7 @@ export default function RevenueAnalytics() {
                 type="Properties"
                 esFilters={propertiesReportGroup || []}
                 setESFilters={(value) => setPropertyFilter(value)}
-                setFilterToggle={() => {}}
+                setFilterToggle={() => { }}
                 isBackground={false}
                 noUpdate={true}
                 strechedWidth

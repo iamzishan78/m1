@@ -14,7 +14,7 @@ import WellMasterTabPanel from "./WellMaster";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
-    margin: "100px 0 10px",
+    margin: "75px 0 10px",
   },
   actionsGrid: {
     "& .MuiButtonBase-root": {
@@ -73,7 +73,7 @@ const StyledTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-export default function LandAnalytics(){
+export default function LandAnalytics() {
   const classes = useStyles();
 
   const [tab, setTab] = useState(0);
