@@ -346,25 +346,23 @@ function CheckDetailsEditableTable(props) {
 
   // get paginated data hits from checkdetails_flat table
   useEffect(() => {
-    if (startPaginationAt > 0) {
-      getESPaginatedList({
-        variables: {
-          esIndex,
-          filters: [
-            {
-              field: "check._id.keyword",
-              value: props.checkId,
-            },
-          ],
-          sort: { [sort.orderBy]: { order: sort.order } },
-          pagination: {
-            first: startPaginationAt,
-            keep_alive: "1micros",
+    getESPaginatedList({
+      variables: {
+        esIndex,
+        filters: [
+          {
+            field: "check._id.keyword",
+            value: props.checkId,
           },
-          search: search.text ? `${search.text}*` : "",
+        ],
+        sort: { [sort.orderBy]: { order: sort.order } },
+        pagination: {
+          first: startPaginationAt,
+          keep_alive: "1micros",
         },
-      });
-    }
+        search: search.text ? `${search.text}*` : "",
+      },
+    });
   }, [props.parent, props.checkId, search.text, sort, startPaginationAt]);
 
   useEffect(() => {
@@ -449,7 +447,7 @@ function CheckDetailsEditableTable(props) {
 
   return (
     <Paper elevation={3}>
-      <Grid container style={{ backgroundColor: "#F2F2F2" }}>
+      <Grid id="checkDetailGrid" container style={{ backgroundColor: "#F2F2F2" }}>
         <Grid item md={12} style={{ border: "1px solid #c1c1c1", paddingBottom: "10px" }}>
           <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: "space-between" }}>
             <Grid item style={{ display: "flex" }}>
@@ -484,7 +482,7 @@ function CheckDetailsEditableTable(props) {
             <Grid item>
               <Grid container direction="row" style={{ marginTop: "5px", marginRight: "15px" }}>
                 <Grid item style={{ marginTop: "5px" }}>
-                  <Button color="secondary" className={classes.multiSelectionTopBarButtons} onClick={addNewRow}>
+                  <Button color="secondary" id="addNewLineItemButton" className={classes.multiSelectionTopBarButtons} onClick={addNewRow}>
                     Add new line item
                   </Button>
                 </Grid>

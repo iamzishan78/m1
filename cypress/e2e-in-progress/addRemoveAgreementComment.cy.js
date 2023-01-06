@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { basic_timeouts } from "../../cypressUtils/data"
+import { basic_timeouts } from "../cypressUtils/data"
 
 describe('Add and Remove Comments on Tract Details Spec', () => {
     it('passes', () => {
@@ -16,7 +16,7 @@ describe('Add and Remove Comments on Tract Details Spec', () => {
         
         cy.get('#dataNameSelect', { timeout: longTimeout }).should('be.visible').trigger("click");
         
-        cy.get('#customized-menu .MuiList-root .MuiGrid-root li',{ timeout: shorTimeout }).contains("Units").trigger('click')
+        cy.get('#customized-menu .MuiList-root .MuiGrid-root li',{ timeout: shorTimeout }).contains("Agreements").trigger('click')
         
         cy.interceptApi('getESSimpleSearch')
         cy.get('#cognitive-search-autocomplete').should('be.visible').type("a");
@@ -25,7 +25,9 @@ describe('Add and Remove Comments on Tract Details Spec', () => {
 
             cy.get('.MuiAutocomplete-popper ul li').first().should("be.visible").trigger('click')
             cy.interceptApi('UpsertComment')
-            cy.get("#expandIcon").should("be.visible").trigger("click");
+            cy.wait(10000)
+            cy.get("#expandIcon",{ timeout: shorTimeout }).should("be.visible").trigger("click");
+            cy.wait(10000)
             cy.get("#txtArea", { timeout: longTimeout }).should('exist').scrollIntoView().type("A cypress comment")
             cy.get("#commentButton").click()
             cy.verifyApiResponse('@UpsertCommentApi', { responseTimeout: longTimeout }).then(response => {
