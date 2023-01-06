@@ -454,7 +454,7 @@ function WellCard() {
                     href={
                       "http://webapps2.rrc.texas.gov/EWA/leaseDetailAction.do?searchType=apiNo&selTab=1&apiNo=" +
                       wellData?.ApiNumber.substring(2) +
-                      "&distCode=7C&leaseNo=20848&methodToCall=displayLeaseDetail&rrcActionMan=H4sIAAAAAAAAALWPT0vDQBDFP009LjObbRoPcwii51aLIsHDNhlSYdsNs4lV2A_vtFIQ_5zE0zzeY2Z-LyMA2YyAhBcibd2Oz3F_20rXwBOd_ANv_DAkazQ2I7_6ZPr4MivqCjS3NLM31w-1yuIoDxzCJgqvJpa3j2umi5o62vG4jd06XvkQ1JiT8DjJfh3v2Eu7Vasi-AbRpFNaS5_M4MXv7n2YWNkW5ErMFTmEhcuX9PhlFf-dP525SzqvLX3P8onzx1L4l1LNb6-OdQmzJYRcqHAEea6zVOMdFVf0QucBAAA"
+                      "&methodToCall=displayLeaseDetail&rrcActionMan=H4sIAAAAAAAAALWPT0vDQBDFP009LjObbRoPcwii51aLIsHDNhlSYdsNs4lV2A_vtFIQ_5zE0zzeY2Z-LyMA2YyAhBcibd2Oz3F_20rXwBOd_ANv_DAkazQ2I7_6ZPr4MivqCjS3NLM31w-1yuIoDxzCJgqvJpa3j2umi5o62vG4jd06XvkQ1JiT8DjJfh3v2Eu7Vasi-AbRpFNaS5_M4MXv7n2YWNkW5ErMFTmEhcuX9PhlFf-dP525SzqvLX3P8onzx1L4l1LNb6-OdQmzJYRcqHAEea6zVOMdFVf0QucBAAA"
                     }
                     variant="body2"
                     target="_blank"
@@ -490,7 +490,7 @@ function WellCard() {
                 {wellData?.State === "LA" ? (
                   <Link
                     href={"https://sonlite.dnr.state.la.us/sundown/cart_prod/cart_con_wellinfo2?p_wsn=" + wellData?.StateWellId}
-                    onClick={() => {}}
+                    onClick={() => { }}
                     variant="body2"
                     target="_blank"
                   >
@@ -502,7 +502,7 @@ function WellCard() {
                   ""
                 )}
                 {wellData?.State === "OK" ? (
-                  <Link href={"https://occpermit.com/WellBrowse/Home.aspx"} onClick={() => {}} variant="body2" target="_blank">
+                  <Link href={"https://occpermit.com/WellBrowse/Home.aspx"} onClick={() => { }} variant="body2" target="_blank">
                     <Typography align="center" variant="subtitle2" className={classes.link_permit}>
                       OCC Search Tool
                     </Typography>
@@ -513,7 +513,7 @@ function WellCard() {
                 {wellData?.State === "CO" ? (
                   <Link
                     href={"https://cogcc.state.co.us/cogisdb/Facility/FacilityDetail?api=" + wellData?.ApiNumber.substring(2)}
-                    onClick={() => {}}
+                    onClick={() => { }}
                     variant="body2"
                     target="_blank"
                   >
@@ -528,7 +528,7 @@ function WellCard() {
                 {wellData?.State === "WY" ? (
                   <Link
                     href={"https://pipeline.wyo.gov/Wellapino.cfm?napino=" + wellData?.ApiNumber.substring(3) + "&s1=Y"}
-                    onClick={() => {}}
+                    onClick={() => { }}
                     variant="body2"
                     target="_blank"
                   >
@@ -547,7 +547,7 @@ function WellCard() {
                       wellData?.ApiNumber +
                       "&DETAILSONLY=True"
                     }
-                    onClick={() => {}}
+                    onClick={() => { }}
                     variant="body2"
                     target="_blank"
                   >
@@ -562,7 +562,7 @@ function WellCard() {
                 {wellData?.State === "KS" ? (
                   <Link
                     href={"https://chasm.kgs.ku.edu/ords/qualified.well_page.DisplayWell?f_kid=" + wellData?.StateWellId}
-                    onClick={() => {}}
+                    onClick={() => { }}
                     variant="body2"
                     target="_blank"
                   >
@@ -697,7 +697,7 @@ function WellCard() {
                 {wellData?.State === "LA" ? (
                   <Link
                     href={"https://sonlite.dnr.state.la.us/sundown/cart_prod/cart_con_wellinfo2?p_wsn=" + wellData?.StateWellId}
-                    onClick={() => {}}
+                    onClick={() => { }}
                     variant="body2"
                     target="_blank"
                   >
