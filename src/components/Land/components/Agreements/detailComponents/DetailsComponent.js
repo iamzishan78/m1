@@ -510,7 +510,7 @@ export function DetailComponents(props) {
                 <StyledTab id="provisionsTab" label="Provisions" />
                 <StyledTab id="legalDescriptionTab" label="Legal Description" />
                 <StyledTab id="wellsTab" label="Wells" />
-                <StyledTab label="Documents" />
+                <StyledTab id="documentsTab" label="Documents" />
                 <StyledTab id="relatedAgreementsTab" label="Related Agreements" />
                 {/* <StyledTab label="Related Info" /> */}
               </StyledTabs>
@@ -618,7 +618,7 @@ export function DetailComponents(props) {
               </div>
               <div style={{ backgroundColor: "#f3f3f3 !important", height: 24 }} />
               <div id="related-agrmt-div" className={classes.tabDetailSection} ref={tab === 6 ? selectedTabRef : null}>
-                <RelatedAgreementsTable uniObj={uniObj} setDrawer={setDrawer} />
+                <RelatedAgreementsTable uniObj={uniObj} setDrawer={setDrawer} drawer={drawer} />
               </div>
             </div>
           </div>

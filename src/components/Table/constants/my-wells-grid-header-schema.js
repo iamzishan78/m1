@@ -14,7 +14,7 @@ const dateCustomRender = (value) => value ? moment(new Date(value)).format("MM/D
 
 const wellsColumnHeaders = [
   {
-    name: "_id",
+    name: "id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
@@ -40,6 +40,8 @@ const wellsColumnHeaders = [
           position: "absolute",
           // left: '70px',
         };
+
+        console.log("-*-*-*- tableMeta *-*-*", tableMeta)
         const globalWellId = tableMeta.rowData[0];
 
         return (

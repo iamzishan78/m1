@@ -52,7 +52,7 @@ const AutoCompleteDocumentList = ({ onSelect, search, setSearch }) => {
   const classes = useStyles();
   return (
     <Autocomplete
-      id="seletExistingDoc"
+      id="searchDocumentList"
       value={value}
       disableListWrap
       classes={classes}

@@ -144,7 +144,7 @@ export default function PdfViewer({ togglePdfViewState, checkId }) {
             )}
 
             <IconButton onClick={togglePdfViewState} size="small">
-              <CloseIcon className={classes.closeIcon} fontSize="small" />
+              <CloseIcon id="closePdfIcon" className={classes.closeIcon} fontSize="small" />
             </IconButton>
           </div>
         </Grid>

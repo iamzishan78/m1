@@ -42,11 +42,11 @@ export const rawJobs = [
   { name: 'Import Units', type: 'UNITS', featureFlag: "UNITIMPORT" },
   { name: 'Check Detail Upload', type: 'CHECKDETAILS' },
   { name: 'Property Upload', type: 'PROPERTIES' },
-  { name: 'Agreement Upload (Header)', type: 'AGREEMENT_HEADER', redirectTo: '/land/agreements' },
-  { name: 'Comment Uploader', type: 'AGREEMENT_COMMENTS' },
-  { name: 'Agreement Upload (Provisions)', type: 'AGREEMENT_PROVISIONS' },
-  { name: 'Agreement Upload (Related Well)', type: 'AGREEMENT_RELATED_WELLS' },
-  { name: 'Agreement Upload (Related Tracts)', type: 'AGREEMENT_RELATED_TRACTS' },
+  { name: 'Comments Uploader', type: 'AGREEMENT_COMMENTS' },
+  { name: 'Agreement Upload (Agreement Header Info)', type: 'AGREEMENT_HEADER', redirectTo: '/land/agreements' },
+  { name: 'Agreement Upload (Agreement Provisions)', type: 'AGREEMENT_PROVISIONS', redirectTo: '/land/agreements' },
+  { name: 'Agreement Upload (Related Tracts)', type: 'AGREEMENT_RELATED_TRACTS', redirectTo: '/land/agreements' },
+  { name: 'Agreement Upload (Related Wells)', type: 'AGREEMENT_RELATED_WELLS', redirectTo: '/land/agreements' },
   { name: 'Transfer Shape to M1 Layer', type: 'SHAPE_TO_M1_LAYER', initialActiveStepNumber: 1, skipReview: true }
 ]
 
