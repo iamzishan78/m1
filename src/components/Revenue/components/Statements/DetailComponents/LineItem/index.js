@@ -68,7 +68,7 @@ export default function LineItem(props) {
           </Button>
         </Grid>
         <Grid item>
-          <Button variant="contained" className={classes.exitButton} onClick={redirectHandler}>
+          <Button id="exitButton" variant="contained" className={classes.exitButton} onClick={redirectHandler}>
             Exit
           </Button>
         </Grid>
