@@ -498,6 +498,7 @@ export function DetailComponents(props) {
             <div className={classes.tabsHeader}>
               <StyledTabs
                 value={tab}
+                id={"header-tabs"}
                 onChange={(event, tab) => {
                   setButtonScroll(true);
                   setTab(tab);
