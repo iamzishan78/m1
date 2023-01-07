@@ -40,8 +40,8 @@ Cypress.Commands.add("checkAndLogin", () => {
     cy.log('==== STEP: LOGGING IN ===')
     cy.get('body').then(($body) => {
         if ($body.find('#workSpaceSignin').length) {
-            cy.get('input').type(workSpace)
-            cy.get('.MuiButtonBase-root').click()
+            cy.get('input').type(workSpace, { force: true })
+            cy.get('.MuiButtonBase-root').click({ force: true })
 
             cy.get('#signInName', { timeout: longTimeout }).should('be.visible').type(loginCredential.email)
             cy.get('#password').type(loginCredential.passsword)
