@@ -514,6 +514,7 @@ export default function RelatedFile(props) {
         {selectedType !== "update" && (
           <>
             <ListItem
+              id="newExisitingTab"
               style={{
                 flexDirection: "column",
                 justifyContent: "start",
@@ -532,6 +533,7 @@ export default function RelatedFile(props) {
                   New Document
                 </h4>
                 <h4
+                  id="existingDocumentTab"
                   onClick={() => {
                     setSelectedType("existing");
                   }}
@@ -650,6 +652,7 @@ export default function RelatedFile(props) {
           <TextField
             className={classes.maxWidth}
             multiline
+            id="fileNumber"
             disabled={selectedType === "existing"}
             value={newDocument?.documentNumber}
             onChange={(e) => {
@@ -671,6 +674,7 @@ export default function RelatedFile(props) {
           <TextField
             className={classes.maxWidth}
             multiline
+            id="fileName"
             disabled={selectedType === "existing"}
             value={newDocument?.documentName}
             onChange={(e) => {
@@ -690,6 +694,7 @@ export default function RelatedFile(props) {
         >
           <h4>File Type</h4>
           <DocumentType
+            id="fileType"
             disabled={selectedType === "existing"}
             className={classes.maxWidth}
             documentTypes={documentTypes}
@@ -717,7 +722,7 @@ export default function RelatedFile(props) {
             variant="inline"
             format="MM/DD/YYYY"
             margin="normal"
-            id="date-picker-inline"
+            id="fileDate"
             value={newDocument?.dateTime ? new Date(newDocument.dateTime) : null}
             onChange={(date) => {
               setNewDocument({
@@ -769,6 +774,7 @@ export default function RelatedFile(props) {
           }}>
             <h4>Book</h4>
             <TextField
+              id="book"
               className={classes.maxWidth}
               multiline
               value={newDocument?.book}
@@ -786,6 +792,7 @@ export default function RelatedFile(props) {
           }}>
             <h4>Page</h4>
             <TextField
+              id="page"
               className={classes.maxWidth}
               multiline
               value={newDocument?.page}
@@ -800,6 +807,7 @@ export default function RelatedFile(props) {
           <div>
             <h4>Instrument #</h4>
             <TextField
+              id="instrument"
               className={classes.maxWidth}
               multiline
               value={newDocument?.instrument}
@@ -1008,10 +1016,12 @@ export default function RelatedFile(props) {
         </Button>
 
         <Button
+          id="saveDocumentButton"
           variant="contained"
           color="secondary"
           size="medium"
           disableElevation
+          id="addFile"
           disabled={(!fileData && !newDocument.fileId) || (selectedType === "existing" && !newDocument.fileId)}
           onClick={() => {
             if (selectedType === "existing") {
