@@ -93,10 +93,10 @@ const ApexChart = ({ productionData, checkData }) => {
       for(let i=0; i<activeCheckData.length; i++){
         const pData = productionData.find(p => p.ReportDate === moment(activeCheckData[i].ReportDate).format('MM/yyyy'))
         if(pData){
-          let label = moment(activeCheckData[i].ReportDate).format('MMM')
-          if(moment(activeCheckData[i].ReportDate).month() === 0){
-            label = moment(activeCheckData[i].ReportDate).format('MMM yyyy')
-          }
+          let label = moment(activeCheckData[i].ReportDate).format('MMM yyyy')
+          // if(moment(activeCheckData[i].ReportDate).month() === 0){
+          //   label = moment(activeCheckData[i].ReportDate).format('MMM yyyy')
+          // }
           if(!labels.find(l => l === label))
             labels.push(label)
           const index = labels.findIndex(l => l === label)
