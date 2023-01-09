@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useMutation } from "@apollo/client";
 
@@ -18,12 +18,15 @@ import TableHeader from "components/Table/constants/parcel-documents-header-sche
 // Utilities
 import { usetableStyles } from "./style";
 import { DELETEDESCRIPTORRELATEDFILE } from "graphQL/useMutationDeleteDescriptorFile";
+import { AppContext } from "AppContext";
+import { DrawerContext } from "../DrawerContext";
 
 function AgreementDocumentsTable(props) {
   const classes = usetableStyles();
   const [isDeletePopup, setDeletePopup] = useState(false);
   const [resetSelectedRow, setResetSelectedRow] = useState(false);
   const { moduleId } = props;
+  const [, setDrawer] = useContext(DrawerContext);
 
   const [updateParcelDocument] = useMutation(DELETEDESCRIPTORRELATEDFILE, {
     onCompleted: () => {
@@ -34,19 +37,24 @@ function AgreementDocumentsTable(props) {
     onError: (err) => { },
   }, { refetchQueries: ["getESSimpleSearch"], awaitRefetchQueries: true });
 
+  const [, setStateApp] = useContext(AppContext)
+
   const options = {
     ...props.options,
     customToolbar: () => {
       return (
         <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
           <Button
+            id="addRelatedDcmnButton"
             color="secondary"
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {
-              if (props.setDrawer) props.setDrawer("dcmnt");
+              if (!props.setDrawer)return
+              props.setDrawer("dcmnt");
+              setStateApp(stateApp => ({...stateApp, selectedDocument: null}))
             }}
           >
-            + ADD RELATED DCMNT
+            + ADD DOCUMENT
           </Button>
         </div>
       );
@@ -71,6 +79,11 @@ function AgreementDocumentsTable(props) {
         </div>
       );
     },
+    onRowClick: (_, { dataIndex }) => {
+      setDrawer('dcmnt')
+
+      setStateApp(stateApp => ({...stateApp, selectedDocument: props.rows[dataIndex]}))
+    }
   };
 
   const formatHits = (hits) => {
