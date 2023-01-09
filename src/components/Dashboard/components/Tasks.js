@@ -128,8 +128,17 @@ const Tasks = () => {
   useEffect(() => {
     if (orginalData && Array.isArray(orginalData.activities)) {
       const sortCallBack = (a, b) => Number(a.dateTime) - Number(b.dateTime)
-      const filterDate = tab === 0 ? moment().add(7, "days") : moment();
-      if (tab === 0) {
+      
+      if(tab === 0){
+        setData(
+          orginalData.activities.filter(activity => 
+            !activity.isClosed &&
+            stateApp.user._id === activity.ownerId &&
+            moment.parseZone(new Date(+activity.dateTime))?.isSame(new Date(), "day")
+          ).sort(sortCallBack)
+        )
+      } else if (tab === 1) {
+        const filterDate = moment().add(7, "days");
         setData(
           orginalData.activities.filter(
             (activity) =>
@@ -189,6 +198,7 @@ const Tasks = () => {
                 setTab(newValue);
               }}
             >
+              <Tab label="Today" />
               <Tab label="Upcoming" />
               <Tab label="Overdue" />
             </Tabs>
