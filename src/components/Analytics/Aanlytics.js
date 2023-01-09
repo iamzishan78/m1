@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Switch, Route, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { makeStyles } from "@material-ui/core/styles";
 
 // import { toggleQuickActionsPanel, setActiveModule } from "store/actions/contactActions";
 import { setActiveModule, toggleQuickActionsPanel } from "store/actions/commonActions";
@@ -13,34 +12,8 @@ import LandAnalytics from "components/Analytics/components/Land";
 import ActivitiesDashboard from "components/Activities/components/ActivitiesDashboard";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import QuickActionPanel from "components/Land/components/QuickActionPanel";
-import ContactsTable from "components/Table/Contact/ContactsTable";
 
 import { analyticsManagementRoutes } from "utils/data";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginTop: "65px",
-    "& div": {
-      "&>.MuiPaper-root": {
-        display: "flex",
-        "flex-direction": "column",
-        height: "calc(100vh - 65px)",
-        // top: "65px",
-        position: "relative",
-        "align-items": "stretch",
-        "&>.MuiPaper-root": {
-          display: "contents",
-        },
-        "&>:nth-child(3)": {
-          height: "inherit !important",
-        },
-        "&> table": {
-          bottom: 0,
-        },
-      },
-    },
-  },
-}));
 
 const Components = {
   Land: LandAnalytics,
@@ -49,7 +22,6 @@ const Components = {
 };
 
 export default function Analytics() {
-  const classes = useStyles();
   const location = useLocation();
   const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
@@ -57,7 +29,7 @@ export default function Analytics() {
   const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
   useEffect(() => {
-    const option = Object.values(analyticsManagementRoutes).find((item) => {     
+    const option = Object.values(analyticsManagementRoutes).find((item) => {
       return item.link === location.pathname
     });
     if (option) {
@@ -83,16 +55,16 @@ export default function Analytics() {
     const allPaths = JSON.parse(JSON.stringify(analyticsManagementRoutes));
     const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICS);
     const allAllowedPaths = {}
-    if(feature?.JSON){
+    if (feature?.JSON) {
       const data = JSON.parse(feature.JSON)
       Object.keys(allPaths).forEach(path => {
-        if(data.options.includes(allPaths[path].value)){
+        if (data.options.includes(allPaths[path].value)) {
           allAllowedPaths[path] = allPaths[path]
         }
       })
     }
     setAllowablePaths(allAllowedPaths)
-  },[stateApp?.user])
+  }, [stateApp?.user])
 
   return (
     <>
