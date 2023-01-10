@@ -603,7 +603,7 @@ function ContactDetailCard(props) {
   const togglePullout = () => dispatch(toggleRightColumn());
 
   return contactData ? (
-    <div style={{ position: "absolute", top: "64px", maxHeight: "calc(100vh - 64px)", width: "100%", backgroundColor: "#F2F2F2" }}>
+    <div style={{ position: "absolute", top: "41px", maxHeight: "calc(100vh - 64px)", width: "100%", backgroundColor: "#F2F2F2" }}>
       {/**
        * Detail title section
        */}
@@ -799,7 +799,7 @@ function ContactDetailCard(props) {
                 showDescription={false}
                 targetLabel="Contact"
                 ownerTitle="Contact Owner"
-                commentsWidth="25vw"
+                commentsWidth="23vw"
                 viewAllDocuments
                 menuComponent={
                   <IconButton className={classes.menuIcon} onClick={handleClick}>

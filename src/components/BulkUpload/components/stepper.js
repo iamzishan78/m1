@@ -304,7 +304,7 @@ export default function CustomizedSteppers(props) {
         }));
       } else {
         const changeDate = new Date();
-        const statementInfo = stateApp.revenueStatementInfo;
+        const statementInfo = stateApp.revenueStatementInfo || {};
         data_to_send.forEach((element) => {
           element.createBy = userID;
           element.createAt = changeDate;

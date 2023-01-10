@@ -420,9 +420,11 @@ export default function MetadataDrawer(props) {
         </div>
         <div style={{
           width: props.commentsWidth,
-          position: "absolute",
+          // position: "absolute",
           bottom: "10px",
-
+          display:'flex',
+          flex:'1',
+          flexDirection:'column'
         }}>
           <CommentComponent
             targetLabel={targetLabel}
@@ -441,7 +443,7 @@ MetadataDrawer.defaultProps = {
   title: "Metadata",
   documentsTitle: "Documents",
   showDescription: true,
-  commentsWidth: "600px",
+  commentsWidth: "570px",
   viewAllDocuments: false,
   ownerTitle: "Owner",
   ownerPlaceHolder: "Assign Approver",
