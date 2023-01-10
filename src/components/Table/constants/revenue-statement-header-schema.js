@@ -1,34 +1,72 @@
+import { GlobalStickyStyles } from "GlobalSettings";
+import { useHistory } from "react-router-dom";
 import { history } from "store";
+
+const styles = {
+  width: "fit-content",
+  fontWeight: 600,
+  color: "#17aadd",
+  cursor: "pointer",
+};
+
+const ComponentPropertyName = ({ value, tableMeta }) => {
+  const history = useHistory();
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    // style={{borderRight: 'solid red'}}
+    >
+      <a
+        href={`/revenue/statement/details/${tableMeta.rowData[0]}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          history.push(`/revenue/statement/details/${tableMeta.rowData[0]}`);
+        }}
+        style={styles}
+      >
+        {(value
+          ? `${value}- ${tableMeta?.rowData[2]}`
+          : tableMeta?.rowData[2]) || 'NA'}
+      </a>
+    </div>
+  );
+}
 
 const RevenueStatementHeadCells = [
   {
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
+  
   {
     name: "checkNumber",
     label: "Check Number",
     esKey: "checkNumber.keyword",
     options: {
+      ...GlobalStickyStyles({
+        setCellProps: {
+          left: "108px",
+        },
+        setCellHeaderProps: {
+          left: "108px",
+        }
+      }),
+      customRender: (value, tableMeta) => <ComponentPropertyName value={value} tableMeta={tableMeta} />,
       sort: true,
       filter: true,
-      customRender: (value, tableMeta, updateValue) => {
-        return <p
-          onClick={(e) => {
-            e.stopPropagation();
-            history.push(`/revenue/statement/details/${tableMeta.rowData[0]}`);
-          }}
-          style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-        >
-          {value || 'N/A'}
-        </p>
-      },
     },
   },
   {
     name: "purchaserName",
     label: "Purchaser Name",
     esKey: "payor.name.keyword",
+    options: {
+      display: false
+    }
   },
   {
     name: "checkAmount",
