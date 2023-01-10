@@ -12,7 +12,7 @@ export const contactDetailInitialData = [
   { index: 0, value: "contactInformation", Icon: ContactInformationIcon, label: "Contact Info" },
   { index: 4, value: "unitInterests", Icon: UnitIcon, label: "Unit Interests" },
   { index: 3, value: "wellInterests", Icon: WellIcon, label: "Well Interests" },
-  { index: 5, value: "parcelInterests", Icon: ParcelIcon, label: "Tract Interests" },
+  { index: 5, value: "tractInterests", Icon: ParcelIcon, label: "Tract Interests" },
   { index: 2, value: "taxRollInterests", Icon: TaxOwnerIcon, label: "Tax Roll Interests" },
   { index: 1, value: "activities", Icon: ActivitiesIcon, label: "Activities" },
   { index: 7, value: "documents", Icon: DocumentsIcon, label: "Documents" },
