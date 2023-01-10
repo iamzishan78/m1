@@ -13,6 +13,21 @@ describe('Add & Delete Document Spec', () => {
         cy.checkAndLogin()
 
         cy.log('==== STEP: ADD DOCUMENT ====')
+        cy.get('#addDocument', { timeout: longTimeout }).should('be.visible')
+
+
+        cy.log('==== STEP: CLICK ON VIEW COLUMN ICON ====')
+        cy.get("#viewColumnIcon").click()
+        cy.wait(1000)
+
+        cy.log('==== STEP: CLICK ON INTERNAL COMPANY COLUMN CHECKBOX ====')
+        cy.get("#internal_company").scrollIntoView().check()
+
+        cy.log('==== STEP: CLICK ON STATE VIEW COLUMN CHECKBOX ====')
+        cy.get("#state").scrollIntoView().check()
+
+        cy.get('body').type('{esc}');
+
         cy.get('#addDocument', { timeout: longTimeout }).should('be.visible').click()
 
         cy.log('==== STEP: ADD FILE NUMBER ====')
@@ -27,12 +42,13 @@ describe('Add & Delete Document Spec', () => {
 
         cy.log('==== STEP: ADD FILE DATE  ====')
         cy.get('#filedate').type('2022-01-01')
-        cy.get('#documentdetails').scrollTo('bottom')
+        // cy.get('#documentdetails').scrollTo('bottom')
 
         cy.log('==== STEP: ADD COMPANY ID ====')
-        cy.get('#dropdown-3').children(1).children(0).type('924{enter}')
+        cy.get("[id='Internal Company-field']").scrollIntoView().children(1).children(0).type('924{enter}')
 
-        cy.get('#multiselect-4').children(1).children(0).click()
+        cy.log('==== STEP: ADD STATE ====')
+        cy.get("[id='State-field']").children(1).children(0).click()
         cy.get('.react-select__menu-list').children().eq(1).click()
         cy.get('.react-select__menu-list').children().eq(2).click()
 

@@ -190,7 +190,7 @@ export default function CommentComponent(props) {
   const [profileImage, setProfileImage] = useState(null);
   const [commentsArray, setCommentsArray] = useState([]);
   const [showActions, setShowActions] = useState(false);
-  const [isEdit,setIsEdit] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const [showCommentActionId, setShowCommentActionId] = useState(null);
   const [loadingComments, setLoadingComments] = useState(true);
   const [scrollIntoView, setScrollIntoView] = useState(false);
@@ -322,21 +322,21 @@ export default function CommentComponent(props) {
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")
+        .split("\n")
+        .map((line) => {
+          if (line.trim() !== ".") {
+            return line.trim();
+          }
+        })
+        .join("\n")
       : `${value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")}`;
+        .split("\n")
+        .map((line) => {
+          if (line.trim() !== ".") {
+            return line.trim();
+          }
+        })
+        .join("\n")}`;
 
   const updateComment = (value) => {
     setLoadingComments(true);
@@ -496,13 +496,12 @@ export default function CommentComponent(props) {
                                 showCommentActionId === eachComment._id &&
                                 editCommentId !== eachComment._id && (
                                   <div
-                                    className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${
-                                      !(
+                                    className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
                                         eachComment?.user?.email === stateApp.user.email &&
                                         showCommentActionId === eachComment._id &&
                                         editCommentId !== eachComment._id
                                       ) && classes.hideMenuIcon
-                                    }`}
+                                      }`}
                                   >
                                     <ActionMenu
                                       eachComment={eachComment}
@@ -576,7 +575,7 @@ export default function CommentComponent(props) {
                 <Grid item style={{ maxWidth: "55px" }}>
                   <IconButton
                     className={classes.commentView}
-                    // style={{ top: "3px" }}
+                  // style={{ top: "3px" }}
                   >
                     {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
                   </IconButton>
@@ -612,6 +611,7 @@ export default function CommentComponent(props) {
                           setEditCommentId={setEditCommentId}
                           setIsEdit={setIsEdit}
                           setShowActions={setShowActions}
+                        // fieldWidth={`${size - 23}px`}
                         />
                       </div>
                   {/*  )}*/}
@@ -673,7 +673,7 @@ export const CommentText = ({ eachComment, users }) => {
   );
 };
 
-const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment,  setShowActions,setIsEdit }) => {
+const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment, setShowActions, setIsEdit }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
