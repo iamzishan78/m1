@@ -4,12 +4,11 @@ import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
 import debounce from "lodash/debounce";
 import { copy } from "components/Shared/functions";
-
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
-
 import { AppContext } from "AppContext";
-
+import {useLazyQuery} from "@apollo/client";
+import {GET_ALL_CUSTOM_DATA_KEYS} from "graphQL/useQueryGetAllCustomKeys";
 const useStyles = makeStyles((theme) => ({
   gridItem: {
     display: "flex",
@@ -51,7 +50,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
     onChange,
     query: GET_ES_SIMPLE_FILTER,
     searchFields: filter.searchFields,
-    filters: [{ field: "shapeJson.properties.type.keyword", value: "agreement" }, ...appliedFilters.filter((af, i) => i < index)],
+    filters: [{ field: "shapeJson.properties.custom_data", value: "custom_data" }, ...appliedFilters.filter((af, i) => i < index)],
     extendSearchQuery: "",
     custom: filter.custom,
   };
@@ -62,8 +61,17 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
     </FormControl>
   );
 };
-
 export default function CustomDataFilters(props) {
+
+  const [getCustomKey, { data: customData }] = useLazyQuery(
+      GET_ALL_CUSTOM_DATA_KEYS,
+      { fetchPolicy: "no-cache" }
+  );
+
+  useEffect(()=>{
+    getCustomKey();
+  },[]);
+
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [filterList, setFilterList] = useState([[], []]);
@@ -88,8 +96,7 @@ export default function CustomDataFilters(props) {
           landSearchFilters: { ...stateApp.landSearchFilters, provisions: landProvisionsFilters },
         }));
       }, 1000),
-    [setStateApp, stateApp.landSearchFilters.provisions]
-  );
+    [setStateApp, stateApp.landSearchFilters.provisions]);
 
   const onFilterChange = (request, callback, filter, index) => {
     let _filterList = [...filterList];
@@ -103,7 +110,7 @@ export default function CustomDataFilters(props) {
 
   return (
     <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
-      {customDataFilters.map((filter, index) => (
+      {customDataFilters?.map((filter, index) => (
         <Grid item key={index} sm={12} className={classes.gridItem}>
           <AutoCompleteDropdown
             classes={classes}
