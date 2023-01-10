@@ -121,6 +121,19 @@ const useStyles = makeStyles({
           fill: "grey",
         },
       },
+  inputRoot: (props) =>
+  props.withContactCard
+    && {
+      "& .MuiAutocomplete-endAdornment": {
+        right: "60px !important",
+        "& .MuiAutocomplete-clearIndicator": {
+          // display: "none"
+        },
+        "& .MuiAutocomplete-popupIndicator": {
+          display: "none",
+        },
+      },
+    },
   listbox: {
     boxSizing: "border-box",
     "& ul": {
@@ -272,7 +285,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       value={nameAutValue}
       disableListWrap
       classes={classes}
-      className={props.withContactCard ? paramUseStyles.adornmentAutocomplete : ""}
+      // className={props.withContactCard ? paramUseStyles.adornmentAutocomplete : ""}
       ListboxComponent={ListboxComponent}
       ListboxProps={ListboxProps}
       options={mongoEntitiesArray}
