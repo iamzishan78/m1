@@ -14,7 +14,7 @@ import Table from "components/Shared/M1nTable/components/Table";
 // QUERIES
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { GET_SHAPE_OWNERS_DATA_BY_ID } from "graphQL/useQueryShapeOwnersDataById";
-import { deepEqualObjects, copy } from "components/Shared/functions";
+import { deepEqualObjects, copy, esExtentedSearch } from "components/Shared/functions";
 
 // Header Schemas
 import TableHeader from "components/Table/constants/map-grid-unit-header-schema";
@@ -82,7 +82,7 @@ function MapGridUnitTable(props) {
 
   useEffect(() => {
     setTableMeta({
-      extendSearchQuery: searchInput || stateApp.landSearchQuery,
+      extendSearchQuery: esExtentedSearch(stateApp.landSearchQuery, searchInput),
       // selectedGridView: GridViewModule || defaultView,
       // searchFields: ["*"],
       TableHeader: copy(TableHeader),

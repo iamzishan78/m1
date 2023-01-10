@@ -15,6 +15,7 @@ describe('Agreement Existing Tracts Spec', () => {
 
         cy.checkAndLogin()
 
+        cy.wait(10000)
         cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
 
         cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout }).then(response => {

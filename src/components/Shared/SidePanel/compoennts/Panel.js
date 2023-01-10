@@ -417,7 +417,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
                 <ListItemText primary={title} />
                 {
                   type === "layer" &&
-                    <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} />
+                  <AddGroup userId={stateApp.user.mongoId} above={layerMap[layerMap.length - 1]?.id} />
                 }
               </div>
               {headerButton && (
