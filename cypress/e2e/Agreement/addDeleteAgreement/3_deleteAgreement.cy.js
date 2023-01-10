@@ -13,43 +13,8 @@ describe('Delete Agreement Spec', () => {
 
         cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
 
-        cy.log('==== STEP: SEARCH AGREEMENT ON GRID ====')
-        cy.gridSearch(agreementObj.agreementName.value, 'getESSimpleSearch').then(response => {
-            const hits = response.response.body.data.getESSimpleSearch.hits
-            const cypressAgreement = hits.find(hit => hit.agreementName === agreementObj.agreementName.value)
-            const cypressAgreementId = cypressAgreement._id
+        cy.deleteAndVerifyAgreement(agreementObj.agreementName.value, agreementObj.agreementNumber.value)
 
-            if (!cypressAgreement)
-                throw new Error('Sample Agreement added by cypress not found');
-
-            const indexOfcypressAgreement = hits.findIndex(hit => hit._id === cypressAgreement._id) + 1
-
-            cy.log('==== STEP: OPEN CYPRESS GENERATED AGREEMENT DETAIL  ====')
-            cy.getTableCell("Agreement", indexOfcypressAgreement).then(($agreementNameCell) => {
-                cy.wrap($agreementNameCell).contains(`${agreementObj.agreementNumber.value} - ${agreementObj.agreementName.value}`).scrollIntoView().click({waitForAnimations: false})
-                cy.get(agreementObj.agreementNumber.id, { timeout: longTimeout }).should('be.visible')
-
-                cy.log('==== STEP: DELETE AGREEMENT PROCESS START ====')
-                cy.get("#moreHorizIcon",{ timeout: longTimeout }).children().click()
-                cy.interceptApi('getESSimpleSearch')
-                cy.interceptApi('updateCustomLayer')
-                cy.deleteConfirmation()
-                cy.verifyApiResponse('@updateCustomLayerApi')
-
-                cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
-
-                cy.gridSearch(agreementObj.agreementName.value, 'getESSimpleSearch').then(response => {
-                    const hits = response.response.body.data.getESSimpleSearch.hits
-                    const isAggreementExist = hits.some(hit => hit.id === cypressAgreementId)
-
-                    if (isAggreementExist)
-                        throw new Error('Agreement still exist');
-
-                    cy.wait(500)
-                })
-
-            })
-        })
 
     })
 

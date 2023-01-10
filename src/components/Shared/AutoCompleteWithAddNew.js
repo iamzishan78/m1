@@ -23,11 +23,12 @@ const useStyles = makeStyles({
   },
 });
 
-const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant }) => {
+const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, type }) => {
   const classes = useStyles();
 
-  const onInputChange = (event) => {
-    if (onSearch) onSearch(event?.target?.value);
+  const onInputChange = (event, value) => {
+    const _value = event?.target?.value ?? value;
+    if (onSearch) onSearch(_value);
   };
 
   return (
@@ -36,6 +37,7 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant })
       value={value}
       disableListWrap
       classes={classes}
+      id="autoCompleteWithAddNew"
       options={options}
       getOptionLabel={(option) => {
         if (typeof option === "string") {

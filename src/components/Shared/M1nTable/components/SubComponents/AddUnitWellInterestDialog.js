@@ -7,9 +7,12 @@ import TextField from "@material-ui/core/TextField";
 import FormControl from "@material-ui/core/FormControl";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
+import CloseIcon2 from "components/Shared/svgIcons/KeyboardTabBlackIcon";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+
 import DeleteIcon from "@material-ui/icons/Delete";
 import Grid from "@material-ui/core/Grid";
-import { CircularProgress, Dialog } from "@material-ui/core";
+import { CircularProgress, Dialog, ListItemIcon, ListItemText, Menu,MenuItem } from "@material-ui/core";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { WELL_INTEREST_SELECT_OPTIONS } from "graphQL/useQueryWellInterestSelectOptions";
 import { ADD_SHAPE_WELL_INTEREST } from "graphQL/useMutationAddShapeWellInterest";
@@ -22,6 +25,7 @@ import { AppContext } from "AppContext";
 import WellSearchApiField from "components/Shared/Forms/Fields/WellSearchApiField";
 import AutoCompleteFieldComponent from "components/Shared/Forms/Fields/AutoCompleteField";
 import { NumberFormatCustom } from "components/Shared/Forms/Formatting/NumberFormatCustom";
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -56,6 +60,7 @@ function AddUnitInterestDialog(props) {
   const [selectedWell, setSelectedWell] = useState(null);
   const [wellInterestSelectOptions, setWellInterestSelectOptions] = useState({});
   const [valid, setValid] = useState({});
+  const [anchorEl, setAnchorEl] = useState();
 
   const [getWellInterestsSelectOptions, { data: dataWellInterestsSelectOptions }] = useLazyQuery(WELL_INTEREST_SELECT_OPTIONS, {
     fetchPolicy: "cache-and-network",
@@ -194,9 +199,16 @@ function AddUnitInterestDialog(props) {
     if (well) reset(well)
   }
 
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   const content = (
     <div style={{ padding: "30px" }}>
-      <Grid item xs={12} style={{ minHeight: "35px" }}>
+      {/* <Grid item xs={12} style={{ minHeight: "35px" }}>
         <h4
           style={{
             margin: "0 0 15px 0",
@@ -229,8 +241,65 @@ function AddUnitInterestDialog(props) {
             <CloseIcon fontSize="small" />
           </IconButton>
         </div>
-      </Grid>
+      </Grid> */}
 
+<Grid item xs={12} style={{ minHeight: "35px" }}>
+      <h4
+        style={{
+          margin: "0 0 15px 0",
+          float: "left",
+          fontSize: "1.1rem",
+        }}
+      >
+        {/* {props.seletedTract ? `Update ${props.shapeType} Tract` : `Associate Tract to ${props.shapeType}`} */}
+        {props.wellInterest
+            ? `Update ${props.shapeType} Well`
+            : `Add ${props.shapeType} Well`}
+      </h4>
+      <div style={{ float: "right" }}>
+        {props.wellInterest && (
+          <>
+            <IconButton
+              size="small"
+              component="span"
+              style={{
+                background: "transparent",
+                paddingLeft: "10px",
+                align: "center",
+              }}
+              onClick={handleMenuClick}
+            >
+              <MoreHorizIcon id="tractMoreHorizIcon" size="medium" />
+            </IconButton>
+          </>
+        )}
+        <IconButton onClick={!loading ? handleClose : undefined} size="small">
+          <CloseIcon2 fontSize="small" />
+        </IconButton>
+        <Menu
+          id="dealMenu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+          className={classes.menu}
+          getContentAnchorEl={null}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          transformOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <MenuItem
+            onClick={() => {
+              openConfirmationDialog();
+            }}
+          >
+            <ListItemIcon style={{ minWidth: '30px' }}>
+              <DeleteIcon size="medium" />
+            </ListItemIcon>
+            <ListItemText id="deleteTract">Delete</ListItemText>
+          </MenuItem>
+        </Menu>
+      </div>
+    </Grid>
       <div>
         <WellSearchApiField
           setTenantWell={setTenantWell}
@@ -379,6 +448,7 @@ function AddUnitInterestDialog(props) {
           variant="contained"
           color="secondary"
           size="medium"
+          id="saveWellButton"
           disableElevation
           onClick={() => {
             handleValidate() && handleSave();
@@ -414,17 +484,17 @@ function AddUnitInterestDialog(props) {
       )}
       {
         props.drawerContainer &&
-          ReactDOM.createPortal(content, props.drawerContainer)
+        ReactDOM.createPortal(content, props.drawerContainer)
       }
       {
         !props.drawerContainer &&
-          <RightDialog
-            open={props.open}
-            handleClickDialogClose={handleClose}
-            width={props.width}
-          >
-            {content}
-          </RightDialog>
+        <RightDialog
+          open={props.open}
+          handleClickDialogClose={handleClose}
+          width={props.width}
+        >
+          {content}
+        </RightDialog>
       }
     </>
   );

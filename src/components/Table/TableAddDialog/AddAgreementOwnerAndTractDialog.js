@@ -328,10 +328,10 @@ function AddAgreementOwnerAndTractDialog(props) {
   };
 
   const handleSave = () => {
-    if (newTractError) {
-      dispatch(showErrorMessage(newTractError.message))
-      return;
-    }
+    // if (newTractError) {
+    //   dispatch(showErrorMessage(newTractError.message))
+    //   return;
+    // }
     const ownerToAdd = getValues();
 
     ownerToAdd.acquisition_nra = Number(ownerToAdd.acquisition_nra);
@@ -434,7 +434,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 
   useEffect(() => {
     if (nameAutValue?._id && nameAutValue?.name) {
-      reset({ ...getValues(), ownerEntity: nameAutValue._id, ownerName: nameAutValue.name });
+      reset({ ...getValues(), tract, ownerEntity: nameAutValue._id, ownerName: nameAutValue.name });
     }
   }, [nameAutValue]);
 
@@ -449,6 +449,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       }
       reset({
         ...getValues(),
+        tract,
         ownerEntity: value._id,
         ownerName: value.name,
         mineral_interest: value.ownerData.mineral_interest || "",
@@ -496,7 +497,7 @@ function AddAgreementOwnerAndTractDialog(props) {
               }}
               onClick={handleMenuClick}
             >
-              <MoreHorizIcon size="medium" />
+              <MoreHorizIcon id="tractMoreHorizIcon" size="medium" />
             </IconButton>
           </>
         )}
@@ -524,7 +525,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             <ListItemIcon style={{ minWidth: '30px' }}>
               <DeleteIcon size="medium" />
             </ListItemIcon>
-            <ListItemText>Delete</ListItemText>
+            <ListItemText id="deleteTract">Delete</ListItemText>
           </MenuItem>
         </Menu>
       </div>

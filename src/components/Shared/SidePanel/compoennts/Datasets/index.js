@@ -34,8 +34,8 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'auto',
         maxHeight: '274px',
         paddingTop: '10px',
-        borderBottom:'1px solid #263451',
-        paddingBottom:'20px',
+        borderBottom: '1px solid #263451',
+        paddingBottom: '20px',
         ...scrollbarStyle,
 
         "& .item": {
@@ -228,7 +228,7 @@ function Datasets({ headerButton, search, stateApp, setStateApp }) {
                 <ListItemText primary={'Data Sources'} />
                 {headerButton && (
                     <StyledListItemSecondaryAction>
-                        <Button onClick={() => headerButton.fn('manageSourceLayer')} color="secondary" variant="outlined" startIcon={<LayersIcon fontSize="medium" />}>
+                        <Button id="managerButton" onClick={() => headerButton.fn('manageSourceLayer')} color="secondary" variant="outlined" startIcon={<LayersIcon fontSize="medium" />}>
                             Manager
                         </Button>
                     </StyledListItemSecondaryAction>
@@ -253,7 +253,7 @@ function Datasets({ headerButton, search, stateApp, setStateApp }) {
                                             }}>{sourceName}</Typography>
                                         </Grid>
                                         <Grid item className='actionIcons'>
-                                            <GridOnIcon className='actionIcon' />
+                                            <GridOnIcon id={"grid-icon-" + sourceName} className='actionIcon' />
                                             {sourceName === 'M1 Platform' && <Box paddingRight='24px' />}
                                             {sourceName !== 'M1 Platform' && <DatasetMenu setChangedDataset={setChangedDataset} handleRemove={handleRemove} handleTransfer={handleTransfer} dataset={{ sourceName, Icon, categories, ...rest }} />}
                                         </Grid>
