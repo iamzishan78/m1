@@ -91,7 +91,6 @@ const useStyles = makeStyles({
       backgroundColor: "inherit",
     },
   },
-
   dateRoot: {
     color: "#ffffff",
     "& .MuiInputBase-inputMarginDense": {
@@ -232,6 +231,13 @@ function CheckDetailsEditableTable(props) {
         // }
       }
     });
+
+    // moving on to new row
+    const nextCell = RevenueStatementHeadCells[RevenueStatementHeadCells.findIndex(cell => cell.id === field) + 1];
+    if (nextCell && nextCell.id === "action") {
+      addNewRow();
+
+    }
   };
 
   useEffect(() => {
@@ -263,65 +269,17 @@ function CheckDetailsEditableTable(props) {
                 esIndex={cell.esIndex}
               />
             ) : focus && cell.type === "date" ? (
-              <>
-                <Date
-                  // className={tclasses.dateRoot}
-                  focus={focus}
-                  value={date}
-                  dataDateFormat="MM/DD/YYYY"
-                  onChange={(value) => {
-                    const date = moment(value).toISOString();
-                    let dRow = rows.find((r) => r._id === row._id);
-                    set(dRow, cell.id, date);
-                    onFieldChange(row._id, cell.id, cell.type)(date);
-                  }}
-                />
-                {/* <TextField
-                                    id='dateType'
-                                    type="date"
-                                    className={tclasses.dateRoot}
-                                    margin="dense"
-                                    fullWidth
-                                    dataDateFormat="MM/DD/YYYY"
-                                    dataDate={moment(date).format('MM/DD/YYYY')}
-                                    defaultValue={moment(date).format('YYYY-MM-DD')}
-
-                                    onKeyDown={(e) => {
-                                        if (e.keyCode === 13) {
-                                            e.stopPropagation();
-                                            let dRow = rows.find((r) => r._id === row._id);
-                                            onFieldChange(dRow._id, cell.id, cell.type)(get(dRow, cell.id))
-                                        }
-                                    }}
-                                    onBlur={() => {
-                                        setTimeout(() => {
-                                            let dRow = rows.find((r) => r._id === row._id);
-                                            onFieldChange(dRow._id, cell.id)(get(dRow, cell.id))
-                                        }, 100)
-
-                                    }}
-                                    onChange={(date) => {
-                                        if (date.target.value) {
-                                            let dRow = rows.find((r) => r._id === row._id);
-                                            set(dRow, cell.id, new Date(date.target.value))
-                                        }
-                                    }}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    InputProps={{
-                                        endAdornment: (
-                                            <IconButton
-                                                onClick={(event) => {
-                                                    props.onChange(event);
-                                                }}
-                                            >
-                                                <Clear style={{ height: 22, width: 22 }} />
-                                            </IconButton>
-                                        ),
-                                    }}
-                                />  */}
-              </>
+              <Date
+                focus={focus}
+                value={date}
+                dataDateFormat="MM/DD/YYYY"
+                onChange={(value) => {
+                  const date = moment(value).toISOString();
+                  let dRow = rows.find((r) => r._id === row._id);
+                  set(dRow, cell.id, date);
+                  onFieldChange(row._id, cell.id, cell.type)(date);
+                }}
+              />
             ) : cell.type === "action" ? (
               <ActionCell id={cell.id + index} onChange={onFieldChange(row._id, "IsDeleted")} />
             ) : (
@@ -405,7 +363,7 @@ function CheckDetailsEditableTable(props) {
   }, [elasticData, props.dependencyUpdate]);
 
   const addNewRow = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     rows.push({});
     setRows([].concat(rows));
     gridRef.current.focusCell({ x: rows.length - 1, y: 0 });
