@@ -26,13 +26,16 @@ import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
 import { handleSelectedGridChange, setColumnDisplayAndFilter } from "./helpers";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { findInFunction, formattingGridView, sortColumns } from "utils/helper";
+import { DrawerContext } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import moment from "moment";
 
 import GlobalSettings from "..//..//GlobalSettings.js";
 
+
 export const TableESHOC = (Component) => {
     const HocWithDefaultProps = function HOC(props) {
         const { stateApp, setStateApp, loadMore } = props
+        const [drawer, setDrawer] = useContext(DrawerContext);
         const dispatch = useDispatch();
         const client = useApolloClient();
         const [tableMeta, setTableMeta] = useState([]);
@@ -54,6 +57,7 @@ export const TableESHOC = (Component) => {
         const [searchedRows, setSearchedRows] = useState([])
 
         const [selectedRows, setSelectedRows] = useState([]);
+        const [allRowsSelected, setAllRowsSelected] = useState(false);
         const [initialFilters, setInitialFilters] = useState([]);
 
         const [selectedGridView, setSelectedGridView] = useState();
@@ -109,7 +113,7 @@ export const TableESHOC = (Component) => {
                     let filterColumns = cols.filter((col) => !col._id && !props.actionColumns.includes(col.label) && !props.actionColumns.includes(col.name));
                     let actionColumns = cols.filter((col) => props.actionColumns.includes(col.label) || props.actionColumns.includes(col.name));
 
-                    // Excluding actionColumns from veiw Columns 
+                    // Excluding actionColumns from veiw Columns
                     actionColumns = actionColumns.map(aC => ({ ...aC, options: { ...aC.options, viewColumns: false } }))
 
                     let columnsData = [...filterColumns, ...copy(metaDatas), ...actionColumns]
@@ -197,7 +201,7 @@ export const TableESHOC = (Component) => {
         }, [stateApp.user, props.targetLabel, props.showTracks]);
 
         useEffect(() => {
-            SetDependencyUpdate(!dependencyUpdate)
+            SetDependencyUpdate(!dependencyUpdate);
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
         useEffect(() => {
@@ -670,7 +674,7 @@ export const TableESHOC = (Component) => {
             updateColumnSorting: (columns) => updateGridViewRedux({ columns }),
         }), [selectedGridView, updateGridViewRedux])
 
-        const onTableChange = (action, tableState, rows, meta) => {
+        const onTableChange = async (action, tableState, rows, meta) => {
             tableState.esIndex = tableMeta.esIndex;
             // tableState.filters = tableMeta.filters ? tableMeta.filters : [];
             tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
@@ -709,6 +713,37 @@ export const TableESHOC = (Component) => {
                     tableActions.genericESAction();
                     break;
                 case "rowSelectionChange":
+                    if (tableMeta.isSelectedAllAllowed)
+                        if (tableState.selectedRows.data.length === tableState.data.length || tableState.selectedRows.data.length > tableState.data.length) {
+                            const isSelectAll = tableState.selectedRows.data.length === tableState.data.length
+                            const rowsSelected = []
+                            const total = isSelectAll ? tableState.count : tableState.selectedRows.data.length
+
+                            for (let i = 0; i < total; i++) { rowsSelected.push(isSelectAll ? i : tableState.selectedRows.data[i].index) }
+
+                            if (!allRowsSelected || allRowsSelected?.length === 0 || total !== tableState.count)
+                                setAllRowsSelected(rowsSelected)
+                            else {
+                                tableState.selectedRows.data = []
+                                setAllRowsSelected([])
+                            }
+                            const pageESVariables = copy(tableActions.pageESVariables)
+                            pageESVariables.variables.pagination = {
+                                first: total,
+                                after: null,
+                            }
+                            const allSelectedRows = await client.query({
+                                ...pageESVariables,
+                                query: GET_ES_SIMPLE_SEARCH,
+                            });
+
+                            tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
+                            meta.setSelectedRows(allSelectedRows?.data?.getESSimpleSearch.hits)
+                        } else {
+                            if (meta?._selectedRows?.length > 0)
+                                meta.setSelectedRows([])
+                            setAllRowsSelected(undefined)
+                        }
                     setSelectedRows(tableState.selectedRows.data)
                     break;
                 case "changePage":
@@ -785,7 +820,6 @@ export const TableESHOC = (Component) => {
                     && props.targetLabel !== "operator"
                     && props.targetLabel !== "owner"
                     && props.targetLabel !== "parcel"
-                    && props.targetLabel !== "agreement"
                     && (
                         <div style={{ height: "48px", display: "flex" }}>
                             <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
@@ -799,24 +833,28 @@ export const TableESHOC = (Component) => {
                     )
             },
             onRowClick: (rowData, { dataIndex, rowIndex }) => {
-                setAddToTable('update')
+                // setAddToTable('update');
+                // if(drawer === "wells"){
+                //   setDrawer(null);
+                // }
+                setDrawer("tract");
                 setClickedRow({ ...rows[dataIndex] })
             }
         }
         options.page = page
 
         const onInfiniteScroll = () => {
-            setCurrentRowsLength(currentRowsLength => {
+            setCurrentRowsLength(_currentRowsLength => {
                 Loading((loading) => {
-                    setRows(rows => {
-                        if (rows.length < currentRowsLength && !loading) {
+                    setRows(tableRows => {
+                        if (tableRows.length < _currentRowsLength && !loading) {
                             document.getElementById('pagination-next').click()
                         }
-                        return rows
+                        return tableRows;
                     })
-                    return loading
+                    return loading;
                 })
-                return currentRowsLength
+                return _currentRowsLength;
             })
         }
 
@@ -876,6 +914,9 @@ export const TableESHOC = (Component) => {
                     selectedGridView={selectedGridView}
                     setSelectedGridView={setSelectedGridView}
                     esHocProps={esHocProps}
+
+                    allRowsSelected={allRowsSelected}
+                    setAllRowsSelected={setAllRowsSelected}
                 />
             </span>
         );

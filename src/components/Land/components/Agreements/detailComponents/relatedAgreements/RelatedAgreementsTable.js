@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useMutation } from "@apollo/client";
 
@@ -20,10 +21,13 @@ import TableHeader from "components/Table/constants/related-agreements-header-sc
 import { usetableStyles } from "./style";
 import convert_date from "components/Shared/valueformatters/convert_date";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
+import { get } from "lodash";
+import AddNewRelatedAgreementDialog from "./AddNewRelatedAgreementDialog";
 
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
   const [isDeletePopup, setDeletePopup] = useState(false);
+  const [selectedRow, selectRow] = useState([]);
   const { moduleId } = props;
 
   const [deleteRelatedAgreements] = useMutation(DELETE_RELATED_AGREEMENTS);
@@ -34,6 +38,7 @@ function AgreementOwnersTractsTable(props) {
       return (
         <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
           <Button
+            id="addRelatedAgreementBtn"
             color="secondary"
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {
@@ -45,12 +50,17 @@ function AgreementOwnersTractsTable(props) {
         </div>
       );
     },
+    onRowClick: (rowData, { dataIndex, rowIndex }) => {
+      props.setDrawer("agrmt-existing");
+      selectRow({ ...props.rows[dataIndex] });
+    },
     customToolbarSelect: ({ data }) => {
       return (
         <div style={{ height: "48px", display: "flex" }}>
           <div style={{ marginTop: "6px", height: "35px", display: "flex" }}>
             <Tooltip title={"Delete"}>
               <IconButton
+                id="deleteAgreementIcon"
                 size="medium"
                 style={{ margin: "0 5px" }}
                 aria-label="delete"
@@ -126,11 +136,22 @@ function AgreementOwnersTractsTable(props) {
           m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
-          {`Do you want to delete the selected related agreement${
-            props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
-          }?`}
+          {`Do you want to delete the selected related agreement${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+            }?`}
         </DeleteConfirmationDialogContent>
       </Dialog>
+
+      {props.drawer === "agrmt-existing" && (
+        ReactDOM.createPortal(
+          <AddNewRelatedAgreementDialog
+            customLayerId={get(props, "customLayer._id")}
+            relatedAgreement={selectedRow}
+            setDrawer={props.setDrawer}
+            parentType="Agreement"
+            portal={props.portal}
+          />,
+          document.querySelector(props.portal))
+      )}
 
       <Table
         style={{ backgroundColor: "#fff" }}

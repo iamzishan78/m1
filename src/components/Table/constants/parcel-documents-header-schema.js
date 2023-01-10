@@ -1,6 +1,8 @@
 
 /* props is just a style object*/
 
+import { GlobalStickyStyles } from "GlobalSettings";
+
 const DocumentsHeadCells = [
   {
     name: "_id",
@@ -19,25 +21,21 @@ const DocumentsHeadCells = [
     label: "File Name",
     esKey: 'name.keyword',
     options: {
-      setCellProps: () => ({
-        style: {
-          minWidth: "150px",
-          whiteSpace: "pre-wrap",
-          position: "sticky",
-          left: "77px",
-          zIndex: 200
+      ...GlobalStickyStyles({
+        setCellProps: {
+          minWidth: "460px",
+          maxWidth: "492px",
+          boxShadow: "none",
+          left: "77px"
+        },
+        setCellHeaderProps: {
+          paddingLeft: '27px',
+          left: "77px"
         }
       }),
-      setCellHeaderProps: () => ({
-        style: {
-          position: "sticky",
-          minWidth: "150px",
-          left: "77px",
-          zIndex: 201
-        }
-      }),
-      filter: true
-    }
+      ignoreGlobal: true,
+      dbName: "shapeJson.properties.agreementNumber",
+    },
   },
   {
     name: "fileId",
