@@ -255,9 +255,9 @@ export default function CSVFileReader(props) {
 
   return (
     <div style={main_div}>
-      {props.selectedJob.name === "Comment Uploader" && (
+      {props.selectedJob.name === "Comments Uploader" && (
         <>
-          <label>Begin by selecting the entity in which the comment should be associated</label>
+          <div style={{ ...big_text, ...padding_div_top }}>Begin by selecting the entity in which the comment should be associated</div>
           <div>
             <Select
               variant="outlined"
