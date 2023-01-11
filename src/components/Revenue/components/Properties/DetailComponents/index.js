@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useContext, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import { debounce, get } from "lodash";
 
-import { Grid } from "@material-ui/core";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Typography, IconButton, Tabs, Tab, Button, Menu, MenuItem, ListItemIcon, ListItemText, Dialog } from "@material-ui/core";
@@ -12,20 +11,13 @@ import {
   MoreHoriz as MoreHorizIcon,
   Delete as DeleteIcon,
 } from "@material-ui/icons";
-import moment from "moment";
-import sortBy from 'lodash/sortBy'
-import orderBy from 'lodash/orderBy'
 
-import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
+
 import { UPSERT_USER_DESCRIPTOR } from "graphQL/useMutationUserDescriptor";
 import { UPDATE_PROPERTY } from "graphQL/useMutationUpdateProperty";
 import { IFARECONTACTS } from "graphQL/useQueryIfOwnersAreContacts";
 import { GET_PROPERTY } from "graphQL/useQueryGetProperty";
 import { AppContext } from "AppContext";
-import { GET_ASSOCIATED_WELL_PRODUCTION_DATA } from "graphQL/useQueryAssociatedWellProductionData";
-
-import { WellCardContext, WellCardContextProvider } from "components/WellCard/WellCardContext";
-import { WellProdChartContext, WellProdChartContextProvider } from "components/WellProdChart/WellProdChartContext";
 
 // Components
 import Tags from "components/Shared/Tagger";
@@ -38,12 +30,9 @@ import MetadataDrawer from "components/Revenue/components/Common/MetadataDrawer"
 import { MultipleOwnerToContactDrawerContainer } from "store/containers";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import DocViewer from "components/Shared/DocViewer";
-import ValidationFilter from "./ValidationFilter";
-import WellProdChart from "components/WellProdChart/WellProdChart";
-import TabButtons from "components/Shared/TabPanels/TabButtons";
-import AssociatedWellsProductionTable from "components/Table/Revenue/AssociatedWellsProductionTable";
+
 import AddNewRelatedAgreementDialog from "components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog";
-import OverShortComparison from 'components/Revenue/components/Properties/DetailComponents/Validation/OverShortComparison'
+import Validation from 'components/Revenue/components/Properties/DetailComponents/Validation'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -230,7 +219,7 @@ export default function DetailComponents(props) {
   const [showOwnerDialog, setShowOwnerDialog] = useState(false);
   const [selectedInterest, setSelectedInterest] = useState(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(1);
   const [refetchContacts, setRefetchContacts] = useState(false);
   const selectedTabRef = useRef(null);
   const [collapse, setCollapse] = useState(true);
@@ -530,224 +519,3 @@ export default function DetailComponents(props) {
     </NavHeader>
   );
 }
-
-const Validation = ({ propertyId }) => {
-  const [esFilters, setESFilters] = useState([]);
-  const [filterToggle, setFilterToggle] = useState(false);
-  const [associatedWellIds, setAssociatedWellIds] = useState([]);
-  const [wellProductionData, setWellProductionData] = useState([]);
-  const [checkDetailsData, setCheckDetailsData] = useState([]);
-  const [startDate, setStartDate] = useState(null);
-
-  const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });
-
-  useEffect(() => {
-    getESSimpleSearch({
-      variables: {
-          index: 'checkdetails_flat',
-          pagination: {
-              first: 10000,
-              after: null
-          },
-          search: {
-              query: "",
-              fields: [],
-          },
-          filters: [
-            {field: "property._id.keyword", value: propertyId },
-            {field: 'date', type: 'range', value: esFilters[0]?.value?.range?.date}
-          ]
-      }
-  })
-  },[esFilters])
-
-  useEffect(() => {
-    if(elasticData?.getESSimpleSearch?.hits?.length > 0){
-      let data = []
-      for(let i = 0; i < elasticData?.getESSimpleSearch?.hits?.length; i++) {
-        const check = elasticData?.getESSimpleSearch?.hits[i]
-        data.push({
-          product: check.product,
-          ReportDate: check.date,
-          oil: check.product === 'OIL' ? check.grossPropertyVolume : 0,
-          gas: check.product === 'GAS' ? check.grossPropertyVolume : 0,
-          water: check.product === 'WATER' ? check.grossPropertyVolume : 0,
-        })
-      }
-      data = sortBy(data, ['ReportDate']);
-      setCheckDetailsData(data)
-    }
-    
-  },[elasticData])
-
-  return (
-    <div style={{ background: "white", padding: "10px" }}>
-      <ValidationFilter
-        field={"date"}
-        defaultStartDate={startDate}
-        setESFilters={setESFilters}
-        setFilterToggle={setFilterToggle}
-        filterToggle={filterToggle}
-      />
-
-      <Grid
-        container
-        direction="row"
-        display="flex"
-        justify="space-between"      
-      >
-        <Grid item xs={6}>
-          <WellCardContextProvider>
-            <WellProdChartContextProvider>
-              <ValidationChart
-                filter={esFilters}
-                propertyId={propertyId}
-                setStartDate={setStartDate}
-                wellProductionData={wellProductionData}
-                setWellProductionData={setWellProductionData}
-                setAssociatedWellIds={setAssociatedWellIds}
-              />
-            </WellProdChartContextProvider>
-          </WellCardContextProvider>
-        </Grid>
-        <Grid item xs={6}>
-          <OverShortComparison productionData={wellProductionData} checkData={checkDetailsData}/>
-        </Grid>
-      </Grid>
-
-      <ValidationGrids associatedWellIds={associatedWellIds} />
-    </div>
-  );
-};
-
-const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellIds, wellProductionData, setWellProductionData }) => {
-  const [, setStateWellCard] = useContext(WellCardContext);
-  const [, setStateWellProdChart] = useContext(WellProdChartContext);
-  const [getAssociatedWellProductionData, { data: associatedWells }] = useLazyQuery(GET_ASSOCIATED_WELL_PRODUCTION_DATA);
-
-  useEffect(() => {
-    setStateWellCard((state) => {
-      return {
-        ...state,
-        wellProdHistory: JSON.parse(JSON.stringify(wellProductionData)),
-      };
-    });
-    setStateWellProdChart((state) => ({
-      ...state,
-      wellProdHistory: JSON.parse(JSON.stringify(wellProductionData)),
-    }));
-  }, [wellProductionData]);
-
-  useEffect(() => {
-    if (associatedWells?.getAssociatedWellProductionData?.length > 0) {
-      const wellData = JSON.parse(JSON.stringify(associatedWells.getAssociatedWellProductionData));
-      const productionData = [];
-      const wellIds = [];
-      wellData.forEach((data) => {
-        wellIds.push(data.well._id);
-        if (data.well.productionData.length > 0) {
-          let pData = JSON.parse(JSON.stringify(data.well.productionData));
-          if (filter[0].value.range.date.lte) {
-            pData = pData.filter((d) => moment(moment(d.data.ReportDate).format('MM/DD/yyyy')) <= moment(moment(filter[0].value.range.date.lte).format('MM/DD/yyyy')));
-          }
-          if (filter[0].value.range.date.gte) {
-            pData = pData.filter((d) => moment(moment(d.data.ReportDate).format('MM/DD/yyyy')) >= moment(moment(filter[0].value.range.date.gte).format('MM/DD/yyyy')));
-          }
-
-          pData.forEach((production) => {
-            production = JSON.parse(JSON.stringify(production.data));
-            const date = moment(production.ReportDate).format("MM/yyyy");
-            production.ReportDate = date;
-            const index = productionData.findIndex((d) => d.ReportDate === date);
-
-            if (index > -1) {
-              productionData[index].allocatedGas = get(productionData[index], "allocatedGas", 0) + get(production, "allocatedGas", 0);
-              productionData[index].allocatedOil = get(productionData[index], "allocatedOil", 0) + get(production, "allocatedOil", 0);
-              productionData[index].allocatedWater = get(productionData[index], "allocatedWater", 0) + get(production, "allocatedWater", 0);
-              productionData[index].gas = get(productionData[index], "gas", 0) + get(production, "gas", 0);
-              productionData[index].oil = get(productionData[index], "oil", 0) + get(production, "oil", 0);
-              productionData[index].water = get(productionData[index], "water", 0) + get(production, "water", 0);
-            } else {
-              production.allocatedGas = production.allocatedGas ? production.allocatedGas : 0;
-              production.allocatedOil = production.allocatedOil ? production.allocatedOil : 0;
-              production.allocatedWater = production.allocatedWater ? production.allocatedWater : 0;
-              production.gas = production.gas ? production.gas : 0;
-              production.oil = production.oil ? production.oil : 0;
-              production.water = production.water ? production.water : 0;
-              productionData.push(production);
-            }
-          });
-        }
-      });
-
-      let data = productionData.map(p => {
-        const d = p.ReportDate.split('/')
-        return ({ ...p, ReportDate: new Date(d[0]+'/01/'+d[1])})
-      })
-      setAssociatedWellIds(wellIds);
-      setWellProductionData(JSON.parse(JSON.stringify(orderBy(data, ['ReportDate'],['desc']).map(d=> ({ ...d, ReportDate: moment(d.ReportDate).format("MM/yyyy")})))));
-    }
-  }, [associatedWells, filter]);
-
-  useEffect(() => {
-    if (associatedWells?.getAssociatedWellProductionData) {
-      let minDate = new Date();
-      const wellData = JSON.parse(JSON.stringify(associatedWells.getAssociatedWellProductionData));
-
-      wellData.forEach((data) => {
-        let pData = data.well.productionData;
-        const newMinDate = new Date(
-          Math.min(
-            ...pData.map((element) => {
-              return new Date(element.data.ReportDate);
-            })
-          )
-        );
-        if (newMinDate < minDate) {
-          minDate = newMinDate;
-        }
-      });
-      setStartDate(minDate);
-    }
-  }, [associatedWells]);
-
-
-  useEffect(() => {
-    getAssociatedWellProductionData({
-      variables: {
-        relatedObject: propertyId,
-      },
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return <WellProdChart />;
-};
-
-const ValidationGrids = ({ associatedWellIds }) => {
-  const classes = useStyles();
-  const [selectedTab, setSelectedTab] = useState(0);
-
-  const Header = () => (
-    <TabButtons
-      labels={["Well Production"]}
-      value={selectedTab}
-      setValue={(n) => {
-        setSelectedTab(n);
-      }}
-    />
-  );
-
-  return (
-    <div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
-      {selectedTab === 0 && (
-        <AssociatedWellsProductionTable
-          targetLabel="propertyInterest"
-          parent="PropertyAssociatedWell"
-          header={<Header />}
-          associatedWellIds={associatedWellIds}
-        />
-      )}
-    </div>
-  );
-};
