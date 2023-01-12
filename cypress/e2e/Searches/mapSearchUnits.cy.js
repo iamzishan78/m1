@@ -14,6 +14,8 @@ describe('Map Search Agreements Spec', () => {
         cy.checkAndLogin('#workSpaceSignin')
 
         cy.log(`==== STEP:Search UNIT BY NAME ${searchStrings} ====`)
+
+
         cy.interceptApi('getCustomLayer')
         cy.searchOnMap('Units', searchStrings)
         cy.verifyApiResponse('@getCustomLayerApi', { responseTimeout: longTimeout })

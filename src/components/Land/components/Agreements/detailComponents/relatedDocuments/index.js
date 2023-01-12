@@ -81,7 +81,7 @@ const RelatedDocumets = (props) => {
               <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
-          onClick={(e) => {}}
+          onClick={(e) => { }}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>
@@ -97,11 +97,13 @@ const RelatedDocumets = (props) => {
             {uniObj?._id && (
               <Grid item xs={12} style={{ padding: "35px 20px 0px 0px" }}>
                 <RelatedDocumentsTable
+                  id="relatedDocumentsTable"
                   dense
                   moduleId={customLayerId}
                   setDrawer={props.setDrawer}
                   setCounter={setCounter}
                   targetLabel="Shape"
+                  portal={'#agreementDetailsDrawer'}
                 />
               </Grid>
             )}
