@@ -280,7 +280,7 @@ function MapGridCard(props) {
                         onTractCount={() => { }}
                       />
                     )}
-                    {searchTapValue.value === "parcelInterests" && (
+                    {searchTapValue.value === "tractInterests" && (
                       <ContactParcelInterestTable
                         parent="contactAssocTaxRollInterests"
                         header={"Tract Interests"}

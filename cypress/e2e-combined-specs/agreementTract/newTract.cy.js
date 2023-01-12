@@ -30,7 +30,7 @@ describe('Agreement New Tracts Spec', () => {
                 cy.wait(10000)
                 cy.get("#legalDescriptionTab").click()
                 cy.wait(10000)
-                cy.get(".MuiButtonBase-root").contains('+ ADD Tract To AGREEMENT').scrollIntoView().click({ force: true })
+                cy.get("#addTractToAgreementBtn").scrollIntoView().click({ force: true })
 
                 cy.get("#tractName", { timeout: longTimeout }).type("Cypress Tract")
 

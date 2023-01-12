@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useMutation } from "@apollo/client";
 
@@ -20,10 +21,13 @@ import TableHeader from "components/Table/constants/related-agreements-header-sc
 import { usetableStyles } from "./style";
 import convert_date from "components/Shared/valueformatters/convert_date";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
+import { get } from "lodash";
+import AddNewRelatedAgreementDialog from "./AddNewRelatedAgreementDialog";
 
 function RelatedAgreementsTable(props) {
   const classes = usetableStyles();
   const [isDeletePopup, setDeletePopup] = useState(false);
+  const [selectedRow, selectRow] = useState([]);
   const { moduleId } = props;
 
   const [deleteRelatedAgreements] = useMutation(DELETE_RELATED_AGREEMENTS);
@@ -45,6 +49,10 @@ function RelatedAgreementsTable(props) {
           </Button>
         </div>
       );
+    },
+    onRowClick: (rowData, { dataIndex, rowIndex }) => {
+      props.setDrawer("agrmt-existing");
+      selectRow({ ...props.rows[dataIndex] });
     },
     customToolbarSelect: ({ data }) => {
       return (
@@ -132,6 +140,18 @@ function RelatedAgreementsTable(props) {
             }?`}
         </DeleteConfirmationDialogContent>
       </Dialog>
+
+      {props.drawer === "agrmt-existing" && (
+        ReactDOM.createPortal(
+          <AddNewRelatedAgreementDialog
+            customLayerId={get(props, "customLayer._id")}
+            relatedAgreement={selectedRow}
+            setDrawer={props.setDrawer}
+            parentType="Agreement"
+            portal={props.portal}
+          />,
+          document.querySelector(props.portal))
+      )}
 
       <Table
         style={{ backgroundColor: "#fff" }}

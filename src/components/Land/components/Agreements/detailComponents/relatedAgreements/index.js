@@ -81,7 +81,7 @@ const RelatedAgreements = (props) => {
               <ExpandMoreIcon fontSize="large" />
             </IconButton>
           }
-          onClick={(e) => {}}
+          onClick={(e) => { }}
         >
           <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item xs={6} className={classes.accordionHeading}>
@@ -100,8 +100,10 @@ const RelatedAgreements = (props) => {
                   dense
                   moduleId={customLayerId}
                   setDrawer={props.setDrawer}
+                  drawer={props.drawer}
                   setCounter={setCounter}
                   targetLabel="Shape"
+                  portal={'#agreementDetailsDrawer'}
                 />
               </Grid>
             )}

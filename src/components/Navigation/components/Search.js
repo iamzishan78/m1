@@ -397,7 +397,7 @@ function Search() {
       },
       "units": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `"*${request.input}*"` : '',
+        search: (request) => request.input ? `*${request.input}*` : '',
         searchFields: ["name", "shapeJson.properties.uNumber", "shapeJson.properties.originalProperties.County", "data.shapeJson.properties.originalProperties.State"],
         filter: {
           field: "layer",
@@ -1370,7 +1370,7 @@ function Search() {
           const parts = parse(option.Primary, Array());
 
           return (
-            <Grid container spacing={0} id={"cognitive-search-options-"+index}>
+            <Grid container spacing={0} id={"cognitive-search-options-" + index}>
               <Grid container item xs={11} alignItems="center">
                 <Grid item>
                   {option.Source === ownerCogIndexName && <PersonIcon className={classes.icon} />}
