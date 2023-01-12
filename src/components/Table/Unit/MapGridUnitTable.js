@@ -101,6 +101,7 @@ function MapGridUnitTable(props) {
         field: "shapeGeometry",
         value: stateApp?.currentFeature?.geometry
       },
+      exportPx: props.parent === "UnitsTable" ? "121px" : undefined,
       formatHits,
     });
     // eslint-disable-next-line
