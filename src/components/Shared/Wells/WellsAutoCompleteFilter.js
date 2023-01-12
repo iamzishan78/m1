@@ -310,7 +310,7 @@ function Search(props) {
       },
       // refetchQueries: ["getWellsDescriptors"],
     }).then((res) => {
-      if(props.setRefetchData)
+      if (props.setRefetchData)
         props.setRefetchData(!props.refetchData);
     });
     handleClose();

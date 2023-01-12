@@ -86,6 +86,7 @@ function WellSearchApiField(props) {
         >
             <Autocomplete
                 options={foundWells || []}
+                id="selectWell"
                 onChange={(e, well) => {
                     setSelectedWell(well);
                     well && getTenantWell({
