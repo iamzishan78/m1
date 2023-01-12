@@ -234,7 +234,7 @@ function CheckDetailsEditableTable(props) {
 
     // moving on to new row
     const nextCell = RevenueStatementHeadCells[RevenueStatementHeadCells.findIndex(cell => cell.id === field) + 1];
-    if (nextCell && nextCell.id === "action") addNewRow();
+    if (nextCell && nextCell.id === "action") addNewRow(null, gridRef);
   };
 
   useEffect(() => {
@@ -359,13 +359,13 @@ function CheckDetailsEditableTable(props) {
     }
   }, [elasticData, props.dependencyUpdate]);
 
-  const addNewRow = React.useCallback((e) => {
+  const addNewRow = (e, gridRef) => {
     if (e) e.preventDefault();
     rows.push({});
     setRows([].concat(rows));
-    gridRef.current.focusCell({ x: rows.length - 1, y: 0 });
+    gridRef.current?.focusCell({ x: rows.length - 1, y: 0 });
     setTimeout(() => document.getElementById(`${rows.length - 1}-0`)?.click(), 0);
-  }, [gridRef]);
+  };
 
   const loadMore = () => {
     setTimeout(() => {
@@ -437,7 +437,7 @@ function CheckDetailsEditableTable(props) {
             <Grid item>
               <Grid container direction="row" style={{ marginTop: "5px", marginRight: "15px" }}>
                 <Grid item style={{ marginTop: "5px" }}>
-                  <Button color="secondary" id="addNewLineItemButton" className={classes.multiSelectionTopBarButtons} onClick={addNewRow}>
+                  <Button color="secondary" id="addNewLineItemButton" className={classes.multiSelectionTopBarButtons} onClick={(e) => addNewRow(e, gridRef)}>
                     Add new line item
                   </Button>
                 </Grid>
