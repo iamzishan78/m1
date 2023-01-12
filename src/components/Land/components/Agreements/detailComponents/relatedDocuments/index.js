@@ -97,6 +97,7 @@ const RelatedDocumets = (props) => {
             {uniObj?._id && (
               <Grid item xs={12} style={{ padding: "35px 20px 0px 0px" }}>
                 <RelatedDocumentsTable
+                  id="relatedDocumentsTable"
                   dense
                   moduleId={customLayerId}
                   setDrawer={props.setDrawer}
