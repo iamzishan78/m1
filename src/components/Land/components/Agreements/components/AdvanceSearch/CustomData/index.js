@@ -1,14 +1,12 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
+import {Grid, TextField} from "@material-ui/core";
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import FormControl from "@material-ui/core/FormControl";
-import debounce from "lodash/debounce";
-import { copy } from "components/Shared/functions";
-import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
-import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { AppContext } from "AppContext";
 import {useLazyQuery} from "@apollo/client";
 import {GET_ALL_CUSTOM_DATA_KEYS} from "graphQL/useQueryGetAllCustomKeys";
+
 const useStyles = makeStyles((theme) => ({
   gridItem: {
     display: "flex",
@@ -20,108 +18,110 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiInputBase-root": {
       backgroundColor: "#101d29",
     },
-  },
+  }
 }));
 
-const customDataFilters = [
-  {
-    label: "Custom Data type",
-    filterKey: "",
-    searchFields: [],
-  },
-  {
-    label: "Custom Data Value",
-    filterKey: "",
-    searchFields: [],
-  },
-];
-
-const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, appliedFilters }) => {
-  const params = {
-    esIndex: "shapes_flat",
-    variant: "outlined",
-    setFilters: () => {},
-    filterList,
-    column: {
-      label: filter.label,
-      filterKey: filter.filterKey,
-    },
-    index,
-    onChange,
-    query: GET_ES_SIMPLE_FILTER,
-    searchFields: filter.searchFields,
-    filters: [{ field: "shapeJson.properties.custom_data", value: "custom_data" }, ...appliedFilters.filter((af, i) => i < index)],
-    extendSearchQuery: "",
-    custom: filter.custom,
-  };
-  if (filter.getOptionLabel) params["getOptionLabel"] = filter.getOptionLabel;
+const AutoCompleteDropdown = ({ options, onChange, loading, label, value }) => {
   return (
-    <FormControl variant="outlined" className={classes.formControl}>
-      <AutoCompleteFilter {...params} />
+    <FormControl fullWidth>
+      <Autocomplete
+        id="combo-box-demo"
+        options={options}
+        loading={loading}
+        onChange={onChange}
+        value={value}
+        getOptionLabel={(option) => option.label}
+        renderInput={(params) => 
+          <TextField 
+            {...params} 
+            label={label}
+            variant="outlined"
+            fullWidth
+          />
+        }
+      />
     </FormControl>
   );
 };
 export default function CustomDataFilters(props) {
+  const classes = useStyles();
+  const [stateApp, setStateApp] = useContext(AppContext);
+  const [filterList, setFilterList] = useState([[], []]);
+  const [selectedKey, setSelectedKey] = useState(null)
+  const [selectedValue, setSelectedValue] = useState(null);
+  
 
-  const [getCustomKey, { data: customData }] = useLazyQuery(
-      GET_ALL_CUSTOM_DATA_KEYS,
-      { fetchPolicy: "no-cache" }
+  const [getCustomKey, { data: customData, loading }] = useLazyQuery(
+    GET_ALL_CUSTOM_DATA_KEYS,
+    { fetchPolicy: "no-cache" }
   );
 
   useEffect(()=>{
     getCustomKey();
   },[]);
 
-  const classes = useStyles();
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const [filterList, setFilterList] = useState([[], []]);
-
   useEffect(() => {
-    if (stateApp.landSearchFilters.provisions?.length === 0 && filterList.find((fl) => fl.length !== 0)) {
-      setFilterList([[], []]);
-    }
-  }, [stateApp.landSearchFilters.provisions]);
-
-  const changeLandProvisions = React.useMemo(
-    () =>
-      debounce((request, callback, index) => {
-        const { filterKey } = callback;
+    if(selectedKey && selectedValue){
+      console.log(stateApp?.landSearchFilters);
+        const filterKey = `shapeJson.properties.custom_data.${selectedKey}`;
         const landProvisionsFilters = [...stateApp.landSearchFilters.provisions];
-        const _index = landProvisionsFilters.findIndex((f) => f.field === filterKey);
-        if (_index === -1 && request[0] !== null) landProvisionsFilters.push({ field: filterKey, value: request[0] });
-        else if (request.length > 0 && request[0] !== null) landProvisionsFilters[_index].value = request[0];
+        const _index = landProvisionsFilters.findIndex((f) => f.field.startsWith("shapeJson.properties.custom_data"));
+        if (_index === -1 && selectedValue !== null) landProvisionsFilters.push({ field: filterKey, value: selectedValue });
+        else if (selectedValue !== null) landProvisionsFilters[_index].value = selectedValue;
         else if (_index !== -1) landProvisionsFilters.splice(_index, 1);
+
+
         setStateApp((stateApp) => ({
           ...stateApp,
           landSearchFilters: { ...stateApp.landSearchFilters, provisions: landProvisionsFilters },
         }));
-      }, 1000),
-    [setStateApp, stateApp.landSearchFilters.provisions]);
+    } else {
+      let landProvisionsFilters = [...stateApp.landSearchFilters.provisions];
+      const _index = landProvisionsFilters.findIndex((f) => f.field.startsWith("shapeJson.properties.custom_data"));
 
-  const onFilterChange = (request, callback, filter, index) => {
-    let _filterList = [...filterList];
-    _filterList[index] = request;
-    setFilterList(_filterList);
+      if(_index > -1){
+        landProvisionsFilters = landProvisionsFilters.filter(f => !f.field.startsWith("shapeJson.properties.custom_data"))
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          landSearchFilters: { ...stateApp.landSearchFilters, provisions: landProvisionsFilters },
+        }));
+      }
+    }
+  }, [selectedKey, selectedValue])
 
-    const _request = copy(request);
-    if (filter.customOnChange) _request[0] = filter.customOnChange(_request[0]);
-    changeLandProvisions(_request, callback, index);
-  };
+  const getKeysOptions = useMemo(() => {
+    return Object.keys(_.get(customData, 'getAllKeys', {})).map(key => ({ label: key, value: key }))
+  }, [customData])
+  
+  const getValueOptions = useMemo(() => {
+    return (customData?.getAllKeys[selectedKey] || []).map(key => ({ label: key, value: key }))
+  }, [customData, selectedKey]);
+
+  const handleKeyChange = (value) => {
+    setSelectedKey(value);
+    setSelectedValue(null);
+  }
 
   return (
     <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
-      {customDataFilters?.map((filter, index) => (
-        <Grid item key={index} sm={12} className={classes.gridItem}>
-          <AutoCompleteDropdown
-            classes={classes}
-            onChange={(request, top, callback) => onFilterChange(request, callback, filter, index)}
-            filter={filter}
-            filterList={filterList}
-            index={index}
-            appliedFilters={stateApp.landSearchFilters.provisions}
-          />
-        </Grid>
-      ))}
+      <Grid item xs={12}>
+        <AutoCompleteDropdown
+          onChange={(e, {value}) => handleKeyChange(value)}
+          options={getKeysOptions}
+          label={"Key"}
+          loading={loading}
+          value={selectedKey && {label: selectedKey, value: selectedKey}}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <AutoCompleteDropdown
+          onChange={(e, {value}) => setSelectedValue(value)}
+          options={getValueOptions}
+          label={"Value"}
+          loading={loading}
+          value={selectedKey && {label: selectedValue, value: selectedValue}}
+        />
+      </Grid>
     </Grid>
   );
 }

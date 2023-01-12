@@ -3,6 +3,7 @@ import { Container, Dialog } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import Agreements from "components/Shared/svgIcons/agreements";
+import _ from "lodash";
 
 import { deepEqualObjects, copy, esExtentedSearch } from "components/Shared/functions";
 import { HeaderComponent } from "components/Table/helpers";
@@ -184,7 +185,7 @@ function AgreementsTable(props) {
     Object.values(stateApp.landSearchFilters).forEach(filter => {
       filters = [...filters, ...filter];
     });
-    return filters;
+    return _.uniq(filters);
   }
 
   const handleDefaultView = (view, user) => {
