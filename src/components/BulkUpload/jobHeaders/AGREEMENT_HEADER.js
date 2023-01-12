@@ -2,7 +2,7 @@ import { copy } from "components/Shared/functions";
 import Agreement from "./AGREEMENT_SHAPE";
 
 let agreementsColumns = copy(Agreement)
-agreementsColumns.splice(agreementsColumns.length-2, 2)
+// agreementsColumns.splice(agreementsColumns.length-2, 2)
 
 const AgreementHeader = [
     ...agreementsColumns,

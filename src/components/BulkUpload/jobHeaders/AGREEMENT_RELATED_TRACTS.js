@@ -27,6 +27,18 @@ const tracts = [
         required: true,
         actual_key: "parcel.name",
     },
+    {
+        label: "Basin",
+        mapped_key: "",
+        required: true,
+        actual_key: "parcel.basin",
+    },
+    {
+        label: "Field",
+        mapped_key: "",
+        required: true,
+        actual_key: "parcel.field",
+    },
     ...copy(landColumns),
     {
         label: "Description",
@@ -188,6 +200,24 @@ const tracts = [
         mapped_key: "",
         required: false,
         actual_key: "owner.nra"
+    },
+    {
+        label: "Lease Royalty Interest",
+        mapped_key: "",
+        required: false,
+        actual_key: "owner.lease_royalty_interest"
+    },
+    {
+        label: "Acquistion $/NRA",
+        mapped_key: "",
+        required: false,
+        actual_key: "owner.acquisition_nra"
+    },
+    {
+        label: "Acquisition Cost",
+        mapped_key: "",
+        required: false,
+        actual_key: "owner.acquisition_cost"
     },
     {
         label: "Depth From",

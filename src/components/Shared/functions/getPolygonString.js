@@ -3,7 +3,7 @@ export const getPolygonString = (feature) => {
   if (feature?.geometry) {
     if (feature.geometry.type === "MultiPolygon") {
       polygonString = "MULTIPOLYGON(";
-      feature.geometry.coordinates.forEach((multiCoordinates, index) => {
+      feature.geometry.coordinates?.forEach((multiCoordinates, index) => {
         polygonString += "((";
         multiCoordinates.forEach((coordinate) => {
           coordinate.forEach((cor, corIndex) => {
@@ -20,7 +20,7 @@ export const getPolygonString = (feature) => {
       polygonString += ")";
     } else {
       polygonString = "POLYGON((";
-      feature.geometry.coordinates[0].forEach((coordinate, index) => {
+      feature.geometry.coordinates?.[0]?.forEach((coordinate, index) => {
         polygonString += coordinate[0] + " " + coordinate[1];
         if (index < feature.geometry.coordinates[0].length - 1) {
           polygonString += ", ";

@@ -1,4 +1,4 @@
-import _ from "underscore";
+import _ from "lodash";
 
 // This helper will match string with each key of object to check if string exists in object or not
 export const findInObject = (obj, stringToCheck) => {
@@ -42,4 +42,9 @@ export const isSearchStringMatched = (searchString, variables) => {
     }
 
     return false
+}
+
+export const camelize = (str) => {
+    var str2 = _.camelCase(str);
+    return str2
 }
