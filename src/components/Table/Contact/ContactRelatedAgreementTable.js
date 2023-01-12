@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useMutation } from "@apollo/client";
 
@@ -15,45 +14,22 @@ import { deepEqualObjects } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 // Header Schemas
-import TableHeader from "components/Table/constants/related-agreements-header-schema";
+import TableHeader from "components/Shared/constants/contact-related-agreement-header-schema";
 
 // Utilities
-import { usetableStyles } from "./style";
 import convert_date from "components/Shared/valueformatters/convert_date";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
-import { get } from "lodash";
-import AddNewRelatedAgreementDialog from "./AddNewRelatedAgreementDialog";
 
 function RelatedAgreementsTable(props) {
-  const classes = usetableStyles();
+  const classes = {};
   const [isDeletePopup, setDeletePopup] = useState(false);
-  const [selectedRow, selectRow] = useState([]);
   const { moduleId } = props;
 
   const [deleteRelatedAgreements] = useMutation(DELETE_RELATED_AGREEMENTS);
 
   const options = {
     ...props.options,
-    customToolbar: () => {
-      return (
-        <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
-          <Button
-            id="addRelatedAgreementBtn"
-            color="secondary"
-            className={classes.multiSelectionTopBarButtons}
-            onClick={() => {
-              if (props.setDrawer) props.setDrawer("agrmt");
-            }}
-          >
-            + ADD RELATED AGMT
-          </Button>
-        </div>
-      );
-    },
-    onRowClick: (rowData, { dataIndex, rowIndex }) => {
-      props.setDrawer("agrmt-existing");
-      selectRow({ ...props.rows[dataIndex] });
-    },
+    customToolbar: null,
     customToolbarSelect: ({ data }) => {
       return (
         <div style={{ height: "48px", display: "flex" }}>
@@ -113,7 +89,7 @@ function RelatedAgreementsTable(props) {
         shapeType: props.shapeType,
         addableName: "Tract",
         searchFields: ["contact.entityDetail.name", "_all"],
-        filters: [{ field: "relatedAgreements._id", value: moduleId }],
+        filters: [{ field: "relatedParties.contactId", value: moduleId }],
         TableHeader: TableHeader,
         esIndex: "shapes_flat",
         startPaginationAt: 25,
@@ -140,18 +116,6 @@ function RelatedAgreementsTable(props) {
             }?`}
         </DeleteConfirmationDialogContent>
       </Dialog>
-
-      {props.drawer === "agrmt-existing" && (
-        ReactDOM.createPortal(
-          <AddNewRelatedAgreementDialog
-            customLayerId={get(props, "customLayer._id")}
-            relatedAgreement={selectedRow}
-            setDrawer={props.setDrawer}
-            parentType="Agreement"
-            portal={props.portal}
-          />,
-          document.querySelector(props.portal))
-      )}
 
       <Table
         style={{ backgroundColor: "#fff" }}
