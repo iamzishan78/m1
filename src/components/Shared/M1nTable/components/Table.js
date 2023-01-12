@@ -775,16 +775,18 @@ function SubTable(props) {
     });
   }
 
-  const handleClickFlyToIcon = (entityType, searchTarget) => {
+  const handleClickFlyToIcon = (entityType, searchTarget, unmount = false) => {
     if (!searchTarget) return;
 
     if (entityType === "well") {
       handleWellFlyTo(searchTarget);
     }
     if (entityType === "owner") {
+      unmount = false
       handleOwnerFlyTo(searchTarget);
     }
     if (entityType === "operator") {
+      unmount = false
       handleOperatorFlyTo(searchTarget);
     }
     if (entityType === "lease") {
@@ -796,6 +798,9 @@ function SubTable(props) {
     if (entityType === "unit") {
       handleUnitFlyTo(searchTarget);
     }
+
+    if (unmount)
+      dispatch(setMapGridCardState({ mapGridCardActivated: false }));
   };
 
   const registerSearchHandler = (handleSearch) => {
@@ -934,6 +939,8 @@ function SubTable(props) {
           wellListFromSearch: [],
         }));
       }
+      // unmount
+      dispatch(setMapGridCardState({ mapGridCardActivated: false }));
     }
   }, [dataOwnerWells]);
 
@@ -971,6 +978,8 @@ function SubTable(props) {
           wellListFromSearch: [],
         }));
       }
+      // unmount
+      dispatch(setMapGridCardState({ mapGridCardActivated: false }));
     }
   }, [dataOperatorWells]);
 
@@ -1796,8 +1805,7 @@ function SubTable(props) {
                           const coordinates = props.rows[tableMeta.rowIndex].coordinates
                           type = coordinates?.objToPopulateSearchLayer?.objectType || type
                           if (column.name === 'Well') coordinates.wellId = props.rows[tableMeta.rowIndex]?.well.globalWell;
-                          handleClickFlyToIcon(type, coordinates);
-                          dispatch(setMapGridCardState({ mapGridCardActivated: false }));
+                          handleClickFlyToIcon(type, coordinates, true);
                         }
                       }}
                       sx={{
