@@ -21,11 +21,28 @@ describe('Unit Map Fly To Spec', () => {
 
         cy.log(`==== STEP:CLICK ON WELL TAB ====`)
         cy.interceptApi('tracksByObjectType')
-        cy.interceptApi('getESPaginatedList')
+
         cy.get(".MuiTab-wrapper", { timeout: longTimeout }).contains('Wells').click()
+
+        cy.log(`==== STEP:CLICK ON POTENTIAL WELLS ====`)
+        cy.get("#PotentialWells", { timeout: longTimeout }).click()
+
+        cy.log(`==== STEP:CLICK ON WELL CHECKBOX ====`)
+        cy.get("[id='MUIDataTableSelectCell-0']", { timeout: longTimeout }).click()
+
+        cy.wait(1000)
+
+        cy.log(`==== STEP:CLICK ON ADD WELL ====`)
+        cy.interceptApi('getESPaginatedList')
+        cy.interceptApi('AddMultiWellInterestToShape')
+        cy.get('#addWells', { timeout: longTimeout }).click()
+        cy.verifyApiResponse('@AddMultiWellInterestToShapeApi', { responseTimeout: longTimeout })
+
+
         cy.verifyApiResponse('@tracksByObjectTypeApi', { responseTimeout: longTimeout })
         cy.verifyApiResponse('@getESPaginatedListApi', { responseTimeout: longTimeout }).then((esPaginatedListResponse) => {
             const hit = esPaginatedListResponse.response.body.data.getESPaginatedList.hits[0]
+
             const golbalWellId = hit.globalWell
             const wellId = hit._id
 
