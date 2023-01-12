@@ -5,14 +5,20 @@ import { history } from "store";
 import Typography from "@material-ui/core/Typography";
 import vf_number from "components/Shared/valueformatters/vf_number";
 import { statusData } from "components/Table/Revenue/RevenuePropertiesTable";
+import moment from "moment";
+
+const dateCustomRender = (value) => value ? moment(new Date(value)).format("MM/DD/YYYY") === "Invalid date"
+  ? ""
+  : moment(new Date(value)).format("MM/DD/YYYY")
+  : ""
 
 const wellsColumnHeaders = [
   {
-    name: "_id",
+    name: "id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-    name: "wellName",
+    name: "WellName",
     label: "Well Name",
     esKey: "wellData.wellName.keyword",
     options: {
@@ -34,6 +40,8 @@ const wellsColumnHeaders = [
           position: "absolute",
           // left: '70px',
         };
+
+        console.log("-*-*-*- tableMeta *-*-*", tableMeta)
         const globalWellId = tableMeta.rowData[0];
 
         return (
@@ -197,10 +205,11 @@ const wellsColumnHeaders = [
     },
   },
   {
-    name: "permitApprovedDate",
+    name: "PermitDate",
     label: "Permit Date",
-    esKey: "wellData.permitApprovedDate",
+    esKey: "wellData.PermitDate",
     options: {
+      customRender: dateCustomRender,
       sort: true,
       filter: true,
       custom: {
@@ -210,10 +219,11 @@ const wellsColumnHeaders = [
     },
   },
   {
-    name: "spudDate",
+    name: "SpudDate",
     label: "Spud Date",
-    esKey: "wellData.spudDate",
+    esKey: "wellData.SpudDate",
     options: {
+      customRender: dateCustomRender,
       sort: true,
       filter: true,
       custom: {
@@ -223,10 +233,12 @@ const wellsColumnHeaders = [
     },
   },
   {
-    name: "completionDate",
+    name: "CompletionDate",
+
     label: "Completion Date",
-    esKey: "wellData.completionDate",
+    esKey: "wellData.CompletionDate",
     options: {
+      customRender: dateCustomRender,
       sort: true,
       filter: true,
       custom: {
@@ -241,6 +253,7 @@ const wellsColumnHeaders = [
     label: "First Prod Date",
     esKey: "wellData.FirstProdDate",
     options: {
+      customRender: dateCustomRender,
       sort: true,
       filter: true,
       custom: {

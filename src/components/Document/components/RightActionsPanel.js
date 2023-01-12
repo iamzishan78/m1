@@ -68,7 +68,7 @@ export default function Drawer(props) {
     ),
     Info: (props) => (
       <Badge anchorOrigin={{ vertical: "top", horizontal: "right", }} color="primary" >
-        <InfoOutlined {...props} />
+        <InfoOutlined id="fileInfoIcon" {...props} />
       </Badge>
     ),
 

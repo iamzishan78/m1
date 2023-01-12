@@ -539,7 +539,6 @@ const Transact = () => {
   const GetCard = React.memo((cardProps) => {
     const CardClasses = useStyles(cardProps);
     const { metadata, title, description, id, laneId } = cardProps;
-
     let owner = null;
     let ownerId = null;
     let ownerEmail = null;
@@ -631,7 +630,6 @@ const Transact = () => {
       </header>
     );
   };
-
   return (
     <div className={classes.root}>
       {stateApp.viewDoc && <DocViewer width="calc(100vw - 28vw)" />}

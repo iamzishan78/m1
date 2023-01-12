@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Grid, TextField } from "@material-ui/core";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Grid, TextField, ClickAwayListener, Popover } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 import EditNoteIcon from "components/Shared/svgIcons/edit-note";
@@ -44,6 +44,14 @@ const useStyles = makeStyles((theme) => ({
         width: "0.2em !important",
       },
     },
+  },
+  commentTypeTriger: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px'
+  },
+  padding: {
+    padding: 10
   },
   customTextField: {
     "& textarea": {
@@ -110,6 +118,15 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     fontSize: "14px",
+    padding: theme.spacing(1),
+
+    "& span": {
+      paddingTop: "5px",
+      paddingBottom: '5px',
+      "&:hover": {
+        backgroundColor: "#F3F3F3"
+      }
+    }
   },
   selectedTab: {
     borderBottom: "4px solid #01B0F0",
@@ -172,7 +189,7 @@ const CategoryList = ["All", "Agreement", "Contact", "Document", "Flow", "Revenu
 export default function CommentType(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
-
+  const anchorEl = useRef(null);
   const [selectedTab, setSelectedTab] = useState("Existing");
   const [selectedCommentType, setSelectedCommentType] = useState("General");
   const [isMenuOpen,setIsMenuOpen] = useState(false);
@@ -230,56 +247,74 @@ export default function CommentType(props) {
 
 
   const openDialogBox = (e) => {
-    props.setCommentTypeDialogBox(true);
     e.stopPropagation();
+    props.setCommentTypeDialogBox(true);
   }
+
   return (
     <>
-      <div
-        style={{
-          padding: "0px 10px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          color: "#949494",
-        }}
-        onClick={(e) => openDialogBox(e)}
-      >
-        {props.showCommentType && (
-          <>
-            <EditNoteIcon fill={props.commentTypeDialogBox ? "black" : ""} />
-            <span style={{ marginLeft: "1px" }}>{selectedCommentType}</span>
-          </>
-        )}
-      </div>
-      {props.commentTypeDialogBox && (
+      <div>
         <div
           style={{
-            position: "absolute",
-            bottom: selectedTab === "New Comment Type" ? "25px" : "69px",
-            background: "white",
-            zIndex: `${isMenuOpen ? '0' :'9999'}`,
-            boxShadow: "0 10px 40px 0 rgb(0 0 0 / 15%)",
-            padding: "15px",
-            width: "315px",
-            padding: "15px",
-            left: "12px",
+            padding: "0px 10px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "#949494",
+            cursor: "pointer",
+          }}
+          id="triggerCommentType"
+          onClick={(e) => openDialogBox(e)}
+        >
+          {props.showCommentType && (
+            <div className={classes.commentTypeTriger} ref={ref => anchorEl.current = ref} aria-describedby="commentTypePopover">
+              <EditNoteIcon fill={props.commentTypeDialogBox ? "black" : ""} />
+              <span style={{ marginLeft: "1px" }}>{selectedCommentType}</span>
+            </div>
+          )}
+        </div>
+
+        <Popover
+          id={"commentTypePopover"}
+          open={props.commentTypeDialogBox}
+          anchorEl={anchorEl.current}
+          onClose={() => props.setCommentTypeDialogBox(false)}
+          classes={{
+            paper: classes.padding
+          }}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
           }}
         >
           <Grid item className={classes.headerActions}>
-            <div>
               <span
-                className={`${classes.tab} ${selectedTab === "Existing" ? classes.selectedTab : ""}`}
-                onClick={() => setSelectedTab("Existing")}
+                className={`${classes.tab} ${
+                  selectedTab === "Existing" ? classes.selectedTab : ""
+                }`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedTab("Existing");
+                }}
               >
                 Existing
               </span>
               <span
-                className={`${classes.tab} ${selectedTab === "New Comment Type" ? classes.selectedTab : ""}`}
+                id="newCommentTypeTab"
+                className={`${classes.tab} ${
+                  selectedTab === "New Comment Type" ? classes.selectedTab : ""
+                }`}
+                onClick={(e) => {
+                  setSelectedTab("New Comment Type");
+                  e.stopPropagation();
+                }}
               >
                 New Comment Type
               </span>
-            </div>
           </Grid>
           <Grid style={{ marginTop: "25px" }}>
             {selectedTab === "Existing" && (
@@ -288,50 +323,81 @@ export default function CommentType(props) {
                 variant="outlined"
                 value={selectedCommentType}
                 onChange={(e) => {
-                  console.log("event fire")
                   setSelectedCommentType(e.target.value);
                   props.setSelectedCommentType(e.target.value);
                   props.setCommentTypeDialogBox(false);
                 }}
-                onClick={(e)=>{
-                  setIsMenuOpen((prev)=> !prev);
+                onClick={(e) => {
+                  setIsMenuOpen((prev) => !prev);
                   e.stopPropagation();
                 }}
               >
                 {commentTypes.map((obj) => (
-                  <MenuItem value={obj.commentType}>{obj.commentType}</MenuItem>
+                  <MenuItem key={obj.commentType} value={obj.commentType}>
+                    {obj.commentType}
+                  </MenuItem>
                 ))}
               </Select>
             )}
             {selectedTab === "New Comment Type" && (
               <>
-                <FormControl className={classes.formControlCommentType} variant="outlined" fullWidth>
+                <FormControl
+                  className={classes.formControlCommentType}
+                  variant="outlined"
+                  fullWidth
+                >
                   <TextField
-                    id="demo-simple-select-standard-label"
+                    id="custom-comment-type"
                     className={classes.commentTypeInput}
                     variant="outlined"
                     value={commentTypeData.commentType}
                     label="Comment Type"
                     onChange={(e) => {
-                      setCommentTypeData((prev) => ({ ...prev, commentType: e.target.value }));
+                      setCommentTypeData((prev) => ({
+                        ...prev,
+                        commentType: e.target.value,
+                      }));
+                      e.stopPropagation();
                     }}
+                    onClick={(e) => e.stopPropagation()}
                   />
                 </FormControl>
-                <FormControl className={classes.formControlCommentType} variant="outlined" fullWidth>
-                  <InputLabel className={classes.formLabel} id="demo-simple-select-category-label">
+                <FormControl
+                  className={classes.formControlCommentType}
+                  variant="outlined"
+                  fullWidth
+                >
+                  <InputLabel
+                    className={classes.formLabel}
+                    id="demo-simple-select-category-label"
+                  >
                     Category
                   </InputLabel>
                   <Select
                     className={classes.selectCommentType}
+                    id={"commentTypeCategory"}
                     variant="outlined"
                     label="Category"
                     value={commentTypeData.category}
                     onChange={(e) => {
-                      setCommentTypeData((prev) => ({ ...prev, category: e.target.value }));
+                      setCommentTypeData((prev) => ({
+                        ...prev,
+                        category: e.target.value,
+                      }));
+                      e.stopPropagation();
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsMenuOpen((prev) => !prev);
                     }}
                   >
                     {CategoryList.map((category) => (
-                      <MenuItem value={category}>{category}</MenuItem>
+                      <MenuItem
+                        className={"commentTypeCategory-option"}
+                        value={category}
+                      >
+                        {category}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -349,9 +415,10 @@ export default function CommentType(props) {
                 style={{
                   margin: "0px 15px 0px 0px",
                 }}
-                onClick={() => {
+                onClick={(e) => {
                   props.setCommentTypeDialogBox(false);
                   setSelectedTab("Existing");
+                  e.stopPropagation();
                 }}
               >
                 Cancel
@@ -361,6 +428,7 @@ export default function CommentType(props) {
                 variant="contained"
                 color="secondary"
                 size="medium"
+                id="addCommentTypeBtn"
                 disableElevation
                 onClick={addCommentType}
                 className={classes.footerButton}
@@ -369,8 +437,8 @@ export default function CommentType(props) {
               </Button>
             </div>
           )}
-        </div>
-      )}
+        </Popover>
+      </div>
     </>
   );
 }

@@ -201,7 +201,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             }}
             button
             selected={stateNav.selectedMenuIndexFind === 1}
-            onClick={(event) =>  handleListItemClick("/")}
+            onClick={(event) => handleListItemClick("/")}
             key="home"
           >
             <div className={classes.tabContent}>
@@ -229,16 +229,16 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             button
             selected={stateNav.selectedMenuIndexContacts === 1}
             onClick={(event) => {
-                setStateApp((stateApp) => ({
-                  ...stateApp,
-                  selectedContact: null,
-                  contactSearchQuery: null,
-                }));
-                setStateNav((stateApp) => ({
-                  ...stateApp,
-                  contactFromMap: false,
-                }));
-                handleListItemClick("/contacts");
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                selectedContact: null,
+                contactSearchQuery: null,
+              }));
+              setStateNav((stateApp) => ({
+                ...stateApp,
+                contactFromMap: false,
+              }));
+              handleListItemClick("/contacts");
             }}
             key="contacts"
           >
@@ -335,7 +335,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               button
               selected={stateNav.selectedMenuIndexRevenue === 1}
               onClick={(event) => {
-                handleListItemClick("/revenue/statements");
+                handleListItemClick("/revenue/properties");
               }}
               key="Revenue"
             >
@@ -370,11 +370,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             button
             selected={stateNav.selectedMenuIndexDocuments === 1}
             onClick={(event) => {
-                setStateApp((stateApp) => ({
-                  ...stateApp,
-                  selectedContact: null,
-                }));
-                handleListItemClick("/documents");
+              setStateApp((stateApp) => ({
+                ...stateApp,
+                selectedContact: null,
+              }));
+              handleListItemClick("/documents");
             }}
             key="documents"
           >
@@ -490,7 +490,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               <div className={classes.tabContent}>
                 <Tooltip title="Analytics" placement="right" classes={{ tooltip: classes.iconTooltip }}>
                   <ListItemIcon className={classes.sideNavIcon}>
-                  <Analytics />
+                    <Analytics />
                   </ListItemIcon>
                 </Tooltip>
                 <ListItemText className={`${classes.sideNavText} uppercase`} primary="Analytics" />

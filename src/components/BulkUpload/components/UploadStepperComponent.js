@@ -37,7 +37,7 @@ const image_style = {
 export default function BulkUpload(props) {
   return (
     <div style={main_div}>
-      <div style={{ ...big_text, ...padding_div_top }}>
+      <div id="sitTightDiv" style={{ ...big_text, ...padding_div_top }}>
         Sit tight as this may take a bit.
       </div>
       <div style={{ ...big_grey_text, ...padding_div_2 }}>

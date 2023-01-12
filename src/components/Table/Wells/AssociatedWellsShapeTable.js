@@ -251,7 +251,7 @@ function AssociatedWellsShapeTable(props) {
         // column: false, 
         customToolbar: () => {
             return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-                <Button color="secondary" className={classes.multiSelectionTopBarButtons} disabled={true} >
+                <Button id="addWells" color="secondary" className={classes.multiSelectionTopBarButtons} disabled={true} >
                     + ADD Wells TO {props.shapeType?.toUpperCase()}
                 </Button>
             </div>
@@ -259,7 +259,7 @@ function AssociatedWellsShapeTable(props) {
         customToolbarSelect: ({ data }) => {
             return <div style={{ height: "48px", display: "flex" }}>
                 <div style={{ marginTop: "6px", height: "35px", display: "flex", marginRight: "20px" }}>
-                    <Button color="secondary" className={classes.multiSelectionTopBarButtons} disabled={data.length < 1}
+                    <Button id="addWells" color="secondary" className={classes.multiSelectionTopBarButtons} disabled={data.length < 1}
                         onClick={() => {
                             addWellInterestToShape();
                         }} >

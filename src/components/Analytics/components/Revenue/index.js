@@ -78,7 +78,7 @@ const StyledTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-export default function RevenueAnalytics() {
+export default function RevenueAnalytics(props) {
   const classes = useStyles();
   const propertiesReportGroup = useSelector(
     ({ Revenue }) => Revenue.propertiesReportGroup
@@ -184,6 +184,7 @@ export default function RevenueAnalytics() {
                 setToDate={setToDate}
                 isProperties={true}
                 lastCheckMinDate={lastCheckMinDate}
+                datesInputWidth={4}
               />
             </Grid>
           </Grid>
@@ -193,7 +194,7 @@ export default function RevenueAnalytics() {
                 type="Properties"
                 esFilters={propertiesReportGroup || []}
                 setESFilters={(value) => setPropertyFilter(value)}
-                setFilterToggle={() => {}}
+                setFilterToggle={() => { }}
                 isBackground={false}
                 noUpdate={true}
                 strechedWidth
@@ -210,6 +211,7 @@ export default function RevenueAnalytics() {
       <DetailTabsSection
         monthsInterval={monthsInterval}
         portfolioSummary={portfolioSummary?.getPortfolioSummary || {}}
+        {...props}
       />
     </>
   );

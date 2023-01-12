@@ -28,7 +28,7 @@
 
 import { deepEqualObjects } from "../../src/components/Shared/functions";
 import { baseUrls, basic_timeouts, loginCredential } from "../cypressUtils/data";
-import { findInObject, isSearchStringMatched } from "../cypressUtils/helper";
+import { camelize, findInObject, isSearchStringMatched } from "../cypressUtils/helper";
 
 // Constants
 const workSpace = Cypress.env('WORK_SPACE') || "enerx"
@@ -37,10 +37,11 @@ const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
 // Common Commands
 Cypress.Commands.add("checkAndLogin", () => {
     //This command will logged in if it is not already logged in
+    cy.log('==== STEP: LOGGING IN ===')
     cy.get('body').then(($body) => {
         if ($body.find('#workSpaceSignin').length) {
-            cy.get('input').type(workSpace)
-            cy.get('.MuiButtonBase-root').click()
+            cy.get('input').type(workSpace, { force: true })
+            cy.get('.MuiButtonBase-root').click({ force: true })
 
             cy.get('#signInName', { timeout: longTimeout }).should('be.visible').type(loginCredential.email)
             cy.get('#password').type(loginCredential.passsword)
@@ -50,9 +51,14 @@ Cypress.Commands.add("checkAndLogin", () => {
     })
 })
 
+//This command will set visbility to hidden for css element
+Cypress.Commands.add('hide', { prevSubject: 'element' }, (subject) => {
+    subject.css('visibility', 'hidden');
+})
+
 // This command is to type  in autocomplete search bar and then select first matched option
 Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId = null) => {
-    cy.get(searchId).type(stringToType)
+    cy.get(searchId, { timeout: longTimeout }).clear().type(stringToType).wait(3000)
 
     if (optionId)
         cy.get(`[id="${optionId}"]`, { timeout: longTimeout }).should('be.visible')
@@ -62,27 +68,42 @@ Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId = null) 
 
 /*This command is to intercept graphql api by operation name and if searchString is passed it will only
 intercept if api payload has that string in search */
-Cypress.Commands.add('interceptApi', (operationName, payloadKey = null) => {
+Cypress.Commands.add('interceptApi', (operationName, payloadKey = null, alias = null) => {
 
     cy.intercept('POST', baseUrls[workSpace], req => {
-
         if (req.body.operationName === operationName) {
             if (payloadKey) {
                 const { variables } = req.body
                 if (payloadKey.searchString && isSearchStringMatched(payloadKey.searchString, variables))
-                    req.alias = `${operationName}WithSearchStringApi`;
+                    req.alias = alias || `${operationName}WithSearchStringApi`;
                 else if (payloadKey?.sortOrder && variables?.sort?.order === payloadKey.sortOrder) {
-                    req.alias = `${operationName}WithSortOrderApi`;
+                    req.alias = alias || `${operationName}WithSortOrderApi`;
                 }
                 else if (payloadKey?.filter && variables?.filters.length &&
                     deepEqualObjects(variables.filters[0], payloadKey.filter)) {
-                    req.alias = `${operationName}WithFilterApi`;
+                    req.alias = alias || `${operationName}WithFilterApi`;
                 }
             }
             else {
                 // req.alias will use as api title 
-                req.alias = `${operationName}Api`;
+                req.alias = alias || `${operationName}Api`;
             }
+        }
+    });
+})
+
+Cypress.Commands.add('interceptApiByIndex', (operationName, esIndex) => {
+    // console.log("interceptApiByIndex")
+    // console.log("operationName : ", operationName)
+    // console.log("esIndex : ", esIndex)
+
+    cy.intercept('POST', baseUrls[workSpace], req => {
+        // console.log("req.body : ", req.body)
+        if (req.body.operationName === operationName && req.body.variables.index === esIndex) {
+            req.alias = `${operationName}ApiByIndex`;
+
+            // console.log(" req.alias : ", req.alias)
+            // console.log(`${operationName}ApiByIndex`)
         }
     });
 })
@@ -96,21 +117,23 @@ Cypress.Commands.add('verifyApiResponse', (apiTitle) => {
         if (typeof response === 'string')
             throw new Error(response)
 
+        if (response?.success === false)
+            throw new Error("Api Failed")
         const errors = interception?.response?.body?.errors
         if (errors)
             throw new Error(`Api returned error: ${JSON.stringify(errors)}`)
 
-        assert.isNotNull(interception.response.body, `${apiTitle} run succesfully`)
+        assert.isNotNull(interception.response?.body, `${apiTitle} run succesfully`)
         return interception
     })
 })
 
 Cypress.Commands.add('deleteConfirmation', () => {
-    cy.log('==== STEP: CLICKING ON HORIZON ICON ====')
-    cy.get(".MuiTypography-root").contains('Delete').click()
+    cy.get(".MuiTypography-root", { timeout: longTimeout }).contains('Delete', { timeout: longTimeout }).scrollIntoView().click({ force: true })
 
+    cy.wait(2000)
     cy.log('==== STEP: CLICKING ON DELETE FROM CONFIRMATION DIALOGUE BOX  ====')
-    cy.get(".MuiButton-label").contains('Delete', { timeout: longTimeout }).should('be.visible').click()
+    cy.get("#deleteButton", { timeout: longTimeout }).should('be.visible').trigger("click")
 })
 
 /*This command will take css id and containing string to click on action
@@ -147,14 +170,14 @@ Cypress.Commands.add('searchOnMap', (data, value) => {
 
 // Command will search and verify results have searched string or not
 Cypress.Commands.add('gridSearch', (searchString, gridOperationName, searchId = null) => {
-    cy.interceptApi(gridOperationName, { searchString: searchString })
+    const apiAlias = searchString.replace(/\s/g, '');
+    cy.interceptApi(gridOperationName, { searchString: searchString }, apiAlias)
 
     const commonSearchClass = ".MuiInputBase-input.MuiOutlinedInput-input.MuiInputBase-inputAdornedStart"
     cy.get(searchId || commonSearchClass).focus().clear().type(searchString)
 
-    cy.verifyApiResponse(`@${gridOperationName}WithSearchStringApi`, { responseTimeout: longTimeout }).then((apiResponse) => {
+    cy.verifyApiResponse(`@${apiAlias}`, { responseTimeout: longTimeout }).then((apiResponse) => {
         let hits = apiResponse.response.body.data?.getESSimpleSearch?.hits
-
 
         if (gridOperationName === 'getESDocuments')
             hits = apiResponse.response.body.data.getESFiles.hits
@@ -185,13 +208,13 @@ Cypress.Commands.add('clickWellIcon', (wellName) => {
 })
 
 Cypress.Commands.add('getTableCell', (columnName, rowIndex) => {
-    cy.contains('th', columnName)
+    cy.contains('th', columnName, { timeout: longTimeout })
         .invoke('index')
         .then(colIndex => {
-            cy.get('tr')
-                .eq(rowIndex)
+            cy.get('tr', { timeout: longTimeout })
+                .eq(rowIndex, { timeout: longTimeout })
                 .within((row) => {
-                    cy.get('td').eq(colIndex).as('cell')
+                    cy.get('td', { timeout: longTimeout }).eq(colIndex).as('cell')
                 })
             cy.get('@cell')   // last command, it's result will be returned
         });
@@ -208,7 +231,7 @@ Cypress.Commands.add('addDocument', (fileAddress) => {
 
 //Remove Document
 Cypress.Commands.add('detachDocument', () => {
-    cy.get('#attachedDocument').trigger('mouseover')
+    cy.get('#attachedDocument', { timeout: longTimeout }).should('be.visible').trigger('mouseover')
     cy.get('#documentDeleteIcon').click({ force: true })
     cy.interceptApi('updateDocument')
     cy.get(".MuiButton-label").contains('Delete').click()
@@ -341,7 +364,7 @@ Cypress.Commands.add('createShapeLayer', (shapeLayerItemId) => {
 
 Cypress.Commands.add('addTract', (tractName) => {
     cy.log(`==== STEP: CLICK ON ADD TRACT BUTTON ====`)
-    cy.get(".MuiButtonBase-root").contains('+ ADD Tract To AGREEMENT').click({ force: true })
+    cy.get("#addTractToAgreementBtn").click({ force: true })
 
     cy.log(`==== STEP: CLICK ON EXISTING TRACT TAB ====`)
     cy.get("#existingTractTab").click()
@@ -358,4 +381,143 @@ Cypress.Commands.add('addTract', (tractName) => {
     cy.interceptApi('addOwnerToAShape')
     cy.get("#saveButton").click()
     cy.verifyApiResponse('@addOwnerToAShapeApi', { responseTimeout: longTimeout })
+})
+
+// AgreementGrid Commands
+
+Cypress.Commands.add('agreementFieldSelect', (field) => {
+    cy.get(field.id).click({ force: true })
+    cy.get('.MuiMenuItem-root').contains(field.value).click()
+})
+
+Cypress.Commands.add('addComment', () => {
+    cy.interceptApi('UpsertComment')
+    cy.get("#txtArea", { timeout: longTimeout }).should('be.visible').type("A cypress comment")
+    cy.get("#commentButton").click()
+})
+
+// This command will delete agreement then will verify too
+Cypress.Commands.add('deleteAndVerifyAgreement', (agreementName, agreementNumber) => {
+    cy.log('==== STEP: SEARCH AGREEMENT ON GRID ====')
+    cy.gridSearch(agreementName, 'getESSimpleSearch').then(response => {
+        const hits = response.response.body.data.getESSimpleSearch.hits
+
+        const cypressAgreement = hits.find(hit => hit.agreementName === agreementName)
+
+        if (!cypressAgreement)
+            throw new Error('Agreement added by cypress not found');
+
+        const cypressAgreementId = cypressAgreement._id
+
+        const indexOfcypressAgreement = hits.findIndex(hit => hit._id === cypressAgreement._id) + 1
+
+        cy.log('==== STEP: OPEN CYPRESS GENERATED AGREEMENT DETAIL  ====')
+        cy.getTableCell("Agreement", indexOfcypressAgreement).then(($agreementNameCell) => {
+            cy.wrap($agreementNameCell).contains(`${agreementNumber} - ${agreementName}`).scrollIntoView().click({ waitForAnimations: false })
+            cy.get("#field-agreementName", { timeout: longTimeout }).should('be.visible')
+
+            cy.log('==== STEP: DELETE AGREEMENT PROCESS START ====')
+            cy.get("#moreHorizIcon", { timeout: longTimeout }).children().click()
+            cy.interceptApi('getESSimpleSearch')
+            cy.interceptApi('updateCustomLayer')
+            cy.deleteConfirmation()
+            cy.verifyApiResponse('@updateCustomLayerApi')
+
+            cy.get('#addButton', { timeout: longTimeout }).should('be.visible')
+
+            cy.gridSearch(agreementName, 'getESSimpleSearch').then(response => {
+                const hits = response.response.body.data.getESSimpleSearch.hits
+                const isAggreementExist = hits.some(hit => hit.id === cypressAgreementId)
+
+                if (isAggreementExist)
+                    throw new Error('Agreement still exist');
+
+                cy.wait(500)
+            })
+
+        })
+    })
+})
+
+// This command will delete tract (related tract to agreement) and then will verify it
+Cypress.Commands.add('deleteTractAndVerify', (tractName) => {
+    cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(response => {
+        cy.get("#legalDescriptionTab").click()
+
+        // cy.get('.MuiTableCell-body', { timeout: longTimeout }).contains(tractName, { timeout: longTimeout }).scrollIntoView()
+        const hits = response.response.body.data.getESSimpleSearch.hits
+        const tractId = hits.find(hit => hit?.tract?.tractName === tractName)?.tractId
+        const indexOfSampleContact = hits.findIndex(hit => hit?.tract?.tractName === tractName) + 1
+
+        cy.wait(5000)
+        cy.get("#AgreementOwnersTractsTable").scrollIntoView()
+        cy.wait(1000)
+        cy.get("#AgreementOwnersTractsTable").scrollIntoView()
+        cy.get("#AgreementOwnersTractsTable", { timeout: longTimeout }).scrollIntoView().getTableCell('State', indexOfSampleContact).scrollIntoView().click()
+
+        cy.interceptApiByIndex('getESSimpleSearch', 'shapeowners_flat')
+        cy.interceptApi('updateShapeOwners')
+        cy.get("#tractMoreHorizIcon", { timeout: longTimeout }).click()
+        cy.get("#deleteTract", { timeout: longTimeout }).click()
+
+        cy.verifyApiResponse('@updateShapeOwnersApi', { responseTimeout: longTimeout })
+
+        cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: longTimeout }).then(response => {
+            const hits = response.response.body.data.getESSimpleSearch.hits
+
+            if (hits.some(hit => hit?.tractId === tractId))
+                throw new Error("Tract still exist after delete")
+        })
+    })
+})
+
+// AGREEMENT UPLOADERS COMMANDS
+
+//This command will click on import to open uploader will select value from breadcrumb
+Cypress.Commands.add('openAgreementUploader', (breadCrumb) => {
+    cy.log('==== STEP: CLICK ON ARROW ICON ====')
+    cy.get('#addButtonArrowIcon', { timeout: longTimeout }).click()
+
+    cy.log('==== STEP: CLIN ON IMPORT BUTTON  ====')
+    cy.get("[id='menu-item-Import Agreements']", { timeout: longTimeout }).click()
+
+
+    cy.log('==== STEP: SELECT BREADCRUMB  ====')
+    cy.get('.MuiTypography-root', { timeout: longTimeout }).contains("Agreement Upload (Agreement Header Info)", { timeout: longTimeout }).click()
+    cy.get('.MuiListItem-root', { timeout: longTimeout }).contains(breadCrumb, { timeout: longTimeout }).click()
+})
+
+//This command will check all fields are mapped or not
+Cypress.Commands.add('checkFieldsMapping', () => {
+    cy.log('==== STEP: CHECK IF ALL FIELDS ARE MAPPED ====')
+    cy.get("#headerTable", { timeout: longTimeout }).should("be.visible")
+        .find("tr")
+        .then((row) => {
+            const totalRows = row.length - 1
+            //  row.length will give you the row count
+            for (let i = 0; i < totalRows; i++) {
+                cy.get(`#checkbox-${i}`).scrollIntoView()
+                    .should('not.be.visible') // Passes
+                    .should('be.checked')
+            }
+        });
+})
+
+Cypress.Commands.add('getDataFromGrid', (gridField, totalRows) => {
+    let gridData = []
+    for (let i = 1; i < totalRows; i++) {
+        // eslint-disable-next-line no-loop-func
+        cy.getTableCell('Agreement Number', i).then(($tableCell) => {
+            cy.wrap($tableCell).scrollIntoView().then(function ($numberCellText) {
+                cy.getTableCell(gridField, i).then(($tableCell) => {
+                    cy.wrap($tableCell).scrollIntoView().then(function ($nameCellText) {
+                        gridData.push({ agreementNumber: $numberCellText.text(), [camelize(gridField)]: $nameCellText.text(), })
+                        cy.wrap(gridData).as('gridData');
+                    })
+
+                })
+            })
+
+        })
+    }
 })

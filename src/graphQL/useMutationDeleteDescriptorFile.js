@@ -8,3 +8,12 @@ export const DELETEDESCRIPTORFILE = gql`
     }
   }
 `;
+
+export const DELETEDESCRIPTORRELATEDFILE = gql`
+  mutation deleteDescriptorRelatedFile( $descriptorObjectId:String, $relatedObjectId:String) {
+    deleteRelatedFileDescriptor(descriptorObjectId: $descriptorObjectId, relatedObjectId: $relatedObjectId) {
+      success
+      message
+    }
+  }
+`;
