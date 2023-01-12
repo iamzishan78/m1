@@ -57,7 +57,6 @@ export default function CustomDataFilters(props) {
   );
 
   useEffect(()=>{
-    debugger
     getCustomKey();
   },[]);
 
