@@ -2599,7 +2599,6 @@ function SubTable(props) {
                                   },
                                   fontWeight: "bold",
                                   justifyContent: "flex-start",
-                                  paddingRight: '40px',
                                 }}
 
                                 onClick={(e) => {
