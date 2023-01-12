@@ -1,6 +1,7 @@
 import { GlobalStickyStyles } from "GlobalSettings";
 import { useHistory } from "react-router-dom";
 import { history } from "store";
+import vf_currency from "components/Shared/valueformatters/vf_currency";
 
 const styles = {
   width: "fit-content",
@@ -72,6 +73,13 @@ const RevenueStatementHeadCells = [
     name: "checkAmount",
     label: "Check Amount",
     esKey: "checkAmount",
+    options: {
+      sort: true,
+      filter: true,
+      customRender: (value) => {
+        return value ? <p style={{ fontWeight: 600 }}>{value ? `${vf_currency(value?.toFixed(2))}` : ""}</p> : <p style={{ color: "#898989b0" }}>N/A</p>;
+      },
+    },
   },
   {
     name: "checkDate",
@@ -110,9 +118,9 @@ const RevenueStatementHeadCells = [
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
-    options: { 
+    options: {
       ignoreGlobal: true,
-      sort: true, filter: true 
+      sort: true, filter: true
     },
   },
   {
