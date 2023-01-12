@@ -772,6 +772,7 @@ function ContactDetailCard(props) {
                     padding: "0px 0px",
                     //  height: '100vh'
                   }}>
+                    {/* MapGridCard 👇🏼 */}
                   <ContactDetailedSelector
                     purchaseData={purchaseData}
                     contactData={contactData}
