@@ -57,12 +57,12 @@ export default function CustomDataFilters(props) {
   );
 
   useEffect(()=>{
+    debugger
     getCustomKey();
   },[]);
 
   useEffect(() => {
     if(selectedKey && selectedValue){
-      console.log(stateApp?.landSearchFilters);
         const filterKey = `shapeJson.properties.custom_data.${selectedKey}`;
         const landProvisionsFilters = [...stateApp.landSearchFilters.provisions];
         const _index = landProvisionsFilters.findIndex((f) => f.field.startsWith("shapeJson.properties.custom_data"));
