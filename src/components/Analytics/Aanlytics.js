@@ -23,31 +23,6 @@ import FilterIcon from "components/Shared/svgIcons/filter";
 import ViewColumnIcon from "components/Shared/svgIcons/view_column";
 import { analyticsManagementRoutes } from "utils/data";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginTop: "65px",
-    "& div": {
-      "&>.MuiPaper-root": {
-        display: "flex",
-        "flex-direction": "column",
-        height: "calc(100vh - 65px)",
-        // top: "65px",
-        position: "relative",
-        "align-items": "stretch",
-        "&>.MuiPaper-root": {
-          display: "contents",
-        },
-        "&>:nth-child(3)": {
-          height: "inherit !important",
-        },
-        "&> table": {
-          bottom: 0,
-        },
-      },
-    },
-  },
-}));
-
 const Components = {
   Land: LandAnalytics,
   Revenue: RevenueAnalytics,
@@ -55,7 +30,6 @@ const Components = {
 };
 
 export default function Analytics() {
-  const classes = useStyles();
   const location = useLocation();
   const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
@@ -89,20 +63,18 @@ export default function Analytics() {
 
   useEffect(() => {
     const allPaths = JSON.parse(JSON.stringify(analyticsManagementRoutes));
-    const feature = stateApp.user?.features?.find(
-      (feature) => feature.name === FEATURES.ANALYTICS
-    );
-    const allAllowedPaths = {};
+    const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICS);
+    const allAllowedPaths = {}
     if (feature?.JSON) {
-      const data = JSON.parse(feature.JSON);
-      Object.keys(allPaths).forEach((path) => {
+      const data = JSON.parse(feature.JSON)
+      Object.keys(allPaths).forEach(path => {
         if (data.options.includes(allPaths[path].value)) {
-          allAllowedPaths[path] = allPaths[path];
+          allAllowedPaths[path] = allPaths[path]
         }
       });
     }
-    setAllowablePaths(allAllowedPaths);
-  }, [stateApp?.user]);
+    setAllowablePaths(allAllowedPaths)
+  }, [stateApp?.user])
 
   return (
     <>

@@ -59,6 +59,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
+import { SHAPE_TYPE } from "components/Navigation/components/Utils/consts";
 
 const landGridIndexName = "landgrid-index";
 const leaseIndexName = "lease-index-v2";
@@ -313,7 +314,7 @@ function Search() {
       "wells": {
         esIndex: "platformData:wells",
         search: (request) => `${request.input}`,
-        searchFields: ["wellName", "api", 'ApiNumber'],
+        searchFields: SHAPE_TYPE['wells'].SEARCH_FIELDS,
         formatOptions: (data) => {
           return { ...data, Source: wellCogIndexName, Primary: data.WellName, Secondary: data.ApiNumber }
         }
@@ -321,7 +322,7 @@ function Search() {
       "contacts": {
         esIndex: "contacts_flat",
         search: (request) => `${request.input}`,
-        searchFields: ['name', 'address1', 'city', 'state', 'zip'],
+        searchFields: SHAPE_TYPE['contacts'].SEARCH_FIELDS,
         formatOptions: (data) => {
           return {
             ...data, ...data.node, Primary: data.name || "--",
@@ -333,7 +334,7 @@ function Search() {
       "tax owners": {
         esIndex: "platformData:globalowner",
         search: (request) => `${request.input}`,
-        searchFields: ["ownerName", "streetAddress", "city", "state", "zip"],
+        searchFields: SHAPE_TYPE['tax owners'].SEARCH_FIELDS,
         formatOptions: (data) => {
           return {
             ...data, Source: 'globalowner-index', Primary: data.OwnerName, Secondary: `${data.StreetAddress}\n${data.City}\n${data.State}\n${data.Zip}`,
@@ -343,7 +344,7 @@ function Search() {
       "operators": {
         esIndex: "platformData:operator",
         search: (request) => `${request.input}`,
-        searchFields: ["operator", 'Operator'],
+        searchFields: SHAPE_TYPE['operators'].SEARCH_FIELDS,
         formatOptions: (data) => {
           return { ...data, Source: operatorIndexName, Primary: data.Operator, Secondary: null }
         }
@@ -362,21 +363,7 @@ function Search() {
       "land grid": {
         esIndex: "platformData:landgrid",
         search: (request) => `${request.input}`,
-        searchFields: [
-          "_all"
-          // "level1Type",
-          // "level1Name",
-          // "level2Type",
-          // "level2Name",
-          // "level3Type",
-          // "level3Name",
-          // "level4Type",
-          // "level4Name",
-          // "level5Type",
-          // "level5Name",
-          // "level6Type",
-          // "level6Name"
-        ],
+        searchFields: SHAPE_TYPE['land grid'].SEARCH_FIELDS,
         filter: [
           { field: "level7Id.keyword", value: undefined },
           { field: "level8Id.keyword", value: undefined },
@@ -397,7 +384,7 @@ function Search() {
       },
       "units": {
         esIndex: "shapes_flat",
-        search: (request) => request.input ? `"*${request.input}*"` : '',
+        search: (request) => request.input ? `*${request.input}*` : '',
         searchFields: ["name", "shapeJson.properties.uNumber", "shapeJson.properties.originalProperties.County", "data.shapeJson.properties.originalProperties.State"],
         filter: {
           field: "layer",
@@ -415,7 +402,7 @@ function Search() {
       "tracts": {
         esIndex: "shapes_flat",
         search: (request) => request.input ? `*${request.input}*` : '',
-        searchFields: ['name', 'shapeLabel', 'state', "shapeJson.properties.originalProperties.County"],
+        searchFields: SHAPE_TYPE['tracts'].SEARCH_FIELDS,
         filter: {
           field: "layer",
           value: "parcel"
@@ -430,7 +417,7 @@ function Search() {
       "agreements": {
         esIndex: "shapes_flat",
         search: (request) => request.input ? `*${request.input}*` : '',
-        searchFields: ['name', 'shapeJson.properties.shapeLabel', 'state', "shapeJson.properties.originalProperties.County", 'shapeJson.properties.agreementNumber', 'shapeJson.properties.agreementType'],
+        searchFields: SHAPE_TYPE['agreements'].SEARCH_FIELDS,
         filter: {
           field: "shapeJson.properties.type",
           value: "agreement"
@@ -1370,7 +1357,7 @@ function Search() {
           const parts = parse(option.Primary, Array());
 
           return (
-            <Grid container spacing={0} id={"cognitive-search-options-"+index}>
+            <Grid container spacing={0} id={"cognitive-search-options-" + index}>
               <Grid container item xs={11} alignItems="center">
                 <Grid item>
                   {option.Source === ownerCogIndexName && <PersonIcon className={classes.icon} />}

@@ -26,6 +26,8 @@ import moment from "moment";
 import { useHistory } from "react-router-dom";
 import { UPDATEACTIVITY } from "../../../graphQL/useMutationActivity";
 import { AppContext } from "AppContext";
+import AddIcon from '@material-ui/icons/Add';
+import ActivitiesModal from "../../Activities/components/ActivitiesModal"
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -110,6 +112,7 @@ const activityIcons = {
 
 const Tasks = () => {
   const history = useHistory();
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [getAllActivities, { data: orginalData, loading }] = useLazyQuery(
     GETALLACTIVITIES,
     {
@@ -122,14 +125,22 @@ const Tasks = () => {
   });
   const classes = useStyles();
   const [tab, setTab] = useState(0);
-  const [stateApp, setStateApp] = useContext(AppContext);
   const [data, setData] = useState([]);
 
   useEffect(() => {
     if (orginalData && Array.isArray(orginalData.activities)) {
       const sortCallBack = (a, b) => Number(a.dateTime) - Number(b.dateTime)
-      const filterDate = tab === 0 ? moment().add(7, "days") : moment();
-      if (tab === 0) {
+      
+      if(tab === 0){
+        setData(
+          orginalData.activities.filter(activity => 
+            !activity.isClosed &&
+            stateApp.user._id === activity.ownerId &&
+            moment.parseZone(new Date(+activity.dateTime))?.isSame(new Date(), "day")
+          ).sort(sortCallBack)
+        )
+      } else if (tab === 1) {
+        const filterDate = moment().add(7, "days");
         setData(
           orginalData.activities.filter(
             (activity) =>
@@ -177,8 +188,13 @@ const Tasks = () => {
   const Title = () => {
     return (
       <Grid container className={classes.gridStyle}>
-        <Grid item xs={6}>
-          <div>My Tasks</div>
+        <Grid item xs={6} >
+          <Grid container alignItems="center">
+            <div>My Tasks</div>
+            <IconButton title="Add new task" onClick={() => setStateApp({...stateApp, activityDialog: true })}>
+              <AddIcon />
+            </IconButton>
+          </Grid>
         </Grid>
         <Grid item xs={6}>
           <div className={classes.customTabs}>
@@ -189,6 +205,7 @@ const Tasks = () => {
                 setTab(newValue);
               }}
             >
+              <Tab label="Today" />
               <Tab label="Upcoming" />
               <Tab label="Overdue" />
             </Tabs>
@@ -277,6 +294,8 @@ const Tasks = () => {
           })}
         </List>
       )}
+
+        <ActivitiesModal setSelectedActivityId={() => {}} events={[]} />
     </Fragment>
   );
 };
