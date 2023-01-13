@@ -4474,6 +4474,7 @@ function SubTable(props) {
     || props.header === "Activities"
     || props.header === "Agreements"
     || props.header === "Tracts"
+    || props.header === "Exhibit A"
     || props.parent === "TractTable"
     || props.parent === "WellsTable"
     || props.parent === "TractInterestsTable"

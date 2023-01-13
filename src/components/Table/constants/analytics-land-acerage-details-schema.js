@@ -1,116 +1,139 @@
+import { GlobalStickyStyles } from "GlobalSettings";
 const AcerageSummaryHeadCells = [
   {
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-    name: "agreementId",
+    name: "agreementNumber",
     label: "Agreement #",
-    esKey: "agreement.keyword",
-    options: { sort: true, filter: true, display: true },
+    esKey: "shape.shapeJson.properties.agreementNumber.keyword",
+    options: {
+      ...GlobalStickyStyles({
+        setCellProps: {
+          left: '76.5px',
+          maxWidth: "392px",
+        },
+        setCellHeaderProps: {
+          left: '76.5px',
+        }
+      }),
+      dbName: "shapeJson.properties.agreementNumber",
+      isSnapGrid: false,
+    },
   },
   {
-    name: "agreementType",
+    name: "agreementName",
+    label: "Agreement Name",
+    esKey: "shape.shapeJson.properties.agreementName.keyword",
+    options: {
+      dbName: "shape.shapeJson.properties.agreementName",
+      display: false,
+      viewColumns: true,
+    },
+  },
+  {
+    name: "layerSubType",
     label: "Agreement Type",
-    esKey: "agreementType.keyword",
+    esKey: "shape.shapeJson.properties.layerSubType.keyword",
     options: { sort: true, filter: true, display: true },
   },
   {
-    name: "agreementSubType",
+    name: "agreementSubtype",
     label: "Agreement Subtype",
-    esKey: "agreementSubType.keyword",
+    esKey: "shape.shapeJson.properties.agreementSubtype.keyword",
     options: { sort: true, filter: true, display: true },
   },
   {
-    name: "rights",
+    name: "rightsType",
     label: "Rights",
-    esKey: "rights.keyword",
+    esKey: "shape.shapeJson.properties.rightsType.keyword",
     options: { sort: true, filter: true, display: true },
   },
   {
-    name: "state",
-    label: "State",
-    esKey: "state.keyword",
+    name: "agreementState", label: "State", esKey: [
+      'shape.shapeJson.properties.originalProperties.State.keyword',
+      'shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword'
+    ],
     options: { sort: true, filter: true, display: true },
   },
-
   {
-    name: "county",
+    name: "agreementCounty",
     label: "County",
-    esKey: "county.keyword",
-    options: { sort: true, filter: true },
+    esKey: "shape.shapeJson.properties.originalProperties.County.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
   },
   {
     name: "tractName",
     label: "Tract Name",
-    esKey: "tractName.keyword",
+    esKey: "parcel.name.keyword",
     options: { sort: true, filter: true },
   },
 
   {
     name: "tractStatus",
     label: "Tract Status",
-    esKey: "tractStatus.keyword",
+    esKey: "parcel.shapeJson.properties.tractStatus.keyword",
     options: {
       sort: true,
       filter: true,
-      setCellProps: () => ({ style: { minWidth: "110px", maxWidth: "110px" } }),
     },
   },
   {
-    name: "reportGross",
+    name: "reportGrossAcres",
     label: "Report Gross",
-    esKey: "reportGross.keyword",
+    esKey: "parcel.shapeJson.properties.reportGrossAcres.keyword",
     options: {
       sort: true,
       filter: true,
-      setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }),
     },
   },
   {
-    name: "gross",
+    name: "sdGrossAcres",
     label: "Gross",
-    esKey: "gross.keyword",
+    esKey: "parcel.shapeJson.properties.sdGrossAcres.keyword",
     options: {
       sort: true,
       filter: true,
-      setCellProps: () => ({ style: { minWidth: "225px" } }),
     },
   },
   {
-    name: "net",
+    name: "netAcres",
     label: "Net",
-    esKey: "net.keyword",
+    esKey: "parcel.shapeJson.properties.netAcres.keyword",
     options: { sort: true, filter: true },
   },
   {
-    name: "coNet",
+    name: "companyNetAcres",
     label: "Co. Net",
-    esKey: "coNet.keyword",
+    esKey: "parcel.shapeJson.properties.companyNetAcres.keyword",
     options: { sort: true, filter: true },
   },
   {
-    name: "nra",
+    name: "netRoyalty",
     label: "NRA",
-    esKey: "nra.keyword",
+    esKey: "parcel.shapeJson.properties.netRoyalty.keyword",
     options: { sort: true, filter: true },
   },
   {
     name: "acquisitionID",
     label: "Acqusition",
-    esKey: "acquisitionID.keyword",
+    esKey: "shape.shapeJson.properties.acquisitionID.keyword",
     options: { sort: true, filter: true },
   },
   {
     name: "prospectID",
     label: "Prospect",
-    esKey: "prospectID.keyword",
+    esKey: "shape.shapeJson.properties.prospectID.keyword",
     options: { sort: true, filter: true },
   },
   {
     name: "internalCompany",
     label: "Internal Company",
-    esKey: "internalCompany.keyword",
+    esKey: "shape.shapeJson.properties.internalCompany.keyword",
     options: { sort: true, filter: true },
   },
 ];

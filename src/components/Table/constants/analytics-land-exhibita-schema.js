@@ -4,36 +4,36 @@ const AcerageSummaryHeadCells = [
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-    name: "number",
+    name: "agreementNumber",
     label: "Agreement #",
-    esKey: "number.keyword",
+    esKey: "shape.shapeJson.properties.agreementNumber.keyword",
     options: { sort: true, filter: true, display: true },
   },
   {
-    name: "lessor",
+    name: "grantor",
     label: "Lessor/Grantor",
-    esKey: "lessor.keyword",
+    esKey: "shape.shapeJson.properties.grantor.keyword",
     options: { sort: true, filter: true, display: true },
   },
   {
-    name: "lessee",
+    name: "grantee",
     label: "Lessee/Grantee",
-    esKey: "lesse.keyword",
+    esKey: "shape.shapeJson.properties.grantee.keyword",
     options: { sort: true, filter: true, display: true },
   },
   {
-    name: "agmtDate",
+    name: "agreementDate",
     label: "Agmt Date",
-    esKey: "acquisition.keyword",
+    esKey: "shape.shapeJson.properties.agreementDate.keyword",
     options: { sort: true, filter: true, display: true },
     custom: {
       isDate: true,
     },
   },
   {
-    name: "efftvDate",
+    name: "effectiveDate",
     label: "Efftv Date",
-    esKey: "efftvDate.keyword",
+    esKey: "shape.shapeJson.properties.effectiveDate.keyword",
     options: { sort: true, filter: true, display: true },
     custom: {
       isDate: true,
@@ -43,80 +43,123 @@ const AcerageSummaryHeadCells = [
   {
     name: "tractName",
     label: "Tract Name",
-    esKey: "tractNamedevelopedNet.keyword",
+    esKey: "parcel.name.keyword",
     options: { sort: true, filter: true },
   },
   {
-    name: "state",
-    label: "State",
-    esKey: "state.keyword",
-    options: { sort: true, filter: true },
+    name: "tractState", label: "State", esKey: [
+      'parcel.shapeJson.properties.originalProperties.State.keyword',
+      'parcel.shapeJson.properties.originalProperties.StateAbbreviation.keyword'
+    ],
+    options: {
+      sort: true,
+      filter: true
+    },
+    custom: {
+      oRFilter: true
+    }
   },
 
   {
-    name: "county",
+    name: "tractCounty",
     label: "County",
-    esKey: "county.keyword",
+    esKey: "parcel.shapeJson.properties.originalProperties.County.keyword",
     options: {
       sort: true,
       filter: true,
     },
   },
   {
-    name: "block",
+    name: "blockTownship",
     label: "Block/Twsp",
-    esKey: "block.keyword",
+    esKey: [
+      'parcel.shapeJson.properties.originalProperties.Block.keyword',
+      'parcel.shapeJson.properties.originalProperties.Township.keyword'
+    ],
     options: {
       sort: true,
       filter: true,
     },
+    custom: {
+      oRFilter: true
+    }
   },
   {
-    name: "sec",
+    name: "sectionRange",
     label: "Sec/Range",
-    esKey: "sec.keyword",
+    esKey: [
+      'parcel.shapeJson.properties.originalProperties.Section.keyword',
+      'parcel.shapeJson.properties.originalProperties.Range.keyword'
+    ],
     options: {
       sort: true,
       filter: true,
     },
+    custom: {
+      oRFilter: true
+    }
   },
   {
-    name: "abstract",
+    name: "abstractSection",
     label: "Abstract/Sec",
-    esKey: "abstract.keyword",
-    options: { sort: true, filter: true },
-  },
-  {
-    name: "legalDescription",
-    label: "Legal Description",
-    esKey: "legalDescription.keyword",
-    options: { sort: true, filter: true },
-  },
-  {
-    name: "recDate",
-    label: "Rec Date",
-    esKey: "recDate.keyword",
+    esKey: [
+      'parcel.shapeJson.properties.originalProperties.AbstractName.keyword',
+      'parcel.shapeJson.properties.originalProperties.ShortName.keyword'
+    ],
     options: { sort: true, filter: true },
     custom: {
-      isDate: true,
-    },
+      oRFilter: true
+    }
   },
   {
-    name: "book",
-    label: "Book",
-    esKey: "book.keyword",
+    name: "legalDesctiption",
+    label: "Legal Description",
+    esKey: "shape.shapeJson.properties.legalDesctiption.keyword",
+    options: { sort: true, filter: true },
+  },
+  // {
+  //   name: "recDate",
+  //   label: "Rec Date",
+  //   esKey: "recDate.keyword",
+  //   options: { sort: true, filter: true },
+  //   custom: {
+  //     isDate: true,
+  //   },
+  // },
+  // {
+  //   name: "book",
+  //   label: "Book",
+  //   esKey: "book.keyword",
+  //   options: { sort: true, filter: true },
+  // },
+  // {
+  //   name: "page",
+  //   label: "Page",
+  //   esKey: "page.keyword",
+  //   options: { sort: true, filter: true },
+  // },
+  // {
+  //   name: "instrumentNumber",
+  //   label: "Instrument #",
+  //   esKey: "instrumentNumber.keyword",
+  //   options: { sort: true, filter: true },
+  // },
+  {
+    name: "internalCompany",
+    label: "Internal Company",
+    esKey: "shape.shapeJson.properties.internalCompany.keyword",
     options: { sort: true, filter: true },
   },
   {
-    name: "page",
-    label: "Page",
-    esKey: "page.keyword",
+    name: "prospectID",
+    label: "Prospect",
+    esKey: "shape.shapeJson.properties.prospectID.keyword",
     options: { sort: true, filter: true },
   },
   {
-    name: "instrumentNumber",
-    label: "Instrument #",
-    esKey: "instrumentNumber.keyword",
+    name: "acquisitionID",
+    label: "Acquisition",
+    esKey: "shape.shapeJson.properties.acquisitionID.keyword",
     options: { sort: true, filter: true },
   },
 ];
