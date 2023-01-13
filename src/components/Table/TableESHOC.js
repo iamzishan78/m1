@@ -36,7 +36,7 @@ import GlobalSettings from "..//..//GlobalSettings.js";
 export const TableESHOC = (Component) => {
     const HocWithDefaultProps = function HOC(props) {
         const { stateApp, setStateApp, loadMore } = props
-      const [drawer, setDrawer] = useContext(DrawerContext);
+        const [drawer, setDrawer] = useContext(DrawerContext);
         const dispatch = useDispatch();
         const client = useApolloClient();
         const [tableMeta, setTableMeta] = useState([]);
@@ -922,7 +922,6 @@ export const TableESHOC = (Component) => {
                     && props.targetLabel !== "operator"
                     && props.targetLabel !== "owner"
                     && props.targetLabel !== "parcel"
-                    && props.targetLabel !== "agreement"
                     && (
                         <div style={{ height: "48px", display: "flex" }}>
                             <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>

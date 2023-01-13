@@ -97,7 +97,7 @@ function RevenueStatementTable(props) {
       filters: fixedFilters,
       extendSearchQuery: revenueSearchQuery,
       searchFields: ["checkNumber", "_all"],
-      startPaginationAt: 25,
+      startPaginationAt: 50,
       defaultSort: { field: "checkDate", order: "desc" },
       formatHits,
       initializeGenericData: { key: "_id", actions: genericDataActions },
@@ -106,8 +106,8 @@ function RevenueStatementTable(props) {
 
   useEffect(() => {
     if (fixedFilters.length > 0) {
-        getCounts();
-     
+      getCounts();
+
       getPotentialIssues({
         variables: {
           filters: [
@@ -172,7 +172,7 @@ function RevenueStatementTable(props) {
   const getCounts = async () => {
     const approvedCounts = await getESCounts("Approved");
     const unApprovedCounts = await getESCounts("UnApproved");
-    
+
     setApprovedCount(approvedCounts);
     setUnApprovedCount(unApprovedCounts);
   }
