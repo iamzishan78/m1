@@ -470,7 +470,7 @@ function WellCard() {
                 {wellData?.State === "NM" ? (
                   <Link
                     href={
-                      "https://wwwapps.emnrd.state.nm.us/ocd/ocdpermitting/data/WellDetails.aspx?api=" +
+                      "https://wwwapps.emnrd.nm.gov/OCD/OCDPermitting/Data/WellDetails.aspx?api=" +
                       wellData?.ApiNumber.substring(0, 2) +
                       "-" +
                       wellData?.ApiNumber.substring(2, 5) +
