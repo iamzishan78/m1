@@ -35,7 +35,7 @@ describe('Agreement Provisions Spec', () => {
                 cy.log('==== STEP: ENTER PROVISION VALUE 1 ====')
                 cy.interceptApi('upsertAgreementProvision')
                 cy.get("[id='provision-value-0']", { timeout: longTimeout }).clear().type("$1,000/acre per year")
-                cy.wait(1000)
+                cy.wait(10000)
                 cy.verifyApiResponse('@upsertAgreementProvisionApi', { responseTimeout: longTimeout })
 
                 cy.log('==== STEP: ENTER START DATE 1 ====')

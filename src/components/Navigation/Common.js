@@ -465,6 +465,9 @@ export const useStyles = makeStyles((theme) => ({
     "& svg": {
       fontSize: "1.5rem",
     },
+    "&:hover": {
+      border: "1px solid #12abe0",
+    },
   },
   sideNavText: {
     flex: 2,
