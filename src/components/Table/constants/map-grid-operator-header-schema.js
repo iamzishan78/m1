@@ -9,9 +9,11 @@ const operatorsColumnHeaders = [
       ...GlobalStickyStyles({
         setCellProps: {
           maxWidth: "350px",
+          left: '77px'
         },
         setCellHeaderProps: {
           paddingLeft: '27px',
+          left: '77px'
         }
       }),
       sort: true,
