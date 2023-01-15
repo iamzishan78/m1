@@ -2,12 +2,13 @@ import React, { useContext, useState, useEffect, useCallback, useRef, useMemo, m
 import { useDispatch, useSelector } from "react-redux";
 import { useApolloClient, useLazyQuery } from "@apollo/client";
 import { Button, Tooltip, IconButton } from "@material-ui/core";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useHistory } from "react-router-dom";
 import { isEmpty } from "lodash";
 
 import { AppContext } from "AppContext";
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+// import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 import { copy, deepEqual, getSearchFields, setStateIfDeepEqual } from "components/Shared/functions";
 import { TAGSAMPLES } from "graphQL/useQueryTagSamples";
@@ -684,18 +685,23 @@ export const TableESHOC = (Component) => {
 
         const getCSVData = (data, sampleCsv) => {
             let csv = ''
-            for (let i = 0; i < sampleCsv.length; i++) {
-                csv = `${i !== 0 ? csv + ',' : ''}${sampleCsv[i].label}`
+            for(let i=0; i<sampleCsv.length; i++){
+                csv = `${i !==0 ? csv+',': ''}${sampleCsv[i].label}`
             }
             csv = `${csv}\n`;
-
-            for (let i = 0; i < data?.length; i++) {
-                for (let j = 0; j < sampleCsv.length; j++) {
-                    let updatedData = data[i][sampleCsv[j].name] ?? '';
-                    if (typeof updatedData === "string" && updatedData?.includes(',')) {
-                        updatedData = updatedData.replace(',', ' ')
+        
+            for(let i=0; i<data?.length; i++){
+                for(let j=0; j<sampleCsv.length; j++){
+                    let updatedData = get(data[i], sampleCsv[j].name, '')
+                    if(typeof updatedData === 'string'){
+                        if(typeof updatedData === 'string' && updatedData?.includes(',')){
+                            updatedData = updatedData.replace(',',' ')
+                        }
+                    }else if(sampleCsv[j].name === 'tags' && Array.isArray(updatedData) ){
+                        const tags = updatedData[0].map(d => d).toString().replace(',',' ')
+                        updatedData = tags
                     }
-                    csv = `${j !== 0 ? csv + ',' : csv}${updatedData}`
+                    csv = `${j !==0 ? csv+',': csv}${updatedData}`
                 }
                 csv = `${csv}\n`;
             }
@@ -703,7 +709,6 @@ export const TableESHOC = (Component) => {
         }
 
         const onDownload = async () => {
-
             const pageESVariables = {
                 variables: {
                     index: tableMeta.esIndex,
@@ -740,10 +745,9 @@ export const TableESHOC = (Component) => {
                 },
                 query: GET_ES_SIMPLE_SEARCH,
             });
-
+            
             const hits = tableMeta.formatHits(copy(allSelectedRows.data.getESSimpleSearch.hits))
-
-            const csvData = getCSVData(hits, columns.filter(c => c.options.display))
+            const csvData = getCSVData(hits, columns.filter(c => c.options.display !== false && c.label !== " "))
 
             var blob = new Blob([csvData]);
             var url = URL.createObjectURL(blob);
@@ -872,11 +876,11 @@ export const TableESHOC = (Component) => {
                 return (
                     <>
                         {tableMeta.exportPx && (
-                            <div style={{
-                                display: "inline",
-                                position: "absolute",
-                                right: tableMeta.exportPx,
-                            }}>
+                            <div style={{ 
+                                    display: "inline", 
+                                    position: "absolute",
+                                    right: tableMeta.exportPx,
+                                }}>
                                 <IconButton onClick={onDownload}>
                                     <Tooltip title="Download CSV" aria-label="add">
                                         <CloudDownloadIcon />
@@ -909,9 +913,7 @@ export const TableESHOC = (Component) => {
                                                 `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
                                         </Button>
                                 }
-
                             </div>
-
                         )}
                     </>
                 )
