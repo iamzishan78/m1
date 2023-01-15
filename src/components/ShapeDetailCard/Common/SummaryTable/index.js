@@ -503,7 +503,6 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                         filters={autoCompleteLandgridFilters(data)}
                         label={data.label}
                         onBlur={() => {
-                          debugger
                           setTableDataState({});
                           setTableTempProperties({ ...tableTempProperties, [data.key]: properties[data.key] });
                         }}

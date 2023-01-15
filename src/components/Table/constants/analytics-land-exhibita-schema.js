@@ -1,3 +1,5 @@
+import { GlobalStickyStyles } from "GlobalSettings";
+
 const AcerageSummaryHeadCells = [
   {
     name: "_id",
@@ -7,7 +9,20 @@ const AcerageSummaryHeadCells = [
     name: "agreementNumber",
     label: "Agreement #",
     esKey: "shape.shapeJson.properties.agreementNumber.keyword",
-    options: { sort: true, filter: true, display: true },
+    options: {
+      sort: true,
+      filter: true,
+      display: true,
+      ...GlobalStickyStyles({
+        setCellProps: {
+          left: "65px",
+          maxWidth: "492px",
+        },
+        setCellHeaderProps: {
+          left: "65px",
+        },
+      }),
+    },
   },
   {
     name: "grantor",
@@ -25,7 +40,7 @@ const AcerageSummaryHeadCells = [
     name: "agreementDate",
     label: "Agmt Date",
     esKey: "shape.shapeJson.properties.agreementDate.keyword",
-    options: { sort: true, filter: true, display: true },
+    options: { sort: true, filter: true, display: true, setCellProps: () => ({ style: { maxWidth: "150px" } }) },
     custom: {
       isDate: true,
     },
@@ -34,7 +49,7 @@ const AcerageSummaryHeadCells = [
     name: "effectiveDate",
     label: "Efftv Date",
     esKey: "shape.shapeJson.properties.effectiveDate.keyword",
-    options: { sort: true, filter: true, display: true },
+    options: { sort: true, filter: true, display: true, setCellProps: () => ({ style: { maxWidth: "150px" } }) },
     custom: {
       isDate: true,
     },
@@ -47,17 +62,20 @@ const AcerageSummaryHeadCells = [
     options: { sort: true, filter: true },
   },
   {
-    name: "tractState", label: "State", esKey: [
-      'parcel.shapeJson.properties.originalProperties.State.keyword',
-      'parcel.shapeJson.properties.originalProperties.StateAbbreviation.keyword'
+    name: "tractState",
+    label: "State",
+    esKey: [
+      "parcel.shapeJson.properties.originalProperties.State.keyword",
+      "parcel.shapeJson.properties.originalProperties.StateAbbreviation.keyword",
     ],
     options: {
       sort: true,
-      filter: true
+      filter: true,
+      setCellProps: () => ({ style: { maxWidth: "150px" } }),
     },
     custom: {
-      oRFilter: true
-    }
+      oRFilter: true,
+    },
   },
 
   {
@@ -73,49 +91,51 @@ const AcerageSummaryHeadCells = [
     name: "blockTownship",
     label: "Block/Twsp",
     esKey: [
-      'parcel.shapeJson.properties.originalProperties.Block.keyword',
-      'parcel.shapeJson.properties.originalProperties.Township.keyword'
+      "parcel.shapeJson.properties.originalProperties.Block.keyword",
+      "parcel.shapeJson.properties.originalProperties.Township.keyword",
     ],
     options: {
       sort: true,
       filter: true,
+      setCellProps: () => ({ style: { maxWidth: "150px" } }),
     },
     custom: {
-      oRFilter: true
-    }
+      oRFilter: true,
+    },
   },
   {
     name: "sectionRange",
     label: "Sec/Range",
     esKey: [
-      'parcel.shapeJson.properties.originalProperties.Section.keyword',
-      'parcel.shapeJson.properties.originalProperties.Range.keyword'
+      "parcel.shapeJson.properties.originalProperties.Section.keyword",
+      "parcel.shapeJson.properties.originalProperties.Range.keyword",
     ],
     options: {
       sort: true,
       filter: true,
+      setCellProps: () => ({ style: { maxWidth: "150px" } }),
     },
     custom: {
-      oRFilter: true
-    }
+      oRFilter: true,
+    },
   },
   {
     name: "abstractSection",
     label: "Abstract/Sec",
     esKey: [
-      'parcel.shapeJson.properties.originalProperties.AbstractName.keyword',
-      'parcel.shapeJson.properties.originalProperties.ShortName.keyword'
+      "parcel.shapeJson.properties.originalProperties.AbstractName.keyword",
+      "parcel.shapeJson.properties.originalProperties.ShortName.keyword",
     ],
-    options: { sort: true, filter: true },
+    options: { sort: true, filter: true, setCellProps: () => ({ style: { maxWidth: "150px" } }) },
     custom: {
-      oRFilter: true
-    }
+      oRFilter: true,
+    },
   },
   {
     name: "legalDesctiption",
     label: "Legal Description",
     esKey: "shape.shapeJson.properties.legalDesctiption.keyword",
-    options: { sort: true, filter: true },
+    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "400px" } }) },
   },
   // {
   //   name: "recDate",
@@ -160,6 +180,30 @@ const AcerageSummaryHeadCells = [
     name: "acquisitionID",
     label: "Acquisition",
     esKey: "shape.shapeJson.properties.acquisitionID.keyword",
+    options: { sort: true, filter: true },
+  },
+  {
+    name: "recordedDate",
+    label: "Rec Date",
+    esKey: "shape.shapeJson.properties.recordedDate",
+    options: { sort: true, filter: true },
+  },
+  {
+    name: "recordedBook",
+    label: "Book",
+    esKey: "shape.shapeJson.properties.recordedBook",
+    options: { sort: true, filter: true },
+  },
+  {
+    name: "recordedPage",
+    label: "Page",
+    esKey: "shape.shapeJson.properties.recordedPage",
+    options: { sort: true, filter: true },
+  },
+  {
+    name: "recordedInstrumentNumber",
+    label: "Instrument #",
+    esKey: "shape.shapeJson.properties.recordedInstrumentNumber",
     options: { sort: true, filter: true },
   },
 ];

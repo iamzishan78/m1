@@ -367,9 +367,9 @@ export const TableESHOC = (Component) => {
                     if (selectedGridView)
                         setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
                     let value
-                    if(column?.custom?.oRFilter){
-                        value = get(allFilters.find(filtr => filtr.field.includes(column.esKey[0])),  "value", "")
-                    }else if (Array.isArray(column.esKey)) value = get(allFilters.find((filter) => { return column.esKey.includes(filter.field) }), "value", "");
+                    if (column?.custom?.oRFilter) {
+                        value = get(allFilters.find(filtr => filtr.field.includes(column.esKey[0])), "value", "")
+                    } else if (Array.isArray(column.esKey)) value = get(allFilters.find((filter) => { return column.esKey.includes(filter.field) }), "value", "");
                     else value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
 
                     let filterList = Array.isArray(column.esKey) ? [] : [];
@@ -383,7 +383,7 @@ export const TableESHOC = (Component) => {
                                 value = moment(new Date(value)).format("MM/DD/YYYY HH:mm:ss.SSS")
                         }
                         filterList = [value];
-                    }else if(Array.isArray(value)){
+                    } else if (Array.isArray(value)) {
                         filterList = value.filter(v => v)
                     }
                     // if (column?.options?.filter) {
@@ -517,9 +517,9 @@ export const TableESHOC = (Component) => {
             // const filterHistory = {}
             if (esFilter) {
                 esFilter.forEach((filter) => {
-                    if(filter.oRFilter){
-                        filters.push({ field: Array.isArray(filter.field) ? JSON.stringify(filter.field): filter.field, value: filter.value, oRFilter: filter.oRFilter })
-                    }else if (typeof filter?.field === 'string') {
+                    if (filter.oRFilter) {
+                        filters.push({ field: Array.isArray(filter.field) ? JSON.stringify(filter.field) : filter.field, value: filter.value, oRFilter: filter.oRFilter })
+                    } else if (typeof filter?.field === 'string') {
                         // if (!filterHistory[filter.field])
                         filters.push(filter)
                         // filterHistory[filter.field] = true
@@ -581,7 +581,7 @@ export const TableESHOC = (Component) => {
             }
 
             tableState.filterList.forEach((val, index) => {
-                const oRFilter = columns[index].custom?.oRFilter
+                const oRFilter = columns[index]?.custom?.oRFilter
                 if (val.length > 0 && columns[index]) {
                     if (columns[index].custom?.isDate || columns[index].custom?.isDateTime) {
                         const filterData = stateApp.filtersData[columns[index].name];
@@ -684,18 +684,18 @@ export const TableESHOC = (Component) => {
 
         const getCSVData = (data, sampleCsv) => {
             let csv = ''
-            for(let i=0; i<sampleCsv.length; i++){
-                csv = `${i !==0 ? csv+',': ''}${sampleCsv[i].label}`
+            for (let i = 0; i < sampleCsv.length; i++) {
+                csv = `${i !== 0 ? csv + ',' : ''}${sampleCsv[i].label}`
             }
             csv = `${csv}\n`;
-        
-            for(let i=0; i<data?.length; i++){
-                for(let j=0; j<sampleCsv.length; j++){
-                    let updatedData = get(data[i], sampleCsv[j].name, '')
-                    if(updatedData?.includes(',')){
-                        updatedData = updatedData.replace(',',' ')
+
+            for (let i = 0; i < data?.length; i++) {
+                for (let j = 0; j < sampleCsv.length; j++) {
+                    let updatedData = data[i][sampleCsv[j].name] ?? '';
+                    if (typeof updatedData === "string" && updatedData?.includes(',')) {
+                        updatedData = updatedData.replace(',', ' ')
                     }
-                    csv = `${j !==0 ? csv+',': csv}${updatedData}`
+                    csv = `${j !== 0 ? csv + ',' : csv}${updatedData}`
                 }
                 csv = `${csv}\n`;
             }
@@ -703,7 +703,7 @@ export const TableESHOC = (Component) => {
         }
 
         const onDownload = async () => {
-            
+
             const pageESVariables = {
                 variables: {
                     index: tableMeta.esIndex,
@@ -740,9 +740,9 @@ export const TableESHOC = (Component) => {
                 },
                 query: GET_ES_SIMPLE_SEARCH,
             });
-            
+
             const hits = tableMeta.formatHits(copy(allSelectedRows.data.getESSimpleSearch.hits))
-            
+
             const csvData = getCSVData(hits, columns.filter(c => c.options.display))
 
             var blob = new Blob([csvData]);
@@ -872,11 +872,11 @@ export const TableESHOC = (Component) => {
                 return (
                     <>
                         {tableMeta.exportPx && (
-                            <div style={{ 
-                                    display: "inline", 
-                                    position: "absolute",
-                                    right: tableMeta.exportPx,
-                                }}>
+                            <div style={{
+                                display: "inline",
+                                position: "absolute",
+                                right: tableMeta.exportPx,
+                            }}>
                                 <IconButton onClick={onDownload}>
                                     <Tooltip title="Download CSV" aria-label="add">
                                         <CloudDownloadIcon />
@@ -886,31 +886,31 @@ export const TableESHOC = (Component) => {
                         )}
                         {(tableMeta.addBtnText || tableMeta.addableName) && (
                             <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-                            {
-                                tableMeta.addWithInput ?
-                                    <Button
-                                        color="secondary"
-                                        className={classes.multiSelectionTopBarButtons}
-                                        onClick={() => {
-                                            if (tableMeta.inputModeType === "revenueStatementDetails")
-                                                history.push(`/revenue/statement/${window.location.search.replace('?id=', '')}/line-item`);
-                                        }}
-                                    >
-                                        {tableMeta.addBtnText}
-                                    </Button>
-                                    :
-                                    <Button
-                                        color="secondary"
-                                        className={classes.multiSelectionTopBarButtons}
-                                        onClick={() => { setAddToTable('add'); setClickedRow(null) }}
-                                    >
-                                        {tableMeta.addBtnText ?
-                                            `+ ADD ${tableMeta.addBtnText}` :
-                                            `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
-                                    </Button>
-                            }
-        
-                        </div>
+                                {
+                                    tableMeta.addWithInput ?
+                                        <Button
+                                            color="secondary"
+                                            className={classes.multiSelectionTopBarButtons}
+                                            onClick={() => {
+                                                if (tableMeta.inputModeType === "revenueStatementDetails")
+                                                    history.push(`/revenue/statement/${window.location.search.replace('?id=', '')}/line-item`);
+                                            }}
+                                        >
+                                            {tableMeta.addBtnText}
+                                        </Button>
+                                        :
+                                        <Button
+                                            color="secondary"
+                                            className={classes.multiSelectionTopBarButtons}
+                                            onClick={() => { setAddToTable('add'); setClickedRow(null) }}
+                                        >
+                                            {tableMeta.addBtnText ?
+                                                `+ ADD ${tableMeta.addBtnText}` :
+                                                `+ ADD ${tableMeta.addableName} To ${tableMeta.shapeType?.toUpperCase()}`}
+                                        </Button>
+                                }
+
+                            </div>
 
                         )}
                     </>
