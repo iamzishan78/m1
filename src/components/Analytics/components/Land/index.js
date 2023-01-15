@@ -89,7 +89,7 @@ export default function LandAnalytics() {
           aria-label="ant example"
         >
           <StyledTab label="Acreage Summary" />
-          <StyledTab label="Acerage Detail" />
+          <StyledTab label="Acreage Detail" />
           <StyledTab label="Exhibit A" />
           <StyledTab label="Well Master" />
         </StyledTabs>

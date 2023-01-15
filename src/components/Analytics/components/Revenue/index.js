@@ -78,7 +78,7 @@ const StyledTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-export default function RevenueAnalytics() {
+export default function RevenueAnalytics(props) {
   const classes = useStyles();
   const propertiesReportGroup = useSelector(
     ({ Revenue }) => Revenue.propertiesReportGroup
@@ -211,6 +211,7 @@ export default function RevenueAnalytics() {
       <DetailTabsSection
         monthsInterval={monthsInterval}
         portfolioSummary={portfolioSummary?.getPortfolioSummary || {}}
+        {...props}
       />
     </>
   );

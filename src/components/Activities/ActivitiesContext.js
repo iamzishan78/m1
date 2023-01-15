@@ -5,6 +5,7 @@ const ActivitiesContext = createContext([{}, () => {}]);
 const ActivitiesContextProvider = (props) => {
   const [stateActivities, setStateActivities] = useState({
     openDialog: false,
+    selectedDate:new Date(),
   });
 
   return (

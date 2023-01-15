@@ -123,7 +123,7 @@ import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
-import Link from "@material-ui/core/Link";
+// import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
@@ -131,7 +131,7 @@ import ReactSelectField from "./SubComponents/ReactSelectField";
 import TableBody from "./MUIDataTable/TableBody";
 import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOfferPrice";
 
-
+import {Link} from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
 import GlobalStyles from "GlobalStyles";
 
@@ -1418,26 +1418,27 @@ function SubTable(props) {
                           size="35"
                           round
                         />
+                        <Link
+                            to={`/contact/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
+                            className={classes.clickableCell}
+                        >
                         <p
-                          className={classes.clickableCell}
+
                           style={{
                             display: "flex",
                             flexDirection: "row",
                             alignItems: "center",
                             minWidth: "300px",
                           }}
-                          onClick={() => {
-                            history.push(`/contact/details/${tableMeta.rowData[0]}`);
-                          }}
                         >
                           {tableMeta.rowData[nameIndex]}
-
                           {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
                             <FeatureFlag feature={FEATURES.IDICORE}>
                               <MonetizationOnIcon className={classes.monetizationIcon} />
                             </FeatureFlag>
                           )}
                         </p>
+                        </Link>
                       </div>
                     );
                   } else {
@@ -1992,19 +1993,18 @@ function SubTable(props) {
                             </Box>
                           </Typography> */}
 
-
+                          <Link
+                             href={
+                              (isSnapGrid && tableMeta.rowData[3]) ?
+                                `/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`
+                              :(!isSnapGrid) &&
+                              `/land/agreement/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`
+                            }
+                            onClick={(e) => e.preventDefault()}
+                          >
                           <Box
                             onClick={(e) => {
                               e.stopPropagation();
-
-                              if (isSnapGrid && tableMeta.rowData[3])
-                                history.push(`/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}`,
-                                  { showAgreementBreadcrumb: false }
-                                );
-                              else if (!isSnapGrid)
-                                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
-                                  { showAgreementBreadcrumb: true }
-                                );
                             }}
 
                             sx={{
@@ -2027,7 +2027,7 @@ function SubTable(props) {
                               ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
                               : tableMeta?.rowData[2]}
                           </Box>
-
+                          </Link>
                         </Grid>
 
                         {/* <Grid item>
@@ -2276,7 +2276,7 @@ function SubTable(props) {
                           <Convert_contact style={{ margin: "4px" }} />
                         ) : (
                           <Link
-                            href={
+                            to={
                               window.location.origin
                               +
                               `/contact/details/${value}/?tenant=${window.sessionStorage.getItem("tenantName")}`
@@ -2599,7 +2599,6 @@ function SubTable(props) {
                                   },
                                   fontWeight: "bold",
                                   justifyContent: "flex-start",
-                                  paddingRight: '40px',
                                 }}
 
                                 onClick={(e) => {
@@ -2971,7 +2970,6 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customBodyRender: (value, tableMeta, updateValue) => {
-
                   if (column.isCustom && (column.type === "multiselect" || column.type === "dropdown")) {
                     let value = null;
                     if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
@@ -2986,6 +2984,7 @@ function SubTable(props) {
                           index={tableMeta.rowIndex}
                           column={column}
                           value={value}
+                          id={column.label}
                           onCustomKeyChange={(value) => props.onCustomKeyChange(value, tableMeta.rowIndex, column.name)}
                         />
                       </div>
@@ -4475,6 +4474,7 @@ function SubTable(props) {
     || props.header === "Activities"
     || props.header === "Agreements"
     || props.header === "Tracts"
+    || props.header === "Exhibit A"
     || props.parent === "TractTable"
     || props.parent === "WellsTable"
     || props.parent === "TractInterestsTable"

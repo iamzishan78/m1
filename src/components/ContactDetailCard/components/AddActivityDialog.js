@@ -152,7 +152,16 @@ const getCurrentDate = () => {
 const mergeDateAndTime = (d, t) => {
   return `${d}T${t}`;
 };
-
+const activityStatus = [
+  {
+    key:'Open',
+    value:false
+  },
+  {
+    key: "Completed",
+    value: true
+  }
+]
 function AddActivityDialog(props) {
   const classes = useStyles();
   const { selectedActivity, onClose, contactData, defaultActivityType } = props;
@@ -163,7 +172,7 @@ function AddActivityDialog(props) {
   const [addNew, setAddNew] = useState(true);
   const [activityType, setActivityType] = useState(defaultActivityType || "call");
   const [activityName, setActivityName] = useState("");
-  const [closed, setClosed] = useState(false);
+  const [closed, setClosed] = useState(activityStatus[0]);
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
   const [startTime, setStartTime] = useState("08:00");
@@ -272,7 +281,7 @@ function AddActivityDialog(props) {
       setDealId(selectedActivity.dealId);
       setActivityType(selectedActivity.type);
       setActivityName(selectedActivity.name);
-      setClosed(selectedActivity.isClosed);
+      setClosed(selectedActivity.isClosed ? activityStatus[1] : activityStatus[0]);
 
       setStartDate(
         moment
@@ -293,7 +302,7 @@ function AddActivityDialog(props) {
       );
     } else {
       setAddNew(true);
-      setClosed(false);
+      setClosed(activityStatus[0]);
       setNotes("");
       setOwner({
         name: stateApp.user.fullname || stateApp.user.displayName,
@@ -366,7 +375,6 @@ function AddActivityDialog(props) {
 
     const dateTime = mergeDateAndTime(startDate, startTime);
     const endDateTime = mergeDateAndTime(endDate, endTime);
-
     await addActivityMutation({
       variables: {
         activity: {
@@ -380,7 +388,7 @@ function AddActivityDialog(props) {
           dealId,
           dateTime: new Date(dateTime).toUTCString(),
           endDateTime: new Date(endDateTime).toUTCString(),
-          isClosed: closed,
+          isClosed: closed?.value,
         },
       },
       refetchQueries: ["getContact"],
@@ -409,7 +417,7 @@ function AddActivityDialog(props) {
           contactId: contactData?._id,
           contactName: contactData?.name,
           dealId,
-          isClosed: closed,
+          isClosed: closed.value,
         },
       },
     });
@@ -468,49 +476,43 @@ function AddActivityDialog(props) {
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
-
       <Grid item xs={12} style={{ minHeight: "35px" }}>
         <div style={{ justifyContent: "space-between", display: "flex" }}>
           <h4 style={{ margin: "0 0 30px 0", float: "left", fontSize: "1.1rem" }}>
-            Recent Activities
+            {addNew ? "Activity Details" : 'Recent Activities'}
           </h4>
           <div>
-            {!addNew && (
-              <>
-                <IconButton
-                  size="small"
-                  component="span"
-                  disabled={addLoading || updateLoading}
-                  style={{
-                    background: "transparent",
-                    paddingLeft: "10px",
-                    align: "center",
-                  }}
-                  onClick={handleMenuClick}
-                >
-                  <MoreHorizIcon size="medium" />
-                </IconButton>
-                <Menu
-                  id="dealMenu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleMenuClose}
-                  className={classes.menu}
-                  getContentAnchorEl={null}
-                  anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-                  transformOrigin={{ vertical: "top", horizontal: "center" }}
-                >
-                  <MenuItem onClick={openConfirmationDialog}>
-                    <ListItemIcon>
-                      <DeleteIcon size="medium" />
-                    </ListItemIcon>
-                    <ListItemText>Delete</ListItemText>
-                  </MenuItem>
-                </Menu>
-              </>
-            )}
-
+            <IconButton
+              size="small"
+              component="span"
+              disabled={addLoading || updateLoading}
+              style={{
+                background: "transparent",
+                paddingLeft: "10px",
+                align: "center",
+              }}
+              onClick={handleMenuClick}
+            >
+              <MoreHorizIcon size="medium" />
+            </IconButton>
+            <Menu
+              id="dealMenu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+              className={classes.menu}
+              getContentAnchorEl={null}
+              anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+              transformOrigin={{ vertical: "top", horizontal: "center" }}
+            >
+              <MenuItem onClick={openConfirmationDialog}>
+                <ListItemIcon>
+                  <DeleteIcon size="medium" />
+                </ListItemIcon>
+                <ListItemText>Delete</ListItemText>
+              </MenuItem>
+            </Menu>
             <IconButton
               onClick={onModalClose}
               size="small"
@@ -708,18 +710,37 @@ function AddActivityDialog(props) {
           />
         )}
       />
+      <Autocomplete
+          className={clsx(!owner.id && errors.owner && classes.error)}
+          options={activityStatus}
+          onChange={(event, newValue) => {
+            setClosed(newValue)
+          }}
+          value={activityStatus.find((item)=>item?.value === closed?.value) || null}
+          getOptionLabel={(option) => option.key}
+          renderInput={(params) => (
+              <TextField
+                  className={clsx(classes.inputField)}
+                  margin="dense"
+                  {...params}
+                  variant="outlined"
+                  InputLabelProps={{ shrink: true }}
+                  label="Activity Status"
+              />
+          )}
+      />
       <div className={classes.btnGroup} style={{ width: "100%" }}>
-        <FormControlLabel
-          enabled
-          control={
-            <Checkbox
-              checked={closed}
-              onChange={(e) => setClosed(e.target.checked)}
-              color="primary"
-            />
-          }
-          label="Mark as done"
-        />
+        {/*<FormControlLabel*/}
+        {/*  enabled*/}
+        {/*  control={*/}
+        {/*    <Checkbox*/}
+        {/*      checked={closed}*/}
+        {/*      onChange={(e,activity) => setClosed(activity)}*/}
+        {/*      color="primary"*/}
+        {/*    />*/}
+        {/*  }*/}
+        {/*  label="Mark as done"*/}
+        {/*/>*/}
         <Button
           className={classes.marginLeft}
           variant="contained"

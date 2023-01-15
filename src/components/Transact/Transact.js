@@ -52,6 +52,9 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "150px",
     display: "flex",
     "flex-direction": "column",
+    '& :hover':{
+      backgroundColor: "rgb(217, 217, 217)",
+    }
   },
   cardHeaderStyle: {
     display: "flex",
