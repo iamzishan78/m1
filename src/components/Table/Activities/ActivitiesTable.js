@@ -121,6 +121,7 @@ function ActivitiesTable(props) {
       esIndex,
       startPaginationAt: 25,
       formatHits,
+      exportPx: props.parent === 'Contact' ? "121px" : undefined,
       defaultSort: { field: "lastUpdateAt", order: "desc" },
       setAppliedFilters: props.filtersChange,
     });
