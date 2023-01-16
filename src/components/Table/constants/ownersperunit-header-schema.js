@@ -36,9 +36,11 @@ const OwnersPerUnitHeadCells = [
       ...GlobalStickyStyles({
         setCellProps: {
           maxWidth: "300px",
+          left: "77px"
         },
         setCellHeaderProps: {
           paddingLeft: "35px",
+          left: "77px"
         },
       }),
     },

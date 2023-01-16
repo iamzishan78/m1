@@ -18,7 +18,16 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: 'name.keyword',
 
     options: {
-      ...GlobalStickyStyles({}),
+      ...GlobalStickyStyles({
+
+        setCellProps: {
+          left: isSnapGrid ? '77px' : '108px',
+        },
+        setCellHeaderProps: {
+          left: isSnapGrid ? '77px' : '108px',
+        }
+
+      }),
       dbName: "name",
 
       customRender: (value, tableMeta) => {
