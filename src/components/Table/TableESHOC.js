@@ -798,38 +798,43 @@ export const TableESHOC = (Component) => {
 
                             for (let i = 0; i < total; i++) { rowsSelected.push(isSelectAll ? i : tableState.selectedRows.data[i].index) }
 
+                            let selectAll = true
                             if (!allRowsSelected || allRowsSelected?.length === 0 || total !== tableState.count)
                                 setAllRowsSelected(rowsSelected)
                             else {
+                                selectAll = false
                                 tableState.selectedRows.data = []
                                 setAllRowsSelected([])
                             }
-                            const pageESVariables = copy(tableActions.pageESVariables)
-                            tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
 
-                            let selectedData = []
-                            let max = 10000
-                            let iter = 0
+                            if (selectAll) {
+                                const pageESVariables = copy(tableActions.pageESVariables)
+                                tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
 
-                            do {
-                                const remainingTotal = total - max * iter
-                                const first = remainingTotal > max ? max : remainingTotal
-                                iter += 1
+                                let selectedData = []
+                                let max = 10000
+                                let iter = 0
 
-                                pageESVariables.variables.pagination = {
-                                    first,
-                                    after: selectedData[selectedData.length - 1]?.sort,
-                                }
+                                do {
+                                    const remainingTotal = total - max * iter
+                                    const first = remainingTotal > max ? max : remainingTotal
+                                    iter += 1
 
-                                const allSelectedRows = await client.query({
-                                    ...pageESVariables,
-                                    query: GET_ES_SIMPLE_SEARCH,
-                                });
-                                const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
-                                selectedData = [...selectedData, ...hits]
-                            } while (iter * max < total);
+                                    pageESVariables.variables.pagination = {
+                                        first,
+                                        after: selectedData[selectedData.length - 1]?.sort,
+                                    }
 
-                            meta.setSelectedRows(selectedData)
+                                    const allSelectedRows = await client.query({
+                                        ...pageESVariables,
+                                        query: GET_ES_SIMPLE_SEARCH,
+                                    });
+                                    const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
+                                    selectedData = [...selectedData, ...hits]
+                                } while (iter * max < total);
+
+                                meta.setSelectedRows(selectedData)
+                            }
                         } else {
                             if (meta?._selectedRows?.length > 0)
                                 meta.setSelectedRows([])
