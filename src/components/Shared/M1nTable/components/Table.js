@@ -1351,8 +1351,8 @@ function SubTable(props) {
                 ...column.options,
                 customRender: (value, tableMeta) => {
                   if (props.targetLabel === "unit") {
-                    const targetSourceId = tableMeta.rowData[1];
-                    const commentValue = tableMeta.rowData[22]
+                    const targetSourceId = tableMeta.rowData[0];
+                    const commentValue = tableMeta.rowData[20];
                     return (
                       <div
                         style={{
