@@ -1,6 +1,5 @@
 import { GlobalStickyStyles } from "GlobalSettings";
 import { useHistory } from "react-router-dom";
-import { history } from "store";
 import vf_currency from "components/Shared/valueformatters/vf_currency";
 
 const styles = {
@@ -16,10 +15,10 @@ const ComponentPropertyName = ({ value, tableMeta }) => {
   return (
     <div
       style={{
-        display: 'flex',
-        alignItems: 'center',
+        display: "flex",
+        alignItems: "center",
       }}
-    // style={{borderRight: 'solid red'}}
+      // style={{borderRight: 'solid red'}}
     >
       <a
         href={`/revenue/statement/details/${tableMeta.rowData[0]}`}
@@ -29,20 +28,18 @@ const ComponentPropertyName = ({ value, tableMeta }) => {
         }}
         style={styles}
       >
-        {(value
-          ? `${value}- ${tableMeta?.rowData[2]}`
-          : tableMeta?.rowData[2]) || 'NA'}
+        {(value ? `${value}- ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]) || "NA"}
       </a>
     </div>
   );
-}
+};
 
 const RevenueStatementHeadCells = [
   {
     name: "_id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
-  
+
   {
     name: "checkNumber",
     label: "Check Number",
@@ -54,7 +51,7 @@ const RevenueStatementHeadCells = [
         },
         setCellHeaderProps: {
           left: "108px",
-        }
+        },
       }),
       customRender: (value, tableMeta) => <ComponentPropertyName value={value} tableMeta={tableMeta} />,
       sort: true,
@@ -66,8 +63,8 @@ const RevenueStatementHeadCells = [
     label: "Purchaser Name",
     esKey: "payor.name.keyword",
     options: {
-      display: false
-    }
+      display: false,
+    },
   },
   {
     name: "checkAmount",
@@ -77,7 +74,7 @@ const RevenueStatementHeadCells = [
       sort: true,
       filter: true,
       customRender: (value) => {
-        return value ? <p style={{ fontWeight: 600 }}>{value ? `${vf_currency(value?.toFixed(2))}` : ""}</p> : <p style={{ color: "#898989b0" }}>N/A</p>;
+        return value ? <p>{value ? `${vf_currency(value?.toFixed(2))}` : ""}</p> : <p style={{ color: "#898989b0" }}>N/A</p>;
       },
     },
   },
@@ -120,7 +117,8 @@ const RevenueStatementHeadCells = [
     esKey: "tags.tag.keyword",
     options: {
       ignoreGlobal: true,
-      sort: true, filter: true
+      sort: true,
+      filter: true,
     },
   },
   {
@@ -148,21 +146,24 @@ const RevenueStatementHeadCells = [
           <div> </div>
         </>
       ),
-      display: true, sort: false, filter: false, viewColumns: false
+      display: true,
+      sort: false,
+      filter: false,
+      viewColumns: false,
     },
     custom: {
       key_as_string: true,
       formatedFilterOptions: [
         {
           label: "Validated",
-          value: 'true',
+          value: "true",
         },
         {
           label: "Potential Issues",
-          value: 'false'
+          value: "false",
         },
-      ]
-    }
+      ],
+    },
   },
 ];
 
