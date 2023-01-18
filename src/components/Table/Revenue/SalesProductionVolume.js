@@ -4,6 +4,7 @@ import get from 'lodash/get'
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
+import moment from "moment";
 
 import { deepEqualObjects, copy } from "components/Shared/functions";
 
@@ -22,7 +23,17 @@ function SalesProductionVolumeTable(props) {
       hit.propertyName = hit.property.name
       hit.apiNumber = get(hit,'wells',[]).map(w => w.apiNumber)
       hit.wellName = get(hit,'wells',[]).map(w => w.wellName)
-      return hit;
+      let pVolume = 0
+      get(hit,'wells',[]).forEach(well => {
+        const prod = well.production.find(p => moment(p.data.ReportDate).format('MM/yyyy') === moment(hit.date).format('MM/yyyy'))
+        if(prod)
+          pVolume = pVolume + prod.data[`allocated${hit.product.charAt(0).toUpperCase() + hit.product.slice(1).toLowerCase()}`]
+      })
+      hit.statementVolume = hit.grossPropertyVolume
+      hit.reportedVolume = pVolume
+      hit.overShort = hit.statementVolume - pVolume
+      hit.difference = pVolume > 0 ? `${Math.round(((hit.overShort) * 100) / pVolume)}%` : null;
+      return hit
     });
   };
 
