@@ -42,7 +42,7 @@ const ProductionDetailsHeaders = [
     {
       name: "apiNumber",
       label: "API Number",
-      esKey: "wells.apiNumber",
+      esKey: "wells.apiNumber.keyword",
       options: {
         sort: true,
         searchable: false,
@@ -55,7 +55,7 @@ const ProductionDetailsHeaders = [
     {
       name: "wellName",
       label: "Well Name",
-      esKey: "wells.wellName",
+      esKey: "wells.wellName.keyword",
       options: {
         sort: true,
         searchable: false,
@@ -68,7 +68,7 @@ const ProductionDetailsHeaders = [
     {
       name: "date",
       label: "Sales Date",
-      esKey: "data",
+      esKey: "date",
       options: {
         sort: true,
         searchable: false,
@@ -77,11 +77,15 @@ const ProductionDetailsHeaders = [
         viewColumns: false,
         selectableRows: false,
       },
+      custom: {
+        key_as_string: true,
+        isDate: true,
+      },
     },
     {
       name: "product",
       label: "Product",
-      esKey: "data.allocatedOil",
+      esKey: "product.keyword",
       options: {
         sort: true,
         searchable: false,
@@ -96,6 +100,7 @@ const ProductionDetailsHeaders = [
       label: "Reported Volume",
       esKey: "data.allocatedGas",
       options: {
+        filter: false,
         sort: true,
         searchable: false,
         download: false,
@@ -107,7 +112,7 @@ const ProductionDetailsHeaders = [
     {
       name: "statementVolume",
       label: "Statement Volume",
-      esKey: "data.allocatedWater",
+      esKey: "grossPropertyVolume",
       options: {
         sort: true,
         searchable: false,
@@ -148,6 +153,7 @@ const ProductionDetailsHeaders = [
       label: "% Difference",
       esKey: "data.allocatedWater",
       options: {
+        filter: false,
         sort: true,
         searchable: false,
         download: false,
