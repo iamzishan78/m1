@@ -435,7 +435,6 @@ export default function DealComment({
           >
             Save Changes
           </Button>
-          {showActions &&
           <Button
             className={classes.commentBtn}
             style={{ marginRight: "10px", marginBottom: "10px" }}
@@ -446,11 +445,12 @@ export default function DealComment({
               setIsMinimize(false);
               setComment("");
               setEditCommentId("");
+              setNameAutValue({});
               // setEditComment("");
             }}
           >
             Cancel
-          </Button>}
+          </Button>
         </>
       )}
     </div>

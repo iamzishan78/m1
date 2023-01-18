@@ -603,7 +603,8 @@ export default function CommentComponent(props) {
                           comment={editComment !== "" ? editComment : comment}
                           showActions={showActions}
                           setComment={editComment !== "" ? setEditComment : setComment}
-                          upsertComment={editComment !== "" ? updateComment : addNewComment}
+                          upsertComment={addNewComment}
+                          updateCommentData={updateComment}
                           showCommentType={props.showCommentType}
                           isMinimize={isMinimize}
                           setIsMinimize={setIsMinimize}
