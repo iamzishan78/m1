@@ -143,7 +143,6 @@ function ShapeWellInterestTable(props) {
     }
   }, [props.portal]);
 
-    
   ////////////Contact Wells end///////////////////////////////////////////////
 
   const onTableChange = (action, tableState, rows, meta) => {
