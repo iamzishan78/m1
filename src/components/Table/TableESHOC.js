@@ -27,7 +27,7 @@ import { usetableStyles } from "./Styles";
 import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
 import { handleSelectedGridChange, setColumnDisplayAndFilter } from "./helpers";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
-import { findInFunction, formattingGridView, sortColumns } from "utils/helper";
+import { formattingGridView, sortColumns } from "utils/helper";
 import { DrawerContext } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import moment from "moment";
 
@@ -215,6 +215,7 @@ export const TableESHOC = (Component) => {
                     tableMeta.modifySelectedGridView(selectedGridView)
                 }
                 setPage(0)
+                setCurrentRowsLength(0)
                 setLoading(true);
                 getESSimpleSearch({
                     variables: {
@@ -685,23 +686,23 @@ export const TableESHOC = (Component) => {
 
         const getCSVData = (data, sampleCsv) => {
             let csv = ''
-            for(let i=0; i<sampleCsv.length; i++){
-                csv = `${i !==0 ? csv+',': ''}${sampleCsv[i].label}`
+            for (let i = 0; i < sampleCsv.length; i++) {
+                csv = `${i !== 0 ? csv + ',' : ''}${sampleCsv[i].label}`
             }
             csv = `${csv}\n`;
-        
-            for(let i=0; i<data?.length; i++){
-                for(let j=0; j<sampleCsv.length; j++){
+
+            for (let i = 0; i < data?.length; i++) {
+                for (let j = 0; j < sampleCsv.length; j++) {
                     let updatedData = get(data[i], sampleCsv[j].name, '')
-                    if(typeof updatedData === 'string'){
-                        if(typeof updatedData === 'string' && updatedData?.includes(',')){
-                            updatedData = updatedData.replace(',',' ')
+                    if (typeof updatedData === 'string') {
+                        if (typeof updatedData === 'string' && updatedData?.includes(',')) {
+                            updatedData = updatedData.replace(',', ' ')
                         }
-                    }else if(sampleCsv[j].name === 'tags' && Array.isArray(updatedData) ){
-                        const tags = updatedData[0].map(d => d).toString().replace(',',' ')
+                    } else if (sampleCsv[j].name === 'tags' && Array.isArray(updatedData)) {
+                        const tags = updatedData[0].map(d => d).toString().replace(',', ' ')
                         updatedData = tags
                     }
-                    csv = `${j !==0 ? csv+',': csv}${updatedData}`
+                    csv = `${j !== 0 ? csv + ',' : csv}${updatedData}`
                 }
                 csv = `${csv}\n`;
             }
@@ -745,7 +746,7 @@ export const TableESHOC = (Component) => {
                 },
                 query: GET_ES_SIMPLE_SEARCH,
             });
-            
+
             const hits = tableMeta.formatHits(copy(allSelectedRows.data.getESSimpleSearch.hits))
             const csvData = getCSVData(hits, columns.filter(c => c.options.display !== false && c.label !== " "))
 
@@ -876,11 +877,11 @@ export const TableESHOC = (Component) => {
                 return (
                     <>
                         {tableMeta.exportPx && (
-                            <div style={{ 
-                                    display: "inline", 
-                                    position: "absolute",
-                                    right: tableMeta.exportPx,
-                                }}>
+                            <div style={{
+                                display: "inline",
+                                position: "absolute",
+                                right: tableMeta.exportPx,
+                            }}>
                                 <IconButton onClick={onDownload}>
                                     <Tooltip title="Download CSV" aria-label="add">
                                         <CloudDownloadIcon />

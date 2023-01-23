@@ -62,7 +62,7 @@ function ContactsTable(props) {
 
   useEffect(() => {
     const tableheaderCopy = copy(tableheader);
-    tableheaderCopy.map(thc => thc.options = tableheader.find(th => th.name === thc.name).options);
+    tableheaderCopy.map((thc) => (thc.options = tableheader.find((th) => th.name === thc.name).options));
 
     props.setInitialFilters([
       {
@@ -113,7 +113,7 @@ function ContactsTable(props) {
   delete props.options.customToolbarSelect;
   delete props.options.onRowClick;
   props.options.search = false;
-  props.options.rowsSelected = props.allRowsSelected
+  props.options.rowsSelected = props.allRowsSelected;
 
   return (
     <>
@@ -142,29 +142,21 @@ function ContactsTable(props) {
           onTableChange={props.onTableChange}
           selectedRows={props.selectedRows}
           setSelectedRows={setSelectedRows}
-          onRowSelectionChange={(
-            currentRowsSelected,
-            allRowsSelected,
-            rowsSelected
-          ) => {
-            if (
-              allRowsSelected.length === startPaginationAt ||
-              allRowsSelected.length === props.options.count
-            ) {
+          onRowSelectionChange={(currentRowsSelected, allRowsSelected, rowsSelected) => {
+            if (allRowsSelected.length === startPaginationAt || allRowsSelected.length === props.options.count) {
               setIsSelectAll(true);
             } else {
               setIsSelectAll(false);
             }
-          }
-          }
+          }}
           exportContactsProps={{
             search: props.activeSearchRef.current,
-            filters: [...props.initialFilters, ...uniqBy(props.customAppliedFilters, "field") || []],
+            filters: [...props.initialFilters, ...(uniqBy(props.customAppliedFilters, "field") || [])],
             total: props.options.count,
             isSelectAll: isSelectAll,
             rows: selectedRows,
             esIndex: esIndex,
-            open: true
+            open: true,
           }}
           campaign={props.campaign}
         />
