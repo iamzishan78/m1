@@ -30,8 +30,8 @@ function AgreementOwnersTractsTable(props) {
   useEffect(() => {
     setSelectredTract(props.clickedRow)
   }, [props.clickedRow])
-  
-  
+
+
   const [drawer, setDrawer] = useContext(DrawerContext);
   useEffect(() => {
     if (props.portal) {
@@ -163,7 +163,10 @@ function AgreementOwnersTractsTable(props) {
           shapeType={props.shapeType}
           seletedOwner={selectredTract}
           deleteFunc={deleteFunc}
-          onClose={() => setDrawer(null)}
+          onClose={() => {
+            setDrawer(null)
+            setSelectredTract(null)
+          }}
           drawerContainer={drawerContainer}
         />
       )}
