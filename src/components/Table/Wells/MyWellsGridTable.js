@@ -40,6 +40,10 @@ function MyWellsGridTable(props) {
     // eslint-disable-next-line
   }, [stateApp.landSearchQuery, props.filters]);
 
+  useEffect(() => {
+    props.setSelectedWell(props.clickedRow)
+  },[props.clickedRow])
+
   const setTableMeta = React.useMemo(
     () =>
       debounce((request, top, callback) => {
