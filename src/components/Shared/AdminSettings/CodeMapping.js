@@ -182,6 +182,9 @@ const CodeMapping = ({ settingsFor }) => {
             field: mappingType?.key,
             size: 50,
           },
+          search: {
+            fields: [mappingType?.key?.replace(/.keyword/, "")],
+          }
         },
       });
     } else {
