@@ -131,7 +131,7 @@ const mappingTypeOptions = {
   ],
 };
 
-const CodeMapping = ({settingsFor}) => {
+const CodeMapping = ({ settingsFor }) => {
   const classes = useStyles();
   const [codes, setCodes] = useState([]);
   const [metaData, setMetaData] = useState([]);
@@ -201,10 +201,10 @@ const CodeMapping = ({settingsFor}) => {
     } else {
       mapping = [{ from: code, to: value }];
     }
-    setMetaData(metaData=>metaData.map(meta=>{
-      if(meta._id!==selectedMeta._id) return meta
+    setMetaData(metaData => metaData.map(meta => {
+      if (meta._id !== selectedMeta._id) return meta
 
-      return {...meta, mapping}
+      return { ...meta, mapping }
     }))
     updateMetaData({
       variables: {
@@ -216,7 +216,7 @@ const CodeMapping = ({settingsFor}) => {
       awaitRefetchQueries: true,
     });
   };
-  
+
   return (
     <>
       <CodeMappingHeader
@@ -266,7 +266,7 @@ const CodeMapping = ({settingsFor}) => {
             <>
               {codes.map((code, index) => {
                 const selectedMeta =
-                metaData.find((meta) => meta.esKey === mappingType?.key) ||
+                  metaData.find((meta) => meta.esKey === mappingType?.key) ||
                   {};
                 const value = selectedMeta?.mapping?.find(
                   (data) => data.from === code
@@ -281,30 +281,30 @@ const CodeMapping = ({settingsFor}) => {
                         <LongIcon />
                       </Grid>
                       <Grid item xs={4}>
-                      {selectedMeta.type === "multiselect" ? (
-                        <ReactSelectField
-                          index={index}
-                          fullWidth
-                          variant="outlined"
-                          valueMarginLeft={5}
-                          isSingleSelect={false}
-                          dropdownOptions={selectedMeta?.dropdownOptions || []}
-                          column={selectedMeta}
-                          value={value ? value.to : ""}
-                          onCustomKeyChange={(value) => onSelect(value, selectedMeta, code)}
-                        />
-                      ) : (
-                        <CustomFieldSelect
-                          index={index}
-                          fullWidth
-                          variant="outlined"
-                          valueMarginLeft={5}
-                          dropdownOptions={selectedMeta?.dropdownOptions || []}
-                          column={selectedMeta}
-                          value={value ? value.to : ""}
-                          onCustomKeyChange={(value) => onSelect(value, selectedMeta, code)}
-                        />
-                      )}
+                        {selectedMeta.type === "multiselect" ? (
+                          <ReactSelectField
+                            index={index}
+                            fullWidth
+                            variant="outlined"
+                            valueMarginLeft={5}
+                            isSingleSelect={false}
+                            dropdownOptions={selectedMeta?.dropdownOptions || []}
+                            column={selectedMeta}
+                            value={value ? value.to : ""}
+                            onCustomKeyChange={(value) => onSelect(value, selectedMeta, code)}
+                          />
+                        ) : (
+                          <CustomFieldSelect
+                            index={index}
+                            fullWidth
+                            variant="outlined"
+                            valueMarginLeft={5}
+                            dropdownOptions={selectedMeta?.dropdownOptions || []}
+                            column={selectedMeta}
+                            value={value ? value.to : ""}
+                            onCustomKeyChange={(value) => onSelect(value, selectedMeta, code)}
+                          />
+                        )}
                       </Grid>
                     </Grid>
                   )
