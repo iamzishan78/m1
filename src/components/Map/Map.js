@@ -144,6 +144,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   // function states
   const [parcelBoundaryId, setParcelBoundaryId] = useState(null);
 
+  const [oneTimeMapBounds, setOneTimeMapBounds] = useState(null);
+
   // styles
   let classes = useStyles({
     drawingCircle: stateApp.draw && stateApp.draw.getMode() === "drag_circle" ? true : false,
@@ -462,9 +464,24 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       jsonLayer.layer = { id: layer.customLayer.layer };
       jsonLayer.id = layer.customLayer._id;
 
+      if (!oneTimeMapBounds) {
+        const bound = findBoundsMap([jsonLayer], map, layerPadding, true);
+    
+        setOneTimeMapBounds({
+          bounds: [
+            [bound.minLong, bound.minLat],
+            [bound.maxLong, bound.maxLat],
+          ],
+          options: {
+            easing: () => 1,
+            padding: layerPadding
+              ? layerPadding
+              : { top: 200, bottom: 200, left: 1200, right: 0, linear: true },
+          },
+        });
+      }
+    
       if (!loading) {
-        findBoundsMap([jsonLayer], map, layerPadding);
-
         drawBoundary(map, jsonLayer);
       }
 
@@ -837,9 +854,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       const paintType = prop.paintType;
 
       // -> add source
-      if (map.getSource(sourceId)) {
-        let mapSourceData = map.getSource(sourceId)._data;
-        if (mapSourceData && !deepEqualObjects(geoJson, mapSourceData)) map.getSource(sourceId).setData(geoJson);
+      if (map?.getSource(sourceId)) {
+        let mapSourceData = map?.getSource(sourceId)._data;
+        if (mapSourceData && !deepEqualObjects(geoJson, mapSourceData)) map?.getSource(sourceId).setData(geoJson);
       } else if (sourceId == "recentsub_permits_source") {
         // need to avoid auto clustering
         map.addSource(sourceId, {
@@ -877,8 +894,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
         pointSource = { type: "FeatureCollection", features: [...pointSource] };
 
-        if (map.getSource(`${sourceId}_point`)) {
-          let pointSourceData = map.getSource(`${sourceId}_point`)._data;
+        if (map?.getSource(`${sourceId}_point`)) {
+          let pointSourceData = map?.getSource(`${sourceId}_point`)._data;
           if (pointSourceData && !deepEqualObjects(pointSource, pointSourceData)) map.getSource(`${sourceId}_point`).setData(pointSource);
         } else {
           map.addSource(`${sourceId}_point`, {
@@ -947,12 +964,12 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
         if (prop.paintProps) layerConfig.paint = prop.paintProps;
         if (prop.filter) layerConfig.filter = prop.filter;
-        
+
         // Incase of group we have one datasource but we filter by layerShapeName ( i.e file name)
-        if (config.layerShapeName && config.groupId) 
+        if (config.layerShapeName && config.groupId)
           layerConfig.filter = ['all', ["==", "layerShapeName", config.layerShapeName], ["==", "layerGeometry", config.layerGeometry]];
         else if (config.layerGeometry && config.groupId) layerConfig.filter = ["==", "layerGeometry", config.layerGeometry];
-        
+
         if (prop.minZoom) {
           layerConfig.minzoom = prop.minZoom;
         }
@@ -1077,6 +1094,14 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   // }, [permitData]);
 
   useEffect(() => {
+    if (
+      permitRecentSubmittedData &&
+      permitRecentSubmittedData.recent_submitted_permits &&
+      permitRecentSubmittedData.recent_submitted_permits.length > 0
+    ) {
+      const nextOffset = recent_submitted_permits.length + permitRecentSubmittedData.recent_submitted_permits.length;
+      setRecentSubmittedPermitData([...recent_submitted_permits, ...permitRecentSubmittedData.recent_submitted_permits]);
+    }
   }, [permitRecentSubmittedData]);
 
   useEffect(() => {
@@ -1301,7 +1326,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
     const clusterClickHandler = (feature, map) => {
       if (feature && feature.properties && feature.properties.cluster_id) {
         var clusterId = feature.properties.cluster_id;
-        map.getSource(feature.source).getClusterExpansionZoom(clusterId, function (err, zoom) {
+        map?.getSource(feature.source).getClusterExpansionZoom(clusterId, function (err, zoom) {
           if (err) return;
           map.easeTo({
             center: feature.geometry.coordinates,
@@ -1584,7 +1609,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           let layerData = layersData.find((l) => l.file === layer.file);
           if (layerData.fileUrl) {
             if (layerData.layerPaintProps?.[0]?.sourceProps) {
-              if (!map.getSource(layerData.layerPaintProps[0].sourceProps)) {
+              if (!map?.getSource(layerData.layerPaintProps[0].sourceProps)) {
                 map.addSource(layerData.layerPaintProps[0].sourceProps, {
                   type: "geojson",
                   data: layerData.fileUrl,
@@ -1614,8 +1639,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   //// remove the layer and it's source from the map after it's deleted
   const removeLayer = (layer) => {
     const paintProps = layer.layerPaintProps;
-    if(!paintProps?.length) return
-    
+    if (!paintProps?.length) return
+
     for (let i = paintProps.length - 1; i >= 0; i--) {
       const prop = paintProps[i];
 
@@ -1633,9 +1658,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       // -> remove source
       const sourceId = prop.sourceProps;
       const sourceLayers = layers.filter((layer) => layer.source === sourceId);
-      if (map.getSource(sourceId) && sourceLayers.length === 0) map.removeSource(sourceId);
-      if (map.getSource(`${sourceId}_point`)) map.removeSource(`${sourceId}_point`);
-      if (map.getSource(`${sourceId}_filter`)) map.removeSource(`${sourceId}_filter`);
+      if (map?.getSource(sourceId) && sourceLayers.length === 0) map.removeSource(sourceId);
+      if (map?.getSource(`${sourceId}_point`)) map.removeSource(`${sourceId}_point`);
+      if (map?.getSource(`${sourceId}_filter`)) map.removeSource(`${sourceId}_filter`);
     }
   };
 
@@ -2302,7 +2327,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                 sourceLayer: layer.sourceLayer,
               });
             } else {
-              featuresList = map.getSource(layer.source)._data.features;
+              featuresList = map?.getSource(layer.source)._data.features;
             }
             if (featuresList && featuresList.length > 0) {
               const result = featuresList.filter((feature) => {
@@ -4392,7 +4417,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   useEffect(() => {
     if (map && stateApp.permitSelectedCoordinates) {
       if (map.getLayer("well-point")) map.removeLayer("well-point");
-      if (map.getSource("well-select-point")) map.removeSource("well-select-point");
+      if (map?.getSource("well-select-point")) map.removeSource("well-select-point");
 
       if (stateApp.permitSelectedCoordinates.length > 0) {
         map.addSource("well-select-point", {
@@ -4630,10 +4655,12 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         ...stateApp,
         mapVars: stateApp.defaultMapVars,
       }));
-      map.flyTo({
+      // console.log('LOGGING', stateApp.defaultMapVars);
+      map.jumpTo({
         center: [stateApp.defaultMapVars.center.lng, stateApp.defaultMapVars.center.lat],
         zoom: stateApp.defaultMapVars.zoom,
-        speed: 0.5,
+        // flyTo v
+        // speed: 0.5,
       });
     }
   }, [stateApp.defaultMapVars]);
@@ -4703,8 +4730,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       const geoJson = makeGeoJSON(data);
       const labelGeoJson = makeLabelGeoJson(data);
 
-      map.getSource("plssseconddivision_geo_source").setData(geoJson);
-      map.getSource("plssseconddivision_label_geo_source").setData(labelGeoJson);
+      map?.getSource("plssseconddivision_geo_source").setData(geoJson);
+      map?.getSource("plssseconddivision_label_geo_source").setData(labelGeoJson);
     }
   }, [plssSecondDivisionData]);
 
@@ -4723,13 +4750,13 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
       const geoJson = makeGeoJSON(data);
 
-      map.getSource("abstract_geo_source").setData(geoJson);
+      map?.getSource("abstract_geo_source").setData(geoJson);
     }
   }, [abstractContainsData]);
 
   useEffect(() => {
     if (map) {
-      const featuresList = map.getSource("abstract_geo_source")._data.features;
+      const featuresList = map?.getSource("abstract_geo_source")._data.features;
       for (let i = 0; i < featuresList.length; i++) {
         const id = featuresList[i].properties.Id;
         map.setFeatureState({ source: "abstract_geo_source", id: id }, { click: stateApp.filterSelectAllAbstract });
@@ -4824,7 +4851,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           source: "abstract_geo_source",
           id: currentFeature.id,
         });
-        const featuresList = map.getSource("abstract_geo_source")._data.features;
+        const featuresList = map?.getSource("abstract_geo_source")._data.features;
 
         const geoSourceFeature = featuresList.find((feature) => feature.properties.Id === currentFeature.id);
         if (geoSourceFeature) currentFeature.geometry = geoSourceFeature.geometry;
@@ -4935,8 +4962,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   }
 
   useEffect(() => {
-    if (mapStyles.length > 0) {
+      if (mapStyles.length <= 0) return;
       // const SET_INITIAL_MAP_STYLE = "Satellite";
+
+      if (paramId && type !== 'wells' && !oneTimeMapBounds) return;
 
       const initializeMap = ({ setMap, mapEl, setStateApp, setDraw }) => {
         let id = mapEl.current.id;
@@ -4996,12 +5025,13 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         });
         newMap.addControl(geoLocate, "bottom-right");
         geoLocate.on("geolocate", function (e) {
-          newMap.flyTo({
+          newMap.jumpTo({
             center: [e.coords.longitude, e.coords.latitude],
             zoom: 14,
             pitch: 80,
             bearing: 20,
-            speed: 0.4,
+            // flyTo v
+            // speed: 0.4,
           });
         });
 
@@ -5289,20 +5319,36 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           setMap(newMap);
           setLoading(false);
         });
+        
+        if (oneTimeMapBounds) {
+          const {bounds, options} = oneTimeMapBounds
+          const invalidCoordinate = bounds.find((coord) => isNaN(parseInt(coord[0])) || isNaN(parseInt(coord[1])))
+          if(!invalidCoordinate) 
+              newMap.fitBounds(bounds, options);
+          setOneTimeMapBounds(null);
+        }
       };
 
       if (!map) {
         initializeMap({ setMap, mapEl, setStateApp, setDraw });
       } else {
+        if (oneTimeMapBounds) {
+          const {bounds, options} = oneTimeMapBounds
+          const invalidCoordinate = bounds.find((coord) => isNaN(parseInt(coord[0])) || isNaN(parseInt(coord[1])))
+          if(!invalidCoordinate) 
+              map.fitBounds(bounds, options);
+          setOneTimeMapBounds(null);
+        }
         // map.on("mousemove", mapMouseMove);
         // map.on("zoom", mapZoom);
       }
-    }
   }, [
     map,
     setStateApp,
     mapStyles,
     // stateApp.checkedLayersInteraction,
+    oneTimeMapBounds,
+    paramId,
   ]);
 
   // VIEWPORT REMOVE
@@ -5497,11 +5543,14 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         wellSelectedCoordinates: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
       }));
 
+      console.log('LOGGING', stateApp.flyTo)
+
       !stateApp.activateWellDetailsFromTable &&
-        map.flyTo({
+        map.jumpTo({
           center: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
           zoom: stateApp.flyTo.zoom ? stateApp.flyTo.zoom : zVal,
-          speed: 0.5,
+          // flyTo v
+          // speed: 0.5,
         });
     }
   }, [map, stateApp.flyTo]);
@@ -5522,7 +5571,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         map.fitBounds([
           [bounds.minLong, bounds.minLat],
           [bounds.maxLong, bounds.maxLat],
-        ]);
+        ], {
+          easing: () => 1,
+        });
     }
   }, [map, stateApp.fitBounds]);
 
@@ -5577,7 +5628,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         }));
       } else {
         if (stateApp.wellListFromSearch[0] && stateApp.wellListFromSearch[0].latitude && stateApp.wellListFromSearch[0].longitude) {
-          map.flyTo({
+          map.jumpTo({
             center: {
               lng: stateApp.wellListFromSearch[0].longitude,
               lat: stateApp.wellListFromSearch[0].latitude,
@@ -5627,13 +5678,16 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
   useEffect(() => {
     if (map && stateApp.toggleZoomOut) {
+      console.log('LOGGING', stateApp.toggleZoomOut)
+
       if (stateApp.toggleZoomOut === true) {
-        map.flyTo({
+        map.jumpTo({
           center: stateApp.defaultMapVars.center,
           zoom: stateApp.defaultMapVars.zoom,
           pitch: stateApp.defaultMapVars.pitch,
           bearing: stateApp.defaultMapVars.bearing,
-          speed: 0.5,
+          // flyTo v
+          // speed: 0.5,
         });
 
         let flying = null;
@@ -6053,8 +6107,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
         // map may be null when wellDetailCard is launched from somewhere else
         map?.fitBounds(bbox, {
-          speed: 0.75,
-          linear: true,
+          easing: () => 1,
         });
       }
       // setStateApp((state) => ({
@@ -6085,8 +6138,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   }, [stateApp.parcelDetailCardOpen]);
 
   useEffect(() => {
-    if (parcelBoundaryId && map && map.getSource("parcels_source")) {
-      let mapSourceData = map.getSource("parcels_source")._data;
+    if (parcelBoundaryId && map && map?.getSource("parcels_source")) {
+      let mapSourceData = map?.getSource("parcels_source")._data;
       const idx = mapSourceData.features.findIndex((feature) => feature.id === parcelBoundaryId);
       if (idx > -1) {
         const geoJson = {
@@ -6098,8 +6151,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           },
         };
 
-        if (map.getSource("parcelBoundarySource")) {
-          map.getSource("parcelBoundarySource").setData(geoJson);
+        if (map?.getSource("parcelBoundarySource")) {
+          map?.getSource("parcelBoundarySource").setData(geoJson);
           if (map.getLayer("parcelBoundary")) {
             map.removeLayer("parcelBoundary");
           }

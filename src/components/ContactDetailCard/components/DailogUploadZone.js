@@ -39,8 +39,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UploadZone(props) {
   const dispatch = useDispatch();
-  const [inputFile, setInputFile] = useState(null);
-  const [addFile, { data: addFileData, loading: addFileLoading }] = useMutation(ADDDESCRIPTORFILE);
+  const [, setInputFile] = useState(null);
+  const [addFile, { loading: addFileLoading }] = useMutation(ADDDESCRIPTORFILE);
 
   const handleUploadFile = (addFileData) => {
     if (addFileData && addFileData?.addFileDescriptor?.success) {
@@ -49,28 +49,31 @@ export default function UploadZone(props) {
       const file_id = addFileData.addFileDescriptor.file.id;
       const file_name = addFileData.addFileDescriptor.file.name;
 
-      if (file_id) {
-        const blockBlobClient = new BlockBlobClient(uri);
-        blockBlobClient
-          .uploadBrowserData(inputFile, {
-            maxSingleShotSize: 4 * 1024 * 1024,
-            blobHTTPHeaders: {
-              blobContentDisposition: `attachment; filename="${file_name}"`,
-            },
-            metadata: {
-              Internalkey: interal_key,
-            },
-          })
-          .then((res) => {
-            if (res?._response?.status === 201) {
-              // props.getRecentFiles();
-              if (!props.relatedObjectId && props.setUploadedFileData) {
-                props.setUploadedFileData(addFileData);
-              }
-            } else dispatch(showErrorMessage("Upload failed"));
-          })
-          .catch((err) => console.log(err));
-      }
+      setInputFile((inputFile) => {
+        if (file_id) {
+          const blockBlobClient = new BlockBlobClient(uri);
+          blockBlobClient
+            .uploadBrowserData(inputFile, {
+              maxSingleShotSize: 4 * 1024 * 1024,
+              blobHTTPHeaders: {
+                blobContentDisposition: `attachment; filename="${file_name}"`,
+              },
+              metadata: {
+                Internalkey: interal_key,
+              },
+            })
+            .then((res) => {
+              if (res?._response?.status === 201) {
+                // props.getRecentFiles();
+                if (!props.relatedObjectId && props.setUploadedFileData) {
+                  props.setUploadedFileData(addFileData);
+                }
+              } else dispatch(showErrorMessage("Upload failed"));
+            })
+            .catch((err) => console.log(err));
+        }
+        return inputFile
+      })
     }
   };
 

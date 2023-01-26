@@ -241,7 +241,7 @@ const ShapeActionsPopup = (props) => {
     if (stateApp.currentFeature.properties.shapeLabel && stateApp.map.getLayer("aoi_label_layer")) {
       const { map, currentFeature } = stateApp;
       // Changing the AOI source
-      map.getSource("aoi_label_source").setData({
+      map?.getSource("aoi_label_source").setData({
         type: "FeatureCollection",
         features: [currentFeature],
       });
@@ -366,7 +366,7 @@ const ShapeActionsPopup = (props) => {
 
   const getAbstractGeoSource = (abstractShape) => {
     if (!abstractShape.properties.State && !abstractShape.properties.StateAbbreviation) {
-      const featuresList = stateApp.map.getSource("abstract_geo_source")._data.features;
+      const featuresList = stateApp.map?.getSource("abstract_geo_source")._data.features;
       const foundFeatures = featuresList.filter((feature) => {
         var intersection = turf.intersect(abstractShape, feature);
         return !!intersection;
@@ -766,7 +766,7 @@ const ShapeActionsPopup = (props) => {
         saveAndOpenShapeDetail={saveAndOpenShapeDetail} updateAndOpenShapeDetail={updateAndOpenShapeDetail} setAgreementAnchorEl={setAgreementAnchorEl} />
 
       <Fragment>
-        <span class={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span>{" "}
+        <span className={classes.label}>{isLine() ? "Calc. Dist" : isAoi ? "AOI Area" : "Calc. Area"}</span>{" "}
         {calculateLandArea(props.selectedFeature)}
         <span className={`${classes.actions} ${isLine() ? classes.gray : ""}`}>
           {isShapeResizeMode ? (

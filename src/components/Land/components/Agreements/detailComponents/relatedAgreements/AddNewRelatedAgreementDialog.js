@@ -37,6 +37,8 @@ const filterKey = [
   "shapeJson.properties.agreementName.keyword",
   "shapeJson.properties.agreementNumber.keyword",
   "shapeJson.properties.layerSubType.keyword",
+  'name.keyword',
+  'shapeJson.properties.shapeLabel.keyword'
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -134,7 +136,7 @@ const AddNewRelatedAgreementDialog = (props) => {
     },
   });
 
-  const selectedAgreement = useMemo(() => get(agreement, "customLayer.shapeJson.properties"), [agreement]);
+  const selectedAgreement = useMemo(() => get(agreement, "customLayer.shapeJson.properties") || props.relatedAgreement, [agreement, props.relatedAgreement]);
 
   const fetchAgreementDetails = (value, key) => {
     getCustomLayer({
@@ -182,7 +184,7 @@ const AddNewRelatedAgreementDialog = (props) => {
             fontSize: 19,
           }}
         >
-          Add Related Agreement
+          {!props.relatedAgreement ? 'Add' : ''} Related Agreement
         </Typography>
 
         <div className="flex alignCenter c-pointer">
@@ -196,7 +198,7 @@ const AddNewRelatedAgreementDialog = (props) => {
         <div className={classes.contentRoot}>
           <div style={{ marginTop: 10, marginLeft: 4 }}>
             <FormControl variant="outlined" fullWidth size="small">
-              <Grid container className={classes.gridStyle}>
+              {!props.relatedAgreement && <Grid container className={classes.gridStyle}>
                 <AutoCompleteESField
                   placeholder="Search for agreement by name or number"
                   column={{
@@ -212,11 +214,16 @@ const AddNewRelatedAgreementDialog = (props) => {
                   filterOptions={(options, params) => {
                     return options;
                   }}
+                  filters={[
+                    {
+                      field: "shapeJson.properties.type.keyword",
+                      value: "agreement"
+                    }
+                  ]}
                   renderOption={(option) => {
                     if (option.id === "newEntity") return;
-                    let parts = parse([option.key[1], option.key[0]], Array());
+                    let parts = parse([option.key[4], option.key[3], option.key[2], option.key[1], option.key[0]], Array());
                     const type = get(option, `key[${2}]`) && agreementTypes.find((type) => type.value === option.key[2]);
-
                     return (
                       <Grid container spacing={0}>
                         <Grid container item xs={11} alignItems="center">
@@ -264,6 +271,7 @@ const AddNewRelatedAgreementDialog = (props) => {
                   }}
                 />
               </Grid>
+              }
               {agreementParams.map((param, index) => (
                 <Grid key={index} container className={classes.gridStyle}>
                   <TextField
@@ -272,11 +280,11 @@ const AddNewRelatedAgreementDialog = (props) => {
                     value={
                       param.type === "date"
                         ? get(selectedAgreement, param.key)
-                          ? moment(get(selectedAgreement, param.key)).format("DD/MM/YYYY")
+                          ? moment(get(selectedAgreement, param.key)).format("MM/DD/YYYY")
                           : ""
                         : param.formatValue
-                        ? param.formatValue(get(selectedAgreement, param.key, ""))
-                        : get(selectedAgreement, param.key, "")
+                          ? param.formatValue(get(selectedAgreement, param.key, ""))
+                          : get(selectedAgreement, param.key, "")
                     }
                     fullWidth
                     disabled
@@ -292,14 +300,18 @@ const AddNewRelatedAgreementDialog = (props) => {
         <Button className={classes.primary} color="primary" style={{ marginBottom: "40px" }} onClick={() => setDrawer("")}>
           Cancel
         </Button>
-        <Button
-          className={classes.secondary}
-          color="secondary"
-          style={{ marginBottom: "40px", marginRight: "20px" }}
-          onClick={addNewRelatedAgreement}
-        >
-          {upsertLoading ? <CircularProgress size={22} /> : "Add"}
-        </Button>
+        {
+          !props.relatedAgreement && <Button
+            id="addAgreementButton"
+            className={classes.secondary}
+            color="secondary"
+            style={{ marginBottom: "40px", marginRight: "20px" }}
+            onClick={addNewRelatedAgreement}
+          >
+            {upsertLoading ? <CircularProgress size={22} /> : "Add"}
+          </Button>
+        }
+
       </DialogActions>
     </div>
   );

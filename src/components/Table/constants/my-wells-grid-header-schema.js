@@ -1,10 +1,16 @@
-import GlobalSettings from "..//..//..//GlobalSettings.js";
+import { GlobalStickyStyles } from "GlobalSettings";
 import GlobalStyles from "..//..//..//GlobalStyles.js";
 import { history } from "store";
 
 import Typography from "@material-ui/core/Typography";
 import vf_number from "components/Shared/valueformatters/vf_number";
 import { statusData } from "components/Table/Revenue/RevenuePropertiesTable";
+import moment from "moment";
+
+const dateCustomRender = (value) => value ? moment(new Date(value)).format("MM/DD/YYYY") === "Invalid date"
+  ? ""
+  : moment(new Date(value)).format("MM/DD/YYYY")
+  : ""
 
 const wellsColumnHeaders = [
   {
@@ -12,12 +18,18 @@ const wellsColumnHeaders = [
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-    name: "wellName",
+    name: "WellName",
     label: "Well Name",
     esKey: "wellData.wellName.keyword",
     options: {
-      ...GlobalSettings.muiGridInfScrollOptions,
-      ignoreGlobal: true,
+      ...GlobalStickyStyles({
+        setCellProps: {
+          left: '125px',
+        },
+        setCellHeaderProps: {
+          left: '125px',
+        }
+      }),
       sort: true,
       filter: true,
       customRender: (value, tableMeta) => {
@@ -69,7 +81,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -79,7 +91,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -191,10 +203,11 @@ const wellsColumnHeaders = [
     },
   },
   {
-    name: "permitApprovedDate",
+    name: "PermitDate",
     label: "Permit Date",
-    esKey: "wellData.permitApprovedDate",
+    esKey: "wellData.PermitDate",
     options: {
+      customRender: dateCustomRender,
       sort: true,
       filter: true,
       custom: {
@@ -204,10 +217,11 @@ const wellsColumnHeaders = [
     },
   },
   {
-    name: "spudDate",
+    name: "SpudDate",
     label: "Spud Date",
-    esKey: "wellData.spudDate",
+    esKey: "wellData.SpudDate",
     options: {
+      customRender: dateCustomRender,
       sort: true,
       filter: true,
       custom: {
@@ -217,10 +231,12 @@ const wellsColumnHeaders = [
     },
   },
   {
-    name: "completionDate",
+    name: "CompletionDate",
+
     label: "Completion Date",
-    esKey: "wellData.completionDate",
+    esKey: "wellData.CompletionDate",
     options: {
+      customRender: dateCustomRender,
       sort: true,
       filter: true,
       custom: {
@@ -235,6 +251,7 @@ const wellsColumnHeaders = [
     label: "First Prod Date",
     esKey: "wellData.FirstProdDate",
     options: {
+      customRender: dateCustomRender,
       sort: true,
       filter: true,
       custom: {
@@ -250,7 +267,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value ? vf_number(Math.floor(value)) : null}</p>,
+      customRender: (value) => <p>{value ? vf_number(Math.floor(value)) : "--"}</p>,
     },
   },
   {
@@ -260,7 +277,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value ? vf_number(Math.floor(value)) : null}</p>,
+      customRender: (value) => <p>{value ? vf_number(Math.floor(value)) : "--"}</p>,
     },
   },
   {
@@ -270,7 +287,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value ? vf_number(Math.floor(value)) : null}</p>,
+      customRender: (value) => <p>{value ? vf_number(Math.floor(value)) : "--"}</p>,
     },
   },
   {
@@ -290,7 +307,7 @@ const wellsColumnHeaders = [
       sort: true,
       filter: true,
       customRender: (values) => (
-        <p>{values?.length ? values.map((value) => statusData.find((sd) => sd.value === value)?.label).join(", ") : null}</p>
+        <p>{values?.length ? values.map((value) => statusData.find((sd) => sd.value === value)?.label).join(", ") : "--"}</p>
       ),
     },
   },
@@ -301,7 +318,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -311,7 +328,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -321,7 +338,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -331,7 +348,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -350,7 +367,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -360,7 +377,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {
@@ -370,7 +387,7 @@ const wellsColumnHeaders = [
     options: {
       sort: true,
       filter: true,
-      customRender: (value) => <p>{value?.length ? value.join(", ") : null}</p>,
+      customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
   {

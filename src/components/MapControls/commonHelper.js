@@ -28,7 +28,7 @@ export const clearMapAndCloseShapeActionsPopup = (stateApp, setStateApp) => {
     }));
 
     // unselecting the grids
-    const featuresList = map.getSource("abstract_geo_source")._data.features;
+    const featuresList = map?.getSource("abstract_geo_source")._data.features;
     for (let i = 0; i < featuresList.length; i++) {
         const id = featuresList[i].properties.Id;
         map.setFeatureState({ source: "abstract_geo_source", id: id }, { click: false });
@@ -85,7 +85,7 @@ export const drawShapeLayerToggle = (stateApp, value) => {
     stateApp.map.setLayoutProperty('gl-draw-polygon-and-line-vertex-stroke-inactive.hot', "visibility", value);
 }
 
-export const findBoundsMap = (shapes, map, padding) => {
+export const findBoundsMap = (shapes, map, padding, onlySendBounds=false) => {
     let bound = null;
     if (shapes && shapes.length > 0) {
         shapes.forEach((shape) => {
@@ -108,9 +108,14 @@ export const findBoundsMap = (shapes, map, padding) => {
             }
         });
     }
-    if (bound)
+    if (bound && !onlySendBounds)
         map?.fitBounds([[bound.minLong, bound.minLat], [bound.maxLong, bound.maxLat],],
-            { padding: padding ? padding : { top: 200, bottom: 200, left: 1200, right: 0, linear: true } }
+            {
+                easing: () => 1,
+                padding: padding ? padding : {
+                    top: 200, bottom: 200, left: 1200, right: 0
+                }
+            }
         );
     return { ...bound };
 };

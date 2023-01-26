@@ -328,19 +328,14 @@ function SourceManager(props) {
       if (!feature.properties) {
         feature.properties = {};
       }
-      feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type, layerShapeName: `${geo.fileName || name} - ${feature.geometry.type}` };
+      const layerShapeName = `${geo.fileName || name} - ${feature.geometry.type === 'MultiPolygon' ? 'Polygon' : feature.geometry.type}`
+      feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type, layerShapeName };
       if (!layerTypes.includes(feature.geometry.type) && feature.geometry.type !== 'MultiPolygon') {
         layerTypes.push(feature.geometry.type);
       }
     });
     layerTypes.forEach((layerType) => {
       fileNames.push(`${geo.fileName || name} - ${layerType}`);
-
-      // if (layerTypes.length > 1) {
-      //   fileNames.push(`${geo.fileName || name} - ${layerType}`);
-      // } else {
-      //   fileNames.push(`${geo.fileName || name} `);
-      // }
     });
     return { layerTypes, fileNames };
   };
@@ -521,9 +516,8 @@ function SourceManager(props) {
   }
 
   return (
-    <div style={{ height: "100%", display: "flex", width: "100%" }}>
-      <DropzoneAreaBase
-        onAdd={handleFileInput}
+    <div id="sourceManagerDiv" style={{ height: "100%", display: "flex", width: "100%" }}>
+      <DropzoneAreaBase onAdd={handleFileInput}
         onDelete={(fileObj) => { }}
         onAlert={(message, variant) => { }}
         filesLimit={1}
@@ -683,6 +677,7 @@ function SourceManager(props) {
                         {
                           dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 className={openDataSets[dataset.sourceName] ? 'isOpen' : ''} style={{ paddingLeft: '0px' }} button onClick={() => setOpenDataSets({ ...openDataSets, [dataset.sourceName]: !openDataSets[dataset.sourceName] })}>
                             <Checkbox
+                              id={"source-checkbox-" + dataset.sourceName}
                               checked={dataset.visibility}
                               color="darkgray"
                               onClick={(e) => e.stopPropagation()}
@@ -691,7 +686,7 @@ function SourceManager(props) {
                             />
                             <EditableTextField onChange={datasetNameChange} item={dataset} name={dataset.sourceName} isEditable={true} openEditField={openEditField(dataset.sourceName)} />
                             {/* <ListItemText primary={dataset.sourceName} /> */}
-                            <MoreHorizIcon aria-controls={"source-menu"} className={"moreSourceIcon " + classes.moreSourceIcon} onClick={(e) => { e.stopPropagation(); handleClick(e); setActionItem({ dataset }) }} />
+                            <MoreHorizIcon id={"more-horiz-" + dataset.sourceName} aria-controls={"source-menu"} className={"moreSourceIcon " + classes.moreSourceIcon} onClick={(e) => { e.stopPropagation(); handleClick(e); setActionItem({ dataset }) }} />
                             {openDataSets[dataset.sourceName] ? <ExpandLess /> : <ExpandMore />}
                           </StyledListItem2>
                             <Collapse in={openDataSets[dataset.sourceName]} timeout="auto" unmountOnExit>
@@ -720,6 +715,7 @@ function SourceManager(props) {
           </>
         }
       />
+
       {/* //// delete confirmation dialog */}
 
 
@@ -733,7 +729,7 @@ function SourceManager(props) {
               <ClickAwayListener onClickAway={handleMenuClose}>
                 <MenuList autoFocusItem={Boolean(anchorEl)} id="menu-list-grow">
                   <MenuItem onClick={(e) => { e.stopPropagation(); setActionItem((actionItem) => ({ ...actionItem, type: 'editName' })); handleMenuClose() }}><EditIcon /> Edit Name</MenuItem>
-                  <MenuItem onClick={(e) => { e.stopPropagation(); setOpenDeleteDialog(actionItem); handleMenuClose() }}><DeleteIcon /> Delete</MenuItem>
+                  <MenuItem id="deleteSource" onClick={(e) => { e.stopPropagation(); setOpenDeleteDialog(actionItem); handleMenuClose() }}><DeleteIcon /> Delete</MenuItem>
                 </MenuList>
               </ClickAwayListener>
             </Paper>

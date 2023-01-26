@@ -5,6 +5,7 @@ import { basic_timeouts } from "../../cypressUtils/data"
 describe('Verify Activity Completed Spec', () => {
     it('passes', () => {
         // Constants 
+        // might need to change
         const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
 
         cy.viewport(1400, 900)

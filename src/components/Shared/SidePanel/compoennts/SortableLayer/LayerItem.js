@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/styles";
-import { Box, Grid, ListItemIcon } from "@material-ui/core";
+import * as turf from "@turf/turf";
+import { Box, CircularProgress, Grid, ListItemIcon } from "@material-ui/core";
 
 import { Flipped } from "react-flip-toolkit";
 import { useSelector } from "react-redux";
@@ -67,7 +68,7 @@ const LayerItem = React.memo((props) => {
   const [zoomLoading, setZoomLoading] = useState(false);
   const colors = useSelector(({ MainMap }) => MainMap);
 
-  const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin } = props;
+  const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin, map } = props;
   const itemRef = React.useRef({ id: -1, depth: -1, data: {} });
   const { type, collapsed, name } = data;
 
@@ -102,14 +103,14 @@ const LayerItem = React.memo((props) => {
 
   const handleLayerZoomClick = (data) => {
     const sourceName = data.layerPaintProps[0].sourceProps
-    let sourceUrl = map.getSource(sourceName)?._data;
+    let sourceUrl = map?.getSource(sourceName)?._data;
     if (sourceUrl) {
       fetchData(sourceUrl, map)
     }
     else {
       setZoomLoading(true)
       const intervalId = setInterval(() => {
-        let sourceUrl = map.getSource(sourceName)?._data;
+        let sourceUrl = map?.getSource(sourceName)?._data;
         if (sourceUrl) {
           fetchData(sourceUrl, map)
           clearInterval(intervalId);
@@ -123,14 +124,18 @@ const LayerItem = React.memo((props) => {
         .then((response) => response.json())
         .then((response) => {
           setZoomLoading(false)
-          var combined = turf.combine(turf.featureCollection(response?.features))
+          let features = response?.features.filter((feature) => feature.properties.layerGeometry === data.layerGeometry)
+          if (data.layerShapeName) {
+            features = features.filter((feature) => feature.properties.layerShapeName === data.layerShapeName)
+          }
+          var combined = turf.combine(turf.featureCollection(features))
           const bbox = turf.bbox(combined)
           map?.fitBounds(
             [
               [bbox[0], bbox[1]], // southwestern corner of the bounds
               [bbox[2], bbox[3]] // northeastern corner of the bounds
             ],
-            { padding: { top: 40, bottom: 40, left: 40, right: 40 } }
+            { padding: { top: 40, bottom: 40, left: 40, right: 40 }, easing: () => 1, }
           )
         })
         .catch((error) => {
@@ -168,7 +173,7 @@ const LayerItem = React.memo((props) => {
                   alignItems: "center",
                 }}
               >
-                <Box borderLeft={4} style={{borderColor: getLayerColor(data, "layer", colors)}} >
+                <Box borderLeft={4} style={{ borderColor: getLayerColor(data, "layer", colors) }} >
                   {hoverItemIndex === id ? (
                     <ListItemIcon ref={drag}>
                       <DragIndicator style={{ cursor: "move", justifyContent: "center" }} />

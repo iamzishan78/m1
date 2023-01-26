@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import ReactDOM from 'react-dom';
+import get from "lodash/get";
 import { useApolloClient, useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -154,8 +155,8 @@ function AddAgreementOwnerAndTractDialog(props) {
   useEffect(() => {
     if (isNewTract) {
       const form = getValues();
-      form.tract = { state }
-      reset(form)
+      form.tract = { tractName: form.tract.tractName, state };
+      reset(form);
     }
   }, [state]);
 
@@ -169,7 +170,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   }, [nra]);
 
   useEffect(() => {
-    try{
+    try {
       if (tract.state && isNewTract) {
         (async () => {
           const { data: tractShape } = await client.query({
@@ -178,22 +179,24 @@ function AddAgreementOwnerAndTractDialog(props) {
               tract
             }
           });
-          if (tractShape?.getTractAbstractShape?.data?.properties?.shapeArea) {
+          if (
+            tractShape?.getTractAbstractShape?.data?.properties?.shapeArea &&
+            tract.shapeArea !== get(tractShape, "getTractAbstractShape.data.properties.shapeArea")
+          ) {
             setValue('tract.shapeArea', tractShape?.getTractAbstractShape?.data.properties?.shapeArea)
             if (newTractError) { setNewTractError(null) }
-          } else {
+          } else if (!get(tractShape, "getTractAbstractShape.data.properties.shapeArea")) {
             setNewTractError(tractShape?.getTractAbstractShape)
           }
         })();
-        setIsNewTract(false);
       } else {
         if (newTractError) { setNewTractError(null) }
       }
-    }catch (error){
-        console.log("%c Fetch track with newState","color:red",error);
+    } catch (error) {
+      console.log("%c Fetch track with newState", "color:red", error);
     }
 
-  }, [tract]);
+  }, [tract.state, tract.county, tract.township, tract.range, tract.section, tract.survey, tract.block, tract.sectiontx, tract.abstract])
 
   const parcelOwnersRadioBValue = watch("parcelOwnersRadioBValue", "true");
 
@@ -230,7 +233,6 @@ function AddAgreementOwnerAndTractDialog(props) {
   });
 
   useEffect(() => {
-    console.log({ so: props.seletedOwner })
     if (props.seletedOwner) {
       props.seletedOwner.realtedObject = props.seletedOwner?.contact?._id;
       props.seletedOwner.ownerEntity = props.seletedOwner.realtedObject;
@@ -326,10 +328,10 @@ function AddAgreementOwnerAndTractDialog(props) {
   };
 
   const handleSave = () => {
-    if (newTractError) {
-      dispatch(showErrorMessage(newTractError.message))
-      return;
-    }
+    // if (newTractError) {
+    //   dispatch(showErrorMessage(newTractError.message))
+    //   return;
+    // }
     const ownerToAdd = getValues();
 
     ownerToAdd.acquisition_nra = Number(ownerToAdd.acquisition_nra);
@@ -432,7 +434,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 
   useEffect(() => {
     if (nameAutValue?._id && nameAutValue?.name) {
-      reset({ ...getValues(), ownerEntity: nameAutValue._id, ownerName: nameAutValue.name });
+      reset({ ...getValues(), tract, ownerEntity: nameAutValue._id, ownerName: nameAutValue.name });
     }
   }, [nameAutValue]);
 
@@ -447,6 +449,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       }
       reset({
         ...getValues(),
+        tract,
         ownerEntity: value._id,
         ownerName: value.name,
         mineral_interest: value.ownerData.mineral_interest || "",
@@ -494,7 +497,7 @@ function AddAgreementOwnerAndTractDialog(props) {
               }}
               onClick={handleMenuClick}
             >
-              <MoreHorizIcon size="medium" />
+              <MoreHorizIcon id="tractMoreHorizIcon" size="medium" />
             </IconButton>
           </>
         )}
@@ -522,7 +525,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             <ListItemIcon style={{ minWidth: '30px' }}>
               <DeleteIcon size="medium" />
             </ListItemIcon>
-            <ListItemText>Delete</ListItemText>
+            <ListItemText id="deleteTract">Delete</ListItemText>
           </MenuItem>
         </Menu>
       </div>

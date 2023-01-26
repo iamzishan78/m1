@@ -113,7 +113,7 @@ export default function CampaignNameField(props) {
       variables: {
         esIndex: "campaigns_flat",
         filterKey: "name.keyword",
-        size: 50,
+        size: 1000
       },
     });
   }, [getCampaignFilters]);

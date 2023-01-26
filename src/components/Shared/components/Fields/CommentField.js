@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, TextField } from "@material-ui/core";
+import { Grid, TextField,  } from "@material-ui/core";
 import $ from "jquery";
 
 import Avatar from "react-avatar";
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     border: "none",
   },
   search: {
-    maxHeight: "217px",
+    maxHeight: "211px",
     width: "100%",
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
@@ -83,6 +83,7 @@ const useStyles = makeStyles((theme) => ({
   commentBtn: {
     float: "right",
     right: "15px",
+    zIndex: "999"
   },
   dialog: {
     "&.MuiDialog-root": {
@@ -171,16 +172,17 @@ export default function DealComment({
   setEditCommentId,
   fieldWidth,
   setShowActions,
+  setIsEdit,
   ...props
 }) {
-  const classes = useStyles({ fieldWidth });
   const [filterValue, setFilterValue] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
   const [nameAutValue, setNameAutValue] = useState({});
   const [showCommentTypeDialog, setShowCommentTypeDialog] = useState(false);
   const [selectedCommentType, setSelectedCommentType] = useState("General");
-
+  const [commentTypeDialogBox,setCommentTypeDialogBox] = useState(false);
+  const classes = useStyles({ fieldWidth, commentTypeDialogBox });
   (function () {
     var target = $("#colorText");
     const scrollDiv = function () {
@@ -272,13 +274,15 @@ export default function DealComment({
     setComment(value + `{{${act._id}}}`);
     setIsSelected(true);
   };
-
+  const openDialogBox = (e) => {
+    e.stopPropagation();
+    setCommentTypeDialogBox(false);
+  }
   return (
-    <>
+    <div
+      onClick={(e)=>openDialogBox(e)}
+    >
       <Autocomplete
-        onFocus={() => {
-          setShowCommentTypeDialog(false);
-        }}
         id="txtArea"
         className={classes.search}
         style={{
@@ -334,7 +338,7 @@ export default function DealComment({
               id="commentBox"
               fullWidth
               rows={isEdit || showActions ? 2 : 1}
-              rowsMax={2}
+              maxRows={2}
               multiline
               className={classes.activitySearchField}
               placeholder="Add a question or post an update"
@@ -357,9 +361,13 @@ export default function DealComment({
             alignItems: "center",
           }}
         >
-          <CommentType showCommentType={props.showCommentType} setSelectedCommentType={setSelectedCommentType} />
-          {showActions && (
-            <Button
+            <CommentType
+                showCommentType={props.showCommentType}
+                setSelectedCommentType={setSelectedCommentType}
+                setCommentTypeDialogBox={setCommentTypeDialogBox}
+                commentTypeDialogBox={commentTypeDialogBox}
+            />
+          <Button
               className={classes.commentBtn}
               variant="contained"
               color="primary"
@@ -370,10 +378,9 @@ export default function DealComment({
                   setNameAutValue({});
                 }
               }}
-            >
-              Comment
-            </Button>
-          )}
+          >
+            Comment
+          </Button>
         </div>
       ) : (
         <>
@@ -388,7 +395,7 @@ export default function DealComment({
           >
             Save Changes
           </Button>
-
+          {showActions &&
           <Button
             className={classes.commentBtn}
             style={{ marginRight: "10px", marginBottom: "10px" }}
@@ -396,13 +403,15 @@ export default function DealComment({
             onClick={() => {
               setComment("");
               setEditCommentId("");
+              setIsEdit(false);
+              setShowActions(false);
             }}
           >
             Cancel
-          </Button>
+          </Button>}
         </>
       )}
-    </>
+    </div>
   );
 }
 

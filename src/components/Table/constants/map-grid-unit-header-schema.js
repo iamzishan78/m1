@@ -1,6 +1,6 @@
-import GlobalSettings from "GlobalSettings";
+import { GlobalStickyStyles } from "GlobalSettings";
 
-const unitsColumnHeaders = [
+const unitsColumnHeaders = (isSnapGrid = false) => [
   {
     name: "id",
     options: {
@@ -30,14 +30,14 @@ const unitsColumnHeaders = [
     label: "Unit Name",
     esKey: "name.keyword",
     options: {
-      ...GlobalSettings.muiGridControlOptions,
-      setCellHeaderProps: () => ({
-        style: {
-          ...GlobalSettings.muiGridControlOptions.setCellHeaderProps().style,
-          padding: "15px",
+      ...GlobalStickyStyles({
+        setCellProps: {
+          left: isSnapGrid ? '77px' : '108.5px',
         },
+        setCellHeaderProps: {
+          left: isSnapGrid ? '77px' : '108.5px',
+        }
       }),
-      ignoreGlobal: true,
     },
   },
   {

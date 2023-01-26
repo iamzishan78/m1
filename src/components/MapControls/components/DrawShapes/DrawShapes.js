@@ -422,7 +422,7 @@ export default function DrawShapes() {
       {((stateApp.showDrawShapesPopup && !stateApp.currentFeature) || (stateApp.changeDrawShapeType) || stateApp.reDrawShape) && (
         <ClickAwayListener onClickAway={handleClose}>
           <div className={classes.mapOverlay}>
-            <div class={classes.mapOverlayInner}>
+            <div className={classes.mapOverlayInner}>
               <div className={classes.content}>
                 <DrawShapePopup handleClose={handleClose} classes={classes}>
                   <span className={classes.clearAction}>
@@ -452,7 +452,7 @@ export default function DrawShapes() {
               <ShapeAOIPopup upsertCustomLayer={upsertCustomLayer} user={user} toggleSpatialDataCard={toggleSpatialDataCard} />
             )}
           <div className={classes.mapOverlay}>
-            <div class={classes.mapOverlayInner}>
+            <div className={classes.mapOverlayInner}>
               <div className={classes.content}>
                 <ShapeActionsPopup
                   classes={classes}

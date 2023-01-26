@@ -135,10 +135,9 @@ export default function OwnerDetailsCardMap(props) {
         // new mapboxgl.Marker(el).setLngLat([-98.8, 31.6]).addTo(newMap);
 
         // newMap.on("load", function (e) {
-        //   newMap.flyTo({
+        //   newMap.jumpTo({
         //     center: [-98.8, 31.6],
         //     zoom: 16,
-        //     speed: 0.4,
         //     bearing: 0,
         //   });
         // });
@@ -302,10 +301,10 @@ export default function OwnerDetailsCardMap(props) {
 
         var clusterId = features[0].properties.cluster_id;
         map
-          .getSource("wells")
+          ?.getSource("wells")
           .getClusterExpansionZoom(clusterId, function (err, zoom) {
             if (err) return;
-            map.flyTo({
+            map.jumpTo({
               center: features[0].geometry.coordinates,
               zoom: zoom,
             });
@@ -320,10 +319,9 @@ export default function OwnerDetailsCardMap(props) {
         let features = map.queryRenderedFeatures(bbox, {
           layers: ["unclustered-point"],
         });
-        map.flyTo({
+        map.jumpTo({
           center: features[0].geometry.coordinates,
           zoom: 13,
-          speed: 0.8,
         });
 
         let rotating = false;
@@ -371,6 +369,7 @@ export default function OwnerDetailsCardMap(props) {
       map.fitBounds(bbox, {
         padding: 30,
         maxZoom: 13,
+        easing: () => 1,
       });
 
       if (bbox[1][0] - bbox[0][0] === 0 && bbox[1][1] - bbox[0][1] === 0) {

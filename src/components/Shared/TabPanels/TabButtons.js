@@ -25,6 +25,7 @@ const TabButtons = ({ labels, value, setValue }) => {
         labels.length &&
         labels.map((label, i) => (
           <Button
+            id={label.replace(/\s/g, '')}
             key={i}
             size="small"
             variant="contained"

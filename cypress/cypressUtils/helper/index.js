@@ -1,4 +1,4 @@
-import _ from "underscore";
+import _ from "lodash";
 
 // This helper will match string with each key of object to check if string exists in object or not
 export const findInObject = (obj, stringToCheck) => {
@@ -24,18 +24,27 @@ export const isArraysEqual = (array1, array2) => {
     return array1.length === array2.length && array1.every((el, ix) => el === array2[ix]);
 }
 
-export const isApiWithSearchString = (searchString, variables) => {
+export const isSearchStringMatched = (searchString, variables) => {
     const searchQuery = variables?.search?.query || variables?.search
 
     if (typeof searchQuery === 'string') {
 
-        if (searchQuery.substring(1, 2) === '*')
+        if (searchQuery.slice(-1) === "*") {
+            if (searchQuery.substring(0, 1) === '*')
+                searchString = `*${searchString}*`
+            else
+                searchString = `${searchString}*`
+        }
+        else if (searchQuery.substring(0, 1) === '*')
             searchString = `*${searchString}"`
-        if (searchQuery.slice(-1) === "*")
-            searchString = `${searchString}*`
 
         return searchQuery === searchString
     }
 
     return false
+}
+
+export const camelize = (str) => {
+    var str2 = _.camelCase(str);
+    return str2
 }

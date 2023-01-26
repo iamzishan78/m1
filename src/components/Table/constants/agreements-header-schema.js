@@ -14,10 +14,11 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     options: {
       ...GlobalStickyStyles({
         setCellProps: {
+          left: isSnapGrid ? '77px' : '108.5px',
           maxWidth: "492px",
         },
         setCellHeaderProps: {
-          paddingLeft: '35px',
+          left: isSnapGrid ? '77px' : '108.5px',
         }
       }),
       dbName: "shapeJson.properties.agreementNumber",
@@ -60,6 +61,26 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     options: {
       dbName: "shapeJson.properties.agreementSubtype",
     },
+  },
+  {
+    name: "State", label: "State", esKey: [
+      'shapeJson.properties.originalProperties.State.keyword',
+      'shapeJson.properties.originalProperties.StateAbbreviation.keyword'
+    ],
+    options: {
+      dbName: "shapeJson.properties.originalProperties.0?.State?.StateAbbreviation?",
+      sort: true,
+      filter: true
+    },
+    custom: {
+      multi_filter_keys: true,
+    },
+  },
+  {
+    name: "County", label: "County", esKey: 'shapeJson.properties.originalProperties.County.keyword',
+    options: {
+      dbName: "shapeJson.properties.originalProperties.0?.County",
+    }
   },
   {
     name: "agreementSubtype",

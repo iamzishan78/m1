@@ -1,5 +1,5 @@
 import { history } from "store";
-import GlobalSettings from "..//..//..//GlobalSettings.js";
+import { GlobalStickyStyles } from "GlobalSettings";
 import GlobalStyles from "..//..//..//GlobalStyles.js";
 import Typography from "@material-ui/core/Typography";
 
@@ -18,11 +18,20 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: 'name.keyword',
 
     options: {
-      ...GlobalSettings.muiGridControlOptions,
+      ...GlobalStickyStyles({
+
+        setCellProps: {
+          left: isSnapGrid ? '77px' : '108px',
+        },
+        setCellHeaderProps: {
+          left: isSnapGrid ? '77px' : '108px',
+        }
+
+      }),
       dbName: "name",
 
       customRender: (value, tableMeta) => {
-        const splitNumber = value?.split("_");
+        const splitNumber = typeof value === 'string' ? value?.split("_") : value
 
         const styles = {
           fontWeight: GlobalStyles.font.boldFontWeight,
@@ -59,18 +68,13 @@ const TractsHeadCells = (isSnapGrid = false) => [
     }
   },
   {
-    name: "State", label: "State", esKey: [
-      'shapeJson.properties.originalProperties.State.keyword',
-      'shapeJson.properties.originalProperties.StateAbbreviation.keyword'
-    ],
+    name: "State", label: "State", esKey: 'shapeJson.properties.originalProperties.State.keyword',
     options: {
-      dbName: "shapeJson.properties.originalProperties.0?.State?.StateAbbreviation?",
+      dbName: "shapeJson.properties.originalProperties.0?.State",
       sort: true,
       filter: true
     },
-    custom: {
-      multi_filter_keys: true,
-    },
+
   },
   {
     name: "County", label: "County", esKey: 'shapeJson.properties.originalProperties.County.keyword',
