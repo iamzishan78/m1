@@ -101,7 +101,7 @@ export default function Admin() {
       <FeatureFlag feature={FEATURES.CONTACTSUBMENU}>
         {/* <FeatureFlag feature={FEATURES.ANALYTICSSUBMENU}> */}
         <QuickActionPanel
-          title="ADMIN"
+          title="Admin Settings"
           handlePanelStateChange={handlePanelStateChange}
           quickActionsPanelState={quickActionsPanelState}
           activeModule={activeModule}

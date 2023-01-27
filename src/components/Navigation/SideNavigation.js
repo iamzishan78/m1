@@ -531,11 +531,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                 handleListItemClick("/admin");
               }}
               key="Admin"
-              style={style.adminDevider}
+             // style={style.adminDevider}
           >
             <div className={classes.tabContent}>
               <Tooltip
-                  title="Admin"
+                  title="Admin Settings"
                   placement="right"
                   classes={{ tooltip: classes.iconTooltip }}
               >
