@@ -545,7 +545,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               </Tooltip>
               <ListItemText
                   className={`${classes.sideNavText} uppercase`}
-                  primary="Admin"
+                  primary="Admin Settings"
               />
             </div>
           </ListItem>
