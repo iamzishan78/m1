@@ -8,12 +8,12 @@ import { setActiveModule, toggleQuickActionsPanel } from "store/actions/commonAc
 import { AppContext } from "AppContext";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
-import RevenueAnalytics from "components/Analytics/components/Revenue";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import ContactsTable from "components/Table/Contact/ContactsTable";
 
 import { AdminManagementRoutes } from "utils/data";
+import Customiztion from './components/Customiztion';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 }));
-import Customiztion from './components/Customiztion';
 
 const Components = {
   Admin: Customiztion,
@@ -80,22 +79,22 @@ export default function Admin() {
     const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.CONTACTSUBMENU);
     // const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICSSUBMENU);
     const allAllowedPaths = {}
-    if(feature?.JSON){
+    if (feature?.JSON) {
       const data = JSON.parse(feature.JSON)
       Object.keys(allPaths).forEach(path => {
-        if(data.options.includes(allPaths[path].value)){
+        if (data.options.includes(allPaths[path].value)) {
           allAllowedPaths[path] = allPaths[path]
         }
       })
-    }else{
+    } else {
       Object.keys(allPaths).forEach(path => {
-        if(allPaths[path].isDefault){
+        if (allPaths[path].isDefault) {
           allAllowedPaths[path] = allPaths[path]
         }
       })
     }
     setAllowablePaths(allAllowedPaths)
-  },[stateApp?.user])
+  }, [stateApp?.user])
   return (
     <>
       <FeatureFlag feature={FEATURES.CONTACTSUBMENU}>
