@@ -13,6 +13,7 @@ import ContactsTable from "components/Table/Contact/ContactsTable";
 
 import { AdminManagementRoutes } from "utils/data";
 import Map from "./components/Map";
+import AdminSettings from "components/Shared/AdminSettings";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Components = {
   Map,
+  AdminSettings,
 };
 
 export default function Admin() {
