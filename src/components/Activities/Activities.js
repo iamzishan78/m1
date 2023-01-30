@@ -280,6 +280,9 @@ const Activities = () => {
                   filtersChange={filtersChange}
                   appliedFilters={appliedFilters}
                   filterToggle={filterToggle}
+                  activityFilterByType={activityFilterByType}
+                  activityFilterByTime={activityFilterByTime}
+                  activityFilterByOwner={activityFilterByOwner}
                   targetLabel={"activitiesDashboard"}
                   header="Activities"
                 />
