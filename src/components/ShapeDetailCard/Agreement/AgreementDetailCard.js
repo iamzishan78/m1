@@ -177,6 +177,13 @@ export default function AgreementDetailCard(props) {
     customLayer.shape = JSON.stringify(shape);
     customLayer.shapeJson = shape;
 
+    if(customLayer?.shapeJson?.properties?.state){
+      customLayer.shapeJson.properties.shapeSubtitle = `${customLayer.shapeJson.properties.state}`
+    }
+    if(customLayer?.shapeJson?.properties?.county){
+      customLayer.shapeJson.properties.shapeSubtitle +=  `- ${customLayer?.shapeJson?.properties?.county}`
+    }
+
     updateCustomLayer({
       variables: {
         customLayerId: uniObj._id,
