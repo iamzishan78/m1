@@ -27,7 +27,7 @@ import { usetableStyles } from "./Styles";
 import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
 import { handleSelectedGridChange, setColumnDisplayAndFilter } from "./helpers";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
-import { findInFunction, formattingGridView, sortColumns } from "utils/helper";
+import { formattingGridView, sortColumns } from "utils/helper";
 import { DrawerContext } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import moment from "moment";
 
@@ -220,6 +220,7 @@ export const TableESHOC = (Component) => {
                     searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
 
                 setPage(0)
+                setCurrentRowsLength(0)
                 setLoading(true);
                 getESSimpleSearch({
                     variables: {
