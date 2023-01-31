@@ -21,14 +21,16 @@ const wellsColumnHeaders = [
       ...GlobalStickyStyles({
         setCellProps: {
           maxWidth: "200px",
+          left: '77px'
         },
         setCellHeaderProps: {
           paddingLeft: '35px',
+          left: '77px'
         }
       }),
       sort: true,
       filter: true,
-    },
+    }
   },
   {
     name: "WellName",

@@ -608,7 +608,7 @@ export default function DocumentDetails(props) {
                   )}
                   {meta.type === "dropdown" && (
                     <ListItem
-                      id={`dropdown-${index}`}
+                      id={`${meta.label}-field`}
                       className={classes.listItem}
                     >
                       <h4>{meta.label}</h4>
@@ -634,7 +634,7 @@ export default function DocumentDetails(props) {
                   )}
                   {meta.type === "multiselect" && (
                     <ListItem
-                      id={`multiselect-${index}`}
+                      id={`${meta.label}-field`}
                       className={classes.listItem}
                     >
                       <h4>{meta.label}</h4>

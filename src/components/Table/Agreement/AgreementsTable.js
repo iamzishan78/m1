@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
-import { Container } from "@material-ui/core";
+import { Container, Dialog } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import Agreements from "components/Shared/svgIcons/agreements";
@@ -29,12 +29,16 @@ import GridView from "components/Shared/GridView";
 
 // value formatters
 import convert_date from "components/Shared/valueformatters/convert_date.js";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { REMOVE_AGREEMENTS } from "graphQL/useMutationRemoveAgreements";
 
 function AgreementsTable(props) {
   const defaultView = {
     name: `All Agreements`,
     type: "Default",
   };
+
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
   const [showSaveAsNew, setShowSaveAsNew] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -43,6 +47,10 @@ function AgreementsTable(props) {
   // queries
   const [updateCustomLayer] = useMutation(UPDATECUSTOMLAYER);
   const [updateGridView] = useMutation(UPDATE_GRID_VIEW);
+  const [removeAgreements] = useMutation(REMOVE_AGREEMENTS, {
+    refetchQueries: ["getESSimpleSearch"],
+    awaitRefetchQueries: true,
+  });
 
   const classes = usetableStyles({ isFullHeight: true, isAgreementsTable: true });
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
@@ -131,6 +139,20 @@ function AgreementsTable(props) {
     props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);
   }, [props?.options?.count]);
 
+  const deleteFunc = (ids) => {
+    if (ids.length > 0) {
+      props.setLoading(true);
+      removeAgreements({
+        variables: {
+          agreementIds: ids,
+        },
+      }).then(() => {
+        props.setLoading(false);
+        setResetSelectedRow(!resetSelectedRow)
+      });
+    }
+  };
+
   const onCustomKeyChange = (value = null, index, key) => {
     const rows = JSON.parse(JSON.stringify(props.rows));
     rows[index].custom_data = {
@@ -176,7 +198,7 @@ function AgreementsTable(props) {
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
-      {/* <Dialog
+      <Dialog
         open={props.openDialog ? true : false}
         onClose={() => props.setOpenDialog(null)}
         fullWidth={true}
@@ -184,7 +206,7 @@ function AgreementsTable(props) {
       >
         {props.openDialog === "delete" && (
           <DeleteConfirmationDialogContent
-            header={`Delete Revenue Statement(s)`}
+            header={`Delete Agreement(s)`}
             onClose={() => props.setOpenDialog(null)}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={props.selectedRows.map(
@@ -192,7 +214,7 @@ function AgreementsTable(props) {
             )}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
-            {`Do you want to delete the selected revenue statement${props.selectedRows &&
+            {`Do you want to delete the selected agreement${props.selectedRows &&
               props.selectedRows.length > 1 &&
               props.selectedRows.length > 1
               ? "s"
@@ -200,7 +222,8 @@ function AgreementsTable(props) {
               }?`}
           </DeleteConfirmationDialogContent>
         )}
-      </Dialog> */}
+      </Dialog>
+
       {showViewModal && (
         <GridView
           columns={props.columns}
@@ -244,6 +267,7 @@ function AgreementsTable(props) {
         startPaginationAt={null}
         onTableChange={props.onTableChange}
         onCustomKeyChange={onCustomKeyChange}
+        resetSelectedRow={resetSelectedRow}
         options={{
           ...props.options,
           ...props.customOptions,
