@@ -214,6 +214,11 @@ export const TableESHOC = (Component) => {
                 if (tableMeta.modifySelectedGridView) {
                     tableMeta.modifySelectedGridView(selectedGridView)
                 }
+
+                let searchQuery = tableMeta.extendSearchQuery || search;
+                if (props.useWildeCard)
+                    searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+
                 setPage(0)
                 setLoading(true);
                 getESSimpleSearch({
@@ -224,7 +229,7 @@ export const TableESHOC = (Component) => {
                             after: null
                         },
                         search: {
-                            query: tableMeta.extendSearchQuery || search,
+                            query: searchQuery,
                             fields: tableMeta.searchFields,
                             advanceSearch: tableMeta.advanceSearch,
                         },
@@ -537,11 +542,15 @@ export const TableESHOC = (Component) => {
         }
 
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
+            let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableState.searchText;
+            if (props.useWildeCard)
+                searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+
             let pageESVariables = {
                 variables: {
                     index: tableMeta.esIndex,
                     search: {
-                        query: typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableState.searchText,
+                        query: searchQuery,
                         fields: tableMeta.searchFields,
                         advanceSearch: tableMeta.advanceSearch,
                     },
@@ -709,11 +718,15 @@ export const TableESHOC = (Component) => {
         }
 
         const onDownload = async () => {
+            let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
+            if (props.useWildeCard)
+                searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+
             const pageESVariables = {
                 variables: {
                     index: tableMeta.esIndex,
                     search: {
-                        query: typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText,
+                        query: searchQuery,
                         fields: tableMeta.searchFields,
                         advanceSearch: tableMeta.advanceSearch,
                     },
@@ -814,6 +827,12 @@ export const TableESHOC = (Component) => {
                                 setAllRowsSelected([])
                             }
                             const pageESVariables = copy(tableActions.pageESVariables)
+
+                            let searchQuery = pageESVariables?.search?.query
+                            if (props.useWildeCard)
+                                searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+                            if (pageESVariables?.search?.query) pageESVariables.search.query = searchQuery
+
                             pageESVariables.variables.pagination = {
                                 first: total,
                                 after: null,

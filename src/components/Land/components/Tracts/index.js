@@ -143,7 +143,7 @@ function Tracts(props) {
       <div
         style={{
           marginTop: '65px',
-          padding: "20px 75px 0px 75px"
+          padding: "20px 26px 0px 33px"
         }}
       >
         <TractsFilters selectedTractTab={selectedTractTab} />
