@@ -10,6 +10,9 @@ const useStyles = makeStyles((theme) => ({
     color: "black",
     width: "100%",
   },
+  autoC: {
+    margin: "8px 0px 4px"
+  }
 }));
 
 export default function FilterStateName({ value, onStateChange, label, variant, shrink = false }) {
