@@ -178,33 +178,6 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                       render={(params) => {
                         return (
                           <Fragment>
-                            {/* {field.type === "text" && field.key === 'bounusPayment' && (
-                              <TextField
-                                {...params}
-                                id={`field-${index}`}
-                                variant="outlined"
-                                margin="dense"
-                                type="text"
-                                fullWidth
-                                InputLabelProps={{
-                                  shrink: true,
-                                }}
-                                value={bonusValue ? bonusValue : params.value}
-                                InputProps={field.InputProps}
-                                onFocus={() => {
-                                  setBonusValue(params.value?.replace(/,/g, ''));
-                                }}
-                                onChange={(e) => {
-                                  setBonusValue(e.target.value);
-                                }}
-                                onBlur={(event) => {
-                                  const value = event.target.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                                  setBonusValue(value);
-                                  offClickHandler(field.key, value);
-                                }}
-                                disabled={field.disabled}
-                              />
-                            )} */}
                             {field.type === "text" && (
                               <TextField
                                 {...params}
@@ -232,30 +205,34 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               />
                             )}
                             {field.type === "dropdown" && (
-                              <ReactSelectField
-                                id={`field-${field.title}`}
-                                isSingleSelect={true}
-                                fullWidth
-                                variant="outlined"
-                                dropdownOptions={field.options}
-                                column={field}
-                                onCustomKeyChange={(value) => {
-                                  offClickHandler(field.key, value, field.isCustom);
-                                }}
-                                disabled={field.disabled}
-                                value={get(agreementDetails, `${field.key}`, "")}
-                              />
+                              <div style={{
+                                margin: "8px 0px 4px"
+                              }}>
+                                <ReactSelectField
+                                  id={`field-${field.title}`}
+                                  isSingleSelect={true}
+                                  fullWidth
+                                  variant="outlined"
+                                  dropdownOptions={field.options}
+                                  column={field}
+                                  onCustomKeyChange={(value) => {
+                                    offClickHandler(field.key, value, field.isCustom);
+                                  }}
+                                  disabled={field.disabled}
+                                  value={get(agreementDetails, `${field.key}`, "")}
+                                />
+                              </div>
                             )}
                             {field.type === "select" && (
                               <Select
                                 {...params}
                                 id={`field-${field.key}`}
                                 variant="outlined"
-                                margin="dense"
                                 fullWidth
                                 InputLabelProps={{
                                   shrink: true,
                                 }}
+                                style={{ margin: "8px 0px 4px" }}
                                 onChange={(event) => offClickHandler(field.key, event.target.value, field.isCustom)}
                                 disabled={field.disabled}
                                 value={get(agreementDetails, `${field.key}`, "")}
@@ -266,18 +243,22 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                               </Select>
                             )}
                             {field.type === "multiselect" && (
-                              <ReactSelectField
-                                id={`field-${field.key}`}
-                                variant="outlined"
-                                margin="dense"
-                                fullWidth
-                                dropdownOptions={field.options}
-                                column={field}
-                                value={get(agreementDetails, `${field.key}`) ?? []}
-                                onCustomKeyChange={(value) => {
-                                  offClickHandler(field.key, value, field.isCustom);
-                                }}
-                              />
+                              <div style={{
+                                margin: "8px 0px 4px"
+                              }}>
+                                <ReactSelectField
+                                  id={`field-${field.key}`}
+                                  variant="outlined"
+                                  margin="dense"
+                                  fullWidth
+                                  dropdownOptions={field.options}
+                                  column={field}
+                                  value={get(agreementDetails, `${field.key}`) ?? []}
+                                  onCustomKeyChange={(value) => {
+                                    offClickHandler(field.key, value, field.isCustom);
+                                  }}
+                                />
+                              </div>
                             )}
                           </Fragment>
                         );
@@ -290,7 +271,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     autoOk
                     type="date"
                     variant="outlined"
-                    margin="normal"
+                    margin="dense"
                     fullWidth
                     value={
                       agreementDetailCopied?.[field.key] ? moment(agreementDetailCopied[field.key]).utc(true).format("yyyy-MM-DD") : ""
@@ -353,7 +334,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                           props.onChange(toFixedValue);
                           setIsAcquisitionCostOverridden(toFixedValue !== calculatedAcquisitionCost);
                         }}
-                        onBlur={(e) => offClickHandler(field.key, {value: Number(props.value), overridden: isAcquisitionCostOverridden})}
+                        onBlur={(e) => offClickHandler(field.key, { value: Number(props.value), overridden: isAcquisitionCostOverridden })}
                         InputProps={{
                           ...field.InputProps,
                           endAdornment: (
@@ -364,7 +345,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                                   onClick={() => {
                                     const totalAcquisitionCost = parseFloat(agreementDetails?.calculated?.totalAcquisitionCost || 0).toFixed(2);
                                     props.onChange(totalAcquisitionCost);
-                                    offClickHandler(field.key, {value: Number(totalAcquisitionCost), overridden: isAcquisitionCostOverridden});
+                                    offClickHandler(field.key, { value: Number(totalAcquisitionCost), overridden: isAcquisitionCostOverridden });
                                     setIsAcquisitionCostOverridden(false);
                                   }}
                                 >
@@ -397,7 +378,7 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                     shrink
                     value={county}
                     state={state}
-                    onCountyChange={(selectedCounty) =>{
+                    onCountyChange={(selectedCounty) => {
                       setCounty(selectedCounty ? selectedCounty.county : '')
                       updateAgreement('county', selectedCounty ? selectedCounty.county : '', false)
                     }}

@@ -140,7 +140,7 @@ const TractsFilters = ({ selectedTractTab }) => {
             <Grid
                 container
                 alignItems="center"
-                style={{ padding: "5px 36px 5px 45px", maxWidth: "1350px" }}
+                style={{ padding: "5px 36px 5px 14px", maxWidth: "1350px" }}
                 // justifyContent="space-between"
                 spacing={2}
             >
