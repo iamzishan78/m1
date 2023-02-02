@@ -1,7 +1,8 @@
 import React, { useContext, useState, useEffect, useCallback, useRef, useMemo, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useApolloClient, useLazyQuery } from "@apollo/client";
-import { Button, Tooltip, IconButton } from "@material-ui/core";
+import { Button, Tooltip, IconButton, TextField } from "@material-ui/core";
+import { Autocomplete } from "@material-ui/lab";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useHistory } from "react-router-dom";
@@ -31,6 +32,7 @@ import { DrawerContext } from "components/Land/components/Agreements/detailCompo
 import moment from "moment";
 
 import GlobalSettings from "..//..//GlobalSettings.js";
+import { SimpleAutoCompleteFilter } from "./SimpleAutoComplete";
 
 
 export const TableESHOC = (Component) => {
@@ -340,6 +342,21 @@ export const TableESHOC = (Component) => {
                                     column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
 
                                 if (!column.filterKey && column.esKey) column.filterKey = column.esKey
+
+                                if(column.name === "isClosed"){
+                                    return (<SimpleAutoCompleteFilter
+                                        esIndex={esIndex}
+                                        filterList={filterList}
+                                        column={column}
+                                        index={index}
+                                        onChange={onChange}
+                                        query={GET_ES_SIMPLE_FILTER}
+                                        searchFields={tableMeta.searchFields}
+                                        filters={appliedFilters}
+                                        extendSearchQuery={extendSearchQuery}
+                                        custom={custom}
+                                  />)
+                                }
                                 return (
                                     <AutoCompleteFilter
                                         esIndex={esIndex}
