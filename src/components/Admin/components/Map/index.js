@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
+import { useMutation } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Tabs, Tab, RadioGroup, Radio, FormControlLabel, TextField } from "@material-ui/core";
+
+import { UPSERT_WORKSPACE_SETTINGS } from "graphQL/useMutationWorksapceSettings";
 
 import Filters from "./Filters";
 
@@ -71,6 +75,30 @@ export default function RevenueStatements() {
   const classes = useStyles();
 
   const [tab, setTab] = useState(0);
+  const [settings, setSettings] = useState();
+  const [addOrUpdateWorkspaceSettings] = useMutation(UPSERT_WORKSPACE_SETTINGS);
+
+  const { user, workspaceSettings } = useSelector(({ app }) => app);
+
+  useEffect(() => {
+    if (workspaceSettings) {
+      setSettings(workspaceSettings.settings);
+    }
+  }, [workspaceSettings]);
+
+  const onChangeType = (type, value) => {
+    addOrUpdateWorkspaceSettings({
+      variables: {
+        workspaceSettings: {
+          name: window.sessionStorage.getItem("tenantName"),
+          modifier: user._id,
+          settings: { map: { unitNra: { type, value } } },
+        },
+      },
+      refetchQueries: ["getWorkspaceSettings"],
+      awaitRefetchQueries: true,
+    });
+  };
 
   return (
     <div
@@ -92,11 +120,30 @@ export default function RevenueStatements() {
         <span>Select the method by which Net Royalty Acres (NRA) should be calculatedd for unit owners:</span>
 
         <div className={classes.options}>
-          <RadioGroup column value={"standard"} onChange={(event) => {}}>
+          <RadioGroup column value={settings?.map?.unitNra?.type ?? "standard"} onChange={(event) => onChangeType(event.target.value)}>
             <FormControlLabel value="standard" control={<Radio />} label="Standard Calculation = (Unit Acres * Unit Decimal Interests)" />
             <div>
               <FormControlLabel value="custom" control={<Radio />} label="Custom Calculations = (Unit Acres * Unit Decimal Interests) / " />
-              <TextField variant="outlined" margin="dense" />
+              <TextField
+                variant="outlined"
+                margin="dense"
+                disabled={settings?.map?.unitNra?.type !== "custom"}
+                onBlur={(event) => onChangeType("custom", event.target.value)}
+                value={settings?.map?.unitNra?.value}
+                onChange={(event) => {
+                  const _settings = {
+                    ...settings,
+                    map: {
+                      ...settings.map,
+                      unitNra: {
+                        ...settings.map.unitNra,
+                        value: event.target.value,
+                      },
+                    },
+                  };
+                  setSettings(_settings);
+                }}
+              />
             </div>
           </RadioGroup>
         </div>

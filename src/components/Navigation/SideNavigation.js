@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import _ from "underscore";
 import clsx from "clsx";
@@ -57,6 +58,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
   const [logoTitle, setLogoTitle] = useState();
   const classes = useStyles({ mapGridCardActivated });
   const theme = useTheme();
+  const dispatch = useDispatch();
 
   const [getNotifications, { data: notificationsData }] = useLazyQuery(GET_NOTIFICATIONS, {
     fetchPolicy: "network-only",
@@ -105,6 +107,8 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
     } else {
       setLogoSrc(`${process.env.PUBLIC_URL}/icons/logo-192x192.png`);
     }
+
+    dispatch({ type: "SET_WORKSPACE_SETTINGS", payload: workspaceSettings?.workspaceSettings?.workspaceSetting });
   }, [workspaceSettings]);
 
   return (

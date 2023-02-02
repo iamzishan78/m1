@@ -17,7 +17,7 @@ import { useMutation } from "@apollo/client";
 import { ADD_OWNER_TOA_SHAPE } from "graphQL/useMutationAddOwnerToAShape";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import { makeStyles } from "@material-ui/core/styles";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { showErrorMessage, showSuccessMessage } from "actions";
 import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import { addTrailingZeros } from "components/Shared/functions";
@@ -67,6 +67,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, ...props }) {
   const dispatch = useDispatch();
+  const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
   const [stateApp, setStateApp] = useContext(AppContext);
   const { control, reset, setValue, getValues, watch } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
@@ -266,6 +267,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const calculateNRA = (interest1, interest2, unitAcres = uAcres) => {
     if (!interest1 && !interest2) return null;
     let nra = parseFloat(unitAcres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0));
+    if (workspaceSettings.settings?.map?.unitNra?.type === "custom") {
+      nra = nra / Number(workspaceSettings.settings?.map?.unitNra?.value);
+    }
     nra = addTrailingZeros(nra.toFixed(8));
     return nra;
   };
