@@ -391,6 +391,15 @@ Cypress.Commands.add('addComment', () => {
     cy.get("#commentButton").click()
 })
 
+
+
+// Cypress.Commands.add('pintotop', () => {
+//     cy.get('#pintotop').click();
+//     cy.get('#pintotop').should('have.text', 'Unpin');
+//     cy.get('#pintotop').click();
+//     cy.get('#pintotop').should('have.text', 'Pin');
+// })
+
 // This command will delete agreement then will verify too
 Cypress.Commands.add('deleteAndVerifyAgreement', (agreementName, agreementNumber) => {
     cy.log('==== STEP: SEARCH AGREEMENT ON GRID ====')

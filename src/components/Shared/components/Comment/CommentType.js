@@ -228,7 +228,7 @@ export default function CommentType(props) {
       variables: {
         commentType: {
           commentType: commentTypeData.commentType,
-          category: commentTypeData.category,
+          category: commentTypeData.category, 
         },
       },
       refetchQueries: ["getAllCommentsType"],

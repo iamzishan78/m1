@@ -374,7 +374,7 @@ export default function DealComment({
               id="commentButton"
               onClick={() => {
                 if (!showCommentTypeDialog) {
-                  upsertComment({ comment, commentType: selectedCommentType });
+                  upsertComment({ comment, commentType: selectedCommentType});
                   setNameAutValue({});
                 }
               }}

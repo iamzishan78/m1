@@ -7,7 +7,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-
+import { useSelector, useDispatch } from "react-redux";
+import { updatePinComments } from "store/actions/commonActions";
 import { AppContext } from "AppContext";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { GET_PROFILE_IMAGE } from "graphQL/useQueryGetProfile";
@@ -24,6 +25,7 @@ import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import moment from "moment";
 import DOMPurify from "dompurify";
+import { object } from "prop-types";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -104,6 +106,18 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     marginBottom: "5px",
   },
+  pinned: {
+    borderLeftWidth: "initial",
+    borderLeftStyle: "inset",
+    borderLeftColor: "yellow",
+    background: "#F4EA56"
+  },
+  tracking: {
+    borderLeftWidth: "initial",
+    borderLeftStyle: "inset",
+    borderLeftColor: "yellow",
+
+  },
 }));
 
 function urlify(text) {
@@ -175,6 +189,8 @@ export default function CommentComponent(props) {
   const { targetSourceId, commentsHeight } = props;
   const classes = useStyles({ commentsHeight });
   const [stateApp] = useContext(AppContext);
+  const dispatch = useDispatch();
+  const { pinComment } = useSelector(state => state.pin);
 
   const [users, setUsers] = useState([]);
   const [comment, setComment] = useState("");
@@ -189,7 +205,7 @@ export default function CommentComponent(props) {
   const [showCommentActionId, setShowCommentActionId] = useState(null);
   const [loadingComments, setLoadingComments] = useState(true);
   const [scrollIntoView, setScrollIntoView] = useState(false);
-
+  const [pinComments, setPinComments] = useState({ isPinned: false });
   const commentContainerRef = useRef(null);
 
   const [removeComment] = useMutation(REMOVECOMMENT);
@@ -248,6 +264,7 @@ export default function CommentComponent(props) {
             isActivity: true,
             isEdited: false,
             public: true,
+            isPinned: false,
             __typename: "Comment",
           });
         });
@@ -371,6 +388,50 @@ export default function CommentComponent(props) {
     setEditComment("");
     setEditCommentId("");
   };
+  const pinToTop = (eachComment) => {
+    const commentsArray = Object.values(pinComments);
+    const newCommentList = commentsArray.map((c) => {
+      if (c.id === eachComment._id) {
+        return {
+          ...c,
+          isPinned: true,
+          id: eachComment
+        };
+      }
+      return {
+        ...c,
+        isPinned: false,
+      };
+    });
+    console.log(commentsArray,"newCommentList");
+    dispatch(updatePinComments(newCommentList));  
+    // upsertComment({
+    //   variables: {
+    //     comment: {
+    //       _id: eachComment._id,
+    //       pin: false,
+    //     },
+    //   },
+    //   refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+    //   awaitRefetchQueries: true,
+    // });
+    setShowCommentActionId(null) 
+  }
+  const unpinFromTop = (eachComment) => {
+    const commentsArray = Object.values(pinComments);
+    const newCommentList = commentsArray.map((c) => {
+      if (c.id === eachComment._id) {
+        return {
+          ...c,
+          isPinned: false,
+        };
+      }
+      return c;
+    });
+    dispatch(updatePinComments(newCommentList)); 
+    setShowCommentActionId(null) 
+  }
+
 
   useEffect(() => {
     if (commentsArray?.length > 0 && scrollIntoView)
@@ -412,6 +473,7 @@ export default function CommentComponent(props) {
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           objectType: props.targetLabel,
+         
         },
       },
       refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
@@ -432,6 +494,105 @@ export default function CommentComponent(props) {
     <SizeMe>
       {({ size }) => (
         <div className={classes.container}>
+
+
+          {Object.values(pinComment).map((pin, index) => {
+            return commentsArray.map((eachComment, index) => {
+              if (pin.id === eachComment._id) {
+                return (
+                  <Grid
+                    id="commentsArea"
+                    container
+                    className={pin.isPinned ? classes.pinned : classes.gridStyle}
+                    onMouseOver={() => setShowCommentActionId(eachComment?._id)}
+                    onMouseLeave={() => setShowCommentActionId(null)}
+                  >
+                    <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
+                      <IconButton>
+                        {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
+                          <Avatar
+                            src={eachComment.isNew ? profileImage : profilesInfo[eachComment?.user?.email].profileImage}
+                            size="38"
+                            round
+                          />
+                        ) : (
+                          <Avatar name={eachComment?.user?.name} size="38" round />
+                        )}
+                      </IconButton>
+                    </Grid>
+
+                    <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
+                      <div>
+                        <span className={classes.bold}>{eachComment?.user?.name}</span>
+                        {!isNaN(eachComment.ts) && (
+                          <ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />
+                        )}
+                        {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+                        {eachComment?.user?.email === stateApp.user.email &&
+                          showCommentActionId === eachComment._id &&
+                          editCommentId !== eachComment._id && (
+                            <div
+                              className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
+                                eachComment?.user?.email === stateApp.user.email &&
+                                showCommentActionId === eachComment._id &&
+                                editCommentId !== eachComment._id
+                              ) && classes.hideMenuIcon
+                                }`}
+                            >
+                              <ActionMenu
+                                eachComment={eachComment}
+                                setEditCommentId={setEditCommentId}
+                                setEditComment={setEditComment}
+                                deleteComment={deleteComment}
+                                setShowActions={setShowActions}
+                                setIsEdit={setIsEdit}
+                                unpinFromTop={unpinFromTop}
+                                pinToTop={pinToTop}
+                              />
+                            </div>
+                          )}
+                      </div>
+                      {eachComment.isActivity === true && (
+                        <>
+                          <div className={`${classes.whiteSpace}`}>
+                            {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
+                          </div>
+                          <div className={`${classes.whiteSpace}`}>
+                            START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
+                          </div>
+                          <div className={`${classes.whiteSpace}`}>
+                            END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
+                          </div>
+                        </>
+                      )}
+                      {editCommentId !== eachComment._id ? (
+                        <CommonCommentText users={users} eachComment={eachComment} />
+                      ) : (
+                        <div className={classes.border}>
+                          <CommentField
+                            isEdit={isEdit}
+                            profilesInfo={profilesInfo}
+                            users={users}
+                            comment={editComment}
+                            showActions={showActions}
+                            setEditCommentId={setEditCommentId}
+                            setComment={setEditComment}
+                            upsertComment={updateComment}
+                            setIsEdit={setIsEdit}
+                            setShowActions={setShowActions}
+                          />
+                        </div>
+                      )}
+                    </Grid>
+                  </Grid>
+                )
+              }
+            });
+          })}
+
+
+
+
           <div className={classes.comment} id="commentsContainer">
             {!loadingComments ? (
               <>
@@ -446,13 +607,19 @@ export default function CommentComponent(props) {
                     </span>
                   </div>
                 )}
+
+
                 {showAllComments && commentsArray.length > 7 && (
                   <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
                     <span onClick={() => setShowAllComments(false)}>Hide Earlier Comments</span>
                   </div>
                 )}
 
+
+
+
                 {commentsArray.map((eachComment, index) => {
+                  const pinnedComment = Object.values(pinComment).find(c => c.id === eachComment._id);
                   let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
                   return (
                     <Fragment key={index}>
@@ -460,7 +627,7 @@ export default function CommentComponent(props) {
                         <Grid
                           id="commentsArea"
                           container
-                          className={classes.gridStyle}
+                          className={pinnedComment ? classes.tracking : classes.gridStyle}
                           onMouseOver={() => setShowCommentActionId(eachComment?._id)}
                           onMouseLeave={() => setShowCommentActionId(null)}
                         >
@@ -489,10 +656,10 @@ export default function CommentComponent(props) {
                                 editCommentId !== eachComment._id && (
                                   <div
                                     className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
-                                        eachComment?.user?.email === stateApp.user.email &&
-                                        showCommentActionId === eachComment._id &&
-                                        editCommentId !== eachComment._id
-                                      ) && classes.hideMenuIcon
+                                      eachComment?.user?.email === stateApp.user.email &&
+                                      showCommentActionId === eachComment._id &&
+                                      editCommentId !== eachComment._id
+                                    ) && classes.hideMenuIcon
                                       }`}
                                   >
                                     <ActionMenu
@@ -502,6 +669,9 @@ export default function CommentComponent(props) {
                                       deleteComment={deleteComment}
                                       setShowActions={setShowActions}
                                       setIsEdit={setIsEdit}
+                                      unpinFromTop={unpinFromTop}
+                                      pinToTop={pinToTop}
+                                      showActions={showActions}
                                     />
                                   </div>
                                 )}
@@ -534,6 +704,7 @@ export default function CommentComponent(props) {
                                   upsertComment={updateComment}
                                   setIsEdit={setIsEdit}
                                   setShowActions={setShowActions}
+                                  
                                 />
                               </div>
                             )}
@@ -654,8 +825,10 @@ export const CommentText = ({ eachComment, users }) => {
   );
 };
 
-const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment, setShowActions, setIsEdit }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
+const ActionMenu = ({ pinToTop, unpinFromTop, showActions , eachComment, setEditCommentId, setEditComment, deleteComment, setShowActions, setIsEdit }) => {
+  const [anchorEl, setAnchorEl] = useState(null);  
+  const { pinComment } = useSelector(state => state.pin);
+
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -664,10 +837,14 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
   const handleClose = () => {
     setAnchorEl(null);
   };
+ 
+  const pinnedComment = Object.values(pinComment).find(c => c.id === eachComment._id);
 
   return (
     <>
-      <ExpandMoreIcon id="expandCommentActionIcon" aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} />
+ 
+      <ExpandMoreIcon id="expandCommentActionIcon" aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} showActions={showActions} />
+ 
       <Menu
         style={{ zIndex: "1305" }}
         id={eachComment._id}
@@ -678,6 +855,7 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
         getContentAnchorEl={null}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "center" }}
+        
       >
         <MenuItem
           id="editComment"
@@ -694,6 +872,15 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
         <MenuItem textcolor="red" onClick={() => deleteComment(eachComment._id)} id="deleteComment">
           Delete Comment
         </MenuItem>
+        {pinnedComment ?
+          <MenuItem textcolor="red" onClick={() => unpinFromTop(eachComment._id)} id="unpin">
+            Unpin
+          </MenuItem>
+          :
+          <MenuItem textcolor="red" onClick={() => pinToTop(eachComment._id)} id="pintotop">
+            Pin To Top
+          </MenuItem>
+        }
       </Menu>
     </>
   );
