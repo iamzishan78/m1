@@ -267,7 +267,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const calculateNRA = (interest1, interest2, unitAcres = uAcres) => {
     if (!interest1 && !interest2) return null;
     let nra = parseFloat(unitAcres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0));
-    if (workspaceSettings.settings?.map?.unitNra?.type === "custom") {
+    if (workspaceSettings.settings?.map?.unitNra?.type === "custom" && workspaceSettings.settings?.map?.unitNra?.value) {
       nra = nra / Number(workspaceSettings.settings?.map?.unitNra?.value);
     }
     nra = addTrailingZeros(nra.toFixed(8));

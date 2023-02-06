@@ -86,7 +86,7 @@ export default function RevenueStatements() {
     }
   }, [workspaceSettings]);
 
-  const onChangeType = (type, value) => {
+  const onChangeType = (type, value = settings?.map?.unitNra?.value) => {
     addOrUpdateWorkspaceSettings({
       variables: {
         workspaceSettings: {
