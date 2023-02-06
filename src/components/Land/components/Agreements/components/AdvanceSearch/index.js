@@ -18,6 +18,7 @@ const filterTypes = {
   // "Remarks Types": { component: "RemarksTypes", countKey: "remarksTypes" },
   "Related Wells": { component: "RelatedWellsFilters", countKey: "tagFilterCount" },
   "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "tagFilterCount" },
+  "Related Documents": { component: "RelatedDocumentFilters", countKey: "tagFilterCount" },
 };
 
 const useStyles = makeStyles(() => ({
