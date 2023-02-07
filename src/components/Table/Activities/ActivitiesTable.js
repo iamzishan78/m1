@@ -112,6 +112,7 @@ function ActivitiesTable(props) {
     props.setTableMeta({
       filters: [
         ...getFilters(appliedFilters),
+        { field: 'isClosed', value: true },
         { field: 'type.keyword', value: 'Expiration', notInclude: true },
         { field: 'type.keyword', value: 'Option to Extend', notInclude: true }
       ],

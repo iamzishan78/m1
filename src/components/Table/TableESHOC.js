@@ -6,7 +6,7 @@ import { Autocomplete } from "@material-ui/lab";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useHistory } from "react-router-dom";
-import { isEmpty } from "lodash";
+import { filter, isEmpty } from "lodash";
 
 import { AppContext } from "AppContext";
 
@@ -329,51 +329,79 @@ export const TableESHOC = (Component) => {
                         ...column.options,
                         sortThirdClickReset: column.options.sort === false ? false : true,
                         filter: true,
-                        filterType: "custom",
+                        
                         filterList: undefined,
-                        customFilterListOptions: {
-                            render: v => v.map(l => l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l),
-                        },
-                        filterOptions: {
-                            display: (filterList, onChange, index, column) => {
-                                if (!TableHeader.find((el) => el.name === column.name) && tableMeta.customDataESKey) {
-                                    column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
-                                } else
-                                    column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
-
-                                if (!column.filterKey && column.esKey) column.filterKey = column.esKey
-
-                                if(column.name === "isClosed"){
-                                    return (<SimpleAutoCompleteFilter
-                                        esIndex={esIndex}
-                                        filterList={filterList}
-                                        column={column}
-                                        index={index}
-                                        onChange={onChange}
-                                        query={GET_ES_SIMPLE_FILTER}
-                                        searchFields={tableMeta.searchFields}
-                                        filters={appliedFilters}
-                                        extendSearchQuery={extendSearchQuery}
-                                        custom={custom}
-                                  />)
-                                }
-                                return (
-                                    <AutoCompleteFilter
-                                        esIndex={esIndex}
-                                        filterList={filterList}
-                                        column={column}
-                                        index={index}
-                                        onChange={onChange}
-                                        query={GET_ES_SIMPLE_FILTER}
-                                        searchFields={tableMeta.searchFields}
-                                        filters={appliedFilters}
-                                        extendSearchQuery={extendSearchQuery}
-                                        custom={custom}
-                                    />
-                                );
-                            },
-                        }
+                        
                     };
+
+                    if(column.name !== "isClosed"){
+                        column.options = { 
+                            ...column.options,
+                            filterType: "custom",
+                            customFilterListOptions: {
+                                render: v => v.map(l => l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l),
+                            },
+                            filterOptions: {
+                                display: (filterList, onChange, index, column) => {
+                                    if (!TableHeader.find((el) => el.name === column.name) && tableMeta.customDataESKey) {
+                                        column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
+                                    } else
+                                        column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
+    
+                                    if (!column.filterKey && column.esKey) column.filterKey = column.esKey
+    
+                                    return (
+                                        <AutoCompleteFilter
+                                            esIndex={esIndex}
+                                            filterList={filterList}
+                                            column={column}
+                                            index={index}
+                                            onChange={onChange}
+                                            query={GET_ES_SIMPLE_FILTER}
+                                            searchFields={tableMeta.searchFields}
+                                            filters={appliedFilters}
+                                            extendSearchQuery={extendSearchQuery}
+                                            custom={custom}
+                                        />
+                                    );
+                                },
+                            }
+                        }
+                    }
+                    //  else {
+                    //     column.options = { 
+                    //         ...column.options,
+                    //         filterType: "custom",
+                    //         customFilterListOptions: {
+                    //             render: v => v.map(l => l  ? "Completed" : "Not Completed"),
+                    //         },
+                    //         filterOptions: {
+                    //             display: (filterList, onChange, index, column) => {
+                    //                 if (!TableHeader.find((el) => el.name === column.name) && tableMeta.customDataESKey) {
+                    //                     column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
+                    //                 } else
+                    //                     column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
+    
+                    //                 if (!column.filterKey && column.esKey) column.filterKey = column.esKey
+    
+                    //                 return (
+                    //                     <Autocomplete
+                    //                         options={[ 
+                    //                             { label: "Completed", value: true },
+                    //                             { label: "Not Completed", value: false },
+                    //                         ]}
+                    //                         getOptionLabel={(option) => option.label}
+                    //                         renderInput={(params) => <TextField {...params} label="Completed?" />}
+                    //                         onChange={(e, newValue) => {
+                    //                             filterList[index] = newValue.value;
+                    //                             onChange(filterList[index], index, column)
+                    //                         }}
+                    //                     />
+                    //                 );
+                    //             },
+                    //         }
+                    //     }
+                    // }
                 } else {
                     column.options = {
                         ...column.options,
@@ -638,6 +666,16 @@ export const TableESHOC = (Component) => {
             if (tableState.polygon) {
                 pageESVariables.variables.filters.push(tableState.polygon)
             }
+
+            let filters =  handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters));
+            filters.forEach(filter => {
+                if(filter.field === "isClosed"){
+                    filter.value = filter.value === "Completed"
+                }
+            })
+
+            console.log("-*-*-*-*-*--*- filters *-*-*-*-*-*-*-*-", filters);
+
             return {
                 pageESVariables,
                 genericESAction: () => {
@@ -650,7 +688,7 @@ export const TableESHOC = (Component) => {
                         ...pageESVariables,
                         variables: {
                             ...pageESVariables.variables,
-                            filters: handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters))
+                            filters: filters
                         },
                     });
                 },

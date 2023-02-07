@@ -107,14 +107,10 @@ const ActivitiesHeadCells = [
       display: true,
       sort: true,
       filter: true,
-      optionLabel: 'label',
+      customRender: (value) => {
+        return value ? "Completed" : "Not completed"
+      }
     },
-    // custom: {
-    //   filterOptions: [
-    //     { label: "Completed",  key: true},
-    //     { label: "Not completed", key: false},
-    //   ]
-    // }
   },
 
 ];
