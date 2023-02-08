@@ -367,41 +367,15 @@ export const TableESHOC = (Component) => {
                                 },
                             }
                         }
+                    } else {
+                        column.options = { 
+                            ...column.options, 
+                            customFilterListOptions: {
+                                render: v => {
+                                     return (typeof v === "boolean" ? (v ? "Completed" : "Not Completed") : v)}
+                            },
+                        }
                     }
-                    //  else {
-                    //     column.options = { 
-                    //         ...column.options,
-                    //         filterType: "custom",
-                    //         customFilterListOptions: {
-                    //             render: v => v.map(l => l  ? "Completed" : "Not Completed"),
-                    //         },
-                    //         filterOptions: {
-                    //             display: (filterList, onChange, index, column) => {
-                    //                 if (!TableHeader.find((el) => el.name === column.name) && tableMeta.customDataESKey) {
-                    //                     column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
-                    //                 } else
-                    //                     column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
-    
-                    //                 if (!column.filterKey && column.esKey) column.filterKey = column.esKey
-    
-                    //                 return (
-                    //                     <Autocomplete
-                    //                         options={[ 
-                    //                             { label: "Completed", value: true },
-                    //                             { label: "Not Completed", value: false },
-                    //                         ]}
-                    //                         getOptionLabel={(option) => option.label}
-                    //                         renderInput={(params) => <TextField {...params} label="Completed?" />}
-                    //                         onChange={(e, newValue) => {
-                    //                             filterList[index] = newValue.value;
-                    //                             onChange(filterList[index], index, column)
-                    //                         }}
-                    //                     />
-                    //                 );
-                    //             },
-                    //         }
-                    //     }
-                    // }
                 } else {
                     column.options = {
                         ...column.options,
@@ -667,14 +641,12 @@ export const TableESHOC = (Component) => {
                 pageESVariables.variables.filters.push(tableState.polygon)
             }
 
-            let filters =  handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters));
+            const filters =  handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters));
             filters.forEach(filter => {
                 if(filter.field === "isClosed"){
                     filter.value = filter.value === "Completed"
                 }
             })
-
-            console.log("-*-*-*-*-*--*- filters *-*-*-*-*-*-*-*-", filters);
 
             return {
                 pageESVariables,

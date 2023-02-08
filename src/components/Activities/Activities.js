@@ -126,10 +126,6 @@ const Activities = () => {
     setTableFilters(filters);
   };
 
-
-
-
-
   let history = useHistory();
   const [getAllActivities, { data: activitiesData, loading: activitiesLoading }] = useLazyQuery(GETALLACTIVITIES, {
     fetchPolicy: `network-only`,
