@@ -7,52 +7,53 @@ import { Box } from "@material-ui/core";
 import GlobalStyles from "GlobalStyles";
 
 const useStyles = makeStyles(() => ({
-    link: {
-        color: GlobalStyles.colors.lightBlue,
-        cursor: "pointer",
-        maxWidth: "300px",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        p: 2,
-        textDecoration: "none !important",
-        "&:hover": {
-            textDecoration: "underline",
-            fontWeight: GlobalStyles.font.boldFontWeight,
-        },
+  root: {
+    color: GlobalStyles.colors.lightBlue,
+    cursor: "pointer",
+  },
+  link: {
+    color: GlobalStyles.colors.lightBlue,
+    maxWidth: "300px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    p: 2,
+    textDecoration: "none !important",
+    "&:hover": {
+      textDecoration: "underline",
+      fontWeight: GlobalStyles.font.boldFontWeight,
     },
+  }
 }));
 
 const ColumnWithLink = ({ value, link, ...rest }) => {
-    const classes = useStyles();
-    return (
-        <Box
-            sx={{
-                color: GlobalStyles.colors.lightBlue,
-                cursor: "pointer",
-                maxWidth: "300px",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                p: 2,
-                "&:hover": {
-                    textDecoration: "underline",
-                    fontWeight: GlobalStyles.font.boldFontWeight,
-                },
-            }}
-            {...rest}
-            onClick={
-                rest.onClick
-                    ? rest.onClick
-                    : (e) => {
-                        e.stopPropagation();
-                        history.push(link);
-                    }
-            }
-        >
-            <RouterLink to={link || "#"} className={classes.link}>
-                {value}
+  const classes = useStyles();
+  return (
+    <Box
+      {...rest}
+      onClick={
+        rest.onClick
+          ? rest.onClick
+          : (e) => {
+            e.stopPropagation();
+            history.push(link);
+          }
+      }
+    >
+      {!rest.disabled ? (
+        <div className={classes.root}>
+          {link ? (
+            <RouterLink to={link} className={classes.link}>
+              {value}
             </RouterLink>
-        </Box>
-    );
+          ) : (
+            value
+          )}
+        </div>
+      ) : (
+        value
+      )}
+    </Box>
+  );
 };
 
 export default ColumnWithLink;
