@@ -325,17 +325,17 @@ export default function MapControls(props) {
     }
   }, [stateApp.expandedCard]);
 
-  useEffect(() => {
-    if (stateApp.openDrawShapesControl === true) {
-      setStateMapControls((state) => ({
-        ...state,
-        selectedMapControl: "draw",
-        // openDrawShapesControl: true,
-      }));
+  // useEffect(() => {
+  //   if (stateApp.openDrawShapesControl === true) {
+  //     setStateMapControls((state) => ({
+  //       ...state,
+  //       selectedMapControl: "draw",
+  //       // openDrawShapesControl: true,
+  //     }));
 
-      handleFabClick();
-    }
-  }, [stateApp.openDrawShapesControl]);
+  //     handleFabClick();
+  //   }
+  // }, [stateApp.openDrawShapesControl]);
 
   return (
     <div>
