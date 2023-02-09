@@ -1373,7 +1373,7 @@ function SubTable(props) {
                             <Box
                               onClick={(e) => {
                                 e.stopPropagation();
-                                history.push(`/map/units/${tableMeta.rowData[0]}`);
+                                history.push(`/${column.label === 'Contact Name' ? 'contact/details' : 'map/units'}/${tableMeta.rowData[0]}`);
                               }}
                               sx={{
                                 color: GlobalStyles.colors.lightBlue,
@@ -1389,12 +1389,14 @@ function SubTable(props) {
 
                               }}
                             >
-                              {tableMeta?.rowData[2]}
+                              {tableMeta?.rowData[column.label === 'Contact Name' ? 1 : 2]}
                             </Box>
                           </Grid>
-                          <Grid item>
-                            <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
-                          </Grid>
+                          {column.label !== 'Contact Name' &&
+                            <Grid item>
+                              <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
+                            </Grid>
+                          }
                         </Grid>
                       </div>
                     );

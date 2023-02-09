@@ -130,7 +130,7 @@ export default function SummaryFields({ contactData }) {
     if (key.includes("nraSum")) {
       return get(contactData, "evaluatedContactInterests.nraSum") !== _value;
     } else if (key.includes("offerPriceSum")) {
-      return get(contactData, "evaluatedContactInterests.offerPriceSum").toFixed(2) !== _value.toFixed(2);
+      return get(contactData, "evaluatedContactInterests.offerPriceSum")?.toFixed(2) !== _value?.toFixed(2);
     }
     return false;
   }
