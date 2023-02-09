@@ -344,7 +344,7 @@ export default function Navigation(props) {
         selectedMenuIndexAdmin: 0,
         selectedMenuIndexAnalytics: 1,
       }));
-    } else if (location.pathname === "/admin") {
+    } else if (location.pathname.startsWith("/admin")) {
       setStateNav((state) => ({
         ...state,
         selectedMenuIndexFind: 0,
@@ -462,10 +462,10 @@ export default function Navigation(props) {
           style={
             location.pathname === "/contacts/activityDashboard" || location.pathname.includes("revenue") ? { background: "white" } : null
           }
-          // style={{
-          //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
-          //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
-          // }}
+        // style={{
+        //   background: checkIfShowBackgroundOnHeader() && "#ffffff",
+        //   boxShadow: checkIfShowBackgroundOnHeader() && "0 0 10px rgba(0,0,0,0.3)"
+        // }}
         >
           {stateApp.user && (
             <Toolbar>
@@ -491,8 +491,8 @@ export default function Navigation(props) {
 
               {(location.pathname === "/analytics" ||
                 Object.values(analyticsManagementRoutes).find((item) => item.link === location.pathname && item.search)) && (
-                <ContactSearch />
-              )}
+                  <ContactSearch />
+                )}
 
               {["/analytics/revenue", "/analytics/land"].includes(location.pathname) && (
                 <Typography
