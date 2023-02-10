@@ -8,7 +8,7 @@ const UnitInterestsPageHeadCells = [
     {
         name: 'name',
         label: 'Contact Name',
-        esKey: 'contact.entityDetail.name',
+        esKey: 'contact.entityDetail.name.keyword',
         options: {
             ...GlobalStickyStyles({
                 setCellProps: {
@@ -18,17 +18,23 @@ const UnitInterestsPageHeadCells = [
                     left: '77px',
                 },
             }),
+            sort: true,
+            filter: true,
         },
     },
     {
         name: 'unitName',
         label: 'Unit Name',
-        esKey: 'name.keyword',
+        esKey: 'shape.shapeJson.properties.uName.keyword',
+        options: {
+            sort: true,
+            filter: true,
+        },
     },
     {
         name: 'uNumber',
         label: 'Unit #',
-        esKey: 'shapeJson.properties.uNumber.keyword',
+        esKey: 'shape.shapeJson.properties.uNumber.keyword',
         options: {
             sort: true,
             filter: true,
@@ -38,7 +44,7 @@ const UnitInterestsPageHeadCells = [
     {
         name: 'shapeArea',
         label: 'Unit Acres',
-        esKey: 'shapeJson.properties.shapeArea.keyword',
+        esKey: 'shape.shapeJson.properties.shapeArea.keyword',
         options: {
             sort: true,
             filter: true,
@@ -68,6 +74,30 @@ const UnitInterestsPageHeadCells = [
         name: 'nra',
         label: 'NRA',
         esKey: 'nra',
+        // editable: false,
+        noFilter: true,
+        options: {
+            display: true,
+            sort: true,
+            filter: true,
+        },
+    },
+    {
+        name: 'uUnitPricing',
+        label: 'Price/NRA',
+        esKey: 'shape.shapeJson.properties.uUnitPricing.keyword',
+        // editable: false,
+        noFilter: true,
+        options: {
+            display: true,
+            sort: true,
+            filter: true,
+        },
+    },
+    {
+        name: 'offer_price',
+        label: 'Offer Price',
+        esKey: 'offer_price',
         // editable: false,
         noFilter: true,
         options: {

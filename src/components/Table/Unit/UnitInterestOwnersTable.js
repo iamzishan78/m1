@@ -41,6 +41,8 @@ function UnitInterestOwnersTable(props) {
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       hit.qualifier = hit?.shape?.shapeJson?.properties?.qualifier?.name;
       hit.reviewer = hit?.shape?.shapeJson?.properties?.reviewer?.name;
+      hit.uUnitPricing = hit?.shape?.shapeJson?.properties?.uUnitPricing;
+
       hit.contactStatus = hit?.contact?.contactStatus
       hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
       return hit;
@@ -52,19 +54,18 @@ function UnitInterestOwnersTable(props) {
     setTableMeta({
       extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
       searchFields: [
-        'contact.entityDetail.name',
-        'name.keyword',
-        'shapeJson.properties.uNumber.keyword',
-        'shapeJson.properties.shapeArea.keyword',
-        'shape.name.keyword',
+        'contact.entityDetail.name.keyword',
+        'shape.shapeJson.properties.uName.keyword',
         'shape.shapeJson.properties.uNumber.keyword',
         'shape.shapeJson.properties.shapeArea.keyword',
         'working_interest',
         'royalty_interest',
         'orri',
         'nra',
-        'campaignName.keyword',
+        'shape.shapeJson.properties.uUnitPricing.keyword',
+        'offer_price',
         'contact.contactStatus.keyword',
+        'campaignName.keyword',
         'shape.shapeJson.properties.reviewer.name.keyword',
         'shape.shapeJson.properties.qualifier.name.keyword',
       ],
