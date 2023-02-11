@@ -61,7 +61,7 @@ const UnitInterestsPageHeadCells = [
         name: 'royalty_interest',
         esKey: 'royalty_interest',
         type: 'number',
-        label: 'Actual RI',
+        label: 'RI',
         options: { filter: true },
     },
     {
