@@ -42,7 +42,7 @@ const ColumnWithLink = ({ value, link, ...rest }) => {
       {!rest.disabled ? (
         <div className={classes.root}>
           {link ? (
-            <RouterLink to={link} className={classes.link}>
+            <RouterLink to={`${link}/?tenant=${window.sessionStorage.getItem("tenantName")}`} className={classes.link}>
               {value}
             </RouterLink>
           ) : (
