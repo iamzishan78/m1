@@ -136,7 +136,7 @@ function ActivitiesTable(props) {
           break;
         case "overdue":
           filters.push({
-            field: 'endDate',
+            field: 'endDateTime',
             value: {
               lte: `${today}T00:00:00.000Z`,
             },
