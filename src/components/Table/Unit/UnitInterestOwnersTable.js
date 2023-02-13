@@ -42,6 +42,8 @@ function UnitInterestOwnersTable(props) {
       hit.qualifier = hit?.shape?.shapeJson?.properties?.qualifier?.name;
       hit.reviewer = hit?.shape?.shapeJson?.properties?.reviewer?.name;
       hit.uUnitPricing = hit?.shape?.shapeJson?.properties?.uUnitPricing;
+      hit.uNumber = hit?.shape?.shapeJson?.properties?.uNumber
+      hit.shapeArea = hit?.shape?.shapeJson?.properties?.shapeArea
 
       hit.contactStatus = hit?.contact?.contactStatus
       hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
@@ -88,6 +90,7 @@ function UnitInterestOwnersTable(props) {
         value: stateApp?.currentFeature?.geometry,
       },
       formatHits,
+      downloadAll: { exportPx: '121px' }
     });
     // eslint-disable-next-line
   }, [searchInput, props.landSearchQuery, userGridViewSettings]);

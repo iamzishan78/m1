@@ -1353,6 +1353,13 @@ function SubTable(props) {
                   if (props.targetLabel === "unit") {
                     const targetSourceId = tableMeta.rowData[1];
                     const commentValue = tableMeta.rowData[22]
+
+                    const tenant = sessionStorage.getItem("tenantName")?.toLocaleLowerCase();
+
+                    const baseURL = window.location.origin
+                    const path = `/${column.label === 'Contact Name' ? 'contact/details' : 'map/units'}/${tableMeta.rowData[0]}`
+                    const query = tenant ? `?tenant=${tenant}` : ''
+
                     return (
                       <div
                         style={{
@@ -1370,27 +1377,34 @@ function SubTable(props) {
                               justifyContent: "flex-start",
                             }}
                           >
-                            <Box
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                history.push(`/${column.label === 'Contact Name' ? 'contact/details' : 'map/units'}/${tableMeta.rowData[0]}`);
-                              }}
-                              sx={{
-                                color: GlobalStyles.colors.lightBlue,
-                                cursor: 'pointer',
-                                maxWidth: '300px',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                p: 2,
-                                "&:hover": {
-                                  textDecoration: "underline",
-                                  fontWeight: GlobalStyles.font.boldFontWeight,
-                                },
+                            <a href={`${baseURL}${path}${query}`}
+                              style={{ textDecoration: 'none' }}
+                              onClick={e => {
+                                e.preventDefault?.();
+                                e.stopPropagation?.();
 
-                              }}
-                            >
-                              {tableMeta?.rowData[column.label === 'Contact Name' ? 1 : 2]}
-                            </Box>
+                                return false;
+                              }}>
+                              <Box
+                                onClick={(e) => {
+                                  history.push(path);
+                                }}
+                                sx={{
+                                  color: GlobalStyles.colors.lightBlue,
+                                  cursor: 'pointer',
+                                  maxWidth: '300px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  p: 2,
+                                  "&:hover": {
+                                    textDecoration: "underline",
+                                    fontWeight: GlobalStyles.font.boldFontWeight,
+                                  },
+                                }}
+                              >
+                                {tableMeta?.rowData[column.label === 'Contact Name' ? 1 : 2]}
+                              </Box>
+                            </a>
                           </Grid>
                           {column.label !== 'Contact Name' &&
                             <Grid item>

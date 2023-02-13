@@ -882,16 +882,14 @@ export const TableESHOC = (Component) => {
             // filter: true,
             searchText: tableMeta.extendSearchQuery || undefined,
             searchFields: tableMeta.searchFields,
-            customToolbar: (tableMeta.addBtnText || tableMeta.addableName || tableMeta.exportPx) ? () => {
+            customToolbar: (tableMeta.addBtnText || tableMeta.addableName || tableMeta?.downloadAll?.exportPx) ? () => {
                 return (
                     <>
-                        {tableMeta.exportPx && (
+                        {tableMeta?.downloadAll?.exportPx && (
                             <div style={{
                                 display: "inline",
-                                display: "inline",
-                                display: "inline",
                                 position: "absolute",
-                                right: tableMeta.exportPx,
+                                right: tableMeta?.downloadAll?.exportPx,
                             }}>
                                 <IconButton onClick={onDownload}>
                                     <Tooltip title="Download CSV" aria-label="add">

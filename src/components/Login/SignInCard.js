@@ -6,7 +6,8 @@ import { AppContext } from "../../AppContext";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import styled from "styled-components";
 import Grid from '@material-ui/core/Grid';
-
+import { useHistory } from "react-router-dom";
+import queryString from 'query-string'
 
 const useStyles = makeStyles((theme) => ({
   select: {
@@ -148,7 +149,11 @@ const SignInCard = (props) => {
 
   const [, setStateApp] = useContext(AppContext);
   const classes = useStyles();
-  const [tenant, setTenant] = useState(props.tenant ? props.tenant : "");
+
+  const history = useHistory()
+  const query = queryString.parse(history.location.search)
+
+  const [tenant, setTenant] = useState(props.tenant || query.tenant ? props.tenant || query.tenant : "");
   const [error, setError] = useState(null);
   const [tenantFlags, setTenantFlags] = useState({
     error: false,
@@ -184,12 +189,14 @@ const SignInCard = (props) => {
     }
   };
 
-  const signInAAD = () => {
+  const signInAAD = async () => {
     if (tenant.trim() === "") {
       updateTenantFlags();
     } else {
       setError(null);
-      handleAADSignIn(tenant, updateTenantFlags);
+      await handleAADSignIn(tenant, updateTenantFlags);
+
+      history.push(history.location.pathname)
     }
   };
 

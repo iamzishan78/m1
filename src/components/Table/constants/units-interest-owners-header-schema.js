@@ -1,3 +1,4 @@
+import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import { GlobalStickyStyles } from 'GlobalSettings';
 
 const UnitInterestsPageHeadCells = [
@@ -12,10 +13,11 @@ const UnitInterestsPageHeadCells = [
         options: {
             ...GlobalStickyStyles({
                 setCellProps: {
-                    left: '77px',
+                    left: '108.5px',
                 },
                 setCellHeaderProps: {
-                    left: '77px',
+                    left: '108.5px',
+                    paddingLeft: '0px'
                 },
             }),
             sort: true,
@@ -29,6 +31,18 @@ const UnitInterestsPageHeadCells = [
         options: {
             sort: true,
             filter: true,
+            setCellProps: () => ({
+                style: {
+                    maxWidth: "450px",
+                    minWidth: "450px",
+                },
+            }),
+            setCellHeaderProps: () => ({
+                style: {
+                    maxWidth: "450px",
+                    minWidth: "450px",
+                },
+            }),
         },
     },
     {
@@ -92,6 +106,7 @@ const UnitInterestsPageHeadCells = [
             display: true,
             sort: true,
             filter: true,
+            customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>
         },
     },
     {
@@ -104,6 +119,7 @@ const UnitInterestsPageHeadCells = [
             display: true,
             sort: true,
             filter: true,
+            customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>
         },
     },
     {
