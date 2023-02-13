@@ -1927,7 +1927,7 @@ function SubTable(props) {
                             value={splitNumber?.[0]
                               ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
                               : tableMeta?.rowData[2]}
-                            link={`/land/agreement/details/${tableMeta.rowData[0]}`}
+                            link={isSnapGrid && tableMeta.rowData[3] ? `/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}` : `/land/agreement/details/${tableMeta.rowData[0]}`}
                             onClick={(e) => {
                               e.stopPropagation();
 
