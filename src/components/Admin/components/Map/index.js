@@ -8,6 +8,7 @@ import { Tabs, Tab, RadioGroup, Radio, FormControlLabel, TextField } from "@mate
 import { UPSERT_WORKSPACE_SETTINGS } from "graphQL/useMutationWorksapceSettings";
 
 import Filters from "./Filters";
+import { workspaceTenantName } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   contenContainer: {
@@ -90,7 +91,7 @@ export default function RevenueStatements() {
     addOrUpdateWorkspaceSettings({
       variables: {
         workspaceSettings: {
-          name: window.sessionStorage.getItem("tenantName"),
+          name: workspaceTenantName(),
           modifier: user._id,
           settings: { map: { unitNra: { type, value } } },
         },

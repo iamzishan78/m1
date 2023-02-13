@@ -35,6 +35,7 @@ import { FEATURES } from "components/Shared/FeatureFlag/common";
 import WorkspaceEditModal from "components/Navigation/components/WorkSpaceEditModal";
 import Analytics from "components/Shared/svgIcons/analytics";
 import AdminIcon from ".././Shared/svgIcons/admin-setting";
+import { workspaceTenantName } from "components/Shared/functions";
 
 const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   width: 260px;
@@ -69,10 +70,9 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
   });
 
   useEffect(() => {
-    let workspaceName = window.sessionStorage.getItem("tenantName");
     getWorkspaceSettings({
       variables: {
-        workspaceName,
+        workspaceName: workspaceTenantName(),
       },
     });
   }, [getWorkspaceSettings]);
