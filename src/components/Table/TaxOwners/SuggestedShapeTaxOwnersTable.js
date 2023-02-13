@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 
 // context
 import { AppContext } from "AppContext";
@@ -76,7 +77,7 @@ function SuggestedShapeTaxOwnersTable(props) {
 
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
-
+  const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
   const client = useApolloClient();
 
   // function states
@@ -352,7 +353,6 @@ function SuggestedShapeTaxOwnersTable(props) {
             className={classes.multiSelectionTopBarButtons}
             disabled={data.length < 1}
             onClick={() => {
-              // suggestedOwnerToShape();
               setShowConvertDialog(true);
             }}
           >
@@ -371,76 +371,13 @@ function SuggestedShapeTaxOwnersTable(props) {
     setFilterByWells(filter);
   };
 
-  const pickSelectedRows = async (rows) => {
-
-  }
-
-  const suggestedOwnerToShape = async () => {
-
-    const { rows } = props;
-    const selectedOwners = selectedRows.map((sR => rows[sR.dataIndex]))
-    const globalOwnerIds = [];
-    const owners = []
-    selectedOwners.forEach((selectedOwner) => {
-      if (
-        !selectedOwner.isContact &&
-        !globalOwnerIds.includes(selectedOwner.globalOwnerId)
-      ) {
-        globalOwnerIds.push(selectedOwner.globalOwnerId);
-      } else {
-        owners.push(selectedOwner);
-      }
-    })
-    if (globalOwnerIds.length > 0) {
-      props.setLoading(true);
-      convertMultitpleOwnerToContact({
-        variables: {
-          ownerIds: globalOwnerIds,
-          existingContactId: null,
-          status: "Lead",
-          contactOwner: null,
-          action: "single",
-          userId: stateApp.user.mongoId,
-        },
-        refetchQueries: ["checkIfOwnersAreContacts", "getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
-        awaitRefetchQueries: true,
-      }).then(
-        async (res) => {
-          if (res.data && res.data.convertMultitpleOwnerToContact) {
-            const { success, message } =
-              res.data.convertMultitpleOwnerToContact;
-            if (success) {
-              const { data: checkIfOwnersAreContactsData } = await client.query(
-                {
-                  query: IFARECONTACTS,
-                  variables: {
-                    idsArray: globalOwnerIds,
-                  },
-                }
-              );
-              const contacts = checkIfOwnersAreContactsData.ifAreContacts.map((contact) => {
-                const selectedRow = selectedOwners.find((row) => row.globalOwnerId === contact.globalOwner)
-                return {
-                  ...contact,
-                  globalOwnerId: selectedRow.globalOwnerId,
-                  interestType: selectedRow.interestType,
-                  ownershipPercentage: selectedRow.ownershipPercentage
-                }
-              })
-              addShape(contacts)
-            }
-          }
-        },
-        (err) => {
-          console.log(err)
-        }
-      );
+  const calculateNRA = (uAcres, ownershipPercentage) => {
+    let nra = parseFloat(uAcres || 0) * ownershipPercentage;
+    if (workspaceSettings.settings?.map?.unitNra?.type === "custom" && workspaceSettings.settings?.map?.unitNra?.value) {
+      nra = nra / Number(workspaceSettings.settings?.map?.unitNra?.value);
     }
-    if (owners.length > 0) {
-      props.setLoading(true);
-      addShape(owners);
-    }
-
+    nra = addTrailingZeros(nra.toFixed(8));
+    return nra;
   };
 
   const formatInterestForImport = () => {
@@ -454,49 +391,13 @@ function SuggestedShapeTaxOwnersTable(props) {
         working_interest: rec.interestType === 'WORKING INTEREST' ? ownershipPercentage : "",
         royalty_interest: rec.interestType === 'ROYALTY INTEREST' ? ownershipPercentage : "",
         orri: rec.interestType === 'OVERRIDING ROYALTY' ? ownershipPercentage : "",
-        nra: addTrailingZeros((uAcres * ownershipPercentage).toFixed(8)),
+        nra: calculateNRA(uAcres, ownershipPercentage),
         globalOwnerId: rec.globalOwnerId,
         isSuggested: true
       }
       return rec;
     }))
   }
-
-  const addShape = (selectedRows) => {
-    const uAcres = props.customLayer?.shapeJson?.properties?.uAcres || 0
-    for (let i = 0; i < selectedRows.length; i++) {
-      const ownershipPercentage = addTrailingZeros(selectedRows[i].ownershipPercentage.toFixed(8))
-      const nra = uAcres * selectedRows[i].ownershipPercentage
-
-      const ownerToAdd = {
-        shapeId: props.customLayer._id,
-        entity: "",
-        globalOwnerId: selectedRows[i].globalOwnerId,
-        working_interest: selectedRows[i].interestType === 'WORKING INTEREST' ? ownershipPercentage : "",
-        royalty_interest: selectedRows[i].interestType === 'ROYALTY INTEREST' ? ownershipPercentage : "",
-        orri: selectedRows[i].interestType === 'OVERRIDING ROYALTY' ? ownershipPercentage : "",
-        nra: addTrailingZeros(nra.toFixed(8)),
-        ownerEntity: selectedRows[i].isContact,
-        type: "",
-        isSuggested: true
-      };
-      addOwnerToAShape({
-        variables: {
-          shapeType: props.shapeType,
-          shapeOwner: {
-            ...ownerToAdd,
-            createBy: stateApp.user.mongoId,
-            lastUpdateBy: stateApp.user.mongoId,
-          },
-        },
-        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
-        awaitRefetchQueries: true,
-      }).then(() => {
-        props.setLoading(false);
-        props.setSelectedTab(0)
-      });
-    }
-  };
 
   return (
     <Container
