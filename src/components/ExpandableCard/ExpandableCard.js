@@ -604,6 +604,7 @@ function ExpandableCard(props) {
     );
   };
 
+  const subHeader = subTitle === ", " ? `${stateApp?.selectedShape?.state} - ${stateApp?.selectedShape?.county}` : (subTitle ? (subTitle.length > 35 ? `${subTitle.substr(0, 35)}...` : subTitle) : "");
   return (
     <React.Fragment>
       {/* Dialog for deleting parcel  */}
