@@ -1,16 +1,12 @@
 import { GlobalStickyStyles } from "GlobalSettings";
-import GlobalStyles from "..//..//..//GlobalStyles.js";
-import { history } from "store";
-
-import Typography from "@material-ui/core/Typography";
-import vf_number from "components/Shared/valueformatters/vf_number";
-import { statusData } from "components/Table/Revenue/RevenuePropertiesTable";
 import moment from "moment";
 
-const dateCustomRender = (value) => value ? moment(new Date(value)).format("MM/DD/YYYY") === "Invalid date"
-  ? ""
-  : moment(new Date(value)).format("MM/DD/YYYY")
-  : ""
+import vf_number from "components/Shared/valueformatters/vf_number";
+import { statusData } from "components/Table/Revenue/RevenuePropertiesTable";
+import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
+
+const dateCustomRender = (value) =>
+  value ? (moment(new Date(value)).format("MM/DD/YYYY") === "Invalid date" ? "" : moment(new Date(value)).format("MM/DD/YYYY")) : "";
 
 const wellsColumnHeaders = [
   {
@@ -24,44 +20,18 @@ const wellsColumnHeaders = [
     options: {
       ...GlobalStickyStyles({
         setCellProps: {
-          left: '125px',
+          left: "125px",
         },
         setCellHeaderProps: {
-          left: '125px',
-        }
+          left: "125px",
+        },
       }),
       sort: true,
       filter: true,
       customRender: (value, tableMeta) => {
-        const styles = {
-          fontWeight: GlobalStyles.font.boldFontWeight,
-          color: GlobalStyles.colors.lightBlue,
-          cursor: GlobalStyles.hyperlink.cursor,
-          position: "absolute",
-          // left: '70px',
-        };
         const globalWellId = tableMeta.rowData[0];
 
-        return (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Typography
-              onClick={(e) => {
-                e.stopPropagation();
-                history.push(`/land/well/details/${globalWellId}`);
-              }}
-              noWrap
-              variant="body2"
-              style={styles}
-            >
-              {value}
-            </Typography>
-          </div>
-        );
+        return <ColumnWithLink value={value} link={`/land/well/details/${globalWellId}`} />;
       },
     },
   },

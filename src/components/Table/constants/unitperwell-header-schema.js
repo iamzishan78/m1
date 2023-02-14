@@ -23,10 +23,12 @@ const UnitWellHeadCells = [
       filter: false,
       ...GlobalStickyStyles({
         setCellProps: {
+          left: "77px",
           maxWidth: "350px",
           left: "77px"
         },
         setCellHeaderProps: {
+          left: "77px",
           paddingLeft: '37px',
           left: "77px"
         }

@@ -15,6 +15,9 @@ const useStyles = makeStyles((theme) => ({
     color: "black",
   },
   loader: {},
+  autoC: {
+    margin: "8px 0px 4px"
+  }
 }));
 
 export default function FilterCountyName({ value, state, onCountyChange, label, variant, shrink }) {
@@ -63,6 +66,7 @@ export default function FilterCountyName({ value, state, onCountyChange, label, 
         <Autocomplete
           className={classes.autoC}
           id="field-county"
+          margin="dense"
           options={countyList}
           size={shrink ? 'small' : 'medium'}
           value={value ? { county: value } : ''}
