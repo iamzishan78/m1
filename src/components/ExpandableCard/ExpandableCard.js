@@ -216,6 +216,7 @@ function ExpandableCard(props) {
       // , marginRight: '10px'
     },
     unitTitle: {
+      flexWrap: 'nowrap',
       "& .name": {
         color: "#1a2341",
         textTransform: "capitalize",
@@ -430,15 +431,15 @@ function ExpandableCard(props) {
         }}
       >
         {stateApp.selectedShape ? (
-          <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+          <Grid container spacing={2} alignItems="center" className={classes.unitTitle} >
             <Grid item>
               <Avatar color="#1a2341">
                 <FolderIcon fontColor="#1a2341" />
-              </Avatar>
+              </Avatar> 
             </Grid>
             <Grid item>
-              <Box className="name">{title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}</Box>
-              <Box className="description">{subHeader}</Box>
+              <Box className="name">{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}</Box>
+              <Box className="description">{subTitle}</Box>
               {stateApp.selectedShape.type === "unit" && <Box className="type">Unit</Box>}
               {stateApp.selectedShape.type === "agreement" && (
                 <Box className="type">{agreementTypes.find((at) => at.value === stateApp.selectedShape?.agreementType)?.label || ""}</Box>
@@ -448,16 +449,17 @@ function ExpandableCard(props) {
         ) : (
           <>
             {" "}
-            {targetLabel !== "contact" && targetLabel !== "parcel" && <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>}
+            {targetLabel !== "contact" && targetLabel !== "parcel" && <div>{title.length > 70 ? `${title.substr(0, 75)}...` : title}</div>}
             {targetLabel === "parcel" && props.expanded === true && (
               <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+                
                 <Grid item>
                   <Avatar color="#1a2341">
                     <FolderIcon fontColor="#1a2341" />
                   </Avatar>
                 </Grid>
                 <Grid item>
-                  <Box className="name">{title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}</Box>
+                  <Box className="name">{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}</Box>
                   {subTitle && <Box className="description">{subTitle}</Box>}
                   <Box className="type">Tract</Box>
                 </Grid>
@@ -472,12 +474,12 @@ function ExpandableCard(props) {
                     marginTop: -6,
                   }}
                 >
-                  {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
+                  {title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}
                 </Box>
               </Grid>
             )}
             {targetLabel === "contact" && parent !== "table" && <ContactSearch />}
-            {targetLabel === "contact" && parent !== "table" && <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>}
+            {targetLabel === "contact" && parent !== "table" && <div>{title.length > 70 ? `${title.substr(0, 75)}...` : title}</div>}
           </>
         )}
       </div>
