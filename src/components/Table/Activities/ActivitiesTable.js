@@ -22,6 +22,8 @@ import { usetableStyles } from "../Styles";
 import { UPDATE_PROPERTY_INTEREST } from "graphQL/useMutationUpdatepropertyInterest";
 import { activityTypes } from "utils/data";
 import { getRangeFilters } from "utils/helper";
+import Chip from '@material-ui/core/Chip';
+import { TableFilterList } from "mui-datatables";
 
 export const getFilters = (appliedFilters) => {
   let filters = [];
@@ -62,6 +64,22 @@ export const getFilters = (appliedFilters) => {
     if (!filters.length && appliedFilters.length) filters = appliedFilters;
   }
   return filters;
+};
+
+
+const CustomChip = ({ label, onDelete }) => {
+  if(["Expiration", "Option to Extend"].includes(label))
+    return null
+  return (
+      <Chip
+          label={label}
+          onDelete={onDelete}
+      />
+  );
+};
+
+const CustomFilterList = (props) => {
+  return <TableFilterList {...props} ItemComponent={CustomChip} />;
 };
 
 function ActivitiesTable(props) {
@@ -112,8 +130,8 @@ function ActivitiesTable(props) {
     props.setTableMeta({
       filters: [
         ...getFilters(appliedFilters),
-        // { field: 'type.keyword', value: 'Expiration', notInclude: true },
-        // { field: 'type.keyword', value: 'Option to Extend', notInclude: true }
+        { field: 'type.keyword', value: 'Expiration', notInclude: true },
+        { field: 'type.keyword', value: 'Option to Extend', notInclude: true }
       ],
       extendSearchQuery: stateApp.activitySearchQuery,
       searchFields,
@@ -264,6 +282,9 @@ function ActivitiesTable(props) {
         parent={props.parent}
         setColumnsBase={[]}
         {...props.esHocProps}
+        component={{
+          TableFilterList: CustomFilterList,
+        }}
       />
       <ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} />
     </Container>

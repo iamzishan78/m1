@@ -6,7 +6,7 @@ import { Autocomplete } from "@material-ui/lab";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useHistory } from "react-router-dom";
-import { filter, isEmpty } from "lodash";
+import { filter, isEmpty, unionWith, isEqual, uniqWith } from "lodash";
 
 import { AppContext } from "AppContext";
 
@@ -329,17 +329,15 @@ export const TableESHOC = (Component) => {
                         ...column.options,
                         sortThirdClickReset: column.options.sort === false ? false : true,
                         filter: true,
-                        
                         filterList: undefined,
-                        
-                    };
-
-                    if(column.name !== "isClosed"){
-                        column.options = { 
-                            ...column.options,
-                            filterType: "custom",
+                        filterType: "custom",
                             customFilterListOptions: {
-                                render: v => v.map(l => l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l),
+                                render: v => v.map(l => {
+                                    if(custom?.formatedFilterOptions?.length > 0){
+                                        return custom?.formatedFilterOptions.find(f => f.value === l)?.label || l
+                                    }
+                                    return l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l
+                                }),
                             },
                             filterOptions: {
                                 display: (filterList, onChange, index, column) => {
@@ -366,16 +364,7 @@ export const TableESHOC = (Component) => {
                                     );
                                 },
                             }
-                        }
-                    } else {
-                        column.options = { 
-                            ...column.options, 
-                            customFilterListOptions: {
-                                render: v => {
-                                     return (typeof v === "boolean" ? (v ? "Completed" : "Not Completed") : v)}
-                            },
-                        }
-                    }
+                    };
                 } else {
                     column.options = {
                         ...column.options,
@@ -550,10 +539,11 @@ export const TableESHOC = (Component) => {
                     }
                 })
             }
-            return filters
+            return uniqWith(filters, isEqual);
         }
 
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
+            debugger
             let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableState.searchText;
             if (props.useWildeCard)
                 searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
@@ -602,6 +592,12 @@ export const TableESHOC = (Component) => {
                 return { field: field, value: value }
             }
 
+            // temporary patch
+            if(tableState?.filterList?.[2]?.includes("Expiration") || tableState?.filterList?.[2]?.includes("Option to Extend")) {
+                tableState.filterList[2] = []
+            }
+            // Patch end
+
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0 && columns[index]) {
                     if (columns[index].custom?.isDate || columns[index].custom?.isDateTime) {
@@ -641,13 +637,6 @@ export const TableESHOC = (Component) => {
                 pageESVariables.variables.filters.push(tableState.polygon)
             }
 
-            const filters =  handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters));
-            filters.forEach(filter => {
-                if(filter.field === "isClosed"){
-                    filter.value = filter.value === "Completed"
-                }
-            })
-
             return {
                 pageESVariables,
                 genericESAction: () => {
@@ -660,7 +649,7 @@ export const TableESHOC = (Component) => {
                         ...pageESVariables,
                         variables: {
                             ...pageESVariables.variables,
-                            filters: filters
+                            filters: handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters))
                         },
                     });
                 },
