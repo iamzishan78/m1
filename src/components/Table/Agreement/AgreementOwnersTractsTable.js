@@ -25,7 +25,8 @@ import _ from "lodash";
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
   const [drawerContainer, setDrawerContainer] = useState(null);
-  const [selectredTract, setSelectredTract] = useState(props.clickedRow)
+  const [selectredTract, setSelectredTract] = useState(props.clickedRow);
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
   useEffect(() => {
     setSelectredTract(props.clickedRow)
@@ -42,8 +43,6 @@ function AgreementOwnersTractsTable(props) {
       }
     }
   }, [props.portal])
-
-  const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
@@ -156,7 +155,7 @@ function AgreementOwnersTractsTable(props) {
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       {drawer === "tract" && (
         <AddAgreementOwnerAndTractDialog
-          open={props.addToTable}
+          open
           width="450px"
           shapeId={props.customLayer._id}
           layerType={props.customLayer.layer}

@@ -44,8 +44,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     overflow: "auto",
     padding: "14px 0px",
-    maxHeight: "calc(100vh - 630px)",
-    // maxHeight:'250px'
+    maxHeight: "calc(100vh - 1120px)",
   }),
   hideMenuIcon: {
     visibility: "hidden",
@@ -497,10 +496,10 @@ export default function CommentComponent(props) {
                                 editCommentId !== eachComment._id && (
                                   <div
                                     className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
-                                        eachComment?.user?.email === stateApp.user.email &&
-                                        showCommentActionId === eachComment._id &&
-                                        editCommentId !== eachComment._id
-                                      ) && classes.hideMenuIcon
+                                      eachComment?.user?.email === stateApp.user.email &&
+                                      showCommentActionId === eachComment._id &&
+                                      editCommentId !== eachComment._id
+                                    ) && classes.hideMenuIcon
                                       }`}
                                   >
                                     <ActionMenu
