@@ -438,7 +438,7 @@ function ExpandableCard(props) {
             </Grid>
             <Grid item>
               <Box className="name">{title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}</Box>
-              <Box className="description">{subTitle}</Box>
+              <Box className="description">{subHeader}</Box>
               {stateApp.selectedShape.type === "unit" && <Box className="type">Unit</Box>}
               {stateApp.selectedShape.type === "agreement" && (
                 <Box className="type">{agreementTypes.find((at) => at.value === stateApp.selectedShape?.agreementType)?.label || ""}</Box>
@@ -602,6 +602,7 @@ function ExpandableCard(props) {
     );
   };
 
+  const subHeader = subTitle === ", " ? `${stateApp?.selectedShape?.state} - ${stateApp?.selectedShape?.county}` : (subTitle ? (subTitle.length > 35 ? `${subTitle.substr(0, 35)}...` : subTitle) : "");
   return (
     <React.Fragment>
       {/* Dialog for deleting parcel  */}
