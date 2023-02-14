@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { Container } from "@material-ui/core";
-import { debounce, get, startCase } from "lodash";
+import { debounce, get } from "lodash";
 
 // context
 import { AppContext } from "AppContext";

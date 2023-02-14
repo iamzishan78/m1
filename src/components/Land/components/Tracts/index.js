@@ -32,18 +32,11 @@ const useStyles = makeStyles((theme) => ({
         },
       },
     },
-
-    // '& .MuiDrawer-paperAnchorRight': {
-    //   overflow: "hidden",
-    // },
-    // marginLeft: '-10px'
   },
 }));
 
 function Tracts(props) {
   const [stateApp] = useContext(AppContext);
-  const classes = useStyles();
-  // const history = useHistory();
 
   // waypointKey should any key of Table Header which do not have customRender in schema file
   const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 445px)' }
@@ -57,53 +50,9 @@ function Tracts(props) {
 
   const [selectedTractTab, setTractSelectedTab] = useState(0);
   const [tractCount, setTractCount] = useState(0);
-  // const [grossAcresSum, setGrossAcresSum] = useState(0);
-  // const [netAcresSum, setNetAcresSum] = useState(0);
-  // const [netRoyaltyAcresSum, setNetRoyaltyAcresSum] = useState(0);
-  // const [openDrawer, setOpenDrawer] = useState(false);
   const onTractCount = (count) => {
     setTractCount(count);
   }
-
-  // const onGrossAcresSum = (sum) => {
-  //   setGrossAcresSum(sum);
-  // }
-
-  // const onNetAcresSum = (sum) => {
-  //   setNetAcresSum(sum);
-  // }
-
-  // const onNetRoyaltyAcresSum = (sum) => {
-  //   setNetRoyaltyAcresSum(sum);
-  // }
-
-  // const handleListItemClick = (path) => {
-  //   history.push(path);
-  //   handleDrawerClose();
-  // };
-
-  // const handleDrawerClose = () => {
-  //   setOpenDrawer(false);
-  // };
-
-  // const cards = [
-  //   {
-  //     heading: "Total Tracts",
-  //     points: tractCount,
-  //   },
-  //   {
-  //     heading: "Gross Acres",
-  //     points: (Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, {maximumFractionDigits: 1}) + 'K',
-  //   },
-  //   {
-  //     heading: "Net Acres",
-  //     points: (Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, {maximumFractionDigits: 1}) + 'K',
-  //   },
-  //   {
-  //     heading: "Net Royalty Acres",
-  //     points: (Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, {maximumFractionDigits: 1}) + 'K',
-  //   },
-  // ];
 
   const esIndex = ["shapes_flat", "shapeowners_flat"];
   const tabLabels = ["Tracts", "Tract Interests"]
@@ -143,7 +92,7 @@ function Tracts(props) {
       <div
         style={{
           marginTop: '65px',
-          padding: "20px 75px 0px 75px"
+          padding: "20px 26px 0px 33px"
         }}
       >
         <TractsFilters selectedTractTab={selectedTractTab} />
