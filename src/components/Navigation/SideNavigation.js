@@ -43,13 +43,6 @@ const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   padding-right: 15px;
 `;
 
-//#263451
-const style = {
-  adminDevider: {
-    borderTop: "0.5px solid #43454D",
-  },
-};
-
 const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handleListItemClick, handleDrawerClose, handleDrawerOpen }) => {
   const [stateApp] = useContext(AppContext);
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
