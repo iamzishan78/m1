@@ -131,9 +131,8 @@ import ReactSelectField from "./SubComponents/ReactSelectField";
 import TableBody from "./MUIDataTable/TableBody";
 import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOfferPrice";
 
-
 import Checkbox from '@material-ui/core/Checkbox';
-import GlobalStyles from "GlobalStyles";
+import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 
 
 // suppress debug console logs
@@ -513,7 +512,6 @@ const useStyles = makeStyles((theme) => ({
     color: "#959595"
   }
 }));
-
 
 function SubTable(props) {
   const classes = useStyles({
@@ -1360,8 +1358,8 @@ function SubTable(props) {
                 ...column.options,
                 customRender: (value, tableMeta) => {
                   if (props.targetLabel === "unit") {
-                    const targetSourceId = tableMeta.rowData[1];
-                    const commentValue = tableMeta.rowData[22]
+                    const targetSourceId = tableMeta.rowData[0];
+                    const commentValue = tableMeta.rowData[20];
                     return (
                       <div
                         style={{
@@ -1379,27 +1377,10 @@ function SubTable(props) {
                               justifyContent: "flex-start",
                             }}
                           >
-                            <Box
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                history.push(`/map/units/${tableMeta.rowData[0]}`);
-                              }}
-                              sx={{
-                                color: GlobalStyles.colors.lightBlue,
-                                cursor: 'pointer',
-                                maxWidth: '300px',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                p: 2,
-                                "&:hover": {
-                                  textDecoration: "underline",
-                                  fontWeight: GlobalStyles.font.boldFontWeight,
-                                },
-
-                              }}
-                            >
-                              {tableMeta?.rowData[2]}
-                            </Box>
+                            <ColumnWithLink
+                              value={tableMeta?.rowData[2]}
+                              link={`/map/units/${tableMeta.rowData[0]}`}
+                            />
                           </Grid>
                           <Grid item>
                             <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
@@ -1797,29 +1778,24 @@ function SubTable(props) {
                   if (column.name === 'ApiNumber' && !props.rows[tableMeta.rowIndex]?.globalWell) disabled = true;
                   if (column.name === 'OwnerName' && !props.rows[tableMeta.rowIndex]?.wellCount > 0) disabled = true;
                   if (column.name === 'Operator' && !props.rows[tableMeta.rowIndex]?.totalWellCount > 0) disabled = true;
+
+                  const coordinates = props.rows[tableMeta.rowIndex].coordinates;
+                  const data = props.rows.find(row => row.Id === coordinates?.objToPopulateSearchLayer?.objectId);
                   return (
-                    <Box
+                    <ColumnWithLink
                       onClick={(e) => {
                         e.stopPropagation();
                         if (!disabled) {
-                          const coordinates = props.rows[tableMeta.rowIndex].coordinates
-                          type = coordinates?.objToPopulateSearchLayer?.objectType || type
-                          if (column.name === 'Well') coordinates.wellId = props.rows[tableMeta.rowIndex]?.well.globalWell;
-                          handleClickFlyToIcon(type, coordinates, true);
+                          type = coordinates?.objToPopulateSearchLayer?.objectType || type;
+                          if (column.name === "Well") coordinates.wellId = props.rows[tableMeta.rowIndex]?.well.globalWell;
+                          handleClickFlyToIcon(type, coordinates);
+                          dispatch(setMapGridCardState({ mapGridCardActivated: false }));
                         }
                       }}
-                      sx={{
-                        color: !disabled ? GlobalStyles.colors.lightBlue : 'inherit',
-                        cursor: 'pointer',
-                        maxWidth: '300px',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        p: 2,
-                        "&:hover": !disabled ? { textDecoration: "underline", fontWeight: GlobalStyles.font.boldFontWeight } : {},
-                      }}
-                    >
-                      {value}
-                    </Box>
+                      value={value}
+                      link={type === "well" ? (coordinates.wellId ? `/map/wells/${coordinates.wellId}` : "") : `/map/units/${data?._id}`}
+                      disabled={disabled}
+                    />
                   );
                 },
               };
@@ -1933,14 +1909,6 @@ function SubTable(props) {
                   value = value?.toString();
                   const splitNumber = value?.split("_");
 
-                  const styles = {
-                    cursor: GlobalStyles.hyperlink.cursor,
-                    //minWidth: "1400px"
-                    // position: 'relative',
-                    // left: '55px',
-                  };
-                  const targetSourceId = tableMeta.rowData[0];
-                  const commentValue = tableMeta.rowData[21]
                   const isSnapGrid = column.options.isSnapGrid || false
 
                   return (
@@ -1955,7 +1923,6 @@ function SubTable(props) {
                       <Grid container spacing={0} direction="row"
                         style={{
                           position: 'absolute',
-                          // justifyContent: 'space-between'
                         }}
                         className={classes.agreementNumber}
                       >
@@ -1963,45 +1930,13 @@ function SubTable(props) {
                           style={{
                             display: "flex",
                             justifyContent: "flex-start",
-                            // alignItems: "center",
-                            // paddingRight: "100px"
                           }}
                         >
-                          {/* <Typography
-                            onClick={(e) => {
-                              e.stopPropagation();
-
-                              if (isSnapGrid)
-                                history.push(`/map/${tableMeta.rowData[18]}s/${tableMeta.rowData[0]}`,
-                                  { showAgreementBreadcrumb: false }
-                                );
-                              else
-                                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
-                                  { showAgreementBreadcrumb: true }
-                                );
-                            }}
-                            noWrap
-                            variant='body2'
-                            style={styles}
-                            color="inherit"
-                          >
-                            <Box sx={{
-                              color: GlobalStyles.colors.lightBlue,
-                              p: 2,
-                              "&:hover": {
-                                textDecoration: "underline",
-                                fontWeight: GlobalStyles.font.boldFontWeight,
-                              },
-                            }}>
-
-                              {splitNumber?.[0]
-                                ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
-                                : tableMeta?.rowData[2]}
-                            </Box>
-                          </Typography> */}
-
-
-                          <Box
+                          <ColumnWithLink
+                            value={splitNumber?.[0]
+                              ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
+                              : tableMeta?.rowData[2]}
+                            link={isSnapGrid && tableMeta.rowData[3] ? `/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}` : `/land/agreement/details/${tableMeta.rowData[0]}`}
                             onClick={(e) => {
                               e.stopPropagation();
 
@@ -2014,7 +1949,20 @@ function SubTable(props) {
                                   { showAgreementBreadcrumb: true }
                                 );
                             }}
+                          />
+                          {/* <Box
+                            onClick={(e) => {
+                              e.stopPropagation();
 
+                              if (isSnapGrid && tableMeta.rowData[3])
+                                history.push(`/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}`,
+                                  { showAgreementBreadcrumb: false }
+                                );
+                              else if (!isSnapGrid)
+                                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
+                                  { showAgreementBreadcrumb: true }
+                                );
+                            }}
                             sx={{
                               color: GlobalStyles.colors.lightBlue,
                               cursor: 'pointer',
@@ -2026,51 +1974,13 @@ function SubTable(props) {
                                 textDecoration: "underline",
                                 fontWeight: GlobalStyles.font.boldFontWeight,
                               },
-
                             }}
-
                           >
-
                             {splitNumber?.[0]
                               ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
                               : tableMeta?.rowData[2]}
-                          </Box>
-
+                          </Box> */}
                         </Grid>
-
-                        {/* <Grid item>
-                          <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
-                        </Grid>
-
-
-                        <Grid item
-                          className={classes.actionButtons}
-                        >
-                          <Grid container spacing={0} direction="row">
-
-                            <Grid item
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-start",
-                                alignItems: "center",
-                              }}
-                            >
-                              <IconButton
-                                size="small"
-                                onClick={(e) => {
-                                  history.push(
-                                    `/map/${tableMeta.rowData[3]?.toLowerCase()}s/${tableMeta.rowData[0]}`,
-                                    { showAgreementBreadcrumb: true }
-                                  );
-                                  e.stopPropagation();
-                                }}
-                              >
-                                <LocationOnIcon />
-                              </IconButton>
-                            </Grid>
-                          </Grid>
-
-                        </Grid> */}
                       </Grid>
                     </div>
 
@@ -4483,6 +4393,7 @@ function SubTable(props) {
     || props.header === "Activities"
     || props.header === "Agreements"
     || props.header === "Tracts"
+    || props.parent === "UnitsTable"
     || props.parent === "TractTable"
     || props.parent === "WellsTable"
     || props.parent === "TractInterestsTable"
