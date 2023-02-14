@@ -98,7 +98,7 @@ function SuggestedShapeTaxOwnersTable(props) {
   const [getPaginatedShapeWellOwners, { data: dataShapeOwners, variables: variablesShapeOwners }] = useLazyQuery(
     SHAPE_WELL_OWNERS,
     {
-      fetchPolicy: "cache-and-network", skip: true,
+      // fetchPolicy: "cache-and-network", skip: true,
       onCompleted: (dataShapeOwners) => {
         setCount((state, props) => {
           let newState = state || dataShapeOwners?.paginatedShapeWellOwners?.edges?.length;
@@ -112,6 +112,13 @@ function SuggestedShapeTaxOwnersTable(props) {
       },
     }
   );
+
+  useEffect(() => {
+    console.log('dataShapeOwners', dataShapeOwners)
+  }, [dataShapeOwners])
+  useEffect(() => {
+    console.log('variablesShapeOwners', variablesShapeOwners)
+  }, [variablesShapeOwners])
 
   const [addOwnerToAShape, { data: shapeOwnerData }] = useMutation(ADD_OWNER_TOA_SHAPE);
 
@@ -135,6 +142,8 @@ function SuggestedShapeTaxOwnersTable(props) {
     const queryPoly = getPolygonString(props.customLayer?.shape)
 
     props.setLoading(true)
+    console.log('gg')
+
     getPaginatedShapeWellOwners({
       variables: {
         polygon: queryPoly,
@@ -186,6 +195,7 @@ function SuggestedShapeTaxOwnersTable(props) {
       setColumns(columns);
       props.setLoading(false);
     } else if (tableData?.edges?.length === 0) {
+      props.setRows([]);
       props.setLoading(false);
     }
   }, [tableData, props.dependencyUpdate]);
