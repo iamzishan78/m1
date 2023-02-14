@@ -38,6 +38,7 @@ function UnitInterestOwnersTable(props) {
         hit?.tags?.length > 0
           ? [[hit.tags.map(tag => tag.tag)], hit.tags.length]
           : [[], 0];
+      hit._id = hit?.contact?._id
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       hit.qualifier = hit?.shape?.shapeJson?.properties?.qualifier?.name;
       hit.reviewer = hit?.shape?.shapeJson?.properties?.reviewer?.name;
@@ -95,6 +96,7 @@ function UnitInterestOwnersTable(props) {
     // eslint-disable-next-line
   }, [searchInput, props.landSearchQuery, userGridViewSettings]);
 
+  console.log(classes.container)
   return (
     <Container
       maxWidth={false}

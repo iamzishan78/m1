@@ -24,10 +24,10 @@ const wellsColumnHeaders = [
     options: {
       ...GlobalStickyStyles({
         setCellProps: {
-          left: '125px',
+          left: '140px',
         },
         setCellHeaderProps: {
-          left: '125px',
+          left: '140px',
         }
       }),
       sort: true,
@@ -37,7 +37,6 @@ const wellsColumnHeaders = [
           fontWeight: GlobalStyles.font.boldFontWeight,
           color: GlobalStyles.colors.lightBlue,
           cursor: GlobalStyles.hyperlink.cursor,
-          position: "absolute",
           // left: '70px',
         };
         const globalWellId = tableMeta.rowData[0];

@@ -11,15 +11,7 @@ const UnitInterestsPageHeadCells = [
         label: 'Contact Name',
         esKey: 'contact.entityDetail.name.keyword',
         options: {
-            ...GlobalStickyStyles({
-                setCellProps: {
-                    left: '108.5px',
-                },
-                setCellHeaderProps: {
-                    left: '108.5px',
-                    paddingLeft: '0px'
-                },
-            }),
+            ...GlobalStickyStyles({}),
             sort: true,
             filter: true,
         },
