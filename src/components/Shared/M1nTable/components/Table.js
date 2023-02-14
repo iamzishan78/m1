@@ -131,10 +131,7 @@ import ReactSelectField from "./SubComponents/ReactSelectField";
 import TableBody from "./MUIDataTable/TableBody";
 import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOfferPrice";
 
-<<<<<<< HEAD
 import {Link} from 'react-router-dom';
-=======
->>>>>>> 2ffe9b48611c6db557985657815dc97fe92a3acb
 import Checkbox from '@material-ui/core/Checkbox';
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 
@@ -1966,12 +1963,7 @@ function SubTable(props) {
                             {splitNumber?.[0]
                               ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
                               : tableMeta?.rowData[2]}
-<<<<<<< HEAD
-                          </Box>
-                          </Link>
-=======
                           </Box> */}
->>>>>>> 2ffe9b48611c6db557985657815dc97fe92a3acb
                         </Grid>
                       </Grid>
                     </div>
