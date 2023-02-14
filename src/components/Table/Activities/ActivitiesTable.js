@@ -112,7 +112,7 @@ function ActivitiesTable(props) {
     props.setTableMeta({
       filters: [
         ...getFilters(appliedFilters),
-        { field: 'category.keyword', value: 'CRM' },
+        { field: 'category.keyword', value: 'CRM', includeEmpty: true },
         { field: 'type.keyword', value: 'Expiration', notInclude: true },
         { field: 'type.keyword', value: 'Option to Extend', notInclude: true }
       ],
