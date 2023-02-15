@@ -62,13 +62,6 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
   //   component: "ReportingGroups",
   //   hideSearch: true,
   // },
-  ADMIN_SETTINGS: {
-    featureFlag: "LANDMODULE",
-    title: "Admin Settings",
-    link: "/land/admin-settings",
-    component: "AdminSettings",
-    hideSearch: true,
-  },
 };
 
 export default function Land() {
