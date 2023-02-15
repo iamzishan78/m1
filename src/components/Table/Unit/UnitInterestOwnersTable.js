@@ -96,7 +96,6 @@ function UnitInterestOwnersTable(props) {
     // eslint-disable-next-line
   }, [searchInput, props.landSearchQuery, userGridViewSettings]);
 
-  console.log(classes.container)
   return (
     <Container
       maxWidth={false}
