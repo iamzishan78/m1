@@ -210,7 +210,7 @@ export default function MyWellDialog(props) {
       if (dataWell?.wellSummaryWithHeaderDetails)
         platformWellData = { ...dataWell.wellSummaryWithHeaderDetails }
       const { data: wellDataResp } = promises[1]
-      platformWellData = { ...platformWellData, ...get(wellDataResp, "myWellByGlobalId.myWell.wellData", {}), ...well }
+      platformWellData = { ...platformWellData, ...get(wellDataResp, "myWellByGlobalId.myWell.wellData", {}), ...well, ...get(wellDataResp, "myWellByGlobalId.myWell", {}) }
 
       platformWellData.permitApprovedDate = platformWellData.PermitDate
       platformWellData.spudDate = platformWellData.SpudDate
@@ -343,7 +343,7 @@ export default function MyWellDialog(props) {
                 )}
                 {activePanel === "Agreements" && (
                   // show agreements list here
-                  <Agreements platformWell={platformWell} agreements={get(myWellData, "myWellByGlobalId.myWell.shapes", [])} />
+                  <Agreements platformWell={platformWell} agreements={get(platformWell, "shapes", [])} />
                 )}
               </div>
             </div>
