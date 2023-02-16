@@ -1,11 +1,12 @@
 import React, { useContext, useState, useEffect, useCallback, useRef, useMemo, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useApolloClient, useLazyQuery } from "@apollo/client";
-import { Button, Tooltip, IconButton } from "@material-ui/core";
+import { Button, Tooltip, IconButton, TextField } from "@material-ui/core";
+import { Autocomplete } from "@material-ui/lab";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useHistory } from "react-router-dom";
-import { isEmpty } from "lodash";
+import { filter, isEmpty, unionWith, isEqual, uniqWith } from "lodash";
 
 import { AppContext } from "AppContext";
 
@@ -31,6 +32,7 @@ import { DrawerContext } from "components/Land/components/Agreements/detailCompo
 import moment from "moment";
 
 import GlobalSettings from "..//..//GlobalSettings.js";
+import { SimpleAutoCompleteFilter } from "./SimpleAutoComplete";
 
 
 export const TableESHOC = (Component) => {
@@ -327,35 +329,41 @@ export const TableESHOC = (Component) => {
                         ...column.options,
                         sortThirdClickReset: column.options.sort === false ? false : true,
                         filter: true,
-                        filterType: "custom",
                         filterList: undefined,
-                        customFilterListOptions: {
-                            render: v => v.map(l => l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l),
-                        },
-                        filterOptions: {
-                            display: (filterList, onChange, index, column) => {
-                                if (!TableHeader.find((el) => el.name === column.name) && tableMeta.customDataESKey) {
-                                    column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
-                                } else
-                                    column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
-
-                                if (!column.filterKey && column.esKey) column.filterKey = column.esKey
-                                return (
-                                    <AutoCompleteFilter
-                                        esIndex={esIndex}
-                                        filterList={filterList}
-                                        column={column}
-                                        index={index}
-                                        onChange={onChange}
-                                        query={GET_ES_SIMPLE_FILTER}
-                                        searchFields={tableMeta.searchFields}
-                                        filters={appliedFilters}
-                                        extendSearchQuery={extendSearchQuery}
-                                        custom={custom}
-                                    />
-                                );
+                        filterType: "custom",
+                            customFilterListOptions: {
+                                render: v => v.map(l => {
+                                    if(custom?.formatedFilterOptions?.length > 0){
+                                        return custom?.formatedFilterOptions.find(f => f.value === l)?.label || l
+                                    }
+                                    return l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l
+                                }),
                             },
-                        }
+                            filterOptions: {
+                                display: (filterList, onChange, index, column) => {
+                                    if (!TableHeader.find((el) => el.name === column.name) && tableMeta.customDataESKey) {
+                                        column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
+                                    } else
+                                        column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
+    
+                                    if (!column.filterKey && column.esKey) column.filterKey = column.esKey
+    
+                                    return (
+                                        <AutoCompleteFilter
+                                            esIndex={esIndex}
+                                            filterList={filterList}
+                                            column={column}
+                                            index={index}
+                                            onChange={onChange}
+                                            query={GET_ES_SIMPLE_FILTER}
+                                            searchFields={tableMeta.searchFields}
+                                            filters={appliedFilters}
+                                            extendSearchQuery={extendSearchQuery}
+                                            custom={custom}
+                                        />
+                                    );
+                                },
+                            }
                     };
                 } else {
                     column.options = {
@@ -531,10 +539,11 @@ export const TableESHOC = (Component) => {
                     }
                 })
             }
-            return filters
+            return uniqWith(filters, isEqual);
         }
 
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
+            debugger
             let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableState.searchText;
             if (props.useWildeCard)
                 searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
@@ -583,6 +592,12 @@ export const TableESHOC = (Component) => {
                 return { field: field, value: value }
             }
 
+            // temporary patch
+            if(tableState?.filterList?.[2]?.includes("Expiration") || tableState?.filterList?.[2]?.includes("Option to Extend")) {
+                tableState.filterList[2] = []
+            }
+            // Patch end
+
             tableState.filterList.forEach((val, index) => {
                 if (val.length > 0 && columns[index]) {
                     if (columns[index].custom?.isDate || columns[index].custom?.isDateTime) {
@@ -621,6 +636,7 @@ export const TableESHOC = (Component) => {
             if (tableState.polygon) {
                 pageESVariables.variables.filters.push(tableState.polygon)
             }
+
             return {
                 pageESVariables,
                 genericESAction: () => {
@@ -882,16 +898,14 @@ export const TableESHOC = (Component) => {
             // filter: true,
             searchText: tableMeta.extendSearchQuery || undefined,
             searchFields: tableMeta.searchFields,
-            customToolbar: (tableMeta.addBtnText || tableMeta.addableName || tableMeta.exportPx) ? () => {
+            customToolbar: (tableMeta.addBtnText || tableMeta.addableName || tableMeta?.downloadAll?.exportPx) ? () => {
                 return (
                     <>
-                        {tableMeta.exportPx && (
+                        {tableMeta?.downloadAll?.exportPx && (
                             <div style={{
                                 display: "inline",
-                                display: "inline",
-                                display: "inline",
                                 position: "absolute",
-                                right: tableMeta.exportPx,
+                                right: tableMeta?.downloadAll?.exportPx,
                             }}>
                                 <IconButton onClick={onDownload}>
                                     <Tooltip title="Download CSV" aria-label="add">

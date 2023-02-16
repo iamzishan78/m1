@@ -126,10 +126,6 @@ const Activities = () => {
     setTableFilters(filters);
   };
 
-
-
-
-
   let history = useHistory();
   const [getAllActivities, { data: activitiesData, loading: activitiesLoading }] = useLazyQuery(GETALLACTIVITIES, {
     fetchPolicy: `network-only`,
@@ -280,6 +276,9 @@ const Activities = () => {
                   filtersChange={filtersChange}
                   appliedFilters={appliedFilters}
                   filterToggle={filterToggle}
+                  activityFilterByType={activityFilterByType}
+                  activityFilterByTime={activityFilterByTime}
+                  activityFilterByOwner={activityFilterByOwner}
                   targetLabel={"activitiesDashboard"}
                   header="Activities"
                 />

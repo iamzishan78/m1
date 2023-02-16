@@ -99,3 +99,8 @@ export function customStartCaseString(str) {
     .map((s) => s[0] + s.substring(1).replace(/[A-Z]/g, (x) => `${x}`))
     .join(" ");
 }
+
+export function workspaceTenantName() {
+  const workspaceName = window.sessionStorage.getItem("tenantName");
+  return workspaceName === "localhost" ? "EnerX" : workspaceName;
+}

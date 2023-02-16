@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const AdminSettings = () => {
-  const settingsFor = useLocation().pathname.split('/')[1]
+  const settingsFor = useLocation().pathname.split("/")[2];
 
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState(menuOptions[0].value);
