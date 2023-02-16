@@ -1,13 +1,15 @@
 import React, { useContext, useState, useEffect, useCallback, useRef, useMemo, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useApolloClient, useLazyQuery } from "@apollo/client";
-import { Button, Tooltip, IconButton } from "@material-ui/core";
+import { Button, Tooltip, IconButton, TextField } from "@material-ui/core";
+import { Autocomplete } from "@material-ui/lab";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useHistory } from "react-router-dom";
-import { isEmpty } from "lodash";
+import { filter, isEmpty, unionWith, isEqual, uniqWith } from "lodash";
 
 import { AppContext } from "AppContext";
+// import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 import { copy, deepEqual, getSearchFields, setStateIfDeepEqual } from "components/Shared/functions";
 import { TAGSAMPLES } from "graphQL/useQueryTagSamples";
@@ -26,11 +28,12 @@ import { usetableStyles } from "./Styles";
 import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
 import { handleSelectedGridChange, setColumnDisplayAndFilter } from "./helpers";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
-import { findInFunction, formattingGridView, sortColumns } from "utils/helper";
+import { formattingGridView, sortColumns } from "utils/helper";
 import { DrawerContext } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import moment from "moment";
 
 import GlobalSettings from "..//..//GlobalSettings.js";
+import { SimpleAutoCompleteFilter } from "./SimpleAutoComplete";
 
 
 export const TableESHOC = (Component) => {
@@ -213,7 +216,13 @@ export const TableESHOC = (Component) => {
                 if (tableMeta.modifySelectedGridView) {
                     tableMeta.modifySelectedGridView(selectedGridView)
                 }
+
+                let searchQuery = tableMeta.extendSearchQuery || search;
+                if (props.useWildeCard)
+                    searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+
                 setPage(0)
+                setCurrentRowsLength(0)
                 setLoading(true);
                 getESSimpleSearch({
                     variables: {
@@ -223,7 +232,7 @@ export const TableESHOC = (Component) => {
                             after: null
                         },
                         search: {
-                            query: tableMeta.extendSearchQuery || search,
+                            query: searchQuery,
                             fields: tableMeta.searchFields,
                             advanceSearch: tableMeta.advanceSearch,
                         },
@@ -322,35 +331,41 @@ export const TableESHOC = (Component) => {
                         ...column.options,
                         sortThirdClickReset: column.options.sort === false ? false : true,
                         filter: true,
-                        filterType: "custom",
                         filterList: undefined,
-                        customFilterListOptions: {
-                            render: v => v.map(l => l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l),
-                        },
-                        filterOptions: {
-                            display: (filterList, onChange, index, column) => {
-                                if (!TableHeader.find((el) => el.name === column.name) && tableMeta.customDataESKey) {
-                                    column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
-                                } else
-                                    column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
-
-                                if (!column.filterKey && column.esKey) column.filterKey = column.esKey
-                                return (
-                                    <AutoCompleteFilter
-                                        esIndex={esIndex}
-                                        filterList={filterList}
-                                        column={column}
-                                        index={index}
-                                        onChange={onChange}
-                                        query={GET_ES_SIMPLE_FILTER}
-                                        searchFields={tableMeta.searchFields}
-                                        filters={appliedFilters}
-                                        extendSearchQuery={extendSearchQuery}
-                                        custom={custom}
-                                    />
-                                );
+                        filterType: "custom",
+                            customFilterListOptions: {
+                                render: v => v.map(l => {
+                                    if(custom?.formatedFilterOptions?.length > 0){
+                                        return custom?.formatedFilterOptions.find(f => f.value === l)?.label || l
+                                    }
+                                    return l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l
+                                }),
                             },
-                        }
+                            filterOptions: {
+                                display: (filterList, onChange, index, column) => {
+                                    if (!TableHeader.find((el) => el.name === column.name) && tableMeta.customDataESKey) {
+                                        column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
+                                    } else
+                                        column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
+    
+                                    if (!column.filterKey && column.esKey) column.filterKey = column.esKey
+    
+                                    return (
+                                        <AutoCompleteFilter
+                                            esIndex={esIndex}
+                                            filterList={filterList}
+                                            column={column}
+                                            index={index}
+                                            onChange={onChange}
+                                            query={GET_ES_SIMPLE_FILTER}
+                                            searchFields={tableMeta.searchFields}
+                                            filters={appliedFilters}
+                                            extendSearchQuery={extendSearchQuery}
+                                            custom={custom}
+                                        />
+                                    );
+                                },
+                            }
                     };
                 } else {
                     column.options = {
@@ -367,7 +382,9 @@ export const TableESHOC = (Component) => {
                     if (selectedGridView)
                         setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
                     let value
-                    if (Array.isArray(column.esKey)) value = get(allFilters.find((filter) => { return column.esKey.includes(filter.field) }), "value", "");
+                    if (column?.custom?.oRFilter) {
+                        value = get(allFilters.find(filtr => filtr.field.includes(column.esKey[0])), "value", "")
+                    } else if (Array.isArray(column.esKey)) value = get(allFilters.find((filter) => { return column.esKey.includes(filter.field) }), "value", "");
                     else value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
 
                     let filterList = Array.isArray(column.esKey) ? [] : [];
@@ -381,6 +398,8 @@ export const TableESHOC = (Component) => {
                                 value = moment(new Date(value)).format("MM/DD/YYYY HH:mm:ss.SSS")
                         }
                         filterList = [value];
+                    } else if (Array.isArray(value)) {
+                        filterList = value.filter(v => v)
                     }
                     // if (column?.options?.filter) {
                     column.options.filterList = filterList;
@@ -513,7 +532,9 @@ export const TableESHOC = (Component) => {
             // const filterHistory = {}
             if (esFilter) {
                 esFilter.forEach((filter) => {
-                    if (typeof filter?.field === 'string') {
+                    if (filter?.oRFilter) {
+                        filters.push({ field: Array.isArray(filter.field) ? JSON.stringify(filter.field) : filter.field, value: filter.value, oRFilter: filter?.oRFilter })
+                    } else if (typeof filter?.field === 'string') {
                         // if (!filterHistory[filter.field])
                         filters.push(filter)
                         // filterHistory[filter.field] = true
@@ -526,15 +547,20 @@ export const TableESHOC = (Component) => {
                     }
                 })
             }
-            return filters
+            return uniqWith(filters, isEqual);
         }
 
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
+            debugger
+            let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableState.searchText;
+            if (props.useWildeCard)
+                searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+
             let pageESVariables = {
                 variables: {
                     index: tableMeta.esIndex,
                     search: {
-                        query: typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableState.searchText,
+                        query: searchQuery,
                         fields: tableMeta.searchFields,
                         advanceSearch: tableMeta.advanceSearch,
                     },
@@ -560,7 +586,7 @@ export const TableESHOC = (Component) => {
                 },
             };
 
-            const manageAppliedFilter = (value, index) => {
+            const manageAppliedFilter = (value, index, oRFilter) => {
                 const gridViewfilters = selectedGridView.filters
                 const gridViewEsKey = gridViewfilters && gridViewfilters.find(filter => filter.value === value)?.field
 
@@ -571,19 +597,26 @@ export const TableESHOC = (Component) => {
                 else if (Array.isArray(columnEsKey) && gridViewEsKey) field = gridViewEsKey
                 else field = columnEsKey
 
-                return { field: field, value: value }
+                return { field: field, value: value, oRFilter }
             }
 
+            // temporary patch
+            if(tableState?.filterList?.[2]?.includes("Expiration") || tableState?.filterList?.[2]?.includes("Option to Extend")) {
+                tableState.filterList[2] = []
+            }
+            // Patch end
+
             tableState.filterList.forEach((val, index) => {
+                const oRFilter = columns[index]?.custom?.oRFilter
                 if (val.length > 0 && columns[index]) {
                     if (columns[index].custom?.isDate || columns[index].custom?.isDateTime) {
                         const filterData = stateApp.filtersData[columns[index].name];
                         if (filterData) {
                             const data = filterData.find(f => f.key === val[0] || f.key_as_string === val[0])
-                            pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
+                            pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string, oRFilter });
                         }
                     } else if (columns[index].custom?.filterOptions?.length > 0) {
-                        pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0] })
+                        pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0], oRFilter })
                     } else if (columns[index].custom?.formatedFilterOptions?.length > 0) {
                         let value = val[0];
                         const filterData = columns[index].custom?.formatedFilterOptions;
@@ -591,14 +624,14 @@ export const TableESHOC = (Component) => {
                         if (data) {
                             value = data.value
                         }
-                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value })
+                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value, oRFilter })
                     } else if (columns[index].custom?.formatedFilterOptions?.length > 0 && columns[index].custom?.isPurchased) {
                         let value = val[0];
                         const filterData = columns[index].custom?.formatedFilterOptions;
                         const data = filterData.find(f => f.label === value)
-                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string })
+                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string, oRFilter })
                     } else {
-                        pageESVariables.variables.filters.push(manageAppliedFilter(val[0], index))
+                        pageESVariables.variables.filters.push(manageAppliedFilter(val[0], index, oRFilter))
                     }
 
                 }
@@ -612,6 +645,7 @@ export const TableESHOC = (Component) => {
             if (tableState.polygon) {
                 pageESVariables.variables.filters.push(tableState.polygon)
             }
+
             return {
                 pageESVariables,
                 genericESAction: () => {
@@ -677,13 +711,13 @@ export const TableESHOC = (Component) => {
 
         const getCSVData = (data, sampleCsv) => {
             let csv = ''
-            for(let i=0; i<sampleCsv.length; i++){
-                csv = `${i !==0 ? csv+',': ''}${sampleCsv[i].label}`
+            for (let i = 0; i < sampleCsv.length; i++) {
+                csv = `${i !== 0 ? csv + ',' : ''}${sampleCsv[i].label}`
             }
             csv = `${csv}\n`;
-        
-            for(let i=0; i<data?.length; i++){
-                for(let j=0; j<sampleCsv.length; j++){
+
+            for (let i = 0; i < data?.length; i++) {
+                for (let j = 0; j < sampleCsv.length; j++) {
                     let updatedData = get(data[i], sampleCsv[j].name, '')
                     if(typeof updatedData === 'string'){
                         updatedData = updatedData.replace(/(?:\r\n|\r|\n)/g, ' ')
@@ -697,7 +731,7 @@ export const TableESHOC = (Component) => {
                         const data = updatedData.map(d => d).toString().replace(/,/g,' ')
                         updatedData = data
                     }
-                    csv = `${j !==0 ? csv+',': csv}${updatedData}`
+                    csv = `${j !== 0 ? csv + ',' : csv}${updatedData}`
                 }
                 csv = `${csv}\n`;
             }
@@ -705,11 +739,15 @@ export const TableESHOC = (Component) => {
         }
 
         const onDownload = async () => {
+            let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
+            if (props.useWildeCard)
+                searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+
             const pageESVariables = {
                 variables: {
                     index: tableMeta.esIndex,
                     search: {
-                        query: typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText,
+                        query: searchQuery,
                         fields: tableMeta.searchFields,
                         advanceSearch: tableMeta.advanceSearch,
                     },
@@ -741,7 +779,7 @@ export const TableESHOC = (Component) => {
                 },
                 query: GET_ES_SIMPLE_SEARCH,
             });
-            
+
             const hits = tableMeta.formatHits(copy(allSelectedRows.data.getESSimpleSearch.hits))
             const csvData = getCSVData(hits, tableStateRef.current.columns.filter( c => c.display !== false && c.display !== "false"  && c.label !== " "))
 
@@ -761,13 +799,14 @@ export const TableESHOC = (Component) => {
             tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
             const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch, selectedGridView)
             activeSearchRef.current = tableActions.pageESVariables.variables.search;
-            activeFiltersRef.current = handleMultiFieldFilter(tableActions.pageESVariables.variables.filters.concat(tableMeta.filters));
+            const existingFilter = tableMeta.filters ? tableMeta.filters : []
+            activeFiltersRef.current = handleMultiFieldFilter(existingFilter.concat(tableActions.pageESVariables.variables.filters));
             selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
             tableStateRef.current = tableState
 
 
             if (action === 'filterChange' && tableMeta.setAppliedFilters) {
-                // tableMeta.setAppliedFilters(activeFiltersRef.current);
+                tableMeta.setAppliedFilters(activeFiltersRef.current);
             }
             if (['filterChange', 'resetFilters'].includes(action)) {
                 if (isFiniteScroll) {
@@ -802,13 +841,21 @@ export const TableESHOC = (Component) => {
 
                             for (let i = 0; i < total; i++) { rowsSelected.push(isSelectAll ? i : tableState.selectedRows.data[i].index) }
 
+                            let selectAll = true
                             if (!allRowsSelected || allRowsSelected?.length === 0 || total !== tableState.count)
                                 setAllRowsSelected(rowsSelected)
                             else {
+                                selectAll = false
                                 tableState.selectedRows.data = []
                                 setAllRowsSelected([])
                             }
                             const pageESVariables = copy(tableActions.pageESVariables)
+
+                            let searchQuery = pageESVariables?.search?.query
+                            if (props.useWildeCard)
+                                searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+                            if (pageESVariables?.search?.query) pageESVariables.search.query = searchQuery
+
                             pageESVariables.variables.pagination = {
                                 first: total,
                                 after: null,
@@ -818,8 +865,34 @@ export const TableESHOC = (Component) => {
                                 query: GET_ES_SIMPLE_SEARCH,
                             });
 
-                            tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
-                            meta.setSelectedRows(allSelectedRows?.data?.getESSimpleSearch.hits)
+                            if (selectAll) {
+                                const pageESVariables = copy(tableActions.pageESVariables)
+                                tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
+
+                                let selectedData = []
+                                let max = 10000
+                                let iter = 0
+
+                                do {
+                                    const remainingTotal = total - max * iter
+                                    const first = remainingTotal > max ? max : remainingTotal
+                                    iter += 1
+
+                                    pageESVariables.variables.pagination = {
+                                        first,
+                                        after: selectedData[selectedData.length - 1]?.sort,
+                                    }
+
+                                    const allSelectedRows = await client.query({
+                                        ...pageESVariables,
+                                        query: GET_ES_SIMPLE_SEARCH,
+                                    });
+                                    const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
+                                    selectedData = [...selectedData, ...hits]
+                                } while (iter * max < total);
+
+                                meta.setSelectedRows(selectedData)
+                            }
                         } else {
                             if (meta?._selectedRows?.length > 0)
                                 meta.setSelectedRows([])
@@ -867,15 +940,15 @@ export const TableESHOC = (Component) => {
             // filter: true,
             searchText: tableMeta.extendSearchQuery || undefined,
             searchFields: tableMeta.searchFields,
-            customToolbar: (tableMeta.addBtnText || tableMeta.addableName || tableMeta.exportPx) ? () => {
+            customToolbar: (tableMeta.addBtnText || tableMeta.addableName || tableMeta?.downloadAll?.exportPx) ? () => {
                 return (
                     <>
-                        {tableMeta.exportPx && (
-                            <div style={{ 
-                                    display: "inline", 
-                                    position: "absolute",
-                                    right: tableMeta.exportPx,
-                                }}>
+                        {tableMeta?.downloadAll?.exportPx && (
+                            <div style={{
+                                display: "inline",
+                                position: "absolute",
+                                right: tableMeta?.downloadAll?.exportPx,
+                            }}>
                                 <IconButton onClick={onDownload}>
                                     <Tooltip title="Download CSV" aria-label="add">
                                         <CloudDownloadIcon />

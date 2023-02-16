@@ -143,7 +143,7 @@ const TableSelectCell = ({
 
                 {
                     components.showRowNumber &&
-                    <div style={{ color: 'rgb(149, 149, 149)', paddingLeft: '20px', paddingRight: '10px' }}>
+                    <div className='table-row-number' style={{ color: 'rgb(149, 149, 149)', paddingLeft: '20px', paddingRight: '20px', width: '63px', maxWidth: '63px' }}>
                         {dataIndex + 1}
                     </div>
                 }

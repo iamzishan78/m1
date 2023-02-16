@@ -344,7 +344,7 @@ export default function M1neralHeaders() {
           </TableContainer>
         </Paper>
 
-        {['AGREEMENT_HEADER', 'SHAPE_TO_M1_LAYER'].includes(stateApp.jobType) ?
+        {['AGREEMENT_HEADER', 'SHAPE_TO_M1_LAYER', 'UNITS'].includes(stateApp.jobType) ?
           (
             <>
               <div style={{ ...medium_text, ...padding_div_top }}>
@@ -367,9 +367,12 @@ export default function M1neralHeaders() {
                 </Select>
               </div>
 
-              <div style={{ ...text_grey }}>
-                *Note: Existing agreements will be matched on M1neral ID or Agreement Number
-              </div>
+              {stateApp.jobType !== 'UNITS' && (
+                <div style={{ ...text_grey }}>
+                  *Note: Existing agreements will be matched on M1neral ID or Agreement Number
+                </div>
+              )}
+
             </>
 
           ) : ['AGREEMENT_PROVISIONS'].includes(stateApp.jobType) ? (

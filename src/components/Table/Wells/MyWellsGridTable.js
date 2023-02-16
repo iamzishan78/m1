@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { Container } from "@material-ui/core";
-import { debounce, get, startCase } from "lodash";
+import { debounce, get } from "lodash";
 
 // context
 import { AppContext } from "AppContext";
@@ -41,6 +41,10 @@ function MyWellsGridTable(props) {
     });
     // eslint-disable-next-line
   }, [stateApp.landSearchQuery, props.filters]);
+
+  useEffect(() => {
+    props.setSelectedWell(props.clickedRow)
+  },[props.clickedRow])
 
   const setTableMeta = React.useMemo(
     () =>
