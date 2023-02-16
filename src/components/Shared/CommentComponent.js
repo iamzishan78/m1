@@ -34,17 +34,25 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiFormControl-marginDense": {
       margin: "0px !important",
     },
-    display:'flex',
-    flexDirection:'column',
-    justifyContent:'space-between',
-    /*minHeight: "200px",*/
     height: "100%",
+    minHeight: "200px",
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end'
   },
   comment: ({ commentsHeight }) => ({
     position: "relative",
     overflow: "auto",
     padding: "14px 0px",
-    maxHeight: "calc(100vh - 1120px)",
+
+    '& *': {
+      overflowAnchor: 'none'
+    },
+
+    '& #checkIf': {
+      overflowAnchor: 'auto',
+      height: '1px'
+    }
   }),
   hideMenuIcon: {
     visibility: "hidden",
@@ -377,12 +385,14 @@ export default function CommentComponent(props) {
   };
 
   useEffect(() => {
-    if (commentsArray?.length > 0 && scrollIntoView)
+    if (commentsArray?.length > 0 && scrollIntoView){
+      debugger
       commentContainerRef?.current?.scrollIntoView({
         behavior: "smooth",
         block: "start",
         inline: "start",
       });
+    }
   }, [commentsArray, scrollIntoView]);
 
   const addNewComment = (value) => {
@@ -433,8 +443,7 @@ export default function CommentComponent(props) {
   };
 
   return (
-    // <SizeMe>
-    //   {({ size }) => (
+    <>
         <div className={classes.container}>
           <div className={classes.comment} id="commentsContainer" onClick={(e)=>{
             setIsMinimize(false);
@@ -570,7 +579,7 @@ export default function CommentComponent(props) {
                 backgroundColor: "#F6F8F9",
               }}
             >
-              <Grid container>
+              <Grid container alignItems="center">
                 <Grid item style={{ maxWidth: "55px" }}>
                   <IconButton
                     className={classes.commentView}
@@ -580,8 +589,7 @@ export default function CommentComponent(props) {
                   </IconButton>
                 </Grid>
                 <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
-                  {/*<SizeMe>*/}
-                  {/*  {({ size }) => (*/}
+                  <>
                       <div
                         className={classes.border}
                         // style={{ paddingBottom: "20px" }}
@@ -614,15 +622,13 @@ export default function CommentComponent(props) {
                         // fieldWidth={`${size - 23}px`}
                         />
                       </div>
-                  {/*  )}*/}
-                  {/*</SizeMe>*/}
+                  </>
                 </Grid>
               </Grid>
             </div>
           {/*)}*/}
         </div>
-    //   )}
-    // </SizeMe>
+    </>
   );
 }
 

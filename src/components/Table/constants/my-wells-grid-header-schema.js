@@ -20,11 +20,11 @@ const wellsColumnHeaders = [
     options: {
       ...GlobalStickyStyles({
         setCellProps: {
-          left: "125px",
+          left: '138px',
         },
         setCellHeaderProps: {
-          left: "125px",
-        },
+          left: '138px',
+        }
       }),
       sort: true,
       filter: true,

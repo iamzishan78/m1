@@ -25,7 +25,27 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
   multiple,
   ...others
 }) {
-  const filterValue = multiple ? filterList[index].map((key) => ({ key })) : { key: filterList[index][0] };
+  const getDefaultSearchValue = () => {
+    if(custom?.formatedFilterOptions){
+      const find = custom.formatedFilterOptions.find(op => op.value === filterList[index][0]);
+
+      if(find) return find.label 
+    }
+
+    return filterList[index][0]
+  }
+
+  const getDefaltValue = () => {
+    let filterValue = multiple ? filterList[index].map((key) => ({ key })) : { key: filterList[index][0] };
+
+    if(custom?.formatedFilterOptions){
+      filterValue = custom?.formatedFilterOptions.find(f => f.value === filterValue.key) || filterValue;
+    }
+
+    return filterValue
+  }
+
+  const filterValue = getDefaltValue();
   const [open, setOpen] = useState(false);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [options, setOptions] = useState([]);
@@ -101,6 +121,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
             }
           }
           setOptions(hits);
+          setSearch(getDefaultSearchValue());
         } else {
           setOptions(filtersData[keys[0]].hits);
         }

@@ -774,16 +774,18 @@ function SubTable(props) {
     });
   }
 
-  const handleClickFlyToIcon = (entityType, searchTarget) => {
+  const handleClickFlyToIcon = (entityType, searchTarget, unmount = false) => {
     if (!searchTarget) return;
 
     if (entityType === "well") {
       handleWellFlyTo(searchTarget);
     }
     if (entityType === "owner") {
+      unmount = false
       handleOwnerFlyTo(searchTarget);
     }
     if (entityType === "operator") {
+      unmount = false
       handleOperatorFlyTo(searchTarget);
     }
     if (entityType === "lease") {
@@ -795,6 +797,9 @@ function SubTable(props) {
     if (entityType === "unit") {
       handleUnitFlyTo(searchTarget);
     }
+
+    if (unmount)
+      dispatch(setMapGridCardState({ mapGridCardActivated: false }));
   };
 
   const registerSearchHandler = (handleSearch) => {
@@ -933,6 +938,8 @@ function SubTable(props) {
           wellListFromSearch: [],
         }));
       }
+      // unmount
+      dispatch(setMapGridCardState({ mapGridCardActivated: false }));
     }
   }, [dataOwnerWells]);
 
@@ -970,6 +977,8 @@ function SubTable(props) {
           wellListFromSearch: [],
         }));
       }
+      // unmount
+      dispatch(setMapGridCardState({ mapGridCardActivated: false }));
     }
   }, [dataOperatorWells]);
 
@@ -1352,6 +1361,9 @@ function SubTable(props) {
                   if (props.targetLabel === "unit") {
                     const targetSourceId = tableMeta.rowData[0];
                     const commentValue = tableMeta.rowData[20];
+
+                    const path = `/${column.label === 'Contact Name' ? 'contact/details' : 'map/units'}/${tableMeta.rowData[0]}`
+
                     return (
                       <div
                         style={{
@@ -1370,13 +1382,15 @@ function SubTable(props) {
                             }}
                           >
                             <ColumnWithLink
-                              value={tableMeta?.rowData[2]}
-                              link={`/map/units/${tableMeta.rowData[0]}`}
+                              value={tableMeta?.rowData[column.label === 'Contact Name' ? 1 : 2]}
+                              link={`${path}`}
                             />
                           </Grid>
-                          <Grid item>
-                            <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
-                          </Grid>
+                          {column.label !== 'Contact Name' &&
+                            <Grid item>
+                              <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
+                            </Grid>
+                          }
                         </Grid>
                       </div>
                     );
@@ -4570,7 +4584,7 @@ function SubTable(props) {
             TableViewCol: CustomTableViewCol,
 
 
-            TableFilterList: (props.header === "Tax Roll Ownership" || props.parent === "potentialOwnersPerUnit") && !isSearchOpen ? TableFilterList : null,
+            TableFilterList: props?.component?.TableFilterList || ((props.header === "Tax Roll Ownership" || props.parent === "potentialOwnersPerUnit") && !isSearchOpen ? TableFilterList : null),
             icons: {
               FilterIcon,
               ViewColumnIcon,
