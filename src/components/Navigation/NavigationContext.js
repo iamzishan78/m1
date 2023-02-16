@@ -18,6 +18,7 @@ const initialValue = {
   selectedMenuIndexContacts: 0,
   selectedMenuIndexAnalytics: 0,
   selectedMenuIndexStudio: 0,
+  selectedMenuIndexAdmin: 0,
   totalFilterCount: 0,
   filterTVD: null,
   filterLateralLength: null,
