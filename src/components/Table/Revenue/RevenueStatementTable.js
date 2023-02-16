@@ -77,6 +77,7 @@ function RevenueStatementTable(props) {
       startPaginationAt: 50,
       defaultSort: { field: "checkDate", order: "desc" },
       formatHits,
+      exportPx: "121px",
       initializeGenericData: { key: "_id", actions: genericDataActions },
     });
   }, [setTableMeta, formatHits, revenueSearchQuery, filterToggle]);

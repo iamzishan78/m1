@@ -719,13 +719,17 @@ export const TableESHOC = (Component) => {
             for (let i = 0; i < data?.length; i++) {
                 for (let j = 0; j < sampleCsv.length; j++) {
                     let updatedData = get(data[i], sampleCsv[j].name, '')
-                    if (typeof updatedData === 'string') {
-                        if (typeof updatedData === 'string' && updatedData?.includes(',')) {
-                            updatedData = updatedData.replace(',', ' ')
+                    if(typeof updatedData === 'string'){
+                        updatedData = updatedData.replace(/(?:\r\n|\r|\n)/g, ' ')
+                        if(typeof updatedData === 'string' && updatedData?.includes(',')){
+                            updatedData = updatedData.replace(/,/g,' ')
                         }
-                    } else if (sampleCsv[j].name === 'tags' && Array.isArray(updatedData)) {
-                        const tags = updatedData[0].map(d => d).toString().replace(',', ' ')
+                    }else if(sampleCsv[j].name === 'tags' && Array.isArray(updatedData) ){
+                        const tags = updatedData[0].map(d => d).toString().replace(/,/g,' ')
                         updatedData = tags
+                    }else if(Array.isArray(updatedData)){
+                        const data = updatedData.map(d => d).toString().replace(/,/g,' ')
+                        updatedData = data
                     }
                     csv = `${j !== 0 ? csv + ',' : csv}${updatedData}`
                 }
@@ -777,7 +781,7 @@ export const TableESHOC = (Component) => {
             });
 
             const hits = tableMeta.formatHits(copy(allSelectedRows.data.getESSimpleSearch.hits))
-            const csvData = getCSVData(hits, columns.filter(c => c.options.display !== false && c.label !== " "))
+            const csvData = getCSVData(hits, tableStateRef.current.columns.filter( c => c.display !== false && c.display !== "false"  && c.label !== " "))
 
             var blob = new Blob([csvData]);
             var url = URL.createObjectURL(blob);
@@ -970,7 +974,11 @@ export const TableESHOC = (Component) => {
                                         <Button
                                             color="secondary"
                                             className={classes.multiSelectionTopBarButtons}
-                                            onClick={() => { setAddToTable('add'); setClickedRow(null) }}
+                                            onClick={() => { 
+                                                if(tableMeta.onClickAdd) tableMeta.onClickAdd()
+                                                setAddToTable('add'); 
+                                                setClickedRow(null) 
+                                            }}
                                         >
                                             {tableMeta.addBtnText ?
                                                 `+ ADD ${tableMeta.addBtnText}` :
@@ -1085,6 +1093,8 @@ export const TableESHOC = (Component) => {
 
                     allRowsSelected={allRowsSelected}
                     setAllRowsSelected={setAllRowsSelected}
+
+                    onDownload={onDownload}
                 />
             </span>
         );

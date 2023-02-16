@@ -84,6 +84,7 @@ function TractInterestTable(props) {
       ],
 
       defaultSort: { field: '_ts', order: 'desc' },
+      exportPx: props.parent === "TractInterestsTable" ? "121px" : undefined,
       polygon: stateApp?.currentFeature?.geometry && {
         type: "geo_intersects",
         field: "geoJSON",

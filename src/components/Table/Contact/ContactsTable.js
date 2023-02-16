@@ -36,11 +36,16 @@ const useStyles = makeStyles((theme) => ({
       display: "flex",
       flexDirection: "row-reverse",
     },
+    "& .MuiToolbar-regular > div:nth-child(2) > button:nth-child(1)": {
+      marginRight: "111px",
+      position: 'absolute'
+    },
     "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(1)": {
       marginRight: "52px",
     },
     "& .MuiToolbar-regular > div:nth-child(2) > span:nth-child(2)": {
-      marginRight: "-104px",
+      marginRight: "54px",
+      position: "absolute"
     },
     "& .MuiToolbar-regular > div:nth-child(1)": {
       minWidth: "400px",
@@ -349,6 +354,7 @@ function ContactsTable(props) {
             esIndex: esIndex,
             open: true
           }}
+          onDownload={props.onDownload}
           {...props.esHocProps}
         />
       </Container>

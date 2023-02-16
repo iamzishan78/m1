@@ -3864,7 +3864,7 @@ function SubTable(props) {
           <div
             style={
               props.addAble?.type === "contact" ? {
-                marginRight: "67px",
+                marginRight: "105px",
                 marginTop: "5px",
               } : {
                 display: "inline",
@@ -3942,6 +3942,15 @@ function SubTable(props) {
               </ButtonGroup>
             )}
 
+            {props.addAble?.type === "contact" && (
+              <div style={{ display: "inline", position: "absolute", right: "120px", top: "5px" }}>
+                <IconButton onClick={props.onDownload}>
+                    <Tooltip title="Download CSV" aria-label="add">
+                      <CloudDownloadIcon />
+                    </Tooltip>
+                </IconButton>
+              </div>
+            )}
             {props.addAble?.type === "contact" && (
               <>
                 <FeatureFlag feature={FEATURES.IDICORE}>
@@ -4390,11 +4399,14 @@ function SubTable(props) {
     || props.header === "Activities"
     || props.header === "Agreements"
     || props.header === "Tracts"
+    || props.header === "Campaigns"
     || props.header === "Exhibit A"
     || props.parent === "UnitsTable"
     || props.parent === "TractTable"
     || props.parent === "WellsTable"
+    || props.parent === "Contacts"
     || props.parent === "TractInterestsTable"
+    || props.parent === "RevenuePropertiesTable"
   ) {
     // adds the print and export options in the Flow grid and the Activities grid
     if (props.targetLabel !== 'activitiesDashboard') {
