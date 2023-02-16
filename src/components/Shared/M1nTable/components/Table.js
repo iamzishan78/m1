@@ -4586,7 +4586,7 @@ function SubTable(props) {
             TableViewCol: CustomTableViewCol,
 
 
-            TableFilterList: (props.header === "Tax Roll Ownership" || props.parent === "potentialOwnersPerUnit") && !isSearchOpen ? TableFilterList : null,
+            TableFilterList: props?.component?.TableFilterList || ((props.header === "Tax Roll Ownership" || props.parent === "potentialOwnersPerUnit") && !isSearchOpen ? TableFilterList : null),
             icons: {
               FilterIcon,
               ViewColumnIcon,
