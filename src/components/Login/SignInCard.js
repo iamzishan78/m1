@@ -290,7 +290,7 @@ const SignInCard = (props) => {
           color: "#fff",
         }}
       >
-        © 2022 M1neral, LLC. All Rights Reserved.
+        © 2023 M1neral, LLC. All Rights Reserved.
       </div>
 
       <div className={classes.termsAndPrivacy}>
