@@ -44,8 +44,6 @@ export const useStyles = makeStyles((theme) => ({
     "& .MuiOutlinedInput-root": {
       height: `46px !important`,
       borderRadius: "6px !important",
-      paddingTop: `0 !important`,
-      paddingBottom: `0 !important`,
     },
   },
   gridStyle: {
@@ -83,13 +81,13 @@ export const useStyles = makeStyles((theme) => ({
     },
   },
   infoSection: {
-    flex:'1',
-    minWidth:'540px',
+    flex: '1',
+    minWidth: '540px',
   },
   mapSection: {
     height: "382px",
-    minWidth:'540px',
-    flex:'1',
+    minWidth: '540px',
+    flex: '1',
     margin: "10px 0px 0px 0px",
   },
   adornmentAutocomplete: {

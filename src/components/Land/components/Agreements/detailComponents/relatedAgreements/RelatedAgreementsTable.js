@@ -24,7 +24,7 @@ import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/a
 import { get } from "lodash";
 import AddNewRelatedAgreementDialog from "./AddNewRelatedAgreementDialog";
 
-function AgreementOwnersTractsTable(props) {
+function RelatedAgreementsTable(props) {
   const classes = usetableStyles();
   const [isDeletePopup, setDeletePopup] = useState(false);
   const [selectedRow, selectRow] = useState([]);
@@ -175,4 +175,4 @@ function AgreementOwnersTractsTable(props) {
   );
 }
 
-export default React.memo(TableESHOC(AgreementOwnersTractsTable), deepEqualObjects);
+export default React.memo(TableESHOC(RelatedAgreementsTable), deepEqualObjects);

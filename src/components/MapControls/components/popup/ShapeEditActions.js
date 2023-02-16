@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { copy } from "utils/helper";
-import { bbox, bboxPolygon } from "@turf/turf";
 import IconButton from "@material-ui/core/IconButton";
 
 import { default as DrawPoly } from "components/Shared/svgIcons/polygon";
 import HighlightAltIcon from "components/Shared/svgIcons/highlightAlt";
-import AutorenewIcon from "@material-ui/icons/Autorenew";
 import AspectRatioIcon from "@material-ui/icons/AspectRatio";
 import Tooltip from "@material-ui/core/Tooltip";
 
@@ -135,7 +133,7 @@ export default function ShapeEditActions({ shapeEdit, shapeEditMode, actionFullE
 
       <Tooltip title="Resize Shape">
         <IconButton size="small" aria-label="Resize Shape" onClick={() => onPreciseEdit(_shapeEditMode !== "resize" ? "resize" : "")}>
-          <AspectRatioIcon  color="secondary" className={_shapeEditMode === "resize" ? "selected" : ""} />
+          <AspectRatioIcon color="secondary" className={_shapeEditMode === "resize" ? "selected" : ""} />
         </IconButton>
       </Tooltip>
 
