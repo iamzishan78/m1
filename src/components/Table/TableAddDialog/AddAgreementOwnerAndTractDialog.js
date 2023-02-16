@@ -155,7 +155,7 @@ function AddAgreementOwnerAndTractDialog(props) {
   useEffect(() => {
     if (isNewTract) {
       const form = getValues();
-      form.tract = { tractName: form.tract.tractName, state };
+      form.tract = { tractName: form.tract?.tractName, state };
       reset(form);
     }
   }, [state]);
