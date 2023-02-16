@@ -821,9 +821,11 @@ export const TableESHOC = (Component) => {
 
                             for (let i = 0; i < total; i++) { rowsSelected.push(isSelectAll ? i : tableState.selectedRows.data[i].index) }
 
+                            let selectAll = true
                             if (!allRowsSelected || allRowsSelected?.length === 0 || total !== tableState.count)
                                 setAllRowsSelected(rowsSelected)
                             else {
+                                selectAll = false
                                 tableState.selectedRows.data = []
                                 setAllRowsSelected([])
                             }
@@ -843,8 +845,34 @@ export const TableESHOC = (Component) => {
                                 query: GET_ES_SIMPLE_SEARCH,
                             });
 
-                            tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
-                            meta.setSelectedRows(allSelectedRows?.data?.getESSimpleSearch.hits)
+                            if (selectAll) {
+                                const pageESVariables = copy(tableActions.pageESVariables)
+                                tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
+
+                                let selectedData = []
+                                let max = 10000
+                                let iter = 0
+
+                                do {
+                                    const remainingTotal = total - max * iter
+                                    const first = remainingTotal > max ? max : remainingTotal
+                                    iter += 1
+
+                                    pageESVariables.variables.pagination = {
+                                        first,
+                                        after: selectedData[selectedData.length - 1]?.sort,
+                                    }
+
+                                    const allSelectedRows = await client.query({
+                                        ...pageESVariables,
+                                        query: GET_ES_SIMPLE_SEARCH,
+                                    });
+                                    const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
+                                    selectedData = [...selectedData, ...hits]
+                                } while (iter * max < total);
+
+                                meta.setSelectedRows(selectedData)
+                            }
                         } else {
                             if (meta?._selectedRows?.length > 0)
                                 meta.setSelectedRows([])

@@ -168,6 +168,7 @@ function ContactsTable(props) {
       defaultSort: { field: "lastUpdateAt", order: "desc", unmapped_type: 'date' },
       formatHits,
       initializeGenericData: { key: "id", actions: genericDataActions },
+      isSelectedAllAllowed: true,
     });
     // eslint-disable-next-line
   }, [props.contactSearchQuery, props.customAppliedFilters]);
