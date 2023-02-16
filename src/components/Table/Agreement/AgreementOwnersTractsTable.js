@@ -25,13 +25,14 @@ import _ from "lodash";
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
   const [drawerContainer, setDrawerContainer] = useState(null);
-  const [selectredTract, setSelectredTract] = useState(props.clickedRow)
+  const [selectredTract, setSelectredTract] = useState(props.clickedRow);
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
   useEffect(() => {
     setSelectredTract(props.clickedRow)
   }, [props.clickedRow])
-  
-  
+
+
   const [drawer, setDrawer] = useContext(DrawerContext);
   useEffect(() => {
     if (props.portal) {
@@ -42,8 +43,6 @@ function AgreementOwnersTractsTable(props) {
       }
     }
   }, [props.portal])
-
-  const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
@@ -72,7 +71,13 @@ function AgreementOwnersTractsTable(props) {
       props.setLoading(true);
       updateShapeOwners({
         variables: {
-          shapeOwners: ids.map((_id) => ({ _id, isDeleted: true, shapeId: props.customLayer?._id })),
+          shapeType: 'Agreement',
+          shapeOwners: ids.map((_id, i) => ({ 
+            _id, isDeleted: true, 
+            shapeId: props.customLayer?._id, 
+            relatedObject: props.rows.find(r => r._id === ids[i])?.contact?._id,
+            tract: { ...props.rows.find(r => r._id === ids[i])?.tract, isDeleted: true } 
+          })),
         },
         refetchQueries: ["getCustomLayer", "getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
         awaitRefetchQueries: true
@@ -150,14 +155,17 @@ function AgreementOwnersTractsTable(props) {
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       {drawer === "tract" && (
         <AddAgreementOwnerAndTractDialog
-          open={props.addToTable}
+          open
           width="450px"
           shapeId={props.customLayer._id}
           layerType={props.customLayer.layer}
           shapeType={props.shapeType}
           seletedOwner={selectredTract}
           deleteFunc={deleteFunc}
-          onClose={() => setDrawer(null)}
+          onClose={() => {
+            setDrawer(null)
+            setSelectredTract(null)
+          }}
           drawerContainer={drawerContainer}
         />
       )}
