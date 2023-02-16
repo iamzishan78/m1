@@ -165,7 +165,7 @@ export const GlobalStickyStyles = ({ setCellProps = {}, setCellHeaderProps = {} 
         maxWidth: "450px",
         minWidth: setCellProps?.maxWidth || "450px",
         position: "sticky",
-        paddingLeft: '35px',
+        // paddingLeft: '35px',
         zIndex: 201,
         left: "108px",
         ...setCellHeaderProps,

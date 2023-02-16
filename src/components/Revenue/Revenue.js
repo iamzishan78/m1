@@ -18,6 +18,11 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     link: "/revenue/statements",
     component: "RevenueStatements",
   },
+  REVENUE_ANALYTICS: {
+    title: "Revenue Analytics",
+    link: "/revenue/analytics",
+    component: "RevenueAnalytics"
+  },
   REPORTING_GROUPS: {
     title: "Reporting Groups",
     link: "/revenue/reporting-groups",
@@ -78,13 +83,18 @@ export default function Revenue() {
   return (
     <RevenueActionsPanel handlePanelStateChange={handlePanelStateChange} expandedPanel={quickActionsPanelState} activeModule={activeModule}>
       <Switch>
-        {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => (
-          <Route
-            exact
-            path={SIDE_PANEL_MENU_ITEMS_LIST[option].link}
-            component={Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component]}
-          />
-        ))}
+        {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => {
+          const Component = Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component];
+          return (
+            <Route
+              exact
+              path={SIDE_PANEL_MENU_ITEMS_LIST[option].link}
+              render={routeProps => (
+                <Component {...routeProps} isRevenueTab />
+              )}
+            />
+          )
+        })}
         <Redirect to={`/revenue/statements`} />
       </Switch>
     </RevenueActionsPanel>
