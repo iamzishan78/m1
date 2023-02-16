@@ -1360,6 +1360,9 @@ function SubTable(props) {
                   if (props.targetLabel === "unit") {
                     const targetSourceId = tableMeta.rowData[0];
                     const commentValue = tableMeta.rowData[20];
+
+                    const path = `/${column.label === 'Contact Name' ? 'contact/details' : 'map/units'}/${tableMeta.rowData[0]}`
+
                     return (
                       <div
                         style={{
@@ -1378,13 +1381,15 @@ function SubTable(props) {
                             }}
                           >
                             <ColumnWithLink
-                              value={tableMeta?.rowData[2]}
-                              link={`/map/units/${tableMeta.rowData[0]}`}
+                              value={tableMeta?.rowData[column.label === 'Contact Name' ? 1 : 2]}
+                              link={`${path}`}
                             />
                           </Grid>
-                          <Grid item>
-                            <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
-                          </Grid>
+                          {column.label !== 'Contact Name' &&
+                            <Grid item>
+                              <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
+                            </Grid>
+                          }
                         </Grid>
                       </div>
                     );
