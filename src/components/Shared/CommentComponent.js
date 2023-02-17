@@ -109,13 +109,13 @@ const useStyles = makeStyles((theme) => ({
   pinned: {
     borderLeftWidth: "initial",
     borderLeftStyle: "inset",
-    borderLeftColor: "yellow",
-    background: "#F4EA56"
+    borderLeftColor: "#ffd107",
+    background: "#FFF4EA"
   },
   tracking: {
     borderLeftWidth: "initial",
     borderLeftStyle: "inset",
-    borderLeftColor: "yellow",
+    borderLeftColor: "#ffd107",
 
   },
 }));
@@ -218,7 +218,7 @@ export default function CommentComponent(props) {
     fetchPolicy: "cache-first",
   });
   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(COMMENTSBYOBJECTIDQUERY, { fetchPolicy: "no-cache" });
-
+  const [pinnedArray, setPinnedArray] = React.useState([])
   useEffect(() => {
     getAllMongoUsers();
   }, [getAllMongoUsers]);
@@ -246,12 +246,14 @@ export default function CommentComponent(props) {
       getCommentsByObjectId({
         variables: {
           objectId: targetSourceId,
+
         },
       });
     }
   }, [targetSourceId]);
 
   useEffect(() => {
+    // debugger
     if (dataComments && dataComments.commentsByObjectId) {
       if (props.activityLog && props.activityLog.length > 0) {
         let activittyData = [];
@@ -264,14 +266,43 @@ export default function CommentComponent(props) {
             isActivity: true,
             isEdited: false,
             public: true,
-            isPinned: false,
             __typename: "Comment",
           });
         });
         let tempArray = dataComments.commentsByObjectId.concat(activittyData);
-        setCommentsArray(sortArrayBasedOnTs([...tempArray]));
+        // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
+        let temp = []
+        let tempArr = sortArrayBasedOnTs([...tempArray])
+
+        tempArr.map(item => {
+          if (item.pin === true) {
+            temp.push(item)
+          }
+        })
+
+        console.log("before", tempArr)
+        const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
+        console.log("after", trueFirst)
+        setCommentsArray(tempArray)
+        setPinnedArray(trueFirst)
+
       } else {
-        setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
+        // setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
+        let temp = []
+
+        // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
+        let tempArr = sortArrayBasedOnTs([...dataComments.commentsByObjectId])
+        tempArr.map(item => {
+          if (item.pin === true) {
+            temp.push(item)
+          }
+        })
+        console.log("before", tempArr)
+
+        const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
+        console.log("after", trueFirst)
+        setCommentsArray(tempArr)
+        setPinnedArray(temp)
       }
     }
     setLoadingComments(false);
@@ -330,7 +361,7 @@ export default function CommentComponent(props) {
 
     return array;
   };
-
+  console.log(commentsArray, "commentsArray");
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value
@@ -389,13 +420,16 @@ export default function CommentComponent(props) {
     setEditCommentId("");
   };
   const pinToTop = (eachComment) => {
-    const commentsArray = Object.values(pinComments);
-    const newCommentList = commentsArray.map((c) => {
-      if (c.id === eachComment._id) {
+    const x = Object.values(pinComments);
+
+    const newCommentList = commentsArray.map(c => {
+
+      if (c._id === eachComment) {
+        console.log("ddaat", c)
         return {
           ...c,
           isPinned: true,
-          id: eachComment
+          _id: eachComment
         };
       }
       return {
@@ -403,24 +437,26 @@ export default function CommentComponent(props) {
         isPinned: false,
       };
     });
-    console.log(commentsArray,"newCommentList");
-    dispatch(updatePinComments(newCommentList));  
-    // upsertComment({
-    //   variables: {
-    //     comment: {
-    //       _id: eachComment._id,
-    //       pin: false,
-    //     },
-    //   },
-    //   refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
-    //   awaitRefetchQueries: true,
-    // });
-    setShowCommentActionId(null) 
+    dispatch(updatePinComments(newCommentList));
+    upsertComment({
+      variables: {
+        comment: {
+          _id: eachComment,
+          pin: true,
+        },
+      },
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      awaitRefetchQueries: true,
+    });
+    setShowCommentActionId(null)
+    //  commentsArray
+    // let temp = commentsArray
   }
   const unpinFromTop = (eachComment) => {
-    const commentsArray = Object.values(pinComments);
+    // debugger
+    const commentsArray1 = Object.values(pinComments);
     const newCommentList = commentsArray.map((c) => {
-      if (c.id === eachComment._id) {
+      if (c.id === eachComment) {
         return {
           ...c,
           isPinned: false,
@@ -428,8 +464,18 @@ export default function CommentComponent(props) {
       }
       return c;
     });
-    dispatch(updatePinComments(newCommentList)); 
-    setShowCommentActionId(null) 
+    dispatch(updatePinComments(newCommentList));
+    upsertComment({
+      variables: {
+        comment: {
+          _id: eachComment,
+          pin: false,
+        },
+      },
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      awaitRefetchQueries: true,
+    });
+    setShowCommentActionId(null)
   }
 
 
@@ -463,7 +509,6 @@ export default function CommentComponent(props) {
       return state;
     });
     setScrollIntoView(true);
-
     upsertComment({
       variables: {
         comment: {
@@ -473,7 +518,7 @@ export default function CommentComponent(props) {
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           objectType: props.targetLabel,
-         
+          pin: false
         },
       },
       refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
@@ -495,10 +540,11 @@ export default function CommentComponent(props) {
       {({ size }) => (
         <div className={classes.container}>
 
-
+          {/* 
           {Object.values(pinComment).map((pin, index) => {
             return commentsArray.map((eachComment, index) => {
-              if (pin.id === eachComment._id) {
+              if (pin._id === eachComment._id) {
+
                 return (
                   <Grid
                     id="commentsArea"
@@ -588,7 +634,7 @@ export default function CommentComponent(props) {
                 )
               }
             });
-          })}
+          })} */}
 
 
 
@@ -616,10 +662,9 @@ export default function CommentComponent(props) {
                 )}
 
 
-
-
-                {commentsArray.map((eachComment, index) => {
-                  const pinnedComment = Object.values(pinComment).find(c => c.id === eachComment._id);
+                {pinnedArray.map((eachComment, index) => {
+                  const pinnedComment = eachComment.pin;
+                  console.log(pinnedComment, "pppppppppp");
                   let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
                   return (
                     <Fragment key={index}>
@@ -627,7 +672,7 @@ export default function CommentComponent(props) {
                         <Grid
                           id="commentsArea"
                           container
-                          className={pinnedComment ? classes.tracking : classes.gridStyle}
+                          className={pinnedComment ? classes.pinned : classes.gridStyle}
                           onMouseOver={() => setShowCommentActionId(eachComment?._id)}
                           onMouseLeave={() => setShowCommentActionId(null)}
                         >
@@ -704,7 +749,107 @@ export default function CommentComponent(props) {
                                   upsertComment={updateComment}
                                   setIsEdit={setIsEdit}
                                   setShowActions={setShowActions}
-                                  
+
+                                />
+                              </div>
+                            )}
+                          </Grid>
+                        </Grid>
+                      )}
+                    </Fragment>
+                  );
+                })}
+
+                {commentsArray.map((eachComment, index) => {
+                  const pinnedComment = eachComment.pin;
+                  console.log(pinnedComment, "pppppppppp");
+                  const duplicate = (commentsArray.filter((obj => obj._id === eachComment._id)).length > 0) && (pinnedArray.filter((obj => obj._id === eachComment._id)).length > 0)
+                  let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
+                  return (
+                    <Fragment key={index}>
+                      {(showAllComments || index >= indexToShow) && (
+                        <Grid
+                          id="commentsArea"
+                          container
+                          className={pinnedComment ? classes.tracking : classes.gridStyle}
+                          //     className={pinnedComment ? (duplicate?classes.tracking: classes.pinned) : classes.gridStyle}
+                          onMouseOver={() => setShowCommentActionId(eachComment?._id)}
+                          onMouseLeave={() => setShowCommentActionId(null)}
+                        >
+                          <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
+                            <IconButton>
+                              {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
+                                <Avatar
+                                  src={eachComment.isNew ? profileImage : profilesInfo[eachComment?.user?.email].profileImage}
+                                  size="38"
+                                  round
+                                />
+                              ) : (
+                                <Avatar name={eachComment?.user?.name} size="38" round />
+                              )}
+                            </IconButton>
+                          </Grid>
+                          <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
+                            <div>
+                              <span className={classes.bold}>{eachComment?.user?.name}</span>
+                              {!isNaN(eachComment.ts) && (
+                                <ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />
+                              )}
+                              {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+                              {eachComment?.user?.email === stateApp.user.email &&
+                                showCommentActionId === eachComment._id &&
+                                editCommentId !== eachComment._id && (
+                                  <div
+                                    className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
+                                      eachComment?.user?.email === stateApp.user.email &&
+                                      showCommentActionId === eachComment._id &&
+                                      editCommentId !== eachComment._id
+                                    ) && classes.hideMenuIcon
+                                      }`}
+                                  >
+                                    <ActionMenu
+                                      eachComment={eachComment}
+                                      setEditCommentId={setEditCommentId}
+                                      setEditComment={setEditComment}
+                                      deleteComment={deleteComment}
+                                      setShowActions={setShowActions}
+                                      setIsEdit={setIsEdit}
+                                      unpinFromTop={unpinFromTop}
+                                      pinToTop={pinToTop}
+                                      showActions={showActions}
+                                    />
+                                  </div>
+                                )}
+                            </div>
+                            {eachComment.isActivity === true && (
+                              <>
+                                <div className={`${classes.whiteSpace}`}>
+                                  {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
+                                </div>
+                                <div className={`${classes.whiteSpace}`}>
+                                  START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
+                                </div>
+                                <div className={`${classes.whiteSpace}`}>
+                                  END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
+                                </div>
+                              </>
+                            )}
+                            {editCommentId !== eachComment._id ? (
+                              <CommonCommentText users={users} eachComment={eachComment} />
+                            ) : (
+                              <div className={classes.border}>
+                                <CommentField
+                                  isEdit={isEdit}
+                                  profilesInfo={profilesInfo}
+                                  users={users}
+                                  comment={editComment}
+                                  showActions={showActions}
+                                  setEditCommentId={setEditCommentId}
+                                  setComment={setEditComment}
+                                  upsertComment={updateComment}
+                                  setIsEdit={setIsEdit}
+                                  setShowActions={setShowActions}
+
                                 />
                               </div>
                             )}
@@ -825,8 +970,10 @@ export const CommentText = ({ eachComment, users }) => {
   );
 };
 
-const ActionMenu = ({ pinToTop, unpinFromTop, showActions , eachComment, setEditCommentId, setEditComment, deleteComment, setShowActions, setIsEdit }) => {
-  const [anchorEl, setAnchorEl] = useState(null);  
+
+
+const ActionMenu = ({ pinToTop, unpinFromTop, showActions, eachComment, setEditCommentId, setEditComment, deleteComment, setShowActions, setIsEdit }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
   const { pinComment } = useSelector(state => state.pin);
 
 
@@ -837,14 +984,14 @@ const ActionMenu = ({ pinToTop, unpinFromTop, showActions , eachComment, setEdit
   const handleClose = () => {
     setAnchorEl(null);
   };
- 
-  const pinnedComment = Object.values(pinComment).find(c => c.id === eachComment._id);
+
+  const pinnedComment = eachComment.pin;
 
   return (
     <>
- 
+
       <ExpandMoreIcon id="expandCommentActionIcon" aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} showActions={showActions} />
- 
+
       <Menu
         style={{ zIndex: "1305" }}
         id={eachComment._id}
@@ -855,7 +1002,7 @@ const ActionMenu = ({ pinToTop, unpinFromTop, showActions , eachComment, setEdit
         getContentAnchorEl={null}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "center" }}
-        
+
       >
         <MenuItem
           id="editComment"

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
 import { AppProvider, AppContext, setApolloHeaders } from "./AppContext";
 import GlobalApolloClientProvider from "./GlobalApolloClientProvider";
 import { Switch, Route } from "react-router-dom";
@@ -64,7 +64,7 @@ import AnalyticsProvider from "components/Analytics/AnalyticsProvider";
 // user management
 const store = configureStore(/ provide initial state if any /);
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     type: "light",
     common: { black: "#000", white: "#fff" },
