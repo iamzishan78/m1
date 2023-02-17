@@ -135,10 +135,12 @@ export default function SummaryFields({ contactData }) {
     return false;
   }
 
+  console.log("*-*-*--* SUMMARY_FIELDS -*--*-*-*", SUMMARY_FIELDS(contactData));
+
   return (
     <Grid container alignItems="center" justify="space-between" display="flex" direction="column" className={classes.container}>
       {SUMMARY_FIELDS(contactData).map((field, key) => (
-        <Grid item key={key} style={{ position: "relative", width: "100%", marginRight: "30px", maxWidth: "44%", flexBasis: "11%" }}>
+        <Grid item key={key} style={{ position: "relative", width: "100%", marginRight: "30px", maxWidth: "44%", flexBasis: "7%" }}>
           <Grid container className={classes.gridStyle}>
             <Grid item style={{ display: "flex" }}>
               <div id={field.label} className={classes.fieldLabel}>{featureFlagChanges(showGenericPhones, field.label)}</div>

@@ -717,6 +717,24 @@ export const SUMMARY_FIELDS = (contactData) => {
       value: getLastUpdatedByValue(contactData),
       disabled: true,
     },
+    {
+      label: "Account",
+      key: "account",
+      type: "text",
+      position: "left",
+    },
+    {
+      label: "Department",
+      key: "department",
+      type: "text",
+      position: "right",
+    },
+    {
+      label: "Title",
+      key: "title",
+      type: "text",
+      position: "left",
+    },
   ];
 }
 
