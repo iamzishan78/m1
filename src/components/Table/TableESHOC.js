@@ -551,7 +551,6 @@ export const TableESHOC = (Component) => {
         }
 
         const initializeTableActions = (tableState, meta, tableData, columns, gqlQuery, selectedGridView = {}) => {
-            debugger
             let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableState.searchText;
             if (props.useWildeCard)
                 searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
