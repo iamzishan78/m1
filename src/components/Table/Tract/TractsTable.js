@@ -75,6 +75,7 @@ function TractsTable(props) {
         field: "geoJSON",
         value: stateApp?.currentFeature?.geometry
       },
+      exportPx: props.parent === "TractTable" ? "121px" : undefined,
       formatHits,
     });
     // eslint-disable-next-line

@@ -113,7 +113,7 @@ const StyledTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-export default function DetailTabsSection({ monthsInterval, portfolioSummary }) {
+export default function DetailTabsSection({ monthsInterval, portfolioSummary, ...rest }) {
   const classes = useStyles();
   const [tab, setTab] = useState(0);
   const [isButtonScroll, setButtonScroll] = useState(false);
@@ -141,21 +141,21 @@ export default function DetailTabsSection({ monthsInterval, portfolioSummary }) 
   };
 
   const handleEndScroll = useMemo(() => debounce(() => setButtonScroll(false), 1000), []);
-  const adjustmentsRef = useCallback(obj => {
+  const adjustmentsRef = useCallback((obj) => {
     if (obj != null) {
       setAdjustmentTotals(obj);
     }
   }, []);
 
-  const netRevenueRef = useCallback(obj => {
+  const netRevenueRef = useCallback((obj) => {
     if (obj != null) {
       setNetRevenueTotals(obj);
     }
   }, []);
 
   return (
-    <div className={classes.tabsSection} >
-      <div className={classes.tabsHeader} >
+    <div className={classes.tabsSection}>
+      <div className={classes.tabsHeader}>
         <StyledTabs
           value={tab}
           onChange={(event, tab) => {
@@ -170,18 +170,38 @@ export default function DetailTabsSection({ monthsInterval, portfolioSummary }) 
           {/* <StyledTab label="Properties" /> */}
         </StyledTabs>
       </div>
-      <div style={{ overflow: "overlay", backgroundColor: "#f3f3f3", maxHeight: "calc(100vh - 235px)" }} onScroll={handleScroll}>
+      <div
+        style={{
+          overflow: "overlay",
+          backgroundColor: "#f3f3f3",
+          maxHeight: rest.isRevenueTab ? "calc(100vh - 305px)" : "calc(100vh - 235px)",
+        }}
+        onScroll={handleScroll}
+      >
         <div className={classes.revenueSection} ref={tab === 0 ? selectedTabRef : null}>
-          <RevenueSection monthsInterval={monthsInterval} portfolioSummary={portfolioSummary} adjustmentsRef={adjustmentsRef} netRevenueRef={netRevenueRef} />
+          <RevenueSection
+            monthsInterval={monthsInterval}
+            portfolioSummary={portfolioSummary}
+            adjustmentsRef={adjustmentsRef}
+            netRevenueRef={netRevenueRef}
+            loading={rest.loading}
+          />
         </div>
         <div className={classes.adjustmentSection} ref={tab === 1 ? selectedTabRef : null}>
-          <AdjustmentSection monthsInterval={monthsInterval} portfolioSummary={portfolioSummary} adjustmentTotals={adjustmentTotals} />
+          <AdjustmentSection
+            monthsInterval={monthsInterval}
+            portfolioSummary={portfolioSummary}
+            adjustmentTotals={adjustmentTotals}
+            loading={rest.loading}
+          />
         </div>
         <div className={classes.productSection} ref={tab === 2 ? selectedTabRef : null}>
-          <Typography variant="h6" className={classes.sectionTitle}>
-            Products
-          </Typography>
-          <ProductsSection monthsInterval={monthsInterval} portfolioSummary={portfolioSummary} netRevenueTotals={netRevenueTotals} />
+          <ProductsSection
+            monthsInterval={monthsInterval}
+            portfolioSummary={portfolioSummary}
+            netRevenueTotals={netRevenueTotals}
+            loading={rest.loading}
+          />
         </div>
         {/* temp hide until we get properties section designed --kc 20220307 */}
         {/* <div className={classes.propertiesSection} ref={tab === 3 ? selectedTabRef : null}>
@@ -190,6 +210,6 @@ export default function DetailTabsSection({ monthsInterval, portfolioSummary }) 
           </Typography>
         </div> */}
       </div>
-    </div >
+    </div>
   );
 }

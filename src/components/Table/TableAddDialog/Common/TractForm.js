@@ -176,7 +176,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
       />
 
       {/* {!["TX", "Texas"].includes(stateName) && ( */}
-        <div style={{ display: !["TX", "Texas"].includes(stateName) ? "block"  : "none"}}>
+      <div style={{ display: !["TX", "Texas"].includes(stateName) ? "block" : "none" }}>
         <>
           <Controller
             control={control}
@@ -266,11 +266,11 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             )}
           /> */}
         </>
-        </div>
+      </div>
       {/* )} */}
 
       {/* {["TX", "Texas"].includes(stateName) && ( */}
-        <div style={{ display: ["TX", "Texas"].includes(stateName) ? "block"  : "none"}}>
+      <div style={{ display: ["TX", "Texas"].includes(stateName) ? "block" : "none" }}>
         <>
           <Controller
             control={control}
@@ -360,7 +360,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             )}
           /> */}
         </>
-        </div>
+      </div>
       {/* )} */}
 
       <Controller
@@ -370,23 +370,23 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
         render={(props) => (
           <AutoCompleteLandgrid
             value={props.value}
-            filterKey={["TX", "Texas"].includes(stateName) ? "level5Name.keyword": "level6Name.keyword"}
+            filterKey={["TX", "Texas"].includes(stateName) ? "level5Name.keyword" : "level6Name.keyword"}
             filters={
-              ["TX", "Texas"].includes(stateName) ? 
+              ["TX", "Texas"].includes(stateName) ?
                 [{ field: "level5Type.keyword", value: "Section" }, ...getDependencies(["state", "county", "survey", "block"])] :
                 [{ field: "level6Type.keyword", value: "Section" }, ...getDependencies(["state", "county", "meridian", "townshipRange"])]
-              }
+            }
             label="Section"
             variant="outlined"
-            onChange={(value) => {
+            onChange={(e, value) => {
               props.onChange(value.key);
             }}
             autoFocus={false}
           />
         )}
-      /> 
+      />
 
-      <div style={{ display: ["TX", "Texas"].includes(stateName) ? "block"  : "none"}}>
+      <div style={{ display: ["TX", "Texas"].includes(stateName) ? "block" : "none" }}>
         <Controller
           control={control}
           id="tractAbstract"
@@ -402,13 +402,13 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
               ]}
               label="Abstract"
               variant="outlined"
-              onChange={(value) => {
+              onChange={(e, value) => {
                 props.onChange(value.key);
               }}
               autoFocus={false}
             />
           )}
-        /> 
+        />
       </div>
 
       <Controller

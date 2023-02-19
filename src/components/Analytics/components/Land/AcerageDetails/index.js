@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { AppContext } from "AppContext";
 import {
   FormControl,
   Grid,
@@ -41,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AcerageDetailTabPanel() {
   const classes = useStyles();
+  const [stateApp] = useContext(AppContext);
   const propertiesReportGroup = useSelector(
     ({ Revenue }) => Revenue.propertiesReportGroup
   );
@@ -103,7 +105,7 @@ export default function AcerageDetailTabPanel() {
                 labelId="demo-simple-select-outlined-label"
                 id="demo-simple-select-outlined"
                 value={externalFilters.agreementType}
-                onChange={({ target }) => setAgreementType(target.value)}
+                onChange={({ target }) => {}}
                 label="Agreement Type"
                 fullWidth
                 className={classes.select}
@@ -156,9 +158,11 @@ export default function AcerageDetailTabPanel() {
       </div>
       <AcerageDetail
         header="Acreage Detail"
-        esFilters={esFilters}
+        esFilters={[]}
         targetLabel="acerage"
         parent="AcerageDetail"
+        esIndex="shapetracts_flat"
+        landAnalyticsSearchQuery={stateApp.landAnalyticsSearchQuery}
         setESFilters={setESFilters}
       />
     </>

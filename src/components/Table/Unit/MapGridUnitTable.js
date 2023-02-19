@@ -85,7 +85,7 @@ function MapGridUnitTable(props) {
       extendSearchQuery: esExtentedSearch(stateApp.landSearchQuery, searchInput),
       // selectedGridView: GridViewModule || defaultView,
       // searchFields: ["*"],
-      TableHeader: copy(TableHeader),
+      TableHeader: copy(TableHeader(props.isSnapGrid)),
       esIndex: "shapes_flat",
       startPaginationAt: 50,
       // typeKeyword: { gridViewCategory: "Units", metaModule: "Unit" },
@@ -101,6 +101,7 @@ function MapGridUnitTable(props) {
         field: "shapeGeometry",
         value: stateApp?.currentFeature?.geometry
       },
+      downloadAll: { exportPx: props.parent === "UnitsTable" ? "121px" : undefined },
       formatHits,
     });
     // eslint-disable-next-line
