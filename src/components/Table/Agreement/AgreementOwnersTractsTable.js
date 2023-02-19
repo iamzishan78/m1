@@ -25,6 +25,14 @@ import _ from "lodash";
 function AgreementOwnersTractsTable(props) {
   const classes = usetableStyles();
   const [drawerContainer, setDrawerContainer] = useState(null);
+  const [selectredTract, setSelectredTract] = useState(props.clickedRow);
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
+
+  useEffect(() => {
+    setSelectredTract(props.clickedRow)
+  }, [props.clickedRow])
+
+
   const [drawer, setDrawer] = useContext(DrawerContext);
   useEffect(() => {
     if (props.portal) {
@@ -35,15 +43,6 @@ function AgreementOwnersTractsTable(props) {
       }
     }
   }, [props.portal])
-
-  useEffect(() => {
-    if (props.addToTable === "add") {
-      setDrawer('tract')
-    } else {
-      setDrawer(null)
-    }
-  }, [props.addToTable])
-  const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
     onCompleted: () => {
@@ -72,7 +71,13 @@ function AgreementOwnersTractsTable(props) {
       props.setLoading(true);
       updateShapeOwners({
         variables: {
-          shapeOwners: ids.map((_id) => ({ _id, isDeleted: true, shapeId: props.customLayer?._id })),
+          shapeType: 'Agreement',
+          shapeOwners: ids.map((_id, i) => ({ 
+            _id, isDeleted: true, 
+            shapeId: props.customLayer?._id, 
+            relatedObject: props.rows.find(r => r._id === ids[i])?.contact?._id,
+            tract: { ...props.rows.find(r => r._id === ids[i])?.tract, isDeleted: true } 
+          })),
         },
         refetchQueries: ["getCustomLayer", "getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
         awaitRefetchQueries: true
@@ -127,37 +132,40 @@ function AgreementOwnersTractsTable(props) {
 
   const tableOptions = {
     ...props.options,
+    customToolbar: () => {
+      return (
+        <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
+          <Button
+            id="addTractToAgreementBtn"
+            color="secondary"
+            className={classes.multiSelectionTopBarButtons}
+            onClick={() => {
+              setDrawer("tract");
+              setSelectredTract(null)
+            }}
+          >
+            + ADD TRACT TO AGREEMENT
+          </Button>
+        </div>
+      );
+    },
   }
 
-
-  // if(props.customToolbar){
-  //   tableOptions.customToolbar = () => {
-
-  //     return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-  //       <Button
-  //         color="secondary"
-  //         variant="contained"
-  //         className={classes.multiSelectionTopBarButtons}
-  //         // disabled={true}
-  //       onClick={() => setDrawer("tract")}
-  //       >
-  //         + ADD TRACT TO AGREEMENT
-  //       </Button>
-  //     </div>
-  //   }
-  // }
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       {drawer === "tract" && (
         <AddAgreementOwnerAndTractDialog
-          open={props.addToTable}
+          open
           width="450px"
           shapeId={props.customLayer._id}
           layerType={props.customLayer.layer}
           shapeType={props.shapeType}
-          seletedOwner={props.clickedRow}
+          seletedOwner={selectredTract}
           deleteFunc={deleteFunc}
-          onClose={() => setDrawer(null)}
+          onClose={() => {
+            setDrawer(null)
+            setSelectredTract(null)
+          }}
           drawerContainer={drawerContainer}
         />
       )}

@@ -20,7 +20,7 @@ export default function AdvanceSearch({ activeModule }) {
   const history = useHistory();
   console.log("isASActive", activeModule.title)
   const isASActive = useMemo(
-    () => activeModule.title === "Agreements" && history.location.pathname === "/land/agreements",
+    () => activeModule.title === "Agreements" || history.location.pathname === "/land/agreements",
     [activeModule, history.location]
   );
 

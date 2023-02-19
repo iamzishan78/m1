@@ -94,11 +94,6 @@ const big_text = {
   fontWeight: "bold",
   color: "#101010",
 };
-const small_grey_text = {
-  fontSize: "10px",
-  fontWeight: "bold",
-  color: "#a6a6a6",
-};
 const big_grey_text = {
   fontSize: "15px",
   color: "#a6a6a6",
@@ -111,12 +106,6 @@ const padding_div_bottom = {
 };
 const padding_div = {
   padding: "16px 0",
-};
-const padidng_20 = {
-  padding: "60px 0",
-};
-const normal_padidng = {
-  padding: "5vh",
 };
 const text_grey = {
   fontSize: "13px",
@@ -255,9 +244,9 @@ export default function CSVFileReader(props) {
 
   return (
     <div style={main_div}>
-      {props.selectedJob.name === "Comment Uploader" && (
+      {props.selectedJob.name === "Comments Uploader" && (
         <>
-          <label>Begin by selecting the entity in which the comment should be associated</label>
+          <div style={{ ...big_text, ...padding_div_top }}>Begin by selecting the entity in which the comment should be associated</div>
           <div>
             <Select
               variant="outlined"

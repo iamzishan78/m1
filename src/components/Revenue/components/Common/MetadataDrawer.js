@@ -77,6 +77,8 @@ const useStyles = makeStyles((theme) => ({
   },
   descriptionInput: {
     width: "100%",
+    minHeight: "90PX",
+    mAXHeight: "140PX",
     margin: "20px 0 0",
     "& .MuiTextField-root": {
       backgroundColor: "#fffcdc",
@@ -86,7 +88,8 @@ const useStyles = makeStyles((theme) => ({
       border: "none",
     },
     "& textarea": {
-      height: "323px",
+      minHeight: "90PX",
+      mAXHeight: "140PX",
     },
   },
   foodText: {
@@ -419,10 +422,8 @@ export default function MetadataDrawer(props) {
           />
         </div>
         <div style={{
-          width: props.commentsWidth,
-          position: "absolute",
-          bottom: "10px",
-
+            flex: '1 1 auto',
+            overflow: 'hidden'
         }}>
           <CommentComponent
             targetLabel={targetLabel}
@@ -441,7 +442,7 @@ MetadataDrawer.defaultProps = {
   title: "Metadata",
   documentsTitle: "Documents",
   showDescription: true,
-  commentsWidth: "600px",
+  commentsWidth: "570px",
   viewAllDocuments: false,
   ownerTitle: "Owner",
   ownerPlaceHolder: "Assign Approver",

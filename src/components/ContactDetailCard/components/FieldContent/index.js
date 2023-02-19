@@ -82,6 +82,7 @@ export default function FieldContent({
   // const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   const [statusOptions, setStatusOptions] = useState([]);
+  const entityTypeOptions = ['INDIVIDUAL', 'CORPORATION', 'NON-PROFIT', 'TRUST']
 
   useEffect(() => {
     getFilters({
@@ -348,7 +349,7 @@ export default function FieldContent({
           ) : fieldName === "ownerType" ? (
             <EntityType
               className={classes.maxWidth}
-              options={statusOptions}
+              options={entityTypeOptions}
               setDocumentType={(value) => {
                 let val = value.name;
                 const data = contactStatusOptions.find((s) => s.label === val);

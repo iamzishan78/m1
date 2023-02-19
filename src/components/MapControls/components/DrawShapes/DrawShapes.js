@@ -80,6 +80,11 @@ const useStyles = makeStyles((theme) => ({
       color: "#717171",
     },
   },
+  selectedAction: {
+    "& svg": {
+      color: "rgb(102 146 202)",
+    },
+  },
   whiteText: {
     color: "#fff",
     "&:hover": {
@@ -403,6 +408,8 @@ export default function DrawShapes() {
       shapeGridOwnersCount: 0,
       changeDrawShapeType: false,
       reDrawShape: false,
+      currentFeature: state.showAddShapePopup ? undefined : state.currentFeature,
+      showAddShapePopup: false,
       ...additionalProps
     }));
     dispatch(
@@ -416,6 +423,37 @@ export default function DrawShapes() {
   const handleClose = () => {
     setStateMapControls({ ...stateMapControls, anchorEl: null });
   };
+
+  const renderAddShapePopup = (onlyAddShape) => (
+    <Fragment>
+      {showSpatialDataCard &&
+        stateApp.currentFeature?.properties?.sdType === "interest" && ( // for edit/create AOI
+          <ShapeAOIPopup upsertCustomLayer={upsertCustomLayer} user={user} toggleSpatialDataCard={toggleSpatialDataCard} />
+        )}
+      <div className={classes.mapOverlay}>
+        <div className={classes.mapOverlayInner}>
+          <div className={classes.content}>
+            <ShapeActionsPopup
+              classes={classes}
+              selectedFeature={stateApp.currentFeature}
+              toggleSpatialDataCard={toggleSpatialDataCard}
+              showSpatialDataCard={showSpatialDataCard}
+              popupCloseAction={actionClose}
+              onlyAddShape={onlyAddShape}
+            >
+              <span className={classes.clearAction}>
+                <Tooltip title="Close">
+                  <IconButton size="small" onClick={actionClose} aria-label="Close" className={classes.clearAction}>
+                    <CloseIcon className="close" fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </span>
+            </ShapeActionsPopup>
+          </div>
+        </div>
+      </div>
+    </Fragment>
+  )
 
   return (
     <Fragment>
@@ -446,33 +484,10 @@ export default function DrawShapes() {
         !stateApp.currentFeature.id?.includes("drag_circle") &&
         !stateApp.currentFeature.id?.includes("draw_rectangle") &&
         !stateApp.currentFeature.id?.includes("edit_polygon") ? (
-        <Fragment>
-          {showSpatialDataCard &&
-            stateApp.currentFeature?.properties?.sdType === "interest" && ( // for edit/create AOI
-              <ShapeAOIPopup upsertCustomLayer={upsertCustomLayer} user={user} toggleSpatialDataCard={toggleSpatialDataCard} />
-            )}
-          <div className={classes.mapOverlay}>
-            <div className={classes.mapOverlayInner}>
-              <div className={classes.content}>
-                <ShapeActionsPopup
-                  classes={classes}
-                  selectedFeature={stateApp.currentFeature}
-                  toggleSpatialDataCard={toggleSpatialDataCard}
-                  showSpatialDataCard={showSpatialDataCard}
-                  popupCloseAction={actionClose}
-                >
-                  <span className={classes.clearAction}>
-                    <Tooltip title="Close">
-                      <IconButton size="small" onClick={actionClose} aria-label="Close" className={classes.clearAction}>
-                        <CloseIcon className="close" fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </span>
-                </ShapeActionsPopup>
-              </div>
-            </div>
-          </div>
-        </Fragment>
+        renderAddShapePopup()
+      ) : null}
+      {stateApp.showAddShapePopup ? (
+        renderAddShapePopup(true)
       ) : null}
     </Fragment>
   );

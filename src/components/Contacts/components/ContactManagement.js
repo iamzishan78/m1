@@ -42,6 +42,7 @@ const ContactManagement = () => {
         userId={stateApp.user.mongoId}
         customAppliedFilters={getCustomAppliedFilters()}
         loadMore={loadMore}
+        useWildeCard
       />
     </div>
   );

@@ -47,13 +47,13 @@ const useStyles = makeStyles((theme) => ({
 
 const RevenueStatementInfoForm = ({ ...rest }) => {
   const classes = useStyles();
-  const { control, watch, reset, getValues, setStateApp, revenueStatementInfo } = rest;
+  const { control, watch, reset, getValues, setStateApp, uploaderFormValues } = rest;
 
   const [payorList, setPayyorList] = useState([]);
   const [getPayorList, { data: payorListData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
-    if (revenueStatementInfo) reset(revenueStatementInfo);
+    if (uploaderFormValues) reset(uploaderFormValues);
     return () => {
       const values = getValues();
       Object.keys(values).forEach(key => {
@@ -65,7 +65,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
           values[`check.${key}`] = values[key];
         }
       });
-      setStateApp(stateApp => ({ ...stateApp, revenueStatementInfo: values }));
+      setStateApp(stateApp => ({ ...stateApp, uploaderFormValues: values }));
     };
   }, []);
 
