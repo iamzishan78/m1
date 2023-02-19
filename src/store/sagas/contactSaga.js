@@ -35,14 +35,18 @@ function* convertTaxOwnerToContact(action) {
     const { userId } = action.payload;
     const owners = formatTaxOwners(copy(shapeOwners), action.payload);
 
-    const uploadUri = yield call(Api.query, GET_JOB_UPLOAD_URI, {
-      jobName: "Contacts",
-      jobType: "CONTACTS",
-      userId,
-    },
+    const uploadUri = yield call(
+      Api.query,
+      GET_JOB_UPLOAD_URI,
+      {
+        jobName: "Contacts",
+        jobType: "CONTACTS",
+        userId,
+      },
       {
         fetchPolicy: "no-cache",
-      });
+      }
+    );
 
     const { uri, id, internalKey } = uploadUri.data.getJobUploadUri.job;
 
@@ -64,17 +68,15 @@ function* convertTaxOwnerToContact(action) {
 }
 
 function* convertMultipleOwnerToContact(action) {
-
   const bulkUpload = yield select((state) => state.common.bulkUpload);
-  yield put(setReduxKey("contactsAdded", false))
+  yield put(setReduxKey("contactsAdded", false));
   try {
     const { rows, entitiesIds, existingContactId, actionType, userId, jobType, jobName } = action.payload;
     let _id, _res;
     if (entitiesIds?.length > 0) {
       const id = yield call(Api.mutate, INITIALIZE_EXPORT_JOB, {
-        entitiesIds
-      },
-      );
+        entitiesIds,
+      });
       _id = id;
     } else {
       let owners = [];
@@ -83,15 +85,18 @@ function* convertMultipleOwnerToContact(action) {
       }
       owners = formatTaxOwners(copy(owners), action.payload);
 
-      const uploadUri = yield call(Api.query, GET_JOB_UPLOAD_URI, {
-        jobName: jobName ? jobName : "Contacts",
-        jobType: jobType ? jobType : "CONTACTS",
-        userId,
-        requestPayload: {
-          existingContactId,
-          actionType
+      const uploadUri = yield call(
+        Api.query,
+        GET_JOB_UPLOAD_URI,
+        {
+          jobName: jobName ? jobName : "Contacts",
+          jobType: jobType ? jobType : "CONTACTS",
+          userId,
+          requestPayload: {
+            existingContactId,
+            actionType,
+          },
         },
-      },
         {
           fetchPolicy: "no-cache",
         }

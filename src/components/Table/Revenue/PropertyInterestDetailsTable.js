@@ -61,6 +61,7 @@ function PropertyInterestDetailsTable(props) {
   useEffect(() => {
     if (props.clickedRow) {
       props.setSelectedInterest(props.clickedRow);
+      props.setAddToTable(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.clickedRow]);
