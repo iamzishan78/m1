@@ -1,6 +1,6 @@
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import { get } from "lodash";
-import { Grid, TextField, InputAdornment } from "@material-ui/core";
+import { Grid, TextField, InputAdornment, Select, MenuItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Controller } from "react-hook-form";
 import { useLazyQuery } from "@apollo/client";
@@ -45,19 +45,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RevenueStatementInfoForm = ({ statementInfo, setStatementsInfo, ...rest }) => {
+const RevenueStatementInfoForm = ({ ...rest }) => {
   const classes = useStyles();
-  const { control, watch, getValues, reset } = rest;
-  const [payorList,setPayyorList] = useState([]);
+  const { control, watch, reset, getValues, setStateApp, uploaderFormValues } = rest;
+
+  const [payorList, setPayyorList] = useState([]);
   const [getPayorList, { data: payorListData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
-    reset(statementInfo);
+    if (uploaderFormValues) reset(uploaderFormValues);
     return () => {
       const values = getValues();
-      setStatementsInfo(values);
+      Object.keys(values).forEach(key => {
+        if (typeof values[key] === "object") {
+          Object.keys(values[key]).forEach(vk => {
+            values[`check.${key}.${vk}`] = values[key][vk];
+          });
+        } else {
+          values[`check.${key}`] = values[key];
+        }
+      });
+      setStateApp(stateApp => ({ ...stateApp, uploaderFormValues: values }));
     };
-  }, [statementInfo]);
+  }, []);
 
   useEffect(() => {
     getPayorList({
@@ -70,14 +80,14 @@ const RevenueStatementInfoForm = ({ statementInfo, setStatementsInfo, ...rest })
     });
   }, [getPayorList]);
 
-  useEffect(()=>{
-    const sortList = _.orderBy(payorListData?.getESFilterList?.hits,"key","asc");
-    if(sortList?.length > 0){
+  useEffect(() => {
+    const sortList = _.orderBy(payorListData?.getESFilterList?.hits, "key", "asc");
+    if (sortList?.length > 0) {
       setPayyorList(sortList);
-    }else {
+    } else {
       setPayyorList([]);
     }
-  },[payorListData])
+  }, [payorListData])
 
   return (
     <div className={classes.root}>
@@ -119,7 +129,7 @@ const RevenueStatementInfoForm = ({ statementInfo, setStatementsInfo, ...rest })
                   control={control}
                   name="checkNumber"
                   defaultValue={""}
-                  render={(params) => <TextField {...params} fullWidth margin="dense" type="text" variant="outlined" />}
+                  render={(params) => <TextField id="checkNumber" {...params} fullWidth margin="dense" type="text" variant="outlined" />}
                 />
               </Grid>
             </Grid>
@@ -136,6 +146,7 @@ const RevenueStatementInfoForm = ({ statementInfo, setStatementsInfo, ...rest })
                   defaultValue={""}
                   render={(params) => (
                     <TextField
+                      id="checkAmount"
                       {...params}
                       fullWidth
                       margin="dense"
@@ -162,6 +173,7 @@ const RevenueStatementInfoForm = ({ statementInfo, setStatementsInfo, ...rest })
                   render={(params) => (
                     <TextField
                       {...params}
+                      id="checkDate"
                       fullWidth
                       type="date"
                       variant="outlined"
@@ -173,20 +185,6 @@ const RevenueStatementInfoForm = ({ statementInfo, setStatementsInfo, ...rest })
                       KeyboardButtonProps={{ "aria-label": "change date" }}
                       format="MM/DD/YYYY"
                       PopoverProps={{ disablePortal: false }}
-                    // InputProps={{
-                    //   endAdornment: (
-                    //     <IconButton
-                    //       onClick={(event) =>
-
-                    //       }
-                    //     >
-                    //       <Clear style={{ height: 22, width: 22 }} />
-                    //     </IconButton>
-                    //   ),
-                    //   classes: {
-                    //     root: classes.dateRoot,
-                    //   },
-                    // }}
                     />
                   )}
                 />
@@ -203,7 +201,7 @@ const RevenueStatementInfoForm = ({ statementInfo, setStatementsInfo, ...rest })
                   control={control}
                   name="payee.number"
                   defaultValue={""}
-                  render={(params) => <TextField {...params} fullWidth margin="dense" type="text" variant="outlined" />}
+                  render={(params) => <TextField id="ownerNumber" {...params} fullWidth margin="dense" type="text" variant="outlined" />}
                 />
               </Grid>
             </Grid>
@@ -249,7 +247,26 @@ const RevenueStatementInfoForm = ({ statementInfo, setStatementsInfo, ...rest })
                   control={control}
                   name="sourceId"
                   defaultValue={""}
-                  render={(params) => <TextField {...params} fullWidth margin="dense" type="text" variant="outlined" />}
+                  render={(params) => <TextField id="sourceId" {...params} fullWidth margin="dense" type="text" variant="outlined" />}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item sm={12} md={12}>
+            <Grid container className={classes.gridStyle} style={{ padding: "8px 0px 0px 0px" }}>
+              <Grid item xs={4}>
+                <div className={classes.boldLabel}>Import Type</div>
+              </Grid>
+              <Grid item xs={8}>
+                <Controller
+                  control={control}
+                  name="importType"
+                  defaultValue="Standard M1 Import"
+                  render={(params) => (
+                    <Select {...params} fullWidth margin="dense" variant="outlined">
+                      <MenuItem value="Standard M1 Import">Standard M1 Import</MenuItem>
+                    </Select>
+                  )}
                 />
               </Grid>
             </Grid>

@@ -71,7 +71,7 @@ export default function SummaryFields({ contactData }) {
   }, [user]);
 
   useEffect(() => {
-    if (!isEmpty(contactData) && !isFormSet) {
+    if (!isEmpty(contactData)) {
       let _contact = { ...contactData };
       if (get(_contact, 'contactInterests.offerPriceSum')) {
         _contact = {
@@ -130,7 +130,7 @@ export default function SummaryFields({ contactData }) {
     if (key.includes("nraSum")) {
       return get(contactData, "evaluatedContactInterests.nraSum") !== _value;
     } else if (key.includes("offerPriceSum")) {
-      return get(contactData, "evaluatedContactInterests.offerPriceSum").toFixed(2) !== _value.toFixed(2);
+      return get(contactData, "evaluatedContactInterests.offerPriceSum")?.toFixed(2) !== _value?.toFixed(2);
     }
     return false;
   }

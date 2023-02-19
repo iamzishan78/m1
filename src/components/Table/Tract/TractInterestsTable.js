@@ -49,12 +49,33 @@ function TractInterestTable(props) {
   useEffect(() => {
     setTableMeta({
       extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
-      searchFields: ["*"],
+      searchFields: [
+        "contact._id",
+        "shape.shapeJson.properties.shapeLabel",
+        "shape.shapeJson.properties.originalProperties.0?.State?.StateAbbreviation?",
+        "shape.shapeJson.properties.originalProperties.0?.County",
+        "shape.shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
+        "shape.shapeJson.properties.originalProperties.0?.Block?.Township?",
+        "shape.shapeJson.properties.originalProperties.0?.Section?.Range?",
+        "shape.shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
+        "qtr",
+        "shape.shapeJson.properties.sdGrossAcres",
+        "depthFrom",
+        "depthTo",
+        "contact.entityDetail.name",
+        "mineral_interest",
+        "royalty_interest",
+        "orri",
+        "net_acres",
+        "nra",
+        "shape.shapeJson.properties.department",
+        "comments.comment",
+      ],
       TableHeader: copy(TableHeader),
       esIndex: "shapeowners_flat",
       selectedGridView: GridViewModule || defaultView,
       typeKeyword: { gridViewCategory: "TractInterest" },
-      startPaginationAt: 10,
+      startPaginationAt: 50,
       filters: [
         {
           field: "shape.layer.keyword",
@@ -63,6 +84,7 @@ function TractInterestTable(props) {
       ],
 
       defaultSort: { field: '_ts', order: 'desc' },
+      exportPx: props.parent === "TractInterestsTable" ? "121px" : undefined,
       polygon: stateApp?.currentFeature?.geometry && {
         type: "geo_intersects",
         field: "geoJSON",
@@ -103,6 +125,7 @@ function TractInterestTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        {...props.esHocProps}
       />
     </Container>
   );

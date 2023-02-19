@@ -3,14 +3,10 @@ import {
   Grid,
   makeStyles,
 } from "@material-ui/core";
-import { useSelector } from "react-redux";
 
 import ExhibitA from "./ExhibitA";
-import ReportGroupHeader from "components/Shared/ReportGroupHeader";
-import { setStateIfDeepEqual } from "components/Shared/functions";
-import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
-import StateField from "../../../../Revenue/components/Properties/DetailComponents/State";
-import CountyField from "../../../../Revenue/components/Properties/DetailComponents/County";
+import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
+import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -23,6 +19,8 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   actionBar: {
+    display: "flex",
+    alignItems: "center",
     backgroundColor: "#f7f7f7",
     width: "100%",
     minHeight: "65px",
@@ -35,52 +33,115 @@ const useStyles = makeStyles((theme) => ({
       borderColor: "#ffff",
     },
   },
+  gridRoot: {
+    "& div": {
+      "&>.MuiPaper-root": {
+        display: "flex",
+        "flex-direction": "column",
+        height: "calc(100vh - 280px)",
+        position: "relative",
+        boxShadow: "none",
+        "align-items": "stretch",
+        "&>.MuiPaper-root": {
+          display: "contents",
+        },
+        "&>:nth-child(3)": {
+          height: "inherit !important",
+        },
+        "&> table": {
+          bottom: 0,
+        },
+      },
+    },
+  },
 }));
+
+const filterColumnsHeader = [
+  {
+    label: "Agreement Type",
+    filterKey: "shape.shapeJson.properties.layerSubType.keyword",
+    name: "layerSubType",
+    custom: { initialCapitalization: true }
+
+  },
+  {
+    label: "State",
+    filterKey: [
+      'parcel.shapeJson.properties.originalProperties.State.keyword',
+      'parcel.shapeJson.properties.originalProperties.StateAbbreviation.keyword'
+    ],
+    custom: {
+      oRFilter: true
+    },
+    name: "state"
+  },
+  {
+    label: "County",
+    filterKey: "parcel.shapeJson.properties.originalProperties.County.keyword",
+    name: "county"
+  },
+  {
+    label: "Internal Company",
+    filterKey: "shape.shapeJson.properties.internalCompany.keyword",
+    name: "internalCompany"
+  },
+  {
+    label: "Prospect",
+    filterKey: "shape.shapeJson.properties.prospectID.keyword",
+    name: "prospectID"
+  },
+  {
+    label: "Acquisition",
+    filterKey: "shape.shapeJson.properties.acquisitionID.keyword",
+    name: "acquisitionID",
+  },
+]
 
 export default function ExhibitATabPanel() {
   const classes = useStyles();
-  const propertiesReportGroup = useSelector(
-    ({ Revenue }) => Revenue.propertiesReportGroup
-  );
+  const initialFilterList = [['All'], ['All'], ['All'], ['All'], ['All'], ['All']];
+  const [, setFilters] = useState([]);
 
-  const [externalFilters, setExtFilters] = useState({
-    state: 'All',
-    county: 'All',
-    internalCompany: "All",
-    acquisitionID: "All",
-    prospectID: "All",
-    reportingGroup: "All",
-  });
-  const [esFilters, ESFilters] = useState([]);
+  const [esFilters, setESFilters] = useState([]);
 
-  useEffect(() => {
-    const newESFilters = [];
+  const onChange = (filter, index, column, esKey) => {
+    const newFilters = JSON.parse(JSON.stringify(esFilters))
 
-    // Add available values to filters
-    [
-      
-      "internalCompany",
-      "acquisitionID",
-      "prospectID",
-    ].map((field) => {
-      if (externalFilters[field] !== "All")
-        newESFilters.push({
-          field: `${field}.keyword`,
-          value: externalFilters[field],
-        });
-    });
-
-    ESFilters(newESFilters);
-  }, [externalFilters]);
-
-  const setESFilters = (newState) => {
-    setStateIfDeepEqual(ESFilters, newState);
-  };
-
-  const handleFilterChange = (field, newValue) => {
-    setExtFilters({ ...externalFilters, [field]: newValue || "All" });
-  };
-
+    if(column?.custom?.oRFilter){
+      if(column?.filterList[0]){
+        if(newFilters.find(filter => filter.field.includes(column?.filterKey[0]))){
+          newFilters[index] = { field: JSON.stringify(column?.filterKey), value: column?.filterList[0], oRFilter: true }
+        }else{
+          newFilters.push({ field: JSON.stringify(column?.filterKey), value: column?.filterList[0], oRFilter: true })
+        }
+      }else{
+        const index = newFilters.find(filter => filter.field.includes(column?.filterKey[0]))
+        if(index > -1){
+          newFilters.splice(index,1)
+        }
+      }
+    }
+    else{
+      if(column?.filterList[0]){
+        if(newFilters.find(filter => filter.field === column?.filterKey)){
+          const index = newFilters.findIndex(filter => filter.field === column?.filterKey)
+          newFilters[index] = { field: column?.filterKey, value: column?.filterList[0] }
+        }else{
+          newFilters.push({ field: column?.filterKey, value: column?.filterList[0] })
+        }
+      }else{
+        const index = newFilters.findIndex(filter => filter.field === column?.filterKey)
+        if(index > -1){
+          newFilters.splice(index,1)
+        }
+      }
+    } 
+    setESFilters(newFilters)
+  }
+  const filterChange = (filter) =>{
+    console.log('filter',filter)
+  }
+  
   return (
     <>
       <div className={classes.actionBar}>
@@ -92,69 +153,67 @@ export default function ExhibitATabPanel() {
           spacing={3}
           style={{ padding: "0px 36px" }}
         >
-          <Grid item xs={12} md={2} style={{}}>
-            <StateField
-              label="State"
-              shrink
-              value={externalFilters.state}
-              onStateChange={(state) =>
-                handleFilterChange("state", state.acronym)
-              }
-            />
-          </Grid>
-          <Grid item xs={12} md={2} style={{}}>
-            <CountyField
-              label="County"
-              shrink
-              value={externalFilters.county}
-              state={externalFilters.state}
-              onCountyChange={(selectedCounty) =>
-                handleFilterChange("county", selectedCounty.county)
-              }
-            />
-          </Grid>
-          {/* Similar Filter Fields */}
-          {["internalCompany", "acquisitionID", "prospectID"].map((field) => (
-            <Grid item xs={12} md={2}>
-              <AutoCompleteTypeComponent
-                fullWidth
-                value={externalFilters[field]}
-                shapeType="Agreement"
-                typeKey={field}
-                variant="outlined"
-                createable={false}
-                onChange={(e, newValue) =>
-                  handleFilterChange(field, newValue?.name)
+          <Grid
+            container
+            alignItems="center"
+            spacing={2}
+          >
+            {filterColumnsHeader.map((filterColumn, index) => {
+              const appliedFilters = esFilters?.length > 0 ? JSON.parse(JSON.stringify(esFilters)): []
+              appliedFilters.push({ field: "shape.shapeJson.properties.type", value: 'agreement' })
+
+              let filterList = JSON.parse(JSON.stringify(initialFilterList))
+              if (esFilters && typeof filterColumn?.filterKey === 'string') {
+                const gridViewFilter = esFilters.find(filter => filter.field === filterColumn?.filterKey)
+                if (gridViewFilter)
+                  filterList[index] = [gridViewFilter?.value]
+                if (filterColumn.name === 'County') {
+                  const stateFilter = esFilters.find(filter => filter.field === 'shape.shapeJson.properties.originalProperties.State.keyword')
+                  if (stateFilter)
+                    appliedFilters.push(stateFilter)
                 }
-                autoFocus={false}
-                id={`field-${field}`}
-              />
-            </Grid>
-          ))}
-          <Grid item xs={12} md={2}>
-            <Grid container display="flex" className={classes.actionsGrid}>
-              <ReportGroupHeader
-                type="Agreements"
-                esFilters={externalFilters.reportingGroup}
-                setESFilters={(value) => setESFilters(value)}
-                setFilterToggle={() => {}}
-                isBackground={false}
-                noUpdate={true}
-                strechedWidth
-                isShrink
-                noPadding
-              />
-            </Grid>
+              }else if(filterColumn?.custom?.oRFilter){
+                const gridViewFilter = esFilters.find(filter => filter.field.includes(filterColumn?.filterKey[0]))
+                if (gridViewFilter)
+                  filterList[index] = [gridViewFilter?.value]
+              }
+
+              return (
+                <Grid item xs={12} md={2} className={classes.inputStyle}>
+                  <AutoCompleteFilter
+                    multiple={filterColumn.multiple}
+                    esIndex={"shapetracts_flat"}
+                    variant="outlined"
+                    setFilters={setFilters}
+                    filterList={JSON.parse(JSON.stringify(initialFilterList))}
+                    column={filterColumn}
+                    disabled={filterColumn?.disabled}
+                    index={index}
+                    custom={filterColumn.custom ? filterColumn.custom : undefined}
+                    onChange={onChange}
+                    query={GET_ES_SIMPLE_FILTER}
+                    searchFields={[`'${filterColumn.filterKey}'`]}
+                    filters={appliedFilters}
+                    extendSearchQuery={""}
+                    inputSize="small"
+                  />
+                </Grid>
+              )
+            })}
           </Grid>
         </Grid>
       </div>
-      <ExhibitA
-        header="Exhibit A"
-        esFilters={esFilters}
-        targetLabel="acerage"
-        parent="AcerageDetail"
-        setESFilters={setESFilters}
-      />
+      <div className={classes.gridRoot}>
+        <ExhibitA
+          filterChange={filterChange}
+          header="Exhibit A"
+          esFilters={esFilters}
+          targetLabel="acerage"
+          parent="AcerageDetail"
+          esIndex="shapetracts_flat"
+          setESFilters={setESFilters}
+        />
+      </div>
     </>
   );
 }

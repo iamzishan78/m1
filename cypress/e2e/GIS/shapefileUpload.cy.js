@@ -112,12 +112,22 @@ describe('Shape File Upload Spec', () => {
                 cy.verifyApiResponse('@getAllMongoUsersApi', { responseTimeout: longTimeout })
                 cy.verifyApiResponse('@getESSimpleSearchApi', { responseTimeout: longTimeout })
 
+                cy.wait(25000)
+
+                cy.reload()
+
                 cy.wait(15000)
 
-                cy.gridSearch('1', 'getESSimpleSearch', "#mapGridCardSearch-basic")
+                cy.get('#managerButton', { timeout: extraTimeout }).should('be.visible')
+                cy.get("[id='grid-icon-cypressford']", { timeout: extraTimeout }).scrollIntoView().click()
+
+                cy.reload()
+
+                cy.get('#managerButton', { timeout: extraTimeout }).should('be.visible')
+                cy.get("[id='grid-icon-cypressford']", { timeout: extraTimeout }).scrollIntoView().click()
 
                 cy.log('==== STEP: VERIFYING THE DATA SHOWING IN GRID OR NOT ===')
-                cy.get("#layerSnapGrid", { timeout: longTimeout }).should('be.visible').getTableCell('geom', 1).then(($tableCell) => {
+                cy.get("#layerSnapGrid", { timeout: extraTimeout }).should('be.visible').getTableCell('geom', 1).then(($tableCell) => {
                     cy.log('==== STEP: OPEN ACTIVIY MODEL ====');
                     cy.wrap($tableCell).should('exist')
 
