@@ -519,6 +519,7 @@ function MapGridCard(props) {
                       )}
                       {searchTapValue.value === "layer" && (
                         <MapGridLayersTable
+                          id="layerSnapGrid"
                           dense
                           parent="search"
                           customOptions={options}
@@ -550,6 +551,7 @@ function MapGridCard(props) {
                           customOptions={options}
                           targetLabel={searchTapValue.value}
                           header={<SearchPanel {...commonProps} />}
+                          isSnapGrid
                         />
                       )}
                       {searchTapValue.value === "agreement" && (

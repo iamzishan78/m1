@@ -1,6 +1,6 @@
 import { GlobalStickyStyles } from "GlobalSettings";
 
-const unitsColumnHeaders = [
+const unitsColumnHeaders = (isSnapGrid = false) => [
   {
     name: "id",
     options: {
@@ -30,14 +30,7 @@ const unitsColumnHeaders = [
     label: "Unit Name",
     esKey: "name.keyword",
     options: {
-      ...GlobalStickyStyles({
-        setCellProps: {
-          left: '108.5px',
-        },
-        setCellHeaderProps: {
-          left: '108.5px',
-        }
-      }),
+      ...GlobalStickyStyles({ isSnapGrid }),
     },
   },
   {

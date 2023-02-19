@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { basic_timeouts } from "../../cypressUtils/data"
+import { basic_timeouts } from "../cypressUtils/data"
 
 describe('Add and Remove Comments Spec', () => {
     it('passes', () => {
@@ -20,8 +20,11 @@ describe('Add and Remove Comments Spec', () => {
 
             cy.getTableCell('Agreement', 3).then(($row) => {
                 cy.log('==== STEP: OPEN Agreement ====')
-                cy.wrap($row).click()
 
+                cy.wait(10000)
+                cy.wrap($row).click()
+                
+                cy.wait(10000)
                 cy.get('.MuiTypography-root', { timeout: longTimeout }).contains('Summary').should('be.visible')
                 cy.get("#metaDataButton", { timeout: longTimeout }).scrollIntoView().wait(1000).click()
 

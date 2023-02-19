@@ -127,6 +127,8 @@ export default function DealComment(props) {
   const [showActions, setShowActions] = useState(false);
   const [showCommentActionId, setShowCommentActionId] = useState(null);
   const [loadingComments, setLoadingComments] = useState(true);
+  const [isMinimize,setIsMinimize] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
 
   const [removeComment] = useMutation(REMOVECOMMENT);
   const [upsertComment, { data: newlyAddedComment }] = useMutation(UPSERTCOMMENT);
@@ -442,6 +444,7 @@ export default function DealComment(props) {
                                       setEditCommentId={setEditCommentId}
                                       setEditComment={setEditComment}
                                       deleteComment={deleteComment}
+                                      setShowActions={setShowActions}
                                     />
                                   </div>
                                 )}
@@ -456,13 +459,17 @@ export default function DealComment(props) {
                               <div className={classes.border}>
                                 <CommentField
                                   isEdit
+                                  setIsEdit={setIsEdit}
                                   profilesInfo={profilesInfo}
                                   users={users}
                                   comment={editComment}
                                   showActions={showActions}
                                   setEditCommentId={setEditCommentId}
                                   setComment={setEditComment}
-                                  upsertComment={updateComment}
+                                  updateCommentData={updateComment}
+                                  isMinimize={isMinimize}
+                                  setIsMinimize={setIsMinimize}
+                                  setShowActions={setShowActions}
                                 />
                               </div>
                             )}
@@ -490,11 +497,10 @@ export default function DealComment(props) {
             <Grid item xs={11} className={classes.paddingLeft10}>
               <div
                 className={classes.border}
-                style={{ width: "calc(23vw)", paddingBottom: "20px", paddingRight: "13px" }}
+                style={{ width: "calc(23vw)", paddingRight: "13px" }}
                 onClick={() => {
-                  if (!showActions) {
+                  debugger
                     setShowActions(true);
-                  }
                 }}
                 onBlur={() => {
                   if (showActions && !comment) {
@@ -509,6 +515,8 @@ export default function DealComment(props) {
                   showActions={showActions}
                   setComment={setComment}
                   upsertComment={addNewComment}
+                  isMinimize={isMinimize}
+                  setIsMinimize={setIsMinimize}
                 />
               </div>
             </Grid>
@@ -519,7 +527,7 @@ export default function DealComment(props) {
   );
 }
 
-const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment }) => {
+const ActionMenu = ({ eachComment, setEditCommentId, setShowActions, setEditComment, deleteComment }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -532,7 +540,7 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
 
   return (
     <>
-      <ExpandMoreIcon id="expandIcon" aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} />
+      <ExpandMoreIcon id="expandCommentActionIcon" aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} />
       <Menu
         style={{ zIndex: "1305" }}
         id={eachComment._id}
@@ -548,6 +556,7 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
           onClick={(event) => {
             setEditCommentId(eachComment._id);
             setEditComment(eachComment.comment);
+            setShowActions(true);
             handleClose();
           }}
         >

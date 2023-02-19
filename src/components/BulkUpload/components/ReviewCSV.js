@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { forwardRef } from "react";
+import React, { useEffect, forwardRef } from "react";
+import get from "lodash/get";
 import MaterialTable from "material-table";
 import { AppContext } from "../../../AppContext";
 import AddBox from "@material-ui/icons/AddBox";
@@ -88,7 +88,7 @@ export default function MaterialTableDemo() {
       temp.leadSource = null;
       temp.tableData = null;
       if (checkProperties(temp) == false) {
-        temp_state.push(element);
+        temp_state.push({ ...element, ...get(stateApp, "uploaderFormValues", {}) });
       }
     });
     setStateApp({
@@ -103,7 +103,7 @@ export default function MaterialTableDemo() {
         Review the data to be uploaded based on the mapping of M1neral headers
         that were selected.
       </div>
-      <div style={{ ...padding_div_top, ...table }}>
+      <div id="materialTable" style={{ ...padding_div_top, ...table }}>
         <MaterialTable
           title="Contacts"
           icons={tableIcons}

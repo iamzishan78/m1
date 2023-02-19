@@ -216,6 +216,7 @@ function ExpandableCard(props) {
       // , marginRight: '10px'
     },
     unitTitle: {
+      flexWrap: 'nowrap',
       "& .name": {
         color: "#1a2341",
         textTransform: "capitalize",
@@ -430,14 +431,14 @@ function ExpandableCard(props) {
         }}
       >
         {stateApp.selectedShape ? (
-          <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+          <Grid container spacing={2} alignItems="center" className={classes.unitTitle} >
             <Grid item>
               <Avatar color="#1a2341">
                 <FolderIcon fontColor="#1a2341" />
-              </Avatar>
+              </Avatar> 
             </Grid>
             <Grid item>
-              <Box className="name">{title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}</Box>
+              <Box className="name">{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}</Box>
               <Box className="description">{subTitle}</Box>
               {stateApp.selectedShape.type === "unit" && <Box className="type">Unit</Box>}
               {stateApp.selectedShape.type === "agreement" && (
@@ -448,16 +449,17 @@ function ExpandableCard(props) {
         ) : (
           <>
             {" "}
-            {targetLabel !== "contact" && targetLabel !== "parcel" && <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>}
+            {targetLabel !== "contact" && targetLabel !== "parcel" && <div>{title.length > 70 ? `${title.substr(0, 75)}...` : title}</div>}
             {targetLabel === "parcel" && props.expanded === true && (
               <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
+                
                 <Grid item>
                   <Avatar color="#1a2341">
                     <FolderIcon fontColor="#1a2341" />
                   </Avatar>
                 </Grid>
                 <Grid item>
-                  <Box className="name">{title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}</Box>
+                  <Box className="name">{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}</Box>
                   {subTitle && <Box className="description">{subTitle}</Box>}
                   <Box className="type">Tract</Box>
                 </Grid>
@@ -472,12 +474,12 @@ function ExpandableCard(props) {
                     marginTop: -6,
                   }}
                 >
-                  {title.length > 30 ? `${title.substr(0, 35).toUpperCase()}...` : title.toUpperCase()}
+                  {title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}
                 </Box>
               </Grid>
             )}
             {targetLabel === "contact" && parent !== "table" && <ContactSearch />}
-            {targetLabel === "contact" && parent !== "table" && <div>{title.length > 30 ? `${title.substr(0, 35)}...` : title}</div>}
+            {targetLabel === "contact" && parent !== "table" && <div>{title.length > 70 ? `${title.substr(0, 75)}...` : title}</div>}
           </>
         )}
       </div>
@@ -588,10 +590,10 @@ function ExpandableCard(props) {
             <Typography
               // className={classes.prevlocation}
               color="inherit"
-              // onClick={() => {
-              //   setStateApp({ ...stateApp, DocumentDrawer: true });
-              //   history.push("/documents");
-              // }}
+            // onClick={() => {
+            //   setStateApp({ ...stateApp, DocumentDrawer: true });
+            //   history.push("/documents");
+            // }}
             >
               Wells
             </Typography>
@@ -602,6 +604,7 @@ function ExpandableCard(props) {
     );
   };
 
+  const subHeader = subTitle === ", " ? `${stateApp?.selectedShape?.state} - ${stateApp?.selectedShape?.county}` : (subTitle ? (subTitle.length > 35 ? `${subTitle.substr(0, 35)}...` : subTitle) : "");
   return (
     <React.Fragment>
       {/* Dialog for deleting parcel  */}
@@ -618,14 +621,14 @@ function ExpandableCard(props) {
             onClose={() => setOpenDialog(false)}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             Are you sure you want to delete the selected {targetLabel === "expandedParcel" ? "parcel" : targetLabel}?
           </DeleteConfirmationDialogContent>
         </Dialog>
       )}
 
-      <Card className={classes.card}>
+      <Card id="expandableCard" className={classes.card}>
         {/* Modal popup for reporting bugs on expandable card  */}
         <ReportBugModal open={openBugModal} onClose={() => setOpenBugModal(false)} />
         {(history.location?.state?.fromShapeDetail || breadcrumbs) && <DisplayBreadCrums />}
@@ -723,12 +726,12 @@ function ExpandableCard(props) {
 
               {stateExpandableCard.expanded && targetLabel !== "activity" && targetLabel !== "contact" && parent !== "table" ? (
                 parent !== "table" &&
-                targetLabel !== "well" &&
-                targetLabel !== "expandedWell" &&
-                targetLabel !== "parcel" &&
-                !stateApp.selectedShape &&
-                targetLabel !== "expandedParcel" &&
-                targetLabel !== "recent_submitted_permits" ? (
+                  targetLabel !== "well" &&
+                  targetLabel !== "expandedWell" &&
+                  targetLabel !== "parcel" &&
+                  !stateApp.selectedShape &&
+                  targetLabel !== "expandedParcel" &&
+                  targetLabel !== "recent_submitted_permits" ? (
                   <Tooltip title={"Shrink"} placement="top">
                     <IconButton color="secondary" onClick={handleShrink} aria-label="shrink" className={classes.icons}>
                       <ShrinkIcon viewBox="0 0 64 64" color="secondary" />
@@ -826,7 +829,7 @@ function ExpandableCard(props) {
         />
 
         <CardContent className={classes.content}>
-          <div id="cardContent">{props.component}</div>
+          <div id="cardContentData">{props.component}</div>
         </CardContent>
       </Card>
     </React.Fragment>
