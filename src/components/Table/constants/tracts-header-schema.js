@@ -1,9 +1,7 @@
 import { history } from "store";
 import { GlobalStickyStyles } from "GlobalSettings";
-import GlobalStyles from "..//..//..//GlobalStyles.js";
-import Typography from "@material-ui/core/Typography";
 
-
+import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 
 const TractsHeadCells = (isSnapGrid = false) => [
   {
@@ -11,152 +9,126 @@ const TractsHeadCells = (isSnapGrid = false) => [
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-
-    /// this is the control column for tracts 
+    /// this is the control column for tracts
     name: "name",
     label: "Tract Name",
-    esKey: 'name.keyword',
+    esKey: "name.keyword",
 
     options: {
-      ...GlobalStickyStyles({
-
-        setCellProps: {
-          left: isSnapGrid ? '77px' : '108px',
-        },
-        setCellHeaderProps: {
-          left: isSnapGrid ? '77px' : '108px',
-        }
-
-      }),
+      ...GlobalStickyStyles({ isSnapGrid }),
       dbName: "name",
 
       customRender: (value, tableMeta) => {
-        const splitNumber = typeof value === 'string' ? value?.split("_") : value
-
-        const styles = {
-          fontWeight: GlobalStyles.font.boldFontWeight,
-          color: GlobalStyles.colors.lightBlue,
-          cursor: GlobalStyles.hyperlink.cursor,
-          position: 'absolute',
-          // left: '70px',
-        };
+        const splitNumber = typeof value === "string" ? value?.split("_") : value;
 
         return (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >   <Typography
+          <ColumnWithLink
             onClick={(e) => {
               e.stopPropagation();
               history.push(`/map/parcels/${tableMeta.rowData[0]}`, { showTractsBreadcrumb: !isSnapGrid });
             }}
-            noWrap
-            variant='body2'
-            style={styles}
-          >
-
-              {splitNumber?.[0]
-                ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}`
-                : tableMeta?.rowData[2]}
-
-            </Typography>
-          </div>
+            value={splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]}
+            link={`/map/parcels/${tableMeta.rowData[0]}`}
+          />
         );
       },
-    }
+    },
   },
   {
-    name: "State", label: "State", esKey: 'shapeJson.properties.originalProperties.State.keyword',
+    name: "State",
+    label: "State",
+    esKey: "shapeJson.properties.originalProperties.State.keyword",
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.State",
       sort: true,
-      filter: true
+      filter: true,
     },
-
   },
   {
-    name: "County", label: "County", esKey: 'shapeJson.properties.originalProperties.County.keyword',
+    name: "County",
+    label: "County",
+    esKey: "shapeJson.properties.originalProperties.County.keyword",
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.County",
-    }
+    },
   },
   {
-    name: "SurveyMeridian", label: "Survey/ Meridian", esKey: [
-      'shapeJson.properties.originalProperties.Survey.keyword',
-      'shapeJson.properties.originalProperties.PrincipalMeridian.keyword'
-    ],
+    name: "SurveyMeridian",
+    label: "Survey/ Meridian",
+    esKey: ["shapeJson.properties.originalProperties.Survey.keyword", "shapeJson.properties.originalProperties.PrincipalMeridian.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
       sort: true,
-      filter: true
+      filter: true,
     },
     custom: {
       multi_filter_keys: true,
     },
   },
   {
-    name: "BlockTownship", label: "Block/ Township", esKey: [
-      'shapeJson.properties.originalProperties.Block.keyword',
-      'shapeJson.properties.originalProperties.Township.keyword'
-    ],
+    name: "BlockTownship",
+    label: "Block/ Township",
+    esKey: ["shapeJson.properties.originalProperties.Block.keyword", "shapeJson.properties.originalProperties.Township.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Block?.Township?",
       sort: true,
-      filter: true
+      filter: true,
     },
     custom: {
       multi_filter_keys: true,
     },
   },
   {
-    name: "SectionRange", label: "Section/ Range", esKey: [
-      'shapeJson.properties.originalProperties.Section.keyword',
-      'shapeJson.properties.originalProperties.Range.keyword'
-    ],
+    name: "SectionRange",
+    label: "Section/ Range",
+    esKey: ["shapeJson.properties.originalProperties.Section.keyword", "shapeJson.properties.originalProperties.Range.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
       sort: true,
-      filter: true
+      filter: true,
     },
     custom: {
       multi_filter_keys: true,
     },
   },
   {
-    name: "AbstractSection", label: "Abstract/ Section", esKey: [
-      'shapeJson.properties.originalProperties.AbstractName.keyword',
-      'shapeJson.properties.originalProperties.ShortName.keyword'
-    ],
+    name: "AbstractSection",
+    label: "Abstract/ Section",
+    esKey: ["shapeJson.properties.originalProperties.AbstractName.keyword", "shapeJson.properties.originalProperties.ShortName.keyword"],
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
       sort: true,
-      filter: true
+      filter: true,
     },
     custom: {
       multi_filter_keys: true,
     },
   },
   {
-    name: "GrossAcres", label: "Gross Acres", esKey: 'shapeJson.properties.sdGrossAcres.keyword',
+    name: "GrossAcres",
+    label: "Gross Acres",
+    esKey: "shapeJson.properties.sdGrossAcres.keyword",
     options: {
       dbName: "shapeJson.properties.sdGrossAcres",
-    }
+    },
   },
   {
-    name: "CalcAcres", label: "Calc Acres", esKey: 'shapeJson.properties.shapeArea.keyword',
+    name: "CalcAcres",
+    label: "Calc Acres",
+    esKey: "shapeJson.properties.shapeArea.keyword",
     options: {
       dbName: "shapeJson.properties.shapeArea",
-    }
+    },
   },
   {
-    name: "department", label: "Department", esKey: 'shapeJson.properties.department.keyword',
+    name: "department",
+    label: "Department",
+    esKey: "shapeJson.properties.department.keyword",
     options: {
       dbName: "shapeJson.properties.department",
       sort: true,
-      filter: true
-    }
+      filter: true,
+    },
   },
   {
     name: "tags",
@@ -165,7 +137,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
     options: {
       ignoreGlobal: true,
       sort: true,
-      filter: true
+      filter: true,
     },
   },
   {
@@ -184,17 +156,17 @@ const TractsHeadCells = (isSnapGrid = false) => [
   },
   {
     name: "name-elasticsearch",
-    esKey: 'name.keyword',
+    esKey: "name.keyword",
     options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
   },
   {
     name: "shapeLabel-elasticsearch",
-    esKey: 'shapeLabel.keyword',
+    esKey: "shapeLabel.keyword",
     options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
   },
   {
     name: "state-elasticsearch",
-    esKey: 'state.keyword',
+    esKey: "state.keyword",
     options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
   },
   // {

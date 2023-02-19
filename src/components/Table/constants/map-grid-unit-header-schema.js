@@ -30,14 +30,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     label: "Unit Name",
     esKey: "name.keyword",
     options: {
-      ...GlobalStickyStyles({
-        setCellProps: {
-          left: isSnapGrid ? '77px' : '108.5px',
-        },
-        setCellHeaderProps: {
-          left: isSnapGrid ? '77px' : '108.5px',
-        }
-      }),
+      ...GlobalStickyStyles({ isSnapGrid }),
     },
   },
   {

@@ -121,6 +121,7 @@ function AgreementsTable(props) {
         field: "shapeGeometry",
         value: stateApp?.currentFeature?.geometry,
       },
+      exportPx: "121px",
       formatHits,
     });
     // eslint-disable-next-line
