@@ -14,9 +14,10 @@ const filterTypes = {
   // "Legal Description": { component: "ProvisionFilters", countKey: "ownershipFilterCount" },
   // Wells: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // Documents: { component: "ProvisionFilters", countKey: "tagFilterCount" },
-  // "Related Agreements": { component: "ProvisionFilters", countKey: "tagFilterCount" },
+  // "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "tagFilterCount" },
   // "Remarks Types": { component: "RemarksTypes", countKey: "remarksTypes" },
   "Related Wells": { component: "RelatedWellsFilters", countKey: "tagFilterCount" },
+  "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "tagFilterCount" },
 };
 
 const useStyles = makeStyles(() => ({
