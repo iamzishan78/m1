@@ -30,7 +30,7 @@ function RevenueStatementTable(props) {
   });
 
   React.useEffect(() => {
-    setCustomFilterChanged(true);
+    setCustomFilterChanged?.(true);
   }, [esFilters]);
 
   const [getPotentialIssues, { data: potentialIssues }] = useLazyQuery(GET_ES_POTENTIAL_ISSUES_SUMMARY, {
