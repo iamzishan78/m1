@@ -1795,8 +1795,7 @@ function SubTable(props) {
                         if (!disabled) {
                           type = coordinates?.objToPopulateSearchLayer?.objectType || type;
                           if (column.name === "Well") coordinates.wellId = props.rows[tableMeta.rowIndex]?.well.globalWell;
-                          handleClickFlyToIcon(type, coordinates);
-                          dispatch(setMapGridCardState({ mapGridCardActivated: false }));
+                          handleClickFlyToIcon(type, coordinates, true);
                         }
                       }}
                       value={value}
