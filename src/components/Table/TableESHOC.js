@@ -855,17 +855,7 @@ export const TableESHOC = (Component) => {
                                 searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
                             if (pageESVariables?.search?.query) pageESVariables.search.query = searchQuery
 
-                            pageESVariables.variables.pagination = {
-                                first: total,
-                                after: null,
-                            }
-                            const allSelectedRows = await client.query({
-                                ...pageESVariables,
-                                query: GET_ES_SIMPLE_SEARCH,
-                            });
-
                             if (selectAll) {
-                                const pageESVariables = copy(tableActions.pageESVariables)
                                 tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
 
                                 let selectedData = []
