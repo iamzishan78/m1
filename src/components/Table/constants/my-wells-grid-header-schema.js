@@ -29,8 +29,6 @@ const wellsColumnHeaders = [
       sort: true,
       filter: true,
       customRender: (value, tableMeta) => {
-
-
         console.log("-*-*-*- tableMeta *-*-*", tableMeta)
         const globalWellId = tableMeta.rowData[0];
 
