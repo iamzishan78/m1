@@ -188,6 +188,7 @@ export const analyticsManagementRoutes = {
     value: "Land",
     search: false,
     isDefault: false,
+    hideSearch: true,
   },
   PROSPECTS: {
     featureFlag: "CONTACTSUBMENU",
