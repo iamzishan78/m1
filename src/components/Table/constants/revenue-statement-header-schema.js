@@ -1,38 +1,6 @@
 import { GlobalStickyStyles } from "GlobalSettings";
-import { useHistory } from "react-router-dom";
 import vf_currency from "components/Shared/valueformatters/vf_currency";
-
-const styles = {
-  width: "fit-content",
-  fontWeight: 600,
-  color: "#17aadd",
-  cursor: "pointer",
-};
-
-const ComponentPropertyName = ({ value, tableMeta }) => {
-  const history = useHistory();
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-      }}
-      // style={{borderRight: 'solid red'}}
-    >
-      <a
-        href={`/revenue/statement/details/${tableMeta.rowData[0]}`}
-        onClick={(e) => {
-          e.stopPropagation();
-          history.push(`/revenue/statement/details/${tableMeta.rowData[0]}`);
-        }}
-        style={styles}
-      >
-        {(value ? `${value}- ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]) || "NA"}
-      </a>
-    </div>
-  );
-};
+import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 
 const RevenueStatementHeadCells = [
   {
@@ -53,7 +21,13 @@ const RevenueStatementHeadCells = [
           left: "108px",
         },
       }),
-      customRender: (value, tableMeta) => <ComponentPropertyName value={value} tableMeta={tableMeta} />,
+      customRender: (value, tableMeta) => <ColumnWithLink
+        value={(value ? `${value} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]) || "NA"}
+        link={`/revenue/statement/details/${tableMeta.rowData[0]}`}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      />,
       sort: true,
       filter: true,
     },
