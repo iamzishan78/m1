@@ -106,7 +106,7 @@ const AnalyticsSearch = () => {
               Land Analytics
             </Typography>
           </Grid>
-          {!activeModule.hideSearch && (
+          {!activeModule?.hideSearch && (
             <Grid item md={6}>
               <TextField
                 value={search}
