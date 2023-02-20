@@ -29,13 +29,7 @@ const wellsColumnHeaders = [
       sort: true,
       filter: true,
       customRender: (value, tableMeta) => {
-        const styles = {
-          fontWeight: GlobalStyles.font.boldFontWeight,
-          color: GlobalStyles.colors.lightBlue,
-          cursor: GlobalStyles.hyperlink.cursor,
-          position: "absolute",
-          // left: '70px',
-        };
+
 
         console.log("-*-*-*- tableMeta *-*-*", tableMeta)
         const globalWellId = tableMeta.rowData[0];
