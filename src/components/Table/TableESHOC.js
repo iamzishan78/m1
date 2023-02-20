@@ -333,39 +333,39 @@ export const TableESHOC = (Component) => {
                         filter: true,
                         filterList: undefined,
                         filterType: "custom",
-                            customFilterListOptions: {
-                                render: v => v.map(l => {
-                                    if(custom?.formatedFilterOptions?.length > 0){
-                                        return custom?.formatedFilterOptions.find(f => f.value === l)?.label || l
-                                    }
-                                    return l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l
-                                }),
+                        customFilterListOptions: {
+                            render: v => v.map(l => {
+                                if (custom?.formatedFilterOptions?.length > 0) {
+                                    return custom?.formatedFilterOptions.find(f => f.value === l)?.label || l
+                                }
+                                return l === "true" && column?.options?.forceFilter ? "Yes" : l === "false" && column?.options?.forceFilter ? "No" : l
+                            }),
+                        },
+                        filterOptions: {
+                            display: (filterList, onChange, index, column) => {
+                                if (!TableHeader.find((el) => el.name === column.name) && tableMeta.customDataESKey) {
+                                    column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
+                                } else
+                                    column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
+
+                                if (!column.filterKey && column.esKey) column.filterKey = column.esKey
+
+                                return (
+                                    <AutoCompleteFilter
+                                        esIndex={esIndex}
+                                        filterList={filterList}
+                                        column={column}
+                                        index={index}
+                                        onChange={onChange}
+                                        query={GET_ES_SIMPLE_FILTER}
+                                        searchFields={tableMeta.searchFields}
+                                        filters={appliedFilters}
+                                        extendSearchQuery={extendSearchQuery}
+                                        custom={custom}
+                                    />
+                                );
                             },
-                            filterOptions: {
-                                display: (filterList, onChange, index, column) => {
-                                    if (!TableHeader.find((el) => el.name === column.name) && tableMeta.customDataESKey) {
-                                        column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
-                                    } else
-                                        column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
-    
-                                    if (!column.filterKey && column.esKey) column.filterKey = column.esKey
-    
-                                    return (
-                                        <AutoCompleteFilter
-                                            esIndex={esIndex}
-                                            filterList={filterList}
-                                            column={column}
-                                            index={index}
-                                            onChange={onChange}
-                                            query={GET_ES_SIMPLE_FILTER}
-                                            searchFields={tableMeta.searchFields}
-                                            filters={appliedFilters}
-                                            extendSearchQuery={extendSearchQuery}
-                                            custom={custom}
-                                        />
-                                    );
-                                },
-                            }
+                        }
                     };
                 } else {
                     column.options = {
@@ -600,7 +600,7 @@ export const TableESHOC = (Component) => {
             }
 
             // temporary patch
-            if(tableState?.filterList?.[2]?.includes("Expiration") || tableState?.filterList?.[2]?.includes("Option to Extend")) {
+            if (tableState?.filterList?.[2]?.includes("Expiration") || tableState?.filterList?.[2]?.includes("Option to Extend")) {
                 tableState.filterList[2] = []
             }
             // Patch end
@@ -718,16 +718,16 @@ export const TableESHOC = (Component) => {
             for (let i = 0; i < data?.length; i++) {
                 for (let j = 0; j < sampleCsv.length; j++) {
                     let updatedData = get(data[i], sampleCsv[j].name, '')
-                    if(typeof updatedData === 'string'){
+                    if (typeof updatedData === 'string') {
                         updatedData = updatedData.replace(/(?:\r\n|\r|\n)/g, ' ')
-                        if(typeof updatedData === 'string' && updatedData?.includes(',')){
-                            updatedData = updatedData.replace(/,/g,' ')
+                        if (typeof updatedData === 'string' && updatedData?.includes(',')) {
+                            updatedData = updatedData.replace(/,/g, ' ')
                         }
-                    }else if(sampleCsv[j].name === 'tags' && Array.isArray(updatedData) ){
-                        const tags = updatedData[0].map(d => d).toString().replace(/,/g,' ')
+                    } else if (sampleCsv[j].name === 'tags' && Array.isArray(updatedData)) {
+                        const tags = updatedData[0].map(d => d).toString().replace(/,/g, ' ')
                         updatedData = tags
-                    }else if(Array.isArray(updatedData)){
-                        const data = updatedData.map(d => d).toString().replace(/,/g,' ')
+                    } else if (Array.isArray(updatedData)) {
+                        const data = updatedData.map(d => d).toString().replace(/,/g, ' ')
                         updatedData = data
                     }
                     csv = `${j !== 0 ? csv + ',' : csv}${updatedData}`
@@ -780,7 +780,7 @@ export const TableESHOC = (Component) => {
             });
 
             const hits = tableMeta.formatHits(copy(allSelectedRows.data.getESSimpleSearch.hits))
-            const csvData = getCSVData(hits, tableStateRef.current.columns.filter( c => c.display !== false && c.display !== "false"  && c.label !== " "))
+            const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => c.display !== false && c.display !== "false" && c.label !== " "))
 
             var blob = new Blob([csvData]);
             var url = URL.createObjectURL(blob);
@@ -973,10 +973,10 @@ export const TableESHOC = (Component) => {
                                         <Button
                                             color="secondary"
                                             className={classes.multiSelectionTopBarButtons}
-                                            onClick={() => { 
-                                                if(tableMeta.onClickAdd) tableMeta.onClickAdd()
-                                                setAddToTable('add'); 
-                                                setClickedRow(null) 
+                                            onClick={() => {
+                                                if (tableMeta.onClickAdd) tableMeta.onClickAdd()
+                                                setAddToTable('add');
+                                                setClickedRow(null)
                                             }}
                                         >
                                             {tableMeta.addBtnText ?
