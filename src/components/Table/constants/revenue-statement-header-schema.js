@@ -18,7 +18,7 @@ const ComponentPropertyName = ({ value, tableMeta }) => {
         display: "flex",
         alignItems: "center",
       }}
-      // style={{borderRight: 'solid red'}}
+    // style={{borderRight: 'solid red'}}
     >
       <a
         href={`/revenue/statement/details/${tableMeta.rowData[0]}`}
@@ -47,10 +47,10 @@ const RevenueStatementHeadCells = [
     options: {
       ...GlobalStickyStyles({
         setCellProps: {
-          left: "108px",
+          left: "124px",
         },
         setCellHeaderProps: {
-          left: "108px",
+          left: "124px",
         },
       }),
       customRender: (value, tableMeta) => <ComponentPropertyName value={value} tableMeta={tableMeta} />,
