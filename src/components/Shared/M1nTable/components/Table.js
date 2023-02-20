@@ -131,7 +131,7 @@ import ReactSelectField from "./SubComponents/ReactSelectField";
 import TableBody from "./MUIDataTable/TableBody";
 import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOfferPrice";
 
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 
@@ -1415,25 +1415,25 @@ function SubTable(props) {
                           round
                         />
                         <Link
-                            to={`/contact/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
-                            className={classes.clickableCell}
+                          to={`/contact/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
+                          className={classes.clickableCell}
                         >
-                        <p
+                          <p
 
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            minWidth: "300px",
-                          }}
-                        >
-                          {tableMeta.rowData[nameIndex]}
-                          {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
-                            <FeatureFlag feature={FEATURES.IDICORE}>
-                              <MonetizationOnIcon className={classes.monetizationIcon} />
-                            </FeatureFlag>
-                          )}
-                        </p>
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              minWidth: "300px",
+                            }}
+                          >
+                            {tableMeta.rowData[nameIndex]}
+                            {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
+                              <FeatureFlag feature={FEATURES.IDICORE}>
+                                <MonetizationOnIcon className={classes.monetizationIcon} />
+                              </FeatureFlag>
+                            )}
+                          </p>
                         </Link>
                       </div>
                     );
@@ -3945,9 +3945,9 @@ function SubTable(props) {
             {props.addAble?.type === "contact" && (
               <div style={{ display: "inline", position: "absolute", right: "120px", top: "5px" }}>
                 <IconButton onClick={props.onDownload}>
-                    <Tooltip title="Download CSV" aria-label="add">
-                      <CloudDownloadIcon />
-                    </Tooltip>
+                  <Tooltip title="Download CSV" aria-label="add">
+                    <CloudDownloadIcon />
+                  </Tooltip>
                 </IconButton>
               </div>
             )}
