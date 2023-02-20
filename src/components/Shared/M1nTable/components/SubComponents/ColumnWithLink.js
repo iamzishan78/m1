@@ -17,9 +17,9 @@ const useStyles = makeStyles(() => ({
     overflow: "hidden",
     textOverflow: "ellipsis",
     p: 2,
-    textDecoration: "none !important",
+    textDecoration: "none",
     "&:hover": {
-      textDecoration: "underline",
+      textDecoration: "underline !important",
       fontWeight: GlobalStyles.font.boldFontWeight,
     },
   }
