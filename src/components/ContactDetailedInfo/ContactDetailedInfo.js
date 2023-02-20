@@ -56,6 +56,8 @@ const AntSwitch = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
+    paddingRight: "25px",
+    paddingLeft: "15px",
   },
   avatar: {
     marginRight: "20px",

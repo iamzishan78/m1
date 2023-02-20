@@ -3,7 +3,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { useMutation } from "@apollo/client";
 
 // context
-import { Container, Dialog, Button, IconButton, Tooltip } from "@material-ui/core";
+import { Container, Dialog, Button, IconButton, Tooltip, makeStyles } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 
@@ -20,8 +20,14 @@ import TableHeader from "components/Shared/constants/contact-related-agreement-h
 import convert_date from "components/Shared/valueformatters/convert_date";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
+const useStyles = makeStyles((theme) => ({
+  container: {
+    padding: "0 !important"
+  },
+}));
+
 function RelatedAgreementsTable(props) {
-  const classes = {};
+  const classes = useStyles();
   const [isDeletePopup, setDeletePopup] = useState(false);
   const { moduleId } = props;
 
