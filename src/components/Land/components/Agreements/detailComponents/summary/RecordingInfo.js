@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import moment from "moment";
 import _ from "lodash";
@@ -87,7 +87,7 @@ const Acreage = ({ properties, updateAgreement }) => {
                       variant="outlined"
                       margin="dense"
                       fullWidth
-                      // value={params.value ? moment(watch("recordedDate")).utc(true).format("yyyy-MM-DD") : ""}
+                      value={params.value ? moment(watch("recordedDate")).utc(true).format("yyyy-MM-DD") : ""}
                       InputLabelProps={{
                         shrink: true,
                       }}
@@ -102,10 +102,14 @@ const Acreage = ({ properties, updateAgreement }) => {
                       InputProps={{
                         endAdornment: (
                           <IconButton>
-                            <Clear style={{ height: 22, width: 22 }} onClick={() => {
-                              params.onChange("");
-                              offClickHandler("recordedDate", null);
-                            }} />
+                            <Clear
+                              style={{ height: 22, width: 22 }}
+                              onClick={() => {
+                                params.onChange(null);
+                                // reset({ ...getValues(), recordedDate: null });
+                                offClickHandler("recordedDate", null);
+                              }}
+                            />
                           </IconButton>
                         ),
                         classes: {
