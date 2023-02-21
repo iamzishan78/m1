@@ -1,14 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Switch, Route, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import MenuItem from "@material-ui/core/MenuItem";
 
 // import { toggleQuickActionsPanel, setActiveModule } from "store/actions/contactActions";
-import {
-  setActiveModule,
-  toggleQuickActionsPanel,
-} from "store/actions/commonActions";
+import { setActiveModule, toggleQuickActionsPanel } from "store/actions/commonActions";
 import { AppContext } from "AppContext";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
@@ -34,9 +31,7 @@ export default function Analytics() {
   const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
   const [allowedPaths, setAllowablePaths] = useState({});
-  const { quickActionsPanelState, activeModule } = useSelector(
-    ({ common }) => common
-  );
+  const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
   useEffect(() => {
     const option = Object.values(analyticsManagementRoutes).find((item) => {
@@ -63,18 +58,18 @@ export default function Analytics() {
 
   useEffect(() => {
     const allPaths = JSON.parse(JSON.stringify(analyticsManagementRoutes));
-    const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICS);
-    const allAllowedPaths = {}
+    const feature = stateApp.user?.features?.find((feature) => feature.name === FEATURES.ANALYTICS);
+    const allAllowedPaths = {};
     if (feature?.JSON) {
-      const data = JSON.parse(feature.JSON)
-      Object.keys(allPaths).forEach(path => {
+      const data = JSON.parse(feature.JSON);
+      Object.keys(allPaths).forEach((path) => {
         if (data.options.includes(allPaths[path].value)) {
-          allAllowedPaths[path] = allPaths[path]
+          allAllowedPaths[path] = allPaths[path];
         }
       });
     }
-    setAllowablePaths(allAllowedPaths)
-  }, [stateApp?.user])
+    setAllowablePaths(allAllowedPaths);
+  }, [stateApp?.user]);
 
   return (
     <>
@@ -89,11 +84,7 @@ export default function Analytics() {
         >
           {Object.keys(allowedPaths).map((option) => (
             <Switch>
-              <Route
-                exact
-                path={allowedPaths[option].link}
-                component={Components[allowedPaths[option].component]}
-              />
+              <Route exact path={allowedPaths[option].link} component={Components[allowedPaths[option].component]} />
             </Switch>
           ))}
         </QuickActionPanel>
@@ -116,33 +107,18 @@ const PanelAction = () => {
       },
       {
         action: "heatMaps",
-        icon: <ViewColumnIcon  fill="#fff"  fontSize="medium" />,
+        icon: <ViewColumnIcon fill="#fff" fontSize="medium" />,
       },
     ];
   }, []);
 
   return (
     <StyledMenuHActionHeader>
-      <Grid
-        container
-        direction="row"
-        justify="space-between"
-        alignItems="center"
-      >
+      <Grid container direction="row" justify="space-between" alignItems="center">
         <Grid item>
-          <Tabs
-            value={tab}
-            aria-label="find-map-tabs"
-            indicatorColor="primary"
-            textColor="primary"
-            variant="fullWidth"
-          >
+          <Tabs value={tab} aria-label="find-map-tabs" indicatorColor="primary" textColor="primary" variant="fullWidth">
             {layerIcons.map((action, index) => (
-              <Tab
-                icon={action.icon}
-                {...a11yProps(index)}
-                onClick={() => setTab(index)}
-              />
+              <Tab icon={action.icon} {...a11yProps(index)} onClick={() => setTab(index)} />
             ))}
           </Tabs>
         </Grid>
@@ -150,7 +126,6 @@ const PanelAction = () => {
     </StyledMenuHActionHeader>
   );
 };
-
 
 const StyledMenuHActionHeader = withStyles((theme) => ({
   root: {
