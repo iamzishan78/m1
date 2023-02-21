@@ -177,7 +177,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
       if (provision._id) {
         addProvision = { ...addProvision, isTemplate: false, applicable: true, templateRef: provision._id, user: stateApp.user.mongoId };
         upsertAgreementProvision({
-          variables: { provision: addProvision },
+          variables: { provision: { ...addProvision, isDeleted: false } },
           refetchQueries: ["getAgreementProvisions", "provisionAutoCompleteList"],
         });
       } else {
@@ -199,7 +199,7 @@ export default function ProvisionsTab({ provisions, standardProvisions, id, setP
       if (provision.type)
         upsertAgreementProvision({
           variables: {
-            provision: { agreement: id, ...formValues.provisions[index], user: stateApp.user.mongoId },
+            provision: { agreement: id, ...formValues.provisions[index], user: stateApp.user.mongoId, isDeleted: false },
           },
         });
     }
