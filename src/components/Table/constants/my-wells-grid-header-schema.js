@@ -29,7 +29,7 @@ const wellsColumnHeaders = [
       sort: true,
       filter: true,
       customRender: (value, tableMeta) => {
-        console.log("-*-*-*- tableMeta *-*-*", tableMeta);
+        console.log("-*-*-*- tableMeta *-*-*", tableMeta)
         const globalWellId = tableMeta.rowData[0];
 
         return <ColumnWithLink value={value} link={`/land/well/details/${globalWellId}`} />;
