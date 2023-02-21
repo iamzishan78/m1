@@ -751,7 +751,7 @@ export const TableESHOC = (Component) => {
                         advanceSearch: tableMeta.advanceSearch,
                     },
                     pagination: {
-                        first: tableStateRef.current.count,
+                        first: tableStateRef.current.count > 10000 ? 10000 : tableStateRef.current.count,
                         after: null,
                     },
                     ...(!isEmpty(tableStateRef.current.sortOrder) && tableStateRef.current.sortOrder.direction !== 'none') ? {
