@@ -17,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiInputBase-root": {
       border: "1px solid black",
     },
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "6px",
+    },
   },
   secondaryFieldContainer: {
     maxWidth: "23%",
