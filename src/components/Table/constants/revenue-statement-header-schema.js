@@ -20,14 +20,13 @@ const RevenueStatementHeadCells = [
           left: "124px",
         },
       }),
-      customRender: (value, tableMeta) => (
-        <ColumnWithLink
-          value={
-            (value && tableMeta?.rowData[2] ? `${value} - ${tableMeta?.rowData[2]}` : value || tableMeta?.rowData[2]) || 'NA'
-          }
-          link={`/revenue/statement/details/${tableMeta.rowData[0]}`}
-        />
-      ),
+      customRender: (value, tableMeta) => <ColumnWithLink
+        value={(value ? `${value} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]) || "NA"}
+        link={`/revenue/statement/details/${tableMeta.rowData[0]}`}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      />,
       sort: true,
       filter: true,
     },
