@@ -14,10 +14,10 @@ const RevenueStatementHeadCells = [
     options: {
       ...GlobalStickyStyles({
         setCellProps: {
-          left: "108px",
+          left: "124px",
         },
         setCellHeaderProps: {
-          left: "108px",
+          left: "124px",
         },
       }),
       customRender: (value, tableMeta) => (
