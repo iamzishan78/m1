@@ -47,8 +47,8 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
           </Grid>
         </Grid>
         <Divider />
-        <div style={{ paddingLeft: '23px' }}>
-          <Typography variant="body2" className={classes.quickActionText}>
+        <div style={{paddingLeft:'23px'}}>
+          <Typography  className={classes.quickActionText}>
             Quick Actions
           </Typography>
           <StyledMenu>

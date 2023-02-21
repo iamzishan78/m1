@@ -57,13 +57,27 @@ const ValidationFilter = ({ field, defaultStartDate, setESFilters, filterToggle,
     const updateFilters = () => {
       const filters = [];
 
+      
+      let from = fromDate
+      let to = toDate
+
+      if(fromDate){
+        
+        const d = fromDate.split('-')
+        if(d.length === 2){
+          from = fromDate+'-01'
+        }
+      }
+      if(toDate){
+        const d = toDate.split('-')
+      }
       filters.push({
         field,
         value: {
           range: {
             [field]: {
-              gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
-              lte: toDate ? `${toDate}T00:00:00.000Z` : null,
+              gte: from ? `${from}T00:00:00.000Z` : null,
+              lte: to ? `${to}T00:00:00.000Z` : null,
             },
           },
         },
@@ -101,6 +115,7 @@ const ValidationFilter = ({ field, defaultStartDate, setESFilters, filterToggle,
             lastCheckMinDate={''}
             onChange={setSelectedFilter}
             defaultRange="Custom"
+            datesInputWidth={2}
           />
         </Grid>
       </div>
