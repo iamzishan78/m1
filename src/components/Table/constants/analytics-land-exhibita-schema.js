@@ -15,11 +15,12 @@ const AcerageSummaryHeadCells = [
       display: true,
       ...GlobalStickyStyles({
         setCellProps: {
-          left: "65px",
+          left: "77px",
           maxWidth: "492px",
         },
         setCellHeaderProps: {
-          left: "65px",
+          left: "77px",
+          paddingLeft: "0px !important",
         },
       }),
     },

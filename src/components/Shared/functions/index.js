@@ -92,7 +92,8 @@ export function replaceLinkId(link, path) {
 }
 
 export function customStartCaseString(str) {
-  if (!str || (str && str.split(" ").length < 2)) return str;
+  if (!str) return "";
+  else if (str && str.split(" ").length < 2) return str;
 
   return str
     .split(" ")

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import moment from "moment";
 import _ from "lodash";
@@ -9,12 +9,21 @@ import { StyledTextField } from "../style";
 const useStyles = makeStyles((theme) => ({
   fieldContainer: {
     opacity: 0.7,
+    maxWidth: "30%",
+    "flex-basis": "30%",
     "& .MuiTextField-root": {
       marginTop: "18px !important",
     },
     "& .MuiInputBase-root": {
       border: "1px solid black",
     },
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "6px",
+    },
+  },
+  secondaryFieldContainer: {
+    maxWidth: "23%",
+    "flex-basis": "23%",
   },
   fieldText: {
     fontSize: "15px",
@@ -87,7 +96,7 @@ const Acreage = ({ properties, updateAgreement }) => {
                       variant="outlined"
                       margin="dense"
                       fullWidth
-                      // value={params.value ? moment(watch("recordedDate")).utc(true).format("yyyy-MM-DD") : ""}
+                      value={params.value ? moment(watch("recordedDate")).utc(true).format("yyyy-MM-DD") : ""}
                       InputLabelProps={{
                         shrink: true,
                       }}
@@ -102,10 +111,14 @@ const Acreage = ({ properties, updateAgreement }) => {
                       InputProps={{
                         endAdornment: (
                           <IconButton>
-                            <Clear style={{ height: 22, width: 22 }} onClick={() => {
-                              params.onChange("");
-                              offClickHandler("recordedDate", null);
-                            }} />
+                            <Clear
+                              style={{ height: 22, width: 22 }}
+                              onClick={() => {
+                                params.onChange(null);
+                                // reset({ ...getValues(), recordedDate: null });
+                                offClickHandler("recordedDate", null);
+                              }}
+                            />
                           </IconButton>
                         ),
                         classes: {
@@ -117,7 +130,7 @@ const Acreage = ({ properties, updateAgreement }) => {
                 )}
               />
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={3} className={classes.secondaryFieldContainer}>
               <Controller
                 control={control}
                 name="recordedBook"
@@ -133,7 +146,7 @@ const Acreage = ({ properties, updateAgreement }) => {
                 )}
               />
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={3} className={classes.secondaryFieldContainer}>
               <Controller
                 control={control}
                 name="recordedPage"
@@ -149,7 +162,7 @@ const Acreage = ({ properties, updateAgreement }) => {
                 )}
               />
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={3} className={classes.secondaryFieldContainer}>
               <Controller
                 control={control}
                 name="recordedInstrumentNumber"
