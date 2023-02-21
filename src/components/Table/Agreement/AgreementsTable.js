@@ -80,6 +80,7 @@ function AgreementsTable(props) {
       hit.effectiveDate = hit.effectiveDate ? convert_date(hit.effectiveDate) : null;
       hit.expirationDate = hit.expirationDate ? convert_date(hit.expirationDate) : null;
       hit.extensionDate = hit.extensionDate ? convert_date(hit.extensionDate) : null;
+      hit.recordedDate = convert_date(hit.recordedDate);
       hit.tags = hit?.tags?.length > 0 ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length] : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       // hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
@@ -103,7 +104,7 @@ function AgreementsTable(props) {
       // addableName: "Unit",
       extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
       selectedGridView: GridViewModule || defaultView,
-      customDataESKey: 'shapeJson.properties.custom_data',
+      customDataESKey: "shapeJson.properties.custom_data",
       // searchFields: ["*"],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: "shapes_flat",
@@ -149,7 +150,7 @@ function AgreementsTable(props) {
         },
       }).then(() => {
         props.setLoading(false);
-        setResetSelectedRow(!resetSelectedRow)
+        setResetSelectedRow(!resetSelectedRow);
       });
     }
   };
@@ -199,28 +200,18 @@ function AgreementsTable(props) {
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
-      <Dialog
-        open={props.openDialog ? true : false}
-        onClose={() => props.setOpenDialog(null)}
-        fullWidth={true}
-        maxWidth={"sm"}
-      >
+      <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
         {props.openDialog === "delete" && (
           <DeleteConfirmationDialogContent
             header={`Delete Agreement(s)`}
             onClose={() => props.setOpenDialog(null)}
             deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={props.selectedRows.map(
-              (sR) => props.rows[sR.dataIndex]._id
-            )}
+            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
-            {`Do you want to delete the selected agreement${props.selectedRows &&
-              props.selectedRows.length > 1 &&
-              props.selectedRows.length > 1
-              ? "s"
-              : ""
-              }?`}
+            {`Do you want to delete the selected agreement${
+              props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+            }?`}
           </DeleteConfirmationDialogContent>
         )}
       </Dialog>
