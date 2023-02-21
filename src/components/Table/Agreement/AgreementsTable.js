@@ -3,6 +3,7 @@ import { Container, Dialog } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import Agreements from "components/Shared/svgIcons/agreements";
+import _ from "lodash";
 
 import { deepEqualObjects, copy, esExtentedSearch } from "components/Shared/functions";
 import { HeaderComponent } from "components/Table/helpers";
@@ -101,7 +102,6 @@ function AgreementsTable(props) {
     const formatedFilter = esFilters ? copy(esFilters) : [];
     props.setInitialFilters(formatedFilter);
     setTableMeta({
-      // addableName: "Unit",
       extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
       selectedGridView: GridViewModule || defaultView,
       customDataESKey: "shapeJson.properties.custom_data",
@@ -111,6 +111,7 @@ function AgreementsTable(props) {
       startPaginationAt: 50,
       typeKeyword: { gridViewCategory: "Agreements", metaModule: "Agreement" },
       filters: [
+        ...getAdvanceSearchFilters(),
         {
           field: "shapeJson.properties.type.keyword",
           value: "agreement",
@@ -126,7 +127,7 @@ function AgreementsTable(props) {
       formatHits,
     });
     // eslint-disable-next-line
-  }, [searchInput, props.landSearchQuery, props.filterToggle]);
+  }, [searchInput, props.landSearchQuery, props.filterToggle, stateApp.landSearchFilters]);
 
   useEffect(() => {
     props?.onAgreementCount && props?.onAgreementCount(props?.options?.count || 0);
@@ -181,6 +182,14 @@ function AgreementsTable(props) {
       refetchQueries: ["customLayer"],
     });
   };
+
+  const getAdvanceSearchFilters = () => {
+    let filters = [];
+    Object.values(stateApp.landSearchFilters).forEach(filter => {
+      filters = [...filters, ...filter];
+    });
+    return _.uniq(filters);
+  }
 
   const handleDefaultView = (view, user) => {
     return view;
