@@ -9,12 +9,18 @@ import { StyledTextField } from "../style";
 const useStyles = makeStyles((theme) => ({
   fieldContainer: {
     opacity: 0.7,
+    maxWidth: "30%",
+    "flex-basis": "30%",
     "& .MuiTextField-root": {
       marginTop: "18px !important",
     },
     "& .MuiInputBase-root": {
       border: "1px solid black",
     },
+  },
+  secondaryFieldContainer: {
+    maxWidth: "23%",
+    "flex-basis": "23%",
   },
   fieldText: {
     fontSize: "15px",
@@ -121,7 +127,7 @@ const Acreage = ({ properties, updateAgreement }) => {
                 )}
               />
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={3} className={classes.secondaryFieldContainer}>
               <Controller
                 control={control}
                 name="recordedBook"
@@ -137,7 +143,7 @@ const Acreage = ({ properties, updateAgreement }) => {
                 )}
               />
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={3} className={classes.secondaryFieldContainer}>
               <Controller
                 control={control}
                 name="recordedPage"
@@ -153,7 +159,7 @@ const Acreage = ({ properties, updateAgreement }) => {
                 )}
               />
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={3} className={classes.secondaryFieldContainer}>
               <Controller
                 control={control}
                 name="recordedInstrumentNumber"
