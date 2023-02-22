@@ -70,6 +70,8 @@ export default function SummaryFields({ contactData }) {
     return user.features?.find(f => f.name === "showGenericPhones")
   }, [user]);
 
+  const [contactInterest, setContactInterest] = useState()
+
   useEffect(() => {
     if (!isEmpty(contactData) && !isFormSet) {
       let _contact = { ...contactData };
@@ -104,9 +106,12 @@ export default function SummaryFields({ contactData }) {
         ...contact,
         contactInterests: {
           ...contactData.contactInterests,
+          ...contactInterest,
           ...contact.contactInterests
         }
       }
+
+      setContactInterest(contact.contactInterests)
     }
     setLoading(_key);
     updateContact({
@@ -162,7 +167,13 @@ export default function SummaryFields({ contactData }) {
                           InputLabelProps={{
                             shrink: true,
                           }}
-                          onBlur={(event) => updateFieldData(field.key, event.target.value)}
+                          onBlur={(event) => {
+                            const currValue = event.target.value
+                            const prevValue = get(contactData, field.key) || ''
+
+                            if (currValue !== prevValue)
+                              updateFieldData(field.key, currValue)
+                          }}
                           onChange={({ target }) => {
                             if (field.key.includes('nraSum')) {
                               params.onChange(getCommaValue(target.value));
@@ -172,6 +183,9 @@ export default function SummaryFields({ contactData }) {
                             else {
                               params.onChange(target.value);
                             }
+                          }}
+                          onKeyUp={e => {
+                            if (e.key === 'Enter') e.target.blur()
                           }}
                           disabled={field.disabled}
                           className={`${classes.field} ${isValueOveridden ? classes.baseValueChanged : null}`}
