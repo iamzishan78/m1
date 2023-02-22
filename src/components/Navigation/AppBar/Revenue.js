@@ -79,7 +79,6 @@ export default function RevenueAppBar(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeModule]);
 
-  console.log("*-*-*- activeModule *-*-*-", activeModule);
   return (
     <Grid
       container
@@ -98,17 +97,17 @@ export default function RevenueAppBar(props) {
           </Grid>
           {(activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.REVENUE_STATEMENTS?.title ||
             activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PROPERTIES?.title) && (
-            <Grid item xs={5} style={{ marginLeft: "20px" }}>
-              <RevenueSearch activeModule={activeModule} />
-            </Grid>
-          )}
+              <Grid item xs={5} style={{ marginLeft: "20px" }}>
+                <RevenueSearch activeModule={activeModule} />
+              </Grid>
+            )}
           {activeModule.title === SIDE_PANEL_MENU_ITEMS_LIST.PORTFOLIO?.title && (
             <Grid item xs={7} style={{ marginLeft: "20px" }}>
               <ReportGroupHeader
                 type="Properties"
                 esFilters={propertiesReportGroup || []}
                 setESFilters={(filters) => dispatch(setRevenueKey("propertiesReportGroup", filters))}
-                setFilterToggle={() => {}}
+                setFilterToggle={() => { }}
                 isBackground={false}
                 noUpdate={true}
                 fullWidth

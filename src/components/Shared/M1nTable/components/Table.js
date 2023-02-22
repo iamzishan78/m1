@@ -2192,8 +2192,6 @@ function SubTable(props) {
                         ) : (
                           <Link
                             to={
-                              window.location.origin
-                              +
                               `/contact/details/${value}/?tenant=${window.sessionStorage.getItem("tenantName")}`
                             }
                             onClick={(e) => e.preventDefault()}>
