@@ -551,19 +551,19 @@ const ShapeActionsPopup = (props) => {
 
   const updateAndOpenShapeDetail = (layerData) => {
     let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
-    layerData.shapeJson.geometry = abstractShape.geometry
+    layerData.shapeJson.geometry = abstractShape?.geometry
     layerData.shapeJson.properties = {
       ...layerData.shapeJson.properties,
-      originalProperties: abstractShape.properties,
+      originalProperties: abstractShape?.properties,
       shapeArea: calculateLandArea(abstractShape),
-      shapeCenter: calculateShapeCenter(abstractShape.geometry.coordinates),
+      shapeCenter: calculateShapeCenter(abstractShape?.geometry.coordinates),
     }
     const customLayerData = {
       shapeJson: layerData.shapeJson,
       shape: JSON.stringify(layerData.shapeJson),
       layer: layerData.layer,
       name: layerData.shapeLabel,
-      user: layerData.user._id,
+      user: layerData.user?._id,
     };
 
     updateCustomLayer({

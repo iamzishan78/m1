@@ -320,7 +320,7 @@ const useStyles = makeStyles((theme) => ({
   },
   detailHeader: {
     backgroundColor: "#fff",
-    padding: "20px",
+    padding: "12px 20px 12px 20px",
     marginTop: "8px",
   },
   title: {
@@ -603,7 +603,7 @@ function ContactDetailCard(props) {
   const togglePullout = () => dispatch(toggleRightColumn());
 
   return contactData ? (
-    <div style={{ position: "absolute", top: "41px", maxHeight: "calc(100vh - 64px)", width: "100%", backgroundColor: "#F2F2F2" }}>
+    <div style={{ position: "absolute", top: "60px", maxHeight: "calc(100vh - 64px)", width: "100%", backgroundColor: "#F2F2F2" }}>
       {/**
        * Detail title section
        */}
@@ -772,7 +772,7 @@ function ContactDetailCard(props) {
                     padding: "0px 0px",
                     //  height: '100vh'
                   }}>
-                    {/* MapGridCard 👇🏼 */}
+                  {/* MapGridCard 👇🏼 */}
                   <ContactDetailedSelector
                     purchaseData={purchaseData}
                     contactData={contactData}

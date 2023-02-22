@@ -174,7 +174,7 @@ export default function DetailTabsSection({ monthsInterval, portfolioSummary, ..
         style={{
           overflow: "overlay",
           backgroundColor: "#f3f3f3",
-          maxHeight: rest.isRevenueTab ? "calc(100vh - 305px)" : "calc(100vh - 235px)",
+          maxHeight: rest.isRevenueTab ? "calc(100vh - 305px)" : "calc(100vh - 270px)",
         }}
         onScroll={handleScroll}
       >
