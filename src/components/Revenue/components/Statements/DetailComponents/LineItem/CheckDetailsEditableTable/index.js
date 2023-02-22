@@ -38,8 +38,7 @@ const useStyles = makeStyles({
     width: "100%",
   },
   container: {
-    // maxHeight: 440,
-    maxHeight: (p) => (p.showPdfSection ? "calc(49vh)" : "calc(99vh)"),
+    maxHeight: (p) => (p.showPdfSection ? "calc(42vh)" : "calc(99vh)"),
     backgroundColor: "#fff",
     display: "flex",
     flexDirection: "column-reverse",
