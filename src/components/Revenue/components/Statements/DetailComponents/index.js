@@ -222,9 +222,7 @@ export default function DetailComponents(props) {
   const history = useHistory();
   const previousRoute = history.pathHistory[1];
   const isLineItem = history.location.pathname.includes("/line-item");
-  const checkId = history.location.pathname.replace("/line-item", "").split("/")[
-    history.location.pathname.replace("/line-item", "").split("/").length - 2
-  ];
+  const checkId = getIdFromPath()
 
   const classes = useStyles({ ...props, collapse });
   // queries
@@ -250,6 +248,16 @@ export default function DetailComponents(props) {
     setOpenDeleteConfirmDialog(false);
     setAnchorEl(false);
   };
+
+  function getIdFromPath() {
+    let pathname = history.location.pathname;
+    if (pathname.slice(-1) === '/')
+      pathname = pathname.substring(0, pathname.length - 1);
+
+    return pathname.replace("/line-item", "").split("/")[
+      pathname.replace("/line-item", "").split("/").length - 1
+    ];
+  }
 
   const handleDeleteAccept = () => {
     // Check Document Logic goes here
