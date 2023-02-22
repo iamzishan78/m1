@@ -22,14 +22,15 @@ const ContactReleatedAgreementHeaderCells = [
         style: {
           ...GlobalSettings.muiGridInfScrollOptions.setCellHeaderProps().style,
           left: "77px",
-          padding: "0px 40px"
+          padding: "0px 40px 0 25px"
         },
       }),
       ignoreGlobal: true,
       dbName: "shapeJson.properties.agreementNumber",
       customRender: (value, tableMeta, updateValue) => {
+        const tenantName = window.sessionStorage.getItem("tenantName");
         return (
-          <Link to={`/land/agreement/details/${tableMeta.rowData[0]}`} style={{ color: GlobalStyles.colors.lightBlue }}>{value
+          <Link to={`/land/agreement/details/${tableMeta.rowData[0]}?tenant=${tenantName}`} style={{ color: GlobalStyles.colors.lightBlue, textDecoration: 'none' }}>{value
             ? `${value} - ${tableMeta?.rowData[2]}`
             : tableMeta?.rowData[2]}</Link>
         );

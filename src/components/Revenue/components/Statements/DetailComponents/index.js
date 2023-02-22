@@ -223,7 +223,7 @@ export default function DetailComponents(props) {
   const previousRoute = history.pathHistory[1];
   const isLineItem = history.location.pathname.includes("/line-item");
   const checkId = history.location.pathname.replace("/line-item", "").split("/")[
-    history.location.pathname.replace("/line-item", "").split("/").length - 1
+    history.location.pathname.replace("/line-item", "").split("/").length - 2
   ];
 
   const classes = useStyles({ ...props, collapse });
@@ -339,7 +339,7 @@ export default function DetailComponents(props) {
           onClose={handleDeleteCancel}
           deleteFunc={handleDeleteAccept}
           m1nSelectedRowsIds={[document._id]}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={() => { }}
         >
           Do you want to delete the selected statement?
         </DeleteConfirmationDialogContent>
@@ -363,9 +363,8 @@ export default function DetailComponents(props) {
                   </IconButton>
                   <div className={classes.titleText}>
                     {checksFlatData && (
-                      <Typography style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}>{`${
-                        checksFlatData?.checkNumber || ""
-                      } - ${checksFlatData?.payor?.name || ""}`}</Typography>
+                      <Typography style={{ fontWeight: "bold", fontSize: "large", marginLeft: 8 }}>{`${checksFlatData?.checkNumber || ""
+                        } - ${checksFlatData?.payor?.name || ""}`}</Typography>
                     )}
                     <div className={classes.tagsContainer}>
                       <div className={classes.highlighter}>
@@ -433,7 +432,7 @@ export default function DetailComponents(props) {
                 <DocViewer divCondition={true} DocStyle={{ height: "calc(100vh - 280px)" }} />
               </div>
 
-              {!collapse &&  (
+              {!collapse && (
                 <div
                   style={{
                     marginTop: 20,

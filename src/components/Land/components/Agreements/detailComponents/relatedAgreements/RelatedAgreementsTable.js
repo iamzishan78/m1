@@ -116,7 +116,7 @@ function RelatedAgreementsTable(props) {
         filters: [{ field: "relatedAgreements._id", value: moduleId }],
         TableHeader: TableHeader,
         esIndex: "shapes_flat",
-        startPaginationAt: 25,
+        startPaginationAt: 10,
         formatHits,
       });
   }, [moduleId]);
@@ -164,7 +164,7 @@ function RelatedAgreementsTable(props) {
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={false}
-        startPaginationAt={null}
+        startPaginationAt={10}
         onTableChange={props.onTableChange}
         options={options}
         parent={props.parent}

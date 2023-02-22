@@ -155,14 +155,14 @@ export default function RevenueAnalytics(props) {
           aria-label="ant example"
         >
           <StyledTab label="Time Series" />
-          <StyledTab label="Comparison" />
+          <StyledTab label="Comparison" disabled />
           {/* <StyledTab label="Properties" /> */}
         </StyledTabs>
       </div>
       <div className={classes.actionBar}>
         <Grid container direction="row" display="flex" spacing={4} style={{ padding: "0px 36px" }}>
           <Grid item xs={8} md={6} style={{ marginTop: "4px" }}>
-            <Grid container display="flex" alignItems="center" spacing={3}>
+            <Grid container display="flex" alignItems="center" spacing={3} justifyContent="space-between">
               <CustomDates
                 onChangeDates={onChangeDates}
                 fromDate={fromDate}
