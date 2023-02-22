@@ -168,17 +168,13 @@ export default function DealComment({
   showActions,
   setComment,
   upsertComment,
-  updateCommentData,
-  isEdit = false,
+  isEdit,
   users,
   profilesInfo,
   setEditCommentId,
   fieldWidth,
   setShowActions,
-  setEditComment,
   setIsEdit,
-  isMinimize = false,
-  setIsMinimize,
   ...props
 }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -191,14 +187,12 @@ export default function DealComment({
   const [commentTypeDialogBox,setCommentTypeDialogBox] = useState(false);
   const classes = useStyles({ fieldWidth, commentTypeDialogBox, collapsed: isCollapsed && !isEdit });
   (function () {
-    if(isMinimize){
-      var target = $("#colorText");
-      const scrollDiv = function () {
-        target.prop("scrollTop", this.scrollTop).prop("scrollLeft", this.scrollLeft);
-      };
-      $(".MuiOutlinedInput-input").scroll(scrollDiv);
-      $(".MuiOutlinedInput-input").resize(scrollDiv);
-    }
+    var target = $("#colorText");
+    const scrollDiv = function () {
+      target.prop("scrollTop", this.scrollTop).prop("scrollLeft", this.scrollLeft);
+    };
+    $(".MuiOutlinedInput-input").scroll(scrollDiv);
+    $(".MuiOutlinedInput-input").resize(scrollDiv);
   })();
 
   const checkIfShowUsers = (comment) => {
@@ -220,31 +214,29 @@ export default function DealComment({
   };
 
   useEffect(() => {
-    if(isMinimize === true && comment !== ""){
-      let value = JSON.parse(JSON.stringify(comment));
-      if (checkIfShowUsers(value)) {
-        setShowOptions(true);
-      } else {
-        setShowOptions(false);
-      }
-      if (comment.includes("{{") && comment.includes("}}")) {
-        let updatedValue = JSON.parse(JSON.stringify(comment));
-        for (let i = 0; i < users.length; i++) {
-          if (updatedValue.includes(users[i]._id)) {
-            updatedValue = replaceAllWith(updatedValue, users[i]._id, `@${users[i].name}`);
-            value = replaceAllWith(value, `{{${users[i]._id}}}`, ` <span class='blue'>@${users[i].name}</span>`);
-          }
-        }
-        setNameAutValue({ name: updatedValue, _id: "" });
-      } else {
-        setNameAutValue({ name: comment, _id: "" });
-      }
-      if (value.includes("\n")) {
-        value = value.replace(/\n/g, "<br>");
-      }
-      document.getElementById("colorText").innerHTML = value;
+    let value = JSON.parse(JSON.stringify(comment));
+    if (checkIfShowUsers(value)) {
+      setShowOptions(true);
+    } else {
+      setShowOptions(false);
     }
-  }, [comment, users, isMinimize]);
+    if (comment.includes("{{") && comment.includes("}}")) {
+      let updatedValue = JSON.parse(JSON.stringify(comment));
+      for (let i = 0; i < users.length; i++) {
+        if (updatedValue.includes(users[i]._id)) {
+          updatedValue = replaceAllWith(updatedValue, users[i]._id, `@${users[i].name}`);
+          value = replaceAllWith(value, `{{${users[i]._id}}}`, ` <span class='blue'>@${users[i].name}</span>`);
+        }
+      }
+      setNameAutValue({ name: updatedValue, _id: "" });
+    } else {
+      setNameAutValue({ name: comment, _id: "" });
+    }
+    if (value.includes("\n")) {
+      value = value.replace(/\n/g, "<br>");
+    }
+    document.getElementById("colorText").innerHTML = value;
+  }, [comment, users]);
 
   const replaceAllWith = (_string, replaceFrom, replaceWith) => {
     return _string.replace(/{{([^{{]+)}}/g, (match, key) => {
@@ -286,25 +278,18 @@ export default function DealComment({
     setIsSelected(true);
   };
   const openDialogBox = (e) => {
-    e.stopPropagation();
+    // e.stopPropagation();
     setCommentTypeDialogBox(false);
   }
   return (
-    <ClickAwayListener onClickAway={() => setIsCollapsed(true)}>
+    <ClickAwayListener onClickAway={(e) => {
+      if(!commentTypeDialogBox)
+        setIsCollapsed(true)
+    }}>
     <div
       onClick={(e)=>openDialogBox(e)}
-      // onBlur={(e)=>{
-      //   if(comment === ''){
-      //     e.stopPropagation();
-      //     setIsMinimize(false);
-      //   }
-      // }}
     >
       <Autocomplete
-        // onFocus={() => {
-        //   setShowCommentTypeDialog(false);
-        // }}
-
         id="txtArea"
         className={classes.search}
         style={{
@@ -352,7 +337,6 @@ export default function DealComment({
         renderInput={(params) => (
           <>
             <TextField
-              autoFocus={true}
               classes={{ root: classes.customTextField }}
               margin="dense"
               {...params}
@@ -368,7 +352,6 @@ export default function DealComment({
               placeholder="Add a question or post an update"
               variant="outlined"
               size="small"
-              auto
             />
             <div
               id="colorText"

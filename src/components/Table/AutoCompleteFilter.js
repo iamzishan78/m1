@@ -47,7 +47,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
 
   const filterValue = getDefaltValue();
   const [open, setOpen] = useState(false);
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [, setStateApp] = useContext(AppContext);
   const [options, setOptions] = useState([]);
   const [value, setValue] = useState(filterValue);
   const [search, setSearch] = useState(filterList[index][0]);
@@ -229,6 +229,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
           }}
         />
       )}
+      {...others}
     />
   );
 });
