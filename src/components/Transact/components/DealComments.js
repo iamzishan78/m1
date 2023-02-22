@@ -499,7 +499,6 @@ export default function DealComment(props) {
                 className={classes.border}
                 style={{ width: "calc(23vw)", paddingRight: "13px" }}
                 onClick={() => {
-                  debugger
                     setShowActions(true);
                 }}
                 onBlur={() => {

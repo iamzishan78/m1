@@ -64,7 +64,6 @@ const useStyles = makeStyles((theme) => ({
     border: "1px solid #EBEBEB",
     background: "white",
     overflow: "auto",
-    position: "relative"
   },
   commentBtn: {
     float: "right",
@@ -108,7 +107,7 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-flex",
   },
   commentContent: {
-    width: "84%",
+    flex: '1 1 auto'
   },
   commentTypeSection: {
     fontWeight: "bold",
@@ -201,9 +200,9 @@ export default function CommentComponent(props) {
   const [showCommentActionId, setShowCommentActionId] = useState(null);
   const [loadingComments, setLoadingComments] = useState(true);
   const [scrollIntoView, setScrollIntoView] = useState(false);
-  const [isMinimize,setIsMinimize] = useState(false);
 
   const commentContainerRef = useRef(null);
+
   const [removeComment] = useMutation(REMOVECOMMENT);
   const [upsertComment, { data: newlyAddedComment }] = useMutation(UPSERTCOMMENT);
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
@@ -386,7 +385,6 @@ export default function CommentComponent(props) {
 
   useEffect(() => {
     if (commentsArray?.length > 0 && scrollIntoView){
-      debugger
       commentContainerRef?.current?.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -445,10 +443,7 @@ export default function CommentComponent(props) {
   return (
     <>
         <div className={classes.container}>
-          <div className={classes.comment} id="commentsContainer" onClick={(e)=>{
-            setIsMinimize(false);
-            e.stopPropagation();
-          }}>
+          <div className={classes.comment} id="commentsContainer">
             {!loadingComments ? (
               <>
                 {!showAllComments && commentsArray.length > 7 && (
@@ -535,27 +530,24 @@ export default function CommentComponent(props) {
                                 </div>
                               </>
                             )}
-                            {editCommentId !== eachComment._id && (
+                            {editCommentId !== eachComment._id ? (
                               <CommonCommentText users={users} eachComment={eachComment} />
-                            ) }
-                            {/*: (*/}
-                            {/*  <div className={classes.border}>*/}
-                            {/*    <CommentField*/}
-                            {/*      isEdit={isEdit}*/}
-                            {/*      profilesInfo={profilesInfo}*/}
-                            {/*      users={users}*/}
-                            {/*      comment={editComment}*/}
-                            {/*      showActions={showActions}*/}
-                            {/*      setEditCommentId={setEditCommentId}*/}
-                            {/*      setComment={setEditComment}*/}
-                            {/*      upsertComment={updateComment}*/}
-                            {/*      setIsEdit={setIsEdit}*/}
-                            {/*      setShowActions={setShowActions}*/}
-                            {/*      isMinimize={isMinimize}*/}
-                            {/*      setIsMinimize={setIsMinimize}*/}
-                            {/*    />*/}
-                            {/*  </div>*/}
-                            {/*)}*/}
+                            ) : (
+                              <div className={classes.border}>
+                                <CommentField
+                                  isEdit={isEdit}
+                                  profilesInfo={profilesInfo}
+                                  users={users}
+                                  comment={editComment}
+                                  showActions={showActions}
+                                  setEditCommentId={setEditCommentId}
+                                  setComment={setEditComment}
+                                  upsertComment={updateComment}
+                                  setIsEdit={setIsEdit}
+                                  setShowActions={setShowActions}
+                                />
+                              </div>
+                            )}
                           </Grid>
                         </Grid>
                       )}
@@ -568,18 +560,16 @@ export default function CommentComponent(props) {
             )}
             <div id="checkIf" ref={commentContainerRef} />
           </div>
-          
-          {/*{(!editCommentId && !isEdit) && (*/}
+          {!editCommentId && (
             <div
               style={{
                 paddingBottom: "20px",
-                position: "absolute",
-                bottom: "0",
-                width: "23vw",
-                backgroundColor: "#F6F8F9",
+                // position: "absolute",
+                // bottom: "0px",
+                width: "100%",
               }}
             >
-              <Grid container alignItems="center">
+              <Grid container alignItems="center" style={{ paddingRight: '10px'}}>
                 <Grid item style={{ maxWidth: "55px" }}>
                   <IconButton
                     className={classes.commentView}
@@ -592,41 +582,33 @@ export default function CommentComponent(props) {
                   <>
                       <div
                         className={classes.border}
-                        // style={{ paddingBottom: "20px" }}
-                        // onClick={() => {
-                        //   if (!showActions) {
-                        //     setShowActions(true);
-                        //   }
-                        // }}
-                        // onBlur={() => {
-                        //   if (showActions && !comment) {
-                        //     setShowActions(false);
-                        //   }
-                        // }}
+                        style={{ paddingBottom: "20px" }}
+                        onClick={() => {
+                          if (!showActions) {
+                            setShowActions(true);
+                          }
+                        }}
+                        onBlur={() => {
+                          if (showActions && !comment) {
+                            setShowActions(false);
+                          }
+                        }}
                       >
                         <CommentField
                           profilesInfo={profilesInfo}
                           users={users}
-                          comment={editComment !== "" ? editComment : comment}
+                          comment={comment}
                           showActions={showActions}
-                          setComment={editComment !== "" ? setEditComment : setComment}
+                          setComment={setComment}
                           upsertComment={addNewComment}
-                          updateCommentData={updateComment}
                           showCommentType={props.showCommentType}
-                          isMinimize={isMinimize}
-                          setIsMinimize={setIsMinimize}
-                          isEdit={isEdit}
-                          setEditCommentId={setEditCommentId}
-                          setIsEdit={setIsEdit}
-                          setShowActions={setShowActions}
-                        // fieldWidth={`${size - 23}px`}
                         />
                       </div>
                   </>
                 </Grid>
               </Grid>
             </div>
-          {/*)}*/}
+          )}
         </div>
     </>
   );
