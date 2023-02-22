@@ -20,7 +20,7 @@ export const contactDetailInitialData = [
   { index: 3, value: "wellInterests", Icon: WellIcon, label: "Well Interests", showCounts: true },
   { index: 5, value: "parcelInterests", Icon: ParcelIcon, label: "Tract Interests", showCounts: true },
   { index: 2, value: "taxRollInterests", Icon: TaxOwnerIcon, label: "Tax Roll Interests", showCounts: true },
-  { index: 8, value: "relatedAgreements", Icon: HistoryEduBlackIcon, label: "Releated Agreements", showCounts: false, feature: FEATURES.LANDMODULE },
+  { index: 8, value: "relatedAgreements", Icon: HistoryEduBlackIcon, label: "Related Agreements", showCounts: true, feature: FEATURES.LANDMODULE },
   { index: 1, value: "activities", Icon: ActivitiesIcon, label: "Activities", showCounts: true },
   { index: 7, value: "documents", Icon: DocumentsIcon, label: "Documents", showCounts: true },
   { index: 6, value: "deals", Icon: DealsIcon, label: "Deals", showCounts: true },
