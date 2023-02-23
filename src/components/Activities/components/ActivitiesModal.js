@@ -688,24 +688,6 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                   />
                 </div>
               </div>
-              <div className={classes.row}>
-                <span className={classes.rowIcon}>
-                  <PersonIcon />
-                </span>
-                <div style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}>
-                  <Autocomplete
-                    className={clsx(classes.fieldWidth, !owner.id && errors.owner && classes.error)}
-                    options={users.filter((u) => u.text)}
-                    onChange={(e, user) => {
-                      setOwner({ name: user?.text, id: user?.value });
-                    }}
-                    value={users.find((user) => user.value === owner.id) || null}
-                    getOptionLabel={(option) => option.text}
-                    getOptionSelected={(option) => option.value === owner.id}
-                    renderInput={(params) => <TextField margin="dense" {...params} variant="outlined" label="Activity Owner" />}
-                  />
-                </div>
-              </div>
 
               <div className={classes.row}>
                 <span className={classes.rowIcon}>
@@ -777,6 +759,25 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
               </div>
 
               <div className={classes.row}>
+                <span className={classes.rowIcon}>
+                  <PersonIcon />
+                </span>
+                <div style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}>
+                  <Autocomplete
+                    className={clsx(classes.fieldWidth, !owner.id && errors.owner && classes.error)}
+                    options={users.filter((u) => u.text)}
+                    onChange={(e, user) => {
+                      setOwner({ name: user?.text, id: user?.value });
+                    }}
+                    value={users.find((user) => user.value === owner.id) || null}
+                    getOptionLabel={(option) => option.text}
+                    getOptionSelected={(option) => option.value === owner.id}
+                    renderInput={(params) => <TextField margin="dense" {...params} variant="outlined" label="Activity Owner" />}
+                  />
+                </div>
+              </div>
+
+              {/* <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
                 <div style={{ width: "76%", marginRight: 24 }}>
                   <TextField
@@ -786,7 +787,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                     placeholder="Organization"
                   />
                 </div>
-              </div>
+              </div> */}
               <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
                 <div className={classes.btnGroup} style={{ width: "76%", marginRight: 24 }}>
