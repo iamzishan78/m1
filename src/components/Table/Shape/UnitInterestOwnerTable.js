@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import EditIcon from "@material-ui/icons/Edit";
-import { Container, Button, Tooltip, IconButton } from "@material-ui/core";
+import { Container, Button, Tooltip, IconButton, CircularProgress } from "@material-ui/core";
 import { useMutation } from "@apollo/client";
 
 import { AppContext } from "AppContext";
@@ -214,6 +214,7 @@ function UnitInterestOwnerTable(props) {
               display: "flex",
             }}
           >
+            {(!props.selectedRows || props.selectedRows?.length === 0) && <CircularProgress size={40} color="secondary" style={{ marginRight: '1em' }} />}
             <Button
               color="secondary"
               startIcon={<EditIcon color="white" />}
@@ -260,7 +261,7 @@ function UnitInterestOwnerTable(props) {
                 color="secondary"
                 startIcon={<RequestPageIcon color="white" />}
                 className={classes.multiSelectionTopBarButtons}
-                disabled={props.selectedRows.length < 1}
+                disabled={!props.selectedRows || props.selectedRows?.length === 0}
                 onClick={() => setOpenCustomDialog("buyContactsInfoData")}
               >
                 Contact Data
@@ -271,6 +272,7 @@ function UnitInterestOwnerTable(props) {
               <IconButton
                 size="medium"
                 style={{ margin: "0 5px" }}
+                disabled={!props.selectedRows || props.selectedRows?.length === 0}
                 onClick={(e) => {
                   setOpenCustomDialog("deleteOwner");
                 }}
