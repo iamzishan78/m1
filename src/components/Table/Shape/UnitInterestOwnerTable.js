@@ -113,6 +113,7 @@ function UnitInterestOwnerTable(props) {
         key: "contact._id",
         actions: genericDataActions,
       },
+      isSelectedAllAllowed: true,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.activitySearchQuery, props.filterToggle]);
@@ -217,12 +218,15 @@ function UnitInterestOwnerTable(props) {
               color="secondary"
               startIcon={<EditIcon color="white" />}
               className={classes.multiSelectionTopBarButtons}
+              disabled={!props.selectedRows || props.selectedRows?.length === 0}
               onClick={() => {
                 let owners = [];
+
+                const rows = props.selectedRowsValues || props.rows
                 for (let i in props.selectedRows) {
                   owners.push({
-                    ...props.rows[props.selectedRows[i].dataIndex],
-                    _id: props.rows[props.selectedRows[i].dataIndex].contact._id
+                    ...rows[props.selectedRows[i].dataIndex],
+                    _id: rows[props.selectedRows[i].dataIndex].contact._id
                   });
                 }
                 setSelectedRows(owners);
@@ -235,11 +239,14 @@ function UnitInterestOwnerTable(props) {
               color="secondary"
               startIcon={<CloudDownloadIcon color="white" />}
               className={classes.multiSelectionTopBarButtons}
+              disabled={!props.selectedRows || props.selectedRows?.length === 0}
               onClick={() => {
                 let owners = [];
+
+                const rows = props.selectedRowsValues || props.rows
                 for (let i in props.selectedRows) {
                   owners.push(
-                    props.rows[props.selectedRows[i].dataIndex]
+                    rows[props.selectedRows[i].dataIndex]
                   );
                 }
                 setSelectedRows(owners);
