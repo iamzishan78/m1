@@ -26,8 +26,8 @@ import DocumentIcon from "@material-ui/icons/DescriptionOutlined";
 import PersonIcon from "@material-ui/icons/Person";
 import RecentActorsIcon from "@material-ui/icons/RecentActors";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+// import Checkbox from "@material-ui/core/Checkbox";
+// import FormControlLabel from "@material-ui/core/FormControlLabel";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { setStateIfDeepEqual } from "../../Shared/functions";
 import { Calendar, momentLocalizer } from "react-big-calendar";
@@ -193,6 +193,10 @@ const initialErrors = {
 };
 
 const localizer = momentLocalizer(moment);
+const activityStatusOptions = [
+  { label: 'Open', value: false },
+  { label: 'Complete', value: true }
+];
 
 export default function ActivitiesModal({ events, setSelectedActivityId }) {
   const classes = useStyles();
@@ -788,14 +792,32 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                   />
                 </div>
               </div> */}
+
+              <div className={classes.row}>
+                <span className={classes.rowIcon}></span>
+                <div
+                  style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}
+                >
+                  <Autocomplete
+                    id="activity-status"
+                    className={classes.fieldWidth}
+                    options={activityStatusOptions}
+                    onChange={(event, option) => setClosed(option.value)}
+                    value={activityStatusOptions.find((option) => option.value === closed)}
+                    getOptionLabel={(option) => option.label}
+                    renderInput={(params) => <TextField {...params} margin="dense" variant="outlined" label="Activity Status" />}
+                  />
+                </div>
+              </div>
+
               <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
                 <div className={classes.btnGroup} style={{ width: "76%", marginRight: 24 }}>
-                  <FormControlLabel
+                  {/* <FormControlLabel
                     enabled
                     control={<Checkbox id="markAsDone" checked={closed} onChange={(e) => setClosed(e.target.checked)} color="primary" />}
                     label="Mark as done"
-                  />
+                  /> */}
                   <Button
                     className={classes.marginLeft}
                     variant="contained"
