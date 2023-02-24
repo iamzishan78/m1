@@ -800,6 +800,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                 >
                   <Autocomplete
                     id="activity-status"
+                    disableClearable
                     className={classes.fieldWidth}
                     options={activityStatusOptions}
                     onChange={(event, option) => setClosed(option.value)}
