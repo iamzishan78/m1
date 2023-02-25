@@ -177,6 +177,7 @@ const Activities = () => {
             ownerId: act.ownerId,
             type: act.type,
             name: act.name,
+            outcome: act.outcome,
             // isContact: act.contactId,
           };
         })

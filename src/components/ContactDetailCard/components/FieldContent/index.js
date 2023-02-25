@@ -10,7 +10,7 @@ import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import PencilEditIcon from "components/ContactDetailCard/components/FieldContent/PencilEditIcon";
 import MergeHistory from "components/ContactDetailCard/components/FieldContent/MergeHistory";
 import CopyPurchaseInfo from "components/ContactDetailCard/components/FieldContent/CopyPurchaseInfo";
-import { textFieldLabels, getHrefValue, LinkTypes, FieldTypes } from "components/ContactDetailCard/components/FieldContent/helper";
+import { textFieldLabels, getHrefValue, LinkTypes, FieldTypes, outcomeOptions } from "components/ContactDetailCard/components/FieldContent/helper";
 import useStyles from "components/ContactDetailCard/components/FieldContent/style";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
@@ -24,6 +24,7 @@ import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import EntityType from "./EntityType";
 import CampaignNameField from "./CampaignNameField";
 import ContactStatus from "components/ContactDetailCard/components/ContactStatus";
+import AutoCompleteAddNewField from "./AutoCompleteAddNewField";
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -149,9 +150,9 @@ export default function FieldContent({
   };
 
   const keyDownHandler = (event, fieldNames) => {
+    event.stopPropagation();
     const fields = {};
     fieldNames.forEach(field => fields[field] = content[field]);
-    event.stopPropagation();
     if (event.key === "Escape") {
       setEdit(null);
       setEditContent({ ...fields });
@@ -360,6 +361,28 @@ export default function FieldContent({
                   [fieldName]: val,
                 }));
               }}
+              value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+              onKeyDown={(event) => keyDownHandler(event, [fieldName])}
+              onBlur={() => onBlurHandler([fieldName])}
+            />
+          ) : fieldName === "outcome" ? (
+            <AutoCompleteAddNewField
+              id="contact-detail-outcome"
+              queryParams={{
+                esIndex: "contacts_flat",
+                filterKey: "outcome.keyword",
+                size: 50,
+              }}
+              onChange={(data) => {
+                debugger
+                setEditContent((editContent) => ({
+                  ...editContent,
+                  [fieldName]: data.name || "",
+                }));
+
+                handleUpdating(data.name);
+              }}
+              defaultOptions={outcomeOptions}
               value={editContent[fieldName] === null ? "" : editContent[fieldName]}
               onKeyDown={(event) => keyDownHandler(event, [fieldName])}
               onBlur={() => onBlurHandler([fieldName])}
