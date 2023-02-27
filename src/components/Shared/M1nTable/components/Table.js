@@ -3790,7 +3790,15 @@ function SubTable(props) {
         menuOptions = {
           text: "Add to Existing Deal",
           isShow: true,
-          action: () => { },
+          action: () => {
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              dealDialog: true,
+              addExistingDeal: true,
+              activeDeal: { cardId: null, laneId: null },
+            }));
+
+          },
         };
       }
       if (props.addAble && props.parent === "UserManagement") {
