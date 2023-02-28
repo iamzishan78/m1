@@ -38,16 +38,25 @@ function CheckDetailsTable(props) {
 
     }, [checkId, setTableMeta]);
 
+    const handleInputModeClick = () => {
+        let checkId;
+        const { pathname } = window.location;
+
+        if (pathname.slice(-1) === '/')
+            checkId = pathname.split("/")[pathname.split("/").length - 2];
+        else
+            checkId = pathname.split("/")[pathname.split("/").length - 1];
+
+        history.push(`/revenue/statement/details/${checkId}/line-item/`);
+    }
+
     props.options.customToolbar = () => {
         return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
             <Button
                 id="inputModeButton"
                 color="secondary"
                 className={classes.multiSelectionTopBarButtons}
-                onClick={() => {
-                    const checkId = window.location.pathname.split("/")[window.location.pathname.split("/").length - 1];
-                    history.push(`/revenue/statement/details/${checkId}/line-item`);
-                }}
+                onClick={() => handleInputModeClick()}
             >
                 INPUT MODE
             </Button>
