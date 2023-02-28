@@ -216,7 +216,6 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
   const [dealId, setDealId] = useState(null);
   const [errors, setErrors] = useState({ ...initialErrors });
   const [users, setUsers] = useState([]);
-  const [isCreatedBy, setIsCreatedBy] = useState()
   const { selectedActivity } = stateApp;
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
@@ -334,7 +333,6 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 
       setEndDate(moment.parseZone(selectedActivity.end).format("yyyy-MM-DD"));
       setEndTime(moment.parseZone(selectedActivity.end).format("HH:mm"));
-      setIsCreatedBy(selectedActivity?.owner?.name)
     } else {
       setAddNew(true);
       setNameAutValue({ name: "", _id: null });
@@ -352,7 +350,6 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
       setEndDate(getCurrentDate());
       setStartTime("08:00");
       setEndTime("08:00");
-      setIsCreatedBy("");
     }
   }, [selectedActivity]);
 
@@ -467,7 +464,6 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
           dateTime: new Date(dateTime).toUTCString(),
           endDateTime: new Date(endDateTime).toUTCString(),
           isClosed: closed,
-          createdBy: stateApp?.user?._id
         },
       },
     });
@@ -825,7 +821,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                       label="Create By"
                       className={classes.fieldWidth}
                       InputProps={{ readOnly: true }}
-                      value={isCreatedBy}
+                      value={selectedActivity?.owner?.name}
                       margin="dense" variant="outlined"
                     />
                   </div>
