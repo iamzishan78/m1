@@ -12,14 +12,14 @@ const filterTypes = {
   // "Related Parties": { component: "ProvisionFilters", countKey: "wellFilterCount" },
   Provisions: { component: "ProvisionFilters", countKey: "provisions" },
   // "Related Wells": { component: "RelatedWellsFilters", countKey: "tagFilterCount" },
-  "Custom Data": { component: "CustomDataFilters", countKey: "tagFilterCount" },
+  "Custom Data": { component: "CustomDataFilters", countKey: "customData" },
   // "Legal Description": { component: "ProvisionFilters", countKey: "ownershipFilterCount" },
   // Wells: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // Documents: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "tagFilterCount" },
   // "Remarks Types": { component: "RemarksTypes", countKey: "remarksTypes" },
-  "Related Wells": { component: "RelatedWellsFilters", countKey: "tagFilterCount" },
-  "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "tagFilterCount" },
+  "Related Wells": { component: "RelatedWellsFilters", countKey: "relatedWells" },
+  "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "relatedAgreements" }
 };
 
 const useStyles = makeStyles(() => ({
@@ -117,7 +117,7 @@ const useStyles = makeStyles(() => ({
 export default function QuickActionsPanel({ children, title, actions, handlePanelStateChange, quickActionsPanelState, activeModule }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [selectedTab,setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(0);
   useEffect(() => {
     return () => {
       let landFilters = { ...stateApp.landSearchFilters };
@@ -136,7 +136,7 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
       ...stateApp,
       landSearchFilters: { ...stateApp.landSearchFilters, [filter.countKey]: [] },
     }));
-  }; 
+  };
   const handleChange = (panel) => (event, isExpanded) => {
     setSelectedTab(isExpanded ? panel : false);
   };
@@ -145,11 +145,11 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
       {Object.keys(filterTypes).map((filterType, index) => (
         <Accordion className={classes.accordionRoot} expanded={selectedTab === index} onChange={handleChange(index)}>
           <AccordionSummary
-             aria-controls="panel1a-content"
-             id={`panel1a-header${selectedTab}`}
-             expandIcon={<ExpandMoreIcon />}
-             defaultExpanded={selectedTab === index}
-             style={{ borderLeft: selectedTab === index && "5px solid #18aadd" }}
+            aria-controls="panel1a-content"
+            id={`panel1a-header${selectedTab}`}
+            expandIcon={<ExpandMoreIcon />}
+            defaultExpanded={selectedTab === index}
+            style={{ borderLeft: selectedTab === index && "5px solid #18aadd" }}
           >
             <Grid container direction="row" justify="space-between" alignItems="center">
               <Grid item className={classes.accordionHeading}>
