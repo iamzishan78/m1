@@ -464,6 +464,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
           dateTime: new Date(dateTime).toUTCString(),
           endDateTime: new Date(endDateTime).toUTCString(),
           isClosed: closed,
+          createdBy: stateApp?.user?._id,
         },
       },
     });
@@ -818,7 +819,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                     style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}
                   >
                     <TextField
-                      label="Create By"
+                      label="Created By"
                       className={classes.fieldWidth}
                       InputProps={{ readOnly: true }}
                       value={selectedActivity?.owner?.name}
