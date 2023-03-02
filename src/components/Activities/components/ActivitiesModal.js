@@ -822,7 +822,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                       label="Created By"
                       className={classes.fieldWidth}
                       InputProps={{ readOnly: true }}
-                      value={selectedActivity?.owner?.name}
+                      value={selectedActivity?.creator?.name}
                       margin="dense" variant="outlined"
                     />
                   </div>
