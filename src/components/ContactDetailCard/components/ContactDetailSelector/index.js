@@ -10,6 +10,7 @@ import OwnersSummaryCard from "components/OwnersSummaryCard/OwnersSummaryCard";
 import { TabPanel } from "components/Shared/TabPanels";
 import ContactDetailedInfo from "components/ContactDetailedInfo/ContactDetailedInfo";
 import ActivitiesTable from "components/Table/Activities/ActivitiesTable";
+import RelatedContactsTable from "components/Table/Contact/RelatedContactTable";
 import ContactWellInterestTable from "components/Table/Contact/ContactWellInterestTable";
 import ContactParcelInterestTable from "components/Table/Contact/ContactParcelInterestTable";
 import ContactTaxRollInterestTable from "components/Table/Contact/ContactTaxRollInterestTable";
@@ -287,6 +288,10 @@ function MapGridCard(props) {
                     )}
                     {searchTapValue.value === "deals" && <ContactDealsProvider />}
                     {searchTapValue.value === "documents" && <ContactDocumentsProvider contactId={props.contactData._id} />}
+                    {
+                      searchTapValue.value === "relatedContacts" && 
+                        <RelatedContactsTable contactId={props.contactData._id} />
+                    }
                   </div>
                 </Grid>
               </Grid>
