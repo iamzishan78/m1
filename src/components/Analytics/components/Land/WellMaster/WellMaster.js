@@ -44,13 +44,12 @@ function WellMasterTable(props) {
     props.setInitialFilters(formatedFilter);
     props.setTableMeta({
       extendSearchQuery: props.landSearchQuery || "",
-      searchFields: ["*"],
       TableHeader: copy(TableHeader),
-      esIndex: esIndex,
+      esIndex: 'mywells_flat',
       filters: fixedFilters,
       selectedGridView: { filters: [] },
       startPaginationAt: 25,
-      defaultSort: { field: "name.keyword", order: "asc" },
+      defaultSort: { field: "lastUpdateAt", order: "desc" },
       formatHits,
     });
     // eslint-disable-next-line
