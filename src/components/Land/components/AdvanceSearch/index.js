@@ -3,8 +3,6 @@ import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
 
 import AgreementAdvanceSearch from "components/Land/components/Agreements/components/AdvanceSearch/";
-import WellsAdvanceSearch from "components/Land/components/Wells/components/AdvanceSearch";
-
 import { Typography, Divider } from "@material-ui/core";
 import Secondarypanel from "components/Shared/SecondaryPanel";
 
@@ -20,7 +18,7 @@ export default function AdvanceSearch({ activeModule }) {
   const history = useHistory();
   console.log("isASActive", activeModule.title)
   const isASActive = useMemo(
-    () => activeModule.title === "Agreements" && history.location.pathname === "/land/agreements",
+    () => activeModule.title === "Agreements" || history.location.pathname === "/land/agreements",
     [activeModule, history.location]
   );
 
@@ -38,17 +36,6 @@ export default function AdvanceSearch({ activeModule }) {
             <Typography className={classes.title}>Advanced Search</Typography>
           </div>
           {activeModule.title === "Agreements" && <AgreementAdvanceSearch />}
-
-          <Divider />
-        </>
-      )}
-      {isASActiveWells && (
-        <>
-          <Divider />
-          <div style={{ paddingLeft: '23px', color: "#29abe0" }}>
-            <Typography className={classes.title}>Advanced Search</Typography>
-          </div>
-          {activeModule.title === "Wells" && <WellsAdvanceSearch />}
 
           <Divider />
         </>

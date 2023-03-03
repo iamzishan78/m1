@@ -1,4 +1,4 @@
-import React, { useContext, useEffect,useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import get from "lodash/get";
 import { makeStyles } from "@material-ui/styles";
 import { IconButton } from "@material-ui/core";
@@ -11,6 +11,8 @@ const filterTypes = {
   // Summary: { component: "ProvisionFilters", countKey: "geographyFilterCount" },
   // "Related Parties": { component: "ProvisionFilters", countKey: "wellFilterCount" },
   Provisions: { component: "ProvisionFilters", countKey: "provisions" },
+  // "Related Wells": { component: "RelatedWellsFilters", countKey: "tagFilterCount" },
+  "Custom Data": { component: "CustomDataFilters", countKey: "tagFilterCount" },
   // "Legal Description": { component: "ProvisionFilters", countKey: "ownershipFilterCount" },
   // Wells: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // Documents: { component: "ProvisionFilters", countKey: "tagFilterCount" },
@@ -135,12 +137,10 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
       ...stateApp,
       landSearchFilters: { ...stateApp.landSearchFilters, [filter.countKey]: [] },
     }));
-  };
-
+  }; 
   const handleChange = (panel) => (event, isExpanded) => {
     setSelectedTab(isExpanded ? panel : false);
   };
-
   return (
     <div className={classes.root}>
       {Object.keys(filterTypes).map((filterType, index) => (

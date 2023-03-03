@@ -269,7 +269,7 @@ export default function MetadataDrawer(props) {
       </div>
 
       <div className={classes.contentRoot}>
-        <div style={{ height: "100vh" }}>
+        <div>
           {(isOwner || isApproval || isSource) && (
             <div style={{ marginTop: 10 }}>
               <FormControl variant="outlined" fullWidth size="small">
@@ -422,10 +422,8 @@ export default function MetadataDrawer(props) {
           />
         </div>
         <div style={{
-          width: props.commentsWidth,
-          position: "absolute",
-          bottom: "10px",
-
+            flex: '1 1 auto',
+            overflow: 'hidden'
         }}>
           <CommentComponent
             targetLabel={targetLabel}
@@ -444,7 +442,7 @@ MetadataDrawer.defaultProps = {
   title: "Metadata",
   documentsTitle: "Documents",
   showDescription: true,
-  commentsWidth: "600px",
+  commentsWidth: "570px",
   viewAllDocuments: false,
   ownerTitle: "Owner",
   ownerPlaceHolder: "Assign Approver",

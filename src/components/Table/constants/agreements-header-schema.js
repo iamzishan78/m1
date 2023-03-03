@@ -14,12 +14,9 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     options: {
       ...GlobalStickyStyles({
         setCellProps: {
-          left: isSnapGrid ? '77px' : '108.5px',
           maxWidth: "492px",
         },
-        setCellHeaderProps: {
-          left: isSnapGrid ? '77px' : '108.5px',
-        }
+        isSnapGrid
       }),
       dbName: "shapeJson.properties.agreementNumber",
       isSnapGrid,
@@ -276,9 +273,53 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Internal Company ",
     esKey: "shapeJson.properties.internalCompany.keyword",
     options: {
-      dbName: "shapeJson.properties.internalCompany ",
+      dbName: "shapeJson.properties.internalCompany",
       sort: true,
       filter: true,
+    },
+  },
+  {
+    name: "recordedDate",
+    label: "Recorded Date",
+    esKey: "shapeJson.properties.recordedDate.keyword",
+    options: {
+      dbName: "shapeJson.properties.recordedDate",
+      sort: true,
+      filter: true,
+      display: false,
+    },
+  },
+  {
+    name: "recordedBook",
+    label: "Book",
+    esKey: "shapeJson.properties.recordedBook.keyword",
+    options: {
+      dbName: "shapeJson.properties.recordedBook",
+      sort: true,
+      filter: true,
+      display: false,
+    },
+  },
+  {
+    name: "recordedPage",
+    label: "Page",
+    esKey: "shapeJson.properties.recordedPage.keyword",
+    options: {
+      dbName: "shapeJson.properties.recordedPage",
+      sort: true,
+      filter: true,
+      display: false,
+    },
+  },
+  {
+    name: "recordedInstrumentNumber",
+    label: "Instrument #",
+    esKey: "shapeJson.properties.recordedInstrumentNumber.keyword",
+    options: {
+      dbName: "shapeJson.properties.recordedInstrumentNumber",
+      sort: true,
+      filter: true,
+      display: false,
     },
   },
 

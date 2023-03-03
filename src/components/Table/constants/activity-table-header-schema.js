@@ -101,12 +101,19 @@ const ActivitiesHeadCells = [
   {
     name: "isClosed",
     label: "Completed?",
+    esKey: "isClosed",
     options: {
       ignoreGlobal: true,
       display: true,
       sort: true,
       filter: true,
     },
+    custom: {
+      formatedFilterOptions: [
+        { value: 'true', label: "Completed"},
+        { value: 'false', label: "Not Completed"},
+      ]
+    }
   },
 
 ];

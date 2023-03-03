@@ -45,6 +45,7 @@ function AgreementDocumentsTable(props) {
       return (
         <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
           <Button
+            id="addRelatedDcmnButton"
             color="secondary"
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {

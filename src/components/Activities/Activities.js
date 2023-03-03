@@ -18,6 +18,7 @@ import ActivitiesAppBar from "./components/ActivitiesAppbar";
 import ActivitiesModal from "./components/ActivitiesModal";
 import { AppContext } from "../../AppContext";
 import ActivitiesTable from "../../components/Table/Activities/ActivitiesTable";
+import {ActivitiesContext} from './ActivitiesContext';
 
 
 const localizer = momentLocalizer(moment);
@@ -29,6 +30,7 @@ Date.prototype.addHours = function (h) {
 
 const ActivitiesCalendar = (props) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [activityApp] = useContext(ActivitiesContext);
   return (
     <div>
       <Calendar
@@ -39,7 +41,7 @@ const ActivitiesCalendar = (props) => {
         endAccessor={"end"}
         startAccessor={"start"}
         view={props.view}
-        date={selectedDate || new Date()}
+        date={activityApp.selectedDate || new Date()}
         style={{ height: "calc(100vh - 67px)", position: "relative" }}
         step={60}
         onSelectEvent={(e) => props.onEventClick(e)}
@@ -125,10 +127,6 @@ const Activities = () => {
   const filtersChange = (filters) => {
     setTableFilters(filters);
   };
-
-
-
-
 
   let history = useHistory();
   const [getAllActivities, { data: activitiesData, loading: activitiesLoading }] = useLazyQuery(GETALLACTIVITIES, {
@@ -280,6 +278,9 @@ const Activities = () => {
                   filtersChange={filtersChange}
                   appliedFilters={appliedFilters}
                   filterToggle={filterToggle}
+                  activityFilterByType={activityFilterByType}
+                  activityFilterByTime={activityFilterByTime}
+                  activityFilterByOwner={activityFilterByOwner}
                   targetLabel={"activitiesDashboard"}
                   header="Activities"
                 />

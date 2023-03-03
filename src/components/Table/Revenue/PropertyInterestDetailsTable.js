@@ -42,7 +42,7 @@ function PropertyInterestDetailsTable(props) {
       filters: [{ field: "property._id", value: props.propertyId }],
       TableHeader: copy(TableHeader),
       esIndex: "propertyinterest_flat",
-      startPaginationAt: 25,
+      startPaginationAt: 10,
       formatHits,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -61,6 +61,7 @@ function PropertyInterestDetailsTable(props) {
   useEffect(() => {
     if (props.clickedRow) {
       props.setSelectedInterest(props.clickedRow);
+      props.setAddToTable(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.clickedRow]);
@@ -132,7 +133,7 @@ function PropertyInterestDetailsTable(props) {
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={false}
-        startPaginationAt={null}
+        startPaginationAt={10}
         onTableChange={props.onTableChange}
         options={props.options}
         parent={props.parent}
