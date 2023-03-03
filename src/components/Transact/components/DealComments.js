@@ -81,6 +81,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridStyle: {
     padding: "12px 0px",
+    flexWrap: 'nowrap'
   },
   bold: {
     fontWeight: "bold",
