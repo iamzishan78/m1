@@ -26,6 +26,24 @@ const AcerageSummaryHeadCells = [
     },
   },
   {
+    name: "agreementName",
+    label: "Agreement Name",
+    esKey: "shape.shapeJson.properties.agreementName.keyword",
+    options: {
+      filter: false,
+      display: false,
+    },
+  },
+  {
+    name: "agreementId",
+    label: "Agreement Id",
+    esKey: "shape._id",
+    options: {
+      filter: false,
+      display: false,
+    },
+  },
+  {
     name: "grantor",
     label: "Lessor/Grantor",
     esKey: "shape.shapeJson.properties.grantor.keyword",
