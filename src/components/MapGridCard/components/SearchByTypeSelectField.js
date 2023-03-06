@@ -7,6 +7,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import Grid from "@material-ui/core/Grid";
+import SearchIcon from "@material-ui/icons/Search";
 
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import { Typography } from "@material-ui/core";
@@ -72,10 +73,15 @@ const useStyles = makeStyles((theme) => ({
     color: "#757575 !important",
     backgroundColor: (props) => `${props.backgroundColor}!important`,
     borderRadius: '16px',
-    padding: '6px 24px',
+    padding: '6px 10px 6px 10px',
     borderRight: '25px',
     "& .MuiButton-startIcon": {
       color: (props) => `${props.color ? props.color : "#757575"}!important`,
+      marginRight: '0 !important'
+    },
+    "& .MuiButton-endIcon": {
+      color: (props) => `${props.color ? props.color : "#757575"}!important`,
+      marginLeft: '0 !important'
     }
   },
 
@@ -129,14 +135,11 @@ const SearchByTypeSelectField = ({ handleChange, value, backgroundColor, color, 
         className={classes.menuButton}
         aria-controls="customized-menu"
         aria-haspopup="true"
-        startIcon={<SelectedIcon color={color ? color : '#757575'} opacity={1} />}
-        endIcon={<ArrowDropDownIcon style={{ color: color ? color : '#757575' }} />}
+        startIcon={<SearchIcon fontSize="25" color={color ? color : '#757575'} opacity={1} />}
+        endIcon={<ArrowDropDownIcon fontSize="25" style={{ color: color ? color : '#757575' }} />}
         onClick={handleClick}
         id="dataNameSelect"
       >
-        <span style={{ color: color ? color : '#757575' }}>
-          {value.label}
-        </span>
       </Button>
 
       <StyledMenu
