@@ -10,10 +10,11 @@ import EmailOutlinedIcon from "@material-ui/icons/EmailOutlined";
 import { makeStyles } from "@material-ui/core/styles";
 
 import vf_number from "components/Shared/valueformatters/vf_number";
-import ContactStatus from 'components/ContactDetailCard/components/ContactStatus'
+import AutoCompleteWithAddNew from 'components/ContactDetailCard/components/AutoCompleteWithAddNew'
 import { SUMMARY_FIELDS, featureFlagChanges } from "components/ContactDetailedInfo/helper";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
+import { contactNewStatusOptions } from "components/ContactDetailedInfo/helper";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -135,8 +136,6 @@ export default function SummaryFields({ contactData }) {
     return false;
   }
 
-  console.log("*-*-*--* SUMMARY_FIELDS -*--*-*-*", SUMMARY_FIELDS(contactData));
-
   return (
     <Grid container alignItems="center" justify="space-between" display="flex" direction="column" className={classes.container}>
       {SUMMARY_FIELDS(contactData).map((field, key) => (
@@ -209,11 +208,13 @@ export default function SummaryFields({ contactData }) {
                           }}
                         />
                       ) : (
-                        <ContactStatus
+                        <AutoCompleteWithAddNew
                           className={classes.maxWidth}
                           setValue={(value) => {
                             updateFieldData(field.key, value.name);
                           }}
+                          fieldKey={field.key}
+                          defaultOptions={field.key === "status" ? contactNewStatusOptions : []}
                           value={contactData[field.key] ?? ""}
                           variant="outlined"
                         />

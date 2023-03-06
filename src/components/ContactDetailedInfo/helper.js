@@ -720,7 +720,7 @@ export const SUMMARY_FIELDS = (contactData) => {
     {
       label: "Account",
       key: "account",
-      type: "text",
+      type: "autocomplete",
       position: "left",
     },
     {
