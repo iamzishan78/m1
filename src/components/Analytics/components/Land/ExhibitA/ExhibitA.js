@@ -80,7 +80,7 @@ function ExhibitATable(props) {
       filters: fixedFilters,
       selectedGridView: { filters: [] },
       startPaginationAt: 25,
-      // defaultSort: { field: "name.keyword", order: "asc" },
+      defaultSort: { field: "_ts", order: "desc" },
       formatHits,
       downloadAll: { exportPx: '121px' },
       setAppliedFilters: props.filterChange,
