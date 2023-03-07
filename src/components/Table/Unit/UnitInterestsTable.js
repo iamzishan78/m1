@@ -24,7 +24,7 @@ import { setColumnsData } from "components/Table/helpers";
 const useStyles = makeStyles((theme) => ({
   tractInterestTable: {
     "& ::-webkit-scrollbar": {
-      height: "0.7em !important",
+      height: "0.7em !important"
     },
   },
   container: {
