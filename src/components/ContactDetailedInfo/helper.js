@@ -262,7 +262,7 @@ export const getBasicInfoExpContent = (contactData) => {
     },
     Website: {
       data: { website: contactData?.website },
-      linkType: LinkTypes.None,
+      linkType: LinkTypes.Simple,
     },
     "Industry Type": {
       data: { industryType: contactData?.industryType },
