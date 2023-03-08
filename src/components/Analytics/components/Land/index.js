@@ -76,7 +76,7 @@ const StyledTab = withStyles((theme) => ({
 export default function LandAnalytics() {
   const classes = useStyles();
 
-  const [tab, setTab] = useState(2);
+  const [tab, setTab] = useState(0);
 
   return (
     <>

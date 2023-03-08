@@ -11,10 +11,10 @@ import { usetableStyles } from "components/Table/Styles";
 // actions
 import { setRevenuePropertyData } from "actions";
 import TableESHOC from "components/Table/TableESHOC";
+import convert_date from "components/Shared/valueformatters/convert_date.js";
 
 function WellMasterTable(props) {
   const classes = usetableStyles();
-  const { esIndex, setESFilters } = props;
   // redux
   const dispatch = useDispatch();
   const [refetchData, setRefetchData] = useState(false);
@@ -23,6 +23,14 @@ function WellMasterTable(props) {
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
+      hit = {
+        ...hit.wellData,
+        sort: hit.sort,
+        permitApprovedDate: hit.wellData.permitApprovedDate ? convert_date(hit.wellData.permitApprovedDate) : null,
+        spudDate: hit.wellData.spudDate ? convert_date(hit.wellData.spudDate) : null,
+        completionDate: hit.wellData.completionDate ? convert_date(hit.wellData.completionDate) : null,
+        firstProdDate: hit.wellData.FirstProdDate ? convert_date(hit.wellData.FirstProdDate) : null,
+      }
       return hit;
     });
     return hits;
