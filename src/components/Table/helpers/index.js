@@ -113,7 +113,8 @@ export const setColumnsData = (
   setFilters,
   query,
   esIndex,
-  extendSearchQuery = ''
+  extendSearchQuery = '',
+  searchFields,
 ) => {
   columns.forEach((column, index) => {
     const tableCol = TableHeader.find((el) => el.name === column.name)
@@ -146,6 +147,7 @@ export const setColumnsData = (
                 query={query}
                 extendSearchQuery={extendSearchQuery}
                 custom={custom}
+                searchFields={searchFields}
               />
             );
           },

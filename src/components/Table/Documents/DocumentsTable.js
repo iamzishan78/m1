@@ -22,10 +22,10 @@ import CustomerViewCol from "components/Table/helpers/CustomerView";
 import TableHeader from "components/Table/constants/documents-header-schema.js";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { GET_ES_DOCUMENTS } from "graphQL/useQueryESDocuments";
-import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { UPDATE_DOCUMENT } from "graphQL/useMutationUpdateDocument";
 import { UPDATE_GRID_VIEW } from "graphQL/useMutationUpdateGridView";
 import { GET_GRID_VIEWS } from "graphQL/useQueryGetGridViews";
+import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { AppContext } from "AppContext";
 import { sortColumns, formattingGridView, getAppliedFilters, getFilterList } from "utils/helper";
 
@@ -36,24 +36,24 @@ const useStyles = makeStyles((theme) => ({
     padding: "0 !important",
   },
   documentTable: {
-    "& .MuiTableCell-paddingCheckbox": { position: 'sticky' },
+    "& .MuiTableCell-paddingCheckbox": { position: "sticky" },
     "& .MuiTableRow-hover": {
       "& .MuiTableCell-root": {
-        backgroundColor: "white"
+        backgroundColor: "white",
       },
       "&:hover": {
         "& .MuiTableCell-root": {
-          backgroundColor: "#dfdfdf"
-        }
-      }
+          backgroundColor: "#dfdfdf",
+        },
+      },
     },
     "& ::-webkit-scrollbar": {
       height: "0.7em !important",
     },
-    '& .MuiTableRow-footer': {
-      visibility: 'hidden',
-      display: 'none'
-    }
+    "& .MuiTableRow-footer": {
+      visibility: "hidden",
+      display: "none",
+    },
   },
 }));
 
@@ -104,10 +104,10 @@ function DocumentsTable(props) {
   const startPaginationAt = 50;
 
   useEffect(() => {
-    if (props.refetch === false) return
+    if (props.refetch === false) return;
 
-    let queryFilters = selectedGridView?.filters ? selectedGridView?.filters : []
-    queryFilters = queryFilters.length > 0 ? queryFilters : getAppliedFilters(filters, columns, stateApp.filtersData)
+    let queryFilters = selectedGridView?.filters ? selectedGridView?.filters : [];
+    queryFilters = queryFilters.length > 0 ? queryFilters : getAppliedFilters(filters, columns, stateApp.filtersData);
     props.setPage(0);
     (async () => {
       const { data } = await client.query({
@@ -119,17 +119,17 @@ function DocumentsTable(props) {
           },
           search: props.documentSearchQuery ? `${props.documentSearchQuery}*` : "*",
           filters: queryFilters,
-          sort: getSort()
+          sort: getSort(),
         },
       });
 
       const documents = data?.getESFiles;
-      props.setRows(documents?.hits)
-    })()
-  }, [props.refetch])
+      props.setRows(documents?.hits);
+    })();
+  }, [props.refetch]);
 
   useEffect(() => {
-    props.setPage(0)
+    props.setPage(0);
     return () => {
       setStateApp((stateApp) => ({
         ...stateApp,
@@ -143,22 +143,21 @@ function DocumentsTable(props) {
   }, [Documents]);
 
   const getSort = () => {
-    let sort
+    let sort;
     if (selectedSorts.current) {
-      const field = Object.keys(selectedSorts.current)[0]
-      if (selectedSorts.current[field]?.order !== 'none')
-        sort = { field, ...selectedSorts.current[field] }
+      const field = Object.keys(selectedSorts.current)[0];
+      if (selectedSorts.current[field]?.order !== "none") sort = { field, ...selectedSorts.current[field] };
     }
-    return sort
-  }
+    return sort;
+  };
   useEffect(() => {
-    const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]")
+    const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]");
     if (tableClass.length > 0) tableClass[0].scrollTop = 0;
 
-    let queryFilters = selectedGridView?.filters ? selectedGridView?.filters : []
-    queryFilters = queryFilters.length > 0 ? queryFilters : getAppliedFilters(filters, columns, stateApp.filtersData)
+    let queryFilters = selectedGridView?.filters ? selectedGridView?.filters : [];
+    queryFilters = queryFilters.length > 0 ? queryFilters : getAppliedFilters(filters, columns, stateApp.filtersData);
 
-    props.setPage(0)
+    props.setPage(0);
     getESDocuments({
       variables: {
         pagination: {
@@ -167,7 +166,7 @@ function DocumentsTable(props) {
         },
         search: props.documentSearchQuery ? `${props.documentSearchQuery}*` : "*",
         filters: queryFilters,
-        sort: getSort()
+        sort: getSort(),
       },
     });
   }, [getESDocuments, props.parent, props.documentSearchQuery, selectedGridView]);
@@ -205,7 +204,9 @@ function DocumentsTable(props) {
 
       let filterColumns = columns.filter((col) => !col._id);
 
-      let columnsData = JSON.parse(JSON.stringify([...filterColumns, ...metaDatas]));
+      let columnsData = JSON.parse(
+        JSON.stringify([...filterColumns, ...metaDatas])
+      );
       for (let i = 0; i < metaDatas.length; i++) {
         TableHeader.push(metaDatas[i]);
       }
@@ -224,9 +225,10 @@ function DocumentsTable(props) {
         JSON.parse(JSON.stringify(columnsData)),
         setColumns,
         setFilters,
-        GET_ES_FILTER_LIST,
+        GET_ES_SIMPLE_FILTER,
         "documents_flat",
-        props.documentSearchQuery
+        props.documentSearchQuery,
+        ["_all"]
       );
       // setSelectedGridView(selectedData);
     }
@@ -235,13 +237,11 @@ function DocumentsTable(props) {
   useEffect(() => {
     if (tableData?.hits) {
       if (changePage) {
-        const rowIndex = props.rows.length - 5
+        const rowIndex = props.rows.length - 5;
         props.setRows(props.rows.concat(tableData?.hits));
         document.getElementById(`waypoint-${rowIndex}`)?.scrollIntoView();
-        isPageChanged(false)
-      }
-      else
-        props.setRows(tableData?.hits);
+        isPageChanged(false);
+      } else props.setRows(tableData?.hits);
 
       let updatedColumns = columns;
       if (!isEmpty(selectedGridView)) {
@@ -256,9 +256,10 @@ function DocumentsTable(props) {
         JSON.parse(JSON.stringify(updatedColumns)),
         setColumns,
         setFilters,
-        GET_ES_FILTER_LIST,
+        GET_ES_SIMPLE_FILTER,
         "documents_flat",
-        props.documentSearchQuery
+        props.documentSearchQuery,
+        ["_all"]
       );
       props.setLoading(false);
     }
@@ -277,9 +278,10 @@ function DocumentsTable(props) {
         JSON.parse(JSON.stringify(updatedColumns)),
         setColumns,
         setFilters,
-        GET_ES_FILTER_LIST,
+        GET_ES_SIMPLE_FILTER,
         "documents_flat",
-        props.documentSearchQuery
+        props.documentSearchQuery,
+        ["_all"]
       );
     }
   }, [selectedGridView]);
@@ -313,9 +315,10 @@ function DocumentsTable(props) {
       JSON.parse(JSON.stringify(columns)),
       setColumns,
       setFilters,
-      GET_ES_FILTER_LIST,
+      GET_ES_SIMPLE_FILTER,
       "documents_flat",
-      props.documentSearchQuery
+      props.documentSearchQuery,
+      ["_all"]
     );
   };
 
@@ -323,14 +326,13 @@ function DocumentsTable(props) {
   const onTableChange = (action, tableState, rows, meta) => {
     const tableActions = props.initializeTableActions(tableState, meta, tableData, columns, getESDocuments, selectedGridView);
     selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
-    selectedSorts.current = tableActions?.pageESVariables?.variables?.sort
+    selectedSorts.current = tableActions?.pageESVariables?.variables?.sort;
 
     if (action === "filterChange") {
       setFilters(tableState.filterList);
     }
     switch (action) {
       case "filterChange":
-
         dispatch(
           updateUserGridViewSettingAction.STARTED({
             userGridViewSetting: {
@@ -363,12 +365,12 @@ function DocumentsTable(props) {
       case "search":
       case "sort":
       case "changeRowsPerPage":
-        const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]")
+        const tableClass = document.querySelectorAll("[class*=MUIDataTable-responsiveBase]");
         if (tableClass.length > 0) tableClass[0].scrollTop = 0;
         tableActions.genericESAction();
         break;
       case "changePage":
-        isPageChanged(true)
+        isPageChanged(true);
         tableActions.changeESPage();
         break;
       case "viewColumnsChange":
@@ -473,8 +475,8 @@ function DocumentsTable(props) {
   };
 
   const onInfiniteScroll = () => {
-    document.getElementById('pagination-next').click()
-  }
+    document.getElementById("pagination-next").click();
+  };
 
   return (
     <div className={classes.documentTable}>
