@@ -3940,13 +3940,13 @@ function SubTable(props) {
             )}
 
             {props.addAble?.type === "contact" && (
-              <div style={{ display: "inline", position: "absolute", right: "120px", top: "5px" }}>
-                <IconButton onClick={props.onDownload}>
+             <div style={{ display: "inline", position: "absolute", right: "120px", top: "5px" }}>
+              <IconButton onClick={props.onDownload} disabled={props.isExporting}>
                   <Tooltip title="Download CSV" aria-label="add">
                     <CloudDownloadIcon />
                   </Tooltip>
-                </IconButton>
-              </div>
+              </IconButton>
+            </div>
             )}
             {props.addAble?.type === "contact" && (
               <>

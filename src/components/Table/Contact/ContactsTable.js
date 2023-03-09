@@ -355,6 +355,7 @@ function ContactsTable(props) {
             esIndex: esIndex,
             open: true
           }}
+          isExporting={props.isExporting}
           onDownload={props.onDownload}
           {...props.esHocProps}
         />
