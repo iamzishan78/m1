@@ -208,7 +208,7 @@ function DocumentsTable(props) {
         JSON.stringify([...filterColumns, ...metaDatas])
       );
       for (let i = 0; i < metaDatas.length; i++) {
-        TableHeader.push(metaDatas[i]);
+        TableHeader.push({ ...metaDatas[i], esKey: `${metaDatas[i].esKey}.keyword` });
       }
 
       let view = JSON.parse(JSON.stringify(selectedData));
