@@ -13,6 +13,9 @@ import LayerSelectionIcon from "components/Shared/svgIcons/layerSelection";
 // contexts
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
+import { copy } from "utils/helper";
+import polylabel from "polylabel";
+import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -132,12 +135,39 @@ function LayerSelectionPopup(props) {
                 return properties.shapeLabel
             } else if (layer.source === 'units_source') {
                 return `${properties.uNumber ? properties.uNumber + '-' : ''}${properties.shapeLabel}`
+            } else if (properties.layerShapeName) {
+                return layer.properties.Unit_Name || layer.layer.id
             } else
                 return `${properties.agreementNumber ? properties.agreementNumber + '-' : ''}${properties.agreementName}`
         }
     }
 
     const selectLayer = (layer) => {
+        if (layer.properties.layerShapeName) {
+            const jsonLayer = copy(layer)
+
+            jsonLayer.properties.shapeCenter = polylabel(jsonLayer.geometry.coordinates);
+            if (props.map)
+                drawBoundary(props.map, jsonLayer);
+
+            props.setStateApp((state) => {
+                return {
+                    ...state,
+                    selectedUserDefinedLayer: jsonLayer,
+                    selectedParcel: null,
+                };
+            });
+            props.setStateApp((state) => {
+                if (!state.showDrawShapesPopup && state.shapeEditMode !== 'redraw') {
+                    props.createUDPopUp(jsonLayer.properties);
+                }
+                return state;
+            });
+            props.map?.resize?.();
+
+            return
+        }
+
         let newPath
         if (layer.source === 'wellsVT') {
             newPath = `/map/wells/${layer.properties.id}/${layer.properties.latitude}/${layer.properties.longitude}`;
