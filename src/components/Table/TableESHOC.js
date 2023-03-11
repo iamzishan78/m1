@@ -27,13 +27,11 @@ import { usetableStyles } from "./Styles";
 import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
 import { handleSelectedGridChange, setColumnDisplayAndFilter } from "./helpers";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
-import { findInFunction, formattingGridView, sortColumns } from "utils/helper";
+import { formattingGridView, sortColumns } from "utils/helper";
 import { DrawerContext } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import moment from "moment";
 
-import GlobalSettings from "..//..//GlobalSettings.js";
-import { SimpleAutoCompleteFilter } from "./SimpleAutoComplete";
-
+import GlobalSettings from "GlobalSettings.js";
 
 export const TableESHOC = (Component) => {
     const HocWithDefaultProps = function HOC(props) {
