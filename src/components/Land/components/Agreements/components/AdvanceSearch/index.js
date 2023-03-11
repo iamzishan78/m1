@@ -12,7 +12,7 @@ const filterTypes = {
   // "Related Parties": { component: "ProvisionFilters", countKey: "wellFilterCount" },
   Provisions: { component: "ProvisionFilters", countKey: "provisions" },
   // "Related Wells": { component: "RelatedWellsFilters", countKey: "tagFilterCount" },
-  "Custom Data": { component: "CustomDataFilters", countKey: "tagFilterCount" },
+  "Custom Data": { component: "CustomDataFilters", countKey: "customData" },
   // "Legal Description": { component: "ProvisionFilters", countKey: "ownershipFilterCount" },
   // Wells: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // Documents: { component: "ProvisionFilters", countKey: "tagFilterCount" },
