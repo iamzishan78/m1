@@ -61,6 +61,7 @@ export const TableESHOC = (Component) => {
         const [searchedRows, setSearchedRows] = useState([])
 
         const [selectedRows, setSelectedRows] = useState([]);
+        const [selectedRowsValues, setSelectedRowsValues] = useState();
         const [allRowsSelected, setAllRowsSelected] = useState(false);
         const [initialFilters, setInitialFilters] = useState([]);
 
@@ -832,6 +833,7 @@ export const TableESHOC = (Component) => {
                     tableActions.genericESAction();
                     break;
                 case "rowSelectionChange":
+                    let allRows = []
                     if (tableMeta.isSelectedAllAllowed)
                         if (tableState.selectedRows.data.length === tableState.data.length || tableState.selectedRows.data.length > tableState.data.length) {
                             const isSelectAll = tableState.selectedRows.data.length === tableState.data.length
@@ -881,13 +883,17 @@ export const TableESHOC = (Component) => {
                                 } while (iter * max < total);
 
                                 meta.setSelectedRows(selectedData)
+                                allRows = selectedData
                             }
                         } else {
-                            if (meta?._selectedRows?.length > 0)
+                            if (meta?._selectedRows?.length > 0) {
                                 meta.setSelectedRows([])
+                                setSelectedRowsValues(null)
+                            }
                             setAllRowsSelected(undefined)
                         }
                     setSelectedRows(tableState.selectedRows.data)
+                    setSelectedRowsValues(allRows)
                     break;
                 case "changePage":
                     isPageChanged(true)
@@ -1061,6 +1067,9 @@ export const TableESHOC = (Component) => {
 
                     selectedRows={selectedRows}
                     setSelectedRows={setSelectedRows}
+
+                    selectedRowsValues={selectedRowsValues}
+                    setSelectedRowsValues={setSelectedRowsValues}
 
                     onTableChange={onTableChange}
                     columns={columns}
