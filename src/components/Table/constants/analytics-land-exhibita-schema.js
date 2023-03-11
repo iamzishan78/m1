@@ -26,6 +26,24 @@ const AcerageSummaryHeadCells = [
     },
   },
   {
+    name: "agreementName",
+    label: "Agreement Name",
+    esKey: "shape.shapeJson.properties.agreementName.keyword",
+    options: {
+      filter: false,
+      display: false,
+    },
+  },
+  {
+    name: "agreementId",
+    label: "Agreement Id",
+    esKey: "shape._id",
+    options: {
+      filter: false,
+      display: false,
+    },
+  },
+  {
     name: "grantor",
     label: "Lessor/Grantor",
     esKey: "shape.shapeJson.properties.grantor.keyword",
@@ -191,23 +209,27 @@ const AcerageSummaryHeadCells = [
     label: "Rec Date",
     esKey: "shape.shapeJson.properties.recordedDate",
     options: { sort: true, filter: true },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
   },
   {
     name: "recordedBook",
     label: "Book",
-    esKey: "shape.shapeJson.properties.recordedBook",
+    esKey: "shape.shapeJson.properties.recordedBook.keyword",
     options: { sort: true, filter: true },
   },
   {
     name: "recordedPage",
     label: "Page",
-    esKey: "shape.shapeJson.properties.recordedPage",
+    esKey: "shape.shapeJson.properties.recordedPage.keyword",
     options: { sort: true, filter: true },
   },
   {
     name: "recordedInstrumentNumber",
     label: "Instrument #",
-    esKey: "shape.shapeJson.properties.recordedInstrumentNumber",
+    esKey: "shape.shapeJson.properties.recordedInstrumentNumber.keyword",
     options: { sort: true, filter: true },
   },
 ];

@@ -73,7 +73,7 @@ function RevenuePropertiesTable(props) {
       startPaginationAt: 50,
       defaultSort: { field: "name.keyword", order: "asc" },
       formatHits,
-      exportPx: "121px",
+      downloadAll: { exportPx: '121px' },
       // initializeGenericData: { key: "_id", actions: genericDataActions },
     });
     // eslint-disable-next-line

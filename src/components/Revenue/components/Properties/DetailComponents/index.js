@@ -220,7 +220,7 @@ export default function DetailComponents(props) {
   const [showOwnerDialog, setShowOwnerDialog] = useState(false);
   const [selectedInterest, setSelectedInterest] = useState(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [tab, setTab] = useState(1);
+  const [tab, setTab] = useState(0);
   const [refetchContacts, setRefetchContacts] = useState(false);
   const selectedTabRef = useRef(null);
   const [collapse, setCollapse] = useState(true);

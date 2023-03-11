@@ -25,6 +25,8 @@ function ExhibitATable(props) {
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
       hit.agreementNumber = hit.shape.shapeJson.properties.agreementNumber;
+      hit.agreementName = hit.shape.shapeJson.properties.agreementName;
+      hit.agreementId = hit.shape._id;
       hit.grantor = hit.shape.shapeJson.properties.grantor;
       hit.grantee = hit.shape.shapeJson.properties.grantee;
       // hit.layerSubType = hit.shape.shapeJson.properties.layerSubType;
@@ -78,7 +80,7 @@ function ExhibitATable(props) {
       filters: fixedFilters,
       selectedGridView: { filters: [] },
       startPaginationAt: 25,
-      // defaultSort: { field: "name.keyword", order: "asc" },
+      defaultSort: { field: "_ts", order: "desc" },
       formatHits,
       downloadAll: { exportPx: '121px' },
       setAppliedFilters: props.filterChange,

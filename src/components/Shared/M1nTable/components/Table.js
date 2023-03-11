@@ -1916,7 +1916,7 @@ function SubTable(props) {
                   const splitNumber = value?.split("_");
 
                   const isSnapGrid = column.options.isSnapGrid || false
-
+                  const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
                   return (
                     <div
                       style={{
@@ -1940,9 +1940,9 @@ function SubTable(props) {
                         >
                           <ColumnWithLink
                             value={splitNumber?.[0]
-                              ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
-                              : tableMeta?.rowData[2]}
-                            link={isSnapGrid && tableMeta.rowData[3] ? `/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}` : `/land/agreement/details/${tableMeta.rowData[0]}`}
+                              ? `${splitNumber?.[0].trim()} - ${row_line.agreementName}`
+                              : row_line.agreementName}
+                            link={isSnapGrid && tableMeta.rowData[3] ? `/map/${tableMeta.rowData[3].toLowerCase()}s/${row_line.agreementId}` : `/land/agreement/details/${row_line.agreementId}`}
                             onClick={(e) => {
                               e.stopPropagation();
                             }}
@@ -3940,13 +3940,13 @@ function SubTable(props) {
             )}
 
             {props.addAble?.type === "contact" && (
-              <div style={{ display: "inline", position: "absolute", right: "120px", top: "5px" }}>
-                <IconButton onClick={props.onDownload}>
+             <div style={{ display: "inline", position: "absolute", right: "120px", top: "5px" }}>
+              <IconButton onClick={props.onDownload} disabled={props.isExporting}>
                   <Tooltip title="Download CSV" aria-label="add">
                     <CloudDownloadIcon />
                   </Tooltip>
-                </IconButton>
-              </div>
+              </IconButton>
+            </div>
             )}
             {props.addAble?.type === "contact" && (
               <>

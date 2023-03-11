@@ -68,7 +68,7 @@ function CampaignsTable(props) {
       esIndex,
       startPaginationAt: 25,
       formatHits,
-      exportPx: "121px",
+      downloadAll: { exportPx: '121px' },
       setAppliedFilters: props.filtersChange,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
