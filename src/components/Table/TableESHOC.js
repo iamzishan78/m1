@@ -47,6 +47,7 @@ export const TableESHOC = (Component) => {
         const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, infScrollHeight: loadMore?.height })
 
         const [search, setSearch] = useState(null);
+        const [isExporting, setIsExporting] = useState(false);
         const [columns, Columns] = useState([]);
         const [changePage, isPageChanged] = useState(false);
         const [page, setPage] = useState(0)
@@ -725,8 +726,10 @@ export const TableESHOC = (Component) => {
                             updatedData = updatedData.replace(/,/g, ' ')
                         }
                     } else if (sampleCsv[j].name === 'tags' && Array.isArray(updatedData)) {
-                        const tags = updatedData[0].map(d => d).toString().replace(/,/g, ' ')
-                        updatedData = tags
+                        if(updatedData[0]){
+                            const tags = updatedData[0].map(d => d).toString().replace(/,/g, ' ')
+                            updatedData = tags
+                        }
                     } else if (Array.isArray(updatedData)) {
                         const data = updatedData.map(d => d).toString().replace(/,/g, ' ')
                         updatedData = data
@@ -739,6 +742,7 @@ export const TableESHOC = (Component) => {
         }
 
         const onDownload = async () => {
+            setIsExporting(true)
             let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
             if (props.useWildeCard)
                 searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
@@ -791,6 +795,7 @@ export const TableESHOC = (Component) => {
             pom.href = url;
             pom.setAttribute('download', 'tableData.csv');
             pom.click();
+            setIsExporting(false)
         }
 
         const onTableChange = async (action, tableState, rows, meta) => {
@@ -944,8 +949,8 @@ export const TableESHOC = (Component) => {
                                 position: "absolute",
                                 right: tableMeta?.downloadAll?.exportPx,
                             }}>
-                                <IconButton onClick={onDownload}>
-                                    <Tooltip title="Download CSV" aria-label="add">
+                                <IconButton onClick={onDownload} disabled={isExporting}>
+                                    <Tooltip title="Download CSV Test" aria-label="add">
                                         <CloudDownloadIcon />
                                     </Tooltip>
                                 </IconButton>
@@ -1093,6 +1098,7 @@ export const TableESHOC = (Component) => {
                     setAllRowsSelected={setAllRowsSelected}
 
                     onDownload={onDownload}
+                    isExporting={isExporting}
                 />
             </span>
         );

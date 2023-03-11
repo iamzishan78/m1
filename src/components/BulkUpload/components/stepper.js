@@ -352,7 +352,7 @@ export default function CustomizedSteppers(props) {
         setStateApp((state) => ({
           ...state,
           activeStepNumber: stateApp.activeStepNumber + 1,
-          revenueStatementInfo: {}
+          uploaderFormValues: {}
         }));
       }
 
