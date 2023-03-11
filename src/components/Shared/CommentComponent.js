@@ -89,6 +89,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridStyle: {
     padding: "12px 0px",
+    flexWrap: 'nowrap'
   },
   bold: {
     fontWeight: "bold",
@@ -115,6 +116,13 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     marginBottom: "5px",
   },
+  commentWords: {
+    display: 'inline-block',
+    overflowWrap: 'break-word',
+    wordWrap: 'break-word',
+    wordBreak: 'break-word',
+    hyphens: 'auto'
+  }
 }));
 
 function urlify(text) {
@@ -151,31 +159,31 @@ export const CommonCommentText = ({ eachComment, users }) => {
                     return (
                       <>
                         {" "}
-                        <span className="blue">
+                        <p className={`${classes.commentWords} blue`}>
                           {firstPart}@{users.find((user) => user._id === id)?.name}
                           {secondPart}{" "}
-                        </span>
+                        </p>
                         {splittedWord.length > 1 && <br />}{" "}
                       </>
                     );
                   } else
                     return (
-                      <span>
+                      <p className={classes.commentWords}>
                         {sWord} <br />{" "}
-                      </span>
+                      </p>
                     );
                 })}
               </>
             );
           }
 
-          return <span>{splittedWord}</span>;
+          return <p className={classes.commentWords}>{splittedWord}</p>;
         } else {
           const _word = index !== formatComment.length - 1 ? `${word} ` : word;
           const sanitizedData = () => ({
             __html: DOMPurify.sanitize(urlify(_word)),
           });
-          return <span dangerouslySetInnerHTML={sanitizedData()}></span>;
+          return <p className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()}></p>;
         }
       })}
     </div>
@@ -635,26 +643,26 @@ export const CommentText = ({ eachComment, users }) => {
                     let id = sWord.split("{{")[1];
                     id = id.split("}}")[0];
                     return (
-                      <span className="blue">
+                      <p className={`${classes.commentWords} blue`}>
                         {firstPart}@{users.find((user) => user._id === id)?.name}
                         {secondPart}{" "}
-                      </span>
+                      </p>
                     );
                   } else if (sWord === "") return <br />;
                   else
                     return (
-                      <span>
+                      <p className={classes.commentWords}>
                         {sWord} <br />{" "}
-                      </span>
+                      </p>
                     );
                 })}
               </>
             );
           }
 
-          return <span>{splittedWord}</span>;
+          return <p className={classes.commentWords}>{splittedWord}</p>;
         } else {
-          return <span>{word} </span>;
+          return <p className={classes.commentWords}>{word} </p>;
         }
       })}
     </div>

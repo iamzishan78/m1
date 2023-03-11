@@ -16,7 +16,7 @@ import { AppContext } from "AppContext";
 const useStyles = makeStyles((theme) => ({
   paperTwo: {
     backgroundColor: theme.palette.background.paper,
-    height: "470px",
+    height: "350px",
     boxShadow: theme.shadows[5],
     overflow: "none",
 
