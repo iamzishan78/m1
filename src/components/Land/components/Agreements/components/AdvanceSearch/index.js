@@ -18,8 +18,9 @@ const filterTypes = {
   // Documents: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "tagFilterCount" },
   // "Remarks Types": { component: "RemarksTypes", countKey: "remarksTypes" },
-  "Related Wells": { component: "RelatedWellsFilters", countKey: "relatedWells" },
-  "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "relatedAgreements" }
+  "Related Wells": { component: "RelatedWellsFilters", countKey: "tagFilterCount" },
+  "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "tagFilterCount" },
+  "Related Documents": { component: "RelatedDocumentFilters", countKey: "tagFilterCount" },
 };
 
 const useStyles = makeStyles(() => ({
@@ -117,7 +118,7 @@ const useStyles = makeStyles(() => ({
 export default function QuickActionsPanel({ children, title, actions, handlePanelStateChange, quickActionsPanelState, activeModule }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(null);
   useEffect(() => {
     return () => {
       let landFilters = { ...stateApp.landSearchFilters };
