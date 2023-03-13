@@ -134,9 +134,9 @@ const InterestDetailForm = (props) => {
         effectiveDate: effectiveDate ? moment(effectiveDate).format("YYYY-MM-DD") : null,
         owner: owner
           ? {
-              ...owner,
-              name: owner.entityDetail.name,
-            }
+            ...owner,
+            name: owner.entityDetail.name,
+          }
           : { name: "", _id: null },
       });
     } else if (props.propertyOwnerContact) {
@@ -232,7 +232,7 @@ const InterestDetailForm = (props) => {
                 type="date"
                 margin="dense"
                 fullWidth
-                value={params.value ?? null}
+                value={params.value ? moment(params.value).utc(true).format("yyyy-MM-DD") : ""}
                 InputLabelProps={{ shrink: true }}
                 InputProps={{
                   endAdornment: (
