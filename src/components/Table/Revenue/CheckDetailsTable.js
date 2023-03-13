@@ -21,6 +21,7 @@ function CheckDetailsTable(props) {
             hit.state = hit.property?.state;
             hit.county = hit.property?.county;
             hit.date = hit.date ? convert_date(hit.date) : null;
+            hit.propertyId = hit?.property?._id;
             return hit;
         });
     };
