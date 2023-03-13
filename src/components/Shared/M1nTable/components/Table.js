@@ -1942,7 +1942,7 @@ function SubTable(props) {
                             value={splitNumber?.[0]
                               ? `${splitNumber?.[0].trim()} - ${row_line.agreementName}`
                               : row_line.agreementName}
-                            link={isSnapGrid && tableMeta.rowData[3] ? `/map/${tableMeta.rowData[3].toLowerCase()}s/${row_line.agreementId}` : `/land/agreement/details/${row_line.agreementId}`}
+                            link={isSnapGrid && tableMeta.rowData[3] ? `/map/${tableMeta.rowData[3].toLowerCase()}s/${row_line.agreementId ?? row_line._id}` : `/land/agreement/details/${row_line.agreementId ?? row_line._id}`}
                             onClick={(e) => {
                               e.stopPropagation();
                             }}
