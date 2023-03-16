@@ -583,17 +583,17 @@ const Transact = () => {
             }
           </div>
         </header>
-        <Box display={"flex"} flexWrap="wrap" style={{ gap: '5px'}}>
+        {
+          showDescription &&
+            <div className={CardClasses.cardDescStyle}>{desc}</div>
+        }
+        <Box display={"flex"} flexWrap="wrap" style={{ gap: '5px', paddingBottom: 5}}>
           {
             tags?.length > 0 && 
             tags.map(tag => 
                 <Chip style={{ height: 25, background: tag.color || "powderblue", color: getOppositeHexColor(tag.color || "powderblue")}} label={tag.tag} />)
           }
         </Box>
-        {
-          showDescription &&
-            <div className={CardClasses.cardDescStyle}>{desc}</div>
-        }
       </article>
     );
   });
