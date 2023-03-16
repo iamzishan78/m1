@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect, useRef, useMemo } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 import { get } from "lodash";
+import Chip from '@material-ui/core/Chip';
 
 import { AppContext } from "../../AppContext";
 import { TransactContext } from "./TransactContext";
@@ -29,6 +30,8 @@ import { validateEmail } from "components/Login/loginHelpers";
 import { GETPIPELINE } from "graphQL/useQueryPipeline";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
 import PipelinesFetchHoc from "components/Transact/components/Common/PipelinesFetchHoc";
+import { Box } from "@material-ui/core";
+import { getOppositeHexColor } from "utils/helper";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -535,7 +538,7 @@ const Transact = () => {
 
   const GetCard = React.memo((cardProps) => {
     const CardClasses = useStyles(cardProps);
-    const { metadata, title, description, id, laneId } = cardProps;
+    const { metadata, title, description, id, laneId, tags } = cardProps;
     let owner = null;
     let ownerId = null;
     let ownerEmail = null;
@@ -580,6 +583,13 @@ const Transact = () => {
             }
           </div>
         </header>
+        <Box display={"flex"} flexWrap="wrap" style={{ gap: '5px'}}>
+          {
+            tags?.length > 0 && 
+            tags.map(tag => 
+                <Chip style={{ height: 25, background: tag.color || "powderblue", color: getOppositeHexColor(tag.color || "powderblue")}} label={tag.tag} />)
+          }
+        </Box>
         {
           showDescription &&
             <div className={CardClasses.cardDescStyle}>{desc}</div>

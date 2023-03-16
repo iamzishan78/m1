@@ -459,3 +459,42 @@ export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFrom
       setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
   }
 };
+
+
+export function generateColor() {
+  // Define an array of available colors
+  const colors = ["#ff7f50", "#6495ed", "#ff69b4", "#ba55d3", "#cd5c5c", "#ffa07a", "#f08080", "#90ee90", "#87cefa", "#b0c4de", "#ffa500", "#40e0d0", "#1e90ff", "#ff6347", "#7b68ee", "#00fa9a", "#ffd700", "#6b8e23", "#ff00ff", "#3cb371"];
+
+  // Pick a random color from the array
+  const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+  // Remove the chosen color from the array
+  colors.splice(colors.indexOf(randomColor), 1);
+
+  // Add the chosen color to the end of the array
+  colors.push(randomColor);
+
+  // Return the chosen color
+  return randomColor || "#B6D0E2"; // Default "powder blue" color
+}
+
+export function getOppositeHexColor(inputColor) {
+ // Convert the background color to an RGB array
+ const rgbArray = hexToRgb(inputColor);
+
+ // Calculate the relative luminance of the color using the formula
+ // from the WCAG 2.0 spec: https://www.w3.org/TR/WCAG20-TECHS/G18.html#G18-tests
+ const relativeLuminance = 0.2126 * rgbArray[0] + 0.7152 * rgbArray[1] + 0.0722 * rgbArray[2];
+
+ // Return "black" if the relative luminance is less than 0.5,
+ // "white" otherwise
+ return relativeLuminance < 0.5 ? "black" : "white";
+}
+
+// Helper function to convert a hex color to an RGB array
+function hexToRgb(hex) {
+  const r = parseInt(hex.substr(1, 2), 16);
+  const g = parseInt(hex.substr(3, 2), 16);
+  const b = parseInt(hex.substr(5, 2), 16);
+  return [r, g, b];
+}

@@ -12,6 +12,7 @@ export const UPSERTTAG = gql`
         public
         taggedOn
         objectType
+        color
       }
     }
   }
