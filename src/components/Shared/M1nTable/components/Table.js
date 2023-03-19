@@ -1942,10 +1942,7 @@ function SubTable(props) {
                             value={splitNumber?.[0]
                               ? `${splitNumber?.[0].trim()} - ${row_line.agreementName}`
                               : row_line.agreementName}
-                            link={isSnapGrid && tableMeta.rowData[3] ? `/map/${tableMeta.rowData[3].toLowerCase()}s/${row_line.agreementId ?? row_line._id}` : `/land/agreement/details/${row_line.agreementId ?? row_line._id}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                            }}
+                            link={isSnapGrid && tableMeta.rowData[3] ? `/map/${tableMeta.rowData[3].toLowerCase()}s/${row_line.agreementId || tableMeta.rowData[0]}` : `/land/agreement/details/${row_line.agreementId || tableMeta.rowData[0]}`}
                           />
                           {/* <Box
                             onClick={(e) => {
@@ -3940,13 +3937,13 @@ function SubTable(props) {
             )}
 
             {props.addAble?.type === "contact" && (
-             <div style={{ display: "inline", position: "absolute", right: "120px", top: "5px" }}>
-              <IconButton onClick={props.onDownload} disabled={props.isExporting}>
+              <div style={{ display: "inline", position: "absolute", right: "120px", top: "5px" }}>
+                <IconButton onClick={props.onDownload} disabled={props.isExporting}>
                   <Tooltip title="Download CSV" aria-label="add">
                     <CloudDownloadIcon />
                   </Tooltip>
-              </IconButton>
-            </div>
+                </IconButton>
+              </div>
             )}
             {props.addAble?.type === "contact" && (
               <>

@@ -36,7 +36,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
   const params = {
     esIndex: "shapes_flat",
     variant: "outlined",
-    setFilters: () => {},
+    setFilters: () => { },
     filterList,
     column: {
       label: filter.label,
@@ -64,26 +64,26 @@ export default function RelatedAgreementsFilters(props) {
   const [filterList, setFilterList] = useState([[], []]);
 
   useEffect(() => {
-    if (stateApp.landSearchFilters.provisions?.length === 0 && filterList.find((fl) => fl.length !== 0)) {
+    if (stateApp.landSearchFilters.relatedAgreements?.length === 0 && filterList.find((fl) => fl.length !== 0)) {
       setFilterList([[], []]);
     }
-  }, [stateApp.landSearchFilters.provisions]);
+  }, [stateApp.landSearchFilters.relatedAgreements]);
 
-  const changeLandProvisions = React.useMemo(
+  const changeLandAgreements = React.useMemo(
     () =>
       debounce((request, callback, index) => {
         const { filterKey } = callback;
-        const landProvisionsFilters = [...stateApp.landSearchFilters.provisions];
-        const _index = landProvisionsFilters.findIndex((f) => f.field === filterKey);
-        if (_index === -1 && request[0] !== null) landProvisionsFilters.push({ field: filterKey, value: request[0] });
-        else if (request.length > 0 && request[0] !== null) landProvisionsFilters[_index].value = request[0];
-        else if (_index !== -1) landProvisionsFilters.splice(_index, 1);
+        const landAgreementsFilters = [...stateApp.landSearchFilters.relatedAgreements];
+        const _index = landAgreementsFilters.findIndex((f) => f.field === filterKey);
+        if (_index === -1 && request[0] !== null) landAgreementsFilters.push({ field: filterKey, value: request[0] });
+        else if (request.length > 0 && request[0] !== null) landAgreementsFilters[_index].value = request[0];
+        else if (_index !== -1) landAgreementsFilters.splice(_index, 1);
         setStateApp((stateApp) => ({
           ...stateApp,
-          landSearchFilters: { ...stateApp.landSearchFilters, provisions: landProvisionsFilters },
+          landSearchFilters: { ...stateApp.landSearchFilters, relatedAgreements: landAgreementsFilters },
         }));
       }, 1000),
-    [setStateApp, stateApp.landSearchFilters.provisions]
+    [setStateApp, stateApp.landSearchFilters.relatedAgreements]
   );
 
   const onFilterChange = (request, callback, filter, index) => {
@@ -93,7 +93,7 @@ export default function RelatedAgreementsFilters(props) {
 
     const _request = copy(request);
     if (filter.customOnChange) _request[0] = filter.customOnChange(_request[0]);
-    changeLandProvisions(_request, callback, index);
+    changeLandAgreements(_request, callback, index);
   };
 
   return (
@@ -106,7 +106,7 @@ export default function RelatedAgreementsFilters(props) {
             filter={filter}
             filterList={filterList}
             index={index}
-            appliedFilters={stateApp.landSearchFilters.provisions}
+            appliedFilters={stateApp.landSearchFilters.relatedAgreements}
           />
         </Grid>
       ))}
