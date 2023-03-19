@@ -278,11 +278,14 @@ export default function DealComment({
     setIsSelected(true);
   };
   const openDialogBox = (e) => {
-    e.stopPropagation();
+    // e.stopPropagation();
     setCommentTypeDialogBox(false);
   }
   return (
-    <ClickAwayListener onClickAway={() => setIsCollapsed(true)}>
+    <ClickAwayListener onClickAway={(e) => {
+      if(!commentTypeDialogBox)
+        setIsCollapsed(true)
+    }}>
     <div
       onClick={(e)=>openDialogBox(e)}
     >
