@@ -112,7 +112,7 @@ export default function ExhibitATabPanel() {
         }
       } else {
         const index = newFilters.find((filter) => filter.field.includes(column?.filterKey[0]));
-        if (index > -1) {
+        if (index >= '0') {
           newFilters.splice(index, 1);
         }
       }
