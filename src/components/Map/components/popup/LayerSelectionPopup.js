@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
     Grid, Card, CardHeader, CardContent, Accordion, AccordionSummary, Typography,
-    List, ListItem, ListItemText
+    List, ListItem, ListItemText, Tooltip
 } from "@material-ui/core";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
@@ -73,6 +73,12 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: "#031d40",
         },
         color: "white",
+    },
+    heading: {
+        width: '345px',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
     },
     accordian: {
         color: 'white',
@@ -245,7 +251,11 @@ function LayerSelectionPopup(props) {
                                     aria-controls="panel1a-content"
                                     id="panel1a-header"
                                 >
-                                    <Typography className={classes.heading}>{getSourceName(key)}</Typography>
+                                    {
+                                        getSourceName(key).length > 38 ? <Tooltip title={getSourceName(key)}>
+                                            <Typography className={classes.heading}>{getSourceName(key)}</Typography>
+                                        </Tooltip> : <Typography className={classes.heading}>{getSourceName(key)}</Typography>
+                                    }
                                 </AccordionSummary>
                                 <List component="nav" aria-label="secondary mailbox folders">
                                     {

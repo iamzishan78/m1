@@ -6371,7 +6371,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                   handleCloseExpandableCard={handleCloseExpandableCard}
                   selectionLayers={stateApp.selectionLayers}
                   zIndex={3000}
-                  cardWidth="350px"
+                  cardWidth="450px"
                   mouseX={0}
                   mouseY={0}
                   position="relative"
