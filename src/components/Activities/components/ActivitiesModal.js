@@ -328,7 +328,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
         _id: selectedActivity.contactId,
       });
       setOutcome(selectedActivity.outcome)
-      outcomeFieldRef.current.updateDefaultValue(selectedActivity.outcome);
+      outcomeFieldRef.current?.updateDefaultValue(selectedActivity.outcome);
       setStartDate(moment.parseZone(selectedActivity.start).format("yyyy-MM-DD"));
       setStartTime(moment.parseZone(selectedActivity.start).format("HH:mm"));
       setCalenderDate(selectedActivity.start);
@@ -624,7 +624,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                 </div>
               </div>
               <div className={classes.row}>
-              <span className={classes.rowIcon}></span>
+                <span className={classes.rowIcon}></span>
                 <AutoCompleteAddNewField
                   ref={outcomeFieldRef}
                   queryParams={{
