@@ -177,6 +177,13 @@ function LayerSelectionPopup(props) {
 
         history.location.pathname !== newPath && history.replace(newPath);
     }
+
+    selectionLayers.forEach((selectionLayer) => {
+        selectionLayer.sourceKey = selectionLayer.source
+        if (selectionLayer?.properties?.layerShapeName)
+            selectionLayer.sourceKey = selectionLayer?.properties.layerShapeName
+    })
+
     if (search)
         selectionLayers = selectionLayers.filter((selectionLayer) => {
             const properties = selectionLayer?.properties
@@ -189,9 +196,8 @@ function LayerSelectionPopup(props) {
             } else
                 return startsWith(search, [properties.agreementNumber, properties.agreementName])
         })
-    const groupFeatures = _.groupBy(selectionLayers, 'source');
+    const groupFeatures = _.groupBy(selectionLayers, 'sourceKey');
     // console.log(groupFeatures)
-
     function GetTitle() {
         const classes = useStyles();
 
