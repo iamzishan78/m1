@@ -7,6 +7,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import AddIcon from "@material-ui/icons/Add";
 import { useHistory } from "react-router-dom";
 import CallOutlinedIcon from '@material-ui/icons/CallOutlined';
+import PhoneIphoneIcon from '@material-ui/icons/PhoneIphone';
 import DomainOutlinedIcon from '@material-ui/icons/DomainOutlined';
 import AutocompEntityNamesVirtualizeList from "components/Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
@@ -79,6 +80,18 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  acSummaryRoot: {
+    minHeight: "unset !important",
+  },
+  acSummaryContent: {
+    margin: "0px !important"
+  },
+  accDetail:{
+    paddingTop: "0px !important",
+    "& .acc-data .address:first-child":{
+      marginTop: "0px !important"
+    }
+  }
 }));
 let contactDetail = {}
 export default function Contacts(props) {
@@ -154,6 +167,7 @@ export default function Contacts(props) {
               _id: dataMap._id,
               descriptorId: dataMap.descriptorId,
               name: allContactList?.paginatedContacts?.edges[0].node.name,
+              homePhone: allContactList?.paginatedContacts?.edges[0].node.homePhone ? allContactList?.paginatedContacts?.edges[0].node.homePhone : "",
               mobilePhone: allContactList?.paginatedContacts?.edges[0].node.mobilePhone ? allContactList?.paginatedContacts?.edges[0].node.mobilePhone : "",
               address1: allContactList?.paginatedContacts?.edges[0].node.address1 ? allContactList?.paginatedContacts?.edges[0].node.address1 + " " + allContactList?.paginatedContacts?.edges[0].node.city + " " + allContactList?.paginatedContacts?.edges[0].node.state + " " + allContactList?.paginatedContacts?.edges[0].node.zip : "",
               primaryEmail: allContactList?.paginatedContacts?.edges[0].node.primaryEmail ? allContactList?.paginatedContacts?.edges[0].node.primaryEmail : ""
@@ -163,6 +177,7 @@ export default function Contacts(props) {
               _id: dataMap._id,
               descriptorId: dataMap.descriptorId,
               name: allContactList?.paginatedContacts?.edges[0].node.name,
+              homePhone: allContactList?.paginatedContacts?.edges[0].node.homePhone ? allContactList?.paginatedContacts?.edges[0].node.homePhone : "",
               mobilePhone: allContactList?.paginatedContacts?.edges[0].node.mobilePhone ? allContactList?.paginatedContacts?.edges[0].node.mobilePhone : "",
               address1: allContactList?.paginatedContacts?.edges[0].node.address1 ? allContactList?.paginatedContacts?.edges[0].node.address1 + " " + allContactList?.paginatedContacts?.edges[0].node.city + " " + allContactList?.paginatedContacts?.edges[0].node.state + " " + allContactList?.paginatedContacts?.edges[0].node.zip : "",
               primaryEmail: allContactList?.paginatedContacts?.edges[0].node.primaryEmail ? allContactList?.paginatedContacts?.edges[0].node.primaryEmail : ""
@@ -172,6 +187,7 @@ export default function Contacts(props) {
               _id: dataMap._id,
               descriptorId: dataMap.descriptorId,
               name: dataMap.name ? dataMap.name : dataMap,
+              homePhone: dataMap.homePhone ? dataMap.homePhone : "",
               mobilePhone: dataMap.mobilePhone ? dataMap.mobilePhone : "",
               address1: dataMap.address1 ? dataMap.address1 : "",
               primaryEmail: dataMap.primaryEmail ? dataMap.primaryEmail : "",
@@ -367,8 +383,13 @@ export default function Contacts(props) {
                 <ListItem key={i}>
 
                   {/* {c} */}
-                  <Accordion expanded={expandedPanel === 'panel' + i.toString()} onChange={handleAccordionChange('panel' + i.toString())}>
+                  <Accordion
+                   expanded={expandedPanel === 'panel' + i.toString()} onChange={handleAccordionChange('panel' + i.toString())}>
                     <AccordionSummary
+                      classes={{
+                        root: classes.acSummaryRoot,
+                        content: classes.acSummaryContent
+                      }}
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="panel1a-content"
                       id="panel1a-header"
@@ -417,10 +438,11 @@ export default function Contacts(props) {
 
                     </AccordionSummary>
 
-                    <AccordionDetails >
+                    <AccordionDetails className={classes.accDetail}>
                       <div className="acc-data">
+                        {c.homePhone ? <p className="address"><CallOutlinedIcon /> <Typography className="address_tabs">{c.homePhone}</Typography></p> : null}
+                        {c.mobilePhone ? <p className="address"><PhoneIphoneIcon /> <Typography className="address_tabs">{c.mobilePhone}</Typography></p> : null}
                         {c.primaryEmail ? <p className="address"><EmailOutlinedIcon /> <Typography className="address_tabs"> {c.primaryEmail}</Typography></p> : null}
-                        {c.mobilePhone ? <p className="address"><CallOutlinedIcon /> <Typography className="address_tabs">{c.mobilePhone}</Typography></p> : null}
                         {c.address1 ? <p className="address"><DomainOutlinedIcon /> <Typography className="address_tabs">{c.address1}</Typography></p>
                           : null}
                       </div>
