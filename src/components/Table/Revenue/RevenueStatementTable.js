@@ -51,6 +51,10 @@ function RevenueStatementTable(props) {
         hit.checkDate = hit.checkDate ? moment(new Date(hit.checkDate)).format("MM/DD/YYYY") : null;
         hit.depositDate = hit.depositDate ? moment(new Date(hit.depositDate)).format("MM/DD/YYYY") : null;
         hit = setGenricData(hit, hit._id, genericDataActions, genericDataActions);
+        hit.tags =
+        hit?.tags?.length > 0
+          ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+          : [[], 0];
         return hit;
       });
       return hits;
@@ -77,7 +81,7 @@ function RevenueStatementTable(props) {
       startPaginationAt: 50,
       defaultSort: { field: "checkDate", order: "desc" },
       formatHits,
-      exportPx: "121px",
+      downloadAll: { exportPx: '121px' },
       initializeGenericData: { key: "_id", actions: genericDataActions },
     });
   }, [setTableMeta, formatHits, revenueSearchQuery, filterToggle]);

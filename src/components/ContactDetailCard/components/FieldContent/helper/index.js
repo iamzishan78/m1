@@ -52,3 +52,11 @@ export const getHrefValue = (linkValue, linkType) => {
             }${linkValue}`;
     else return linkValue;
 };
+
+export const outcomeOptions = [
+    "Interested",
+    "Left Message",
+    "No Response",
+    "Not Interested",
+    "Unable to Reach"
+]

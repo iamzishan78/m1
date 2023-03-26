@@ -268,7 +268,10 @@ export const getBasicInfoExpContent = (contactData) => {
       data: { industryType: contactData?.industryType },
       linkType: LinkTypes.None,
     },
-
+    Outcome: {
+      data: { outcome: contactData?.outcome },
+      linkType: LinkTypes.None,
+    },
     "Campaign Name": {
       data: { campaignName },
       linkType: LinkTypes.None,

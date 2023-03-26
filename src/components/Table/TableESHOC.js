@@ -32,9 +32,7 @@ import { formattingGridView, sortColumns } from "utils/helper";
 import { DrawerContext } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import moment from "moment";
 
-import GlobalSettings from "..//..//GlobalSettings.js";
-import { SimpleAutoCompleteFilter } from "./SimpleAutoComplete";
-
+import GlobalSettings from "GlobalSettings.js";
 
 export const TableESHOC = (Component) => {
     const HocWithDefaultProps = function HOC(props) {
@@ -47,6 +45,7 @@ export const TableESHOC = (Component) => {
         const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, infScrollHeight: loadMore?.height })
 
         const [search, setSearch] = useState(null);
+        const [isExporting, setIsExporting] = useState(false);
         const [columns, Columns] = useState([]);
         const [changePage, isPageChanged] = useState(false);
         const [page, setPage] = useState(0)
@@ -61,6 +60,7 @@ export const TableESHOC = (Component) => {
         const [searchedRows, setSearchedRows] = useState([])
 
         const [selectedRows, setSelectedRows] = useState([]);
+        const [selectedRowsValues, setSelectedRowsValues] = useState();
         const [allRowsSelected, setAllRowsSelected] = useState(false);
         const [initialFilters, setInitialFilters] = useState([]);
 
@@ -724,8 +724,10 @@ export const TableESHOC = (Component) => {
                             updatedData = updatedData.replace(/,/g, ' ')
                         }
                     } else if (sampleCsv[j].name === 'tags' && Array.isArray(updatedData)) {
-                        const tags = updatedData[0].map(d => d).toString().replace(/,/g, ' ')
-                        updatedData = tags
+                        if(updatedData[0]){
+                            const tags = updatedData[0].map(d => d).toString().replace(/,/g, ' ')
+                            updatedData = tags
+                        }
                     } else if (Array.isArray(updatedData)) {
                         const data = updatedData.map(d => d).toString().replace(/,/g, ' ')
                         updatedData = data
@@ -738,6 +740,7 @@ export const TableESHOC = (Component) => {
         }
 
         const onDownload = async () => {
+            setIsExporting(true)
             let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
             if (props.useWildeCard)
                 searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
@@ -790,6 +793,7 @@ export const TableESHOC = (Component) => {
             pom.href = url;
             pom.setAttribute('download', 'tableData.csv');
             pom.click();
+            setIsExporting(false)
         }
 
         const onTableChange = async (action, tableState, rows, meta) => {
@@ -832,6 +836,7 @@ export const TableESHOC = (Component) => {
                     tableActions.genericESAction();
                     break;
                 case "rowSelectionChange":
+                    let allRows = []
                     if (tableMeta.isSelectedAllAllowed)
                         if (tableState.selectedRows.data.length === tableState.data.length || tableState.selectedRows.data.length > tableState.data.length) {
                             const isSelectAll = tableState.selectedRows.data.length === tableState.data.length
@@ -881,13 +886,17 @@ export const TableESHOC = (Component) => {
                                 } while (iter * max < total);
 
                                 meta.setSelectedRows(selectedData)
+                                allRows = selectedData
                             }
                         } else {
-                            if (meta?._selectedRows?.length > 0)
+                            if (meta?._selectedRows?.length > 0) {
                                 meta.setSelectedRows([])
+                                setSelectedRowsValues(null)
+                            }
                             setAllRowsSelected(undefined)
                         }
                     setSelectedRows(tableState.selectedRows.data)
+                    setSelectedRowsValues(allRows)
                     break;
                 case "changePage":
                     isPageChanged(true)
@@ -938,8 +947,8 @@ export const TableESHOC = (Component) => {
                                 position: "absolute",
                                 right: tableMeta?.downloadAll?.exportPx,
                             }}>
-                                <IconButton onClick={onDownload}>
-                                    <Tooltip title="Download CSV" aria-label="add">
+                                <IconButton onClick={onDownload} disabled={isExporting}>
+                                    <Tooltip title="Download CSV Test" aria-label="add">
                                         <CloudDownloadIcon />
                                     </Tooltip>
                                 </IconButton>
@@ -1062,6 +1071,9 @@ export const TableESHOC = (Component) => {
                     selectedRows={selectedRows}
                     setSelectedRows={setSelectedRows}
 
+                    selectedRowsValues={selectedRowsValues}
+                    setSelectedRowsValues={setSelectedRowsValues}
+
                     onTableChange={onTableChange}
                     columns={columns}
                     setColumns={setColumns}
@@ -1084,6 +1096,7 @@ export const TableESHOC = (Component) => {
                     setAllRowsSelected={setAllRowsSelected}
 
                     onDownload={onDownload}
+                    isExporting={isExporting}
                 />
             </span>
         );

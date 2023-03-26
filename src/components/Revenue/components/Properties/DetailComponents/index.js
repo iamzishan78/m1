@@ -33,6 +33,7 @@ import DocViewer from "components/Shared/DocViewer";
 
 import AddNewRelatedAgreementDialog from "components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog";
 import Validation from 'components/Revenue/components/Properties/DetailComponents/Validation'
+import { getIdFromPath } from "utils/helper";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -213,13 +214,13 @@ export default function DetailComponents(props) {
   const history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
 
-  const propertyId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
+  const propertyId = getIdFromPath(history.location.pathname);
   const [propertyOwnerContact, setPropertyOwnerContacts] = useState([]);
   const [showInterestDetails, setShowInterestDetails] = useState(false);
   const [showOwnerDialog, setShowOwnerDialog] = useState(false);
   const [selectedInterest, setSelectedInterest] = useState(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [tab, setTab] = useState(1);
+  const [tab, setTab] = useState(0);
   const [refetchContacts, setRefetchContacts] = useState(false);
   const selectedTabRef = useRef(null);
   const [collapse, setCollapse] = useState(true);
@@ -420,7 +421,7 @@ export default function DetailComponents(props) {
                 </div>
               </div>
             )}
-           {tab === 1 && (
+            {tab === 1 && (
               <Validation propertyId={propertyId} />
             )}
           </div>
@@ -447,9 +448,9 @@ export default function DetailComponents(props) {
           <MultipleOwnerToContactDrawerContainer
             onClose={() => setEntityToConvert(null)}
             rows={[entityToConvert]}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
             onSuccess={() => setRefetchContacts(!refetchContacts)}
-            setRows={() => {}}
+            setRows={() => { }}
           />
         )}
 
@@ -490,7 +491,7 @@ export default function DetailComponents(props) {
           onClose={() => setOpenDeleteDialog(false)}
           deleteFunc={deleteFunc}
           m1nSelectedRowsIds={[propertyDetails?._id]}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={() => { }}
         >
           {`Do you want to delete this property?`}
         </DeleteConfirmationDialogContent>
