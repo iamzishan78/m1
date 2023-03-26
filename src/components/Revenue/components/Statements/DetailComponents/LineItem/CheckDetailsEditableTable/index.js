@@ -76,7 +76,7 @@ const useStyles = makeStyles({
   tableGrid: {
     backgroundColor: "#fff",
     overflowX: "auto",
-    maxHeight: (p) => (p.showPdfSection ? "calc(50vh)" : "calc(100vh)"),
+    maxHeight: (p) => (p.showPdfSection ? "calc(51vh)" : "calc(100vh)"),
     // maxHeight: "500px",
   },
   tableHeaderLabel: { marginLeft: "15px", paddingRight: "10px", marginTop: "5px" },
