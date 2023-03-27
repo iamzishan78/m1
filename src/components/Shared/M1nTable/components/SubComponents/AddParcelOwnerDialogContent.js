@@ -186,7 +186,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         customLayer,
       });
 
-      let calculatedNRA = calculateNRA(royalty_interest, orri, net_acres);
+      let calculatedNRA = calculateNRA(royalty_interest, orri, nri, net_acres);
       if (!isNaN(parseFloat(calculatedNRA)))
         setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)))
 
@@ -374,9 +374,13 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     return netAcres;
   };
 
-  const calculateNRA = (interest1, interest2, net_acres = newOwner.net_acres) => {
-    if (!interest1 && !interest2) return null;
+  const calculateNRA = (interest1, interest2, interest3, net_acres = newOwner.net_acres, gross_acers = newOwner.net_acres) => {
+    if (!interest3 || (!interest1 && !interest2)) return null;
+
     let nra = parseFloat(net_acres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) * 8;
+
+    if (interest3) nra = parseFloat(interest3 || 0) * parseFloat(gross_acers || 0)
+
     nra = addTrailingZeros(nra.toFixed(8));
 
     return nra;
@@ -499,7 +503,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   onChange={(e) => {
                     const value = e.target.value;
                     const net_acres = !isAcresOverridden ? calculateNetAcres(value) : newOwner.net_acres
-                    const nra = !isNraOverridden ? calculateNRA(newOwner.royalty_interest, newOwner.orri, net_acres) : newOwner.nra
+                    const nra = !isNraOverridden ? calculateNRA(newOwner.royalty_interest, newOwner.orri, newOwner.nri, net_acres) : newOwner.nra
                     setNewOwner((newOwner) => ({
                       ...newOwner, mineral_interest: value ? addTrailingZeros(value) : null,
                       net_acres, nra
@@ -520,7 +524,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     setNewOwner({
                       ...newOwner,
                       royalty_interest: value ? addTrailingZeros(e.target.value) : null,
-                      nra: !isNraOverridden ? calculateNRA(value, newOwner.orri) : newOwner.nra,
+                      nra: !isNraOverridden ? calculateNRA(value, newOwner.orri, newOwner.nri) : newOwner.nra,
                     });
                   }}
                   onWheel={(e) => e.target.blur()}
@@ -538,7 +542,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     setNewOwner({
                       ...newOwner,
                       orri: value ? addTrailingZeros(e.target.value) : null,
-                      nra: !isNraOverridden ? calculateNRA(value, newOwner.royalty_interest) : newOwner.nra,
+                      nra: !isNraOverridden ? calculateNRA(value, newOwner.royalty_interest, newOwner.nri) : newOwner.nra,
                     });
                   }}
                   onWheel={(e) => e.target.blur()}
@@ -626,7 +630,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     setNewOwner((newOwner) => ({
                       ...newOwner,
                       net_acres: value,
-                      nra: !isNraOverridden ? calculateNRA(newOwner.orri, newOwner.royalty_interest, value) : newOwner.nra
+                      nra: !isNraOverridden ? calculateNRA(newOwner.orri, newOwner.royalty_interest, newOwner.nri, value) : newOwner.nra
                     }));
                   }}
                   InputProps={{
@@ -640,7 +644,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                               setIsAcresOverridden(false)
                               setNewOwner((newOwner) => ({
                                 ...newOwner,
-                                net_acres: netAcres, nra: !isNraOverridden ? calculateNRA(newOwner.orri, newOwner.royalty_interest, netAcres) : newOwner.nra
+                                net_acres: netAcres, nra: !isNraOverridden ? calculateNRA(newOwner.orri, newOwner.royalty_interest, newOwner.nri, netAcres) : newOwner.nra
                               }));
                             }}
                           >
@@ -680,7 +684,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   value={newOwner.nra}
                   onChange={(e) => {
                     const value = addTrailingZeros(e.target.value);
-                    const nra = calculateNRA(newOwner.royalty_interest, newOwner.orri);
+                    const nra = calculateNRA(newOwner.royalty_interest, newOwner.orri, newOwner.nri);
                     setIsNRAOverridden(parseFloat(nra) !== parseFloat(value))
                     setNewOwner({
                       ...newOwner,
@@ -694,7 +698,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                           <IconButton
                             aria-label="toggle royality-acres"
                             onClick={() => {
-                              const nra = calculateNRA(newOwner.royalty_interest, newOwner.orri);
+                              const nra = calculateNRA(newOwner.royalty_interest, newOwner.orri, newOwner.nri);
                               setIsNRAOverridden(false)
                               setNewOwner({ ...newOwner, nra });
                             }}
