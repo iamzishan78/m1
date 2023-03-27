@@ -161,6 +161,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         name,
         ownerEntity,
         qtr,
+        grossAcres
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
 
@@ -186,7 +187,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         customLayer,
       });
 
-      let calculatedNRA = calculateNRA(royalty_interest, orri, nri, net_acres);
+      let calculatedNRA = calculateNRA(royalty_interest, orri, nri, net_acres, grossAcres);
       if (!isNaN(parseFloat(calculatedNRA)))
         setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)))
 
@@ -374,7 +375,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     return netAcres;
   };
 
-  const calculateNRA = (interest1, interest2, interest3, net_acres = newOwner.net_acres, gross_acers = newOwner.net_acres) => {
+  const calculateNRA = (interest1, interest2, interest3, net_acres = newOwner.net_acres, gross_acers = selectedRow.grossAcres) => {
     if (!interest3 || (!interest1 && !interest2)) return null;
 
     let nra = parseFloat(net_acres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) * 8;
@@ -608,9 +609,11 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   value={newOwner.nri}
                   onChange={(e) => {
                     const value = e.target.value;
+                    const netAcres = calculateNetAcres(newOwner.mineral_interest);
                     setNewOwner({
                       ...newOwner,
                       nri: value ? addTrailingZeros(e.target.value) : null,
+                      nra: !isNraOverridden ? calculateNRA(newOwner.orri, newOwner.royalty_interest, value, netAcres) : newOwner.nra,
                     });
                   }}
                   onWheel={(e) => e.target.blur()}

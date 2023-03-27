@@ -416,6 +416,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
+                        if (!isNraOverridden) { setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri, e.target.value)); }
                       }}
                       fullWidth
                       defaultValue=""
