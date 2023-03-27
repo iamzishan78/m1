@@ -38,6 +38,22 @@ const ContactReleatedAgreementHeaderCells = [
     },
   },
   {
+    name: "agreementType",
+    label: "Agmt Type",
+    esKey: "shapeJson.properties.agreementType.keyword",
+    options: {
+      dbName: "shapeJson.properties.agreementType",
+    },
+  },
+  {
+    name: "agreementSubtype",
+    label: "Agmt Subtype",
+    esKey: "shapeJson.properties.agreementSubtype.keyword",
+    options: {
+      dbName: "shapeJson.properties.agreementSubtype",
+    },
+  },
+  {
     name: "agreementName",
     label: "Agreement Name",
     esKey: "shapeJson.properties.agreementName.keyword",
