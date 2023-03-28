@@ -24,7 +24,7 @@ function PropertyInterestDetailsTable(props) {
 
   const formatHits = (hits) => {
     return hits.map((hit) => {
-      hit.effectiveDate = hit.effectiveDate ? moment(hit.effectiveDate).format("MM/DD/YYYY") : null;
+      hit.effectiveDate = hit.effectiveDate ? moment(hit.effectiveDate).utc(true).format("MM/DD/YYYY") : null;
       hit.tags =
         hit?.tags?.length > 0
           ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]

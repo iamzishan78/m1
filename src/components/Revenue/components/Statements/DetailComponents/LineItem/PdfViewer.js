@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: "none",
 
     "& .react-pdf__Document": {
-      height: '520px',
+      height: '300px',
       overflow: 'scroll',
       width: '100%'
     },
