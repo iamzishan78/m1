@@ -132,6 +132,14 @@ const UnitInterestsHeadCells = [
             filter: true
         }
     },
+    {
+        name: "name", label: "Owner Name", esKey: 'contact.entityDetail.name.keyword',
+        options: {
+            dbName: "contact.entityDetail.name",
+            sort: true,
+            filter: true
+        }
+    },
     // {
     //     name: "QtrCalls", label: "QTR Calls", esKey: 'qtr.keyword', 
     //     options: { 
@@ -165,13 +173,7 @@ const UnitInterestsHeadCells = [
     //     }
     // },
     // {
-    //     name: "name", label: "Owner Name", esKey: 'contact.entityDetail.name.keyword', 
-    //     options: { 
-    //         dbName: "contact.entityDetail.name",
-    //         sort: true, 
-    //         filter: true 
-    //     }
-    // },
+
     {
         name: "working_interest", label: "Working Interest", esKey: 'working_interest',
         options: {
