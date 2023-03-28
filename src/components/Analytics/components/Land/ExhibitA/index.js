@@ -1,8 +1,5 @@
-import React, { useState, useEffect } from "react";
-import {
-  Grid,
-  makeStyles,
-} from "@material-ui/core";
+import React, { useState } from "react";
+import { Grid, makeStyles } from "@material-ui/core";
 
 import ExhibitA from "./ExhibitA";
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
@@ -38,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
       "&>.MuiPaper-root": {
         display: "flex",
         "flex-direction": "column",
-        height: "calc(100vh - 280px)",
+        height: "calc(100vh - 240px)",
         position: "relative",
         boxShadow: "none",
         "align-items": "stretch",
@@ -61,121 +58,107 @@ const filterColumnsHeader = [
     label: "Agreement Type",
     filterKey: "shape.shapeJson.properties.layerSubType.keyword",
     name: "layerSubType",
-    custom: { initialCapitalization: true }
-
+    custom: { initialCapitalization: true },
   },
   {
     label: "State",
     filterKey: [
-      'parcel.shapeJson.properties.originalProperties.State.keyword',
-      'parcel.shapeJson.properties.originalProperties.StateAbbreviation.keyword'
+      "parcel.shapeJson.properties.originalProperties.State.keyword",
+      "parcel.shapeJson.properties.originalProperties.StateAbbreviation.keyword",
     ],
     custom: {
-      oRFilter: true
+      oRFilter: true,
     },
-    name: "state"
+    name: "state",
   },
   {
     label: "County",
     filterKey: "parcel.shapeJson.properties.originalProperties.County.keyword",
-    name: "county"
+    name: "county",
   },
   {
     label: "Internal Company",
     filterKey: "shape.shapeJson.properties.internalCompany.keyword",
-    name: "internalCompany"
+    name: "internalCompany",
   },
   {
     label: "Prospect",
     filterKey: "shape.shapeJson.properties.prospectID.keyword",
-    name: "prospectID"
+    name: "prospectID",
   },
   {
     label: "Acquisition",
     filterKey: "shape.shapeJson.properties.acquisitionID.keyword",
     name: "acquisitionID",
   },
-]
+];
 
 export default function ExhibitATabPanel() {
   const classes = useStyles();
-  const initialFilterList = [['All'], ['All'], ['All'], ['All'], ['All'], ['All']];
+  const initialFilterList = [["All"], ["All"], ["All"], ["All"], ["All"], ["All"]];
   const [, setFilters] = useState([]);
 
   const [esFilters, setESFilters] = useState([]);
 
   const onChange = (filter, index, column, esKey) => {
-    const newFilters = JSON.parse(JSON.stringify(esFilters))
+    const newFilters = JSON.parse(JSON.stringify(esFilters));
 
-    if(column?.custom?.oRFilter){
-      if(column?.filterList[0]){
-        if(newFilters.find(filter => filter.field.includes(column?.filterKey[0]))){
-          newFilters[index] = { field: JSON.stringify(column?.filterKey), value: column?.filterList[0], oRFilter: true }
-        }else{
-          newFilters.push({ field: JSON.stringify(column?.filterKey), value: column?.filterList[0], oRFilter: true })
+    if (column?.custom?.oRFilter) {
+      if (column?.filterList[0]) {
+        if (newFilters.find((filter) => filter.field.includes(column?.filterKey[0]))) {
+          newFilters[index] = { field: JSON.stringify(column?.filterKey), value: column?.filterList[0], oRFilter: true };
+        } else {
+          newFilters.push({ field: JSON.stringify(column?.filterKey), value: column?.filterList[0], oRFilter: true });
         }
-      }else{
-        const index = newFilters.find(filter => filter.field.includes(column?.filterKey[0]))
-        if(index > -1){
-          newFilters.splice(index,1)
+      } else {
+        const index = newFilters.find((filter) => filter.field.includes(column?.filterKey[0]));
+        if (index >= '0') {
+          newFilters.splice(index, 1);
+        }
+      }
+    } else {
+      if (column?.filterList[0]) {
+        if (newFilters.find((filter) => filter.field === column?.filterKey)) {
+          const index = newFilters.findIndex((filter) => filter.field === column?.filterKey);
+          newFilters[index] = { field: column?.filterKey, value: column?.filterList[0] };
+        } else {
+          newFilters.push({ field: column?.filterKey, value: column?.filterList[0] });
+        }
+      } else {
+        const index = newFilters.findIndex((filter) => filter.field === column?.filterKey);
+        if (index > -1) {
+          newFilters.splice(index, 1);
         }
       }
     }
-    else{
-      if(column?.filterList[0]){
-        if(newFilters.find(filter => filter.field === column?.filterKey)){
-          const index = newFilters.findIndex(filter => filter.field === column?.filterKey)
-          newFilters[index] = { field: column?.filterKey, value: column?.filterList[0] }
-        }else{
-          newFilters.push({ field: column?.filterKey, value: column?.filterList[0] })
-        }
-      }else{
-        const index = newFilters.findIndex(filter => filter.field === column?.filterKey)
-        if(index > -1){
-          newFilters.splice(index,1)
-        }
-      }
-    } 
-    setESFilters(newFilters)
-  }
-  const filterChange = (filter) =>{
-    console.log('filter',filter)
-  }
-  
+    setESFilters(newFilters);
+  };
+  const filterChange = (filter) => {
+    console.log("filter", filter);
+  };
+
   return (
     <>
       <div className={classes.actionBar}>
-        <Grid
-          container
-          direction="row"
-          display="flex"
-          alignItems="center"
-          spacing={3}
-          style={{ padding: "0px 36px" }}
-        >
-          <Grid
-            container
-            alignItems="center"
-            spacing={2}
-          >
+        <Grid container direction="row" display="flex" alignItems="center" spacing={3} style={{ padding: "0px 36px" }}>
+          <Grid container alignItems="center" spacing={2}>
             {filterColumnsHeader.map((filterColumn, index) => {
-              const appliedFilters = esFilters?.length > 0 ? JSON.parse(JSON.stringify(esFilters)): []
-              appliedFilters.push({ field: "shape.shapeJson.properties.type", value: 'agreement' })
+              const appliedFilters = esFilters?.length > 0 ? JSON.parse(JSON.stringify(esFilters)) : [];
+              appliedFilters.push({ field: "shape.shapeJson.properties.type", value: "agreement" });
 
-              let filterList = JSON.parse(JSON.stringify(initialFilterList))
-              if (esFilters && typeof filterColumn?.filterKey === 'string') {
-                const gridViewFilter = esFilters.find(filter => filter.field === filterColumn?.filterKey)
-                if (gridViewFilter)
-                  filterList[index] = [gridViewFilter?.value]
-                if (filterColumn.name === 'County') {
-                  const stateFilter = esFilters.find(filter => filter.field === 'shape.shapeJson.properties.originalProperties.State.keyword')
-                  if (stateFilter)
-                    appliedFilters.push(stateFilter)
+              let filterList = JSON.parse(JSON.stringify(initialFilterList));
+              if (esFilters && typeof filterColumn?.filterKey === "string") {
+                const gridViewFilter = esFilters.find((filter) => filter.field === filterColumn?.filterKey);
+                if (gridViewFilter) filterList[index] = [gridViewFilter?.value];
+                if (filterColumn.name === "County") {
+                  const stateFilter = esFilters.find(
+                    (filter) => filter.field === "shape.shapeJson.properties.originalProperties.State.keyword"
+                  );
+                  if (stateFilter) appliedFilters.push(stateFilter);
                 }
-              }else if(filterColumn?.custom?.oRFilter){
-                const gridViewFilter = esFilters.find(filter => filter.field.includes(filterColumn?.filterKey[0]))
-                if (gridViewFilter)
-                  filterList[index] = [gridViewFilter?.value]
+              } else if (filterColumn?.custom?.oRFilter) {
+                const gridViewFilter = esFilters.find((filter) => filter.field.includes(filterColumn?.filterKey[0]));
+                if (gridViewFilter) filterList[index] = [gridViewFilter?.value];
               }
 
               return (
@@ -198,7 +181,7 @@ export default function ExhibitATabPanel() {
                     inputSize="small"
                   />
                 </Grid>
-              )
+              );
             })}
           </Grid>
         </Grid>

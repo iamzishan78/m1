@@ -21,6 +21,7 @@ import { UPSERT_WORKSPACE_SETTINGS } from "graphQL/useMutationWorksapceSettings"
 import { ADDFILE } from "graphQL/useMutationAddFile";
 
 import { AppContext } from "AppContext";
+import { workspaceTenantName } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -138,7 +139,7 @@ export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal
                 addOrUpdateWorkspaceSettings({
                   variables: {
                     workspaceSettings: {
-                      name: window.sessionStorage.getItem("tenantName"),
+                      name: workspaceTenantName(),
                       modifier: stateApp.user._id,
                       file: fileData.addFile.file.id,
                       title: workspaceTitle,
@@ -181,7 +182,7 @@ export default function CustomizedDialogs({ workspaceSettings, setWorkspaceModal
   const saveSettings = () => {
     if (src === m1neralIconPath || !inputFile?.name) {
       const obj = {
-        name: window.sessionStorage.getItem("tenantName"),
+        name: workspaceTenantName(),
         modifier: stateApp.user._id,
         title: workspaceTitle,
       };

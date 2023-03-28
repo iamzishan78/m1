@@ -179,7 +179,6 @@ export default function AgreementDetailCard(props) {
     customLayer.shapeJson = shape;
 
     const shapeSubtitle = [];
-    debugger
     if(customLayer?.shapeJson?.properties?.state){
       shapeSubtitle.push(customLayer.shapeJson.properties.state);
     }
@@ -190,6 +189,8 @@ export default function AgreementDetailCard(props) {
     if(shapeSubtitle.length){
       customLayer.shapeJson.properties.shapeSubtitle = shapeSubtitle.join(" - ")
     }
+    if(shapeSubtitle.length)
+      customLayer.shapeJson.properties.shapeSubtitle = shapeSubtitle.join(" - ");
 
     updateCustomLayer({
       variables: {

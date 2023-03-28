@@ -28,17 +28,23 @@ function MyWellsGridTable(props) {
   useEffect(() => {
     setTableMeta({
       filters: props.filters,
-      addBtnText: "WELLS",
+      addBtnText: "WELL",
+      onClickAdd: () => props.setDialog(true),
       extendSearchQuery: stateApp.landSearchQuery,
       searchFields: ["wellData.wellName", "wellData.api", "wellData.WellName", "wellData.ApiNumber"],
       TableHeader: copy(TableHeader),
       esIndex: "mywells_flat",
       startPaginationAt,
       defaultSort: { field: "lastUpdateAt", order: "desc" },
+      exportPx: "121px",
       formatHits,
     });
     // eslint-disable-next-line
   }, [stateApp.landSearchQuery, props.filters]);
+
+  useEffect(() => {
+    props.setSelectedWell(props.clickedRow)
+  },[props.clickedRow])
 
   const setTableMeta = React.useMemo(
     () =>

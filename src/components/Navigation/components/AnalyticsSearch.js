@@ -1,13 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import {
-  InputAdornment,
-  TextField,
-  IconButton,
-  Tooltip,
-  Grid,
-  Typography,
-} from "@material-ui/core";
+import { InputAdornment, TextField, IconButton, Tooltip, Grid, Typography } from "@material-ui/core";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -69,6 +62,7 @@ const AnalyticsSearch = () => {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [search, setSearch] = useState(stateApp.landAnalyticsSearchQuery);
+  const { activeModule } = useSelector(({ common }) => common);
 
   useEffect(() => {
     return () => {
@@ -76,13 +70,12 @@ const AnalyticsSearch = () => {
         ...stateApp,
         landAnalyticsSearchQuery: "",
       }));
-    }
+    };
   }, []);
 
   useEffect(() => {
     setSearch(stateApp.landAnalyticsSearchQuery);
   }, [stateApp.landAnalyticsSearchQuery]);
-
 
   const handleChange = React.useMemo(
     () =>
@@ -96,84 +89,79 @@ const AnalyticsSearch = () => {
   );
 
   return (
-    <Grid
-      container
-      direction="row"
-      display="flex"
-      justify="space-between"
-      alignItems="center"
-      style={{
-        marginLeft: "433px",
-      }}
-    >
-      <Grid item md={8}>
+    <>
+      {activeModule.title && (
         <Grid
           container
           direction="row"
           display="flex"
-          justify="flex-start"
+          justify="space-between"
           alignItems="center"
+          style={{
+            marginLeft: "433px",
+          }}
         >
-            <Grid item md={2.5}>
-              <Typography
-                variant="h5"
-                style={{ color: "black", fontWeight: "bold", marginRight: "20px" }}
-              >
-                Land Analytics
-              </Typography>
+          <Grid item md={8}>
+            <Grid container direction="row" display="flex" justify="flex-start" alignItems="center">
+              <Grid item md={2.5}>
+                <Typography variant="h5" style={{ color: "black", fontWeight: "bold", marginRight: "20px" }}>
+                  {activeModule.title} Analytics
+                </Typography>
+              </Grid>
+              {!activeModule.hideSearch && (
+                <Grid item md={6}>
+                  <TextField
+                    value={search}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      handleChange(e.target.value);
+                    }}
+                    style={{
+                      margin: 0,
+                      width: "100%",
+                    }}
+                    className={classes.contactSearchField}
+                    margin="dense"
+                    variant="outlined"
+                    placeholder="Search"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment>
+                          <IconButton size="small">
+                            <SearchIcon htmlColor="grey" />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <>
+                          <Tooltip title="Clear">
+                            <IconButton
+                              id="crossButton"
+                              size="small"
+                              htmlColor="#fff"
+                              className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" && classes.activeBtn}`}
+                              onClick={() => {
+                                setSearch("");
+                                setStateApp((stateApp) => ({
+                                  ...stateApp,
+                                  landAnalyticsSearchQuery: "",
+                                }));
+                              }}
+                            >
+                              <ClearIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </>
+                      ),
+                    }}
+                  />
+                </Grid>
+              )}
             </Grid>
-          <Grid item md={6}>
-            <TextField
-              value={search}
-              onChange={e => {
-                setSearch(e.target.value)
-                handleChange(e.target.value);
-              }}
-              style={{
-                margin: 0,
-                width: "100%",
-              }}
-              className={classes.contactSearchField}
-              margin="dense"
-              variant="outlined"
-              placeholder="Search"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment>
-                    <IconButton size="small">
-                      <SearchIcon htmlColor="grey" />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <>
-                    <Tooltip title="Clear">
-                      <IconButton
-                        id="crossButton"
-                        size="small"
-                        htmlColor="#fff"
-                        className={`${classes.toggleBtn} ${stateApp.activityDisplayType === "table" &&
-                          classes.activeBtn
-                          }`}
-                        onClick={() => {
-                          setSearch("")
-                          setStateApp((stateApp) => ({
-                            ...stateApp,
-                            landAnalyticsSearchQuery: "",
-                          }));
-                        }}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </>
-                ),
-              }}
-            />
           </Grid>
         </Grid>
-      </Grid>
-    </Grid>
+      )}
+    </>
   );
 };
 

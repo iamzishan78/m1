@@ -22,6 +22,7 @@ function Wells() {
   const { id: globalWellId } = useParams();
 
   const [filters, setFilters] = useState([]);
+  const [selectedWell, setSelectedWell] = useState();
   const [showDialog, setDialog] = useState(false);
   const loadMore = { type: "infiniteScroll", height: "calc(100vh - 166px)" };
 
@@ -75,10 +76,13 @@ function Wells() {
           parent="WellsTable"
           targetLabel="wells"
           loadMore={loadMore}
-          customOptions={customToolbar}
+          showDialog={showDialog}
+          setDialog={setDialog}
+          // customOptions={customToolbar}
+          setSelectedWell={setSelectedWell}
         />
       </div>
-      {showDialog && <MyWellDialog setDialog={setDialog} />}
+      {showDialog && <MyWellDialog selectedWell={selectedWell} setDialog={setDialog} />}
     </div>
   );
 }

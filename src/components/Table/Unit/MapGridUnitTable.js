@@ -101,7 +101,7 @@ function MapGridUnitTable(props) {
         field: "shapeGeometry",
         value: stateApp?.currentFeature?.geometry
       },
-      exportPx: props.parent === "UnitsTable" ? "121px" : undefined,
+      downloadAll: { exportPx: props.parent === "UnitsTable" ? "121px" : undefined },
       formatHits,
     });
     // eslint-disable-next-line
@@ -114,7 +114,7 @@ function MapGridUnitTable(props) {
 
       for (let i = 0; i < rows.length; i++) {
         for (let j = 0; j < contactStatuses.length; j++) {
-          const data = owners?.getShapeOwnerDataById[rows[i]._id].status[contactStatuses[j].name]
+          const data = owners?.getShapeOwnerDataById[rows[i]._id]?.status[contactStatuses[j]?.name]
           contactStatuses[j].data = data ? [data] : [0]
         }
         rows[i].unitStatus = { series: contactStatuses, xaxis: [''] }

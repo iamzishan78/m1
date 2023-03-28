@@ -297,7 +297,7 @@ export default function CustomizedSteppers(props) {
       } else {
         const changeDate = new Date();
         const statementInfo = get(stateApp, "uploaderFormValues", {});
-        data_to_send.forEach((element) => {
+        data_to_send.forEach((element, index) => {
           element.createBy = userID;
           element.createAt = changeDate;
           element.lastUpdateBy = userID;
@@ -314,7 +314,7 @@ export default function CustomizedSteppers(props) {
             element["shape.shapeType"] = "Unit";
           }
           if (props.selectedJob.type === "AGREEMENT_HEADER") {
-            element["shapeType"] = "Agreement";
+            data_to_send[index].shapeType = "Agreement";
           }
           delete element.tableData;
         });
@@ -352,7 +352,7 @@ export default function CustomizedSteppers(props) {
         setStateApp((state) => ({
           ...state,
           activeStepNumber: stateApp.activeStepNumber + 1,
-          revenueStatementInfo: {}
+          uploaderFormValues: {}
         }));
       }
 

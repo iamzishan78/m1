@@ -15,13 +15,32 @@ const AcerageSummaryHeadCells = [
       display: true,
       ...GlobalStickyStyles({
         setCellProps: {
-          left: "65px",
+          left: "77px",
           maxWidth: "492px",
         },
         setCellHeaderProps: {
-          left: "65px",
+          left: "77px",
+          paddingLeft: "0px !important",
         },
       }),
+    },
+  },
+  {
+    name: "agreementName",
+    label: "Agreement Name",
+    esKey: "shape.shapeJson.properties.agreementName.keyword",
+    options: {
+      filter: false,
+      display: false,
+    },
+  },
+  {
+    name: "agreementId",
+    label: "Agreement Id",
+    esKey: "shape._id",
+    options: {
+      filter: false,
+      display: false,
     },
   },
   {
@@ -40,7 +59,7 @@ const AcerageSummaryHeadCells = [
     name: "agreementDate",
     label: "Agmt Date",
     esKey: "shape.shapeJson.properties.agreementDate.keyword",
-    options: { sort: true, filter: true, display: true, setCellProps: () => ({ style: { maxWidth: "150px" } }) },
+    options: { sort: true, filter: true, display: true, ignoreGlobal: true, setCellProps: () => ({ style: { maxWidth: "150px" } }) },
     custom: {
       isDate: true,
     },
@@ -49,7 +68,7 @@ const AcerageSummaryHeadCells = [
     name: "effectiveDate",
     label: "Efftv Date",
     esKey: "shape.shapeJson.properties.effectiveDate.keyword",
-    options: { sort: true, filter: true, display: true, setCellProps: () => ({ style: { maxWidth: "150px" } }) },
+    options: { sort: true, filter: true, display: true, ignoreGlobal: true, setCellProps: () => ({ style: { maxWidth: "150px" } }) },
     custom: {
       isDate: true,
     },
@@ -71,6 +90,7 @@ const AcerageSummaryHeadCells = [
     options: {
       sort: true,
       filter: true,
+      ignoreGlobal: true,
       setCellProps: () => ({ style: { maxWidth: "150px" } }),
     },
     custom: {
@@ -97,6 +117,7 @@ const AcerageSummaryHeadCells = [
     options: {
       sort: true,
       filter: true,
+      ignoreGlobal: true,
       setCellProps: () => ({ style: { maxWidth: "150px" } }),
     },
     custom: {
@@ -113,6 +134,7 @@ const AcerageSummaryHeadCells = [
     options: {
       sort: true,
       filter: true,
+      ignoreGlobal: true,
       setCellProps: () => ({ style: { maxWidth: "150px" } }),
     },
     custom: {
@@ -126,7 +148,7 @@ const AcerageSummaryHeadCells = [
       "parcel.shapeJson.properties.originalProperties.AbstractName.keyword",
       "parcel.shapeJson.properties.originalProperties.ShortName.keyword",
     ],
-    options: { sort: true, filter: true, setCellProps: () => ({ style: { maxWidth: "150px" } }) },
+    options: { sort: true, filter: true, ignoreGlobal: true, setCellProps: () => ({ style: { maxWidth: "150px" } }) },
     custom: {
       oRFilter: true,
     },
@@ -135,7 +157,7 @@ const AcerageSummaryHeadCells = [
     name: "legalDesctiption",
     label: "Legal Description",
     esKey: "shape.shapeJson.properties.legalDesctiption.keyword",
-    options: { sort: true, filter: true, setCellProps: () => ({ style: { minWidth: "400px" } }) },
+    options: { sort: true, filter: true, ignoreGlobal: true, setCellProps: () => ({ style: { minWidth: "400px" } }) },
   },
   // {
   //   name: "recDate",
@@ -187,23 +209,27 @@ const AcerageSummaryHeadCells = [
     label: "Rec Date",
     esKey: "shape.shapeJson.properties.recordedDate",
     options: { sort: true, filter: true },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
   },
   {
     name: "recordedBook",
     label: "Book",
-    esKey: "shape.shapeJson.properties.recordedBook",
+    esKey: "shape.shapeJson.properties.recordedBook.keyword",
     options: { sort: true, filter: true },
   },
   {
     name: "recordedPage",
     label: "Page",
-    esKey: "shape.shapeJson.properties.recordedPage",
+    esKey: "shape.shapeJson.properties.recordedPage.keyword",
     options: { sort: true, filter: true },
   },
   {
     name: "recordedInstrumentNumber",
     label: "Instrument #",
-    esKey: "shape.shapeJson.properties.recordedInstrumentNumber",
+    esKey: "shape.shapeJson.properties.recordedInstrumentNumber.keyword",
     options: { sort: true, filter: true },
   },
 ];

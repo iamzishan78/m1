@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, TextField,  } from "@material-ui/core";
+import { ClickAwayListener, Grid, TextField,  } from "@material-ui/core";
 import $ from "jquery";
 
 import Avatar from "react-avatar";
@@ -8,7 +8,6 @@ import Button from "@material-ui/core/Button";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/core/styles";
 import CommentType from "components/Shared/components/Comment/CommentType";
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
 const filter = createFilterOptions();
 
@@ -16,8 +15,10 @@ const useStyles = makeStyles((theme) => ({
   noBorder: {
     border: "none",
   },
-  search: {
-    maxHeight: "211px",
+  search: ({ collapsed }) => ({
+    maxHeight: collapsed ? "30px" : "211px",
+    overflowY: collapsed ? "hidden" : "scroll",
+    transition: "0.2s ease-in-out",
     width: "100%",
     "& .MuiOutlinedInput-notchedOutline": {
       border: "none",
@@ -29,9 +30,9 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiAutocomplete-endAdornment": {
       display: "none",
     },
-    "& .MuiInputBase-input": { color: "transparent", caretColor: "black" },
+    "& .MuiInputBase-input": { color: "transparent", caretColor: "black", paddingTop: '0 !important' },
     "& .MuiInputBase-inputMultiline": {
-      height: "201px !important",
+      height: "205px !important",
       overflow: "overlay",
       paddingRight: "8px",
       "*::-webkit-scrollbar": {
@@ -43,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
         width: "0.2em !important",
       },
     },
-  },
+  }),
   customTextField: {
     "& textarea": {
       zIndex: 99,
@@ -167,19 +168,16 @@ export default function DealComment({
   showActions,
   setComment,
   upsertComment,
-  updateCommentData,
-  isEdit = false,
+  isEdit,
   users,
   profilesInfo,
   setEditCommentId,
   fieldWidth,
   setShowActions,
-  setEditComment,
   setIsEdit,
-  isMinimize = false,
-  setIsMinimize,
   ...props
 }) {
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [filterValue, setFilterValue] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
@@ -187,16 +185,14 @@ export default function DealComment({
   const [showCommentTypeDialog, setShowCommentTypeDialog] = useState(false);
   const [selectedCommentType, setSelectedCommentType] = useState("General");
   const [commentTypeDialogBox,setCommentTypeDialogBox] = useState(false);
-  const classes = useStyles({ fieldWidth, commentTypeDialogBox });
+  const classes = useStyles({ fieldWidth, commentTypeDialogBox, collapsed: isCollapsed && !isEdit });
   (function () {
-    if(isMinimize){
-      var target = $("#colorText");
-      const scrollDiv = function () {
-        target.prop("scrollTop", this.scrollTop).prop("scrollLeft", this.scrollLeft);
-      };
-      $(".MuiOutlinedInput-input").scroll(scrollDiv);
-      $(".MuiOutlinedInput-input").resize(scrollDiv);
-    }
+    var target = $("#colorText");
+    const scrollDiv = function () {
+      target.prop("scrollTop", this.scrollTop).prop("scrollLeft", this.scrollLeft);
+    };
+    $(".MuiOutlinedInput-input").scroll(scrollDiv);
+    $(".MuiOutlinedInput-input").resize(scrollDiv);
   })();
 
   const checkIfShowUsers = (comment) => {
@@ -218,31 +214,29 @@ export default function DealComment({
   };
 
   useEffect(() => {
-    if(isMinimize === true && comment !== ""){
-      let value = JSON.parse(JSON.stringify(comment));
-      if (checkIfShowUsers(value)) {
-        setShowOptions(true);
-      } else {
-        setShowOptions(false);
-      }
-      if (comment.includes("{{") && comment.includes("}}")) {
-        let updatedValue = JSON.parse(JSON.stringify(comment));
-        for (let i = 0; i < users.length; i++) {
-          if (updatedValue.includes(users[i]._id)) {
-            updatedValue = replaceAllWith(updatedValue, users[i]._id, `@${users[i].name}`);
-            value = replaceAllWith(value, `{{${users[i]._id}}}`, ` <span class='blue'>@${users[i].name}</span>`);
-          }
-        }
-        setNameAutValue({ name: updatedValue, _id: "" });
-      } else {
-        setNameAutValue({ name: comment, _id: "" });
-      }
-      if (value.includes("\n")) {
-        value = value.replace(/\n/g, "<br>");
-      }
-      document.getElementById("colorText").innerHTML = value;
+    let value = JSON.parse(JSON.stringify(comment));
+    if (checkIfShowUsers(value)) {
+      setShowOptions(true);
+    } else {
+      setShowOptions(false);
     }
-  }, [comment, users, isMinimize]);
+    if (comment.includes("{{") && comment.includes("}}")) {
+      let updatedValue = JSON.parse(JSON.stringify(comment));
+      for (let i = 0; i < users.length; i++) {
+        if (updatedValue.includes(users[i]._id)) {
+          updatedValue = replaceAllWith(updatedValue, users[i]._id, `@${users[i].name}`);
+          value = replaceAllWith(value, `{{${users[i]._id}}}`, ` <span class='blue'>@${users[i].name}</span>`);
+        }
+      }
+      setNameAutValue({ name: updatedValue, _id: "" });
+    } else {
+      setNameAutValue({ name: comment, _id: "" });
+    }
+    if (value.includes("\n")) {
+      value = value.replace(/\n/g, "<br>");
+    }
+    document.getElementById("colorText").innerHTML = value;
+  }, [comment, users]);
 
   const replaceAllWith = (_string, replaceFrom, replaceWith) => {
     return _string.replace(/{{([^{{]+)}}/g, (match, key) => {
@@ -284,37 +278,18 @@ export default function DealComment({
     setIsSelected(true);
   };
   const openDialogBox = (e) => {
-    e.stopPropagation();
+    // e.stopPropagation();
     setCommentTypeDialogBox(false);
   }
-
-  useEffect(()=>{
-    if(isEdit === true){
-      setIsMinimize(true);
-    }
-  },[isEdit])
-
-  useEffect(()=>{
-    if(!showActions || !isEdit){
-      setComment("");
-    }
-  },[showActions,isEdit])
-  return (<>
-    <ClickAwayListener onClickAway={()=> setIsMinimize(false)}>
-      {isMinimize ? <div
+  return (
+    <ClickAwayListener onClickAway={(e) => {
+      if(!commentTypeDialogBox)
+        setIsCollapsed(true)
+    }}>
+    <div
       onClick={(e)=>openDialogBox(e)}
-      // onBlur={(e)=>{
-      //   if(comment === ''){
-      //     e.stopPropagation();
-      //     setIsMinimize(false);
-      //   }
-      // }}
     >
       <Autocomplete
-        onFocus={() => {
-          setShowCommentTypeDialog(false);
-        }}
-
         id="txtArea"
         className={classes.search}
         style={{
@@ -326,6 +301,7 @@ export default function DealComment({
         value={nameAutValue}
         disableListWrap
         options={users}
+        onFocus={() => setIsCollapsed(false)}
         getOptionLabel={(option) => option.name}
         getOptionSelected={(option, value) => {
           return option === value;
@@ -361,7 +337,6 @@ export default function DealComment({
         renderInput={(params) => (
           <>
             <TextField
-              autoFocus={true}
               classes={{ root: classes.customTextField }}
               margin="dense"
               {...params}
@@ -371,13 +346,12 @@ export default function DealComment({
               id="commentBox"
               fullWidth
               rows={isEdit || showActions ? 2 : 1}
-              maxRows={2}
+              maxRows={1}
               multiline
               className={classes.activitySearchField}
               placeholder="Add a question or post an update"
               variant="outlined"
               size="small"
-              auto
             />
             <div
               id="colorText"
@@ -387,95 +361,76 @@ export default function DealComment({
           </>
         )}
       />
-      {!isEdit ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-            <CommentType
-                showCommentType={props.showCommentType}
-                setSelectedCommentType={setSelectedCommentType}
-                setCommentTypeDialogBox={setCommentTypeDialogBox}
-                commentTypeDialogBox={commentTypeDialogBox}
-            />
-          <Button
-              className={classes.commentBtn}
-              variant="contained"
-              color="primary"
-              id="commentButton"
-              style={{ marginBottom: "10px" }}
-              onClick={(e) => {
-                if (!showCommentTypeDialog) {
+      { !isCollapsed && 
+        <>
+          {!isEdit ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <CommentType
+                  showCommentType={props.showCommentType}
+                  setSelectedCommentType={setSelectedCommentType}
+                  setCommentTypeDialogBox={setCommentTypeDialogBox}
+                  commentTypeDialogBox={commentTypeDialogBox}
+              />
+              <Button
+                  className={classes.commentBtn}
+                  variant="contained"
+                  color="primary"
+                  id="commentButton"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!showCommentTypeDialog) {
+                      upsertComment({ comment, commentType: selectedCommentType });
+                      setNameAutValue({});
+                      setIsCollapsed(true);
+                    }
+                  }}
+              >
+                Comment
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Button
+                className={classes.commentBtn}
+                style={{ marginBottom: "10px" }}
+                variant="contained"
+                color="primary"
+                onClick={(e) => {
                   e.stopPropagation();
                   upsertComment({ comment, commentType: selectedCommentType });
-                  setNameAutValue({});
-                  setIsMinimize(false);
-                }
-              }}
-          >
-            Comment
-          </Button>
-        </div>
-      ) : (
-        <>
-          <Button
-            className={classes.commentBtn}
-            style={{ marginBottom: "15px" }}
-            variant="contained"
-            color="primary"
-            onClick={(e) => {
-              e.stopPropagation();
-              updateCommentData({ comment, commentType: selectedCommentType });
-              setIsMinimize(false);
-              setIsEdit(false);
-            }}
-          >
-            Save Changes
-          </Button>
-          <Button
-            className={classes.commentBtn}
-            style={{ marginRight: "10px", marginBottom: "10px" }}
-            variant="contained"
-            onClick={() => {
-              setIsEdit(false);
-              setShowActions(false);
-              setIsMinimize(false);
-              setComment("");
-              setEditCommentId("");
-              setNameAutValue({});
-              // setEditComment("");
-            }}
-          >
-            Cancel
-          </Button>
-        </>
-      )}
-    </div>
-          :
-          <div>
-            <TextField
-                value={nameAutValue.name}
-                margin="dense"
-                style={{
-                  margin: 0,
+                  setIsCollapsed(true);
                 }}
-                fullWidth
-                placeholder="Add a question or post an update"
-                variant="outlined"
-                size="small"
-
-                onFocus={(e)=>{
-                  setIsMinimize(true);
+              >
+                Save Changes
+              </Button>
+              <Button
+                className={classes.commentBtn}
+                style={{ marginRight: "10px", marginBottom: "10px" }}
+                variant="contained"
+                onClick={(e) => {
                   e.stopPropagation();
+                  setComment("");
+                  setEditCommentId("");
+                  setIsEdit(false);
+                  setShowActions(false);
+                  setIsCollapsed(true);
                 }}
-            />
-          </div>
+              >
+                Cancel
+              </Button>
+            </>
+          )}
+        </>
       }
+    </div>
     </ClickAwayListener>
-  </>);
+  );
 }
 
 DealComment.defaultProps = {

@@ -81,6 +81,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridStyle: {
     padding: "12px 0px",
+    flexWrap: 'nowrap'
   },
   bold: {
     fontWeight: "bold",
@@ -499,7 +500,6 @@ export default function DealComment(props) {
                 className={classes.border}
                 style={{ width: "calc(23vw)", paddingRight: "13px" }}
                 onClick={() => {
-                  debugger
                     setShowActions(true);
                 }}
                 onBlur={() => {

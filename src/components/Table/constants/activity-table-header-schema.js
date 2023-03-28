@@ -57,6 +57,16 @@ const ActivitiesHeadCells = [
     style: { minWidth: 185 }
   },
   {
+    name: "outcome",
+    label: "Outcome",
+    esKey: "outcome.keyword",
+    options: {
+      display: true,
+      sort: true,
+      filter: true,
+    },
+  },
+  {
     name: "dealName",
     label: "Deal Name",
     esKey: "deal.name.keyword",
@@ -101,12 +111,19 @@ const ActivitiesHeadCells = [
   {
     name: "isClosed",
     label: "Completed?",
+    esKey: "isClosed",
     options: {
       ignoreGlobal: true,
       display: true,
       sort: true,
       filter: true,
     },
+    custom: {
+      formatedFilterOptions: [
+        { value: 'true', label: "Completed" },
+        { value: 'false', label: "Not Completed" },
+      ]
+    }
   },
 
 ];

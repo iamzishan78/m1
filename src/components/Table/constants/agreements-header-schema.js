@@ -14,12 +14,9 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     options: {
       ...GlobalStickyStyles({
         setCellProps: {
-          left: isSnapGrid ? '77px' : '108.5px',
           maxWidth: "492px",
         },
-        setCellHeaderProps: {
-          left: isSnapGrid ? '77px' : '108.5px',
-        }
+        isSnapGrid
       }),
       dbName: "shapeJson.properties.agreementNumber",
       isSnapGrid,

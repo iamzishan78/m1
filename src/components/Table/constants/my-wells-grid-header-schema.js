@@ -20,23 +20,15 @@ const wellsColumnHeaders = [
     options: {
       ...GlobalStickyStyles({
         setCellProps: {
-          left: "125px",
+          left: "138px",
         },
         setCellHeaderProps: {
-          left: "125px",
+          left: "138px",
         },
       }),
       sort: true,
       filter: true,
       customRender: (value, tableMeta) => {
-        const styles = {
-          fontWeight: GlobalStyles.font.boldFontWeight,
-          color: GlobalStyles.colors.lightBlue,
-          cursor: GlobalStyles.hyperlink.cursor,
-          position: "absolute",
-          // left: '70px',
-        };
-
         console.log("-*-*-*- tableMeta *-*-*", tableMeta)
         const globalWellId = tableMeta.rowData[0];
 

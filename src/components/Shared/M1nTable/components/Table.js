@@ -131,7 +131,7 @@ import ReactSelectField from "./SubComponents/ReactSelectField";
 import TableBody from "./MUIDataTable/TableBody";
 import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOfferPrice";
 
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 
@@ -774,16 +774,18 @@ function SubTable(props) {
     });
   }
 
-  const handleClickFlyToIcon = (entityType, searchTarget) => {
+  const handleClickFlyToIcon = (entityType, searchTarget, unmount = false) => {
     if (!searchTarget) return;
 
     if (entityType === "well") {
       handleWellFlyTo(searchTarget);
     }
     if (entityType === "owner") {
+      unmount = false
       handleOwnerFlyTo(searchTarget);
     }
     if (entityType === "operator") {
+      unmount = false
       handleOperatorFlyTo(searchTarget);
     }
     if (entityType === "lease") {
@@ -795,6 +797,9 @@ function SubTable(props) {
     if (entityType === "unit") {
       handleUnitFlyTo(searchTarget);
     }
+
+    if (unmount)
+      dispatch(setMapGridCardState({ mapGridCardActivated: false }));
   };
 
   const registerSearchHandler = (handleSearch) => {
@@ -933,6 +938,8 @@ function SubTable(props) {
           wellListFromSearch: [],
         }));
       }
+      // unmount
+      dispatch(setMapGridCardState({ mapGridCardActivated: false }));
     }
   }, [dataOwnerWells]);
 
@@ -970,6 +977,8 @@ function SubTable(props) {
           wellListFromSearch: [],
         }));
       }
+      // unmount
+      dispatch(setMapGridCardState({ mapGridCardActivated: false }));
     }
   }, [dataOperatorWells]);
 
@@ -1352,6 +1361,9 @@ function SubTable(props) {
                   if (props.targetLabel === "unit") {
                     const targetSourceId = tableMeta.rowData[0];
                     const commentValue = tableMeta.rowData[20];
+
+                    const path = `/${column.label === 'Contact Name' ? 'contact/details' : 'map/units'}/${tableMeta.rowData[0]}`
+
                     return (
                       <div
                         style={{
@@ -1370,13 +1382,15 @@ function SubTable(props) {
                             }}
                           >
                             <ColumnWithLink
-                              value={tableMeta?.rowData[2]}
-                              link={`/map/units/${tableMeta.rowData[0]}`}
+                              value={tableMeta?.rowData[column.label === 'Contact Name' ? 1 : 2]}
+                              link={`${path}`}
                             />
                           </Grid>
-                          <Grid item>
-                            <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
-                          </Grid>
+                          {column.label !== 'Contact Name' &&
+                            <Grid item>
+                              <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
+                            </Grid>
+                          }
                         </Grid>
                       </div>
                     );
@@ -1401,25 +1415,25 @@ function SubTable(props) {
                           round
                         />
                         <Link
-                            to={`/contact/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
-                            className={classes.clickableCell}
+                          to={`/contact/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
+                          className={classes.clickableCell}
                         >
-                        <p
+                          <p
 
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            minWidth: "300px",
-                          }}
-                        >
-                          {tableMeta.rowData[nameIndex]}
-                          {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
-                            <FeatureFlag feature={FEATURES.IDICORE}>
-                              <MonetizationOnIcon className={classes.monetizationIcon} />
-                            </FeatureFlag>
-                          )}
-                        </p>
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              minWidth: "300px",
+                            }}
+                          >
+                            {tableMeta.rowData[nameIndex]}
+                            {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
+                              <FeatureFlag feature={FEATURES.IDICORE}>
+                                <MonetizationOnIcon className={classes.monetizationIcon} />
+                              </FeatureFlag>
+                            )}
+                          </p>
                         </Link>
                       </div>
                     );
@@ -1781,8 +1795,7 @@ function SubTable(props) {
                         if (!disabled) {
                           type = coordinates?.objToPopulateSearchLayer?.objectType || type;
                           if (column.name === "Well") coordinates.wellId = props.rows[tableMeta.rowIndex]?.well.globalWell;
-                          handleClickFlyToIcon(type, coordinates);
-                          dispatch(setMapGridCardState({ mapGridCardActivated: false }));
+                          handleClickFlyToIcon(type, coordinates, true);
                         }
                       }}
                       value={value}
@@ -1903,7 +1916,7 @@ function SubTable(props) {
                   const splitNumber = value?.split("_");
 
                   const isSnapGrid = column.options.isSnapGrid || false
-
+                  const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
                   return (
                     <div
                       style={{
@@ -1927,12 +1940,9 @@ function SubTable(props) {
                         >
                           <ColumnWithLink
                             value={splitNumber?.[0]
-                              ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
-                              : tableMeta?.rowData[2]}
-                            link={isSnapGrid && tableMeta.rowData[3] ? `/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}` : `/land/agreement/details/${tableMeta.rowData[0]}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                            }}
+                              ? `${splitNumber?.[0].trim()} - ${row_line.agreementName}`
+                              : row_line.agreementName}
+                            link={isSnapGrid && tableMeta.rowData[3] ? `/map/${tableMeta.rowData[3].toLowerCase()}s/${row_line.agreementId || tableMeta.rowData[0]}` : `/land/agreement/details/${row_line.agreementId || tableMeta.rowData[0]}`}
                           />
                           {/* <Box
                             onClick={(e) => {
@@ -2179,8 +2189,6 @@ function SubTable(props) {
                         ) : (
                           <Link
                             to={
-                              window.location.origin
-                              +
                               `/contact/details/${value}/?tenant=${window.sessionStorage.getItem("tenantName")}`
                             }
                             onClick={(e) => e.preventDefault()}>
@@ -3850,7 +3858,7 @@ function SubTable(props) {
           <div
             style={
               props.addAble?.type === "contact" ? {
-                marginRight: "67px",
+                marginRight: "105px",
                 marginTop: "5px",
               } : {
                 display: "inline",
@@ -3928,6 +3936,15 @@ function SubTable(props) {
               </ButtonGroup>
             )}
 
+            {props.addAble?.type === "contact" && (
+              <div style={{ display: "inline", position: "absolute", right: "120px", top: "5px" }}>
+                <IconButton onClick={props.onDownload} disabled={props.isExporting}>
+                  <Tooltip title="Download CSV" aria-label="add">
+                    <CloudDownloadIcon />
+                  </Tooltip>
+                </IconButton>
+              </div>
+            )}
             {props.addAble?.type === "contact" && (
               <>
                 <FeatureFlag feature={FEATURES.IDICORE}>
@@ -4376,11 +4393,14 @@ function SubTable(props) {
     || props.header === "Activities"
     || props.header === "Agreements"
     || props.header === "Tracts"
+    || props.header === "Campaigns"
     || props.header === "Exhibit A"
     || props.parent === "UnitsTable"
     || props.parent === "TractTable"
     || props.parent === "WellsTable"
+    || props.parent === "Contacts"
     || props.parent === "TractInterestsTable"
+    || props.parent === "RevenuePropertiesTable"
   ) {
     // adds the print and export options in the Flow grid and the Activities grid
     if (props.targetLabel !== 'activitiesDashboard') {
@@ -4570,7 +4590,7 @@ function SubTable(props) {
             TableViewCol: CustomTableViewCol,
 
 
-            TableFilterList: (props.header === "Tax Roll Ownership" || props.parent === "potentialOwnersPerUnit") && !isSearchOpen ? TableFilterList : null,
+            TableFilterList: props?.component?.TableFilterList || ((props.header === "Tax Roll Ownership" || props.parent === "potentialOwnersPerUnit") && !isSearchOpen ? TableFilterList : null),
             icons: {
               FilterIcon,
               ViewColumnIcon,
