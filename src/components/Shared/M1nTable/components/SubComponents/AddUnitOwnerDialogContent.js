@@ -265,7 +265,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   };
 
   const calculateNRA = (interest1, interest2, interest3, unitAcres = uAcres) => {
-    if (!interest3 || (!interest1 && !interest2)) return null;
+    if (!interest3 && (!interest1 && !interest2)) return null;
 
     let nra = parseFloat(unitAcres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0));
 

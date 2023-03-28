@@ -375,8 +375,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     return netAcres;
   };
 
-  const calculateNRA = (interest1, interest2, interest3, net_acres = newOwner.net_acres, gross_acers = selectedRow.grossAcres) => {
-    if (!interest3 || (!interest1 && !interest2)) return null;
+  const calculateNRA = (interest1, interest2, interest3, net_acres = newOwner.net_acres, gross_acers = get(stateApp, 'selectedParcel.sdGrossAcres')) => {
+    if (!interest3 && (!interest1 && !interest2)) return null;
 
     let nra = parseFloat(net_acres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) * 8;
 
