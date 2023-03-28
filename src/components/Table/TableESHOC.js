@@ -948,7 +948,7 @@ export const TableESHOC = (Component) => {
                                 right: tableMeta?.downloadAll?.exportPx,
                             }}>
                                 <IconButton onClick={onDownload} disabled={isExporting}>
-                                    <Tooltip title="Download CSV Test" aria-label="add">
+                                    <Tooltip title="Download to CSV" aria-label="add">
                                         <CloudDownloadIcon />
                                     </Tooltip>
                                 </IconButton>
