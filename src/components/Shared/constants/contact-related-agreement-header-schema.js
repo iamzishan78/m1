@@ -29,10 +29,17 @@ const ContactReleatedAgreementHeaderCells = [
       dbName: "shapeJson.properties.agreementNumber",
       customRender: (value, tableMeta, updateValue) => {
         const tenantName = window.sessionStorage.getItem("tenantName");
+
+        value = value?.toString();
+        const splitNumber = value?.split("_");
+        const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [ContactReleatedAgreementHeaderCells[index]?.name]: item })));
+
         return (
-          <Link to={`/land/agreement/details/${tableMeta.rowData[0]}?tenant=${tenantName}`} style={{ color: GlobalStyles.colors.lightBlue, textDecoration: 'none' }}>{value
-            ? `${value} - ${tableMeta?.rowData[2]}`
-            : tableMeta?.rowData[2]}</Link>
+          <Link to={`/land/agreement/details/${tableMeta.rowData[0]}?tenant=${tenantName}`} style={{ color: GlobalStyles.colors.lightBlue, textDecoration: 'none' }}>{
+            splitNumber?.[0]
+              ? `${splitNumber?.[0].trim()} - ${row_line.agreementName}`
+              : row_line.agreementName
+          }</Link>
         );
       },
     },
