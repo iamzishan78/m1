@@ -88,16 +88,16 @@ export default function LandAnalytics() {
           }}
           aria-label="ant example"
         >
-          <StyledTab label="Acreage Summary" />
-          <StyledTab label="Acreage Detail" />
+          {/* <StyledTab label="Acreage Summary" /> */}
+          {/* <StyledTab label="Acreage Detail" /> */}
           <StyledTab label="Exhibit A" />
           <StyledTab label="Well Master" />
         </StyledTabs>
       </div>
-      {tab === 0 && <AcerageSummaryTabPanel />}
-      {tab === 1 && <AcerageDetailsTabPanel />}
-      {tab === 2 && <ExhibitATabPanel />}
-      {tab === 3 && <WellMasterTabPanel />}
+      {/* {tab === 0 && <AcerageSummaryTabPanel />} */}
+      {/* {tab === 1 && <AcerageDetailsTabPanel />} */}
+      {tab === 0 && <ExhibitATabPanel />}
+      {tab === 1 && <WellMasterTabPanel />}
       {/* <AnalyticsCards cards={cards} /> */}
       <Divider className={classes.divider} />
     </>
