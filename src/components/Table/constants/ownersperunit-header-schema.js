@@ -1,6 +1,7 @@
 import vf_currency from "components/Shared/valueformatters/vf_currency";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import { GlobalStickyStyles } from "GlobalSettings";
+import Chip from "@material-ui/core/Chip";
 
 const OwnersPerUnitHeadCells = [
   {
@@ -128,6 +129,36 @@ const OwnersPerUnitHeadCells = [
         // } else {
         //   return value.campaignName?.map((v, index) => `${v}${index < value?.length - 1 ? ", " : ""}`);
         // }
+      },
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "associatedDeals",
+    label: "Associated Deals",
+    esKey: "associatedDeals.keyword",
+    options: {
+      customRender: (value) => {
+        console.log("deal value : ", value)
+        return <>
+          {
+            value.map((tag, index) => (
+              <Chip
+                style={{
+                  backgroundColor: "#f0f0f0",
+                }}
+                disabled
+                key={index}
+                id={tag}
+                label={tag}
+
+              />
+            ))
+          }
+        </>
+
       },
       setCellProps: () => ({ style: { minWidth: "200px" } }),
       sort: true,
