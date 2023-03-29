@@ -104,3 +104,14 @@ export function workspaceTenantName() {
   const workspaceName = window.sessionStorage.getItem("tenantName");
   return workspaceName === "localhost" ? "EnerX" : workspaceName;
 }
+
+export function getDateWithoutTime(dateTime = "") {
+  const splittedDate = dateTime.split("-")
+  if (splittedDate.length === 3) {
+    const newDate = new Date()
+    newDate.setYear(Number(splittedDate[0]))
+    newDate.setMonth(Number(splittedDate[1]) - 1)
+    newDate.setDate(Number(splittedDate[2]))
+    return newDate;
+  } else return null;
+}
