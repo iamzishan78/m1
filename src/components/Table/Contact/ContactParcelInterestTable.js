@@ -59,11 +59,18 @@ function ContactParcelInterestTable(props) {
 
   useEffect(() => {
     // if (props.parent && props.parent === "assocTaxRollInterests") {
+    const payload = {
+      filters: [{ field: 'contact._id', value: props.contactId }]
+    }
+
+    if(typeof props.contactId === "object" && Array.isArray(props.contactId)){
+      payload.contactIds = props.contactId
+    } else {
+      payload.contactId = props.contactId
+    }
+
     getContactParcelInterests({
-      variables: {
-        contactId: props.contactId,
-        filters: [{ field: 'contact._id', value: props.contactId }]
-      },
+      variables: payload,
     });
     // }
   }, [getContactParcelInterests, props.contactId, props.parent]);

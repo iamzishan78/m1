@@ -52,6 +52,8 @@ import CustomAvatar from "components/Shared/ui/CustomAvatar";
 
 import MapProvider from "components/Map/MapProvider";
 import { getRandomColor } from "components/Shared/functions/ui";
+import AssociatedFlowDealDetails from "../AssociatedFlowDealDetails";
+import { createPortal } from "react-dom/cjs/react-dom.production.min";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -1289,7 +1291,7 @@ function AddDealDialog(props) {
                 dealSettingsNumber={getSubtaskNumber()}
                 mapSettings={mapSettings}
               />
-              {!["Deal", "Map"].includes(stateApp.transactBarView) &&
+              {!["Deal", "Map", "Grid"].includes(stateApp.transactBarView) &&
               (stateApp.activeDeal?.cardId ||
                 get(stateApp, "activeDeal._id") ||
                 get(stateTransact, "dealToCreate._id")) ? (
@@ -1759,6 +1761,13 @@ function AddDealDialog(props) {
           </div>
         )}
       </div>
+      {
+        stateApp.transactBarView === "Grid" &&
+        createPortal(<AssociatedFlowDealDetails
+          contacts={stateApp.activeDeal?.contacts.map(contact => contact._id)}
+          deal={stateApp?.activeDeal?.cardId}
+        />, document.body)
+      }
     </>
   );
 }
