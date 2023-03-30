@@ -136,24 +136,23 @@ const OwnersPerUnitHeadCells = [
     },
   },
   {
-    name: "associatedDeals",
+    name: "deals",
     label: "Associated Deals",
-    esKey: "associatedDeals.keyword",
+    esKey: "deals.keyword",
     options: {
       customRender: (value) => {
-        console.log("deal value : ", value)
+
         return <>
           {
-            value.map((tag, index) => (
+            value && value.map((tag, index) => (
               <Chip
                 style={{
                   backgroundColor: "#f0f0f0",
                 }}
                 disabled
                 key={index}
-                id={tag}
-                label={tag}
-
+                id={tag._id}
+                label={tag.name}
               />
             ))
           }

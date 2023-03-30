@@ -96,7 +96,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         contactStatus,
         ownerType,
         contact,
-        associatedDeals
+        deals
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
@@ -112,7 +112,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerType,
         customLayer,
         campaignName: contact.campaignName,
-        associatedDeals
+        deals
       }
       let calculatedNRA = calculateNRA(royalty_interest, orri);
       let calculatedOfferPrice = calculateOfferPrice(nra)
@@ -616,13 +616,13 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
                 <Controller
                   control={control}
-                  defaultValue={''}
-                  name="associatedDeals"
+                  name="deals"
                   render={(params) => (
                     <AssociatedDealField
                       {...params}
                       className={classes.maxWidth}
                       onChange={(values, id) => {
+                        debugger
                         params.onChange(values);
                       }}
                       fullWidth

@@ -96,7 +96,7 @@ export default function AssociatedDealField(props) {
 
     useEffect(() => {
         if (dealsData?.openDeals?.deals) {
-            const allFiltersData = dealsData?.openDeals?.deals.map((deal) => deal.name);
+            const allFiltersData = dealsData?.openDeals?.deals.map((deal) => ({ name: deal.name, _id: deal._id }));
             setOptions(allFiltersData.filter((d) => d));
         }
     }, [dealsData]);
@@ -138,6 +138,10 @@ export default function AssociatedDealField(props) {
 
         setInputValue(values);
     };
+    console.log("inputValue : ", inputValue)
+
+    const getOptionDisabled = (option) =>
+        inputValue.findIndex((selectedOption) => selectedOption._id === option._id) !== -1;
 
     return (
         <div id="taggerRoot" className={classes.rootDiv}>
@@ -145,19 +149,22 @@ export default function AssociatedDealField(props) {
                 <Grid item xs={12} md={12}>
                     <Autocomplete
                         className={classes.chip}
-                        multiple
                         id="tags-outlined"
                         onChange={(e, newValue, reason) => handleChange(newValue, reason)}
+                        multiple
                         options={options}
-                        value={inputValue}
+                        getOptionLabel={(option) => option.name}
+                        value={inputValue || null}
+                        getOptionSelected={(option) => option._id === inputValue._id}
+                        getOptionDisabled={getOptionDisabled}
                         freeSolo
                         disabled={props.disabled}
                         renderTags={(value, getTagProps) => {
                             return value.map((tag, index) => (
                                 <Chip
                                     key={index}
-                                    id={tag}
-                                    label={tag}
+                                    id={tag._id}
+                                    label={tag.name}
                                     {...getTagProps({ index })}
                                     deleteIcon={!props.disabled ? <ClearIcon /> : <></>}
                                 />
