@@ -105,7 +105,6 @@ export const TableESHOC = (Component) => {
 
         const getNonGridViewColumnsData = (cols = columns, metaDatas = metaDataRef.current) => {
             if (cols?.length > 0 && metaDatas) {
-                console.log('Inside Non Grid View Columns', cols);
 
                 let filterColumns = cols.filter((col) => !col._id && !props.actionColumns.includes(col.label) && !props.actionColumns.includes(col.name));
                 let actionColumns = cols.filter((col) => props.actionColumns.includes(col.label) || props.actionColumns.includes(col.name));
@@ -130,7 +129,7 @@ export const TableESHOC = (Component) => {
             return cols;
         }
 
-        const updateColumnsOnGridViewChange = (metaDatas = metaDataRef.current) => {
+        const updateColumnsOnGridViewChange = () => {
             Columns((cols) => {
                 if (cols?.length > 0) {
                     console.log('Inside Columns', cols)
@@ -297,9 +296,13 @@ export const TableESHOC = (Component) => {
                 let { TableHeader, formatColumns, formatHits } = tableMeta
 
                 TableHeader = columns.length > 0 ? columns : TableHeader;
-                let hits = tableData?.hits
+                let hits = tableData?.hits;
                 if (formatHits)
-                    hits = formatHits(hits)
+                    hits = formatHits(hits);
+
+                if (metaDataRef.current) {
+                    hits = setCustomMetaRows(hits);
+                }
 
                 if (isFiniteScroll && changePage) {
                     const rowIndex = rows.length - 5
@@ -327,6 +330,16 @@ export const TableESHOC = (Component) => {
                 setLoading(false);
             }
         }, [tableData, dependencyUpdate]);
+
+        const setCustomMetaRows = (hits) => {
+            hits.forEach(hit => {
+                metaDataRef.current.forEach(meta => {
+                    const esKey = meta.esKey.replace(".keyword", "");
+                    hit[meta.name] = get(hit, esKey);
+                });
+            });
+            return hits;
+        }
 
         const setColumnsData = (tableCols) => {
             let { TableHeader, extendSearchQuery, esIndex, filters } = tableMeta
