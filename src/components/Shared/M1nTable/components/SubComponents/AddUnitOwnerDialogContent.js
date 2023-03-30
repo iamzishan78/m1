@@ -622,7 +622,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       {...params}
                       className={classes.maxWidth}
                       onChange={(values, id) => {
-                        debugger
                         params.onChange(values);
                       }}
                       fullWidth

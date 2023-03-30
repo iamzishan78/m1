@@ -1,5 +1,7 @@
+import { Chip } from "@material-ui/core";
+import ListChips from "components/Common/ListChips";
 import GlobalSettings from "../../../GlobalSettings";
-const TractInterestOwnerHeadCells =  (isSnapGrid = false) => [
+const TractInterestOwnerHeadCells = (isSnapGrid = false) => [
   {
     name: "_id",
     options: {
@@ -179,6 +181,19 @@ const TractInterestOwnerHeadCells =  (isSnapGrid = false) => [
     editabe: true,
     options: {
       display: true,
+    },
+  },
+  {
+    name: "deals",
+    label: "Associated Deals",
+    esKey: "deals.keyword",
+    options: {
+      customRender: (value) => {
+        return value && <ListChips list={value} />
+      },
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      sort: true,
+      filter: true,
     },
   },
   {

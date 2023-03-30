@@ -138,7 +138,6 @@ export default function AssociatedDealField(props) {
 
         setInputValue(values);
     };
-    console.log("inputValue : ", inputValue)
 
     const getOptionDisabled = (option) =>
         inputValue.findIndex((selectedOption) => selectedOption._id === option._id) !== -1;

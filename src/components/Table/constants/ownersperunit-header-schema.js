@@ -1,7 +1,7 @@
 import vf_currency from "components/Shared/valueformatters/vf_currency";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import { GlobalStickyStyles } from "GlobalSettings";
-import Chip from "@material-ui/core/Chip";
+import ListChips from "components/Common/ListChips";
 
 const OwnersPerUnitHeadCells = [
   {
@@ -141,23 +141,7 @@ const OwnersPerUnitHeadCells = [
     esKey: "deals.keyword",
     options: {
       customRender: (value) => {
-
-        return <>
-          {
-            value && value.map((tag, index) => (
-              <Chip
-                style={{
-                  backgroundColor: "#f0f0f0",
-                }}
-                disabled
-                key={index}
-                id={tag._id}
-                label={tag.name}
-              />
-            ))
-          }
-        </>
-
+        return value && <ListChips list={value} />
       },
       setCellProps: () => ({ style: { minWidth: "200px" } }),
       sort: true,

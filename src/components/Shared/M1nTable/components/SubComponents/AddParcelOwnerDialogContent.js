@@ -33,6 +33,7 @@ import { addTrailingZeros } from "components/Shared/functions";
 import { Controller, useForm } from "react-hook-form";
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
+import AssociatedDealField from "components/ContactDetailCard/components/FieldContent/AssociatedDealField";
 
 const entities = [
   "Corporation",
@@ -123,6 +124,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     nra: null,
     qtr: [null, null, null, null],
     customLayer: props.customLayerId,
+    deals: []
   });
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
   const [isAcresOverridden, setIsAcresOverridden] = useState(false);
@@ -161,6 +163,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         name,
         ownerEntity,
         qtr,
+        deals
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
 
@@ -184,6 +187,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         depthTo: depthTo || "",
         qtr: qtr ? qtr : [null, null, null, null],
         customLayer,
+        deals
       });
 
       let calculatedNRA = calculateNRA(royalty_interest, orri, net_acres);
@@ -297,6 +301,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       nra: null,
       qtr: [null, null, null, null],
       customLayer: props.customLayerId,
+      deals: []
     });
     setParcelOwnersRadioBValue("true");
     setNameAutValue(null);
@@ -888,6 +893,32 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   />
                 </Grid>
               )}
+
+              <Grid item xs={12}>
+                <h3>Associated Deals</h3>
+
+                <Controller
+                  control={control}
+                  name="deals"
+                  render={(params) => (
+                    <AssociatedDealField
+                      {...params}
+                      className={classes.maxWidth}
+                      onChange={(values, id) => {
+                        setNewOwner({
+                          ...newOwner,
+                          deals: values || [],
+                        });
+                        params.onChange(values);
+                      }}
+                      value={newOwner?.deals}
+                      fullWidth
+                      targetLabel="Contact"
+                      simpleChips
+                    />
+                  )}
+                />
+              </Grid>
             </Grid>
           </DialogContent>
           <DialogActions className={classes.dialogAction}>
