@@ -117,6 +117,7 @@ export const TableESHOC = (Component) => {
                     label: meta.label,
                     esKey: meta.esKey,
                     options: {
+                        ...meta.options,
                         sort: true,
                         filter: true,
                         dbName: meta.esKey.replace('.keyword', '')
