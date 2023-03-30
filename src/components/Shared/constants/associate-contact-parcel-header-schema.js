@@ -1,3 +1,5 @@
+import ListChips from "components/Common/ListChips";
+
 const AssociateContactWellHeadCells = [
   {
     name: "_id",
@@ -27,7 +29,7 @@ const AssociateContactWellHeadCells = [
   },
   // hide custom render of blue link for now as it is not consistent with unit interests
   //{ name: "parcelName", label: "Tract Name", options:{setCellProps: () => ({ style: { minWidth: "200px", maxWidth: "200px", fontWeight: 600, color: "#17aadd", } }),}},
-  { name: "parcelName", label: "Tract Name", options:{setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }),}},
+  { name: "parcelName", label: "Tract Name", options: { setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }), } },
   { name: "state", label: "State" },
   { name: "county", label: "County" },
   { name: "survey", label: "Survey/ Meridian" },
@@ -57,13 +59,25 @@ const AssociateContactWellHeadCells = [
   { name: "operating_rights", label: "Working Interest" },
   { name: "nri", label: "NRI" },
   { name: "net_acres", label: "Net Acres" },
-  { name: "nra", label: "NRA", editable: true},
-  { name: "cost_bearing", label: "Cost Bearing"},
+  { name: "nra", label: "NRA", editable: true },
+  { name: "cost_bearing", label: "Cost Bearing" },
   { name: "cost_free_high_value", label: "Cost Free High Value" },
   { name: "cost_bearing_high_value", label: "Cost Bearing High Value" },
   { name: "depthFrom", label: "Depth From" },
   { name: "depthTo", label: "Depth To" },
-
+  {
+    name: "deals",
+    label: "Associated Deals",
+    esKey: "deals.keyword",
+    options: {
+      customRender: (value) => {
+        return value && <ListChips list={value} />
+      },
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      sort: true,
+      filter: true,
+    },
+  },
   {
     name: "parcelId",
     options: {
