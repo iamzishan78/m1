@@ -62,7 +62,7 @@ export default function CustomDataFilters(props) {
 
   useEffect(() => {
     if (selectedKey && selectedValue) {
-      const filterKey = `shapeJson.properties.custom_data.${selectedKey}`;
+      const filterKey = `shapeJson.properties.custom_data.${selectedKey?.value}`;
       const landCustomDataFilters = [...stateApp.landSearchFilters.customData];
       const _index = landCustomDataFilters.findIndex((f) => f.field.startsWith("shapeJson.properties.custom_data"));
       if (_index === -1 && selectedValue !== null) landCustomDataFilters.push({ field: filterKey, value: selectedValue });
@@ -88,11 +88,11 @@ export default function CustomDataFilters(props) {
   }, [selectedKey, selectedValue])
 
   const getKeysOptions = useMemo(() => {
-    return Object.keys(_.get(customData, 'getAllKeys', {})).map(key => ({ label: key, value: key }))
+    return Object.keys(_.get(customData, 'getAllKeys', {})).map((key, index) => ({ label: `Custom Data ${index + 1}`, value: key }))
   }, [customData])
 
   const getValueOptions = useMemo(() => {
-    return (customData?.getAllKeys[selectedKey] || []).map(key => ({ label: key, value: key }))
+    return (customData?.getAllKeys[selectedKey?.value || ""] || []).map(key => ({ label: key, value: key }))
   }, [customData, selectedKey]);
 
   const handleKeyChange = (value) => {
@@ -104,11 +104,11 @@ export default function CustomDataFilters(props) {
     <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
       <Grid item xs={12}>
         <AutoCompleteDropdown
-          onChange={(e, { value }) => handleKeyChange(value)}
+          onChange={(e, value) => handleKeyChange(value)}
           options={getKeysOptions}
           label={"Key"}
           loading={loading}
-          value={selectedKey && { label: selectedKey, value: selectedKey }}
+          value={selectedKey}
         />
       </Grid>
       <Grid item xs={12}>
