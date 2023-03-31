@@ -12,7 +12,6 @@ const filterTypes = {
   // "Related Parties": { component: "ProvisionFilters", countKey: "wellFilterCount" },
   Provisions: { component: "ProvisionFilters", countKey: "provisions" },
   // "Related Wells": { component: "RelatedWellsFilters", countKey: "tagFilterCount" },
-  "Custom Data": { component: "CustomDataFilters", countKey: "customData" },
   // "Legal Description": { component: "ProvisionFilters", countKey: "ownershipFilterCount" },
   // Wells: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // Documents: { component: "ProvisionFilters", countKey: "tagFilterCount" },
@@ -21,6 +20,7 @@ const filterTypes = {
   "Related Wells": { component: "RelatedWellsFilters", countKey: "relatedWells" },
   "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "relatedAgreements" },
   "Related Documents": { component: "RelatedDocumentFilters", countKey: "relatedDocuments" },
+  "Custom Metadata": { component: "CustomDataFilters", countKey: "customData" },
 };
 
 const useStyles = makeStyles(() => ({
