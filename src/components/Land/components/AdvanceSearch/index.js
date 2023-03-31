@@ -16,7 +16,6 @@ const useStyles = makeStyles(() => ({
 export default function AdvanceSearch({ activeModule }) {
   const classes = useStyles();
   const history = useHistory();
-  console.log("isASActive", activeModule.title)
   const isASActive = useMemo(
     () => activeModule.title === "Agreements" || history.location.pathname === "/land/agreements",
     [activeModule, history.location]
