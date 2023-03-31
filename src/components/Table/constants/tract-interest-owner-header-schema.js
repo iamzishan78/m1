@@ -186,7 +186,7 @@ const TractInterestOwnerHeadCells = (isSnapGrid = false) => [
   {
     name: "deals",
     label: "Associated Deals",
-    esKey: "deals.keyword",
+    esKey: "deals.name.keyword",
     options: {
       customRender: (value) => {
         return value && <ListChips list={value} />
