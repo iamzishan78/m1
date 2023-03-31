@@ -161,7 +161,8 @@ const AppProvider = (props) => {
       provisions: [],
       customData: [],
       relatedWells: [],
-      relatedAgreements: []
+      relatedAgreements: [],
+      relatedDocuments: [],
     },
 
     toggleLayersActivity: (identifier, activityValue) => {
