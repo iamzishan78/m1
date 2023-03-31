@@ -7,6 +7,7 @@ import { AppContext } from "AppContext";
 import { useLazyQuery } from "@apollo/client";
 import { GET_ALL_CUSTOM_DATA_KEYS } from "graphQL/useQueryGetAllCustomKeys";
 import _ from "lodash";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   gridItem: {
@@ -50,6 +51,7 @@ export default function CustomDataFilters(props) {
   const [filterList, setFilterList] = useState([[], []]);
   const [selectedKey, setSelectedKey] = useState(null)
   const [selectedValue, setSelectedValue] = useState(null);
+  const agreementDetails = useSelector(({ Land }) => Land.agreement?.activeAgreement?.shape)?.properties;
 
 
   const [getCustomKey, { data: customData, loading }] = useLazyQuery(
@@ -95,8 +97,11 @@ export default function CustomDataFilters(props) {
   }, [selectedKey, selectedValue])
 
   const getKeysOptions = useMemo(() => {
-    return Object.keys(_.get(customData, 'getAllKeys', {})).map(key => ({ label: key, value: key }))
-  }, [customData])
+    const allKeys = Object.keys(_.get(customData, 'getAllKeys', {})).map(key => ({ label: key, value: key }))
+
+    // Removing the keys that are already in agreementDetails
+    return allKeys.filter(key => !(key.value.replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase()) in (agreementDetails || {})))
+  }, [customData, agreementDetails])
 
   const getValueOptions = useMemo(() => {
     return (customData?.getAllKeys[selectedKey] || []).map(key => ({ label: key, value: key }))
