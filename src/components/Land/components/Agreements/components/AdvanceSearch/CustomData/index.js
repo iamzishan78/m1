@@ -6,6 +6,7 @@ import FormControl from "@material-ui/core/FormControl";
 import { AppContext } from "AppContext";
 import { useLazyQuery } from "@apollo/client";
 import { GET_ALL_CUSTOM_DATA_KEYS } from "graphQL/useQueryGetAllCustomKeys";
+import _ from "lodash";
 
 const useStyles = makeStyles((theme) => ({
   gridItem: {
@@ -61,6 +62,12 @@ export default function CustomDataFilters(props) {
   }, []);
 
   useEffect(() => {
+    const customFilters = stateApp.landSearchFilters.customData[0]
+    setSelectedKey(customFilters?.field?.split?.('.')[3])
+    setSelectedValue(customFilters?.value)
+  }, [stateApp.landSearchFilters.customData])
+
+  useEffect(() => {
     if (selectedKey && selectedValue) {
       const filterKey = `shapeJson.properties.custom_data.${selectedKey}`;
       const landCustomDataFilters = [...stateApp.landSearchFilters.customData];
@@ -104,7 +111,7 @@ export default function CustomDataFilters(props) {
     <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
       <Grid item xs={12}>
         <AutoCompleteDropdown
-          onChange={(e, { value }) => handleKeyChange(value)}
+          onChange={(e, val) => handleKeyChange(val?.value)}
           options={getKeysOptions}
           label={"Key"}
           loading={loading}
@@ -113,7 +120,7 @@ export default function CustomDataFilters(props) {
       </Grid>
       <Grid item xs={12}>
         <AutoCompleteDropdown
-          onChange={(e, { value }) => setSelectedValue(value)}
+          onChange={(e, val) => setSelectedValue(val?.value)}
           options={getValueOptions}
           label={"Value"}
           loading={loading}
