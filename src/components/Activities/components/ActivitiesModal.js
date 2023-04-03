@@ -820,6 +820,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                   >
                     <TextField
                       label="Created By"
+                      disabled
                       className={classes.fieldWidth}
                       InputProps={{ readOnly: true }}
                       value={selectedActivity?.creator?.name}
