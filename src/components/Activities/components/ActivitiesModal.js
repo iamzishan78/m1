@@ -782,7 +782,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 
                   {!addNew &&
                     <div
-                      style={{ width: "76%", marginTop: "7.5px" }}
+                      style={{ width: "76%", marginTop: "22.5px" }}
                     >
                       <TextField
                         label="Activity Created By"
@@ -812,7 +812,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
               <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
                 <div
-                  style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}
+                  style={{ width: "76%", margin: "0px 24px 7.5px 0px", marginRight: 24 }}
                 >
                   <Autocomplete
                     id="activity-status"
