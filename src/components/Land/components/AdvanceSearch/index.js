@@ -4,7 +4,6 @@ import { makeStyles } from "@material-ui/styles";
 
 import AgreementAdvanceSearch from "components/Land/components/Agreements/components/AdvanceSearch/";
 import { Typography, Divider } from "@material-ui/core";
-import Secondarypanel from "components/Shared/SecondaryPanel";
 
 const useStyles = makeStyles(() => ({
   title: {
@@ -19,11 +18,6 @@ export default function AdvanceSearch({ activeModule }) {
   console.log("isASActive", activeModule.title)
   const isASActive = useMemo(
     () => activeModule.title === "Agreements" || history.location.pathname === "/land/agreements",
-    [activeModule, history.location]
-  );
-
-  const isASActiveWells = useMemo(
-    () => activeModule.title === "Wells" || history.location.pathname === "/land/wells",
     [activeModule, history.location]
   );
 
