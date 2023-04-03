@@ -779,6 +779,21 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                     getOptionSelected={(option) => option.value === owner.id}
                     renderInput={(params) => <TextField margin="dense" {...params} variant="outlined" label="Activity Owner" />}
                   />
+
+                  {!addNew &&
+                    <div
+                      style={{ width: "76%", marginTop: "7.5px" }}
+                    >
+                      <TextField
+                        label="Activity Created By"
+                        disabled
+                        className={classes.fieldWidth}
+                        InputProps={{ readOnly: true }}
+                        value={selectedActivity?.creator?.name}
+                        margin="dense" variant="outlined"
+                      />
+                    </div>
+                  }
                 </div>
               </div>
 
@@ -812,23 +827,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                 </div>
               </div>
 
-              {!addNew &&
-                <div className={classes.row}>
-                  <span className={classes.rowIcon}></span>
-                  <div
-                    style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}
-                  >
-                    <TextField
-                      label="Created By"
-                      disabled
-                      className={classes.fieldWidth}
-                      InputProps={{ readOnly: true }}
-                      value={selectedActivity?.creator?.name}
-                      margin="dense" variant="outlined"
-                    />
-                  </div>
-                </div>
-              }
+
 
               <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
