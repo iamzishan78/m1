@@ -500,13 +500,12 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
     });
   };
 
-  const handleOnContactView = () => nameAutValue._id && history.push(`/contact/details/${nameAutValue._id}`);
+  const handleOnContactView = () => nameAutValue._id ? `/contact/details/${nameAutValue._id}?tenant=${workspaceTenantName()}` : "/";
 
   const handleOnDealClick = () => {
     if (dealValue) {
       const { _id: stageId, pipeline } = dealValue.stage;
       const dealId = dealValue._id;
-      // history.push(`/flow/${pipeline}/lane/${stageId}/card/${dealId}`);
       return `/flow/${pipeline}/lane/${stageId}/card/${dealId}?tenant=${workspaceTenantName()}`;
     }
     return '/';
@@ -748,9 +747,9 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                 </div>
               </div>
               <div className={classes.row}>
-                <span className={classes.rowIcon}>
-                  <RecentActorsIcon onClick={handleOnContactView} color={nameAutValue?._id ? "secondary" : "disabled"} />
-                </span>
+                <a href={handleOnContactView()} className={classes.rowIcon}>
+                  <RecentActorsIcon color={nameAutValue?._id ? "secondary" : "disabled"} />
+                </a>
                 <div className={classes.fieldWidth}>
                   <AutocompEntityNamesVirtualizeList
                     mongoEntitiesArray={mongoEntitiesArray}
