@@ -39,6 +39,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
 import Typography from "@material-ui/core/Typography";
 import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from "../../../graphQL/useMutationActivity";
+import { workspaceTenantName } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   dialogExpCard: {
@@ -502,7 +503,13 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
   const handleOnContactView = () => nameAutValue._id && history.push(`/contact/details/${nameAutValue._id}`);
 
   const handleOnDealClick = () => {
-    // handle Deal Click we need to get lane id
+    if (dealValue) {
+      const { _id: stageId, pipeline } = dealValue.stage;
+      const dealId = dealValue._id;
+      // history.push(`/flow/${pipeline}/lane/${stageId}/card/${dealId}`);
+      return `/flow/${pipeline}/lane/${stageId}/card/${dealId}?tenant=${workspaceTenantName()}`;
+    }
+    return '/';
   };
 
   const dealValue = openDeals.find((deal) => deal._id === dealId) || null;
@@ -708,9 +715,9 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
               </div>
 
               <div className={classes.row}>
-                <span className={classes.rowIcon}>
-                  <MonetizationOnIcon onClick={handleOnDealClick} color={dealValue ? "secondary" : "disabled"} />
-                </span>
+                <a href={handleOnDealClick()} className={classes.rowIcon}>
+                  <MonetizationOnIcon color={dealValue ? "secondary" : "disabled"} />
+                </a>
                 <div style={{ width: "76%", marginRight: 24 }}>
                   <Autocomplete
                     className={classes.fieldWidth}
