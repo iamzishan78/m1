@@ -500,16 +500,13 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
     });
   };
 
-  const handleOnContactView = () => nameAutValue._id ? `/contact/details/${nameAutValue._id}?tenant=${workspaceTenantName()}` : "/";
-
   const handleOnDealClick = () => {
-    if (dealValue) {
-      const { _id: stageId, pipeline } = dealValue.stage;
-      const dealId = dealValue._id;
-      return `/flow/${pipeline}/lane/${stageId}/card/${dealId}?tenant=${workspaceTenantName()}`;
-    }
-    return '/';
+    const { _id: stageId, pipeline } = dealValue.stage;
+    const dealId = dealValue._id;
+    return `/flow/${pipeline}/lane/${stageId}/card/${dealId}?tenant=${workspaceTenantName()}`;
   };
+
+  const handleOnContactView = () => `/contact/details/${nameAutValue._id}?tenant=${workspaceTenantName()}`;
 
   const dealValue = openDeals.find((deal) => deal._id === dealId) || null;
 
@@ -714,9 +711,15 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
               </div>
 
               <div className={classes.row}>
-                <a href={handleOnDealClick()} className={classes.rowIcon}>
-                  <MonetizationOnIcon color={dealValue ? "secondary" : "disabled"} />
-                </a>
+                <span className={classes.rowIcon}>
+                  {dealValue ? (
+                    <a href={handleOnDealClick()} className={classes.rowIcon}>
+                      <MonetizationOnIcon color="secondary" />
+                    </a>
+                  ) : (
+                    <MonetizationOnIcon color="disabled" />
+                  )}
+                </span>
                 <div style={{ width: "76%", marginRight: 24 }}>
                   <Autocomplete
                     className={classes.fieldWidth}
@@ -747,9 +750,15 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                 </div>
               </div>
               <div className={classes.row}>
-                <a href={handleOnContactView()} className={classes.rowIcon}>
-                  <RecentActorsIcon color={nameAutValue?._id ? "secondary" : "disabled"} />
-                </a>
+                <span className={classes.rowIcon}>
+                  {nameAutValue?._id ? (
+                    <a href={handleOnContactView()} >
+                      <RecentActorsIcon color="secondary" />
+                    </a>
+                  ) : (
+                    <RecentActorsIcon color="disabled" />
+                  )}
+                </span>
                 <div className={classes.fieldWidth}>
                   <AutocompEntityNamesVirtualizeList
                     mongoEntitiesArray={mongoEntitiesArray}
