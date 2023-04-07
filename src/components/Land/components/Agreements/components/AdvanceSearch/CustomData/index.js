@@ -6,6 +6,8 @@ import FormControl from "@material-ui/core/FormControl";
 import { AppContext } from "AppContext";
 import { useLazyQuery } from "@apollo/client";
 import { GET_ALL_CUSTOM_DATA_KEYS } from "graphQL/useQueryGetAllCustomKeys";
+import _ from "lodash";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   gridItem: {
@@ -49,6 +51,7 @@ export default function CustomDataFilters(props) {
   const [filterList, setFilterList] = useState([[], []]);
   const [selectedKey, setSelectedKey] = useState(null)
   const [selectedValue, setSelectedValue] = useState(null);
+  const agreementDetails = useSelector(({ Land }) => Land.agreement?.activeAgreement?.shape)?.properties;
 
 
   const [getCustomKey, { data: customData, loading }] = useLazyQuery(
@@ -59,6 +62,12 @@ export default function CustomDataFilters(props) {
   useEffect(() => {
     getCustomKey();
   }, []);
+
+  useEffect(() => {
+    const customFilters = stateApp.landSearchFilters.customData[0]
+    setSelectedKey(customFilters?.field?.split?.('.')[3])
+    setSelectedValue(customFilters?.value)
+  }, [stateApp.landSearchFilters.customData])
 
   useEffect(() => {
     if (selectedKey && selectedValue) {
@@ -88,8 +97,11 @@ export default function CustomDataFilters(props) {
   }, [selectedKey, selectedValue])
 
   const getKeysOptions = useMemo(() => {
-    return Object.keys(_.get(customData, 'getAllKeys', {})).map(key => ({ label: key, value: key }))
-  }, [customData])
+    const allKeys = Object.keys(_.get(customData, 'getAllKeys', {})).map(key => ({ label: key, value: key }))
+
+    // Removing the keys that are already in agreementDetails
+    return allKeys.filter(key => !(key.value.replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase()) in (agreementDetails || {})))
+  }, [customData, agreementDetails])
 
   const getValueOptions = useMemo(() => {
     return (customData?.getAllKeys[selectedKey] || []).map(key => ({ label: key, value: key }))
@@ -104,7 +116,7 @@ export default function CustomDataFilters(props) {
     <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
       <Grid item xs={12}>
         <AutoCompleteDropdown
-          onChange={(e, { value }) => handleKeyChange(value)}
+          onChange={(e, val) => handleKeyChange(val?.value)}
           options={getKeysOptions}
           label={"Key"}
           loading={loading}
@@ -113,7 +125,7 @@ export default function CustomDataFilters(props) {
       </Grid>
       <Grid item xs={12}>
         <AutoCompleteDropdown
-          onChange={(e, { value }) => setSelectedValue(value)}
+          onChange={(e, val) => setSelectedValue(val?.value)}
           options={getValueOptions}
           label={"Value"}
           loading={loading}
