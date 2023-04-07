@@ -25,10 +25,10 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
   ...others
 }) {
   const getDefaultSearchValue = () => {
-    if(custom?.formatedFilterOptions){
+    if (custom?.formatedFilterOptions) {
       const find = custom.formatedFilterOptions.find(op => op.value === filterList[index][0]);
 
-      if(find) return find.label 
+      if (find) return find.label
     }
 
     return filterList[index][0]
@@ -37,7 +37,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
   const getDefaltValue = () => {
     let filterValue = multiple ? filterList[index].map((key) => ({ key })) : { key: filterList[index][0] };
 
-    if(custom?.formatedFilterOptions){
+    if (custom?.formatedFilterOptions) {
       filterValue = custom?.formatedFilterOptions.find(f => f.value === filterValue.key) || filterValue;
     }
 
@@ -124,7 +124,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
 
   const getFiltersAction = (search) => {
     const rawSearch = search;
-    if (search) search = type === "number" ? search : `${search}*`;
+    if (search) search = type === "number" ? search : `*${search}*`;
     getFilters({
       variables: {
         esIndex,
