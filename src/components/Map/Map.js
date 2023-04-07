@@ -4651,9 +4651,20 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           bearing: map.getBearing(),
         },
       }));
-      setMap(null);
+      // setMap(null);
     }
   }, [stateApp.mapVars.styleId]);
+
+  useEffect(() => {
+    if (!map || !mapStyles) return
+
+    var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
+    if (index === -1) {
+      index = 0
+    }
+
+    map.setStyle("mapbox://styles/m1neral/" + mapStyles[index]?.id)
+  }, [stateApp.mapVars.styleId, mapStyles]);
 
   useEffect(() => {
     if (map) {
@@ -5113,7 +5124,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         setStateApp((state) => ({
           ...state,
           mapVars: {
-            ...stateApp.mapVars,
+            ...state.mapVars,
             zoom: map.getZoom(),
             center: map.getCenter(),
             pitch: map.getPitch(),
