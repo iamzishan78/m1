@@ -4651,7 +4651,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           bearing: map.getBearing(),
         },
       }));
-      // setMap(null);
+      setMap(null);
     }
   }, [stateApp.mapVars.styleId]);
 
