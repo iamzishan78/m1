@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { set, get, upperFirst } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import moment from "moment";
-import { IconButton, Grid, Table, TableCell, TableBody, FormControl } from "@material-ui/core";
+import { IconButton, Grid, Table, TableCell, TableBody, FormControl, CircularProgress } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 
 import AutorenewIcon from "@material-ui/icons/Autorenew";
@@ -30,7 +30,7 @@ import { US_STATES_CODES } from "utils/data";
 import filterConsts from "components/Table/TableAddDialog/Common/filterConsts";
 
 
-function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps }) {
+function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps, loading }) {
   const classes = summaryTableStyles();
   // match unit nra value with system generated nra
   const getNraClass = () => {
@@ -71,6 +71,10 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
               <span>Return</span> to save
             </p>
           ),
+          endAdornment: 
+            loading ? 
+              <CircularProgress color="secondary" size={40} />
+              : null
         }}
         fullWidth
       />
@@ -92,7 +96,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
   );
 }
 
-export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [], id }) {
+export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [], id, updating }) {
   const classes = summaryTableStyles();
   const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
@@ -425,6 +429,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                         onWheel={(e) => e.target.blur()}
                         type="value"
                         InputProps={data.InputProps}
+                        loading={updating}
                       />
                     )}
                     {data.type === "date" && (
