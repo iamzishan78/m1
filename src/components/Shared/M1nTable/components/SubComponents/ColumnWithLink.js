@@ -14,8 +14,10 @@ const useStyles = makeStyles(() => ({
   link: {
     color: GlobalStyles.colors.lightBlue,
     maxWidth: "300px",
+    whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
+    display: "flow-root",
     p: 2,
     textDecoration: "none !important",
     "&:hover": {

@@ -111,7 +111,8 @@ function UdLayerCard(props) {
   };
 
   const getTitle = () => {
-    const { layerName, groupName } = layer;
+    let { layerName, groupName, id } = layer;
+    layerName = layerName || properties.Unit_Name || id
     if (!layerName && !groupName) {
       return "--";
     }
