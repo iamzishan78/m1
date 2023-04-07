@@ -1486,9 +1486,13 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         for (const popUp of popUps) popUp.remove()
       }
 
+      const fileLayers = stateApp.layers.filter(layer => layer.layerType === 'file layer').map(layer => layer.identifier)
+
+      const allLayerIds = [...defaultLayers, ...fileLayers]
+
       var bbox = [[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]];
       const mapLayers = map.getStyle().layers
-      const layersToQuery = defaultLayers.filter((layerId) => mapLayers.find((mLayer) => mLayer.id === layerId))
+      const layersToQuery = allLayerIds.filter((layerId) => mapLayers.find((mLayer) => mLayer.id === layerId))
       let features = map.queryRenderedFeatures(bbox, { layers: [...layersToQuery] });
       if (features?.length === 0)
         return ''
@@ -4387,6 +4391,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
   const createUDPopUp = useCallback(
     (currentFeature) => {
+      if (!map) return
+
       let coordinates = currentFeature.shapeCenter;
       if (typeof currentFeature.shapeCenter === "string") {
         coordinates = JSON.parse(currentFeature.shapeCenter);
@@ -6355,7 +6361,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                 )}
               </PortalD>
             )}
-            {showIfUserDefinedLayer(stateApp) && (
+            {(showIfUserDefinedLayer(stateApp) || stateApp.selectedUserDefinedLayer) && (
               <PortalD id="popupContainer">
                 <UdLayerCardProvider
                   parent="map"
@@ -6376,10 +6382,13 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                   handleCloseExpandableCard={handleCloseExpandableCard}
                   selectionLayers={stateApp.selectionLayers}
                   zIndex={3000}
-                  cardWidth="350px"
+                  cardWidth="450px"
                   mouseX={0}
                   mouseY={0}
                   position="relative"
+                  map={map}
+                  setStateApp={setStateApp}
+                  createUDPopUp={createUDPopUp}
                 />
               </PortalD>
             )}
