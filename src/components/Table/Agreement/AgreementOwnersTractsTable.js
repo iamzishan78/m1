@@ -62,6 +62,7 @@ function AgreementOwnersTractsTable(props) {
       hit.BlockTownship = isTX ? hit.block : hit.township
       hit.SectionRange = isTX ? hit.section : hit.range
       hit.AbstractSection = isTX ? hit.abstract : hit.section
+      hit.department = _.get(hit, 'tract.department')
       return hit;
     });
   };
