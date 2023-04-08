@@ -72,6 +72,12 @@ export default [
         actual_key: "property.documentDate",
     },
     {
+        label: "DO Status",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.divOrderStatus",
+    },
+    {
         label: "Operator Name",
         mapped_key: "",
         required: false,

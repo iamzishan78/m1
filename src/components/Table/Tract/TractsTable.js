@@ -56,11 +56,12 @@ function TractsTable(props) {
   }, [GridViewModule]);
 
   useEffect(() => {
+    let tableHeaders = copy(TableHeader(props.isSnapGrid));
     setTableMeta({
       extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
-      TableHeader: copy(TableHeader(props.isSnapGrid)),
+      TableHeader: tableHeaders,
       esIndex: "shapes_flat",
-      typeKeyword: { gridViewCategory: "Tracts" },
+      typeKeyword: { gridViewCategory: "Tracts", metaModule: "Parcel" },
       startPaginationAt: 10,
       filters: [
         {
