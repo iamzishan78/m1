@@ -26,12 +26,12 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: "25px",
       // position: 'relative',
 
-      "&:hover": {
-        backgroundColor: "#626687",
-        borderRadius: "25px",
-        // borderTopRightRadius: "0",
-        // borderBottomRightRadius: "0",
-      },
+      // "&:hover": {
+      //   backgroundColor: "#626687",
+      //   borderRadius: "25px",
+      //   // borderTopRightRadius: "0",
+      //   // borderBottomRightRadius: "0",
+      // },
     },
     "& fieldset": {
       border: "none",
@@ -45,20 +45,20 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "25px",
     minWidth: "unset",
     padding: '0 10px 0 0', 
-    "&:hover ": {
-      backgroundColor: "#626687",
-      borderRadius: "25px",
-    },
+    // "&:hover ": {
+    //   backgroundColor: "#626687",
+    //   borderRadius: "25px",
+    // },
   },
   selected: {
     color: "rgba(23, 170, 221, 1) !important",
     backgroundColor: "#1c2233",
     borderRadius: "25px",
     marginLeft: "5px",
-    "&:hover ": {
-      backgroundColor: "#626687",
-      borderRadius: "25px",
-    },
+    // "&:hover ": {
+    //   backgroundColor: "#626687",
+    //   borderRadius: "25px",
+    // },
   },
 }));
 
