@@ -856,7 +856,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       // -> add source
       if (map?.getSource(sourceId)) {
         let mapSourceData = map?.getSource(sourceId)._data;
-        if (mapSourceData && !deepEqualObjects(geoJson, mapSourceData)) map?.getSource(sourceId).setData(geoJson);
+        if (mapSourceData && !deepEqualObjects(geoJson, mapSourceData)) map?.getSource(sourceId)?.setData(geoJson);
       } else if (sourceId == "recentsub_permits_source") {
         // need to avoid auto clustering
         map.addSource(sourceId, {
@@ -896,7 +896,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
         if (map?.getSource(`${sourceId}_point`)) {
           let pointSourceData = map?.getSource(`${sourceId}_point`)._data;
-          if (pointSourceData && !deepEqualObjects(pointSource, pointSourceData)) map.getSource(`${sourceId}_point`).setData(pointSource);
+          if (pointSourceData && !deepEqualObjects(pointSource, pointSourceData)) map.getSource(`${sourceId}_point`)?.setData(pointSource);
         } else {
           map.addSource(`${sourceId}_point`, {
             type: "geojson",
@@ -4651,7 +4651,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           bearing: map.getBearing(),
         },
       }));
-      // setMap(null);
+      setMap(null);
     }
   }, [stateApp.mapVars.styleId]);
 
@@ -4712,8 +4712,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       const geoJson = makeGeoJSON(data);
       const labelGeoJson = makeLabelGeoJson(data);
 
-      map?.getSource("abstract_geo_source").setData(geoJson);
-      map?.getSource("abstract_label_geo_source").setData(labelGeoJson);
+      map?.getSource("abstract_geo_source")?.setData(geoJson);
+      map?.getSource("abstract_label_geo_source")?.setData(labelGeoJson);
     }
   }, [abstractData]);
 
@@ -4747,8 +4747,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       const geoJson = makeGeoJSON(data);
       const labelGeoJson = makeLabelGeoJson(data);
 
-      map?.getSource("plssseconddivision_geo_source").setData(geoJson);
-      map?.getSource("plssseconddivision_label_geo_source").setData(labelGeoJson);
+      map?.getSource("plssseconddivision_geo_source")?.setData(geoJson);
+      map?.getSource("plssseconddivision_label_geo_source")?.setData(labelGeoJson);
     }
   }, [plssSecondDivisionData]);
 
@@ -4767,7 +4767,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
       const geoJson = makeGeoJSON(data);
 
-      map?.getSource("abstract_geo_source").setData(geoJson);
+      map?.getSource("abstract_geo_source")?.setData(geoJson);
     }
   }, [abstractContainsData]);
 
@@ -6169,7 +6169,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         };
 
         if (map?.getSource("parcelBoundarySource")) {
-          map?.getSource("parcelBoundarySource").setData(geoJson);
+          map?.getSource("parcelBoundarySource")?.setData(geoJson);
           if (map.getLayer("parcelBoundary")) {
             map.removeLayer("parcelBoundary");
           }
