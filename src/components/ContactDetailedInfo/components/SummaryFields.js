@@ -169,7 +169,8 @@ export default function SummaryFields({ contactData }) {
                           }}
                           onBlur={(event) => {
                             let currValue = event.target.value
-                            if (field.key.includes('offerPriceSum')) currValue = parseFloat(currValue.slice(1))
+
+                            if (field.key.includes('offerPriceSum')) currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''))
 
                             const prevValue = get(contactData, field.key) || ''
 
