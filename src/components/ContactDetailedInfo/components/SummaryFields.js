@@ -168,10 +168,13 @@ export default function SummaryFields({ contactData }) {
                             shrink: true,
                           }}
                           onBlur={(event) => {
-                            const currValue = event.target.value
+                            let currValue = event.target.value
+
+                            if (field.key.includes('offerPriceSum')) currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''))
+
                             const prevValue = get(contactData, field.key) || ''
 
-                            if (currValue !== prevValue)
+                            if (currValue != prevValue)
                               updateFieldData(field.key, currValue)
                           }}
                           onChange={({ target }) => {
