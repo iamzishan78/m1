@@ -69,13 +69,13 @@ export const getFilters = (appliedFilters) => {
 
 
 const CustomChip = ({ label, onDelete }) => {
-  if(["Expiration", "Option to Extend"].includes(label))
+  if (["Expiration", "Option to Extend"].includes(label))
     return null
   return (
-      <Chip
-          label={label}
-          onDelete={onDelete}
-      />
+    <Chip
+      label={label}
+      onDelete={onDelete}
+    />
   );
 };
 
@@ -128,57 +128,57 @@ function ActivitiesTable(props) {
   };
 
   useEffect(() => {
-    const filters =[
+    const filters = [
       ...getFilters(appliedFilters),
       { field: 'type.keyword', value: 'Expiration', notInclude: true },
       { field: 'type.keyword', value: 'Option to Extend', notInclude: true },
     ]
 
-    if(props.activityFilterByType !== "all"){
+    if (props?.activityFilterByType && props?.activityFilterByType !== "all") {
       filters.push({ field: "type.keyword", value: props.activityFilterByType })
     }
-    if(props.activityFilterByOwner !== "all"){
+    if (props?.activityFilterByType && props?.activityFilterByOwner !== "all") {
       filters.push({ field: "ownerId.keyword", value: props.activityFilterByOwner })
     }
     const today = moment().format("yyyy-MM-DD");
-      switch (props.activityFilterByTime) {
+    switch (props.activityFilterByTime) {
 
-        case "upcoming":
-          filters.push({
-            field: 'dateTime',
-            value: {
-              gte: `${today}T00:00:00.000Z`,
-            },
-            type: "range"
-          });
-          break;
-        case "overdue":
-          filters.push({
-            field: 'endDateTime',
-            value: {
-              lte: `${today}T00:00:00.000Z`,
-            },
-            type: "range"
-          });
-          filters.push({ field: "isClosed", value: false });
-          break;
-        case "open":
-          filters.push({
-            field: "isClosed",
-            value: false
-          });
-          break;
-        case "closed":
-          filters.push({
-            field: "isClosed",
-            value: true
-          });
-          break;
-      
-        default:
-          break;
-      }
-      
+      case "upcoming":
+        filters.push({
+          field: 'dateTime',
+          value: {
+            gte: `${today}T00:00:00.000Z`,
+          },
+          type: "range"
+        });
+        break;
+      case "overdue":
+        filters.push({
+          field: 'endDateTime',
+          value: {
+            lte: `${today}T00:00:00.000Z`,
+          },
+          type: "range"
+        });
+        filters.push({ field: "isClosed", value: false });
+        break;
+      case "open":
+        filters.push({
+          field: "isClosed",
+          value: false
+        });
+        break;
+      case "closed":
+        filters.push({
+          field: "isClosed",
+          value: true
+        });
+        break;
+
+      default:
+        break;
+    }
+
 
     props.setTableMeta({
       filters: [
