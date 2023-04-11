@@ -17,9 +17,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#f7f7f7",
     marginBottom: "0",
     display: "flex",
-    // width: "100%",
-    // minHeight: "65px",
-    // marginTop: "100px",
   },
   actionsGrid: {
     marginTop: "6px",
@@ -81,10 +78,7 @@ export default function CustomDatesActivities({
 
   return (
     <div className={classes.actionBar}>
-      {/* <Grid style={{ marginTop: "2px", padding: 0 }}>
-        <label className={classes.label}>Created Date</label>
-      </Grid> */}
-      <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "15px 15px 10px 15px" }}>
+      <Grid container direction="row" display="flex" justify="space-between" style={{ padding: "15px 32px 10px" }}>
         <label style={{ marginTop: "10px", padding: 0 }} className={classes.label}>
           Created Date
         </label>

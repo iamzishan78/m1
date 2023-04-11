@@ -179,6 +179,7 @@ export const analyticsManagementRoutes = {
     value: "CRM",
     search: true,
     isDefault: true,
+    hideSearch: true,
   },
   LEADS: {
     featureFlag: "CONTACTSUBMENU",
@@ -186,8 +187,9 @@ export const analyticsManagementRoutes = {
     link: "/analytics/land",
     component: "Land",
     value: "Land",
-    search: false,
+    search: true,
     isDefault: false,
+    hideSearch: false,
   },
   PROSPECTS: {
     featureFlag: "CONTACTSUBMENU",
@@ -199,6 +201,7 @@ export const analyticsManagementRoutes = {
     value: "Revenue",
     search: false,
     isDefault: false,
+    hideSearch: true,
   },
 };
 

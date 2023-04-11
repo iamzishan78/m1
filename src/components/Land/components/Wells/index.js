@@ -76,7 +76,9 @@ function Wells() {
           parent="WellsTable"
           targetLabel="wells"
           loadMore={loadMore}
-          customOptions={customToolbar}
+          showDialog={showDialog}
+          setDialog={setDialog}
+          // customOptions={customToolbar}
           setSelectedWell={setSelectedWell}
         />
       </div>

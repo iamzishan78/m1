@@ -14,7 +14,7 @@ import WellMasterTabPanel from "./WellMaster";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
-    margin: "100px 0 10px",
+    margin: "75px 0 10px",
   },
   actionsGrid: {
     "& .MuiButtonBase-root": {
@@ -73,7 +73,7 @@ const StyledTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-export default function LandAnalytics(){
+export default function LandAnalytics() {
   const classes = useStyles();
 
   const [tab, setTab] = useState(0);
@@ -88,16 +88,16 @@ export default function LandAnalytics(){
           }}
           aria-label="ant example"
         >
-          <StyledTab label="Acreage Summary" />
-          <StyledTab label="Acerage Detail" />
+          {/* <StyledTab label="Acreage Summary" /> */}
+          {/* <StyledTab label="Acreage Detail" /> */}
           <StyledTab label="Exhibit A" />
           <StyledTab label="Well Master" />
         </StyledTabs>
       </div>
-      {tab === 0 && <AcerageSummaryTabPanel />}
-      {tab === 1 && <AcerageDetailsTabPanel />}
-      {tab === 2 && <ExhibitATabPanel />}
-      {tab === 3 && <WellMasterTabPanel />}
+      {/* {tab === 0 && <AcerageSummaryTabPanel />} */}
+      {/* {tab === 1 && <AcerageDetailsTabPanel />} */}
+      {tab === 0 && <ExhibitATabPanel />}
+      {tab === 1 && <WellMasterTabPanel />}
       {/* <AnalyticsCards cards={cards} /> */}
       <Divider className={classes.divider} />
     </>
