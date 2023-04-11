@@ -257,12 +257,13 @@ export default function CommentComponent(props) {
   useEffect(() => {
     if (dataComments && dataComments.commentsByObjectId) {
       if (props.activityLog && props.activityLog.length > 0) {
-        let activittyData = [];
+        let activityData = [];
         props.activityLog.forEach((element) => {
-          activittyData.push({
+          activityData.push({
             user: { name: element.ownerName, email: element.ownerName },
             activityData: element,
             comment: element.notes,
+            outcome: element.outcome,
             ts: new Date(element._ts.includes("GMT") ? element._ts : Number(element._ts)).getTime(),
             isActivity: true,
             isEdited: false,
@@ -270,7 +271,7 @@ export default function CommentComponent(props) {
             __typename: "Comment",
           });
         });
-        let tempArray = dataComments.commentsByObjectId.concat(activittyData);
+        let tempArray = dataComments.commentsByObjectId.concat(activityData);
         setCommentsArray(sortArrayBasedOnTs([...tempArray]));
       } else {
         setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
@@ -536,6 +537,11 @@ export default function CommentComponent(props) {
                               <div className={`${classes.whiteSpace}`}>
                                 END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
                               </div>
+                              {eachComment.activityData.outcome && (
+                                <div className={`${classes.whiteSpace}`}>
+                                  OUTCOME: {eachComment.activityData.outcome}
+                                </div>
+                              )}
                             </>
                           )}
                           {editCommentId !== eachComment._id ? (

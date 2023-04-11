@@ -12,15 +12,15 @@ const filterTypes = {
   // "Related Parties": { component: "ProvisionFilters", countKey: "wellFilterCount" },
   Provisions: { component: "ProvisionFilters", countKey: "provisions" },
   // "Related Wells": { component: "RelatedWellsFilters", countKey: "tagFilterCount" },
-  "Custom Data": { component: "CustomDataFilters", countKey: "customData" },
   // "Legal Description": { component: "ProvisionFilters", countKey: "ownershipFilterCount" },
   // Wells: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // Documents: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "tagFilterCount" },
   // "Remarks Types": { component: "RemarksTypes", countKey: "remarksTypes" },
-  "Related Wells": { component: "RelatedWellsFilters", countKey: "tagFilterCount" },
-  "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "tagFilterCount" },
-  "Related Documents": { component: "RelatedDocumentFilters", countKey: "tagFilterCount" },
+  "Related Wells": { component: "RelatedWellsFilters", countKey: "relatedWells" },
+  "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "relatedAgreements" },
+  "Related Documents": { component: "RelatedDocumentFilters", countKey: "relatedDocuments" },
+  "Custom Metadata": { component: "CustomDataFilters", countKey: "customData" },
 };
 
 const useStyles = makeStyles(() => ({
@@ -141,6 +141,7 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
   const handleChange = (panel) => (event, isExpanded) => {
     setSelectedTab(isExpanded ? panel : false);
   };
+
   return (
     <div className={classes.root}>
       {Object.keys(filterTypes).map((filterType, index) => (

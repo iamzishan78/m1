@@ -110,7 +110,6 @@ export const TableESHOC = (Component) => {
         const updateColumnsOnGridViewChange = (metaDatas) => {
             Columns((cols) => {
                 if (cols?.length > 0) {
-                    console.log('Inside Columns', cols)
                     const selectedData = JSON.parse(JSON.stringify(selectedGridView));
                     setStateApp((state) => ({ ...state, selectedView: selectedData }));
 
@@ -724,7 +723,7 @@ export const TableESHOC = (Component) => {
                             updatedData = updatedData.replace(/,/g, ' ')
                         }
                     } else if (sampleCsv[j].name === 'tags' && Array.isArray(updatedData)) {
-                        if(updatedData[0]){
+                        if (updatedData[0]) {
                             const tags = updatedData[0].map(d => d).toString().replace(/,/g, ' ')
                             updatedData = tags
                         }
@@ -948,7 +947,7 @@ export const TableESHOC = (Component) => {
                                 right: tableMeta?.downloadAll?.exportPx,
                             }}>
                                 <IconButton onClick={onDownload} disabled={isExporting}>
-                                    <Tooltip title="Download CSV Test" aria-label="add">
+                                    <Tooltip title="Download to CSV" aria-label="add">
                                         <CloudDownloadIcon />
                                     </Tooltip>
                                 </IconButton>

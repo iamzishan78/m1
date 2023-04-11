@@ -28,6 +28,8 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { OPENDEALS } from "graphQL/useQueryOpenDeals";
 import DeleteConfirmationDialogContent from "../../Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { DELETEACTIVITY } from "graphQL/useMutationActivity";
+import { outcomeOptions } from "./FieldContent/helper";
+import AutoCompleteAddNewField from "./FieldContent/AutoCompleteAddNewField";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -183,6 +185,7 @@ function AddActivityDialog(props) {
   const [errors, setErrors] = useState({ ...initialErrors });
   const [users, setUsers] = useState([]);
   const [anchorEl, setAnchorEl] = useState();
+  const [outcome, setOutcome] = useState();
 
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "no-cache",
@@ -282,6 +285,7 @@ function AddActivityDialog(props) {
       setActivityType(selectedActivity.type);
       setActivityName(selectedActivity.name);
       setClosed(selectedActivity.isClosed ? activityStatus[1] : activityStatus[0]);
+      setOutcome(outcome);
 
       setStartDate(
         moment
@@ -386,6 +390,7 @@ function AddActivityDialog(props) {
           contactId: contactData?._id,
           contactName: contactData?.name,
           dealId,
+          outcome,
           dateTime: new Date(dateTime).toUTCString(),
           endDateTime: new Date(endDateTime).toUTCString(),
           isClosed: closed?.value,
@@ -412,6 +417,7 @@ function AddActivityDialog(props) {
           dateTime: new Date(dateTime).toUTCString(),
           endDateTime: new Date(endDateTime).toUTCString(),
           notes,
+          outcome,
           ownerId: owner.id,
           ownerName: owner.name,
           contactId: contactData?._id,
@@ -440,7 +446,7 @@ function AddActivityDialog(props) {
           dispatch(showSuccessMessage("The Activity was successfully deleted."));
           onModalClose();
         } else dispatch(showErrorMessage("An error occurred."));
-      });;
+      });
       setIsDeleting(false);
     } catch {
       setIsDeleting(false);
@@ -575,6 +581,31 @@ function AddActivityDialog(props) {
 
 
         </Select>
+      </FormControl>
+      <FormControl
+        variant="outlined"
+        fullWidth
+        className={clsx(
+          classes.inputField,
+          (activityType === "" || !activityType) &&
+          errors.activityType &&
+          classes.error
+        )}
+        size="small"
+      >
+        <AutoCompleteAddNewField
+          queryParams={{
+            esIndex: "contacts_flat",
+            filterKey: "outcome.keyword",
+            size: 50,
+          }}
+          onChange={(data) => {
+            setOutcome(data.name)
+          }}
+          defaultOptions={outcomeOptions}
+          value={outcome}
+          inputProps={{ variant: "outlined", size: "small", label: "Outcome" }}
+        />
       </FormControl>
       <div className={classes.dateTimeRow}>
         <TextField

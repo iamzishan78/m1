@@ -65,8 +65,8 @@ function ExpandableCard(props) {
   const [openBugModal, setOpenBugModal] = useState(false);
   const [toggleExpand, setToggleExpand] = useState(false);
   const [isExpanded, setExpanded] = useState([]);
+  const {subTitle} = props;
   const [title, setTitle] = useState(props.title);
-  const [subTitle] = useState(props.subTitle);
   const [parent] = useState(props.parent);
   const [cardWidth] = useState(props.cardWidth);
   const [cardWidthExpanded] = useState(props.cardWidthExpanded);
@@ -825,7 +825,7 @@ function ExpandableCard(props) {
           // Expandable Card Title
           title={getTitle()}
           // Expandable Card Secondary Header
-          subheader={subTitle ? (subTitle.length > 35 ? `${subTitle.substr(0, 35)}...` : subTitle) : ""}
+          subheader={subHeader}
         />
 
         <CardContent className={classes.content}>
