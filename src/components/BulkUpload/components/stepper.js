@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
 import moment from "moment";
 import PropTypes from "prop-types";
 import { set, get } from "lodash";
@@ -14,7 +13,7 @@ import { useDispatch } from "react-redux";
 import StepConnector from "@material-ui/core/StepConnector";
 import Button from "@material-ui/core/Button";
 import CSVFileReader from "./CSVFileReader";
-import RevenueStatementInfoForm from "./RevenueStatementInfoForm";
+import RevenueStatementInfoForm from "./Fields/RevenueStatementInfoForm";
 import M1neralHeaders from "./M1neralHeaders";
 import ReviewCSV from "./ReviewCSV";
 import UploadStepperComponent from "./UploadStepperComponent";
@@ -183,15 +182,11 @@ export default function CustomizedSteppers(props) {
   const history = useHistory();
   const previousRoute = matchRoutes(props.routes, history.pathHistory[1]);
 
-
-
   const [contactList, setContactList] = useState(null);
   const [jobId, setJobId] = useState(null);
   const [processing, setProcessing] = useState(false);
 
   const [buttonTitle, setButtonTitle] = useState("false");
-
-
 
   const steps = getSteps(stateApp.job);
   const dispatch = useDispatch();
@@ -209,11 +204,9 @@ export default function CustomizedSteppers(props) {
   const checkNumber = watch("checkNumber");
 
   useEffect(() => {
-    setButtonTitle(stateApp.activeStepNumber >= steps.length - 2
-      ? stateApp.activeStepNumber === steps.length - 1
-        ? "Close"
-        : "Upload"
-      : "Continue")
+    setButtonTitle(
+      stateApp.activeStepNumber >= steps.length - 2 ? (stateApp.activeStepNumber === steps.length - 1 ? "Close" : "Upload") : "Continue"
+    );
   }, []);
 
   useEffect(() => {
@@ -272,7 +265,7 @@ export default function CustomizedSteppers(props) {
   const setValue = (_obj, key, value) => {
     if (_obj[key]) delete _obj[key];
     set(_obj, key, value);
-  }
+  };
 
   const handleNext = async () => {
     if (stateApp.activeStepNumber === steps.length - 2) {
@@ -290,7 +283,6 @@ export default function CustomizedSteppers(props) {
             userId: userID,
           },
         });
-
         await client.mutate({
           mutation: CREATE_JOB,
           variables: {
@@ -304,12 +296,13 @@ export default function CustomizedSteppers(props) {
         }));
       } else {
         const changeDate = new Date();
-        const statementInfo = stateApp.revenueStatementInfo || {};
-        data_to_send.forEach((element) => {
+        const statementInfo = get(stateApp, "uploaderFormValues", {});
+        data_to_send.forEach((element, index) => {
           element.createBy = userID;
           element.createAt = changeDate;
           element.lastUpdateBy = userID;
           element.lastUpdateAt = changeDate;
+          element = { ...statementInfo, ...element };
           setValue(element, "check.payor", statementInfo.payor);
           setValue(element, "check.payee", statementInfo.payee);
           setValue(element, "check.checkNumber", statementInfo.checkNumber);
@@ -321,7 +314,7 @@ export default function CustomizedSteppers(props) {
             element["shape.shapeType"] = "Unit";
           }
           if (props.selectedJob.type === "AGREEMENT_HEADER") {
-            element["shapeType"] = "Agreement";
+            data_to_send[index].shapeType = "Agreement";
           }
           delete element.tableData;
         });
@@ -359,6 +352,7 @@ export default function CustomizedSteppers(props) {
         setStateApp((state) => ({
           ...state,
           activeStepNumber: stateApp.activeStepNumber + 1,
+          uploaderFormValues: {}
         }));
       }
 
@@ -439,7 +433,7 @@ export default function CustomizedSteppers(props) {
                     getValues={getValues}
                     reset={reset}
                     setStateApp={setStateApp}
-                    revenueStatementInfo={stateApp.revenueStatementInfo}
+                    uploaderFormValues={stateApp.uploaderFormValues}
                   />
                 )}
                 <CSVFileReader
@@ -461,7 +455,14 @@ export default function CustomizedSteppers(props) {
               </Button>
             ) : null}
             {steps[stateApp.activeStepNumber] !== "Select" ? (
-              <Button id={`${buttonTitle}-button`} disabled={isDisabled} variant="contained" color="primary" onClick={handleNext} className={classes.buttonselect}>
+              <Button
+                id={`${buttonTitle}-button`}
+                disabled={isDisabled}
+                variant="contained"
+                color="primary"
+                onClick={handleNext}
+                className={classes.buttonselect}
+              >
                 {buttonTitle}
               </Button>
             ) : null}

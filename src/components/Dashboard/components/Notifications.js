@@ -238,6 +238,7 @@ const Notifications = () => {
       case "CHECK":
         return <LocalAtm />;
       case "PROPERTY":
+        case "FILE":
         return <DescriptionOutlined />;
       default:
         return;
@@ -314,6 +315,12 @@ const Notifications = () => {
                           {parent.name}
                         </span>
                       )}
+                    {parent && parentType === "FILE" && (
+                      <span className={classes.title}>
+                        {getNotificationIcon(parentType)}
+                        {parent.documentNumber && parent.documentNumber + "-"}{parent?.documentName}
+                      </span>
+                    )}
                     {parent && parentType === "CHECK" && (
                       <span className={classes.title}>
                         {getNotificationIcon(parentType)}
