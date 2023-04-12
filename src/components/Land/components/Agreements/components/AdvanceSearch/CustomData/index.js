@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect, useMemo } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { Grid, TextField } from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import FormControl from "@material-ui/core/FormControl";
@@ -8,20 +7,6 @@ import { useLazyQuery } from "@apollo/client";
 import { GET_ALL_CUSTOM_DATA_KEYS } from "graphQL/useQueryGetAllCustomKeys";
 import _ from "lodash";
 import { useSelector } from "react-redux";
-
-const useStyles = makeStyles((theme) => ({
-  gridItem: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  formControl: {
-    minWidth: 249,
-    color: "black",
-    "& .MuiInputBase-root": {
-      backgroundColor: "#101d29",
-    },
-  }
-}));
 
 const AutoCompleteDropdown = ({ options, onChange, loading, label, value }) => {
   return (
@@ -46,9 +31,7 @@ const AutoCompleteDropdown = ({ options, onChange, loading, label, value }) => {
   );
 };
 export default function CustomDataFilters(props) {
-  const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [filterList, setFilterList] = useState([[], []]);
   const [selectedKey, setSelectedKey] = useState(null)
   const [selectedValue, setSelectedValue] = useState(null);
   const agreementDetails = useSelector(({ Land }) => Land.agreement?.activeAgreement?.shape)?.properties;
@@ -60,14 +43,20 @@ export default function CustomDataFilters(props) {
   );
 
   useEffect(() => {
-    getCustomKey();
+    getCustomKey({
+      variables: {
+        index: 'shapes_flat',
+        pathToKey: 'shapeJson.properties.custom_data',
+        filters: [{ field: 'shapeJson.properties.type.keyword', value: 'agreement' }]
+      },
+    });
   }, []);
 
   useEffect(() => {
     const customFilters = stateApp.landSearchFilters.customData[0]
     setSelectedKey(customFilters?.field?.split?.('.')[3])
     setSelectedValue(customFilters?.value)
-  }, [stateApp.landSearchFilters.customData])
+  }, [])
 
   useEffect(() => {
     if (selectedKey && selectedValue) {
@@ -77,6 +66,9 @@ export default function CustomDataFilters(props) {
       if (_index === -1 && selectedValue !== null) landCustomDataFilters.push({ field: filterKey, value: selectedValue });
       else if (selectedValue !== null) landCustomDataFilters[_index].value = selectedValue;
       else if (_index !== -1) landCustomDataFilters.splice(_index, 1);
+
+      setSelectedKey(landCustomDataFilters?.[0]?.field?.split?.('.')[3])
+      setSelectedValue(landCustomDataFilters?.[0]?.value)
 
       setStateApp((stateApp) => ({
         ...stateApp,
@@ -88,6 +80,7 @@ export default function CustomDataFilters(props) {
 
       if (_index > -1) {
         landCustomDataFilters = landCustomDataFilters.filter(f => !f.field.startsWith("shapeJson.properties.custom_data"))
+
         setStateApp((stateApp) => ({
           ...stateApp,
           landSearchFilters: { ...stateApp.landSearchFilters, customData: landCustomDataFilters },
