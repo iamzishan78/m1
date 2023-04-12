@@ -42,8 +42,9 @@ const documentFilters = [
   },
   {
     label: "File Date",
-    filterKey: "relatedDocs.uploadedDate.keyword",
+    filterKey: "relatedDocs.uploadedDate",
     searchFields: ["relatedDocs.uploadedDate"],
+    isDate: true
   },
   {
     label: "Book",
@@ -83,7 +84,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
   if (filter.getOptionLabel) params["getOptionLabel"] = filter.getOptionLabel;
   return (
     <FormControl variant="outlined" className={classes.formControl}>
-      <AutoCompleteFilter {...params} />
+      <AutoCompleteFilter {...params} isDate={filter.isDate} />
     </FormControl>
   );
 };
