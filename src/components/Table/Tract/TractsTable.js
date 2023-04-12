@@ -62,7 +62,7 @@ function TractsTable(props) {
       TableHeader: tableHeaders,
       esIndex: "shapes_flat",
       typeKeyword: { gridViewCategory: "Tracts", metaModule: "Parcel" },
-      startPaginationAt: 10,
+      startPaginationAt: 50,
       filters: [
         {
           field: "layer.keyword",
