@@ -29,17 +29,17 @@ TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
 const useStyles = makeStyles((theme) => ({
-  container: {
+  container: ({ isFileDetail }) => ({
     backgroundColor: "#F6F8F9",
     "& .MuiFormControl-marginDense": {
       margin: "0px !important",
     },
-    height: "100%",
+    height: isFileDetail ? "calc(100vh - 395px)" : "100%",
     minHeight: "200px",
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-end'
-  },
+  }),
   comment: ({ commentsHeight }) => ({
     position: "relative",
     overflow: "auto",
@@ -192,7 +192,7 @@ export const CommonCommentText = ({ eachComment, users }) => {
 
 export default function CommentComponent(props) {
   const { targetSourceId, commentsHeight } = props;
-  const classes = useStyles({ commentsHeight });
+  const classes = useStyles({ commentsHeight, isFileDetail: props.targetLabel === 'file' || false });
   const [stateApp] = useContext(AppContext);
 
   const [users, setUsers] = useState([]);
