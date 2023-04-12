@@ -1,5 +1,6 @@
 import { BlockBlobClient } from "@azure/storage-blob";
 import { cloneDeep } from "lodash";
+import moment from "moment";
 
 export * from "./deepEqual";
 export * from "./setStateIfDeepEqual";
@@ -91,9 +92,12 @@ export function replaceLinkId(link, path) {
   return true;
 }
 
-export function customStartCaseString(str) {
+export function customStartCaseString(str, isDate) {
   if (!str) return "";
-  else if (str && str.split(" ").length < 2) return str;
+
+  if (isDate) return moment.parseZone(new Date(+str)).format("MM/DD/YY")
+
+  if (str && str.split(" ").length < 2) return str;
 
   return str
     .split(" ")
