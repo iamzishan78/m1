@@ -24,7 +24,7 @@ import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/a
 import { get } from "lodash";
 import AddNewRelatedAgreementDialog from "./AddNewRelatedAgreementDialog";
 
-function AgreementOwnersTractsTable(props) {
+function RelatedAgreementsTable(props) {
   const classes = usetableStyles();
   const [isDeletePopup, setDeletePopup] = useState(false);
   const [selectedRow, selectRow] = useState([]);
@@ -116,7 +116,7 @@ function AgreementOwnersTractsTable(props) {
         filters: [{ field: "relatedAgreements._id", value: moduleId }],
         TableHeader: TableHeader,
         esIndex: "shapes_flat",
-        startPaginationAt: 25,
+        startPaginationAt: 10,
         formatHits,
       });
   }, [moduleId]);
@@ -164,7 +164,7 @@ function AgreementOwnersTractsTable(props) {
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={false}
-        startPaginationAt={null}
+        startPaginationAt={10}
         onTableChange={props.onTableChange}
         options={options}
         parent={props.parent}
@@ -175,4 +175,4 @@ function AgreementOwnersTractsTable(props) {
   );
 }
 
-export default React.memo(TableESHOC(AgreementOwnersTractsTable), deepEqualObjects);
+export default React.memo(TableESHOC(RelatedAgreementsTable), deepEqualObjects);

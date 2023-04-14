@@ -3,7 +3,7 @@ import { Container } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHeader from "components/Table/constants/analytics-land-acerage-details-schema";
-
+import { esExtentedSearch } from "components/Shared/functions";
 // QUERIES
 import { deepEqualObjects, copy } from "components/Shared/functions";
 // Utilities
@@ -12,7 +12,7 @@ import { usetableStyles } from "components/Table/Styles";
 import { setRevenuePropertyData } from "actions";
 import TableESHOC from "components/Table/TableESHOC";
 
-function AcerageDetailTable(props) {
+function AcerageDetail(props) {
   const classes = usetableStyles();
   const { esIndex, setESFilters } = props;
   // redux
@@ -22,7 +22,27 @@ function AcerageDetailTable(props) {
   const esFilters = props.esFilters ? props.esFilters : [];
 
   const formatHits = (hits) => {
+    
     hits = hits.map((hit) => {
+      hit._id = hit.shape._id;
+      hit.agreementNumber = hit.shape.shapeJson.properties.agreementNumber;
+      hit.agreementName = hit.shape.shapeJson.properties.agreementName;
+      hit.agreementSubtype = hit.shape.shapeJson.properties.agreementSubtype;
+      hit.layerSubType = hit.shape.shapeJson.properties.layerSubType;
+      hit.rightsType = hit.shape.shapeJson.properties.rightsType;
+      hit.agreementState = hit?.shape?.shapeJson?.properties?.originalProperties?.State || hit?.shape?.shapeJson?.properties?.originalProperties?.StateAbbreviation
+      hit.agreementCounty = hit?.shape?.shapeJson?.properties?.originalProperties?.County
+      hit.tractName = hit.parcel.name;
+      hit.tractStatus = hit?.parcel?.shapeJson?.properties?.tractStatus;
+      hit.reportGrossAcres = hit?.parcel?.shapeJson?.properties?.reportGrossAcres;
+      hit.sdGrossAcres = hit?.parcel?.shapeJson?.properties?.sdGrossAcres;
+      hit.netAcres = hit?.parcel?.shapeJson?.properties?.netAcres;
+      hit.companyNetAcres = hit?.parcel?.shapeJson?.properties?.companyNetAcres;
+      hit.netRoyalty = hit?.parcel?.shapeJson?.properties?.netRoyalty;
+
+      hit.internalCompany = hit.shape.shapeJson.properties.internalCompany;
+      hit.prospectID = hit.shape.shapeJson.properties.prospectID;
+      hit.acquisitionID = hit.shape.shapeJson.properties.acquisitionID;
       return hit;
     });
     return hits;
@@ -33,28 +53,25 @@ function AcerageDetailTable(props) {
     const fixedFilters = [];
     if (formatedFilter[0] && formatedFilter[0].value.range) {
       formatedFilter[0].type = "range";
-      formatedFilter[0].value =
-        formatedFilter[0].value.range[formatedFilter[0].field];
+      formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field];
       fixedFilters.push(formatedFilter[0]);
     }
-
-    // fixedFilters[1].type = "value";
-    // fixedFilters[1].value = "";
-
+    fixedFilters.push({ field: "shape.shapeJson.properties.type", value: 'agreement' });
+    // fixedFilters.push({ field: "shape._id", value: '637180f3ddaf4a47251a35b5' });
+    
     props.setInitialFilters(formatedFilter);
     props.setTableMeta({
-      extendSearchQuery: props.landSearchQuery || "",
-      searchFields: ["*"],
+      extendSearchQuery: esExtentedSearch(props.landAnalyticsSearchQuery, ''),
       TableHeader: copy(TableHeader),
       esIndex: esIndex,
       filters: fixedFilters,
       selectedGridView: { filters: [] },
       startPaginationAt: 25,
-      defaultSort: { field: "name.keyword", order: "asc" },
+      // defaultSort: { field: "name.keyword", order: "asc" },
       formatHits,
     });
     // eslint-disable-next-line
-  }, [props.landSearchQuery, props.filterToggle, refetchData]);
+  }, [props.landAnalyticsSearchQuery, props.filterToggle, refetchData]);
 
   useEffect(() => {
     // setESFilters(props.initialFilters);
@@ -113,4 +130,4 @@ function AcerageDetailTable(props) {
   );
 }
 
-export default React.memo(TableESHOC(AcerageDetailTable), deepEqualObjects);
+export default React.memo(TableESHOC(AcerageDetail), deepEqualObjects);

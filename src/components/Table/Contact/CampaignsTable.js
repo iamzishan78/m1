@@ -68,6 +68,7 @@ function CampaignsTable(props) {
       esIndex,
       startPaginationAt: 25,
       formatHits,
+      downloadAll: { exportPx: '121px' },
       setAppliedFilters: props.filtersChange,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,7 +91,6 @@ function CampaignsTable(props) {
         onTableChange={props.onTableChange}
         options={{
           ...props.options,
-          customToolbar: () => <div></div>,
           customToolbarSelect: () => <div></div>,
         }}
         parent={props.parent}

@@ -73,7 +73,7 @@ export default function SummaryFields({ contactData }) {
   const [contactInterest, setContactInterest] = useState()
 
   useEffect(() => {
-    if (!isEmpty(contactData) && !isFormSet) {
+    if (!isEmpty(contactData)) {
       let _contact = { ...contactData };
       if (get(_contact, 'contactInterests.offerPriceSum')) {
         _contact = {

@@ -8,6 +8,7 @@ import { useHistory } from "react-router-dom";
 import { isEmpty, isEqual, uniqWith } from "lodash";
 
 import { AppContext } from "AppContext";
+// import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 import { copy, deepEqual, getSearchFields, setStateIfDeepEqual } from "components/Shared/functions";
 import { TAGSAMPLES } from "graphQL/useQueryTagSamples";
@@ -43,6 +44,7 @@ export const TableESHOC = (Component) => {
         const classes = usetableStyles({ isCheckboxSticky: props.isCheckboxSticky, infScrollHeight: loadMore?.height })
 
         const [search, setSearch] = useState(null);
+        const [isExporting, setIsExporting] = useState(false);
         const [columns, Columns] = useState([]);
         const [changePage, isPageChanged] = useState(false);
         const [page, setPage] = useState(0)
@@ -57,6 +59,7 @@ export const TableESHOC = (Component) => {
         const [searchedRows, setSearchedRows] = useState([])
 
         const [selectedRows, setSelectedRows] = useState([]);
+        const [selectedRowsValues, setSelectedRowsValues] = useState();
         const [allRowsSelected, setAllRowsSelected] = useState(false);
         const [initialFilters, setInitialFilters] = useState([]);
 
@@ -133,7 +136,6 @@ export const TableESHOC = (Component) => {
         const updateColumnsOnGridViewChange = () => {
             Columns((cols) => {
                 if (cols?.length > 0) {
-                    console.log('Inside Columns', cols)
                     const selectedData = JSON.parse(JSON.stringify(selectedGridView));
                     setStateApp((state) => ({ ...state, selectedView: selectedData }));
 
@@ -255,6 +257,7 @@ export const TableESHOC = (Component) => {
                     searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
 
                 setPage(0)
+                setCurrentRowsLength(0)
                 setLoading(true);
                 getESSimpleSearch({
                     variables: {
@@ -429,7 +432,9 @@ export const TableESHOC = (Component) => {
                     if (selectedGridView)
                         setColumnDisplayAndFilter(TableHeader, selectedGridView, column);
                     let value
-                    if (Array.isArray(column.esKey)) value = get(allFilters.find((filter) => { return column.esKey.includes(filter.field) }), "value", "");
+                    if (column?.custom?.oRFilter) {
+                        value = get(allFilters.find(filtr => filtr.field.includes(column.esKey[0])), "value", "")
+                    } else if (Array.isArray(column.esKey)) value = get(allFilters.find((filter) => { return column.esKey.includes(filter.field) }), "value", "");
                     else value = get(allFilters.find((filter) => { return JSON.stringify(filter.field) === JSON.stringify(column.esKey) }), "value", "");
 
                     let filterList = Array.isArray(column.esKey) ? [] : [];
@@ -443,6 +448,8 @@ export const TableESHOC = (Component) => {
                                 value = moment(new Date(value)).format("MM/DD/YYYY HH:mm:ss.SSS")
                         }
                         filterList = [value];
+                    } else if (Array.isArray(value)) {
+                        filterList = value.filter(v => v)
                     }
                     // if (column?.options?.filter) {
                     column.options.filterList = filterList;
@@ -575,7 +582,9 @@ export const TableESHOC = (Component) => {
             // const filterHistory = {}
             if (esFilter) {
                 esFilter.forEach((filter) => {
-                    if (typeof filter?.field === 'string') {
+                    if (filter?.oRFilter) {
+                        filters.push({ field: Array.isArray(filter.field) ? JSON.stringify(filter.field) : filter.field, value: filter.value, oRFilter: filter?.oRFilter })
+                    } else if (typeof filter?.field === 'string') {
                         // if (!filterHistory[filter.field])
                         filters.push(filter)
                         // filterHistory[filter.field] = true
@@ -626,7 +635,7 @@ export const TableESHOC = (Component) => {
                 },
             };
 
-            const manageAppliedFilter = (value, index) => {
+            const manageAppliedFilter = (value, index, oRFilter) => {
                 const gridViewfilters = selectedGridView.filters
                 const gridViewEsKey = gridViewfilters && gridViewfilters.find(filter => filter.value === value)?.field
 
@@ -637,7 +646,7 @@ export const TableESHOC = (Component) => {
                 else if (Array.isArray(columnEsKey) && gridViewEsKey) field = gridViewEsKey
                 else field = columnEsKey
 
-                return { field: field, value: value }
+                return { field: field, value: value, oRFilter }
             }
 
             // temporary patch
@@ -647,15 +656,16 @@ export const TableESHOC = (Component) => {
             // Patch end
 
             tableState.filterList.forEach((val, index) => {
+                const oRFilter = columns[index]?.custom?.oRFilter
                 if (val.length > 0 && columns[index]) {
                     if (columns[index].custom?.isDate || columns[index].custom?.isDateTime) {
                         const filterData = stateApp.filtersData[columns[index].name];
                         if (filterData) {
                             const data = filterData.find(f => f.key === val[0] || f.key_as_string === val[0])
-                            pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string });
+                            pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string, oRFilter });
                         }
                     } else if (columns[index].custom?.filterOptions?.length > 0) {
-                        pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0] })
+                        pageESVariables.variables.customFilters.push({ field: columns[index].esKey, value: val[0], oRFilter })
                     } else if (columns[index].custom?.formatedFilterOptions?.length > 0) {
                         let value = val[0];
                         const filterData = columns[index].custom?.formatedFilterOptions;
@@ -663,14 +673,14 @@ export const TableESHOC = (Component) => {
                         if (data) {
                             value = data.value
                         }
-                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value })
+                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value, oRFilter })
                     } else if (columns[index].custom?.formatedFilterOptions?.length > 0 && columns[index].custom?.isPurchased) {
                         let value = val[0];
                         const filterData = columns[index].custom?.formatedFilterOptions;
                         const data = filterData.find(f => f.label === value)
-                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string })
+                        pageESVariables.variables.filters.push({ field: columns[index].esKey, value: data.key_as_string, oRFilter })
                     } else {
-                        pageESVariables.variables.filters.push(manageAppliedFilter(val[0], index))
+                        pageESVariables.variables.filters.push(manageAppliedFilter(val[0], index, oRFilter))
                     }
 
                 }
@@ -759,12 +769,18 @@ export const TableESHOC = (Component) => {
                 for (let j = 0; j < sampleCsv.length; j++) {
                     let updatedData = get(data[i], sampleCsv[j].name, '')
                     if (typeof updatedData === 'string') {
+                        updatedData = updatedData.replace(/(?:\r\n|\r|\n)/g, ' ')
                         if (typeof updatedData === 'string' && updatedData?.includes(',')) {
-                            updatedData = updatedData.replace(',', ' ')
+                            updatedData = updatedData.replace(/,/g, ' ')
                         }
                     } else if (sampleCsv[j].name === 'tags' && Array.isArray(updatedData)) {
-                        const tags = updatedData[0].map(d => d).toString().replace(',', ' ')
-                        updatedData = tags
+                        if (updatedData[0]) {
+                            const tags = updatedData[0].map(d => d).toString().replace(/,/g, ' ')
+                            updatedData = tags
+                        }
+                    } else if (Array.isArray(updatedData)) {
+                        const data = updatedData.map(d => d).toString().replace(/,/g, ' ')
+                        updatedData = data
                     }
                     csv = `${j !== 0 ? csv + ',' : csv}${updatedData}`
                 }
@@ -774,6 +790,7 @@ export const TableESHOC = (Component) => {
         }
 
         const onDownload = async () => {
+            setIsExporting(true)
             let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
             if (props.useWildeCard)
                 searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
@@ -787,7 +804,7 @@ export const TableESHOC = (Component) => {
                         advanceSearch: tableMeta.advanceSearch,
                     },
                     pagination: {
-                        first: tableStateRef.current.count,
+                        first: tableStateRef.current.count > 10000 ? 10000 : tableStateRef.current.count,
                         after: null,
                     },
                     ...(!isEmpty(tableStateRef.current.sortOrder) && tableStateRef.current.sortOrder.direction !== 'none') ? {
@@ -816,7 +833,7 @@ export const TableESHOC = (Component) => {
             });
 
             const hits = tableMeta.formatHits(copy(allSelectedRows.data.getESSimpleSearch.hits))
-            const csvData = getCSVData(hits, columns.filter(c => c.options.display !== false && c.label !== " "))
+            const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => c.display !== false && c.display !== "false" && c.label !== " "))
 
             var blob = new Blob([csvData]);
             var url = URL.createObjectURL(blob);
@@ -826,6 +843,7 @@ export const TableESHOC = (Component) => {
             pom.href = url;
             pom.setAttribute('download', 'tableData.csv');
             pom.click();
+            setIsExporting(false)
         }
 
         const onTableChange = async (action, tableState, rows, meta) => {
@@ -834,13 +852,14 @@ export const TableESHOC = (Component) => {
             tableState.polygon = tableMeta.polygon ? tableMeta.polygon : undefined;
             const tableActions = initializeTableActions(tableState, meta, tableData, columns, getESSimpleSearch, selectedGridView)
             activeSearchRef.current = tableActions.pageESVariables.variables.search;
-            activeFiltersRef.current = handleMultiFieldFilter(tableActions.pageESVariables.variables.filters.concat(tableMeta.filters));
+            const existingFilter = tableMeta.filters ? tableMeta.filters : []
+            activeFiltersRef.current = handleMultiFieldFilter(existingFilter.concat(tableActions.pageESVariables.variables.filters));
             selectedFilters.current = tableActions?.pageESVariables?.variables?.filters;
             tableStateRef.current = tableState
 
 
             if (action === 'filterChange' && tableMeta.setAppliedFilters) {
-                // tableMeta.setAppliedFilters(activeFiltersRef.current);
+                tableMeta.setAppliedFilters(activeFiltersRef.current);
             }
             if (['filterChange', 'resetFilters'].includes(action)) {
                 if (isFiniteScroll) {
@@ -867,6 +886,7 @@ export const TableESHOC = (Component) => {
                     tableActions.genericESAction();
                     break;
                 case "rowSelectionChange":
+                    let allRows = []
                     if (tableMeta.isSelectedAllAllowed)
                         if (tableState.selectedRows.data.length === tableState.data.length || tableState.selectedRows.data.length > tableState.data.length) {
                             const isSelectAll = tableState.selectedRows.data.length === tableState.data.length
@@ -875,9 +895,11 @@ export const TableESHOC = (Component) => {
 
                             for (let i = 0; i < total; i++) { rowsSelected.push(isSelectAll ? i : tableState.selectedRows.data[i].index) }
 
+                            let selectAll = true
                             if (!allRowsSelected || allRowsSelected?.length === 0 || total !== tableState.count)
                                 setAllRowsSelected(rowsSelected)
                             else {
+                                selectAll = false
                                 tableState.selectedRows.data = []
                                 setAllRowsSelected([])
                             }
@@ -888,23 +910,43 @@ export const TableESHOC = (Component) => {
                                 searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
                             if (pageESVariables?.search?.query) pageESVariables.search.query = searchQuery
 
-                            pageESVariables.variables.pagination = {
-                                first: total,
-                                after: null,
-                            }
-                            const allSelectedRows = await client.query({
-                                ...pageESVariables,
-                                query: GET_ES_SIMPLE_SEARCH,
-                            });
+                            if (selectAll) {
+                                tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
 
-                            tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
-                            meta.setSelectedRows(allSelectedRows?.data?.getESSimpleSearch.hits)
+                                let selectedData = []
+                                let max = 10000
+                                let iter = 0
+
+                                do {
+                                    const remainingTotal = total - max * iter
+                                    const first = remainingTotal > max ? max : remainingTotal
+                                    iter += 1
+
+                                    pageESVariables.variables.pagination = {
+                                        first,
+                                        after: selectedData[selectedData.length - 1]?.sort,
+                                    }
+
+                                    const allSelectedRows = await client.query({
+                                        ...pageESVariables,
+                                        query: GET_ES_SIMPLE_SEARCH,
+                                    });
+                                    const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
+                                    selectedData = [...selectedData, ...hits]
+                                } while (iter * max < total);
+
+                                meta.setSelectedRows(selectedData)
+                                allRows = selectedData
+                            }
                         } else {
-                            if (meta?._selectedRows?.length > 0)
+                            if (meta?._selectedRows?.length > 0) {
                                 meta.setSelectedRows([])
+                                setSelectedRowsValues(null)
+                            }
                             setAllRowsSelected(undefined)
                         }
                     setSelectedRows(tableState.selectedRows.data)
+                    setSelectedRowsValues(allRows)
                     break;
                 case "changePage":
                     isPageChanged(true)
@@ -955,8 +997,8 @@ export const TableESHOC = (Component) => {
                                 position: "absolute",
                                 right: tableMeta?.downloadAll?.exportPx,
                             }}>
-                                <IconButton onClick={onDownload}>
-                                    <Tooltip title="Download CSV" aria-label="add">
+                                <IconButton onClick={onDownload} disabled={isExporting}>
+                                    <Tooltip title="Download to CSV" aria-label="add">
                                         <CloudDownloadIcon />
                                     </Tooltip>
                                 </IconButton>
@@ -980,7 +1022,11 @@ export const TableESHOC = (Component) => {
                                         <Button
                                             color="secondary"
                                             className={classes.multiSelectionTopBarButtons}
-                                            onClick={() => { setAddToTable('add'); setClickedRow(null) }}
+                                            onClick={() => {
+                                                if (tableMeta.onClickAdd) tableMeta.onClickAdd()
+                                                setAddToTable('add');
+                                                setClickedRow(null)
+                                            }}
                                         >
                                             {tableMeta.addBtnText ?
                                                 `+ ADD ${tableMeta.addBtnText}` :
@@ -1075,6 +1121,9 @@ export const TableESHOC = (Component) => {
                     selectedRows={selectedRows}
                     setSelectedRows={setSelectedRows}
 
+                    selectedRowsValues={selectedRowsValues}
+                    setSelectedRowsValues={setSelectedRowsValues}
+
                     onTableChange={onTableChange}
                     columns={columns}
                     setColumns={setColumns}
@@ -1095,6 +1144,9 @@ export const TableESHOC = (Component) => {
 
                     allRowsSelected={allRowsSelected}
                     setAllRowsSelected={setAllRowsSelected}
+
+                    onDownload={onDownload}
+                    isExporting={isExporting}
                 />
             </span>
         );
