@@ -27,10 +27,10 @@ export function copy(obj) {
 
 export function esExtentedSearch(search1, search2) {
   const search = search1 || search2 || ''
-  return search ? `*${search}*` : '';
+  return search ? `*${search}*` : '*';
 }
 
-export function getSearchFields(Table) {
+export function getSearchFields(Table, customMetaFields = []) {
   let searchFields = [];
   Table.forEach((row) => {
     if ((row?.options?.display !== false && row.esKey && !row.name?.toLowerCase()?.includes("date")) || row?.options?.forSearch) {
@@ -40,6 +40,13 @@ export function getSearchFields(Table) {
     }
   });
 
+  customMetaFields.forEach(metaFeild => {
+    if (metaFeild.esKey) {
+      searchFields.push(metaFeild.esKey);
+    }
+  });
+
+  searchFields = [...new Set(searchFields)];
   searchFields = searchFields.map((key) => key.replace(".keyword", ""));
   return searchFields;
 }

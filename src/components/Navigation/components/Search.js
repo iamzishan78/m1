@@ -10,6 +10,7 @@ import parse from "autosuggest-highlight/parse";
 import debounce from "lodash/debounce";
 import Button from "@material-ui/core/Button";
 import PersonIcon from "@material-ui/icons/Person";
+import HistoryIcon from '@material-ui/icons/History';
 
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -877,35 +878,7 @@ function Search() {
 
   return (
     <div className={classes.root} style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
-      {/* {location.pathname === '/documents' && (
-        <Accordion style={{ width: '40px', backgroundColor: 'transparent', display: 'flex', flexDirection: 'column', padding: '0px', }}>
-
-          <AccordionSummary
-            // expandIcon={<SearchIcon style={{color:'white',backgroundColor:'transparent'}}></SearchIcon>}
-
-            style={{ maxHeight: '43px', backgroundColor: 'transparent', marginTop: '0px !important' }}
-          >
-            <SearchIcon style={{ color: 'white', backgroundColor: 'transparent', padding: '0px' }}></SearchIcon>
-          </AccordionSummary>
-          <AccordionDetails style={{ width: '300px', backgroundColor: 'white', display: 'flex', flexDirection: 'column', padding: '0px', border: '2px solid #d1cfcf', marginTop: '-11px' }}>
-
-            <Typography style={{ padding: '9px', color: 'rgb(24, 170, 221)', cursor: 'pointer' }} variant='subtitle2'>
-              All Documents
-            </Typography>
-
-            <Typography style={{ padding: '6px', paddingLeft: '9px', backgroundColor: '#f2f2f2', width: '100%', borderTop: '1px solid #d1cfcf' }} variant='subtitle2'>
-              Agreements
-            </Typography>
-            <Typography style={{ padding: '9px', cursor: 'pointer' }} variant='subtitle2'>
-              Shapefiles
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
-      )
-      } */}
       <SearchByTypeSelectField value={searchDropDown} handleChange={handleSearchPanelChange} color='#ffffff' backgroundColor='#1c2233' />
-      <div style={{ width: '10px' }}></div>
-
       <Autocomplete
         id="cognitive-search-autocomplete"
         getOptionLabel={(option, value) => option.Primary || searchInputValue}
@@ -934,125 +907,6 @@ function Search() {
 
           return option.group === "header" && location.pathname !== "/documents" ? (
             <div>
-              {/* <Grid
-                key={option.group}
-                container
-                item
-                spacing={0}
-                style={{
-                  position: "relative",
-                  top: "0",
-                  backgroundColor: "#ffffff",
-                  paddingBottom:
-                    (searchOption === "all" &&
-                      (loadingWells || loadingOwners || loadingOperators || loadingLeases || loadingContacts || loadingMapboxSearch)) ||
-                      (searchOption === "wells" && loadingWells) ||
-                      (searchOption === "owners" && loadingOwners) ||
-                      (searchOption === "operators" && loadingOperators) ||
-                      (searchOption === "leases" && loadingLeases) ||
-                      (searchOption === "contacts" && loadingContacts) ||
-                      (searchOption === "locations" && loadingMapboxSearch) ||
-                      options.length === 0
-                      ? "0"
-                      : "9px",
-                }}
-              >
-                <Grid
-                  item
-                  xs={12}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    margin: "0 4px",
-                  }}
-                >
-                  <Button
-
-                    className={classes.headerButtons}
-                    variant={searchOption === "all" ? "contained" : "outlined"}
-                    size="small"
-                    color={searchOption === "all" ? "secondary" : "primary"}
-                    onClick={() => {
-                      // setSearchTop(5);
-                      setSearchOption("all");
-                    }}
-                  >
-                    All
-                  </Button>
-
-                  <Button
-                    className={classes.headerButtons}
-                    variant={searchOption === "wells" ? "contained" : "outlined"}
-                    size="small"
-                    color={searchOption === "wells" ? "secondary" : "primary"}
-                    onClick={() => {
-                      // setSearchTop(5);
-                      setSearchOption("wells");
-                    }}
-                  >
-                    Wells
-                  </Button>
-                  <Button
-                    className={classes.headerButtons}
-                    variant={searchOption === "owners" ? "contained" : "outlined"}
-                    size="small"
-                    color={searchOption === "owners" ? "secondary" : "primary"}
-                    onClick={() => {
-                      // setSearchTop(5);
-                      setSearchOption("owners");
-                    }}
-                  >
-                    Tax Owners
-                  </Button>
-                  <Button
-                    className={classes.headerButtons}
-                    variant={searchOption === "operators" ? "contained" : "outlined"}
-                    size="small"
-                    color={searchOption === "operators" ? "secondary" : "primary"}
-                    onClick={() => {
-                      // setSearchTop(5);
-                      setSearchOption("operators");
-                    }}
-                  >
-                    Operators
-                  </Button>
-                  <Button
-                    className={classes.headerButtons}
-                    variant={searchOption === "leases" ? "contained" : "outlined"}
-                    size="small"
-                    color={searchOption === "leases" ? "secondary" : "primary"}
-                    onClick={() => {
-                      // setSearchTop(5);
-                      setSearchOption("leases");
-                    }}
-                  >
-                    Leases
-                  </Button>
-                  <Button
-                    className={classes.headerButtons}
-                    variant={searchOption === "contacts" ? "contained" : "outlined"}
-                    size="small"
-                    color={searchOption === "contacts" ? "secondary" : "primary"}
-                    onClick={() => {
-                      setSearchOption("contacts");
-                    }}
-                  >
-                    Contacts
-                  </Button>
-                  <Button
-                    className={classes.headerButtons}
-                    variant={searchOption === "locations" ? "contained" : "outlined"}
-                    size="small"
-                    color={searchOption === "locations" ? "secondary" : "primary"}
-                    onClick={() => {
-                      setSearchTop(5);
-                      setSearchOption("locations");
-                    }}
-                  >
-                    Locations
-                  </Button>
-                </Grid>
-              </Grid> */}
 
             </div>
           ) : (
@@ -1069,21 +923,6 @@ function Search() {
                         className={classes.groupsButton}
                         onClick={() => {
                           setSearchTop(200);
-                          // setSearchOption(
-                          //   option.group === "Tax Owners"
-                          //     ? "tax owners"
-                          //     : option.group === "Wells"
-                          //       ? "wells"
-                          //       : option.group === "Operators"
-                          //         ? "operators"
-                          //         : option.group === "Leases"
-                          //           ? "leases"
-                          //           : option.group === "Contacts"
-                          //             ? "contacts"
-                          //             : option.group === "Locations"
-                          //               ? "locations"
-                          //               : "all"
-                          // );
                         }}
                       >
                         See All Results
@@ -1139,10 +978,6 @@ function Search() {
           <div>
             {location.pathname === "/documents" ? (
               <div style={{ display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
-                {/* <IconButton>
-              <SearchIcon style={{color:'white'}}></SearchIcon>
-              </IconButton> */}
-
                 <TextField
                   {...params}
                   variant="outlined"
@@ -1159,18 +994,6 @@ function Search() {
                 placeholder="Search by well name, API, owner, operator or a location"
                 InputProps={{
                   ...params.InputProps,
-                  startAdornment: (
-                    <InputAdornment className={classes.startAdornmentIcon}>
-                      <Button
-                        style={{ minWidth: "0", height: "42px" }}
-                        onClick={() => {
-                          if (mapGridCardActivated) dispatch(toggleMapGridCardAtived());
-                        }}
-                      >
-                        <SearchIcon htmlColor="#d3d3d3" />
-                      </Button>
-                    </InputAdornment>
-                  ),
                   endAdornment: (
                     <InputAdornment className={classes.endAdornmentIcon}>
                       <div>
@@ -1204,7 +1027,7 @@ function Search() {
                               setAnchorEl(event.currentTarget);
                             }}
                           >
-                            <ArrowDropDownIcon htmlColor="#fff" />
+                            <HistoryIcon fontSize="25" htmlColor="#fff" />
                           </IconButton>
                         </Tooltip>
 

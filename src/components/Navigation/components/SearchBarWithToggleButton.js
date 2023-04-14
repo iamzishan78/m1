@@ -17,7 +17,7 @@ import { CircularProgress } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    "& .MuiButtonGroup-root": { width: "100%", borderRadius: "25px" },
+    "& .MuiButtonGroup-root": { width: "100%", borderRadius: "13px", padding: '0 5px', backgroundColor: 'rgb(28, 34, 51) !important' },
     "& .MuiAutocomplete-root": {
       flexGrow: "1",
       borderRight: "1px solid rgba(0, 0, 0, 0.23)",
@@ -26,12 +26,12 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: "25px",
       // position: 'relative',
 
-      "&:hover": {
-        backgroundColor: "#626687",
-        borderRadius: "25px",
-        // borderTopRightRadius: "0",
-        // borderBottomRightRadius: "0",
-      },
+      // "&:hover": {
+      //   backgroundColor: "#626687",
+      //   borderRadius: "25px",
+      //   // borderTopRightRadius: "0",
+      //   // borderBottomRightRadius: "0",
+      // },
     },
     "& fieldset": {
       border: "none",
@@ -43,21 +43,22 @@ const useStyles = makeStyles((theme) => ({
     color: "#d3d3d3",
     backgroundColor: "#1c2233",
     borderRadius: "25px",
-    marginLeft: "5px",
-    "&:hover ": {
-      backgroundColor: "#626687",
-      borderRadius: "25px",
-    },
+    minWidth: "unset",
+    padding: '0 10px 0 0', 
+    // "&:hover ": {
+    //   backgroundColor: "#626687",
+    //   borderRadius: "25px",
+    // },
   },
   selected: {
     color: "rgba(23, 170, 221, 1) !important",
     backgroundColor: "#1c2233",
     borderRadius: "25px",
     marginLeft: "5px",
-    "&:hover ": {
-      backgroundColor: "#626687",
-      borderRadius: "25px",
-    },
+    // "&:hover ": {
+    //   backgroundColor: "#626687",
+    //   borderRadius: "25px",
+    // },
   },
 }));
 
@@ -75,7 +76,7 @@ function GridIcon({ setStateApp }) {
           dispatch(toggleMapGridCardAtived());
         }}
       >
-        <GridOnIcon />
+        <GridOnIcon fontSize="25" />
       </Button>
     </Tooltip>
   );
