@@ -23,6 +23,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
   custom,
   setFilters,
   multiple,
+  isDate,
   ...others
 }) {
   const getDefaultSearchValue = () => {
@@ -73,7 +74,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
     if (filtersData) {
       const keys = Object.keys(filtersData);
       if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits) {
-        if(custom?.isState || custom?.oRFilter){
+        if (custom?.isState || custom?.oRFilter) {
           let hits = filtersData[keys[0]].hits.map((hit) => {
             const keys = hit.key_as_string.split('|')
             return ({
@@ -173,9 +174,9 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
       }}
       disabled={others.disabled || false}
       value={multiple && !value ? [] : value}
-      inputValue={customStartCaseString(search?.toString())}
+      inputValue={customStartCaseString(search?.toString(), isDate)}
       getOptionSelected={(option, value) => option.key === value.key}
-      getOptionLabel={(option) => customStartCaseString(capitalizeFirstLetter(option?.key?.toString().replace(/^\,|\,$/gm, "")))}
+      getOptionLabel={(option) => customStartCaseString(capitalizeFirstLetter(option?.key?.toString().replace(/^\,|\,$/gm, "")), isDate)}
       onChange={(e, value2, reason) => {
         if (reason === "clear" || (multiple && value2.length === 0) || (!multiple && !value2?.key)) {
           filterList[index].pop();

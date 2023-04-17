@@ -189,7 +189,7 @@ function ExpandableCard(props) {
       background: "#fff",
       padding: "0 !important",
       overflow: "auto",
-
+      overflowY:'hidden',
       "&::-webkit-scrollbar": {
         width: "0.4em",
       },

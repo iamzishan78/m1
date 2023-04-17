@@ -26,7 +26,6 @@ import RelatedParties from "components/Land/components/Agreements/detailComponen
 import Provisions from "components/Land/components/Agreements/detailComponents/provisions";
 import LegalDescription from "components/Land/components/Agreements/detailComponents/legalDescription";
 import RelatedWells from "components/Land/components/Agreements/detailComponents/relatedWells";
-import Documents from "components/Land/components/Agreements/detailComponents/documents";
 import RelatedAgreementsTable from "components/Land/components/Agreements/detailComponents/relatedAgreements";
 import AddNewRelatedAgreementDialog from "components/Land/components/Agreements/detailComponents/relatedAgreements/AddNewRelatedAgreementDialog";
 

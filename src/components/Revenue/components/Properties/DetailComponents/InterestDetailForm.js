@@ -14,6 +14,7 @@ import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete
 import { ADD_PROPERTY_INTEREST } from "graphQL/useMutationAddpropertyInterest";
 import { UPDATE_PROPERTY_INTEREST } from "graphQL/useMutationUpdatepropertyInterest";
 
+import { getDateWithoutTime } from "components/Shared/functions";
 import ArrowForwardIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import ContactPaginatedAutocomplete from "components/Revenue/components/Common/ContactsPaginatedAutocomplete";
 
@@ -100,6 +101,7 @@ const InterestDetailForm = (props) => {
     const id = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
     const values = getValues();
 
+    values.effectiveDate = getDateWithoutTime(values.effectiveDate);
     if (selectedInterest) {
       updatePropertyInterest({
         variables: {
