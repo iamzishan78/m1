@@ -7,6 +7,7 @@ import { useLazyQuery } from "@apollo/client";
 import { GET_ALL_CUSTOM_DATA_KEYS } from "graphQL/useQueryGetAllCustomKeys";
 import _ from "lodash";
 import { useSelector } from "react-redux";
+import { convertToTitleCase } from "components/Shared/M1nTable/components/MUIDataTable/utils";
 
 const AutoCompleteDropdown = ({ options, onChange, loading, label, value }) => {
   return (
@@ -90,14 +91,22 @@ export default function CustomDataFilters(props) {
   }, [selectedKey, selectedValue])
 
   const getKeysOptions = useMemo(() => {
-    const allKeys = Object.keys(_.get(customData, 'getAllKeys', {})).map(key => ({ label: key, value: key }))
+    let allKeys = Object.keys(_.get(customData, 'getAllKeys', {})).map(key => ({ label: key, value: key }))
 
     // Removing the keys that are already in agreementDetails
-    return allKeys.filter(key => !(key.value.replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase()) in (agreementDetails || {})))
+    allKeys = allKeys.filter(key => !(key.value.replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase()) in (agreementDetails || {})))
+
+    allKeys = allKeys.map(({ label, value }) => ({ value, label: convertToTitleCase(label) }))
+
+    return allKeys
   }, [customData, agreementDetails])
 
   const getValueOptions = useMemo(() => {
-    return (customData?.getAllKeys[selectedKey] || []).map(key => ({ label: key, value: key }))
+    let allValues = (customData?.getAllKeys[selectedKey] || []).map(key => ({ label: key, value: key }))
+
+    allValues = allValues.map(({ label, value }) => ({ value, label: convertToTitleCase(label) }))
+
+    return allValues
   }, [customData, selectedKey]);
 
   const handleKeyChange = (value) => {
@@ -113,7 +122,7 @@ export default function CustomDataFilters(props) {
           options={getKeysOptions}
           label={"Key"}
           loading={loading}
-          value={selectedKey && { label: selectedKey, value: selectedKey }}
+          value={selectedKey && { label: convertToTitleCase(selectedKey), value: selectedKey }}
         />
       </Grid>
       <Grid item xs={12}>
@@ -122,7 +131,7 @@ export default function CustomDataFilters(props) {
           options={getValueOptions}
           label={"Value"}
           loading={loading}
-          value={selectedKey && { label: selectedValue, value: selectedValue }}
+          value={selectedKey && { label: convertToTitleCase(selectedValue), value: selectedValue }}
         />
       </Grid>
     </Grid>
