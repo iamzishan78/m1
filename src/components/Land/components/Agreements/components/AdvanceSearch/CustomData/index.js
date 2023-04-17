@@ -1,11 +1,11 @@
-import React, { useContext, useState, useEffect, useMemo } from "react";
+import React, { useContext, useState, useEffect, useMemo, useCallback } from "react";
 import { Grid, TextField } from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import FormControl from "@material-ui/core/FormControl";
 import { AppContext } from "AppContext";
 import { useLazyQuery } from "@apollo/client";
 import { GET_ALL_CUSTOM_DATA_KEYS } from "graphQL/useQueryGetAllCustomKeys";
-import _ from "lodash";
+import _, { isArray } from "lodash";
 import { useSelector } from "react-redux";
 import { convertToTitleCase } from "components/Shared/M1nTable/components/MUIDataTable/utils";
 
@@ -91,23 +91,36 @@ export default function CustomDataFilters(props) {
   }, [selectedKey, selectedValue])
 
   const getKeysOptions = useMemo(() => {
-    let allKeys = Object.keys(_.get(customData, 'getAllKeys', {})).map(key => ({ label: key, value: key }))
+    const getAllKeys = _.get(customData, 'getAllKeys', {})
+
+    let allKeys = Object.keys(getAllKeys).flatMap(key => {
+      if (isArray(getAllKeys[key].label)) return getAllKeys[key].label.map(label => ({ label: label || convertToTitleCase(key), value: key }))
+
+      return { label: getAllKeys[key].label || convertToTitleCase(key), value: key }
+    })
 
     // Removing the keys that are already in agreementDetails
     allKeys = allKeys.filter(key => !(key.value.replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase()) in (agreementDetails || {})))
-
-    allKeys = allKeys.map(({ label, value }) => ({ value, label: convertToTitleCase(label) }))
 
     return allKeys
   }, [customData, agreementDetails])
 
   const getValueOptions = useMemo(() => {
-    let allValues = (customData?.getAllKeys[selectedKey] || []).map(key => ({ label: key, value: key }))
-
-    allValues = allValues.map(({ label, value }) => ({ value, label: convertToTitleCase(label) }))
+    let allValues = (customData?.getAllKeys[selectedKey]?.value || []).map(key => ({ label: convertToTitleCase(key), value: key }))
 
     return allValues
   }, [customData, selectedKey]);
+
+  const getLabel = useCallback(
+    (key) => {
+      const getAllKeys = _.get(customData, 'getAllKeys', {})
+
+      if (isArray(getAllKeys?.[key]?.label)) return convertToTitleCase(key)
+
+      return getAllKeys?.[key]?.label || convertToTitleCase(key)
+    },
+    [customData],
+  )
 
   const handleKeyChange = (value) => {
     setSelectedKey(value);
@@ -122,7 +135,7 @@ export default function CustomDataFilters(props) {
           options={getKeysOptions}
           label={"Key"}
           loading={loading}
-          value={selectedKey && { label: convertToTitleCase(selectedKey), value: selectedKey }}
+          value={selectedKey && { label: getLabel(selectedKey), value: selectedKey }}
         />
       </Grid>
       <Grid item xs={12}>
