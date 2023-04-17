@@ -52,11 +52,16 @@ function AgreementsTable(props) {
     refetchQueries: ["getESSimpleSearch"],
     awaitRefetchQueries: true,
   });
+  const excludeFromViewColumns = ["interest_type", "tract_status"]
 
   const classes = usetableStyles({ isFullHeight: true, isAgreementsTable: true });
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
-  const GridViewModule = userGridViewSettings[`Agreements`];
+  let GridViewModule = userGridViewSettings[`Agreements`];
+  GridViewModule.columns = GridViewModule.columns.map(obj =>
+    excludeFromViewColumns.includes(obj.name) ? { ...obj, "viewColumns": false } : obj
+  );
+
   const { Agreements: AgreementsGridView } = useSelector(({ session }) => session.userGridViewSettings);
 
   const searchInput = useSelector((state) => state.MapGridCard.searchInputValue);
