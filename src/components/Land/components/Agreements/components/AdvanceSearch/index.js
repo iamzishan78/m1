@@ -10,16 +10,16 @@ import { AppContext } from "AppContext";
 const filterTypes = {
   // Summary: { component: "ProvisionFilters", countKey: "geographyFilterCount" },
   // "Related Parties": { component: "ProvisionFilters", countKey: "wellFilterCount" },
-  Provisions: { component: "ProvisionFilters", countKey: "provisions" },
+  // Provisions: { component: "ProvisionFilters", countKey: "provisions" },
   // "Related Wells": { component: "RelatedWellsFilters", countKey: "tagFilterCount" },
   // "Legal Description": { component: "ProvisionFilters", countKey: "ownershipFilterCount" },
   // Wells: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // Documents: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "tagFilterCount" },
   // "Remarks Types": { component: "RemarksTypes", countKey: "remarksTypes" },
-  "Related Wells": { component: "RelatedWellsFilters", countKey: "relatedWells" },
-  "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "relatedAgreements" },
-  "Related Documents": { component: "RelatedDocumentFilters", countKey: "relatedDocuments" },
+  // "Related Wells": { component: "RelatedWellsFilters", countKey: "relatedWells" },
+  // "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "relatedAgreements" },
+  // "Related Documents": { component: "RelatedDocumentFilters", countKey: "relatedDocuments" },
   "Custom Metadata": { component: "CustomDataFilters", countKey: "customData" },
 };
 
