@@ -34,6 +34,7 @@ const AutoCompleteDropdown = ({ options, onChange, loading, label, value }) => {
 export default function CustomDataFilters(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [selectedKey, setSelectedKey] = useState(null)
+  const [key, setKey] = useState(null)
   const [selectedValue, setSelectedValue] = useState(null);
   const agreementDetails = useSelector(({ Land }) => Land.agreement?.activeAgreement?.shape)?.properties;
 
@@ -106,36 +107,27 @@ export default function CustomDataFilters(props) {
   }, [customData, agreementDetails])
 
   const getValueOptions = useMemo(() => {
-    let allValues = (customData?.getAllKeys[selectedKey]?.value || []).map(key => ({ label: convertToTitleCase(key), value: key }))
+    let allValues = (customData?.getAllKeys[selectedKey]?.value || []).map(key => ({ label: key, value: key }))
 
     return allValues
   }, [customData, selectedKey]);
 
-  const getLabel = useCallback(
-    (key) => {
-      const getAllKeys = _.get(customData, 'getAllKeys', {})
-
-      if (isArray(getAllKeys?.[key]?.label)) return convertToTitleCase(key)
-
-      return getAllKeys?.[key]?.label || convertToTitleCase(key)
-    },
-    [customData],
-  )
-
-  const handleKeyChange = (value) => {
-    setSelectedKey(value);
+  const handleKeyChange = (key) => {
+    setSelectedKey(key.value);
+    setKey(key)
     setSelectedValue(null);
   }
-
   return (
     <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
       <Grid item xs={12}>
         <AutoCompleteDropdown
-          onChange={(e, val) => handleKeyChange(val?.value)}
+          onChange={(e, val) => {
+            handleKeyChange(val)
+          }}
           options={getKeysOptions}
           label={"Key"}
           loading={loading}
-          value={selectedKey && { label: getLabel(selectedKey), value: selectedKey }}
+          value={key}
         />
       </Grid>
       <Grid item xs={12}>
@@ -144,7 +136,7 @@ export default function CustomDataFilters(props) {
           options={getValueOptions}
           label={"Value"}
           loading={loading}
-          value={selectedKey && { label: convertToTitleCase(selectedValue), value: selectedValue }}
+          value={selectedKey && { label: selectedValue, value: selectedValue }}
         />
       </Grid>
     </Grid>
