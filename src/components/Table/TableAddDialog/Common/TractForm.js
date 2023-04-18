@@ -62,22 +62,12 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
     [tract, stateName]
   );
 
-  const filters = useMemo(() => {
+  const sectionNewOptions = useMemo(() => {
     return {
-      state: { field: filterConsts.state.filterField, value: 'State' },
-      county: [{ field: filterConsts.county.filterField, value: 'County' }, ...getDependencies(filterConsts.county.dependencyArray)],
-      meridian: [{ field: filterConsts.meridian.filterField, value: 'Meridian' }, ...getDependencies(filterConsts.meridian.dependencyArray)],
-      township: [{ field: filterConsts.township.filterField, value: 'TownshipRange' }, ...getDependencies(filterConsts.township.dependencyArray)],
-      range: [{ field: filterConsts.range.filterField, value: 'TownshipRange' }, ...getDependencies(filterConsts.range.dependencyArray)],
-
-      section: [{ field: filterConsts.section.filterField, value: 'Section' }, ...getDependencies(filterConsts.section.dependencyArray)],
-      survey: [{ field: filterConsts.survey.filterField, value: 'Survey' }, ...getDependencies(filterConsts.survey.dependencyArray)],
-      block: [{ field: filterConsts.block.filterField, value: 'Block' }, ...getDependencies(filterConsts.block.dependencyArray)],
-      sectiontx: [{ field: filterConsts.sectiontx.filterField, value: 'Section' }, ...getDependencies(filterConsts.sectiontx.dependencyArray)],
-
-      abstract: [{ field: filterConsts.abstract.filterField, value: 'Abstract' }, ...getDependencies(filterConsts.abstract.dependencyArray)],
+      section: { state: tract.state, county: tract.county, meridian: tract.meridian, township: tract.township, range: tract.range },
+      sectiontx: { state: tract.state, county: tract.county, survey: tract.survey, block: tract.block },
     }
-  }, [tract.state, tract.county, tract.township, tract.range, tract.section, tract.survey, tract.block, tract.sectiontx, tract.abstract])
+  }, [tract.state, tract.county, tract.meridian, tract.township, tract.range, tract.survey, tract.block])
 
   return (
     <>
@@ -175,7 +165,6 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
         )}
       />
 
-      {/* {!["TX", "Texas"].includes(stateName) && ( */}
       <div style={{ display: !["TX", "Texas"].includes(stateName) ? "block" : "none" }}>
         <>
           <Controller
@@ -241,35 +230,9 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
               />
             )}
           />
-
-          {/* <Controller
-            control={control}
-            name={`${prefix}section`}
-            defaultValue={tract?.section || ""}
-            render={(props) => (
-              <AutoCompleteLandgrid
-                value={props.value}
-                filterKey={filterConsts.section.filterKey}
-                filters={[
-                  { field: filterConsts.section.filterField, value: "Section" },
-                  ...getDependencies(filterConsts.section.dependencyArray),
-                ]}
-                label="Section"
-                variant="outlined"
-                onChange={(e, value) => {
-                  props.onChange(value.key);
-                }}
-                autoFocus={false}
-                newOptions
-                newOptionFilters={{ state: tract.state, county: tract.county, meridian: tract.meridian, township: tract.township, range: tract.range }}
-              />
-            )}
-          /> */}
         </>
       </div>
-      {/* )} */}
 
-      {/* {["TX", "Texas"].includes(stateName) && ( */}
       <div style={{ display: ["TX", "Texas"].includes(stateName) ? "block" : "none" }}>
         <>
           <Controller
@@ -313,55 +276,8 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
               />
             )}
           />
-
-          {/* <Controller
-            control={control}
-            name={`${prefix}section`}
-            defaultValue={tract?.section || ""}
-            render={(props) => (
-              <AutoCompleteLandgrid
-                value={props.value}
-                filterKey={filterConsts.section.filterKey}
-                filters={[{ field: filterConsts.section.filterField, value: "Section" }, ...getDependencies(filterConsts.section.dependencyArray)]}
-                label="Section"
-                variant="outlined"
-                onChange={(e, value) => {
-                  props.onChange(value.key);
-                }}
-                autoFocus={false}
-                newOptions
-                newOptionFilters={{ state: tract.state, county: tract.county, survey: tract.survey, block: tract.block }}
-              />
-            )}
-          /> */}
-
-          {/* <Controller
-            control={control}
-            id="tractAbstract"
-            name={`${prefix}abstract`}
-            defaultValue={tract?.abstract || ""}
-            render={(props) => (
-              <AutoCompleteLandgrid
-                value={props.value}
-                filterKey={filterConsts.abstract.filterKey}
-                filters={[
-                  { field: filterConsts.abstract.filterField, value: "Abstract" },
-                  ...getDependencies(filterConsts.abstract.dependencyArray),
-                ]}
-                label="Abstract"
-                variant="outlined"
-                onChange={(e, value) => {
-                  props.onChange(value.key);
-                }}
-                autoFocus={false}
-                newOptions
-                newOptionFilters={{ state: tract.state, county: tract.county, survey: tract.survey, block: tract.block, section: tract.section }}
-              />
-            )}
-          /> */}
         </>
       </div>
-      {/* )} */}
 
       <Controller
         control={control}
@@ -382,6 +298,8 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
               props.onChange(value.key);
             }}
             autoFocus={false}
+            newOptions
+            newOptionFilters={["TX", "Texas"].includes(stateName) ? sectionNewOptions['sectiontx'] : sectionNewOptions['section']}
           />
         )}
       />
@@ -406,6 +324,8 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
                 props.onChange(value.key);
               }}
               autoFocus={false}
+              newOptions
+              newOptionFilters={{ state: tract.state, county: tract.county, survey: tract.survey, block: tract.block, section: tract.section }}
             />
           )}
         />
