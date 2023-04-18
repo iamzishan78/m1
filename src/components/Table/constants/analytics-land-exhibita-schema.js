@@ -1,4 +1,5 @@
 import { GlobalStickyStyles } from "GlobalSettings";
+import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
 const AcerageSummaryHeadCells = [
   {
@@ -42,6 +43,15 @@ const AcerageSummaryHeadCells = [
       filter: false,
       display: false,
     },
+  },
+  {
+    name: "agreementType",
+    label: "Type",
+    esKey: "shape.shapeJson.properties.agreementType.keyword",
+    options: { sort: true, filter: true, display: true },
+    custom: {
+      formatedFilterOptions: agreementTypes
+    }
   },
   {
     name: "grantor",
