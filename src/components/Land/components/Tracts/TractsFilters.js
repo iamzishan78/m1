@@ -5,7 +5,6 @@ import { makeStyles } from "@material-ui/styles";
 import { useSelector } from "react-redux";
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
-import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
 import { AppContext } from "AppContext";
 import { tractFilterColumnsHeader, tractInterestFilterColumnsHeader } from "utils/data";
@@ -168,9 +167,6 @@ const TractsFilters = ({ selectedTractTab }) => {
                                     appliedFilters.push(stateFilter)
                             }
                         }
-
-                        if(filterColumn.name==="State")
-                        filterColumn.filterKey="shape.shapeJson.properties.originalProperties.State.keyword"
 
                         return (
                             <Grid item xs md style={{ minWidth: "205px", maxWidth: "305px" }}>
