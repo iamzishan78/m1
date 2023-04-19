@@ -151,7 +151,7 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
         setOpen(false);
       }}
       // value={{ key: value, _id: value }}
-      inputValue={search?.toString()}
+      inputValue={search?.toString() || ""}
       getOptionSelected={(option, value) => option.key === value.key}
       getOptionLabel={(option) => option?.key?.toString().replace(/^\,|\,$/gm, "")}
       onChange={(e, value, reason) => {
@@ -160,7 +160,7 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
           onChange(e, {})
         } else {
           setSearch(value.key)
-          onChange(e, value)
+          onChange(e, value || "")
         }
       }}
       options={options}
