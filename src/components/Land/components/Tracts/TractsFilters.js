@@ -169,6 +169,9 @@ const TractsFilters = ({ selectedTractTab }) => {
                             }
                         }
 
+                        if(filterColumn.name==="State")
+                        filterColumn.filterKey="shape.shapeJson.properties.originalProperties.State.keyword"
+
                         return (
                             <Grid item xs md style={{ minWidth: "205px", maxWidth: "305px" }}>
                                 <AutoCompleteFilter
