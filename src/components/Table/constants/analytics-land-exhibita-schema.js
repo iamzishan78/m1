@@ -21,7 +21,7 @@ const AcerageSummaryHeadCells = [
         },
         setCellHeaderProps: {
           left: "77px",
-          paddingLeft: "0px !important",
+          paddingLeft: "0px",
         },
       }),
     },

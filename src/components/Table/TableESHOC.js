@@ -861,7 +861,7 @@ export const TableESHOC = (Component) => {
             if (action === 'filterChange' && tableMeta.setAppliedFilters) {
                 tableMeta.setAppliedFilters(activeFiltersRef.current);
             }
-            if (['filterChange', 'resetFilters'].includes(action)) {
+            if (['filterChange', 'resetFilters', 'viewColumnsChange'].includes(action)) {
                 if (isFiniteScroll) {
                     tableStateRef.current.sortOrder = {}
                     tableState.sortOrder = {}
