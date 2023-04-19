@@ -188,6 +188,7 @@ const AppProvider = (props) => {
             return {
               ...stateApp,
               layers: [...currentLayers],
+              toggleLayerActivityValue: activityValue,
               mapCircularLoaderAct: false,
             };
           }
