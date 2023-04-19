@@ -39,22 +39,29 @@ const ActivitiesHeadCells = [
     label: "Start Date",
     esKey: "dateTime",
     options: {
-      display: true,
+      setCellProps: () => ({ style: { minWidth: "185px" } }),
       sort: true,
       filter: true,
     },
-    style: { minWidth: 185 }
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
   },
+
   {
     name: "end",
     label: "End Date",
     esKey: "endDateTime",
     options: {
-      display: true,
+      setCellProps: () => ({ style: { minWidth: "185px" } }),
       sort: true,
       filter: true,
     },
-    style: { minWidth: 185 }
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
   },
   {
     name: "outcome",
