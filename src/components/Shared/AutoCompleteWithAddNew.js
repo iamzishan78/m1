@@ -71,12 +71,12 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, t
         // }
         const filtered = filter(options, { ...params, inputValue });
         const isExist = loadashFilter(filtered, (filter) => {
-          return filter._id === inputValue;
+          return filter._id === params.inputValue;
         });
         // Suggest the creation of a new value
-        if (inputValue !== "" && (!isExist || isExist.length === 0)) {
+        if (params.inputValue !== "" && (!isExist || isExist.length === 0)) {
           filtered.unshift({
-            name: inputValue,
+            name: params.inputValue,
             _id: "newEntity",
           });
         }
