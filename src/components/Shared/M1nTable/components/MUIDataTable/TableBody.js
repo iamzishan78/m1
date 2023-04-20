@@ -209,7 +209,7 @@ class TableBody extends React.Component {
         // Don't trigger onRowClick if the event was actually a row selection via click
         if (this.props.options.selectableRowsOnClick) return;
 
-        this.props.options.onRowClick && this.props.options.onRowClick(row, data, event);
+        // this.props.options.onRowClick && this.props.options.onRowClick(row, data, event);
     };
 
     processRow = (row, columnOrder) => {
