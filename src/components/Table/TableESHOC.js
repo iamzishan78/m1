@@ -123,6 +123,7 @@ export const TableESHOC = (Component) => {
                         ...meta.options,
                         sort: true,
                         filter: true,
+                        display: false,
                         dbName: meta.esKey.replace('.keyword', '')
                     },
                 }));
@@ -970,30 +971,31 @@ export const TableESHOC = (Component) => {
                     isPageChanged(true)
                     tableActions.changeESPage();
                     break;
-                // case "viewColumnsChange":
-                //     viewColumnsChange(tableState.columns);
-                //     break;
+                case "viewColumnsChange":
+                    viewColumnsChange(tableState.columns);
+                    break;
                 default:
             }
         }
 
-        // const viewColumnsChange = (tableColumns) => {
-        //     for (let i = 0; i < tableColumns.length; i++) {
-        //         if (columns[i]) {
-        //             if ((tableColumns[i].display === "true" || tableColumns[i].display === true) && tableColumns[i].display !== false) {
-        //                 columns[i].options.display = true;
-        //                 if (columns[i].esKey && !columns[i].noFilter) {
-        //                     columns[i].options.filter = true;
-        //                 }
-        //             } else {
-        //                 columns[i].options.display = false;
-        //                 columns[i].options.filter = false;
-        //                 delete columns[i]?.options.filterOptions;
-        //             }
-        //         }
-        //     }
-        //     Columns(columns);
-        // };
+        const viewColumnsChange = (tableColumns) => {
+            const cols = columns;
+            for (let i = 0; i < tableColumns.length; i++) {
+                if (cols[i]) {
+                    if ((tableColumns[i].display === "true" || tableColumns[i].display === true) && tableColumns[i].display !== false) {
+                        cols[i].options.display = true;
+                        if (cols[i].esKey && !cols[i].noFilter) {
+                            cols[i].options.filter = true;
+                        }
+                    } else {
+                        cols[i].options.display = false;
+                        cols[i].options.filter = false;
+                        delete cols[i]?.options.filterOptions;
+                    }
+                }
+            }
+            Columns(cols);
+        };
 
         const count = tableData?.total || 0
 
