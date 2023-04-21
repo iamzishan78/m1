@@ -796,6 +796,8 @@ export const TableESHOC = (Component) => {
             if (props.useWildeCard)
                 searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
 
+            const total = tableStateRef.current.count
+            let allRows = []
             const pageESVariables = {
                 variables: {
                     index: tableMeta.esIndex,
@@ -824,16 +826,32 @@ export const TableESHOC = (Component) => {
                     customFilters: []
                 },
             }
-            const allSelectedRows = await client.query({
-                ...pageESVariables,
-                variables: {
-                    ...pageESVariables.variables,
-                    filters: handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters))
-                },
-                query: GET_ES_SIMPLE_SEARCH,
-            });
 
-            const hits = tableMeta.formatHits(copy(allSelectedRows.data.getESSimpleSearch.hits))
+            let selectedData = []
+            let max = 10000
+            let iter = 0
+
+            do {
+                const remainingTotal = total - max * iter
+                const first = remainingTotal > max ? max : remainingTotal
+                iter += 1
+
+                pageESVariables.variables.pagination = {
+                    first,
+                    after: selectedData[selectedData.length - 1]?.sort,
+                }
+
+                const allSelectedRows = await client.query({
+                    ...pageESVariables,
+                    query: GET_ES_SIMPLE_SEARCH,
+                });
+                const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
+                selectedData = [...selectedData, ...hits]
+            } while (iter * max < total);
+
+            allRows = selectedData
+            
+            const hits = tableMeta.formatHits(copy(allRows))
             const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => c.display !== false && c.display !== "false" && c.label !== " "))
 
             var blob = new Blob([csvData]);
@@ -862,7 +880,7 @@ export const TableESHOC = (Component) => {
             if (action === 'filterChange' && tableMeta.setAppliedFilters) {
                 tableMeta.setAppliedFilters(activeFiltersRef.current);
             }
-            if (['filterChange', 'resetFilters'].includes(action)) {
+            if (['filterChange', 'resetFilters', 'viewColumnsChange'].includes(action)) {
                 if (isFiniteScroll) {
                     tableStateRef.current.sortOrder = {}
                     tableState.sortOrder = {}

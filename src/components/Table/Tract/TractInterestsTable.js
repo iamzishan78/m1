@@ -47,6 +47,10 @@ function TractInterestTable(props) {
   }
 
   useEffect(() => {
+    props.setSelectedGridView(GridViewModule || defaultView);
+  }, [GridViewModule]);
+
+  useEffect(() => {
     setTableMeta({
       extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
       searchFields: [
