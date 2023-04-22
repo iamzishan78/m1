@@ -474,7 +474,8 @@ function Search() {
       if (searchInputValue === "") {
         setOptions(value ? [value] : []);
         setValue(null);
-        setStateApp((state) => ({ ...state, wellListFromSearch: [], landGridListFromSearch: [] }));
+        if (!stateApp.toggleLayerActivityValue)
+          setStateApp((state) => ({ ...state, wellListFromSearch: [], landGridListFromSearch: [] }));
         setLoading(false);
         return undefined;
       }

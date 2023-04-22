@@ -1,27 +1,13 @@
-import React, { useContext, useState, useEffect, useMemo } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext, useState, useEffect, useMemo, useCallback } from "react";
 import { Grid, TextField } from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import FormControl from "@material-ui/core/FormControl";
 import { AppContext } from "AppContext";
 import { useLazyQuery } from "@apollo/client";
 import { GET_ALL_CUSTOM_DATA_KEYS } from "graphQL/useQueryGetAllCustomKeys";
-import _ from "lodash";
+import _, { isArray } from "lodash";
 import { useSelector } from "react-redux";
-
-const useStyles = makeStyles((theme) => ({
-  gridItem: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  formControl: {
-    minWidth: 249,
-    color: "black",
-    "& .MuiInputBase-root": {
-      backgroundColor: "#101d29",
-    },
-  }
-}));
+import { convertToTitleCase } from "components/Shared/M1nTable/components/MUIDataTable/utils";
 
 const AutoCompleteDropdown = ({ options, onChange, loading, label, value }) => {
   return (
@@ -46,10 +32,9 @@ const AutoCompleteDropdown = ({ options, onChange, loading, label, value }) => {
   );
 };
 export default function CustomDataFilters(props) {
-  const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [filterList, setFilterList] = useState([[], []]);
   const [selectedKey, setSelectedKey] = useState(null)
+  const [key, setKey] = useState(null)
   const [selectedValue, setSelectedValue] = useState(null);
   const agreementDetails = useSelector(({ Land }) => Land.agreement?.activeAgreement?.shape)?.properties;
 
@@ -60,14 +45,20 @@ export default function CustomDataFilters(props) {
   );
 
   useEffect(() => {
-    getCustomKey();
+    getCustomKey({
+      variables: {
+        index: 'shapes_flat',
+        pathToKey: 'shapeJson.properties.custom_data',
+        filters: [{ field: 'shapeJson.properties.type.keyword', value: 'agreement' }]
+      },
+    });
   }, []);
 
   useEffect(() => {
     const customFilters = stateApp.landSearchFilters.customData[0]
     setSelectedKey(customFilters?.field?.split?.('.')[3])
     setSelectedValue(customFilters?.value)
-  }, [stateApp.landSearchFilters.customData])
+  }, [])
 
   useEffect(() => {
     if (selectedKey && selectedValue) {
@@ -77,6 +68,9 @@ export default function CustomDataFilters(props) {
       if (_index === -1 && selectedValue !== null) landCustomDataFilters.push({ field: filterKey, value: selectedValue });
       else if (selectedValue !== null) landCustomDataFilters[_index].value = selectedValue;
       else if (_index !== -1) landCustomDataFilters.splice(_index, 1);
+
+      setSelectedKey(landCustomDataFilters?.[0]?.field?.split?.('.')[3])
+      setSelectedValue(landCustomDataFilters?.[0]?.value)
 
       setStateApp((stateApp) => ({
         ...stateApp,
@@ -88,6 +82,7 @@ export default function CustomDataFilters(props) {
 
       if (_index > -1) {
         landCustomDataFilters = landCustomDataFilters.filter(f => !f.field.startsWith("shapeJson.properties.custom_data"))
+
         setStateApp((stateApp) => ({
           ...stateApp,
           landSearchFilters: { ...stateApp.landSearchFilters, customData: landCustomDataFilters },
@@ -97,30 +92,42 @@ export default function CustomDataFilters(props) {
   }, [selectedKey, selectedValue])
 
   const getKeysOptions = useMemo(() => {
-    const allKeys = Object.keys(_.get(customData, 'getAllKeys', {})).map(key => ({ label: key, value: key }))
+    const getAllKeys = _.get(customData, 'getAllKeys', {})
+
+    let allKeys = Object.keys(getAllKeys).flatMap(key => {
+      if (isArray(getAllKeys[key].label)) return getAllKeys[key].label.map(label => ({ label: label || convertToTitleCase(key), value: key }))
+
+      return { label: getAllKeys[key].label || convertToTitleCase(key), value: key }
+    })
 
     // Removing the keys that are already in agreementDetails
-    return allKeys.filter(key => !(key.value.replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase()) in (agreementDetails || {})))
+    allKeys = allKeys.filter(key => !(key.value.replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase()) in (agreementDetails || {})))
+
+    return allKeys
   }, [customData, agreementDetails])
 
   const getValueOptions = useMemo(() => {
-    return (customData?.getAllKeys[selectedKey] || []).map(key => ({ label: key, value: key }))
+    let allValues = (customData?.getAllKeys[selectedKey]?.value || []).map(key => ({ label: key, value: key }))
+
+    return allValues
   }, [customData, selectedKey]);
 
-  const handleKeyChange = (value) => {
-    setSelectedKey(value);
+  const handleKeyChange = (key) => {
+    setSelectedKey(key.value);
+    setKey(key)
     setSelectedValue(null);
   }
-
   return (
     <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
       <Grid item xs={12}>
         <AutoCompleteDropdown
-          onChange={(e, val) => handleKeyChange(val?.value)}
+          onChange={(e, val) => {
+            handleKeyChange(val)
+          }}
           options={getKeysOptions}
           label={"Key"}
           loading={loading}
-          value={selectedKey && { label: selectedKey, value: selectedKey }}
+          value={key}
         />
       </Grid>
       <Grid item xs={12}>

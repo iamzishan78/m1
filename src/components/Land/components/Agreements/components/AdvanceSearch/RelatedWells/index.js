@@ -141,7 +141,7 @@ export default function RelatedWellsFilters(props) {
             filter={filter}
             filterList={filterList}
             index={index}
-            appliedFilters={stateApp.landSearchFilters.relatedAgreements}
+            appliedFilters={stateApp.landSearchFilters.relatedWells}
           />
         </Grid>
       ))}
