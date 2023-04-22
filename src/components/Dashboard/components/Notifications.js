@@ -300,6 +300,21 @@ const Notifications = () => {
                       history.push(`/revenue/property/details/${parent._id}`);
                     } else if (parentType === "CONTACT") {
                       history.push(`/contact/details/${parent._id}`);
+                    }else if(parentType === "FILE"){
+                      history.push(`/documents`);
+                      setStateApp((state) => ({
+                        ...state,
+                        pdfView: null,
+                        selectedDocument: {
+                          fileId:parent._id,
+                          documentName:parent.name,
+                          fileType:parent.name.split('.')[parent.name.split('.').length-1].toUpperCase(),
+                          fileCreatedAt:parent.fileCreatedAt,
+                          uploadedBy:parent.user.name,
+                          fileSize:Math.round(parent.size/1024)+" KB",
+                          ...parent
+                        },
+                      }));
                     }
                   }}
                 >
@@ -315,12 +330,6 @@ const Notifications = () => {
                           {parent.name}
                         </span>
                       )}
-                    {parent && parentType === "FILE" && (
-                      <span className={classes.title}>
-                        {getNotificationIcon(parentType)}
-                        {parent.documentNumber && parent.documentNumber + "-"}{parent?.documentName}
-                      </span>
-                    )}
                     {parent && parentType === "CHECK" && (
                       <span className={classes.title}>
                         {getNotificationIcon(parentType)}
@@ -333,6 +342,14 @@ const Notifications = () => {
                         {parent.number}-{parent.name}
                       </span>
                     )}
+
+                    {parent && parentType === "FILE" && (
+                      <span className={classes.title}>
+                        {getNotificationIcon(parentType)}
+                        {parent.name}
+                      </span>
+                    )}
+
                     {notificationType === "SYSTEM" && (
                       <Grid container className={classes.gridStyle}>
                         <Grid item xs={1}>
