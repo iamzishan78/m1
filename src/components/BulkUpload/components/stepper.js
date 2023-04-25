@@ -298,17 +298,19 @@ export default function CustomizedSteppers(props) {
       } else {
         const changeDate = new Date();
         const statementInfo = get(stateApp, "uploaderFormValues", {});
-        data_to_send.forEach((element, index) => {
+        let data_to_send = stateApp.csvDataToSend.map((element, index) => {
           element.createBy = userID;
           element.createAt = changeDate;
           element.lastUpdateBy = userID;
           element.lastUpdateAt = changeDate;
+
           element = { ...statementInfo, ...element };
+          element['checkDate'] = getDateWithoutTime(statementInfo.checkDate)
+          element['check.checkDate'] = getDateWithoutTime(statementInfo.checkDate)
           setValue(element, "check.payor", statementInfo.payor);
           setValue(element, "check.payee", statementInfo.payee);
           setValue(element, "check.checkNumber", statementInfo.checkNumber);
           setValue(element, "check.checkAmount", statementInfo.checkAmount);
-          setValue(element, "check.checkDate", getDateWithoutTime(statementInfo.checkDate));
           setValue(element, "check.sourceId", statementInfo.sourceId);
           setValue(element, "check.importType", statementInfo.importType);
           if (props.selectedJob.type === "UNITS") {
@@ -318,8 +320,8 @@ export default function CustomizedSteppers(props) {
             data_to_send[index].shapeType = "Agreement";
           }
           delete element.tableData;
+          return element
         });
-
         const requestPayload = {
           sampleCsv: jobHeaders[props.selectedJob.type],
           uploadType: stateApp.selectedShapeLayerOption,
