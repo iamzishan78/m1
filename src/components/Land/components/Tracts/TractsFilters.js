@@ -181,7 +181,7 @@ const TractsFilters = ({ selectedTractTab }) => {
                                     custom={Array.isArray(filterColumn.filterKey) ? custom : undefined}
                                     onChange={onChange}
                                     query={GET_ES_SIMPLE_FILTER}
-                                    searchFields={["*"]}
+                                    searchFields={[filterColumn.filterKey]}
                                     filters={appliedFilters}
                                     extendSearchQuery={""}
                                 />
