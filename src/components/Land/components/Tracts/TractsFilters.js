@@ -153,7 +153,7 @@ const TractsFilters = ({ selectedTractTab }) => {
                             value: "parcel"
                         }]
                         let filterList = [[''], [''], [''], ['']]
-                        const gridViewFilters = TractGridViewModule?.filters
+                        const gridViewFilters = TractInterestGridViewModule?.filters
 
                         if (gridViewFilters && typeof filterColumn?.filterKey === 'string') {
                             const gridViewFilter = gridViewFilters.find(filter => filter.field === filterColumn?.filterKey)
@@ -174,7 +174,7 @@ const TractsFilters = ({ selectedTractTab }) => {
                                     esIndex={"shapeowners_flat"}
                                     variant="outlined"
                                     setFilters={setFilters}
-                                    filterList={[[''], [''], [''], ['']]}
+                                    filterList={filterList}
                                     column={filterColumn}
                                     disabled={filterColumn?.disabled}
                                     index={index}
