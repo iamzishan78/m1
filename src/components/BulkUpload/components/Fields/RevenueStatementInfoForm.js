@@ -51,6 +51,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
 
   const [payorList, setPayyorList] = useState([]);
   const [getPayorList, { data: payorListData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  const [searchOperator, setSearchOperator] = useState("");
 
   useEffect(() => {
     if (uploaderFormValues) reset(uploaderFormValues);
@@ -72,13 +73,13 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
   useEffect(() => {
     getPayorList({
       variables: {
-        search: "*",
+        search: searchOperator ? `${searchOperator}*` : "*",
         filterKey: "payor.name.keyword",
         esIndex: "checks_flat",
         size: 50,
       },
     });
-  }, [getPayorList]);
+  }, [getPayorList, searchOperator]);
 
   useEffect(() => {
     const sortList = _.orderBy(payorListData?.getESFilterList?.hits, "key", "asc");
@@ -109,6 +110,9 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
                       value={get(params, "value.name", "")}
                       variant="outlined"
                       setValue={params.onChange}
+                      onSearch={(value) => {
+                        setSearchOperator(value);
+                      }}
                       options={payorList?.map((payor) => ({
                         _id: get(payor, `original.hits.hits.${0}._id`),
                         name: payor.key,
