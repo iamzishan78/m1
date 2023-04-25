@@ -71,7 +71,7 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, t
         // }
         const filtered = filter(options, { ...params, inputValue });
         const isExist = loadashFilter(filtered, (filter) => {
-          return filter._id === params.inputValue || filter.name === params.inputValue;
+          return filter._id === params.inputValue?.trim() || filter.name === params.inputValue?.trim();
         });
         // Suggest the creation of a new value
         if (params.inputValue !== "" && (!isExist || isExist.length === 0)) {
