@@ -962,6 +962,11 @@ export const TableESHOC = (Component) => {
                                 meta.setSelectedRows([])
                                 setSelectedRowsValues(null)
                             }
+                            if(tableState.selectedRows.data.length > 0){
+                                for(let i = 0; i< tableState.selectedRows.data.length; i++){
+                                    allRows.push(rows[tableState.selectedRows.data[i].index])
+                                }
+                            }
                             setAllRowsSelected(undefined)
                         }
                     setSelectedRows(tableState.selectedRows.data)
