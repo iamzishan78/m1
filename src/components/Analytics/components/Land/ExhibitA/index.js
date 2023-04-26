@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, makeStyles } from "@material-ui/core";
 
 import ExhibitA from "./ExhibitA";
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
+import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -56,9 +57,11 @@ const useStyles = makeStyles((theme) => ({
 const filterColumnsHeader = [
   {
     label: "Agreement Type",
-    filterKey: "shape.shapeJson.properties.layerSubType.keyword",
-    name: "layerSubType",
-    custom: { initialCapitalization: true },
+    filterKey: "shape.shapeJson.properties.agreementType.keyword",
+    name: "agreementType",
+    custom: {
+      formatedFilterOptions: agreementTypes
+    }
   },
   {
     label: "State",
@@ -99,7 +102,32 @@ export default function ExhibitATabPanel() {
   const [, setFilters] = useState([]);
 
   const [esFilters, setESFilters] = useState([]);
+  const [tableFilters, setTableFilters] = useState([]);
 
+  useEffect(() => {
+    const filter = JSON.parse(JSON.stringify(esFilters))
+    for(let i=0; i<filter.length; i++) {
+      const column = filterColumnsHeader.find(h => h.filterKey === filter[i].field)
+      if(column && column?.custom?.formatedFilterOptions){
+        const filterData = column?.custom?.formatedFilterOptions;
+        const data = filterData.find(f => f.label === filter[i].value)
+        if (data) {
+          filter[i].value = data.value
+        }
+      }
+      setTableFilters(filter)
+    }
+    // if(column?.custom?.formatedFilterOptions){
+    //   let value = column.filterList[0];
+    //   const filterData = column?.custom?.formatedFilterOptions;
+    //   const data = filterData.find(f => f.label === value)
+    //   if (data) {
+    //     value = data.value
+    //   }
+    //   column.filterList[0] = value
+    // }
+    // setTableFilters(esFilters)
+  },[esFilters])
   const onChange = (filter, index, column, esKey) => {
     const newFilters = JSON.parse(JSON.stringify(esFilters));
 
@@ -112,7 +140,7 @@ export default function ExhibitATabPanel() {
         }
       } else {
         const index = newFilters.find((filter) => filter.field.includes(column?.filterKey[0]));
-        if (index > -1) {
+        if (index >= '0') {
           newFilters.splice(index, 1);
         }
       }
@@ -168,7 +196,7 @@ export default function ExhibitATabPanel() {
                     esIndex={"shapetracts_flat"}
                     variant="outlined"
                     setFilters={setFilters}
-                    filterList={JSON.parse(JSON.stringify(initialFilterList))}
+                    filterList={JSON.parse(JSON.stringify(filterList))}
                     column={filterColumn}
                     disabled={filterColumn?.disabled}
                     index={index}
@@ -190,7 +218,7 @@ export default function ExhibitATabPanel() {
         <ExhibitA
           filterChange={filterChange}
           header="Exhibit A"
-          esFilters={esFilters}
+          esFilters={tableFilters}
           targetLabel="acerage"
           parent="AcerageDetail"
           esIndex="shapetracts_flat"

@@ -1508,7 +1508,7 @@ function SubTable(props) {
                             getWell({
                               variables: { wellId: value },
                             });
-                          } else if (props.parent === "assocTaxRollInterests" && props.targetLabel === "unit") {
+                          } else if (props.parent === "assocTaxRollInterests" && (props.targetLabel === "unit" || props.targetLabel === 'contactUnits')) {
                             let selectedUnit = props.rows.find((row) => {
                               return row.shape._id === tableMeta.rowData[2];
                             })?.shape;

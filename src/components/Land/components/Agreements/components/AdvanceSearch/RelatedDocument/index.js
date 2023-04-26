@@ -42,8 +42,9 @@ const documentFilters = [
   },
   {
     label: "File Date",
-    filterKey: "relatedDocs.uploadedDate.keyword",
+    filterKey: "relatedDocs.uploadedDate",
     searchFields: ["relatedDocs.uploadedDate"],
+    isDate: true
   },
   {
     label: "Book",
@@ -66,7 +67,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
   const params = {
     esIndex: "shapes_flat",
     variant: "outlined",
-    setFilters: () => {},
+    setFilters: () => { },
     filterList,
     column: {
       label: filter.label,
@@ -83,7 +84,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
   if (filter.getOptionLabel) params["getOptionLabel"] = filter.getOptionLabel;
   return (
     <FormControl variant="outlined" className={classes.formControl}>
-      <AutoCompleteFilter {...params} />
+      <AutoCompleteFilter {...params} isDate={filter.isDate} />
     </FormControl>
   );
 };
@@ -94,26 +95,26 @@ export default function RelatedDocumentFilters(props) {
   const [filterList, setFilterList] = useState([[], [], [], [], [], [], []]);
 
   useEffect(() => {
-    if (stateApp.landSearchFilters.provisions?.length === 0 && filterList.find((fl) => fl.length !== 0)) {
-      setFilterList([[], []]);
+    if (stateApp.landSearchFilters.relatedDocuments?.length === 0 && filterList.find((fl) => fl.length !== 0)) {
+      setFilterList([[], [], [], [], [], [], []]);
     }
-  }, [stateApp.landSearchFilters.provisions]);
+  }, [stateApp.landSearchFilters.relatedDocuments]);
 
   const changeLandProvisions = React.useMemo(
     () =>
       debounce((request, callback, index) => {
         const { filterKey } = callback;
-        const landProvisionsFilters = [...stateApp.landSearchFilters.provisions];
+        const landProvisionsFilters = [...stateApp.landSearchFilters.relatedDocuments];
         const _index = landProvisionsFilters.findIndex((f) => f.field === filterKey);
         if (_index === -1 && request[0] !== null) landProvisionsFilters.push({ field: filterKey, value: request[0] });
         else if (request.length > 0 && request[0] !== null) landProvisionsFilters[_index].value = request[0];
         else if (_index !== -1) landProvisionsFilters.splice(_index, 1);
         setStateApp((stateApp) => ({
           ...stateApp,
-          landSearchFilters: { ...stateApp.landSearchFilters, provisions: landProvisionsFilters },
+          landSearchFilters: { ...stateApp.landSearchFilters, relatedDocuments: landProvisionsFilters },
         }));
       }, 1000),
-    [setStateApp, stateApp.landSearchFilters.provisions]
+    [setStateApp, stateApp.landSearchFilters.relatedDocuments]
   );
 
   const onFilterChange = (request, callback, filter, index) => {
@@ -136,7 +137,7 @@ export default function RelatedDocumentFilters(props) {
             filter={filter}
             filterList={filterList}
             index={index}
-            appliedFilters={stateApp.landSearchFilters.provisions}
+            appliedFilters={stateApp.landSearchFilters.relatedDocuments}
           />
         </Grid>
       ))}

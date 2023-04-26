@@ -161,7 +161,8 @@ const AppProvider = (props) => {
       provisions: [],
       customData: [],
       relatedWells: [],
-      relatedAgreements: []
+      relatedAgreements: [],
+      relatedDocuments: [],
     },
 
     toggleLayersActivity: (identifier, activityValue) => {
@@ -187,6 +188,7 @@ const AppProvider = (props) => {
             return {
               ...stateApp,
               layers: [...currentLayers],
+              toggleLayerActivityValue: activityValue,
               mapCircularLoaderAct: false,
             };
           }

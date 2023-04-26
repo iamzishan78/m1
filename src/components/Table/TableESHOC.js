@@ -1,12 +1,11 @@
 import React, { useContext, useState, useEffect, useCallback, useRef, useMemo, memo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useApolloClient, useLazyQuery } from "@apollo/client";
-import { Button, Tooltip, IconButton, TextField } from "@material-ui/core";
-import { Autocomplete } from "@material-ui/lab";
+import { Button, Tooltip, IconButton } from "@material-ui/core";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import DeleteIcon from "@material-ui/icons/Delete";
 import { useHistory } from "react-router-dom";
-import { filter, isEmpty, unionWith, isEqual, uniqWith } from "lodash";
+import { isEmpty, isEqual, uniqWith } from "lodash";
 
 import { AppContext } from "AppContext";
 // import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
@@ -32,9 +31,7 @@ import { formattingGridView, sortColumns } from "utils/helper";
 import { DrawerContext } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import moment from "moment";
 
-import GlobalSettings from "..//..//GlobalSettings.js";
-import { SimpleAutoCompleteFilter } from "./SimpleAutoComplete";
-
+import GlobalSettings from "GlobalSettings.js";
 
 export const TableESHOC = (Component) => {
     const HocWithDefaultProps = function HOC(props) {
@@ -107,22 +104,47 @@ export const TableESHOC = (Component) => {
 
         const history = useHistory();
 
-        const tableData = elasticData?.getESSimpleSearch || {}
+        const tableData = elasticData?.getESSimpleSearch || {};
 
-        const updateColumnsOnGridViewChange = (metaDatas) => {
+        const getNonGridViewColumnsData = (cols = columns, metaDatas = metaDataRef.current) => {
+            if (cols?.length > 0 && metaDatas) {
+
+                let filterColumns = cols.filter((col) => !col._id && !props.actionColumns.includes(col.label) && !props.actionColumns.includes(col.name));
+                let actionColumns = cols.filter((col) => props.actionColumns.includes(col.label) || props.actionColumns.includes(col.name));
+
+                // Excluding actionColumns from veiw Columns
+                actionColumns = actionColumns.map(aC => ({ ...aC, options: { ...aC.options, viewColumns: false } }));
+
+                metaDatas = metaDatas.filter(meta => !cols.find(col => col.name === meta.name)).map(meta => ({
+                    name: meta.name,
+                    label: meta.label,
+                    esKey: meta.esKey,
+                    options: {
+                        ...meta.options,
+                        sort: true,
+                        filter: true,
+                        dbName: meta.esKey.replace('.keyword', '')
+                    },
+                }));
+
+                let columnsData = [...filterColumns, ...copy(metaDatas), ...actionColumns];
+                return columnsData;
+            }
+            return cols;
+        }
+
+        const updateColumnsOnGridViewChange = () => {
             Columns((cols) => {
                 if (cols?.length > 0) {
-                    console.log('Inside Columns', cols)
                     const selectedData = JSON.parse(JSON.stringify(selectedGridView));
                     setStateApp((state) => ({ ...state, selectedView: selectedData }));
 
-                    let filterColumns = cols.filter((col) => !col._id && !props.actionColumns.includes(col.label) && !props.actionColumns.includes(col.name));
                     let actionColumns = cols.filter((col) => props.actionColumns.includes(col.label) || props.actionColumns.includes(col.name));
 
                     // Excluding actionColumns from veiw Columns
                     actionColumns = actionColumns.map(aC => ({ ...aC, options: { ...aC.options, viewColumns: false } }))
 
-                    let columnsData = [...filterColumns, ...copy(metaDatas), ...actionColumns]
+                    let columnsData = getNonGridViewColumnsData();
 
                     let view = JSON.parse(JSON.stringify(selectedData));
                     if (view.columns) {
@@ -140,19 +162,28 @@ export const TableESHOC = (Component) => {
                 return cols
             })
         }
+
+        useEffect(() => {
+            if (tableMeta?.typeKeyword?.metaModule) {
+                if (!metaDataRef.current) {
+                    client
+                        .query({
+                            query: GET_META_DATA,
+                            variables: { user: stateApp.user?.mongoId, category: tableMeta?.typeKeyword?.metaModule },
+                        })
+                        .then(({ data: metaDataRes }) => {
+                            const metaDatas = metaDataRes?.getMetaData?.metaData || [];
+                            if (!deepEqual(metaDatas, metaDataRef.current)) {
+                                metaDataRef.current = metaDatas;
+                            }
+                        });
+                }
+            }
+        }, [tableMeta?.typeKeyword?.metaModule]);
+
         useEffect(() => {
             if (selectedGridView) {
-                updateColumnsOnGridViewChange(metaDataRef.current || [])
-
-                client.query({
-                    query: GET_META_DATA, variables: { user: stateApp.user?.mongoId, category: tableMeta?.typeKeyword?.metaModule },
-                }).then(({ data: metaDataRes }) => {
-                    const metaDatas = metaDataRes?.getMetaData?.metaData || []
-                    if (!deepEqual(metaDatas, metaDataRef.current)) {
-                        metaDataRef.current = metaDatas
-                        updateColumnsOnGridViewChange(metaDatas)
-                    }
-                });
+                updateColumnsOnGridViewChange(metaDataRef.current || []);
             }
         }, [selectedGridView]);
 
@@ -212,7 +243,9 @@ export const TableESHOC = (Component) => {
 
         useEffect(() => {
             // New code added to only search on table related fields to avoid api crash
-            if (!tableMeta.searchFields && tableMeta.TableHeader) tableMeta.searchFields = getSearchFields(tableMeta.TableHeader)
+            if ((!tableMeta.searchFields && tableMeta.TableHeader) || metaDataRef.current) {
+                tableMeta.searchFields = getSearchFields(tableMeta.TableHeader, metaDataRef.current)
+            }
 
             if (tableMeta?.esIndex) {
                 if (tableMeta.modifySelectedGridView) {
@@ -251,7 +284,7 @@ export const TableESHOC = (Component) => {
                     handleSelectedGridChange(tableMeta.TableHeader, { ...selectedGridView, filters: (selectedGridView.filters || []).concat(tableMeta.filters || []) }, columns, true)
             }
             // eslint-disable-next-line
-        }, [tableMeta, search]);
+        }, [tableMeta, search, metaDataRef.current]);
 
 
         useEffect(() => {
@@ -267,9 +300,13 @@ export const TableESHOC = (Component) => {
                 let { TableHeader, formatColumns, formatHits } = tableMeta
 
                 TableHeader = columns.length > 0 ? columns : TableHeader;
-                let hits = tableData?.hits
+                let hits = tableData?.hits;
                 if (formatHits)
-                    hits = formatHits(hits)
+                    hits = formatHits(hits);
+
+                if (metaDataRef.current) {
+                    hits = setCustomMetaRows(hits);
+                }
 
                 if (isFiniteScroll && changePage) {
                     const rowIndex = rows.length - 5
@@ -284,7 +321,7 @@ export const TableESHOC = (Component) => {
                     TableHeader = formatColumns(TableHeader, hits)
                     tableMeta.TableHeader = TableHeader
                 }
-                setColumnsData(copy(TableHeader));
+                setColumnsData(getNonGridViewColumnsData(copy(TableHeader)));
                 setLoading(false);
             }
             else if (tableData?.hits?.length === 0) {
@@ -293,10 +330,20 @@ export const TableESHOC = (Component) => {
                 if (formatHits)
                     formatHits([]);
                 setRows([]);
-                setColumnsData(copy(tableMeta.TableHeader));
+                setColumnsData(getNonGridViewColumnsData(copy(tableMeta.TableHeader)));
                 setLoading(false);
             }
         }, [tableData, dependencyUpdate]);
+
+        const setCustomMetaRows = (hits) => {
+            hits.forEach(hit => {
+                metaDataRef.current.forEach(meta => {
+                    const esKey = meta.esKey.replace(".keyword", "");
+                    hit[meta.name] = get(hit, esKey);
+                });
+            });
+            return hits;
+        }
 
         const setColumnsData = (tableCols) => {
             let { TableHeader, extendSearchQuery, esIndex, filters } = tableMeta
@@ -345,10 +392,11 @@ export const TableESHOC = (Component) => {
                         },
                         filterOptions: {
                             display: (filterList, onChange, index, column) => {
-                                if (!TableHeader.find((el) => el.name === column.name) && tableMeta.customDataESKey) {
+                                const tableHeaders = getNonGridViewColumnsData(copy(TableHeader));
+                                if (!tableHeaders.find((el) => el.name === column.name) && tableMeta.customDataESKey) {
                                     column.filterKey = `${tableMeta.customDataESKey}.${column.name}.keyword`
                                 } else
-                                    column.filterKey = TableHeader.find((el) => el.name === column.name)?.esKey;
+                                    column.filterKey = tableHeaders.find((el) => el.name === column.name)?.esKey;
 
                                 if (!column.filterKey && column.esKey) column.filterKey = column.esKey
 
@@ -421,7 +469,7 @@ export const TableESHOC = (Component) => {
             tableCols = tableCols.filter(cD => cD.name !== "_id" && !cD.options?.stickyColumn);
             tableCols.unshift(...stickyColumns);
 
-            setColumns(tableCols);
+            setColumns(getNonGridViewColumnsData(tableCols));
         };
 
         const initializeGenericData = useCallback((ids, actions) => {
@@ -726,7 +774,7 @@ export const TableESHOC = (Component) => {
                             updatedData = updatedData.replace(/,/g, ' ')
                         }
                     } else if (sampleCsv[j].name === 'tags' && Array.isArray(updatedData)) {
-                        if(updatedData[0]){
+                        if (updatedData[0]) {
                             const tags = updatedData[0].map(d => d).toString().replace(/,/g, ' ')
                             updatedData = tags
                         }
@@ -831,7 +879,7 @@ export const TableESHOC = (Component) => {
             if (action === 'filterChange' && tableMeta.setAppliedFilters) {
                 tableMeta.setAppliedFilters(activeFiltersRef.current);
             }
-            if (['filterChange', 'resetFilters'].includes(action)) {
+            if (['filterChange', 'resetFilters', 'viewColumnsChange'].includes(action)) {
                 if (isFiniteScroll) {
                     tableStateRef.current.sortOrder = {}
                     tableState.sortOrder = {}
@@ -973,7 +1021,7 @@ export const TableESHOC = (Component) => {
                                 right: tableMeta?.downloadAll?.exportPx,
                             }}>
                                 <IconButton onClick={onDownload} disabled={isExporting}>
-                                    <Tooltip title="Download CSV Test" aria-label="add">
+                                    <Tooltip title="Download to CSV" aria-label="add">
                                         <CloudDownloadIcon />
                                     </Tooltip>
                                 </IconButton>

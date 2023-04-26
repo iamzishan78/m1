@@ -52,11 +52,16 @@ function AgreementsTable(props) {
     refetchQueries: ["getESSimpleSearch"],
     awaitRefetchQueries: true,
   });
+  const excludeFromViewColumns = ["interest_type", "tract_status"]
 
   const classes = usetableStyles({ isFullHeight: true, isAgreementsTable: true });
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
-  const GridViewModule = userGridViewSettings[`Agreements`];
+  let GridViewModule = userGridViewSettings[`Agreements`];
+  GridViewModule.columns = GridViewModule.columns.map(obj =>
+    excludeFromViewColumns.includes(obj.name) ? { ...obj, "viewColumns": false } : obj
+  );
+
   const { Agreements: AgreementsGridView } = useSelector(({ session }) => session.userGridViewSettings);
 
   const searchInput = useSelector((state) => state.MapGridCard.searchInputValue);
@@ -218,9 +223,8 @@ function AgreementsTable(props) {
             m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
-            {`Do you want to delete the selected agreement${
-              props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
-            }?`}
+            {`Do you want to delete the selected agreement${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+              }?`}
           </DeleteConfirmationDialogContent>
         )}
       </Dialog>

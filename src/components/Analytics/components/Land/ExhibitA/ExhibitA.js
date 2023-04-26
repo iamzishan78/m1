@@ -12,6 +12,7 @@ import { usetableStyles } from "components/Table/Styles";
 import { setRevenuePropertyData } from "actions";
 import TableESHOC from "components/Table/TableESHOC";
 import convert_date from "components/Shared/valueformatters/convert_date.js";
+import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
 function ExhibitATable(props) {
   const classes = usetableStyles();
@@ -26,6 +27,7 @@ function ExhibitATable(props) {
     hits = hits.map((hit) => {
       hit.agreementNumber = hit.shape.shapeJson.properties.agreementNumber;
       hit.agreementName = hit.shape.shapeJson.properties.agreementName;
+      hit.agreementType = agreementTypes.find((type) => type.value === hit.shape.shapeJson.properties.agreementType || type.label === hit.shape.shapeJson.properties.agreementType)?.label;
       hit.agreementId = hit.shape._id;
       hit.grantor = hit.shape.shapeJson.properties.grantor;
       hit.grantee = hit.shape.shapeJson.properties.grantee;

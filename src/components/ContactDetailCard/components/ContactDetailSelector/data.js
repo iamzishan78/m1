@@ -1,4 +1,3 @@
-import LeaseIcon from "components/Shared/svgIcons/lease";
 import WellIcon from "components/Shared/svgIcons/well";
 import UnitIcon from "components/Shared/svgIcons/unit";
 import TaxOwnerIcon from "@material-ui/icons/AccountBalance";
@@ -18,7 +17,7 @@ export const contactDetailInitialData = [
   { index: 0, value: "contactInformation", Icon: ContactInformationIcon, label: "Contact Info", showCounts: false },
   { index: 4, value: "unitInterests", Icon: UnitIcon, label: "Unit Interests", showCounts: true },
   { index: 3, value: "wellInterests", Icon: WellIcon, label: "Well Interests", showCounts: true },
-  { index: 5, value: "parcelInterests", Icon: ParcelIcon, label: "Tract Interests", showCounts: true },
+  { index: 5, value: "tractInterests", Icon: ParcelIcon, label: "Tract Interests", showCounts: true },
   { index: 2, value: "taxRollInterests", Icon: TaxOwnerIcon, label: "Tax Roll Interests", showCounts: true },
   { index: 8, value: "relatedAgreements", Icon: HistoryEduBlackIcon, label: "Related Agreements", showCounts: true, feature: FEATURES.LANDMODULE },
   { index: 1, value: "activities", Icon: ActivitiesIcon, label: "Activities", showCounts: true },
