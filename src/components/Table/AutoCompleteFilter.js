@@ -46,6 +46,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
     return filterValue
   }
 
+  console.log("filterList : ", filterList)
   const filterValue = getDefaltValue();
   const [open, setOpen] = useState(false);
   const [, setStateApp] = useContext(AppContext);
@@ -148,13 +149,14 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
         search,
         ...(getFiltersType === "getESSimpleFilter" && { search: { query: extendSearchQuery, fields: searchFields } }),
         extendSearchQuery,
-        size: 50,
+        size: 10,
         key_as_string: custom?.key_as_string,
         multi_filter_keys: custom?.multi_filter_keys,
         filterAggs: {
           query: rawSearch,
           field: typeof filterKey === "string" ? filterKey : undefined,
           fields: typeof filterKey !== "string" ? filterKey : undefined,
+          type: others.aggsType ? others.aggsType : undefined,
           size: 50,
         },
       },
@@ -178,6 +180,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
       getOptionSelected={(option, value) => option.key === value.key}
       getOptionLabel={(option) => customStartCaseString(capitalizeFirstLetter(option?.key?.toString().replace(/^\,|\,$/gm, "")), isDate)}
       onChange={(e, value2, reason) => {
+
         if (reason === "clear" || (multiple && value2.length === 0) || (!multiple && !value2?.key)) {
           filterList[index].pop();
           setSearch("");
