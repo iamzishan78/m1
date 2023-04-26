@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import get from "lodash/get";
 import { makeStyles } from "@material-ui/styles";
 import { IconButton } from "@material-ui/core";
@@ -11,11 +11,16 @@ const filterTypes = {
   // Summary: { component: "ProvisionFilters", countKey: "geographyFilterCount" },
   // "Related Parties": { component: "ProvisionFilters", countKey: "wellFilterCount" },
   Provisions: { component: "ProvisionFilters", countKey: "provisions" },
+  // "Related Wells": { component: "RelatedWellsFilters", countKey: "tagFilterCount" },
   // "Legal Description": { component: "ProvisionFilters", countKey: "ownershipFilterCount" },
   // Wells: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // Documents: { component: "ProvisionFilters", countKey: "tagFilterCount" },
-  // "Related Agreements": { component: "ProvisionFilters", countKey: "tagFilterCount" },
+  // "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "tagFilterCount" },
   // "Remarks Types": { component: "RemarksTypes", countKey: "remarksTypes" },
+  "Related Wells": { component: "RelatedWellsFilters", countKey: "relatedWells" },
+  "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "relatedAgreements" },
+  "Related Documents": { component: "RelatedDocumentFilters", countKey: "relatedDocuments" },
+  "Custom Metadata": { component: "CustomDataFilters", countKey: "customData" },
 };
 
 const useStyles = makeStyles(() => ({
@@ -113,7 +118,7 @@ const useStyles = makeStyles(() => ({
 export default function QuickActionsPanel({ children, title, actions, handlePanelStateChange, quickActionsPanelState, activeModule }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-
+  const [selectedTab, setSelectedTab] = useState(null);
   useEffect(() => {
     return () => {
       let landFilters = { ...stateApp.landSearchFilters };
@@ -133,17 +138,20 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
       landSearchFilters: { ...stateApp.landSearchFilters, [filter.countKey]: [] },
     }));
   };
+  const handleChange = (panel) => (event, isExpanded) => {
+    setSelectedTab(isExpanded ? panel : false);
+  };
 
   return (
     <div className={classes.root}>
       {Object.keys(filterTypes).map((filterType, index) => (
-        <Accordion className={classes.accordionRoot}>
+        <Accordion className={classes.accordionRoot} expanded={selectedTab === index} onChange={handleChange(index)}>
           <AccordionSummary
             aria-controls="panel1a-content"
-            id="panel1a-header"
+            id={`panel1a-header${selectedTab}`}
             expandIcon={<ExpandMoreIcon />}
-            defaultExpanded={index === 0}
-            style={{ borderLeft: "5px solid #18aadd" }}
+            defaultExpanded={selectedTab === index}
+            style={{ borderLeft: selectedTab === index && "5px solid #18aadd" }}
           >
             <Grid container direction="row" justify="space-between" alignItems="center">
               <Grid item className={classes.accordionHeading}>

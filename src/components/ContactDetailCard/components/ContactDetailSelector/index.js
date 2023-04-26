@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { get } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "AppContext";
@@ -23,7 +23,6 @@ import { contactDetailInitialData } from "./data";
 
 import { CONTACT_SUMMARY } from "graphQL/useQueryContactSummary";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
-import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 const useStyles = makeStyles((theme) => ({
   card: {

@@ -551,19 +551,19 @@ const ShapeActionsPopup = (props) => {
 
   const updateAndOpenShapeDetail = (layerData) => {
     let abstractShape = getAbstractGeoSource(stateApp.currentFeature);
-    layerData.shapeJson.geometry = abstractShape.geometry
+    layerData.shapeJson.geometry = abstractShape?.geometry
     layerData.shapeJson.properties = {
       ...layerData.shapeJson.properties,
-      originalProperties: abstractShape.properties,
+      originalProperties: abstractShape?.properties,
       shapeArea: calculateLandArea(abstractShape),
-      shapeCenter: calculateShapeCenter(abstractShape.geometry.coordinates),
+      shapeCenter: calculateShapeCenter(abstractShape?.geometry.coordinates),
     }
     const customLayerData = {
       shapeJson: layerData.shapeJson,
       shape: JSON.stringify(layerData.shapeJson),
       layer: layerData.layer,
       name: layerData.shapeLabel,
-      user: layerData.user._id,
+      user: layerData.user?._id,
     };
 
     updateCustomLayer({
@@ -667,7 +667,7 @@ const ShapeActionsPopup = (props) => {
   const enableEditOnly = stateApp.featureToEdit?.layer?.id === "parcel" || shapeTypeLayers.includes(stateApp.featureToEdit?.layer?.id);
   const isAoi = stateApp.selectedAoi?.layer?.id === "interest";
   const isCreateParcelMenu = Boolean(anchorEl);
-  const isShapeResizeMode = stateApp.featureToEdit?.layer?.id === "parcel" || stateApp.featureToEdit?.layer?.id === "unit";
+  const isShapeResizeMode = stateApp.featureToEdit?.layer?.id === "parcel" || shapeTypeLayers.includes(stateApp.featureToEdit?.layer?.id);
 
   const confirmShapeEditing = () => {
     let { featureToEdit, currentFeature } = stateApp;

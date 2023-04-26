@@ -28,6 +28,7 @@ import { GET_JOB_UPLOAD_URI } from "graphQL/useQueryGetJobUploadUri";
 import { BlockBlobClient } from "@azure/storage-blob";
 import jobHeaders from "../jobHeaders";
 import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
+import { getDateWithoutTime } from "components/Shared/functions";
 
 const QontoConnector = withStyles({
   alternativeLabel: {
@@ -297,28 +298,30 @@ export default function CustomizedSteppers(props) {
       } else {
         const changeDate = new Date();
         const statementInfo = get(stateApp, "uploaderFormValues", {});
-        data_to_send.forEach((element) => {
+        let data_to_send = stateApp.csvDataToSend.map((element, index) => {
           element.createBy = userID;
           element.createAt = changeDate;
           element.lastUpdateBy = userID;
           element.lastUpdateAt = changeDate;
+
           element = { ...statementInfo, ...element };
+          element['checkDate'] = getDateWithoutTime(statementInfo.checkDate)
+          element['check.checkDate'] = getDateWithoutTime(statementInfo.checkDate)
           setValue(element, "check.payor", statementInfo.payor);
           setValue(element, "check.payee", statementInfo.payee);
           setValue(element, "check.checkNumber", statementInfo.checkNumber);
           setValue(element, "check.checkAmount", statementInfo.checkAmount);
-          setValue(element, "check.checkDate", moment(statementInfo.checkDate).format("MM/DD/YYYY"));
           setValue(element, "check.sourceId", statementInfo.sourceId);
           setValue(element, "check.importType", statementInfo.importType);
           if (props.selectedJob.type === "UNITS") {
             element["shape.shapeType"] = "Unit";
           }
           if (props.selectedJob.type === "AGREEMENT_HEADER") {
-            element["shapeType"] = "Agreement";
+            data_to_send[index].shapeType = "Agreement";
           }
           delete element.tableData;
+          return element
         });
-
         const requestPayload = {
           sampleCsv: jobHeaders[props.selectedJob.type],
           uploadType: stateApp.selectedShapeLayerOption,
@@ -352,7 +355,7 @@ export default function CustomizedSteppers(props) {
         setStateApp((state) => ({
           ...state,
           activeStepNumber: stateApp.activeStepNumber + 1,
-          revenueStatementInfo: {}
+          uploaderFormValues: {}
         }));
       }
 

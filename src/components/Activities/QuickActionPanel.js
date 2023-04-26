@@ -136,13 +136,7 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
                         )
                 )}
           </StyledMenu>
-          <div className={calenderClasses.centerNav}>
-            <DatePicker
-                selected={activityApp?.selectedDate}
-                inline
-                onMonthChange={(e)=>handleCalender(e)}
-            />
-          </div>
+          
         </Drawer>
         <FeatureFlag feature={FEATURES[activeModule.featureFlag]} noCheck={activeModule.noCheck}>
           <div

@@ -12,6 +12,7 @@ import { usetableStyles } from "components/Table/Styles";
 import { setRevenuePropertyData } from "actions";
 import TableESHOC from "components/Table/TableESHOC";
 import convert_date from "components/Shared/valueformatters/convert_date.js";
+import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
 function ExhibitATable(props) {
   const classes = usetableStyles();
@@ -25,6 +26,9 @@ function ExhibitATable(props) {
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
       hit.agreementNumber = hit.shape.shapeJson.properties.agreementNumber;
+      hit.agreementName = hit.shape.shapeJson.properties.agreementName;
+      hit.agreementType = agreementTypes.find((type) => type.value === hit.shape.shapeJson.properties.agreementType || type.label === hit.shape.shapeJson.properties.agreementType)?.label;
+      hit.agreementId = hit.shape._id;
       hit.grantor = hit.shape.shapeJson.properties.grantor;
       hit.grantee = hit.shape.shapeJson.properties.grantee;
       // hit.layerSubType = hit.shape.shapeJson.properties.layerSubType;
@@ -78,9 +82,9 @@ function ExhibitATable(props) {
       filters: fixedFilters,
       selectedGridView: { filters: [] },
       startPaginationAt: 25,
-      // defaultSort: { field: "name.keyword", order: "asc" },
+      defaultSort: { field: "_ts", order: "desc" },
       formatHits,
-      exportPx: "121px",
+      downloadAll: { exportPx: '121px' },
       setAppliedFilters: props.filterChange,
     });
     // eslint-disable-next-line

@@ -64,19 +64,19 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, t
       }}
       onInputChange={onInputChange}
       filterOptions={(options, params) => {
-        const { inputValue } = params;
-        // let inputValue = value ? JSON.parse(JSON.stringify(value)) : "";
+        // const { inputValue } = params;
+        let inputValue = value ? JSON.parse(JSON.stringify(value)) : "";
         // if (typeof inputValue.name === "string") {
         //   inputValue = inputValue.name;
         // }
         const filtered = filter(options, { ...params, inputValue });
         const isExist = loadashFilter(filtered, (filter) => {
-          return filter._id === inputValue;
+          return filter._id === params.inputValue?.trim() || filter.name === params.inputValue?.trim();
         });
         // Suggest the creation of a new value
-        if (inputValue !== "" && (!isExist || isExist.length === 0)) {
+        if (params.inputValue !== "" && (!isExist || isExist.length === 0)) {
           filtered.unshift({
-            name: inputValue,
+            name: params.inputValue,
             _id: "newEntity",
           });
         }

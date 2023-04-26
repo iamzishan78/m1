@@ -83,7 +83,7 @@ export default function ExhibitATabPanel() {
 
   return (
     <>
-      <div className={classes.actionBar}>
+      {/* <div className={classes.actionBar}>
         <Grid
           container
           direction="row"
@@ -164,9 +164,9 @@ export default function ExhibitATabPanel() {
             </Grid>
           </Grid>
         </Grid>
-      </div>
+      </div> */}
       <WellMaster
-        header="Acreage Detail"
+        header="Well Master"
         esFilters={esFilters}
         targetLabel="acerage"
         parent="AcerageDetail"

@@ -16,9 +16,13 @@ const useStyles = makeStyles(() => ({
 export default function AdvanceSearch({ activeModule }) {
   const classes = useStyles();
   const history = useHistory();
-
   const isASActive = useMemo(
-    () => activeModule.title === "Agreements" && history.location.pathname === "/land/agreements",
+    () => activeModule.title === "Agreements" || history.location.pathname === "/land/agreements",
+    [activeModule, history.location]
+  );
+
+  const isASActiveWells = useMemo(
+    () => activeModule.title === "Wells" || history.location.pathname === "/land/wells",
     [activeModule, history.location]
   );
 
@@ -27,11 +31,11 @@ export default function AdvanceSearch({ activeModule }) {
       {isASActive && (
         <>
           <Divider />
-          <div style={{ paddingLeft: '23px', color: "#29abe0" }}> 
-          <Typography  className={classes.title}>Advanced Search</Typography>
+          <div style={{ paddingLeft: '23px', color: "#29abe0" }}>
+            <Typography className={classes.title}>Advanced Search</Typography>
           </div>
           {activeModule.title === "Agreements" && <AgreementAdvanceSearch />}
-          
+
           <Divider />
         </>
       )}

@@ -11,6 +11,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { AppContext } from "AppContext";
+import moment from "moment";
 
 import { useLazyQuery } from "@apollo/client";
 import { GET_ACTIVITY_TYPES } from "graphQL/useQueryActivityTypes";
@@ -54,7 +55,6 @@ const useToolbarStyles = makeStyles((theme) => ({
     opacity: "0",
 
     '& input::-webkit-calendar-picker-indicator': {
-      cursor: "pointer",
       display: "block",
       top: 0,
       left: 0,
@@ -141,45 +141,15 @@ const ActivitiesToolbar = ({
 
   const goToBack = () => {
     setSelectedDate(state => {
-      let current = state
-      if (state.getMonth() === 1)
-        current = new Date(state.getFullYear() - 1, 0, 1);
-      else
-        current = new Date(state.getFullYear(), state.getMonth() - 1, 1);
-
-      return current
+      return moment(state).subtract(1, view).toDate()
     })
 
   };
   const goToNext = () => {
     setSelectedDate(state => {
-      let current = state
-      if (state.getMonth() === 11)
-        current = new Date(state.getFullYear() + 1, 0, 1);
-      else
-        current = new Date(state.getFullYear(), state.getMonth() + 1, 1);
-
-      return current
+      return moment(state).add(1, view).toDate()
     })
   };
-  // const goToCurrent = () => {
-  //   toolbar.onNavigate("TODAY");
-  // };
-  // const goToNextWeek = () => {
-  //   var today = new Date();
-  //   toolbar.onNavigate(
-  //     "DATE",
-  //     new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
-  //   );
-  // };
-  // const goToTomorrow = () => {
-  //   var today = new Date();
-  //   toolbar.onNavigate(
-  //     "DATE",
-  //     new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000)
-  //   );
-  // };
-
   const handleViewChange = (event) => {
     const view = event.target.value;
     setView(view);
@@ -259,32 +229,31 @@ const ActivitiesToolbar = ({
             renderInput={(params) => <TextField {...params} label="Owner" variant="outlined" value={activityFilterByOwner} />}
           />
         </div>
-        {/*{stateApp.activityDisplayType === "calendar" && (*/}
-        {/*    <div className={classes.centerNav}>*/}
-        {/*      <IconButton size="small" className={classes.marginLeft} onClick={() => goToBack()}>*/}
-        {/*        <NavigateBeforeIcon />*/}
-        {/*      </IconButton>*/}
-        {/*      <p className={classes.marginLeft}>{toolbar.label}</p>*/}
-        {/*      <IconButton size="small" className={classes.marginLeft} onClick={() => goToNext()}>*/}
-        {/*        <NavigateNextIcon />*/}
-        {/*      </IconButton>*/}
-
-        {/*      <TextField*/}
-        {/*          id="date"*/}
-        {/*          label="Birthday"*/}
-        {/*          type="date"*/}
-        {/*          format="MM/DD/YYYY"*/}
-        {/*          defaultValue={selectedDate}*/}
-        {/*          className={classes.datePicker}*/}
-        {/*          onChange={(event) => setSelectedDate(new Date(event.target.value))}*/}
-        {/*          InputLabelProps={{*/}
-        {/*            shrink: true,*/}
-        {/*          }}*/}
-        {/*      />*/}
-        {/*    </div>*/}
-        {/*)}*/}
       </div>
+      {stateApp.activityDisplayType === "calendar" && (
+        <div className={classes.centerNav}>
+          <IconButton size="small" className={classes.marginLeft} onClick={() => goToBack()}>
+            <NavigateBeforeIcon />
+          </IconButton>
+          <p className={classes.marginLeft}>{toolbar.label}</p>
+          <IconButton size="small" className={classes.marginLeft} onClick={() => goToNext()}>
+            <NavigateNextIcon />
+          </IconButton>
 
+          <TextField
+            id="date"
+            label="Birthday"
+            type="date"
+            format="MM/DD/YYYY"
+            value={selectedDate}
+            className={classes.datePicker}
+            onChange={(event) => setSelectedDate(new Date(event.target.value))}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </div>
+      )}
       <div className={classes.right}>
         {stateApp.activityDisplayType === "calendar" ? (
           <Select className={classes.viewSwitcher} variant="outlined" value={view} onChange={handleViewChange}>

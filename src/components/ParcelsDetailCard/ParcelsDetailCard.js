@@ -353,7 +353,7 @@ export default function ParcelsDetailCard(props) {
     }
     const data = copy(parcelObj)
     const shape = data.shape;
-    shape.properties[field] = value;
+    set(shape, `properties.${field}`, value);
 
     const customLayer = {
       shapeJson: shape,

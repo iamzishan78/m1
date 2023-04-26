@@ -172,6 +172,7 @@ function ContactsTable(props) {
       startPaginationAt: 25,
       defaultSort: { field: "lastUpdateAt", order: "desc", unmapped_type: 'date' },
       formatHits,
+      downloadAll: { exportPx: '121px' },
       initializeGenericData: { key: "id", actions: genericDataActions },
       isSelectedAllAllowed: true,
     });
@@ -354,6 +355,7 @@ function ContactsTable(props) {
             esIndex: esIndex,
             open: true
           }}
+          isExporting={props.isExporting}
           onDownload={props.onDownload}
           {...props.esHocProps}
         />
