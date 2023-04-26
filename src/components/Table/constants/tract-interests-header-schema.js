@@ -39,7 +39,7 @@ const TractInterestsHeadCells = [
                     paddingLeft: '0px'
                 }
             }),
-            dbName: "name",
+            dbName: "shape.shapeJson.properties.shapeLabel",
             sort: true,
             filter: true,
             customRender: (value, tableMeta, updateValue) => {

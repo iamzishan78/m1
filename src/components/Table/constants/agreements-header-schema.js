@@ -268,16 +268,16 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       filter: true,
     },
   },
-  {
-    name: "internalCompany",
-    label: "Internal Company ",
-    esKey: "shapeJson.properties.internalCompany.keyword",
-    options: {
-      dbName: "shapeJson.properties.internalCompany",
-      sort: true,
-      filter: true,
-    },
-  },
+  // {
+  //   name: "internalCompany",
+  //   label: "Internal Company ",
+  //   esKey: "shapeJson.properties.internalCompany.keyword",
+  //   options: {
+  //     dbName: "shapeJson.properties.internalCompany",
+  //     sort: true,
+  //     filter: true,
+  //   },
+  // },
   {
     name: "recordedDate",
     label: "Recorded Date",

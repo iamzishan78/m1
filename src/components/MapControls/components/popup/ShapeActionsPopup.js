@@ -667,7 +667,7 @@ const ShapeActionsPopup = (props) => {
   const enableEditOnly = stateApp.featureToEdit?.layer?.id === "parcel" || shapeTypeLayers.includes(stateApp.featureToEdit?.layer?.id);
   const isAoi = stateApp.selectedAoi?.layer?.id === "interest";
   const isCreateParcelMenu = Boolean(anchorEl);
-  const isShapeResizeMode = stateApp.featureToEdit?.layer?.id === "parcel" || stateApp.featureToEdit?.layer?.id === "unit";
+  const isShapeResizeMode = stateApp.featureToEdit?.layer?.id === "parcel" || shapeTypeLayers.includes(stateApp.featureToEdit?.layer?.id);
 
   const confirmShapeEditing = () => {
     let { featureToEdit, currentFeature } = stateApp;
