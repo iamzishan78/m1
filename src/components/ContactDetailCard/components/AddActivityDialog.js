@@ -156,8 +156,8 @@ const mergeDateAndTime = (d, t) => {
 };
 const activityStatus = [
   {
-    key:'Open',
-    value:false
+    key: 'Open',
+    value: false
   },
   {
     key: "Completed",
@@ -196,7 +196,7 @@ function AddActivityDialog(props) {
   const [deleteActivityMutation, { loading: deleteLoading }] = useMutation(
     DELETEACTIVITY,
     {
-      refetchQueries: ["getContact", "getAllActivities"],
+      refetchQueries: ["getContact", "getAllActivities", "getContactSummary"],
       awaitRefetchQueries: true,
     }
   );
@@ -742,23 +742,23 @@ function AddActivityDialog(props) {
         )}
       />
       <Autocomplete
-          className={clsx(!owner.id && errors.owner && classes.error)}
-          options={activityStatus}
-          onChange={(event, newValue) => {
-            setClosed(newValue)
-          }}
-          value={activityStatus.find((item)=>item?.value === closed?.value) || null}
-          getOptionLabel={(option) => option.key}
-          renderInput={(params) => (
-              <TextField
-                  className={clsx(classes.inputField)}
-                  margin="dense"
-                  {...params}
-                  variant="outlined"
-                  InputLabelProps={{ shrink: true }}
-                  label="Activity Status"
-              />
-          )}
+        className={clsx(!owner.id && errors.owner && classes.error)}
+        options={activityStatus}
+        onChange={(event, newValue) => {
+          setClosed(newValue)
+        }}
+        value={activityStatus.find((item) => item?.value === closed?.value) || null}
+        getOptionLabel={(option) => option.key}
+        renderInput={(params) => (
+          <TextField
+            className={clsx(classes.inputField)}
+            margin="dense"
+            {...params}
+            variant="outlined"
+            InputLabelProps={{ shrink: true }}
+            label="Activity Status"
+          />
+        )}
       />
       <div className={classes.btnGroup} style={{ width: "100%" }}>
         {/*<FormControlLabel*/}

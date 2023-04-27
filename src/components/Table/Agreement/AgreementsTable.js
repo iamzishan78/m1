@@ -57,8 +57,8 @@ function AgreementsTable(props) {
   const classes = usetableStyles({ isFullHeight: true, isAgreementsTable: true });
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
-  let GridViewModule = userGridViewSettings[`Agreements`];
-  GridViewModule.columns = GridViewModule.columns.map(obj =>
+  let GridViewModule = userGridViewSettings[`Agreements`] || {};
+  GridViewModule.columns = _.get(GridViewModule,'columns',[]).map(obj =>
     excludeFromViewColumns.includes(obj.name) ? { ...obj, "viewColumns": false } : obj
   );
 
