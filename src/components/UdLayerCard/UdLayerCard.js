@@ -11,6 +11,9 @@ import $ from "jquery";
 
 // contexts
 import { AppContext } from "../../AppContext";
+import { MapControlsContext } from "components/MapControls/MapControlsContext";
+import { clearMapAndCloseShapeActionsPopup } from "components/MapControls/commonHelper";
+import LayerIcon from "@material-ui/icons/Layers";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,6 +52,9 @@ const useStyles = makeStyles((theme) => ({
     color: "#FFFFFF",
     fontSize: "11px",
   },
+  headerContainer: {
+    wordBreak: 'break-word',
+  },
   content: {
     backgroundColor: "#fffff",
     transition: "height 0.1s",
@@ -78,7 +84,89 @@ const useStyles = makeStyles((theme) => ({
 function UdLayerCard(props) {
   const classes = useStyles(props);
   // contexts
-  const [, setStateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
+
+  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
+
+  const handleCloseLeftSidePanel = () => {
+    // close layer manager
+    setStateMapControls({
+      ...stateMapControls,
+      expandedPanel: false,
+      anchorEl: null,
+    });
+  };
+
+  const handleCloseShapeDrawer = () => {
+    const { map } = stateApp;
+    setStateApp((state) => ({
+      ...state,
+      editDraw: false,
+      currentFeature: undefined,
+      isAbstractedLayersPolygon: false,
+      multiSelectLandGrids: false,
+      selectedAbstracts: [],
+      showShapeActionsPopup: false,
+      showDrawShapesPopup: false,
+    }));
+
+    // unselecting the grids
+    const featuresList = map?.getSource("abstract_geo_source")?._data?.features || [];
+    for (let i = 0; i < featuresList.length; i++) {
+      const id = featuresList[i].properties.Id;
+      map.setFeatureState({ source: "abstract_geo_source", id: id }, { click: false });
+    }
+
+    // Removing layer of AOI Label
+    if (stateApp.map?.getLayer("aoi_label_layer")) {
+      stateApp.map?.removeLayer("aoi_label_layer");
+    }
+    setStateApp((state) => ({
+      ...state,
+      selectedAoi: null,
+      featureOrMapShape: null,
+    }));
+  };
+
+  const handleAddShapeClick = (e, action) => {
+    if (stateApp.expandedCard === true) {
+      handleCloseLeftSidePanel();
+      handleCloseShapeDrawer();
+    }
+  
+    if (e && action) {
+      if (action === "draw") {
+        setStateMapControls({
+          ...stateMapControls,
+          selectedMapControl: action,
+          // selectedControl: 'layer',
+        });
+  
+        if (!stateApp.editDraw) {
+          setStateApp((state) => ({
+            ...state,
+            popupOpen: false,
+            showDrawShapesPopup: false,
+            editDraw: false,
+            showAddShapePopup: true,
+          }));
+        } else {
+          clearMapAndCloseShapeActionsPopup(stateApp, setStateApp);
+        }
+      }
+    }
+  
+    setStateApp((stateApp) => ({
+      ...stateApp,
+      toggle3d: action === "threed" ? !stateApp.toggle3d : stateApp.toggle3d,
+      toggleZoomOut: action === "zoomout" ? !stateApp.toggleZoomOut : stateApp.toggleZoomOut,
+    }));
+  
+    if (stateApp.draw && stateApp.draw.getMode() !== "simple_select") {
+      setStateApp({ ...stateApp, editDraw: false });
+      stateApp.draw.changeMode("simple_select");
+    }
+  };
 
 
   if (!props.selectedUserDefinedLayer) {
@@ -135,9 +223,16 @@ function UdLayerCard(props) {
     <React.Fragment>
       <Card className={classes.card}>
         <CardHeader
+        id='gggggggg'
           classes={{ title: classes.title, subheader: classes.subheader }}
+          className={classes.headerContainer}
           action={
-            <div className={classes.headerIcons}>
+            <div id='hhhhhhhh' className={classes.headerIcons}>
+              <Tooltip title={"Add Shape to Layer"} placement="top">
+                <IconButton size={"small"} onClick={(e) => handleAddShapeClick(e, 'draw')} aria-label="close" className={classes.icons}>
+                  <LayerIcon color="secondary" />
+                </IconButton>
+              </Tooltip>
               <Tooltip title={"Close"} placement="top">
                 <IconButton size={"small"} onClick={handleClose} aria-label="close" className={classes.icons}>
                   <CloseIcon color="secondary" />

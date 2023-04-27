@@ -1211,6 +1211,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         selectedShape: null,
         expandedCard: false,
         popupOpen: false,
+        showAddShapePopup: false,
         layerSelectionPopup: false,
       }));
       const filteredLayer = customLayerData?.allCustomLayers?.find((cl) => cl._id === feature.properties.id);

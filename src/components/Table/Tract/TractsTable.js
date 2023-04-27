@@ -76,6 +76,7 @@ function TractsTable(props) {
         field: "geoJSON",
         value: stateApp?.currentFeature?.geometry
       },
+      downloadAll: props.parent === "TractTable" ? { exportPx: '121px' } : undefined,
       formatHits,
     });
     // eslint-disable-next-line
@@ -106,8 +107,7 @@ function TractsTable(props) {
         startPaginationAt={null}
         onTableChange={props.onTableChange}
         options={{
-          ...props.options,
-          ...props.customOptions,
+          ...props.options
         }}
         parent={props.parent}
         setColumnsBase={[]}

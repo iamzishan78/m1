@@ -1,5 +1,6 @@
 import { history } from "store";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
+import { GlobalStickyStyles } from "GlobalSettings";
 
 const TractInterestsHeadCells = [
     {
@@ -25,16 +26,22 @@ const TractInterestsHeadCells = [
             viewColumns: false,
         },
     },
-
     {
-        name: "tractName",
-        label: "Tract Name",
-        esKey: "shape.shapeJson.properties.shapeLabel.keyword",
+        name: "tractName", label: "Tract Name", esKey: 'shape.shapeJson.properties.shapeLabel.keyword',
         options: {
+            ...GlobalStickyStyles({
+                setCellProps: {
+                    left: '124.5px',
+                    minWidth: "450px",
+                    paddingLeft: '0px !important'
+                },
+                setCellHeaderProps: {
+                    paddingLeft: '0px'
+                }
+            }),
             dbName: "shape.shapeJson.properties.shapeLabel",
             sort: true,
             filter: true,
-            setCellProps: () => ({ style: { minWidth: "250px" } }),
             customRender: (value, tableMeta, updateValue) => {
                 return (
                     <ColumnWithLink
@@ -47,7 +54,7 @@ const TractInterestsHeadCells = [
                     />
                 );
             },
-        },
+        }
     },
     {
         name: "State",

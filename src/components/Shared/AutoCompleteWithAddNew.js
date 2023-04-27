@@ -28,12 +28,12 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, t
 
   const onInputChange = (event, value) => {
     const _value = event?.target?.value ?? value;
+    console.log('event?.target?.value ?? value', _value)
     if (onSearch) onSearch(_value);
   };
-
   return (
     <Autocomplete
-      defaultValue={value}
+      // defaultValue={value}
       value={value}
       disableListWrap
       classes={classes}
@@ -66,17 +66,21 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, t
       filterOptions={(options, params) => {
         // const { inputValue } = params;
         let inputValue = value ? JSON.parse(JSON.stringify(value)) : "";
+        if (params.inputValue === '' && inputValue) {
+          params.inputValue = inputValue
+        }
         // if (typeof inputValue.name === "string") {
         //   inputValue = inputValue.name;
         // }
         const filtered = filter(options, { ...params, inputValue });
         const isExist = loadashFilter(filtered, (filter) => {
-          return filter._id === inputValue;
+          return filter._id === params.inputValue?.trim() || filter.name === params.inputValue?.trim();
         });
+        console.log(params, value)
         // Suggest the creation of a new value
-        if (inputValue !== "" && (!isExist || isExist.length === 0)) {
+        if (params.inputValue !== "" && (!isExist || isExist.length === 0)) {
           filtered.unshift({
-            name: inputValue,
+            name: params.inputValue,
             _id: "newEntity",
           });
         }

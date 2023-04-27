@@ -426,12 +426,12 @@ export function DetailComponents(props) {
     if (!isButtonScroll) {
       let activeTab = 0;
       if (getRelativePosition("summary-div") < 5) activeTab = 0;
-      if (getRelativePosition("related-parties-div") < 30) activeTab = 1;
-      if (getRelativePosition("provisions-div") < 30) activeTab = 2;
-      if (getRelativePosition("legal-description-div") < 30) activeTab = 3;
-      if (getRelativePosition("related-wells-div") < 30) activeTab = 4;
-      if (getRelativePosition("related-docs-div") < 30) activeTab = 5;
-      if (getRelativePosition("related-agrmt-div") < 30) activeTab = 6;
+      // if (getRelativePosition("related-parties-div") < 30) activeTab = 1;
+      // if (getRelativePosition("provisions-div") < 30) activeTab = 2;
+      // if (getRelativePosition("legal-description-div") < 30) activeTab = 3;
+      // if (getRelativePosition("related-wells-div") < 30) activeTab = 4;
+      // if (getRelativePosition("related-docs-div") < 30) activeTab = 5;
+      // if (getRelativePosition("related-agrmt-div") < 30) activeTab = 6;
 
       if (tab !== activeTab) setTab(activeTab);
     }
@@ -497,6 +497,7 @@ export function DetailComponents(props) {
             <div className={classes.tabsHeader}>
               <StyledTabs
                 value={tab}
+                id={"header-tabs"}
                 onChange={(event, tab) => {
                   setButtonScroll(true);
                   setTab(tab);
@@ -508,7 +509,7 @@ export function DetailComponents(props) {
                 <StyledTab id="provisionsTab" label="Provisions" />
                 <StyledTab id="legalDescriptionTab" label="Legal Description" />
                 <StyledTab id="wellsTab" label="Wells" />
-                <StyledTab label="Documents" />
+                <StyledTab id="documentsTab" label="Documents" />
                 <StyledTab id="relatedAgreementsTab" label="Related Agreements" />
                 {/* <StyledTab label="Related Info" /> */}
               </StyledTabs>
