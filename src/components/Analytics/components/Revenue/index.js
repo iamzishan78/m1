@@ -155,7 +155,7 @@ export default function RevenueAnalytics(props) {
           aria-label="ant example"
         >
           <StyledTab label="Time Series" />
-          <StyledTab label="Comparison" disabled />
+          <StyledTab label="Check Details" disabled />
           {/* <StyledTab label="Properties" /> */}
         </StyledTabs>
       </div>
@@ -181,7 +181,7 @@ export default function RevenueAnalytics(props) {
                 type="Properties"
                 esFilters={propertiesReportGroup || []}
                 setESFilters={(value) => setPropertyFilter(value)}
-                setFilterToggle={() => {}}
+                setFilterToggle={() => { }}
                 isBackground={false}
                 noUpdate={true}
                 strechedWidth
