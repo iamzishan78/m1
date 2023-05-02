@@ -109,11 +109,10 @@ const useStyles = makeStyles((theme) => ({
   },
   commentContent: {
     flex: '1 1 auto',
-    maxWidth:"80%",
+    maxWidth: "calc(100% - 55px)",
     overflowWrap: 'break-word',
     wordWrap: 'break-word',
     wordBreak: 'break-word',
-    hyphens: 'auto'
   },
   commentTypeSection: {
     fontWeight: "bold",
