@@ -11,6 +11,7 @@ import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfoli
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import DetailTabsSection from "components/Analytics/components/Revenue/DetailTabsSection";
 import ReportGroupHeader from "components/Shared/ReportGroupHeader";
+import CheckDetailsSection from "./CheckDetailsSection";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
@@ -32,6 +33,15 @@ const useStyles = makeStyles((theme) => ({
     height: "10px",
     backgroundColor: "#f3f3f3",
   },
+  sectionCard: {
+    height: "500px",
+    padding: "20px 15px",
+    maxWidth: "100%",
+    margin: "0 auto",
+    background: "#ffffff",
+    borderBottonLeftRadius: 8,
+    borderBottomRightRadius: 8,
+  }
 }));
 
 const StyledTabs = withStyles({
@@ -144,6 +154,7 @@ export default function RevenueAnalytics(props) {
     });
   }, [propertiesReportGroup, toDate, fromDate]);
 
+
   return (
     <>
       <div className={classes.mainTabContainer}>
@@ -155,52 +166,63 @@ export default function RevenueAnalytics(props) {
           aria-label="ant example"
         >
           <StyledTab label="Time Series" />
-          <StyledTab label="Check Details" disabled />
+          <StyledTab label="Check Details" />
           {/* <StyledTab label="Properties" /> */}
         </StyledTabs>
       </div>
-      <div className={classes.actionBar}>
-        <Grid container direction="row" display="flex" spacing={4} style={{ padding: "0px 36px" }}>
-          <Grid item xs={8} md={6} style={{ marginTop: "4px" }}>
-            <Grid container display="flex" alignItems="center" spacing={3} justifyContent="space-between">
-              <CustomDates
-                onChangeDates={onChangeDates}
-                fromDate={fromDate}
-                setFromDate={setFromDate}
-                toDate={toDate}
-                setToDate={setToDate}
-                isProperties={true}
-                lastCheckMinDate={lastCheckMinDate}
-                datesInputWidth={4}
-              />
-            </Grid>
-          </Grid>
-          <Grid item xs={4} md={2}>
-            <Grid container display="flex" className={classes.actionsGrid}>
-              <ReportGroupHeader
-                type="Properties"
-                esFilters={propertiesReportGroup || []}
-                setESFilters={(value) => setPropertyFilter(value)}
-                setFilterToggle={() => { }}
-                isBackground={false}
-                noUpdate={true}
-                strechedWidth
-                isShrink
-                noPadding
-              />
-            </Grid>
-          </Grid>
-        </Grid>
-      </div>
-      {/* <AnalyticsCards cards={cards} /> */}
-      <Divider className={classes.divider} />
 
-      <DetailTabsSection
-        monthsInterval={monthsInterval}
-        portfolioSummary={portfolioSummary?.getPortfolioSummary || {}}
-        {...props}
-        loading={loading}
-      />
+      {tab === 0 && (
+        <>
+          <div className={classes.actionBar}>
+            <Grid container direction="row" display="flex" spacing={4} style={{ padding: "0px 36px" }}>
+              <Grid item xs={8} md={6} style={{ marginTop: "4px" }}>
+                <Grid container display="flex" alignItems="center" spacing={3} justifyContent="space-between">
+                  <CustomDates
+                    onChangeDates={onChangeDates}
+                    fromDate={fromDate}
+                    setFromDate={setFromDate}
+                    toDate={toDate}
+                    setToDate={setToDate}
+                    isProperties={true}
+                    lastCheckMinDate={lastCheckMinDate}
+                    datesInputWidth={4}
+                  />
+                </Grid>
+              </Grid>
+              <Grid item xs={4} md={2}>
+                <Grid container display="flex" className={classes.actionsGrid}>
+                  <ReportGroupHeader
+                    type="Properties"
+                    esFilters={propertiesReportGroup || []}
+                    setESFilters={(value) => setPropertyFilter(value)}
+                    setFilterToggle={() => { }}
+                    isBackground={false}
+                    noUpdate={true}
+                    strechedWidth
+                    isShrink
+                    noPadding
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          </div>
+          {/* <AnalyticsCards cards={cards} /> */}
+          <Divider className={classes.divider} />
+          <DetailTabsSection
+            monthsInterval={monthsInterval}
+            portfolioSummary={portfolioSummary?.getPortfolioSummary || {}}
+            {...props}
+            loading={loading}
+          />
+        </>
+      )}
+
+      {tab === 1 &&
+        <div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
+          <CheckDetailsSection />
+        </div>
+      }
+
     </>
   );
 }
