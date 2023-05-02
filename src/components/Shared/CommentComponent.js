@@ -108,7 +108,12 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-flex",
   },
   commentContent: {
-    flex: '1 1 auto'
+    flex: '1 1 auto',
+    maxWidth:"80%",
+    overflowWrap: 'break-word',
+    wordWrap: 'break-word',
+    wordBreak: 'break-word',
+    hyphens: 'auto'
   },
   commentTypeSection: {
     fontWeight: "bold",
@@ -117,7 +122,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "5px",
   },
   commentWords: {
-    display: 'inline-block',
+    // display: 'inline-block',
     overflowWrap: 'break-word',
     wordWrap: 'break-word',
     wordBreak: 'break-word',
@@ -183,7 +188,7 @@ export const CommonCommentText = ({ eachComment, users }) => {
           const sanitizedData = () => ({
             __html: DOMPurify.sanitize(urlify(_word)),
           });
-          return <p className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()}></p>;
+          return <span className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()}></span>;
         }
       })}
     </div>
