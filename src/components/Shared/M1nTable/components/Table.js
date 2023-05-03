@@ -4496,37 +4496,37 @@ function SubTable(props) {
     }
   };
 
-  const checkStatementValidation = (checkId) => {
-    const response = props.potentialIssues.filter((issue) => {
-      if (issue.key === checkId) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-    if (response.length > 0) {
-      return true;
-    } else {
-      return false;
-    }
-  };
+  // const checkStatementValidation = (checkId) => {
+  //   const response = props.potentialIssues.filter((issue) => {
+  //     if (issue.key === checkId) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   });
+  //   if (response.length > 0) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // };
 
-  //  revenue data set
-  const getRevenueStatementRows = () => {
-    let dataSet = rows?.map((item) => ({
-      checkNumber: `${item?.checkNumber}_${item?._id}`,
-      purchaserName: item?.payor?.name || "",
-      checkAmount: item?.checkAmount || "",
-      checkDate: moment.parseZone(item?.checkDate).format("MM/DD/yyyy") || "",
-      depositDate: moment.parseZone(item?.depositDate).format("MM/DD/yyyy") || "",
-      lines: item?.checkDetail?.lines || 0,
-      checkId: item?.sourceId,
-      source: item?.source || "",
-      status: item?.status || "Imported",
-      validation: checkStatementValidation(item._id) || null,
-    }));
-    return dataSet;
-  };
+  // //  revenue data set
+  // const getRevenueStatementRows = () => {
+  //   let dataSet = rows?.map((item) => ({
+  //     checkNumber: `${item?.checkNumber}_${item?._id}`,
+  //     purchaserName: item?.payor?.name || "",
+  //     checkAmount: item?.checkAmount || "",
+  //     checkDate: moment.parseZone(item?.checkDate).format("MM/DD/yyyy") || "",
+  //     depositDate: moment.parseZone(item?.depositDate).format("MM/DD/yyyy") || "",
+  //     lines: item?.checkDetail?.lines || 0,
+  //     checkId: item?.sourceId,
+  //     source: item?.source || "",
+  //     status: item?.status || "Imported",
+  //     validation: checkStatementValidation(item._id) || null,
+  //   }));
+  //   return dataSet;
+  // };
 
 
 
@@ -4571,11 +4571,9 @@ function SubTable(props) {
           data={
             props.parent === "ownersPerParcel" || props.parent === 'boundary_grid_owners'
               ? searchedRows
-              : props.addAble?.type === "RevenueStatement"
-                ? getRevenueStatementRows()
-                : rows
-                  ? rows
-                  : []
+              : rows.length
+                ? rows
+                : []
           }
           // columns={
           //   props.parent === "ownersPerParcel" ? false :

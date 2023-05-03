@@ -134,6 +134,7 @@ function UnitInterestsTable(props) {
             ?.filter((el) => el)
             ?.map((qtr, i) => `${qtr}/${i + 1}`)
             ?.join();
+          hit.unitCampaign = hit.contact.campaignName;
           hit.tags =
             hit?.tags?.length > 0
               ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]

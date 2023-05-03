@@ -350,8 +350,8 @@ function ContactsTable(props) {
             search: props.activeSearchRef.current,
             filters: [...props.initialFilters, ...uniqBy(props.customAppliedFilters, "field") || []],
             total: props.options.count,
-            isSelectAll: isSelectAll,
-            rows: selectedRows,
+            isSelectAll: false,
+            rows: props.selectedRowsValues || [],
             esIndex: esIndex,
             open: true
           }}

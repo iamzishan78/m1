@@ -616,10 +616,14 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       }));
 
       if (layerStates.allLayerSettingsByUser.length > 0) {
-        setLayersData(layerStates.allLayerSettingsByUser);
-        for (let i = 0; i < layerStates.allLayerSettingsByUser.length; i++) {
-          const layer = layerStates.allLayerSettingsByUser[i];
-          if (layer.layerType === "file layer") {
+        const layers = copy(layerStates.allLayerSettingsByUser)
+        for (let i = 0; i < layers.length; i++) {
+          const layer = layers[i];
+          if (layer.layerType === "file layer" && !layer.layerSettings?.visiable) {
+            layer.fileViewed = false
+          }
+          if (layer.layerType === "file layer" && layer.layerSettings?.visiable) {
+            layer.fileViewed = true
             setFileRequestCounter(1);
             viewFile({
               variables: {
@@ -629,6 +633,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             break;
           }
         }
+
+        setLayersData(layers);
       }
     }
   }, [layerStates]);
@@ -664,7 +670,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
       if (layerIndex < layersData.length - 1)
         for (let i = layerIndex + 1; i < layers.length; i++) {
-          if (layers[i].layerType == "file layer" && !layers[i].fileUrl) {
+          if (layers[i].layerType == "file layer" && !layers[i].fileUrl && layers[i].layerSettings.visiable && layers[i].fileViewed !== true) {
             setFileRequestCounter(1);
             viewFile({
               variables: {
@@ -1622,11 +1628,19 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
               }
             }
             beforeLayer = setLayer(layerData.fileUrl, layer.identifier, map, beforeLayer);
+          } else if (layerData.fileViewed === false && layer.layerSettings?.visiable) {
+            setFileRequestCounter(1);
+            viewFile({
+              variables: {
+                fileId: layer.file,
+              },
+            });
           }
         }
       }
     }
   }, [
+    layersData,
     stateApp.layers,
     stateApp.trackedOwnerWells,
     stateApp.trackedwells,
