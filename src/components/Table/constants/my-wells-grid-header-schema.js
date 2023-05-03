@@ -10,7 +10,7 @@ const dateCustomRender = (value) =>
 
 const wellsColumnHeaders = [
   {
-    name: "_id",
+    name: "id",
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
@@ -20,15 +20,16 @@ const wellsColumnHeaders = [
     options: {
       ...GlobalStickyStyles({
         setCellProps: {
-          left: '138px',
+          left: "138px",
         },
         setCellHeaderProps: {
-          left: '138px',
-        }
+          left: "138px",
+        },
       }),
       sort: true,
       filter: true,
       customRender: (value, tableMeta) => {
+        console.log("-*-*-*- tableMeta *-*-*", tableMeta)
         const globalWellId = tableMeta.rowData[0];
 
         return <ColumnWithLink value={value} link={`/land/well/details/${globalWellId}`} />;

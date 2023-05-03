@@ -139,8 +139,10 @@ export default function HeaderSection(props) {
   const { propertyDetails, propertyOwnerContact, setEntityToConvert } = props;
   const [entityType, setEntityType] = useState("");
   const [searchOperator, setSearchOperator] = useState("");
+  const [searchPurchaser, setSearchPurchaser] = useState("");
 
   const [getOperatorList, { data: operatorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  const [getPurchaserList, { data: purchaserList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
   const [getContactEntity, { data: contactEntityData }] = useLazyQuery(CONTACT_ENTITY);
   const { data: acquisitionOptions } = useQuery(GET_AUTOCOMPLETE_PROPERTY_LIST, { variables: { key: "acquisitionID" } });
   const { data: prospectOptions } = useQuery(GET_AUTOCOMPLETE_PROPERTY_LIST, {
@@ -174,6 +176,17 @@ export default function HeaderSection(props) {
   }, [getOperatorList, searchOperator])
 
   useEffect(() => {
+    getPurchaserList({
+      variables: {
+        search: searchPurchaser ? `${searchPurchaser}*` : "*",
+        filterKey: "purchaser.name.keyword",
+        esIndex: "properties_flat",
+        size: 50,
+      }
+    })
+  }, [getPurchaserList, searchPurchaser])
+
+  useEffect(() => {
     register("state");
     register("county");
   }, [register]);
@@ -183,6 +196,7 @@ export default function HeaderSection(props) {
       const data = JSON.parse(JSON.stringify(propertyDetails));
       delete data.owner;
       delete data.operator;
+      delete data.purchaser;
       let owner = {};
       // let operator = {};
       if (propertyOwnerContact) {
@@ -190,7 +204,8 @@ export default function HeaderSection(props) {
         // operator = propertyOwnerContact?.find((owner) => owner.entityId === propertyDetails?.operator?._id);
       }
       setSearchOperator(propertyDetails?.operator?.name)
-      reset({ ...data, owner: { ...owner, number: data.ownerNumber }, operator: propertyDetails?.operator?.name });
+      setSearchPurchaser(propertyDetails?.purchaser?.name)
+      reset({ ...data, owner: { ...owner, number: data.ownerNumber }, operator: propertyDetails?.operator?.name, purchaser: propertyDetails?.purchaser?.name });
     }
   }, [propertyDetails, propertyOwnerContact]);
 
@@ -428,6 +443,70 @@ export default function HeaderSection(props) {
                     />
                   )}
                 /> */}
+              </Grid>
+            </Grid>
+          </Grid>
+
+
+          <Grid item xs={5}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={3}>
+                <div className={classes.label}>Purchaser Prop #</div>
+              </Grid>
+              <Grid item xs={8}>
+                <Controller
+                  control={control}
+                  name="purchaserNumber"
+                  render={(params) => (
+                    <TextField
+                      {...params}
+                      className={classes.textField}
+                      variant="outlined"
+                      margin="dense"
+                      type="text"
+                      fullWidth
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                      }}
+                      onBlur={(e) => handleUpdate("purchaserNumber", e.target.value)}
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <Grid item xs={7}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={2}>
+                <div className={classes.label}>Purchaser</div>
+              </Grid>
+              <Grid item xs={9}>
+                <Controller
+                  control={control}
+                  name="purchaser"
+                  render={(props) => (
+                    <AutoCompleteWithAddNew
+                      value={searchPurchaser}
+                      variant="outlined"
+                      onSearch={(value) => {
+                        setSearchPurchaser(value);
+                      }}
+                      setValue={(value) => {
+                        handleUpdate("purchaser", { name: value?.name });
+                        props.onChange(value);
+                      }}
+                      options={get(
+                        purchaserList,
+                        "getESFilterList.hits",
+                        []
+                      )?.map((campaign) => ({
+                        _id: campaign.key,
+                        name: campaign.key,
+                      }))}
+                    />
+                  )}
+                />
               </Grid>
             </Grid>
           </Grid>

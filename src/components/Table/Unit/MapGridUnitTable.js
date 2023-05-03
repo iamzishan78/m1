@@ -88,7 +88,7 @@ function MapGridUnitTable(props) {
       TableHeader: copy(TableHeader(props.isSnapGrid)),
       esIndex: "shapes_flat",
       startPaginationAt: 50,
-      // typeKeyword: { gridViewCategory: "Units", metaModule: "Unit" },
+      typeKeyword: { metaModule: "Unit" },
       filters: [
         {
           field: "layer.keyword",
