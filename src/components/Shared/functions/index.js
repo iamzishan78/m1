@@ -1,5 +1,6 @@
 import { BlockBlobClient } from "@azure/storage-blob";
 import { cloneDeep } from "lodash";
+import moment from "moment";
 
 export * from "./deepEqual";
 export * from "./setStateIfDeepEqual";
@@ -26,10 +27,10 @@ export function copy(obj) {
 
 export function esExtentedSearch(search1, search2) {
   const search = search1 || search2 || ''
-  return search ? `*${search}*` : '';
+  return search ? `*${search}*` : '*';
 }
 
-export function getSearchFields(Table) {
+export function getSearchFields(Table, customMetaFields = []) {
   let searchFields = [];
   Table.forEach((row) => {
     if ((row?.options?.display !== false && row.esKey && !row.name?.toLowerCase()?.includes("date")) || row?.options?.forSearch) {
@@ -39,6 +40,13 @@ export function getSearchFields(Table) {
     }
   });
 
+  customMetaFields.forEach(metaFeild => {
+    if (metaFeild.esKey) {
+      searchFields.push(metaFeild.esKey);
+    }
+  });
+
+  searchFields = [...new Set(searchFields)];
   searchFields = searchFields.map((key) => key.replace(".keyword", ""));
   return searchFields;
 }
@@ -91,8 +99,12 @@ export function replaceLinkId(link, path) {
   return true;
 }
 
-export function customStartCaseString(str) {
-  if (!str || (str && str.split(" ").length < 2)) return str;
+export function customStartCaseString(str, isDate) {
+  if (!str) return "";
+
+  if (isDate) return moment.parseZone(new Date(+str)).format("MM/DD/YY")
+
+  if (str && str.split(" ").length < 2) return str;
 
   return str
     .split(" ")
@@ -103,4 +115,15 @@ export function customStartCaseString(str) {
 export function workspaceTenantName() {
   const workspaceName = window.sessionStorage.getItem("tenantName");
   return workspaceName === "localhost" ? "EnerX" : workspaceName;
+}
+
+export function getDateWithoutTime(dateTime = "") {
+  const splittedDate = dateTime.split("-")
+  if (splittedDate.length === 3) {
+    const newDate = new Date()
+    newDate.setYear(Number(splittedDate[0]))
+    newDate.setMonth(Number(splittedDate[1]) - 1)
+    newDate.setDate(Number(splittedDate[2]))
+    return newDate;
+  } else return null;
 }
