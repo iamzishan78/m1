@@ -16,10 +16,10 @@ const filterTypes = {
   // Wells: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // Documents: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "tagFilterCount" },
-  // "Remarks Types": { component: "RemarksTypes", countKey: "remarksTypes" },
   "Related Wells": { component: "RelatedWellsFilters", countKey: "relatedWells" },
   "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "relatedAgreements" },
   "Related Documents": { component: "RelatedDocumentFilters", countKey: "relatedDocuments" },
+  "Remarks Types": { component: "RemarksTypes", countKey: "remarksTypes" },
   "Custom Metadata": { component: "CustomDataFilters", countKey: "customData" },
 };
 
