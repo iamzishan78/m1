@@ -355,9 +355,36 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Operator</div>
+                <div className={classes.label}>Property Description</div>
               </Grid>
               <Grid item xs={9}>
+                <Controller
+                  control={control}
+                  name="description"
+                  render={(params) => (
+                    <TextField
+                      {...params}
+                      className={classes.textField}
+                      variant="outlined"
+                      margin="dense"
+                      type="text"
+                      fullWidth
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                      }}
+                      onBlur={(e) => handleUpdate("description", e.target.value)}
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={5}>
+            <Grid container className={classes.gridStyle}>
+              <Grid item xs={3}>
+                <div className={classes.label}>Operator</div>
+              </Grid>
+              <Grid item xs={8}>
                 <Controller
                   control={control}
                   name="operator"
@@ -448,12 +475,12 @@ export default function HeaderSection(props) {
           </Grid>
 
 
-          <Grid item xs={5}>
+          <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
-              <Grid item xs={3}>
+              <Grid item xs={2}>
                 <div className={classes.label}>Purchaser Prop #</div>
               </Grid>
-              <Grid item xs={8}>
+              <Grid item xs={9}>
                 <Controller
                   control={control}
                   name="purchaserNumber"
@@ -476,12 +503,12 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-          <Grid item xs={7}>
+          <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
-              <Grid item xs={2}>
+              <Grid item xs={3}>
                 <div className={classes.label}>Purchaser</div>
               </Grid>
-              <Grid item xs={9}>
+              <Grid item xs={8}>
                 <Controller
                   control={control}
                   name="purchaser"
@@ -511,12 +538,12 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-          <Grid item xs={5}>
+          <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
-              <Grid item xs={3}>
+              <Grid item xs={2}>
                 <div className={classes.label}>Owner #</div>
               </Grid>
-              <Grid item xs={8}>
+              <Grid item xs={9}>
                 <Controller
                   control={control}
                   name="owner.number"
@@ -541,12 +568,12 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-          <Grid item xs={7}>
+          <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
-              <Grid item xs={2}>
+              <Grid item xs={3}>
                 <div className={classes.label}>Owner Name</div>
               </Grid>
-              <Grid item xs={9}>
+              <Grid item xs={8}>
                 <Controller
                   control={control}
                   name="owner"
@@ -609,12 +636,12 @@ export default function HeaderSection(props) {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
-              <Grid item xs={3}>
+              <Grid item xs={2}>
                 <div className={classes.label}>DO Date</div>
               </Grid>
-              <Grid item xs={8} className={classes.datePicker}>
+              <Grid item xs={9} className={classes.datePicker}>
                 <Controller
                   control={control}
                   name="documentDate"
@@ -662,12 +689,12 @@ export default function HeaderSection(props) {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={7}>
+          <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
-              <Grid item xs={2}>
+              <Grid item xs={3}>
                 <div className={classes.label}>DO Status</div>
               </Grid>
-              <Grid item xs={9}>
+              <Grid item xs={8}>
                 <Controller
                   control={control}
                   name="divOrderStatus"
@@ -692,12 +719,12 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-          <Grid item xs={5}>
+          <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
-              <Grid item xs={3}>
+              <Grid item xs={2}>
                 <div className={classes.label}>State</div>
               </Grid>
-              <Grid item xs={8}>
+              <Grid item xs={9}>
                 <Controller
                   control={control}
                   name="state"
@@ -717,12 +744,12 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-          <Grid item xs={7}>
+          <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
-              <Grid item xs={2}>
+              <Grid item xs={3}>
                 <div className={classes.label}>County</div>
               </Grid>
-              <Grid item xs={9}>
+              <Grid item xs={8}>
                 <Controller
                   control={control}
                   name="county"
@@ -772,12 +799,12 @@ export default function HeaderSection(props) {
               </Grid>
             </Grid>
           </Grid> */}
-          <Grid item xs={5}>
+          <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
-              <Grid item xs={3}>
+              <Grid item xs={2}>
                 <div className={classes.label}>Pay Status</div>
               </Grid>
-              <Grid item xs={8}>
+              <Grid item xs={9}>
                 <Controller
                   control={control}
                   name="status"
@@ -801,12 +828,12 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-          <Grid item xs={7}>
+          <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
-              <Grid item xs={2}>
+              <Grid item xs={3}>
                 <div className={classes.label}>Internal Company</div>
               </Grid>
-              <Grid item xs={9}>
+              <Grid item xs={8}>
                 <Controller
                   control={control}
                   name="internalCompany"
@@ -832,12 +859,12 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-          <Grid item xs={5}>
+          <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
-              <Grid item xs={3}>
+              <Grid item xs={2}>
                 <div className={classes.label}>Prospect</div>
               </Grid>
-              <Grid item xs={8}>
+              <Grid item xs={9}>
                 <Controller
                   control={control}
                   name="prospectID"
@@ -935,12 +962,12 @@ export default function HeaderSection(props) {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={7}>
+          <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
-              <Grid item xs={2}>
+              <Grid item xs={3}>
                 <div className={classes.label}>Acquisition ID</div>
               </Grid>
-              <Grid item xs={9}>
+              <Grid item xs={8}>
                 <Controller
                   control={control}
                   name="acquisitionID"

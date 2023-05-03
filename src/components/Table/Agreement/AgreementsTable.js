@@ -190,8 +190,12 @@ function AgreementsTable(props) {
 
   const getAdvanceSearchFilters = () => {
     let filters = [];
-    Object.values(stateApp.landSearchFilters).forEach(filter => {
-      filters = [...filters, ...filter];
+    Object.keys(stateApp.landSearchFilters).forEach(key => {
+      if (stateApp.landSearchFilters[key] && stateApp.landSearchFilters[key].length)
+        filters.push({
+          field: key,
+          value: stateApp.landSearchFilters[key]
+        });
     });
     return _.uniq(filters);
   }
