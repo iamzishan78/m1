@@ -29,6 +29,13 @@ export const dateIsValid = (date) => {
   }
 }
 
+export const getIdFromPath = (path) => {
+  if (path.slice(-1) === '/')
+    path = path.substring(0, path.length - 1);
+
+  return path.split("/")[path.split("/").length - 1];
+}
+
 export const getURL = () => {
   let tenantName = window.sessionStorage.getItem("tenantName");
   if (tenantName) {

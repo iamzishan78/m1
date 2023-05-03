@@ -64,45 +64,48 @@ export const handleCustomFilterColumns = (TableHeader, filterObject) => {
 
 export const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column) => {
   if (!TableHeader) return
-
-  if (selectedGridView?.columns) {
-    const col = selectedGridView.columns.find(col => col.name === column.name)
-    if (col && typeof col.display !== 'undefined') {
-      column.options.display = col.display;
-      if (column.esKey && !column.noFilter) {
+  if (column.name === "interest_type" || column.name === "tract_status")
+    if (selectedGridView?.columns) {
+      const col = selectedGridView.columns.find(col => col.name === column.name)
+      if (col && typeof col.display !== 'undefined') {
+        column.options.display = col.display;
+        if (col.hasOwnProperty("viewColumns"))
+          column.options.viewColumns = col.viewColumns;
+        if (column.esKey && !column.noFilter) {
+          column.options.filter = true;
+        }
+      } else if (column.name !== ' ') {
+        const tableHeaderCol = TableHeader.find(tH => tH.name === column.name)
+        if (tableHeaderCol) {
+          if (typeof tableHeaderCol.options.display !== 'undefined')
+            column.options.display = tableHeaderCol.options.display;
+          if (typeof tableHeaderCol.options.filter !== 'undefined')
+            column.options.filter = tableHeaderCol.options.filter;
+        }
+        else {
+          column.options.display = false;
+          column.options.filter = false;
+        }
+      }
+    } else {
+      if (
+        TableHeader.find((col) => col.name === column.name)?.options?.display !==
+        false
+      ) {
+        column.options.display = true;
+        if (column.esKey && !column.noFilter) {
+          column.options.filter = true;
+        }
+      } else if (TableHeader.find((col) => col.name === column.name).options.forceFilter !== undefined &&
+        TableHeader.find((col) => col.name === column.name).options.forceFilter) {
+        column.options.display = false;
         column.options.filter = true;
-      }
-    } else if (column.name !== ' ') {
-      const tableHeaderCol = TableHeader.find(tH => tH.name === column.name)
-      if (tableHeaderCol) {
-        if (typeof tableHeaderCol.options.display !== 'undefined')
-          column.options.display = tableHeaderCol.options.display;
-        if (typeof tableHeaderCol.options.filter !== 'undefined')
-          column.options.filter = tableHeaderCol.options.filter;
-      }
-      else {
+      } else {
         column.options.display = false;
         column.options.filter = false;
       }
     }
-  } else {
-    if (
-      TableHeader.find((col) => col.name === column.name)?.options?.display !==
-      false
-    ) {
-      column.options.display = true;
-      if (column.esKey && !column.noFilter) {
-        column.options.filter = true;
-      }
-    } else if (TableHeader.find((col) => col.name === column.name).options.forceFilter !== undefined &&
-      TableHeader.find((col) => col.name === column.name).options.forceFilter) {
-      column.options.display = false;
-      column.options.filter = true;
-    } else {
-      column.options.display = false;
-      column.options.filter = false;
-    }
-  }
+  console.log("column after :  ", column)
 };
 
 export const setColumnsData = (
@@ -113,7 +116,8 @@ export const setColumnsData = (
   setFilters,
   query,
   esIndex,
-  extendSearchQuery = ''
+  extendSearchQuery = '',
+  searchFields,
 ) => {
   columns.forEach((column, index) => {
     const tableCol = TableHeader.find((el) => el.name === column.name)
@@ -146,6 +150,7 @@ export const setColumnsData = (
                 query={query}
                 extendSearchQuery={extendSearchQuery}
                 custom={custom}
+                searchFields={searchFields}
               />
             );
           },
