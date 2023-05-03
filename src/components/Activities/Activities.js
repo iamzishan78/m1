@@ -18,6 +18,7 @@ import ActivitiesAppBar from "./components/ActivitiesAppbar";
 import ActivitiesModal from "./components/ActivitiesModal";
 import { AppContext } from "../../AppContext";
 import ActivitiesTable from "../../components/Table/Activities/ActivitiesTable";
+import {ActivitiesContext} from './ActivitiesContext';
 
 
 const localizer = momentLocalizer(moment);
@@ -39,7 +40,7 @@ const ActivitiesCalendar = (props) => {
         endAccessor={"end"}
         startAccessor={"start"}
         view={props.view}
-        date={selectedDate || new Date()}
+        date={selectedDate}
         style={{ height: "calc(100vh - 67px)", position: "relative" }}
         step={60}
         onSelectEvent={(e) => props.onEventClick(e)}
@@ -59,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
     verticalAlign: "middle",
   },
   root: {
-    marginTop: "65px",
+    marginTop: "54px",
   },
   table: {
     borderTop: "solid 1px#E0E0E0",
@@ -276,9 +277,6 @@ const Activities = () => {
                   filtersChange={filtersChange}
                   appliedFilters={appliedFilters}
                   filterToggle={filterToggle}
-                  activityFilterByType={activityFilterByType}
-                  activityFilterByTime={activityFilterByTime}
-                  activityFilterByOwner={activityFilterByOwner}
                   targetLabel={"activitiesDashboard"}
                   header="Activities"
                 />

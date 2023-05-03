@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import EditIcon from "@material-ui/icons/Edit";
-import { Container, Button, Tooltip, IconButton } from "@material-ui/core";
+import { Container, Button, Tooltip, IconButton, CircularProgress } from "@material-ui/core";
 import { useMutation } from "@apollo/client";
 
 import { AppContext } from "AppContext";
@@ -113,6 +113,7 @@ function UnitInterestOwnerTable(props) {
         key: "contact._id",
         actions: genericDataActions,
       },
+      isSelectedAllAllowed: true,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.activitySearchQuery, props.filterToggle]);
@@ -213,16 +214,20 @@ function UnitInterestOwnerTable(props) {
               display: "flex",
             }}
           >
+            {(!props.selectedRows || props.selectedRows?.length === 0) && <CircularProgress size={40} color="secondary" style={{ marginRight: '1em' }} />}
             <Button
               color="secondary"
               startIcon={<EditIcon color="white" />}
               className={classes.multiSelectionTopBarButtons}
+              disabled={!props.selectedRows || props.selectedRows?.length === 0}
               onClick={() => {
                 let owners = [];
+
+                const rows = props.selectedRowsValues || props.rows
                 for (let i in props.selectedRows) {
                   owners.push({
-                    ...props.rows[props.selectedRows[i].dataIndex],
-                    _id: props.rows[props.selectedRows[i].dataIndex].contact._id
+                    ...rows[props.selectedRows[i].dataIndex],
+                    _id: rows[props.selectedRows[i].dataIndex].contact._id
                   });
                 }
                 setSelectedRows(owners);
@@ -235,11 +240,14 @@ function UnitInterestOwnerTable(props) {
               color="secondary"
               startIcon={<CloudDownloadIcon color="white" />}
               className={classes.multiSelectionTopBarButtons}
+              disabled={!props.selectedRows || props.selectedRows?.length === 0}
               onClick={() => {
                 let owners = [];
+
+                const rows = props.selectedRowsValues || props.rows
                 for (let i in props.selectedRows) {
                   owners.push(
-                    props.rows[props.selectedRows[i].dataIndex]
+                    rows[props.selectedRows[i].dataIndex]
                   );
                 }
                 setSelectedRows(owners);
@@ -253,7 +261,7 @@ function UnitInterestOwnerTable(props) {
                 color="secondary"
                 startIcon={<RequestPageIcon color="white" />}
                 className={classes.multiSelectionTopBarButtons}
-                disabled={props.selectedRows.length < 1}
+                disabled={!props.selectedRows || props.selectedRows?.length === 0}
                 onClick={() => setOpenCustomDialog("buyContactsInfoData")}
               >
                 Contact Data
@@ -264,6 +272,7 @@ function UnitInterestOwnerTable(props) {
               <IconButton
                 size="medium"
                 style={{ margin: "0 5px" }}
+                disabled={!props.selectedRows || props.selectedRows?.length === 0}
                 onClick={(e) => {
                   setOpenCustomDialog("deleteOwner");
                 }}

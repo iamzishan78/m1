@@ -5,11 +5,12 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
-import { Grid } from "@material-ui/core";
-import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
+import { CircularProgress,Grid, Dialog, OutlinedInput, InputAdornment, Typography, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import DeleteIcon from "@material-ui/icons/Delete";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 
 import { AppContext } from "AppContext";
@@ -29,6 +30,8 @@ import EntityType from "components/ContactDetailCard/components/FieldContent/Ent
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import AssociatedDealField from "components/ContactDetailCard/components/FieldContent/AssociatedDealField";
+import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
+import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -76,7 +79,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [ownerTypeOfConctact, setOwnerTypeOfConctact] = useState();
-
+  const [anchorEl, setAnchorEl] = useState();
+  const [loading, setLoading] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const watchedNra = watch('nra')
 
   useEffect(() => {
@@ -280,9 +285,54 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
   };
 
+  
+
+  const openConfirmationDialog = () => {
+    setDeleteDialogOpen(true);
+    handleMenuClose();
+  };
+  const handleCloseDialog = () => {
+    setDeleteDialogOpen(false);
+  };
+  const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
+  
+  const deleteFunc = () => {
+    setLoading(true);
+      updateShapeOwners({
+        variables: {
+          shapeType: props.shapeType,
+          shapeOwners: { _id:selectedRow?._id, isDeleted: true },
+        },
+        refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
+        awaitRefetchQueries: true,
+      }).finally(()=>{
+        setLoading(false);
+      });
+    
+  };
   const classes = useStyles();
   return (
     <div className={classes.move}>
+      {deleteDialogOpen && (
+        <Dialog
+          className={classes.dialog}
+          open={deleteDialogOpen ? true : false}
+          onClose={handleCloseDialog}
+          fullWidth={false}
+          maxWidth="sm"
+        >
+          <DeleteConfirmationDialogContent
+            header={`Delete Interest Owner`}
+            onClose={handleCloseDialog}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={null}
+            setM1nSelectedRowsIndexes={() => { }}
+          >
+            Do you want to delete the selected interest owner?
+          </DeleteConfirmationDialogContent>
+        </Dialog>
+      )}
       <React.Fragment>
         <RightDialog open={true} handleClickDialogClose={props.onClose} width={"450px"}>
           <Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
@@ -291,7 +341,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 {selectedRow ? "Update" : "Add"} Unit Ownership
               </DialogTitle>
             </Grid>
-            <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
+            {/* <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
               <IconButton
                 size="small"
                 component="span"
@@ -304,7 +354,56 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               >
                 <KeyboardTabBlackIcon />
               </IconButton>
-            </Grid>
+            </Grid> */}
+            <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
+            <div style={{ "float": "right",display:'flex',marginRight:'10px' }}>
+                <>
+                  <IconButton
+                    disabled={loading}
+                    size="small"
+                    style={{ margin: "0 8px" }}
+                  >
+                    {loading ? (
+                      <CircularProgress size={20} color="secondary" />
+                    ) : (
+                      <MoreHorizIcon size="medium" onClick={handleMenuClick} />
+                    )}
+                  </IconButton>
+                  <Menu
+                    id="dealMenu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                    className={classes.menu}
+                    getContentAnchorEl={null}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                    transformOrigin={{ vertical: "top", horizontal: "center" }}
+                  >
+                    <MenuItem 
+                      onClick={openConfirmationDialog}
+                    >
+                      <ListItemIcon>
+                        <DeleteIcon size="medium" />
+                      </ListItemIcon>
+                      <ListItemText>Delete</ListItemText>
+                    </MenuItem>
+                  </Menu>
+                </>
+                <IconButton
+                size="small"
+                component="span"
+                style={{
+                  background: "transparent",
+                  align: "center",
+                  float: "right",
+                }}
+                onClick={props.onClose}
+              >
+                <KeyboardTabBlackIcon />
+              </IconButton>
+            </div>
+          </Grid>
           </Grid>
           <DialogContent className={classes.dialogContent}>
             <Grid container spacing={2}>

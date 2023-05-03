@@ -35,10 +35,10 @@ export default function LandAppBar(props) {
             geometry: {},
             properties: {
               originalProperties: {},
-              shapeSubtitle: '',
-              type: 'agreement',
-              layerType: 'agreement',
-              layerSubType: 'lease',
+              shapeSubtitle: "",
+              type: "agreement",
+              layerType: "agreement",
+              layerSubType: "lease",
               shapeArea: 0,
               shapeCenter: [0, 0],
               id: featureId,
@@ -47,8 +47,8 @@ export default function LandAppBar(props) {
           const customLayerData = {
             shapeJson: newShapeFeature,
             shape: JSON.stringify(newShapeFeature),
-            layer: 'lease',
-            name: '',
+            layer: "lease",
+            name: "",
             user: user.mongoId,
           };
 
@@ -61,7 +61,7 @@ export default function LandAppBar(props) {
         isShow: true,
         text: "Import Agreements",
         action: () => {
-          history.push("/bulkupload/agreement_header", { title: 'Agreements', previousRoute: '/land/agreements' });
+          history.push("/bulkupload/agreement_header", { title: "Agreements", previousRoute: "/land/agreements" });
         },
       },
     ];
@@ -85,13 +85,11 @@ export default function LandAppBar(props) {
             </Typography>
           </Grid>
 
-          {(
-            !activeModule.hideSearch
-          ) && (
-              <Grid item md={5} style={{ marginLeft: "20px" }}>
-                <LandSearch activeModule={activeModule} />
-              </Grid>
-            )}
+          {!activeModule.hideSearch && (
+            <Grid item md={5} style={{ marginLeft: "20px" }}>
+              <LandSearch activeModule={activeModule} />
+            </Grid>
+          )}
         </Grid>
       </Grid>
 

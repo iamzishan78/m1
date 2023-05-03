@@ -150,6 +150,7 @@ const AssociateContactWellHeadCells = [
     name: "detailCard",
     label: " ",
     options: {
+      display: false,
       filter: false,
       sort: false,
       searchable: false,

@@ -68,6 +68,7 @@ export const UPDATECONTACT = gql`
         website
         industryType
         campaignName
+        outcome
       }
     }
   }
