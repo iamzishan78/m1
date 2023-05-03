@@ -303,14 +303,9 @@ export default function CustomizedSteppers(props) {
           element.createAt = changeDate;
           element.lastUpdateBy = userID;
           element.lastUpdateAt = changeDate;
-
           element = { ...statementInfo, ...element };
-          element['checkDate'] = getDateWithoutTime(statementInfo.checkDate)
-          element['check.checkDate'] = getDateWithoutTime(statementInfo.checkDate)
-          setValue(element, "check.payor", statementInfo.payor);
-          setValue(element, "check.payee", statementInfo.payee);
-          setValue(element, "check.checkNumber", statementInfo.checkNumber);
-          setValue(element, "check.checkAmount", statementInfo.checkAmount);
+          element['checkDate'] = getDateWithoutTime(element['check.checkDate'])
+          element['check.checkDate'] = getDateWithoutTime(element['check.checkDate'])
           setValue(element, "check.sourceId", statementInfo.sourceId);
           setValue(element, "check.importType", statementInfo.importType);
           if (props.selectedJob.type === "UNITS") {
@@ -443,7 +438,6 @@ export default function CustomizedSteppers(props) {
                   importType={getValues().importType}
                   selectedJob={props.selectedJob}
                   setSelectedJob={props.setSelectedJob}
-                  disabled={props.selectedJob.type === "CHECKDETAILS" && !(get(payor, "_id", "") && checkNumber && checkAmount)}
                 />
               </>
             ) : null}

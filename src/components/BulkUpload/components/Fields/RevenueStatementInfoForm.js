@@ -95,7 +95,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
       <div className={classes.title}>Begin by entering the following revenue statement information</div>
       <div style={{ display: "flex", justifyContent: "center" }}>
         <Grid container display="flex" direction="row" alignItems="center" style={{ padding: "10px 35px", maxWidth: "540px" }}>
-          <Grid item sm={12} md={12}>
+          {/* <Grid item sm={12} md={12}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={4}>
                 <div className={classes.boldLabel}>Payor *</div>
@@ -240,7 +240,7 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
                 />
               </Grid>
             </Grid>
-          </Grid>
+          </Grid> */}
           <Grid item sm={12} md={12}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={4}>

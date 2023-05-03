@@ -118,6 +118,14 @@ export function workspaceTenantName() {
 }
 
 export function getDateWithoutTime(dateTime = "") {
+  if (dateTime?.includes && dateTime.includes('/')) {
+    const splittedDate = dateTime.split("/")
+    const newDate = new Date()
+    newDate.setMonth(Number(splittedDate[0]) - 1)
+    newDate.setDate(Number(splittedDate[1]))
+    newDate.setYear(Number(splittedDate[2]))
+    return newDate;
+  }
   const splittedDate = dateTime.split("-")
   if (splittedDate.length === 3) {
     const newDate = new Date()
