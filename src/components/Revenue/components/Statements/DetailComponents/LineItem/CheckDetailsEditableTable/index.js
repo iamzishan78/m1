@@ -38,8 +38,7 @@ const useStyles = makeStyles({
     width: "100%",
   },
   container: {
-    // maxHeight: 440,
-    maxHeight: (p) => (p.showPdfSection ? "calc(49vh)" : "calc(99vh)"),
+    maxHeight: (p) => (p.showPdfSection ? "calc(100vh - 620px)" : "calc(99vh)"),
     backgroundColor: "#fff",
     display: "flex",
     flexDirection: "column-reverse",
@@ -76,8 +75,8 @@ const useStyles = makeStyles({
   },
   tableGrid: {
     backgroundColor: "#fff",
-    overflowX: "auto",
-    maxHeight: (p) => (p.showPdfSection ? "calc(50vh)" : "calc(100vh)"),
+    overflowX: "auto", maxHeight: (p) => (!p.showPdfSection && "calc(100vh)"),
+
     // maxHeight: "500px",
   },
   tableHeaderLabel: { marginLeft: "15px", paddingRight: "10px", marginTop: "5px" },
@@ -402,7 +401,7 @@ function CheckDetailsEditableTable(props) {
 
   return (
     <Paper elevation={3}>
-      <Grid id="checkDetailGrid" container style={{ backgroundColor: "#F2F2F2" }}>
+      <Grid id="checkDetailGrid" container style={{ backgroundColor: "#F2F2F2", maxHeight: "50vh" }}>
         <Grid item md={12} style={{ border: "1px solid #c1c1c1", paddingBottom: "10px" }}>
           <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ justifyContent: "space-between" }}>
             <Grid item style={{ display: "flex" }}>

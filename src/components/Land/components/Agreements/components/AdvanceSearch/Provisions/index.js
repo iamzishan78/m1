@@ -29,11 +29,13 @@ const provisionFilters = [
     label: "Type",
     filterKey: "provisions.type.keyword",
     searchFields: ["provisions.type"],
+    type: "nested"
   },
   {
     label: "Applicable",
     filterKey: "provisions.applicable",
     searchFields: ["provisions.applicable"],
+    type: "nested",
     customOnChange: (value) => (value ? (value === "Yes" ? true : false) : null),
     custom: {
       key_as_string: true,
@@ -53,11 +55,13 @@ const provisionFilters = [
     label: "Provision Value",
     filterKey: "provisions.value.keyword",
     searchFields: ["provisions.value"],
+    type: "nested"
   },
   {
     label: "Party Name",
     filterKey: "provisions.partyName.keyword",
     searchFields: ["provisions.partyName"],
+    type: "nested"
   },
 ];
 
@@ -65,11 +69,12 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
   const params = {
     esIndex: "shapes_flat",
     variant: "outlined",
-    setFilters: () => {},
+    setFilters: () => { },
     filterList,
     column: {
       label: filter.label,
       filterKey: filter.filterKey,
+      type: filter.type
     },
     index,
     onChange,
@@ -78,6 +83,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
     filters: [{ field: "shapeJson.properties.type.keyword", value: "agreement" }, ...appliedFilters.filter((af, i) => i < index)],
     extendSearchQuery: "",
     custom: filter.custom,
+    aggsType: "nested"
   };
   if (filter.getOptionLabel) params["getOptionLabel"] = filter.getOptionLabel;
   return (
@@ -101,12 +107,13 @@ export default function ProvisionsFilters(props) {
   const changeLandProvisions = React.useMemo(
     () =>
       debounce((request, callback, index) => {
-        const { filterKey } = callback;
+        const { filterKey, type } = callback;
         const landProvisionsFilters = [...stateApp.landSearchFilters.provisions];
         const _index = landProvisionsFilters.findIndex((f) => f.field === filterKey);
-        if (_index === -1 && request[0] !== null) landProvisionsFilters.push({ field: filterKey, value: request[0] });
+        if (_index === -1 && request[0] !== null) landProvisionsFilters.push({ field: filterKey, value: request[0], type });
         else if (request.length > 0 && request[0] !== null) landProvisionsFilters[_index].value = request[0];
         else if (_index !== -1) landProvisionsFilters.splice(_index, 1);
+
         setStateApp((stateApp) => ({
           ...stateApp,
           landSearchFilters: { ...stateApp.landSearchFilters, provisions: landProvisionsFilters },

@@ -24,11 +24,42 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const relatedAgreementsFilters = [
+const documentFilters = [
   {
-    label: "Agreements",
-    filterKey: "relatedAgreements.name.keyword",
-    searchFields: ["relatedAgreements.name"],
+    label: "File Name",
+    filterKey: "relatedDocs.documentName.keyword",
+    searchFields: ["relatedDocs.documentName"],
+  },
+  {
+    label: "File Number",
+    filterKey: "relatedDocs.documentNumber.keyword",
+    searchFields: ["relatedDocs.documentNumber"],
+  },
+  {
+    label: "File Types",
+    filterKey: "relatedDocs.documentType.keyword",
+    searchFields: ["relatedDocs.documentType"],
+  },
+  {
+    label: "File Date",
+    filterKey: "relatedDocs.uploadedDate",
+    searchFields: ["relatedDocs.uploadedDate"],
+    isDate: true
+  },
+  {
+    label: "Book",
+    filterKey: "relatedDocs.book.keyword",
+    searchFields: ["relatedDocs.book"],
+  },
+  {
+    label: "Page",
+    filterKey: "relatedDocs.page.keyword",
+    searchFields: ["relatedDocs.page"],
+  },
+  {
+    label: "Instument#",
+    filterKey: "relatedDocs.instrument.keyword",
+    searchFields: ["relatedDocs.instrument"],
   },
 ];
 
@@ -53,37 +84,37 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
   if (filter.getOptionLabel) params["getOptionLabel"] = filter.getOptionLabel;
   return (
     <FormControl variant="outlined" className={classes.formControl}>
-      <AutoCompleteFilter {...params} />
+      <AutoCompleteFilter {...params} isDate={filter.isDate} />
     </FormControl>
   );
 };
 
-export default function RelatedAgreementsFilters(props) {
+export default function RelatedDocumentFilters(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [filterList, setFilterList] = useState([[], []]);
+  const [filterList, setFilterList] = useState([[], [], [], [], [], [], []]);
 
   useEffect(() => {
-    if (stateApp.landSearchFilters.relatedAgreements?.length === 0 && filterList.find((fl) => fl.length !== 0)) {
-      setFilterList([[], []]);
+    if (stateApp.landSearchFilters.relatedDocuments?.length === 0 && filterList.find((fl) => fl.length !== 0)) {
+      setFilterList([[], [], [], [], [], [], []]);
     }
-  }, [stateApp.landSearchFilters.relatedAgreements]);
+  }, [stateApp.landSearchFilters.relatedDocuments]);
 
-  const changeLandAgreements = React.useMemo(
+  const changeLandProvisions = React.useMemo(
     () =>
       debounce((request, callback, index) => {
         const { filterKey } = callback;
-        const landAgreementsFilters = [...stateApp.landSearchFilters.relatedAgreements];
-        const _index = landAgreementsFilters.findIndex((f) => f.field === filterKey);
-        if (_index === -1 && request[0] !== null) landAgreementsFilters.push({ field: filterKey, value: request[0] });
-        else if (request.length > 0 && request[0] !== null) landAgreementsFilters[_index].value = request[0];
-        else if (_index !== -1) landAgreementsFilters.splice(_index, 1);
+        const landProvisionsFilters = [...stateApp.landSearchFilters.relatedDocuments];
+        const _index = landProvisionsFilters.findIndex((f) => f.field === filterKey);
+        if (_index === -1 && request[0] !== null) landProvisionsFilters.push({ field: filterKey, value: request[0] });
+        else if (request.length > 0 && request[0] !== null) landProvisionsFilters[_index].value = request[0];
+        else if (_index !== -1) landProvisionsFilters.splice(_index, 1);
         setStateApp((stateApp) => ({
           ...stateApp,
-          landSearchFilters: { ...stateApp.landSearchFilters, relatedAgreements: landAgreementsFilters },
+          landSearchFilters: { ...stateApp.landSearchFilters, relatedDocuments: landProvisionsFilters },
         }));
       }, 1000),
-    [setStateApp, stateApp.landSearchFilters.relatedAgreements]
+    [setStateApp, stateApp.landSearchFilters.relatedDocuments]
   );
 
   const onFilterChange = (request, callback, filter, index) => {
@@ -93,12 +124,12 @@ export default function RelatedAgreementsFilters(props) {
 
     const _request = copy(request);
     if (filter.customOnChange) _request[0] = filter.customOnChange(_request[0]);
-    changeLandAgreements(_request, callback, index);
+    changeLandProvisions(_request, callback, index);
   };
 
   return (
     <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
-      {relatedAgreementsFilters.map((filter, index) => (
+      {documentFilters.map((filter, index) => (
         <Grid item key={index} sm={12} className={classes.gridItem}>
           <AutoCompleteDropdown
             classes={classes}
@@ -106,10 +137,12 @@ export default function RelatedAgreementsFilters(props) {
             filter={filter}
             filterList={filterList}
             index={index}
-            appliedFilters={stateApp.landSearchFilters.relatedAgreements}
+            appliedFilters={stateApp.landSearchFilters.relatedDocuments}
           />
         </Grid>
       ))}
     </Grid>
   );
 }
+
+

@@ -7,7 +7,6 @@ import Table from "components/Shared/M1nTable/components/Table";
 import { usetableStyles } from "../Styles";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { REMOVE_CHECKS } from "graphQL/useMutationRemoveChecks";
-import { GET_ES_POTENTIAL_ISSUES_SUMMARY } from "graphQL/useQueryESSummary";
 import { GET_ES_SIMPLE_COUNT } from "graphQL/useQueryESCount";
 import TableHeader from "components/Table/constants/revenue-statement-header-schema";
 import { deepEqualObjects, copy } from "components/Shared/functions";
@@ -17,8 +16,6 @@ const genericDataActions = [];
 
 function RevenueStatementTable(props) {
   const classes = usetableStyles({ isRevenueTable: true });
-
-  const [potentialIssuesList, setPotentialIssuesList] = useState([]);
 
   const { setTableMeta, onGettingPotentialIssues, onGettingStatements, setGenricData, esFilters, revenueSearchQuery, filterToggle, setCustomFilterChanged } = props;
 
@@ -33,17 +30,10 @@ function RevenueStatementTable(props) {
     setCustomFilterChanged?.(true);
   }, [esFilters]);
 
-  const [getPotentialIssues, { data: potentialIssues }] = useLazyQuery(GET_ES_POTENTIAL_ISSUES_SUMMARY, {
-    context: { batch: true },
-    fetchPolicy: "no-cache",
-  });
-
   const [getESSimpleCount] = useLazyQuery(GET_ES_SIMPLE_COUNT, {
     // context: { batch: true },
     fetchPolicy: "no-cache",
   });
-
-  const issues = potentialIssues?.getESPotentialIssuesSummary;
 
   const formatHits = useCallback(
     (hits) => {
@@ -51,6 +41,10 @@ function RevenueStatementTable(props) {
         hit.checkDate = hit.checkDate ? moment(new Date(hit.checkDate)).format("MM/DD/YYYY") : null;
         hit.depositDate = hit.depositDate ? moment(new Date(hit.depositDate)).format("MM/DD/YYYY") : null;
         hit = setGenricData(hit, hit._id, genericDataActions, genericDataActions);
+        hit.tags =
+          hit?.tags?.length > 0
+            ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+            : [[], 0];
         return hit;
       });
       return hits;
@@ -77,7 +71,7 @@ function RevenueStatementTable(props) {
       startPaginationAt: 50,
       defaultSort: { field: "checkDate", order: "desc" },
       formatHits,
-      exportPx: "121px",
+      downloadAll: { exportPx: '121px' },
       initializeGenericData: { key: "_id", actions: genericDataActions },
     });
   }, [setTableMeta, formatHits, revenueSearchQuery, filterToggle]);
@@ -85,21 +79,6 @@ function RevenueStatementTable(props) {
   useEffect(() => {
     if (fixedFilters.length > 0) {
       getCounts();
-
-      getPotentialIssues({
-        variables: {
-          filters: [...fixedFilters, ...props.selectedFilters.current],
-          search: {
-            query: revenueSearchQuery,
-            fields: ["checkNumber", "_all"],
-          },
-          sort: { field: "checkDate", order: "desc" },
-          pagination: {
-            first: props.total,
-            after: null,
-          },
-        },
-      });
     }
   }, [props.rows]);
 
@@ -112,24 +91,6 @@ function RevenueStatementTable(props) {
       });
     }
   }, [approvedCount, unApprovedCount, props.total]);
-
-  //  Potential issues
-  useEffect(() => {
-    if (issues?.hits?.length > 0) {
-      const allIssues = issues?.hits.filter((issue) => {
-        const checkAmt = issue?.checkAmt?.value?.toFixed(2);
-        const checkDetailAmt = issue?.checkDetailAmt?.value?.toFixed(2);
-        if (Number(checkAmt) !== Number(checkDetailAmt)) {
-          return issue;
-        }
-      });
-      setPotentialIssuesList(allIssues);
-      onGettingPotentialIssues(allIssues);
-    } else {
-      onGettingPotentialIssues([]);
-      setPotentialIssuesList([]);
-    }
-  }, [potentialIssues, issues]);
 
   const deleteFunc = (ids) => {
     if (ids.length > 0) {
@@ -145,19 +106,21 @@ function RevenueStatementTable(props) {
   };
 
   const getCounts = async () => {
-    const approvedCounts = await getESCounts("Approved");
-    const unApprovedCounts = await getESCounts("UnApproved");
+    const approvedCounts = await getESCounts("approvalStatus.keyword", "Approved");
+    const unApprovedCounts = await getESCounts("approvalStatus.keyword", "Unapproved");
+    const potentialIssuesCounts = await getESCounts("isAmountValidated", false, "term");
 
     setApprovedCount(approvedCounts);
     setUnApprovedCount(unApprovedCounts);
+    onGettingPotentialIssues(potentialIssuesCounts);
   };
 
-  const getESCounts = (key) => {
+  const getESCounts = (key, value, type) => {
     return new Promise((resolve, reject) => {
       getESSimpleCount({
         variables: {
           index: "checks_flat",
-          filters: [...fixedFilters, { field: "approvalStatus.keyword", value: key }, ...props.selectedFilters.current],
+          filters: [...fixedFilters, { field: key, value: value, type }, ...props.selectedFilters.current],
           search: {
             query: revenueSearchQuery,
             fields: ["checkNumber", "_all"],
@@ -196,7 +159,6 @@ function RevenueStatementTable(props) {
         columns={props.columns}
         rows={props.rows}
         total={false}
-        potentialIssues={potentialIssuesList}
         loading={props.loading}
         targetLabel={props.targetLabel}
         uploadIcon={null}

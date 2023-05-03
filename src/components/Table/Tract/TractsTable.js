@@ -56,12 +56,13 @@ function TractsTable(props) {
   }, [GridViewModule]);
 
   useEffect(() => {
+    let tableHeaders = copy(TableHeader(props.isSnapGrid));
     setTableMeta({
       extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
-      TableHeader: copy(TableHeader(props.isSnapGrid)),
+      TableHeader: tableHeaders,
       esIndex: "shapes_flat",
-      typeKeyword: { gridViewCategory: "Tracts" },
-      startPaginationAt: 10,
+      typeKeyword: { gridViewCategory: "Tracts", metaModule: "Parcel" },
+      startPaginationAt: 50,
       filters: [
         {
           field: "layer.keyword",
@@ -75,7 +76,7 @@ function TractsTable(props) {
         field: "geoJSON",
         value: stateApp?.currentFeature?.geometry
       },
-      exportPx: props.parent === "TractTable" ? "121px" : undefined,
+      downloadAll: props.parent === "TractTable" ? { exportPx: '121px' } : undefined,
       formatHits,
     });
     // eslint-disable-next-line
@@ -106,8 +107,7 @@ function TractsTable(props) {
         startPaginationAt={null}
         onTableChange={props.onTableChange}
         options={{
-          ...props.options,
-          ...props.customOptions,
+          ...props.options
         }}
         parent={props.parent}
         setColumnsBase={[]}

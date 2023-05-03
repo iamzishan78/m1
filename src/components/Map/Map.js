@@ -466,7 +466,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
       if (!oneTimeMapBounds) {
         const bound = findBoundsMap([jsonLayer], map, layerPadding, true);
-    
+
         setOneTimeMapBounds({
           bounds: [
             [bound.minLong, bound.minLat],
@@ -480,7 +480,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           },
         });
       }
-    
+
       if (!loading) {
         drawBoundary(map, jsonLayer);
       }
@@ -616,10 +616,14 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       }));
 
       if (layerStates.allLayerSettingsByUser.length > 0) {
-        setLayersData(layerStates.allLayerSettingsByUser);
-        for (let i = 0; i < layerStates.allLayerSettingsByUser.length; i++) {
-          const layer = layerStates.allLayerSettingsByUser[i];
-          if (layer.layerType === "file layer") {
+        const layers = copy(layerStates.allLayerSettingsByUser)
+        for (let i = 0; i < layers.length; i++) {
+          const layer = layers[i];
+          if (layer.layerType === "file layer" && !layer.layerSettings?.visiable) {
+            layer.fileViewed = false
+          }
+          if (layer.layerType === "file layer" && layer.layerSettings?.visiable) {
+            layer.fileViewed = true
             setFileRequestCounter(1);
             viewFile({
               variables: {
@@ -629,6 +633,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             break;
           }
         }
+
+        setLayersData(layers);
       }
     }
   }, [layerStates]);
@@ -664,7 +670,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
       if (layerIndex < layersData.length - 1)
         for (let i = layerIndex + 1; i < layers.length; i++) {
-          if (layers[i].layerType == "file layer" && !layers[i].fileUrl) {
+          if (layers[i].layerType == "file layer" && !layers[i].fileUrl && layers[i].layerSettings.visiable && layers[i].fileViewed !== true) {
             setFileRequestCounter(1);
             viewFile({
               variables: {
@@ -856,7 +862,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       // -> add source
       if (map?.getSource(sourceId)) {
         let mapSourceData = map?.getSource(sourceId)._data;
-        if (mapSourceData && !deepEqualObjects(geoJson, mapSourceData)) map?.getSource(sourceId).setData(geoJson);
+        if (mapSourceData && !deepEqualObjects(geoJson, mapSourceData)) map?.getSource(sourceId)?.setData(geoJson);
       } else if (sourceId == "recentsub_permits_source") {
         // need to avoid auto clustering
         map.addSource(sourceId, {
@@ -896,7 +902,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
         if (map?.getSource(`${sourceId}_point`)) {
           let pointSourceData = map?.getSource(`${sourceId}_point`)._data;
-          if (pointSourceData && !deepEqualObjects(pointSource, pointSourceData)) map.getSource(`${sourceId}_point`).setData(pointSource);
+          if (pointSourceData && !deepEqualObjects(pointSource, pointSourceData)) map.getSource(`${sourceId}_point`)?.setData(pointSource);
         } else {
           map.addSource(`${sourceId}_point`, {
             type: "geojson",
@@ -1487,9 +1493,13 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         for (const popUp of popUps) popUp.remove()
       }
 
+      const fileLayers = stateApp.layers.filter(layer => layer.layerType === 'file layer').map(layer => layer.identifier)
+
+      const allLayerIds = [...defaultLayers, ...fileLayers]
+
       var bbox = [[e.point.x - 10, e.point.y - 10], [e.point.x + 10, e.point.y + 10]];
       const mapLayers = map.getStyle().layers
-      const layersToQuery = defaultLayers.filter((layerId) => mapLayers.find((mLayer) => mLayer.id === layerId))
+      const layersToQuery = allLayerIds.filter((layerId) => mapLayers.find((mLayer) => mLayer.id === layerId))
       let features = map.queryRenderedFeatures(bbox, { layers: [...layersToQuery] });
       if (features?.length === 0)
         return ''
@@ -1618,11 +1628,19 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
               }
             }
             beforeLayer = setLayer(layerData.fileUrl, layer.identifier, map, beforeLayer);
+          } else if (layerData.fileViewed === false && layer.layerSettings?.visiable) {
+            setFileRequestCounter(1);
+            viewFile({
+              variables: {
+                fileId: layer.file,
+              },
+            });
           }
         }
       }
     }
   }, [
+    layersData,
     stateApp.layers,
     stateApp.trackedOwnerWells,
     stateApp.trackedwells,
@@ -4388,6 +4406,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
   const createUDPopUp = useCallback(
     (currentFeature) => {
+      if (!map) return
+
       let coordinates = currentFeature.shapeCenter;
       if (typeof currentFeature.shapeCenter === "string") {
         coordinates = JSON.parse(currentFeature.shapeCenter);
@@ -4651,6 +4671,17 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   }, [stateApp.mapVars.styleId]);
 
   useEffect(() => {
+    if (!map || !mapStyles) return
+
+    var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
+    if (index === -1) {
+      index = 0
+    }
+
+    map.setStyle("mapbox://styles/m1neral/" + mapStyles[index]?.id)
+  }, [stateApp.mapVars.styleId, mapStyles]);
+
+  useEffect(() => {
     if (map) {
       setStateApp((stateApp) => ({
         ...stateApp,
@@ -4696,8 +4727,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       const geoJson = makeGeoJSON(data);
       const labelGeoJson = makeLabelGeoJson(data);
 
-      map?.getSource("abstract_geo_source").setData(geoJson);
-      map?.getSource("abstract_label_geo_source").setData(labelGeoJson);
+      map?.getSource("abstract_geo_source")?.setData(geoJson);
+      map?.getSource("abstract_label_geo_source")?.setData(labelGeoJson);
     }
   }, [abstractData]);
 
@@ -4731,8 +4762,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       const geoJson = makeGeoJSON(data);
       const labelGeoJson = makeLabelGeoJson(data);
 
-      map?.getSource("plssseconddivision_geo_source").setData(geoJson);
-      map?.getSource("plssseconddivision_label_geo_source").setData(labelGeoJson);
+      map?.getSource("plssseconddivision_geo_source")?.setData(geoJson);
+      map?.getSource("plssseconddivision_label_geo_source")?.setData(labelGeoJson);
     }
   }, [plssSecondDivisionData]);
 
@@ -4751,7 +4782,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
       const geoJson = makeGeoJSON(data);
 
-      map?.getSource("abstract_geo_source").setData(geoJson);
+      map?.getSource("abstract_geo_source")?.setData(geoJson);
     }
   }, [abstractContainsData]);
 
@@ -4963,386 +4994,386 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   }
 
   useEffect(() => {
-      if (mapStyles.length <= 0) return;
-      // const SET_INITIAL_MAP_STYLE = "Satellite";
+    if (mapStyles.length <= 0) return;
+    // const SET_INITIAL_MAP_STYLE = "Satellite";
 
-      if (paramId && type !== 'wells' && !oneTimeMapBounds) return;
+    if (paramId && type !== 'wells' && !oneTimeMapBounds) return;
 
-      const initializeMap = ({ setMap, mapEl, setStateApp, setDraw }) => {
-        let id = mapEl.current.id;
+    const initializeMap = ({ setMap, mapEl, setStateApp, setDraw }) => {
+      let id = mapEl.current.id;
 
-        var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
-        if (index === -1) {
-          index = 0
+      var index = getIndex(stateApp.mapVars.styleId, mapStyles, "name");
+      if (index === -1) {
+        index = 0
+      }
+      const newMap = new mapboxgl.Map({
+        container: `${id}`,
+        style: "mapbox://styles/m1neral/" + mapStyles[index]?.id,
+        // style: "mapbox://styles/mapbox/outdoors-v11",
+        center: stateApp.mapVars.center,
+        zoom: stateApp.mapVars.zoom,
+        pitch: stateApp.mapVars.pitch,
+        bearing: stateApp.mapVars.bearing,
+      });
+
+      setWellsTileset(
+        mapStyles[index].sources.composite.url
+          .split(",")
+          .find((element) => element.indexOf("m1neral.wells") > -1)
+          ?.replace("mapbox://", "")
+      );
+
+      /// optimized interactions w/ map
+      newMap.scrollZoom.enable();
+      newMap.dragPan.enable();
+      newMap.dragRotate.enable();
+      newMap.keyboard.enable();
+      // newMap.doubleClickZoom.disable();
+      newMap.boxZoom.enable();
+      newMap.touchZoomRotate.enable();
+
+      newMap.addControl(
+        new mapboxgl.ScaleControl({
+          maxWidth: 80,
+          unit: "imperial",
+        }),
+        "bottom-right"
+      );
+
+      newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
+
+      newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
+
+      var geoLocate = new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
+        },
+        fitBoundsOptions: {
+          maxZoom: 24,
+        },
+        trackUserLocation: false,
+        showAccuracyCircle: true,
+        showUserLocation: true,
+      });
+      newMap.addControl(geoLocate, "bottom-right");
+      geoLocate.on("geolocate", function (e) {
+        newMap.jumpTo({
+          center: [e.coords.longitude, e.coords.latitude],
+          zoom: 14,
+          pitch: 80,
+          bearing: 20,
+          // flyTo v
+          // speed: 0.4,
+        });
+      });
+
+      //// selecting the rect after draw
+      let CostumDrawRectangle = { ...DrawRectangle };
+      CostumDrawRectangle.onClick = function onClick(state, e) {
+        // if state.startPoint exist, means its second click
+        //change to  simple_select mode
+        if (state.startPoint && state.startPoint[0] !== e.lngLat.lng && state.startPoint[1] !== e.lngLat.lat) {
+          this.updateUIClasses({ mouse: "pointer" });
+          state.endPoint = [e.lngLat.lng, e.lngLat.lat];
+          this.changeMode("simple_select", {
+            featuresId: state.rectangle.id,
+          });
+          this.setSelected(state.rectangle.id); //// selecting the rect after draw
         }
-        const newMap = new mapboxgl.Map({
-          container: `${id}`,
-          style: "mapbox://styles/m1neral/" + mapStyles[index]?.id,
-          // style: "mapbox://styles/mapbox/outdoors-v11",
-          center: stateApp.mapVars.center,
-          zoom: stateApp.mapVars.zoom,
-          pitch: stateApp.mapVars.pitch,
-          bearing: stateApp.mapVars.bearing,
-        });
-
-        setWellsTileset(
-          mapStyles[index].sources.composite.url
-            .split(",")
-            .find((element) => element.indexOf("m1neral.wells") > -1)
-            ?.replace("mapbox://", "")
-        );
-
-        /// optimized interactions w/ map
-        newMap.scrollZoom.enable();
-        newMap.dragPan.enable();
-        newMap.dragRotate.enable();
-        newMap.keyboard.enable();
-        // newMap.doubleClickZoom.disable();
-        newMap.boxZoom.enable();
-        newMap.touchZoomRotate.enable();
-
-        newMap.addControl(
-          new mapboxgl.ScaleControl({
-            maxWidth: 80,
-            unit: "imperial",
-          }),
-          "bottom-right"
-        );
-
-        newMap.addControl(new mapboxgl.NavigationControl(), "bottom-right");
-
-        newMap.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
-
-        var geoLocate = new mapboxgl.GeolocateControl({
-          positionOptions: {
-            enableHighAccuracy: true,
-          },
-          fitBoundsOptions: {
-            maxZoom: 24,
-          },
-          trackUserLocation: false,
-          showAccuracyCircle: true,
-          showUserLocation: true,
-        });
-        newMap.addControl(geoLocate, "bottom-right");
-        geoLocate.on("geolocate", function (e) {
-          newMap.jumpTo({
-            center: [e.coords.longitude, e.coords.latitude],
-            zoom: 14,
-            pitch: 80,
-            bearing: 20,
-            // flyTo v
-            // speed: 0.4,
-          });
-        });
-
-        //// selecting the rect after draw
-        let CostumDrawRectangle = { ...DrawRectangle };
-        CostumDrawRectangle.onClick = function onClick(state, e) {
-          // if state.startPoint exist, means its second click
-          //change to  simple_select mode
-          if (state.startPoint && state.startPoint[0] !== e.lngLat.lng && state.startPoint[1] !== e.lngLat.lat) {
-            this.updateUIClasses({ mouse: "pointer" });
-            state.endPoint = [e.lngLat.lng, e.lngLat.lat];
-            this.changeMode("simple_select", {
-              featuresId: state.rectangle.id,
-            });
-            this.setSelected(state.rectangle.id); //// selecting the rect after draw
-          }
-          // on first click, save clicked point coords as starting for  rectangle
-          var startPoint = [e.lngLat.lng, e.lngLat.lat];
-          state.startPoint = startPoint;
-        };
-
-        let Draw = new MapboxDraw({
-          displayControlsDefault: false,
-          userProperties: true,
-          styles: drawShapeStyles,
-          modes: {
-            ...MapboxDraw.modes,
-            static: StaticMode,
-            draw_circle: CircleMode,
-            drag_circle: DragCircleMode,
-            direct_select: DirectMode,
-            simple_select: SimpleSelectMode,
-            draw_rectangle: CostumDrawRectangle,
-            tx_poly: SRMode,
-            // tx_poly: TxRectMode,
-          },
-        });
-        newMap.addControl(Draw);
-
-        const abstractControl = async (e) => {
-          const map = e.target;
-          if (map.getZoom() >= 12) {
-            const bounds = map.getBounds();
-            const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
-            const bboxPolygon = turf.bboxPolygon(bbox);
-            let polygonString = getPolygonString(bboxPolygon)
-
-            getAbstractGeo({
-              variables: {
-                polygon: polygonString,
-              },
-            });
-
-            setStateApp((state) => ({
-              ...state,
-              selectedPolygonString: polygonString,
-            }));
-          }
-
-          if (map.getZoom() >= 14) {
-            const bounds = map.getBounds();
-            const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
-            const bboxPolygon = turf.bboxPolygon(bbox);
-            let polygonString = getPolygonString(bboxPolygon)
-
-            getPLSSSecondDivisionGeo({
-              variables: {
-                polygon: polygonString,
-              },
-            });
-          }
-          // setting map vars on every map moveend
-          setStateApp((state) => ({
-            ...state,
-            mapVars: {
-              ...stateApp.mapVars,
-              zoom: map.getZoom(),
-              center: map.getCenter(),
-              pitch: map.getPitch(),
-              bearing: map.getBearing(),
-            },
-          }));
-        };
-
-        newMap.on('sourcedata', (e) => {
-          if (e.sourceId === 'wellsVT') {
-            findBadLinestrings(e.target, e.tile);
-          }
-        });
-        newMap.on("zoomend", function (e) {
-          abstractControl(e);
-          shapeFilterControl(e.target);
-        });
-        newMap.on("moveend", function (e) {
-          abstractControl(e);
-          shapeFilterControl(e.target);
-        });
-
-        // omg please use the updater pattern!
-        setStateApp((state) => ({
-          ...state,
-          map: newMap,
-          draw: Draw,
-        }));
-
-        function setLayerSource(layerId, source, sourceLayer) {
-          const oldLayers = newMap.getStyle().layers;
-          const layerIndex = oldLayers.findIndex((l) => l.id === layerId);
-          const layerDef = oldLayers[layerIndex];
-          const before = oldLayers[layerIndex + 1] && oldLayers[layerIndex + 1].id;
-          layerDef.source = source;
-          if (sourceLayer) {
-            layerDef["source-layer"] = sourceLayer;
-          }
-          newMap.removeLayer(layerId);
-          newMap.addLayer(layerDef, before);
-        }
-
-        newMap.on("load", function (e) {
-          const tilesetEndpoint = "https://m1neraldata.z22.web.core.windows.net/latest.json";
-          fetch(tilesetEndpoint)
-            .then((response) => response.json())
-            .then((response) => {
-              newMap.addSource("wellsVT", {
-                type: "vector",
-                tiles: [`https://m1neraldata.z22.web.core.windows.net/${response.latest}/{z}/{x}/{y}.pbf`],
-                promoteId: 'id',
-                maxzoom: 15
-              });
-              setStateApp((state) => ({
-                ...state,
-                wellTilesetSource: `https://m1neraldata.z22.web.core.windows.net/${response.latest}/{z}/{x}/{y}.pbf`,
-              }));
-              setLayerSource("wellpermitlines", "wellsVT");
-              const defaultwellpermitlinesOpacity = newMap.getPaintProperty('wellpermitlines', 'line-opacity');
-              newMap.setPaintProperty('wellpermitlines', 'line-opacity', [
-                'case',
-                ['>', ['number', ['feature-state', 'geometryLength']], 20000],
-                0,
-                defaultwellpermitlinesOpacity || 1
-              ]);
-              setLayerSource("welllines", "wellsVT");
-              const defaultwelllinesOpacity = newMap.getPaintProperty('welllines', 'line-opacity');
-              newMap.setPaintProperty('welllines', 'line-opacity', [
-                'case',
-                ['>', ['number', ['feature-state', 'geometryLength']], 20000],
-                0,
-                defaultwelllinesOpacity || 1
-              ]);
-              setLayerSource("wellpoints", "wellsVT");
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-
-          newMap.loadImage(MarkerIcon, function (error, image) {
-            if (error) throw error;
-            // add image to the active style and make it SDF-enabled
-            newMap.addImage("marker-icon", image, { sdf: true });
-          });
-
-          newMap.addSource("abstract_geo_source", {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: [],
-            },
-            promoteId: "Id",
-          });
-
-          newMap.addSource("abstract_label_geo_source", {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: [],
-            },
-            promoteId: "Id",
-          });
-
-          newMap.addSource("plssseconddivision_geo_source", {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: [],
-            },
-            // promoteId: "Id",
-          });
-
-          newMap.addSource("plssseconddivision_label_geo_source", {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: [],
-            },
-            // promoteId: "Id",
-          });
-
-          // FOR aoi_labels
-          newMap.addSource("aoi_label_source", {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: [],
-            },
-          });
-
-          newMap.addLayer({
-            id: "abstract_geo_fill_layer",
-            type: "fill",
-            minzoom: 12,
-            source: "abstract_geo_source",
-            paint: {
-              "fill-color": "#888",
-              "fill-opacity": [
-                "case",
-                ["boolean", ["feature-state", "hover"], false],
-                0.3,
-                ["boolean", ["feature-state", "click"], false],
-                0.3,
-                0,
-              ],
-            },
-          });
-
-          newMap.addLayer({
-            id: "abstract_geo_layer",
-            type: "line",
-            minzoom: 12,
-            source: "abstract_geo_source",
-            layout: {
-              "line-join": "round",
-              "line-cap": "round",
-            },
-            paint: {
-              "line-color": "#292424",
-              "line-opacity": "0.5",
-              "line-width": 3,
-            },
-          });
-
-          newMap.addLayer({
-            id: "abstract_geo_label_layer",
-            type: "symbol",
-            minzoom: 12,
-            source: "abstract_label_geo_source",
-            layout: {
-              "text-field": "{AbstractName}",
-              "text-anchor": "center",
-            },
-            paint: {
-              "text-color": "#888",
-            },
-          });
-
-          newMap.addLayer({
-            id: "plssseconddivision_geo_layer",
-            type: "fill",
-            minzoom: 14,
-            source: "plssseconddivision_geo_source",
-            paint: {
-              "fill-color": "rgba(0, 0, 0, 0)",
-              "fill-outline-color": "rgba(0, 6, 15, 0.17)",
-            },
-          });
-
-          newMap.addLayer({
-            id: "plssseconddivision_geo_label_layer",
-            type: "symbol",
-            minzoom: 14,
-            source: "plssseconddivision_label_geo_source",
-            layout: {
-              "text-font": ["Open Sans SemiBold", "Arial Unicode MS Regular"],
-              "text-field": "{ShortName}",
-              "text-anchor": "center",
-            },
-            paint: {
-              "text-color": "hsla(0, 0%, 0%, 0.75)",
-              "text-halo-color": "hsl(35, 16%, 100%)",
-              "text-halo-width": 0.5,
-              "text-halo-blur": 0.5,
-            },
-          });
-
-          setDraw(Draw);
-          setMap(newMap);
-          setLoading(false);
-        });
-        
-        if (oneTimeMapBounds) {
-          const {bounds, options} = oneTimeMapBounds
-          const invalidCoordinate = bounds.find((coord) => isNaN(parseInt(coord[0])) || isNaN(parseInt(coord[1])))
-          if(!invalidCoordinate) 
-              newMap.fitBounds(bounds, options);
-          setOneTimeMapBounds(null);
-        }
+        // on first click, save clicked point coords as starting for  rectangle
+        var startPoint = [e.lngLat.lng, e.lngLat.lat];
+        state.startPoint = startPoint;
       };
 
-      if (!map) {
-        initializeMap({ setMap, mapEl, setStateApp, setDraw });
-      } else {
-        if (oneTimeMapBounds) {
-          const {bounds, options} = oneTimeMapBounds
-          const invalidCoordinate = bounds.find((coord) => isNaN(parseInt(coord[0])) || isNaN(parseInt(coord[1])))
-          if(!invalidCoordinate) 
-              map.fitBounds(bounds, options);
-          setOneTimeMapBounds(null);
+      let Draw = new MapboxDraw({
+        displayControlsDefault: false,
+        userProperties: true,
+        styles: drawShapeStyles,
+        modes: {
+          ...MapboxDraw.modes,
+          static: StaticMode,
+          draw_circle: CircleMode,
+          drag_circle: DragCircleMode,
+          direct_select: DirectMode,
+          simple_select: SimpleSelectMode,
+          draw_rectangle: CostumDrawRectangle,
+          tx_poly: SRMode,
+          // tx_poly: TxRectMode,
+        },
+      });
+      newMap.addControl(Draw);
+
+      const abstractControl = async (e) => {
+        const map = e.target;
+        if (map.getZoom() >= 12) {
+          const bounds = map.getBounds();
+          const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+          const bboxPolygon = turf.bboxPolygon(bbox);
+          let polygonString = getPolygonString(bboxPolygon)
+
+          getAbstractGeo({
+            variables: {
+              polygon: polygonString,
+            },
+          });
+
+          setStateApp((state) => ({
+            ...state,
+            selectedPolygonString: polygonString,
+          }));
         }
-        // map.on("mousemove", mapMouseMove);
-        // map.on("zoom", mapZoom);
+
+        if (map.getZoom() >= 14) {
+          const bounds = map.getBounds();
+          const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+          const bboxPolygon = turf.bboxPolygon(bbox);
+          let polygonString = getPolygonString(bboxPolygon)
+
+          getPLSSSecondDivisionGeo({
+            variables: {
+              polygon: polygonString,
+            },
+          });
+        }
+        // setting map vars on every map moveend
+        setStateApp((state) => ({
+          ...state,
+          mapVars: {
+            ...state.mapVars,
+            zoom: map.getZoom(),
+            center: map.getCenter(),
+            pitch: map.getPitch(),
+            bearing: map.getBearing(),
+          },
+        }));
+      };
+
+      newMap.on('sourcedata', (e) => {
+        if (e.sourceId === 'wellsVT') {
+          findBadLinestrings(e.target, e.tile);
+        }
+      });
+      newMap.on("zoomend", function (e) {
+        abstractControl(e);
+        shapeFilterControl(e.target);
+      });
+      newMap.on("moveend", function (e) {
+        abstractControl(e);
+        shapeFilterControl(e.target);
+      });
+
+      // omg please use the updater pattern!
+      setStateApp((state) => ({
+        ...state,
+        map: newMap,
+        draw: Draw,
+      }));
+
+      function setLayerSource(layerId, source, sourceLayer) {
+        const oldLayers = newMap.getStyle().layers;
+        const layerIndex = oldLayers.findIndex((l) => l.id === layerId);
+        const layerDef = oldLayers[layerIndex];
+        const before = oldLayers[layerIndex + 1] && oldLayers[layerIndex + 1].id;
+        layerDef.source = source;
+        if (sourceLayer) {
+          layerDef["source-layer"] = sourceLayer;
+        }
+        newMap.removeLayer(layerId);
+        newMap.addLayer(layerDef, before);
       }
+
+      newMap.on("load", function (e) {
+        const tilesetEndpoint = "https://m1neraldata.z22.web.core.windows.net/latest.json";
+        fetch(tilesetEndpoint)
+          .then((response) => response.json())
+          .then((response) => {
+            newMap.addSource("wellsVT", {
+              type: "vector",
+              tiles: [`https://m1neraldata.z22.web.core.windows.net/${response.latest}/{z}/{x}/{y}.pbf`],
+              promoteId: 'id',
+              maxzoom: 15
+            });
+            setStateApp((state) => ({
+              ...state,
+              wellTilesetSource: `https://m1neraldata.z22.web.core.windows.net/${response.latest}/{z}/{x}/{y}.pbf`,
+            }));
+            setLayerSource("wellpermitlines", "wellsVT");
+            const defaultwellpermitlinesOpacity = newMap.getPaintProperty('wellpermitlines', 'line-opacity');
+            newMap.setPaintProperty('wellpermitlines', 'line-opacity', [
+              'case',
+              ['>', ['number', ['feature-state', 'geometryLength']], 20000],
+              0,
+              defaultwellpermitlinesOpacity || 1
+            ]);
+            setLayerSource("welllines", "wellsVT");
+            const defaultwelllinesOpacity = newMap.getPaintProperty('welllines', 'line-opacity');
+            newMap.setPaintProperty('welllines', 'line-opacity', [
+              'case',
+              ['>', ['number', ['feature-state', 'geometryLength']], 20000],
+              0,
+              defaultwelllinesOpacity || 1
+            ]);
+            setLayerSource("wellpoints", "wellsVT");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+
+        newMap.loadImage(MarkerIcon, function (error, image) {
+          if (error) throw error;
+          // add image to the active style and make it SDF-enabled
+          newMap.addImage("marker-icon", image, { sdf: true });
+        });
+
+        newMap.addSource("abstract_geo_source", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: [],
+          },
+          promoteId: "Id",
+        });
+
+        newMap.addSource("abstract_label_geo_source", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: [],
+          },
+          promoteId: "Id",
+        });
+
+        newMap.addSource("plssseconddivision_geo_source", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: [],
+          },
+          // promoteId: "Id",
+        });
+
+        newMap.addSource("plssseconddivision_label_geo_source", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: [],
+          },
+          // promoteId: "Id",
+        });
+
+        // FOR aoi_labels
+        newMap.addSource("aoi_label_source", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: [],
+          },
+        });
+
+        newMap.addLayer({
+          id: "abstract_geo_fill_layer",
+          type: "fill",
+          minzoom: 12,
+          source: "abstract_geo_source",
+          paint: {
+            "fill-color": "#888",
+            "fill-opacity": [
+              "case",
+              ["boolean", ["feature-state", "hover"], false],
+              0.3,
+              ["boolean", ["feature-state", "click"], false],
+              0.3,
+              0,
+            ],
+          },
+        });
+
+        newMap.addLayer({
+          id: "abstract_geo_layer",
+          type: "line",
+          minzoom: 12,
+          source: "abstract_geo_source",
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-color": "#292424",
+            "line-opacity": "0.5",
+            "line-width": 3,
+          },
+        });
+
+        newMap.addLayer({
+          id: "abstract_geo_label_layer",
+          type: "symbol",
+          minzoom: 12,
+          source: "abstract_label_geo_source",
+          layout: {
+            "text-field": "{AbstractName}",
+            "text-anchor": "center",
+          },
+          paint: {
+            "text-color": "#888",
+          },
+        });
+
+        newMap.addLayer({
+          id: "plssseconddivision_geo_layer",
+          type: "fill",
+          minzoom: 14,
+          source: "plssseconddivision_geo_source",
+          paint: {
+            "fill-color": "rgba(0, 0, 0, 0)",
+            "fill-outline-color": "rgba(0, 6, 15, 0.17)",
+          },
+        });
+
+        newMap.addLayer({
+          id: "plssseconddivision_geo_label_layer",
+          type: "symbol",
+          minzoom: 14,
+          source: "plssseconddivision_label_geo_source",
+          layout: {
+            "text-font": ["Open Sans SemiBold", "Arial Unicode MS Regular"],
+            "text-field": "{ShortName}",
+            "text-anchor": "center",
+          },
+          paint: {
+            "text-color": "hsla(0, 0%, 0%, 0.75)",
+            "text-halo-color": "hsl(35, 16%, 100%)",
+            "text-halo-width": 0.5,
+            "text-halo-blur": 0.5,
+          },
+        });
+
+        setDraw(Draw);
+        setMap(newMap);
+        setLoading(false);
+      });
+
+      if (oneTimeMapBounds) {
+        const { bounds, options } = oneTimeMapBounds
+        const invalidCoordinate = bounds.find((coord) => isNaN(parseInt(coord[0])) || isNaN(parseInt(coord[1])))
+        if (!invalidCoordinate)
+          newMap.fitBounds(bounds, options);
+        setOneTimeMapBounds(null);
+      }
+    };
+
+    if (!map) {
+      initializeMap({ setMap, mapEl, setStateApp, setDraw });
+    } else {
+      if (oneTimeMapBounds) {
+        const { bounds, options } = oneTimeMapBounds
+        const invalidCoordinate = bounds.find((coord) => isNaN(parseInt(coord[0])) || isNaN(parseInt(coord[1])))
+        if (!invalidCoordinate)
+          map.fitBounds(bounds, options);
+        setOneTimeMapBounds(null);
+      }
+      // map.on("mousemove", mapMouseMove);
+      // map.on("zoom", mapZoom);
+    }
   }, [
     map,
     setStateApp,
@@ -6153,7 +6184,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         };
 
         if (map?.getSource("parcelBoundarySource")) {
-          map?.getSource("parcelBoundarySource").setData(geoJson);
+          map?.getSource("parcelBoundarySource")?.setData(geoJson);
           if (map.getLayer("parcelBoundary")) {
             map.removeLayer("parcelBoundary");
           }
@@ -6345,7 +6376,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                 )}
               </PortalD>
             )}
-            {showIfUserDefinedLayer(stateApp) && (
+            {(showIfUserDefinedLayer(stateApp) || stateApp.selectedUserDefinedLayer) && (
               <PortalD id="popupContainer">
                 <UdLayerCardProvider
                   parent="map"
@@ -6366,10 +6397,13 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                   handleCloseExpandableCard={handleCloseExpandableCard}
                   selectionLayers={stateApp.selectionLayers}
                   zIndex={3000}
-                  cardWidth="350px"
+                  cardWidth="450px"
                   mouseX={0}
                   mouseY={0}
                   position="relative"
+                  map={map}
+                  setStateApp={setStateApp}
+                  createUDPopUp={createUDPopUp}
                 />
               </PortalD>
             )}

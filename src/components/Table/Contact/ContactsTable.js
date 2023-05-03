@@ -172,6 +172,7 @@ function ContactsTable(props) {
       startPaginationAt: 25,
       defaultSort: { field: "lastUpdateAt", order: "desc", unmapped_type: 'date' },
       formatHits,
+      downloadAll: { exportPx: '121px' },
       initializeGenericData: { key: "id", actions: genericDataActions },
       isSelectedAllAllowed: true,
     });
@@ -349,11 +350,12 @@ function ContactsTable(props) {
             search: props.activeSearchRef.current,
             filters: [...props.initialFilters, ...uniqBy(props.customAppliedFilters, "field") || []],
             total: props.options.count,
-            isSelectAll: isSelectAll,
-            rows: selectedRows,
+            isSelectAll: false,
+            rows: props.selectedRowsValues || [],
             esIndex: esIndex,
             open: true
           }}
+          isExporting={props.isExporting}
           onDownload={props.onDownload}
           {...props.esHocProps}
         />

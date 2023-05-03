@@ -71,7 +71,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
   const params = {
     esIndex: "shapes_flat",
     variant: "outlined",
-    setFilters: () => {},
+    setFilters: () => { },
     filterList,
     column: {
       label: filter.label,
@@ -96,29 +96,29 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
 export default function RelatedWellsFilters(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [filterList, setFilterList] = useState([[], [], [], [],[],[],[],[]]);
+  const [filterList, setFilterList] = useState([[], [], [], [], [], [], [], []]);
 
   useEffect(() => {
-    if (stateApp.landSearchFilters.provisions?.length === 0 && filterList.find((fl) => fl.length !== 0)) {
-      setFilterList([[], [], [], [],[],[],[],[]]);
+    if (stateApp.landSearchFilters.relatedWells?.length === 0 && filterList.find((fl) => fl.length !== 0)) {
+      setFilterList([[], [], [], [], [], [], [], []]);
     }
-  }, [stateApp.landSearchFilters.provisions]);
+  }, [stateApp.landSearchFilters.relatedWells]);
 
-  const changeLandProvisions = React.useMemo(
+  const changeLandWells = React.useMemo(
     () =>
       debounce((request, callback, index) => {
         const { filterKey } = callback;
-        const landProvisionsFilters = [...stateApp.landSearchFilters.provisions];
-        const _index = landProvisionsFilters.findIndex((f) => f.field === filterKey);
-        if (_index === -1 && request[0] !== null) landProvisionsFilters.push({ field: filterKey, value: request[0] });
-        else if (request.length > 0 && request[0] !== null) landProvisionsFilters[_index].value = request[0];
-        else if (_index !== -1) landProvisionsFilters.splice(_index, 1);
+        const landWellssFilters = [...stateApp.landSearchFilters.relatedWells];
+        const _index = landWellssFilters.findIndex((f) => f.field === filterKey);
+        if (_index === -1 && request[0] !== null) landWellssFilters.push({ field: filterKey, value: request[0] });
+        else if (request.length > 0 && request[0] !== null) landWellssFilters[_index].value = request[0];
+        else if (_index !== -1) landWellssFilters.splice(_index, 1);
         setStateApp((stateApp) => ({
           ...stateApp,
-          landSearchFilters: { ...stateApp.landSearchFilters, provisions: landProvisionsFilters },
+          landSearchFilters: { ...stateApp.landSearchFilters, relatedWells: landWellssFilters },
         }));
       }, 1000),
-    [setStateApp, stateApp.landSearchFilters.provisions]
+    [setStateApp, stateApp.landSearchFilters.relatedWells]
   );
 
   const onFilterChange = (request, callback, filter, index) => {
@@ -128,7 +128,7 @@ export default function RelatedWellsFilters(props) {
 
     const _request = copy(request);
     if (filter.customOnChange) _request[0] = filter.customOnChange(_request[0]);
-    changeLandProvisions(_request, callback, index);
+    changeLandWells(_request, callback, index);
   };
 
   return (
@@ -141,7 +141,7 @@ export default function RelatedWellsFilters(props) {
             filter={filter}
             filterList={filterList}
             index={index}
-            appliedFilters={stateApp.landSearchFilters.provisions}
+            appliedFilters={stateApp.landSearchFilters.relatedWells}
           />
         </Grid>
       ))}

@@ -158,7 +158,11 @@ const AppProvider = (props) => {
     filtersData: [],
     shapeEditMode: "",
     landSearchFilters: {
-      provisions: []
+      provisions: [],
+      customData: [],
+      relatedWells: [],
+      relatedAgreements: [],
+      relatedDocuments: [],
     },
 
     toggleLayersActivity: (identifier, activityValue) => {
@@ -184,6 +188,7 @@ const AppProvider = (props) => {
             return {
               ...stateApp,
               layers: [...currentLayers],
+              toggleLayerActivityValue: activityValue,
               mapCircularLoaderAct: false,
             };
           }

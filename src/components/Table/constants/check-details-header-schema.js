@@ -1,22 +1,6 @@
 
+import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import { GlobalStickyStyles } from "GlobalSettings";
-
-
-const ComponentPropertyName = ({ value, tableMeta }) => {
-    return (
-        <div
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-            }}>
-            <p >
-                {value?.split("_")?.[0]
-                    ? tableMeta?.rowData[2] ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[2]}` : value
-                    : tableMeta?.rowData[2]}
-            </p>
-        </div>
-    );
-}
 
 const RevenueStatementHeadCells = [
     {
@@ -47,7 +31,15 @@ const RevenueStatementHeadCells = [
             }),
             sort: true, filter: false,
 
-            customRender: (value, tableMeta) => <ComponentPropertyName value={value} tableMeta={tableMeta} />,
+            customRender: (value, tableMeta) => <ColumnWithLink
+                value={value?.split("_")?.[0]
+                    ? tableMeta?.rowData[2] ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[2]}` : value
+                    : tableMeta?.rowData[2]}
+                link={`/revenue/property/details/${tableMeta.rowData[20]}`}
+                onClick={(e) => {
+                    e.stopPropagation();
+                }}
+            />,
         },
     },
 
@@ -99,6 +91,10 @@ const RevenueStatementHeadCells = [
     {
         name: "netOwnerValue", label: "Owner Net Rev", esKey: 'netOwnerValue', options: { sort: true, filter: true }
     },
+    {
+        name: "propertyId", options: { filter: false, display: false, sort: false, viewColumns: false, }
+    },
+
     {
         name: "commentsCounter",
         label: " ",

@@ -12,14 +12,15 @@ const filterTypes = {
   // "Related Parties": { component: "ProvisionFilters", countKey: "wellFilterCount" },
   Provisions: { component: "ProvisionFilters", countKey: "provisions" },
   // "Related Wells": { component: "RelatedWellsFilters", countKey: "tagFilterCount" },
-  "Custom Data": { component: "CustomDataFilters", countKey: "tagFilterCount" },
   // "Legal Description": { component: "ProvisionFilters", countKey: "ownershipFilterCount" },
   // Wells: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // Documents: { component: "ProvisionFilters", countKey: "tagFilterCount" },
   // "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "tagFilterCount" },
-  "Related Wells": { component: "RelatedWellsFilters", countKey: "tagFilterCount" },
-  "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "tagFilterCount" },
+  "Related Wells": { component: "RelatedWellsFilters", countKey: "relatedWells" },
+  "Related Agreements": { component: "RelatedAgreementsFilters", countKey: "relatedAgreements" },
+  "Related Documents": { component: "RelatedDocumentFilters", countKey: "relatedDocuments" },
   "Remarks Types": { component: "RemarksTypes", countKey: "remarksTypes" },
+  "Custom Metadata": { component: "CustomDataFilters", countKey: "customData" },
 };
 
 const useStyles = makeStyles(() => ({
@@ -117,7 +118,7 @@ const useStyles = makeStyles(() => ({
 export default function QuickActionsPanel({ children, title, actions, handlePanelStateChange, quickActionsPanelState, activeModule }) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(null);
   useEffect(() => {
     return () => {
       let landFilters = { ...stateApp.landSearchFilters };

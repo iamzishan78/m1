@@ -3,7 +3,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { useMutation } from "@apollo/client";
 
 // context
-import { Container, Dialog, Button, IconButton, Tooltip } from "@material-ui/core";
+import { Container, Dialog, Button, IconButton, Tooltip, makeStyles } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 
@@ -20,8 +20,14 @@ import TableHeader from "components/Shared/constants/contact-related-agreement-h
 import convert_date from "components/Shared/valueformatters/convert_date";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
+const useStyles = makeStyles((theme) => ({
+  container: {
+    padding: "0 !important"
+  },
+}));
+
 function RelatedAgreementsTable(props) {
-  const classes = {};
+  const classes = useStyles();
   const [isDeletePopup, setDeletePopup] = useState(false);
   const { moduleId } = props;
 
@@ -88,7 +94,32 @@ function RelatedAgreementsTable(props) {
       props.setTableMeta({
         shapeType: props.shapeType,
         addableName: "Tract",
-        searchFields: ["contact.entityDetail.name", "_all"],
+        searchFields: [
+          "shapeJson.properties.agreementNumber",
+          "shapeJson.properties.agreementType",
+          "shapeJson.properties.agreementSubtype",
+          "shapeJson.properties.originalProperties.State",
+          "shapeJson.properties.originalProperties.StateAbbreviation",
+          "shapeJson.properties.originalProperties.County",
+          "shapeJson.properties.rightsType",
+          "shapeJson.properties.grantor",
+          "shapeJson.properties.grantee",
+          "shapeJson.properties.agreementTerm",
+          "shapeJson.properties.agreementStatus",
+          "shapeJson.properties.reportGrossAcres",
+          "shapeJson.properties.grossAcres",
+          "shapeJson.properties.netAcres",
+          "shapeJson.properties.companyNetAcres",
+          "shapeJson.properties.netRoyalty",
+          "shapeJson.properties.acquisitionID",
+          "shapeJson.properties.prospectID",
+          "shapeJson.properties.internalCompany",
+          "tags.tag",
+          "name",
+          "shapeJson.properties.shapeLabel",
+          "state",
+          "contact.entityDetail.name", 
+          "_all"],
         filters: [{ field: "relatedParties.contactId", value: moduleId }],
         TableHeader: TableHeader,
         esIndex: "shapes_flat",

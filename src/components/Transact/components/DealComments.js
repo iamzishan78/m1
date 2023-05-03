@@ -81,6 +81,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridStyle: {
     padding: "12px 0px",
+    flexWrap: 'nowrap'
   },
   bold: {
     fontWeight: "bold",
@@ -104,16 +105,16 @@ const useStyles = makeStyles((theme) => ({
   inlineFlex: {
     display: "inline-flex",
   },
-  containerWrapper:{
-    display:'flex',
-    justifyContent:'flex-start',
-    alignItems:'center',
-    gap:'10px'
+  containerWrapper: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: '10px'
   }
 }));
 
 export default function DealComment(props) {
-  const { targetSourceId,contactData } = props;
+  const { targetSourceId, contactData } = props;
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
   const [users, setUsers] = useState([]);
@@ -127,7 +128,7 @@ export default function DealComment(props) {
   const [showActions, setShowActions] = useState(false);
   const [showCommentActionId, setShowCommentActionId] = useState(null);
   const [loadingComments, setLoadingComments] = useState(true);
-  const [isMinimize,setIsMinimize] = useState(false);
+  const [isMinimize, setIsMinimize] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
 
   const [removeComment] = useMutation(REMOVECOMMENT);
@@ -351,12 +352,12 @@ export default function DealComment(props) {
           setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
         }
       }
-    }catch (e){
-      console.log("modifying the Comment Error",e);
-    }finally {
+    } catch (e) {
+      console.log("modifying the Comment Error", e);
+    } finally {
       setLoadingComments(false);
     }
-  }, [stateApp?.activeDeal?.activity,dataComments]);
+  }, [stateApp?.activeDeal?.activity, dataComments]);
   return (
     <div className={classes.container}>
       <div className={classes.comment} id="commentsContainer">
@@ -409,26 +410,26 @@ export default function DealComment(props) {
                             <span className={classes.bold}>{eachComment.user?.name}</span>
                             <span>{
                               <ReactTimeAgo
-                                  className={classes.commentTime}
-                                  date={
-                                    new Date(Number(eachComment.ts))
-                                  }
-                                  locale="en-US"
+                                className={classes.commentTime}
+                                date={
+                                  new Date(Number(eachComment.ts))
+                                }
+                                locale="en-US"
                               />
                             }</span>
                           </div>
                           {eachComment.isActivity === true && (
-                              <>
-                                <div className={`${classes.whiteSpace}`}>
-                                  {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
-                                </div>
-                                <div className={`${classes.whiteSpace}`}>
-                                  START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
-                                </div>
-                                <div className={`${classes.whiteSpace}`}>
-                                  END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
-                                </div>
-                              </>
+                            <>
+                              <div className={`${classes.whiteSpace}`}>
+                                {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
+                              </div>
+                              <div className={`${classes.whiteSpace}`}>
+                                START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
+                              </div>
+                              <div className={`${classes.whiteSpace}`}>
+                                END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
+                              </div>
+                            </>
                           )}
                           {eachComment.isPinned && <span> created this task.</span>}
 
@@ -499,7 +500,6 @@ export default function DealComment(props) {
                 className={classes.border}
                 style={{ width: "calc(23vw)", paddingRight: "13px" }}
                 onClick={() => {
-                  debugger
                     setShowActions(true);
                 }}
                 onBlur={() => {

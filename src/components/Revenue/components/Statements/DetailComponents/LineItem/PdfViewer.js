@@ -16,12 +16,12 @@ import { AppContext } from "AppContext";
 const useStyles = makeStyles((theme) => ({
   paperTwo: {
     backgroundColor: theme.palette.background.paper,
-    height: "570px",
+    height: "350px",
     boxShadow: theme.shadows[5],
     overflow: "none",
 
     "& .react-pdf__Document": {
-      height: '520px',
+      height: '300px',
       overflow: 'scroll',
       width: '100%'
     },

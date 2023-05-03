@@ -1,5 +1,6 @@
-export { default as ProvisionFilters } from "components/Land/components/Agreements/components/AdvanceSearch/Provisions";
-export { default as RemarksTypes } from "components/Land/components/Agreements/components/AdvanceSearch/Remarks";
-export { default as RelatedWellsFilters } from "components/Land/components/Agreements/components/AdvanceSearch/RelatedWells";
-export { default as CustomDataFilters } from "components/Land/components/Agreements/components/AdvanceSearch/CustomData";
-export { default as RelatedAgreementsFilters } from "components/Land/components/Agreements/components/AdvanceSearch/RelatedAgreements";
+export { default as ProvisionFilters } from "./Provisions";
+export { default as RemarksTypes } from "./Remarks";
+export { default as RelatedWellsFilters } from "./RelatedWells";
+export { default as CustomDataFilters } from "./CustomData";
+export { default as RelatedAgreementsFilters } from "./RelatedAgreements";
+export { default as RelatedDocumentFilters } from "./RelatedDocument";
