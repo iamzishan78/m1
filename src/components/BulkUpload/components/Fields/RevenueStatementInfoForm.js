@@ -47,13 +47,14 @@ const useStyles = makeStyles((theme) => ({
 
 const RevenueStatementInfoForm = ({ ...rest }) => {
   const classes = useStyles();
-  const { control, watch, reset, getValues, setStateApp, revenueStatementInfo } = rest;
+  const { control, watch, reset, getValues, setStateApp, uploaderFormValues } = rest;
 
   const [payorList, setPayyorList] = useState([]);
   const [getPayorList, { data: payorListData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  const [searchOperator, setSearchOperator] = useState("");
 
   useEffect(() => {
-    if (revenueStatementInfo) reset(revenueStatementInfo);
+    if (uploaderFormValues) reset(uploaderFormValues);
     return () => {
       const values = getValues();
       Object.keys(values).forEach(key => {
@@ -65,20 +66,20 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
           values[`check.${key}`] = values[key];
         }
       });
-      setStateApp(stateApp => ({ ...stateApp, revenueStatementInfo: values }));
+      setStateApp(stateApp => ({ ...stateApp, uploaderFormValues: values }));
     };
   }, []);
 
   useEffect(() => {
     getPayorList({
       variables: {
-        search: "*",
+        search: searchOperator ? `${searchOperator}*` : "*",
         filterKey: "payor.name.keyword",
         esIndex: "checks_flat",
         size: 50,
       },
     });
-  }, [getPayorList]);
+  }, [getPayorList, searchOperator]);
 
   useEffect(() => {
     const sortList = _.orderBy(payorListData?.getESFilterList?.hits, "key", "asc");
@@ -109,6 +110,9 @@ const RevenueStatementInfoForm = ({ ...rest }) => {
                       value={get(params, "value.name", "")}
                       variant="outlined"
                       setValue={params.onChange}
+                      onSearch={(value) => {
+                        setSearchOperator(value);
+                      }}
                       options={payorList?.map((payor) => ({
                         _id: get(payor, `original.hits.hits.${0}._id`),
                         name: payor.key,

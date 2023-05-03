@@ -36,7 +36,7 @@ export default function UnitDetailCard(props) {
   const [uniObj, setUniObj] = useState();
   const [properties, setProperties] = useState();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [updateCustomLayer, { data: updatedUnit }] = useMutation(UPDATECUSTOMLAYER);
+  const [updateCustomLayer, { data: updatedUnit, loading: updatingLayer }] = useMutation(UPDATECUSTOMLAYER);
 
   const classes = detailCardStyles();
   const showSummary = true;
@@ -228,6 +228,7 @@ export default function UnitDetailCard(props) {
                 updateCustomProperties={updateCustomProperties}
                 id={props.id}
                 customLayer={uniObj}
+                updating={updatingLayer}
               />
             </div>,
             <TabPanels

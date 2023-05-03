@@ -10,6 +10,7 @@ import parse from "autosuggest-highlight/parse";
 import debounce from "lodash/debounce";
 import Button from "@material-ui/core/Button";
 import PersonIcon from "@material-ui/icons/Person";
+import HistoryIcon from '@material-ui/icons/History';
 
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -59,6 +60,7 @@ import ClearIcon from "@material-ui/icons/Clear";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
+import { SHAPE_TYPE } from "components/Navigation/components/Utils/consts";
 
 const landGridIndexName = "landgrid-index";
 const leaseIndexName = "lease-index-v2";
@@ -313,7 +315,7 @@ function Search() {
       "wells": {
         esIndex: "platformData:wells",
         search: (request) => `${request.input}`,
-        searchFields: ["wellName", "api", 'ApiNumber'],
+        searchFields: SHAPE_TYPE['wells'].SEARCH_FIELDS,
         formatOptions: (data) => {
           return { ...data, Source: wellCogIndexName, Primary: data.WellName, Secondary: data.ApiNumber }
         }
@@ -321,7 +323,7 @@ function Search() {
       "contacts": {
         esIndex: "contacts_flat",
         search: (request) => `${request.input}`,
-        searchFields: ['name', 'address1', 'city', 'state', 'zip'],
+        searchFields: SHAPE_TYPE['contacts'].SEARCH_FIELDS,
         formatOptions: (data) => {
           return {
             ...data, ...data.node, Primary: data.name || "--",
@@ -333,7 +335,7 @@ function Search() {
       "tax owners": {
         esIndex: "platformData:globalowner",
         search: (request) => `${request.input}`,
-        searchFields: ["ownerName", "streetAddress", "city", "state", "zip"],
+        searchFields: SHAPE_TYPE['tax owners'].SEARCH_FIELDS,
         formatOptions: (data) => {
           return {
             ...data, Source: 'globalowner-index', Primary: data.OwnerName, Secondary: `${data.StreetAddress}\n${data.City}\n${data.State}\n${data.Zip}`,
@@ -343,7 +345,7 @@ function Search() {
       "operators": {
         esIndex: "platformData:operator",
         search: (request) => `${request.input}`,
-        searchFields: ["operator", 'Operator'],
+        searchFields: SHAPE_TYPE['operators'].SEARCH_FIELDS,
         formatOptions: (data) => {
           return { ...data, Source: operatorIndexName, Primary: data.Operator, Secondary: null }
         }
@@ -362,21 +364,7 @@ function Search() {
       "land grid": {
         esIndex: "platformData:landgrid",
         search: (request) => `${request.input}`,
-        searchFields: [
-          "_all"
-          // "level1Type",
-          // "level1Name",
-          // "level2Type",
-          // "level2Name",
-          // "level3Type",
-          // "level3Name",
-          // "level4Type",
-          // "level4Name",
-          // "level5Type",
-          // "level5Name",
-          // "level6Type",
-          // "level6Name"
-        ],
+        searchFields: SHAPE_TYPE['land grid'].SEARCH_FIELDS,
         filter: [
           { field: "level7Id.keyword", value: undefined },
           { field: "level8Id.keyword", value: undefined },
@@ -415,7 +403,7 @@ function Search() {
       "tracts": {
         esIndex: "shapes_flat",
         search: (request) => request.input ? `*${request.input}*` : '',
-        searchFields: ['name', 'shapeLabel', 'state', "shapeJson.properties.originalProperties.County"],
+        searchFields: SHAPE_TYPE['tracts'].SEARCH_FIELDS,
         filter: {
           field: "layer",
           value: "parcel"
@@ -430,7 +418,7 @@ function Search() {
       "agreements": {
         esIndex: "shapes_flat",
         search: (request) => request.input ? `*${request.input}*` : '',
-        searchFields: ['name', 'shapeJson.properties.shapeLabel', 'state', "shapeJson.properties.originalProperties.County", 'shapeJson.properties.agreementNumber', 'shapeJson.properties.agreementType'],
+        searchFields: SHAPE_TYPE['agreements'].SEARCH_FIELDS,
         filter: {
           field: "shapeJson.properties.type",
           value: "agreement"
@@ -486,7 +474,8 @@ function Search() {
       if (searchInputValue === "") {
         setOptions(value ? [value] : []);
         setValue(null);
-        setStateApp((state) => ({ ...state, wellListFromSearch: [], landGridListFromSearch: [] }));
+        if (!stateApp.toggleLayerActivityValue)
+          setStateApp((state) => ({ ...state, wellListFromSearch: [], landGridListFromSearch: [] }));
         setLoading(false);
         return undefined;
       }
@@ -890,35 +879,7 @@ function Search() {
 
   return (
     <div className={classes.root} style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
-      {/* {location.pathname === '/documents' && (
-        <Accordion style={{ width: '40px', backgroundColor: 'transparent', display: 'flex', flexDirection: 'column', padding: '0px', }}>
-
-          <AccordionSummary
-            // expandIcon={<SearchIcon style={{color:'white',backgroundColor:'transparent'}}></SearchIcon>}
-
-            style={{ maxHeight: '43px', backgroundColor: 'transparent', marginTop: '0px !important' }}
-          >
-            <SearchIcon style={{ color: 'white', backgroundColor: 'transparent', padding: '0px' }}></SearchIcon>
-          </AccordionSummary>
-          <AccordionDetails style={{ width: '300px', backgroundColor: 'white', display: 'flex', flexDirection: 'column', padding: '0px', border: '2px solid #d1cfcf', marginTop: '-11px' }}>
-
-            <Typography style={{ padding: '9px', color: 'rgb(24, 170, 221)', cursor: 'pointer' }} variant='subtitle2'>
-              All Documents
-            </Typography>
-
-            <Typography style={{ padding: '6px', paddingLeft: '9px', backgroundColor: '#f2f2f2', width: '100%', borderTop: '1px solid #d1cfcf' }} variant='subtitle2'>
-              Agreements
-            </Typography>
-            <Typography style={{ padding: '9px', cursor: 'pointer' }} variant='subtitle2'>
-              Shapefiles
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
-      )
-      } */}
       <SearchByTypeSelectField value={searchDropDown} handleChange={handleSearchPanelChange} color='#ffffff' backgroundColor='#1c2233' />
-      <div style={{ width: '10px' }}></div>
-
       <Autocomplete
         id="cognitive-search-autocomplete"
         getOptionLabel={(option, value) => option.Primary || searchInputValue}
@@ -947,125 +908,6 @@ function Search() {
 
           return option.group === "header" && location.pathname !== "/documents" ? (
             <div>
-              {/* <Grid
-                key={option.group}
-                container
-                item
-                spacing={0}
-                style={{
-                  position: "relative",
-                  top: "0",
-                  backgroundColor: "#ffffff",
-                  paddingBottom:
-                    (searchOption === "all" &&
-                      (loadingWells || loadingOwners || loadingOperators || loadingLeases || loadingContacts || loadingMapboxSearch)) ||
-                      (searchOption === "wells" && loadingWells) ||
-                      (searchOption === "owners" && loadingOwners) ||
-                      (searchOption === "operators" && loadingOperators) ||
-                      (searchOption === "leases" && loadingLeases) ||
-                      (searchOption === "contacts" && loadingContacts) ||
-                      (searchOption === "locations" && loadingMapboxSearch) ||
-                      options.length === 0
-                      ? "0"
-                      : "9px",
-                }}
-              >
-                <Grid
-                  item
-                  xs={12}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    margin: "0 4px",
-                  }}
-                >
-                  <Button
-
-                    className={classes.headerButtons}
-                    variant={searchOption === "all" ? "contained" : "outlined"}
-                    size="small"
-                    color={searchOption === "all" ? "secondary" : "primary"}
-                    onClick={() => {
-                      // setSearchTop(5);
-                      setSearchOption("all");
-                    }}
-                  >
-                    All
-                  </Button>
-
-                  <Button
-                    className={classes.headerButtons}
-                    variant={searchOption === "wells" ? "contained" : "outlined"}
-                    size="small"
-                    color={searchOption === "wells" ? "secondary" : "primary"}
-                    onClick={() => {
-                      // setSearchTop(5);
-                      setSearchOption("wells");
-                    }}
-                  >
-                    Wells
-                  </Button>
-                  <Button
-                    className={classes.headerButtons}
-                    variant={searchOption === "owners" ? "contained" : "outlined"}
-                    size="small"
-                    color={searchOption === "owners" ? "secondary" : "primary"}
-                    onClick={() => {
-                      // setSearchTop(5);
-                      setSearchOption("owners");
-                    }}
-                  >
-                    Tax Owners
-                  </Button>
-                  <Button
-                    className={classes.headerButtons}
-                    variant={searchOption === "operators" ? "contained" : "outlined"}
-                    size="small"
-                    color={searchOption === "operators" ? "secondary" : "primary"}
-                    onClick={() => {
-                      // setSearchTop(5);
-                      setSearchOption("operators");
-                    }}
-                  >
-                    Operators
-                  </Button>
-                  <Button
-                    className={classes.headerButtons}
-                    variant={searchOption === "leases" ? "contained" : "outlined"}
-                    size="small"
-                    color={searchOption === "leases" ? "secondary" : "primary"}
-                    onClick={() => {
-                      // setSearchTop(5);
-                      setSearchOption("leases");
-                    }}
-                  >
-                    Leases
-                  </Button>
-                  <Button
-                    className={classes.headerButtons}
-                    variant={searchOption === "contacts" ? "contained" : "outlined"}
-                    size="small"
-                    color={searchOption === "contacts" ? "secondary" : "primary"}
-                    onClick={() => {
-                      setSearchOption("contacts");
-                    }}
-                  >
-                    Contacts
-                  </Button>
-                  <Button
-                    className={classes.headerButtons}
-                    variant={searchOption === "locations" ? "contained" : "outlined"}
-                    size="small"
-                    color={searchOption === "locations" ? "secondary" : "primary"}
-                    onClick={() => {
-                      setSearchTop(5);
-                      setSearchOption("locations");
-                    }}
-                  >
-                    Locations
-                  </Button>
-                </Grid>
-              </Grid> */}
 
             </div>
           ) : (
@@ -1082,21 +924,6 @@ function Search() {
                         className={classes.groupsButton}
                         onClick={() => {
                           setSearchTop(200);
-                          // setSearchOption(
-                          //   option.group === "Tax Owners"
-                          //     ? "tax owners"
-                          //     : option.group === "Wells"
-                          //       ? "wells"
-                          //       : option.group === "Operators"
-                          //         ? "operators"
-                          //         : option.group === "Leases"
-                          //           ? "leases"
-                          //           : option.group === "Contacts"
-                          //             ? "contacts"
-                          //             : option.group === "Locations"
-                          //               ? "locations"
-                          //               : "all"
-                          // );
                         }}
                       >
                         See All Results
@@ -1152,10 +979,6 @@ function Search() {
           <div>
             {location.pathname === "/documents" ? (
               <div style={{ display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "transparent" }}>
-                {/* <IconButton>
-              <SearchIcon style={{color:'white'}}></SearchIcon>
-              </IconButton> */}
-
                 <TextField
                   {...params}
                   variant="outlined"
@@ -1172,18 +995,6 @@ function Search() {
                 placeholder="Search by well name, API, owner, operator or a location"
                 InputProps={{
                   ...params.InputProps,
-                  startAdornment: (
-                    <InputAdornment className={classes.startAdornmentIcon}>
-                      <Button
-                        style={{ minWidth: "0", height: "42px" }}
-                        onClick={() => {
-                          if (mapGridCardActivated) dispatch(toggleMapGridCardAtived());
-                        }}
-                      >
-                        <SearchIcon htmlColor="#d3d3d3" />
-                      </Button>
-                    </InputAdornment>
-                  ),
                   endAdornment: (
                     <InputAdornment className={classes.endAdornmentIcon}>
                       <div>
@@ -1217,7 +1028,7 @@ function Search() {
                               setAnchorEl(event.currentTarget);
                             }}
                           >
-                            <ArrowDropDownIcon htmlColor="#fff" />
+                            <HistoryIcon fontSize="25" htmlColor="#fff" />
                           </IconButton>
                         </Tooltip>
 

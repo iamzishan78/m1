@@ -29,17 +29,17 @@ TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
 const useStyles = makeStyles((theme) => ({
-  container: {
+  container: ({ isFileDetail }) => ({
     backgroundColor: "#F6F8F9",
     "& .MuiFormControl-marginDense": {
       margin: "0px !important",
     },
-    height: "100%",
+    height: isFileDetail ? "calc(100vh - 395px)" : "100%",
     minHeight: "200px",
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-end'
-  },
+  }),
   comment: ({ commentsHeight }) => ({
     position: "relative",
     overflow: "auto",
@@ -89,6 +89,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridStyle: {
     padding: "12px 0px",
+    flexWrap: 'nowrap'
   },
   bold: {
     fontWeight: "bold",
@@ -107,7 +108,11 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-flex",
   },
   commentContent: {
-    width: "84%",
+    flex: '1 1 auto',
+    maxWidth: "calc(100% - 55px)",
+    overflowWrap: 'break-word',
+    wordWrap: 'break-word',
+    wordBreak: 'break-word',
   },
   commentTypeSection: {
     fontWeight: "bold",
@@ -115,6 +120,13 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     marginBottom: "5px",
   },
+  commentWords: {
+    // display: 'inline-block',
+    overflowWrap: 'break-word',
+    wordWrap: 'break-word',
+    wordBreak: 'break-word',
+    hyphens: 'auto'
+  }
 }));
 
 function urlify(text) {
@@ -151,31 +163,31 @@ export const CommonCommentText = ({ eachComment, users }) => {
                     return (
                       <>
                         {" "}
-                        <span className="blue">
+                        <p className={`${classes.commentWords} blue`}>
                           {firstPart}@{users.find((user) => user._id === id)?.name}
                           {secondPart}{" "}
-                        </span>
+                        </p>
                         {splittedWord.length > 1 && <br />}{" "}
                       </>
                     );
                   } else
                     return (
-                      <span>
+                      <p className={classes.commentWords}>
                         {sWord} <br />{" "}
-                      </span>
+                      </p>
                     );
                 })}
               </>
             );
           }
 
-          return <span>{splittedWord}</span>;
+          return <p className={classes.commentWords}>{splittedWord}</p>;
         } else {
           const _word = index !== formatComment.length - 1 ? `${word} ` : word;
           const sanitizedData = () => ({
             __html: DOMPurify.sanitize(urlify(_word)),
           });
-          return <span dangerouslySetInnerHTML={sanitizedData()}></span>;
+          return <span className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()}></span>;
         }
       })}
     </div>
@@ -184,7 +196,7 @@ export const CommonCommentText = ({ eachComment, users }) => {
 
 export default function CommentComponent(props) {
   const { targetSourceId, commentsHeight } = props;
-  const classes = useStyles({ commentsHeight });
+  const classes = useStyles({ commentsHeight, isFileDetail: props.targetLabel === 'file' || false });
   const [stateApp] = useContext(AppContext);
 
   const [users, setUsers] = useState([]);
@@ -249,12 +261,13 @@ export default function CommentComponent(props) {
   useEffect(() => {
     if (dataComments && dataComments.commentsByObjectId) {
       if (props.activityLog && props.activityLog.length > 0) {
-        let activittyData = [];
+        let activityData = [];
         props.activityLog.forEach((element) => {
-          activittyData.push({
+          activityData.push({
             user: { name: element.ownerName, email: element.ownerName },
             activityData: element,
             comment: element.notes,
+            outcome: element.outcome,
             ts: new Date(element._ts.includes("GMT") ? element._ts : Number(element._ts)).getTime(),
             isActivity: true,
             isEdited: false,
@@ -262,7 +275,7 @@ export default function CommentComponent(props) {
             __typename: "Comment",
           });
         });
-        let tempArray = dataComments.commentsByObjectId.concat(activittyData);
+        let tempArray = dataComments.commentsByObjectId.concat(activityData);
         setCommentsArray(sortArrayBasedOnTs([...tempArray]));
       } else {
         setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
@@ -528,6 +541,11 @@ export default function CommentComponent(props) {
                               <div className={`${classes.whiteSpace}`}>
                                 END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
                               </div>
+                              {eachComment.activityData.outcome && (
+                                <div className={`${classes.whiteSpace}`}>
+                                  OUTCOME: {eachComment.activityData.outcome}
+                                </div>
+                              )}
                             </>
                           )}
                           {editCommentId !== eachComment._id ? (
@@ -635,26 +653,26 @@ export const CommentText = ({ eachComment, users }) => {
                     let id = sWord.split("{{")[1];
                     id = id.split("}}")[0];
                     return (
-                      <span className="blue">
+                      <p className={`${classes.commentWords} blue`}>
                         {firstPart}@{users.find((user) => user._id === id)?.name}
                         {secondPart}{" "}
-                      </span>
+                      </p>
                     );
                   } else if (sWord === "") return <br />;
                   else
                     return (
-                      <span>
+                      <p className={classes.commentWords}>
                         {sWord} <br />{" "}
-                      </span>
+                      </p>
                     );
                 })}
               </>
             );
           }
 
-          return <span>{splittedWord}</span>;
+          return <p className={classes.commentWords}>{splittedWord}</p>;
         } else {
-          return <span>{word} </span>;
+          return <p className={classes.commentWords}>{word} </p>;
         }
       })}
     </div>
