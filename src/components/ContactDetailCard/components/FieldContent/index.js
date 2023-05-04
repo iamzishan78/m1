@@ -23,7 +23,7 @@ import { get } from "lodash";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import EntityType from "./EntityType";
 import CampaignNameField from "./CampaignNameField";
-import ContactStatus from "components/ContactDetailCard/components/ContactStatus";
+// import ContactStatus from "components/ContactDetailCard/components/ContactStatus";
 import AutoCompleteAddNewField from "./AutoCompleteAddNewField";
 
 const filter = createFilterOptions();
