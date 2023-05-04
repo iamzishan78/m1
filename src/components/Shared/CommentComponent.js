@@ -7,7 +7,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-
+import { useSelector, useDispatch } from "react-redux";
+import { updatePinComments } from "store/actions/commonActions";
 import { AppContext } from "AppContext";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { GET_PROFILE_IMAGE } from "graphQL/useQueryGetProfile";
@@ -24,22 +25,23 @@ import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import moment from "moment";
 import DOMPurify from "dompurify";
+import { object } from "prop-types";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
 const useStyles = makeStyles((theme) => ({
-  container: {
+  container: ({ isFileDetail }) => ({
     backgroundColor: "#F6F8F9",
     "& .MuiFormControl-marginDense": {
       margin: "0px !important",
     },
-    height: "100%",
+    height: isFileDetail ? "calc(100vh - 395px)" : "100%",
     minHeight: "200px",
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-end'
-  },
+  }),
   comment: ({ commentsHeight }) => ({
     position: "relative",
     overflow: "auto",
@@ -89,6 +91,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridStyle: {
     padding: "12px 0px",
+    flexWrap: 'nowrap'
   },
   bold: {
     fontWeight: "bold",
@@ -107,7 +110,11 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-flex",
   },
   commentContent: {
-    width: "84%",
+    flex: '1 1 auto',
+    maxWidth: "calc(100% - 55px)",
+    overflowWrap: 'break-word',
+    wordWrap: 'break-word',
+    wordBreak: 'break-word',
   },
   commentTypeSection: {
     fontWeight: "bold",
@@ -115,6 +122,13 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     marginBottom: "5px",
   },
+  commentWords: {
+    // display: 'inline-block',
+    overflowWrap: 'break-word',
+    wordWrap: 'break-word',
+    wordBreak: 'break-word',
+    hyphens: 'auto'
+  }
 }));
 
 function urlify(text) {
@@ -151,31 +165,31 @@ export const CommonCommentText = ({ eachComment, users }) => {
                     return (
                       <>
                         {" "}
-                        <span className="blue">
+                        <p className={`${classes.commentWords} blue`}>
                           {firstPart}@{users.find((user) => user._id === id)?.name}
                           {secondPart}{" "}
-                        </span>
+                        </p>
                         {splittedWord.length > 1 && <br />}{" "}
                       </>
                     );
                   } else
                     return (
-                      <span>
+                      <p className={classes.commentWords}>
                         {sWord} <br />{" "}
-                      </span>
+                      </p>
                     );
                 })}
               </>
             );
           }
 
-          return <span>{splittedWord}</span>;
+          return <p className={classes.commentWords}>{splittedWord}</p>;
         } else {
           const _word = index !== formatComment.length - 1 ? `${word} ` : word;
           const sanitizedData = () => ({
             __html: DOMPurify.sanitize(urlify(_word)),
           });
-          return <span dangerouslySetInnerHTML={sanitizedData()}></span>;
+          return <span className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()}></span>;
         }
       })}
     </div>
@@ -184,8 +198,10 @@ export const CommonCommentText = ({ eachComment, users }) => {
 
 export default function CommentComponent(props) {
   const { targetSourceId, commentsHeight } = props;
-  const classes = useStyles({ commentsHeight });
+  const classes = useStyles({ commentsHeight, isFileDetail: props.targetLabel === 'file' || false });
   const [stateApp] = useContext(AppContext);
+  const dispatch = useDispatch();
+  const { pinComment } = useSelector(state => state.pin);
 
   const [users, setUsers] = useState([]);
   const [comment, setComment] = useState("");
@@ -200,7 +216,7 @@ export default function CommentComponent(props) {
   const [showCommentActionId, setShowCommentActionId] = useState(null);
   const [loadingComments, setLoadingComments] = useState(true);
   const [scrollIntoView, setScrollIntoView] = useState(false);
-
+  const [pinComments, setPinComments] = useState({ isPinned: false });
   const commentContainerRef = useRef(null);
 
   const [removeComment] = useMutation(REMOVECOMMENT);
@@ -213,7 +229,7 @@ export default function CommentComponent(props) {
     fetchPolicy: "cache-first",
   });
   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(COMMENTSBYOBJECTIDQUERY, { fetchPolicy: "no-cache" });
-
+  const [pinnedArray, setPinnedArray] = React.useState([])
   useEffect(() => {
     getAllMongoUsers();
   }, [getAllMongoUsers]);
@@ -241,20 +257,23 @@ export default function CommentComponent(props) {
       getCommentsByObjectId({
         variables: {
           objectId: targetSourceId,
+
         },
       });
     }
   }, [targetSourceId]);
 
   useEffect(() => {
+    // debugger
     if (dataComments && dataComments.commentsByObjectId) {
       if (props.activityLog && props.activityLog.length > 0) {
-        let activittyData = [];
+        let activityData = [];
         props.activityLog.forEach((element) => {
-          activittyData.push({
+          activityData.push({
             user: { name: element.ownerName, email: element.ownerName },
             activityData: element,
             comment: element.notes,
+            outcome: element.outcome,
             ts: new Date(element._ts.includes("GMT") ? element._ts : Number(element._ts)).getTime(),
             isActivity: true,
             isEdited: false,
@@ -263,9 +282,39 @@ export default function CommentComponent(props) {
           });
         });
         let tempArray = dataComments.commentsByObjectId.concat(activittyData);
-        setCommentsArray(sortArrayBasedOnTs([...tempArray]));
+        // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
+        let temp = []
+        let tempArr = sortArrayBasedOnTs([...tempArray])
+
+        tempArr.map(item => {
+          if (item.pin === true) {
+            temp.push(item)
+          }
+        })
+
+        console.log("before", tempArr)
+        const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
+        console.log("after", trueFirst)
+        setCommentsArray(tempArray)
+        setPinnedArray(trueFirst)
+
       } else {
-        setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
+        // setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
+        let temp = []
+
+        // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
+        let tempArr = sortArrayBasedOnTs([...dataComments.commentsByObjectId])
+        tempArr.map(item => {
+          if (item.pin === true) {
+            temp.push(item)
+          }
+        })
+        console.log("before", tempArr)
+
+        const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
+        console.log("after", trueFirst)
+        setCommentsArray(tempArr)
+        setPinnedArray(temp)
       }
     }
     setLoadingComments(false);
@@ -324,7 +373,7 @@ export default function CommentComponent(props) {
 
     return array;
   };
-
+  console.log(commentsArray, "commentsArray");
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value
@@ -382,10 +431,68 @@ export default function CommentComponent(props) {
     setEditComment("");
     setEditCommentId("");
   };
+  const pinToTop = (eachComment) => {
+    const x = Object.values(pinComments);
+
+    const newCommentList = commentsArray.map(c => {
+
+      if (c._id === eachComment) {
+        console.log("ddaat", c)
+        return {
+          ...c,
+          isPinned: true,
+          _id: eachComment
+        };
+      }
+      return {
+        ...c,
+        isPinned: false,
+      };
+    });
+    dispatch(updatePinComments(newCommentList));
+    upsertComment({
+      variables: {
+        comment: {
+          _id: eachComment,
+          pin: true,
+        },
+      },
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      awaitRefetchQueries: true,
+    });
+    setShowCommentActionId(null)
+    //  commentsArray
+    // let temp = commentsArray
+  }
+  const unpinFromTop = (eachComment) => {
+    // debugger
+    const commentsArray1 = Object.values(pinComments);
+    const newCommentList = commentsArray.map((c) => {
+      if (c.id === eachComment) {
+        return {
+          ...c,
+          isPinned: false,
+        };
+      }
+      return c;
+    });
+    dispatch(updatePinComments(newCommentList));
+    upsertComment({
+      variables: {
+        comment: {
+          _id: eachComment,
+          pin: false,
+        },
+      },
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      awaitRefetchQueries: true,
+    });
+    setShowCommentActionId(null)
+  }
+
 
   useEffect(() => {
-    if (commentsArray?.length > 0 && scrollIntoView){
-      debugger
+    if (commentsArray?.length > 0 && scrollIntoView) {
       commentContainerRef?.current?.scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -415,7 +522,6 @@ export default function CommentComponent(props) {
       return state;
     });
     setScrollIntoView(true);
-
     upsertComment({
       variables: {
         comment: {
@@ -425,6 +531,7 @@ export default function CommentComponent(props) {
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           objectType: props.targetLabel,
+          pin: false
         },
       },
       refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
@@ -443,174 +550,179 @@ export default function CommentComponent(props) {
 
   return (
     <>
-        <div className={classes.container}>
-          <div className={classes.comment} id="commentsContainer">
-            {!loadingComments ? (
-              <>
-                {!showAllComments && commentsArray.length > 7 && (
-                  <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
-                    <span
-                      onClick={() => {
-                        setShowAllComments(true);
-                      }}
-                    >
-                      {getCount()} more comments
-                    </span>
-                  </div>
-                )}
-                {showAllComments && commentsArray.length > 7 && (
-                  <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
-                    <span onClick={() => setShowAllComments(false)}>Hide Earlier Comments</span>
-                  </div>
-                )}
-
-                {commentsArray.map((eachComment, index) => {
-                  let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
-                  return (
-                    <Fragment key={index}>
-                      {(showAllComments || index >= indexToShow) && (
-                        <Grid
-                          id="commentsArea"
-                          container
-                          className={classes.gridStyle}
-                          onMouseOver={() => setShowCommentActionId(eachComment?._id)}
-                          onMouseLeave={() => setShowCommentActionId(null)}
-                        >
-                          <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
-                            <IconButton>
-                              {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
-                                <Avatar
-                                  src={eachComment.isNew ? profileImage : profilesInfo[eachComment?.user?.email].profileImage}
-                                  size="38"
-                                  round
-                                />
-                              ) : (
-                                <Avatar name={eachComment?.user?.name} size="38" round />
-                              )}
-                            </IconButton>
-                          </Grid>
-                          <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
-                            <div>
-                              <span className={classes.bold}>{eachComment?.user?.name}</span>
-                              {!isNaN(eachComment.ts) && (
-                                <ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />
-                              )}
-                              {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
-                              {eachComment?.user?.email === stateApp.user.email &&
-                                showCommentActionId === eachComment._id &&
-                                editCommentId !== eachComment._id && (
-                                  <div
-                                    className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
-                                      eachComment?.user?.email === stateApp.user.email &&
-                                      showCommentActionId === eachComment._id &&
-                                      editCommentId !== eachComment._id
-                                    ) && classes.hideMenuIcon
-                                      }`}
-                                  >
-                                    <ActionMenu
-                                      eachComment={eachComment}
-                                      setEditCommentId={setEditCommentId}
-                                      setEditComment={setEditComment}
-                                      deleteComment={deleteComment}
-                                      setShowActions={setShowActions}
-                                      setIsEdit={setIsEdit}
-                                    />
-                                  </div>
-                                )}
-                            </div>
-                            {eachComment.isActivity === true && (
-                              <>
-                                <div className={`${classes.whiteSpace}`}>
-                                  {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
-                                </div>
-                                <div className={`${classes.whiteSpace}`}>
-                                  START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
-                                </div>
-                                <div className={`${classes.whiteSpace}`}>
-                                  END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
-                                </div>
-                              </>
-                            )}
-                            {editCommentId !== eachComment._id ? (
-                              <CommonCommentText users={users} eachComment={eachComment} />
-                            ) : (
-                              <div className={classes.border}>
-                                <CommentField
-                                  isEdit={isEdit}
-                                  profilesInfo={profilesInfo}
-                                  users={users}
-                                  comment={editComment}
-                                  showActions={showActions}
-                                  setEditCommentId={setEditCommentId}
-                                  setComment={setEditComment}
-                                  upsertComment={updateComment}
-                                  setIsEdit={setIsEdit}
-                                  setShowActions={setShowActions}
-                                />
-                              </div>
-                            )}
-                          </Grid>
-                        </Grid>
-                      )}
-                    </Fragment>
-                  );
-                })}
-              </>
-            ) : (
-              <CircularProgress color="secondary"></CircularProgress>
-            )}
-            <div id="checkIf" ref={commentContainerRef} />
-          </div>
-          {!editCommentId && (
-            <div
-              style={{
-                paddingBottom: "20px",
-                // position: "absolute",
-                // bottom: "0px",
-                width: "100%",
-              }}
-            >
-              <Grid container alignItems="center">
-                <Grid item style={{ maxWidth: "55px" }}>
-                  <IconButton
-                    className={classes.commentView}
-                  // style={{ top: "3px" }}
+      <div className={classes.container}>
+        <div className={classes.comment} id="commentsContainer">
+          {!loadingComments ? (
+            <>
+              {!showAllComments && commentsArray.length > 7 && (
+                <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
+                  <span
+                    onClick={() => {
+                      setShowAllComments(true);
+                    }}
                   >
-                    {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
-                  </IconButton>
-                </Grid>
-                <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
-                  <>
-                      <div
-                        className={classes.border}
-                        style={{ paddingBottom: "20px" }}
-                        onClick={() => {
-                          if (!showActions) {
-                            setShowActions(true);
-                          }
-                        }}
-                        onBlur={() => {
-                          if (showActions && !comment) {
-                            setShowActions(false);
-                          }
-                        }}
+                    {getCount()} more comments
+                  </span>
+                </div>
+              )}
+              {showAllComments && commentsArray.length > 7 && (
+                <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
+                  <span onClick={() => setShowAllComments(false)}>Hide Earlier Comments</span>
+                </div>
+              )}
+
+              {commentsArray.map((eachComment, index) => {
+                let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
+                return (
+                  <Fragment key={index}>
+                    {(showAllComments || index >= indexToShow) && (
+                      <Grid
+                        id="commentsArea"
+                        container
+                        className={classes.gridStyle}
+                        onMouseOver={() => setShowCommentActionId(eachComment?._id)}
+                        onMouseLeave={() => setShowCommentActionId(null)}
                       >
-                        <CommentField
-                          profilesInfo={profilesInfo}
-                          users={users}
-                          comment={comment}
-                          showActions={showActions}
-                          setComment={setComment}
-                          upsertComment={addNewComment}
-                          showCommentType={props.showCommentType}
-                        />
-                      </div>
-                  </>
-                </Grid>
-              </Grid>
-            </div>
+                        <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
+                          <IconButton>
+                            {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
+                              <Avatar
+                                src={eachComment.isNew ? profileImage : profilesInfo[eachComment?.user?.email].profileImage}
+                                size="38"
+                                round
+                              />
+                            ) : (
+                              <Avatar name={eachComment?.user?.name} size="38" round />
+                            )}
+                          </IconButton>
+                        </Grid>
+                        <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
+                          <div>
+                            <span className={classes.bold}>{eachComment?.user?.name}</span>
+                            {!isNaN(eachComment.ts) && (
+                              <ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />
+                            )}
+                            {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+                            {eachComment?.user?.email === stateApp.user.email &&
+                              showCommentActionId === eachComment._id &&
+                              editCommentId !== eachComment._id && (
+                                <div
+                                  className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
+                                    eachComment?.user?.email === stateApp.user.email &&
+                                    showCommentActionId === eachComment._id &&
+                                    editCommentId !== eachComment._id
+                                  ) && classes.hideMenuIcon
+                                    }`}
+                                >
+                                  <ActionMenu
+                                    eachComment={eachComment}
+                                    setEditCommentId={setEditCommentId}
+                                    setEditComment={setEditComment}
+                                    deleteComment={deleteComment}
+                                    setShowActions={setShowActions}
+                                    setIsEdit={setIsEdit}
+                                  />
+                                </div>
+                              )}
+                          </div>
+                          {eachComment.isActivity === true && (
+                            <>
+                              <div className={`${classes.whiteSpace}`}>
+                                {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
+                              </div>
+                              <div className={`${classes.whiteSpace}`}>
+                                START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
+                              </div>
+                              <div className={`${classes.whiteSpace}`}>
+                                END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
+                              </div>
+                              {eachComment.activityData.outcome && (
+                                <div className={`${classes.whiteSpace}`}>
+                                  OUTCOME: {eachComment.activityData.outcome}
+                                </div>
+                              )}
+                            </>
+                          )}
+                          {editCommentId !== eachComment._id ? (
+                            <CommonCommentText users={users} eachComment={eachComment} />
+                          ) : (
+                            <div className={classes.border}>
+                              <CommentField
+                                isEdit={isEdit}
+                                profilesInfo={profilesInfo}
+                                users={users}
+                                comment={editComment}
+                                showActions={showActions}
+                                setEditCommentId={setEditCommentId}
+                                setComment={setEditComment}
+                                upsertComment={updateComment}
+                                setIsEdit={setIsEdit}
+                                setShowActions={setShowActions}
+                              />
+                            </div>
+                          )}
+                        </Grid>
+                      </Grid>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </>
+          ) : (
+            <CircularProgress color="secondary"></CircularProgress>
           )}
+          <div id="checkIf" ref={commentContainerRef} />
         </div>
+        {!editCommentId && (
+          <div
+            style={{
+              paddingBottom: "20px",
+              // position: "absolute",
+              // bottom: "0px",
+              width: "100%",
+            }}
+          >
+            <Grid container alignItems="center">
+              <Grid item style={{ maxWidth: "55px" }}>
+                <IconButton
+                  className={classes.commentView}
+                // style={{ top: "3px" }}
+                >
+                  {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
+                </IconButton>
+              </Grid>
+              <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
+                <>
+                  <div
+                    className={classes.border}
+                    style={{ paddingBottom: "20px" }}
+                    onClick={() => {
+                      if (!showActions) {
+                        setShowActions(true);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (showActions && !comment) {
+                        setShowActions(false);
+                      }
+                    }}
+                  >
+                    <CommentField
+                      profilesInfo={profilesInfo}
+                      users={users}
+                      comment={comment}
+                      showActions={showActions}
+                      setComment={setComment}
+                      upsertComment={addNewComment}
+                      showCommentType={props.showCommentType}
+                    />
+                  </div>
+                </>
+              </Grid>
+            </Grid>
+          </div>
+        )}
+      </div>
     </>
   );
 }
@@ -636,34 +748,38 @@ export const CommentText = ({ eachComment, users }) => {
                     let id = sWord.split("{{")[1];
                     id = id.split("}}")[0];
                     return (
-                      <span className="blue">
+                      <p className={`${classes.commentWords} blue`}>
                         {firstPart}@{users.find((user) => user._id === id)?.name}
                         {secondPart}{" "}
-                      </span>
+                      </p>
                     );
                   } else if (sWord === "") return <br />;
                   else
                     return (
-                      <span>
+                      <p className={classes.commentWords}>
                         {sWord} <br />{" "}
-                      </span>
+                      </p>
                     );
                 })}
               </>
             );
           }
 
-          return <span>{splittedWord}</span>;
+          return <p className={classes.commentWords}>{splittedWord}</p>;
         } else {
-          return <span>{word} </span>;
+          return <p className={classes.commentWords}>{word} </p>;
         }
       })}
     </div>
   );
 };
 
-const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment, setShowActions, setIsEdit }) => {
+
+
+const ActionMenu = ({ pinToTop, unpinFromTop, showActions, eachComment, setEditCommentId, setEditComment, deleteComment, setShowActions, setIsEdit }) => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const { pinComment } = useSelector(state => state.pin);
+
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -673,9 +789,13 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
     setAnchorEl(null);
   };
 
+  const pinnedComment = eachComment.pin;
+
   return (
     <>
-      <ExpandMoreIcon id="expandCommentActionIcon" aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} />
+
+      <ExpandMoreIcon id="expandCommentActionIcon" aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} showActions={showActions} />
+
       <Menu
         style={{ zIndex: "1305" }}
         id={eachComment._id}
@@ -686,6 +806,7 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
         getContentAnchorEl={null}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "center" }}
+
       >
         <MenuItem
           id="editComment"
@@ -702,6 +823,15 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
         <MenuItem textcolor="red" onClick={() => deleteComment(eachComment._id)} id="deleteComment">
           Delete Comment
         </MenuItem>
+        {pinnedComment ?
+          <MenuItem textcolor="red" onClick={() => unpinFromTop(eachComment._id)} id="unpin">
+            Unpin
+          </MenuItem>
+          :
+          <MenuItem textcolor="red" onClick={() => pinToTop(eachComment._id)} id="pintotop">
+            Pin To Top
+          </MenuItem>
+        }
       </Menu>
     </>
   );

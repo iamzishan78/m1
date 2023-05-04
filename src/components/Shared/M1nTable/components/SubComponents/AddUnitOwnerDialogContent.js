@@ -5,11 +5,12 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
-import { Grid } from "@material-ui/core";
-import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
+import { CircularProgress,Grid, Dialog, OutlinedInput, InputAdornment, Typography, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
+import DeleteIcon from "@material-ui/icons/Delete";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 
 import { AppContext } from "AppContext";
@@ -28,6 +29,9 @@ import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteW
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
+import AssociatedDealField from "components/ContactDetailCard/components/FieldContent/AssociatedDealField";
+import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
+import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -75,7 +79,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [ownerTypeOfConctact, setOwnerTypeOfConctact] = useState();
-
+  const [anchorEl, setAnchorEl] = useState();
+  const [loading, setLoading] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const watchedNra = watch('nra')
 
   useEffect(() => {
@@ -94,7 +100,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerEntity,
         contactStatus,
         ownerType,
-        contact
+        contact,
+        deals
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
@@ -109,9 +116,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         contactStatus: contactStatus || contact.contactStatus,
         ownerType,
         customLayer,
-        campaignName: contact.campaignName
+        campaignName: contact.campaignName,
+        deals
       }
-      let calculatedNRA = calculateNRA(royalty_interest, orri);
+      let calculatedNRA = calculateNRA(royalty_interest, orri, nri);
       let calculatedOfferPrice = calculateOfferPrice(nra)
       if (!isNaN(parseFloat(calculatedNRA)))
         setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)))
@@ -184,7 +192,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   };
 
   const handleAddUpdate = (ownerToAdd) => {
-
     if (ownerToAdd.nra) {
       ownerToAdd.nra = addTrailingZeros(parseFloat(ownerToAdd.nra).toFixed(8));
     }
@@ -264,12 +271,16 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     }
   };
 
-  const calculateNRA = (interest1, interest2, unitAcres = uAcres) => {
-    if (!interest1 && !interest2) return null;
+  const calculateNRA = (interest1, interest2, interest3, unitAcres = uAcres) => {
+    if (!interest3 && (!interest1 && !interest2)) return null;
+
     let nra = parseFloat(unitAcres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0));
-    if (workspaceSettings.settings?.map?.unitNra?.type === "custom" && workspaceSettings.settings?.map?.unitNra?.value) {
+
+    if (interest3) nra = parseFloat(interest3 || 0) * parseFloat(unitAcres || 0)
+
+    if (workspaceSettings.settings?.map?.unitNra?.type === "custom" && workspaceSettings.settings?.map?.unitNra?.value)
       nra = nra / Number(workspaceSettings.settings?.map?.unitNra?.value);
-    }
+
     nra = addTrailingZeros(nra.toFixed(8));
     return nra;
   };
@@ -278,9 +289,54 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
   };
 
+  
+
+  const openConfirmationDialog = () => {
+    setDeleteDialogOpen(true);
+    handleMenuClose();
+  };
+  const handleCloseDialog = () => {
+    setDeleteDialogOpen(false);
+  };
+  const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
+  
+  const deleteFunc = () => {
+    setLoading(true);
+      updateShapeOwners({
+        variables: {
+          shapeType: props.shapeType,
+          shapeOwners: { _id:selectedRow?._id, isDeleted: true },
+        },
+        refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
+        awaitRefetchQueries: true,
+      }).finally(()=>{
+        setLoading(false);
+      });
+    
+  };
   const classes = useStyles();
   return (
     <div className={classes.move}>
+      {deleteDialogOpen && (
+        <Dialog
+          className={classes.dialog}
+          open={deleteDialogOpen ? true : false}
+          onClose={handleCloseDialog}
+          fullWidth={false}
+          maxWidth="sm"
+        >
+          <DeleteConfirmationDialogContent
+            header={`Delete Interest Owner`}
+            onClose={handleCloseDialog}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={null}
+            setM1nSelectedRowsIndexes={() => { }}
+          >
+            Do you want to delete the selected interest owner?
+          </DeleteConfirmationDialogContent>
+        </Dialog>
+      )}
       <React.Fragment>
         <RightDialog open={true} handleClickDialogClose={props.onClose} width={"450px"}>
           <Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
@@ -289,7 +345,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 {selectedRow ? "Update" : "Add"} Unit Ownership
               </DialogTitle>
             </Grid>
-            <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
+            {/* <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
               <IconButton
                 size="small"
                 component="span"
@@ -302,7 +358,56 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               >
                 <KeyboardTabBlackIcon />
               </IconButton>
-            </Grid>
+            </Grid> */}
+            <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
+            <div style={{ "float": "right",display:'flex',marginRight:'10px' }}>
+                <>
+                  <IconButton
+                    disabled={loading}
+                    size="small"
+                    style={{ margin: "0 8px" }}
+                  >
+                    {loading ? (
+                      <CircularProgress size={20} color="secondary" />
+                    ) : (
+                      <MoreHorizIcon size="medium" onClick={handleMenuClick} />
+                    )}
+                  </IconButton>
+                  <Menu
+                    id="dealMenu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                    className={classes.menu}
+                    getContentAnchorEl={null}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                    transformOrigin={{ vertical: "top", horizontal: "center" }}
+                  >
+                    <MenuItem 
+                      onClick={openConfirmationDialog}
+                    >
+                      <ListItemIcon>
+                        <DeleteIcon size="medium" />
+                      </ListItemIcon>
+                      <ListItemText>Delete</ListItemText>
+                    </MenuItem>
+                  </Menu>
+                </>
+                <IconButton
+                size="small"
+                component="span"
+                style={{
+                  background: "transparent",
+                  align: "center",
+                  float: "right",
+                }}
+                onClick={props.onClose}
+              >
+                <KeyboardTabBlackIcon />
+              </IconButton>
+            </div>
+          </Grid>
           </Grid>
           <DialogContent className={classes.dialogContent}>
             <Grid container spacing={2}>
@@ -367,7 +472,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) setValue("nra", calculateNRA(e.target.value, getValues().orri));
+                        if (!isNraOverridden) setValue("nra", calculateNRA(e.target.value, getValues().orri, getValues().nri));
                       }}
                       fullWidth
                       defaultValue=""
@@ -389,7 +494,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) { setValue("nra", calculateNRA(getValues().royalty_interest, e.target.value)); }
+                        if (!isNraOverridden) { setValue("nra", calculateNRA(getValues().royalty_interest, e.target.value, getValues().nri)); }
                       }}
                       fullWidth
                       defaultValue=""
@@ -412,6 +517,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
+                        if (!isNraOverridden) { setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri, e.target.value)); }
                       }}
                       fullWidth
                       defaultValue=""
@@ -448,7 +554,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         const value = addTrailingZeros(e.target.value);
-                        const nra = calculateNRA(getValues().royalty_interest, getValues().orri)
+                        const nra = calculateNRA(getValues().royalty_interest, getValues().orri, getValues().nri)
                         setIsNRAOverridden(parseFloat(value) !== parseFloat(nra))
                         params.onChange(e.target.value);
                       }}
@@ -461,7 +567,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                                 aria-label="toggle royality-acres"
                                 onClick={() => {
                                   setIsNRAOverridden(false)
-                                  setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri));
+                                  setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri, getValues().nri));
                                 }}
                               >
                                 <AutorenewIcon />
@@ -596,6 +702,27 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   name="campaignName"
                   render={(params) => (
                     <CampaignNameField
+                      {...params}
+                      className={classes.maxWidth}
+                      onChange={(values, id) => {
+                        params.onChange(values);
+                      }}
+                      fullWidth
+                      targetLabel="Contact"
+                      simpleChips
+                    />
+                  )}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <h3>Associated Deals</h3>
+
+                <Controller
+                  control={control}
+                  name="deals"
+                  render={(params) => (
+                    <AssociatedDealField
                       {...params}
                       className={classes.maxWidth}
                       onChange={(values, id) => {

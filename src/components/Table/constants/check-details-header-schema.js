@@ -1,14 +1,48 @@
 
+import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
+import { GlobalStickyStyles } from "GlobalSettings";
+
 const RevenueStatementHeadCells = [
     {
         name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
     },
     {
-        name: "number", label: "Property #", esKey: 'property.number.keyword', options: { sort: true, filter: true, style: { minWidth: 250 }, }
+        name: "number", label: "Property #", esKey: 'property.number.keyword', options: { display: false, sort: false, filter: true, style: { minWidth: 250 }, }
     },
     {
-        name: "name", label: "Property Name", esKey: 'property.name.keyword', options: { sort: true, filter: true }
+        name: "name", label: "Property Name", esKey: 'property.name.keyword', options: { display: false, sort: false, filter: true }
     },
+    {
+        /// this is the control column for properties 
+        name: "number",
+        label: "Property",
+        esKey: 'property.number.keyword',
+        options: {
+            ...GlobalStickyStyles({
+                setCellProps: {
+                    left: "77px",
+                    maxWidth: "300px"
+                },
+                setCellHeaderProps: {
+                    left: "77px",
+                    maxWidth: "300px",
+                    paddingLeft: '0px',
+                }
+            }),
+            sort: true, filter: false,
+
+            customRender: (value, tableMeta) => <ColumnWithLink
+                value={value?.split("_")?.[0]
+                    ? tableMeta?.rowData[2] ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[2]}` : value
+                    : tableMeta?.rowData[2]}
+                link={`/revenue/property/details/${tableMeta.rowData[20]}`}
+                onClick={(e) => {
+                    e.stopPropagation();
+                }}
+            />,
+        },
+    },
+
     {
         name: "state", label: "State", esKey: 'property.state.keyword', options: { sort: true, filter: true }
     },
@@ -57,6 +91,10 @@ const RevenueStatementHeadCells = [
     {
         name: "netOwnerValue", label: "Owner Net Rev", esKey: 'netOwnerValue', options: { sort: true, filter: true }
     },
+    {
+        name: "propertyId", options: { filter: false, display: false, sort: false, viewColumns: false, }
+    },
+
     {
         name: "commentsCounter",
         label: " ",
