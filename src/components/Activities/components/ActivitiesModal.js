@@ -39,6 +39,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
 import Typography from "@material-ui/core/Typography";
 import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from "../../../graphQL/useMutationActivity";
+import { workspaceTenantName } from "components/Shared/functions";
 import AutoCompleteAddNewField from "components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField";
 import { outcomeOptions } from "components/ContactDetailCard/components/FieldContent/helper";
 
@@ -512,11 +513,13 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
     });
   };
 
-  const handleOnContactView = () => nameAutValue._id && history.push(`/contact/details/${nameAutValue._id}`);
-
   const handleOnDealClick = () => {
-    // handle Deal Click we need to get lane id
+    const { _id: stageId, pipeline } = dealValue.stage;
+    const dealId = dealValue._id;
+    return `/flow/${pipeline}/lane/${stageId}/card/${dealId}?tenant=${workspaceTenantName()}`;
   };
+
+  const handleOnContactView = () => `/contact/details/${nameAutValue._id}?tenant=${workspaceTenantName()}`;
 
   const dealValue = openDeals.find((deal) => deal._id === dealId) || null;
   console.log("--*-*-*- selectedActivity *-*-*-*-", selectedActivity, outcomeFieldRef);
@@ -722,7 +725,13 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
 
               <div className={classes.row}>
                 <span className={classes.rowIcon}>
-                  <MonetizationOnIcon onClick={handleOnDealClick} color={dealValue ? "secondary" : "disabled"} />
+                  {dealValue ? (
+                    <a href={handleOnDealClick()} className={classes.rowIcon}>
+                      <MonetizationOnIcon color="secondary" />
+                    </a>
+                  ) : (
+                    <MonetizationOnIcon color="disabled" />
+                  )}
                 </span>
                 <div style={{ width: "76%", marginRight: 24 }}>
                   <Autocomplete
@@ -755,7 +764,13 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
               </div>
               <div className={classes.row}>
                 <span className={classes.rowIcon}>
-                  <RecentActorsIcon onClick={handleOnContactView} color={nameAutValue?._id ? "secondary" : "disabled"} />
+                  {nameAutValue?._id ? (
+                    <a href={handleOnContactView()} >
+                      <RecentActorsIcon color="secondary" />
+                    </a>
+                  ) : (
+                    <RecentActorsIcon color="disabled" />
+                  )}
                 </span>
                 <div className={classes.fieldWidth}>
                   <AutocompEntityNamesVirtualizeList
