@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, Component } from "react";
 import { Link } from "react-router-dom";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import EmailSuccess from "./EmailSuccess";
-import { fade, ThemeProvider, withStyles, makeStyles, createMuiTheme } from "@material-ui/core/styles";
+import { fade, ThemeProvider, withStyles, makeStyles, createTheme } from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
 import { Card, Button } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";

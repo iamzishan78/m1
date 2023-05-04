@@ -2,7 +2,7 @@ import React from 'react'
 import { TrackContextProvider } from './TrackContext'
 import { makeStyles } from '@material-ui/core/styles'
 import Track from './Track'
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles'
+import { createTheme, MuiThemeProvider } from '@material-ui/core/styles'
 const useStyles = makeStyles(theme => ({
   trackWrapper: {
     width: '100%',

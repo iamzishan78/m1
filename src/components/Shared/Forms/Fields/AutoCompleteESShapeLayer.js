@@ -23,7 +23,7 @@ const useStyles = makeStyles({
     },
 });
 
-const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer }) => {
+const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer, searchFields }) => {
 
     const [search, setSearch] = useState('')
 
@@ -43,7 +43,7 @@ const AutoCompleteESShapeLayer = ({ label, value, filters, setSelectedShapeLayer
                 },
                 search: {
                     query: search ? `*${search}*` : '',
-                    fields: ['*'],
+                    fields: searchFields || ['*'],
                 },
                 filters
             }

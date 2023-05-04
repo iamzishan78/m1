@@ -2,11 +2,11 @@ import React from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import MenuItem from "@material-ui/core/MenuItem";
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createTheme } from "@material-ui/core/styles";
 
 const drawerWidth = 425;
 
-export const theme = createMuiTheme({
+export const theme = createTheme({
   overrides: {
     MuiSvgIcon: {
       root: {
@@ -62,11 +62,13 @@ export const useStyles = makeStyles((theme) => ({
   landRootExpanded: {
     marginLeft: "425px !important",
     width: "calc(100% - 425px)",
+    overflowX: "hidden"
   },
   landRootCollapsed: {
     marginLeft: "0px !important",
     width: "100%",
     transition: "all 0.3s ease-in-out",
+    overflowX: "hidden"
   },
   header: {
     padding: "10px 5px 15px 10px",
@@ -98,7 +100,7 @@ export const StyledMenuItem = withStyles((theme) => ({
     fontFamily: "Poppins",
     display: "block",
     color: "white",
-    paddingLeft:'10px',
+    paddingLeft: '10px',
     "&:hover": {
       background: "#808080",
     },

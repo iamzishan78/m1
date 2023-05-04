@@ -1,7 +1,7 @@
 const CONTACTS_FIELDS = require("./CONTACTS").default
 
 const fields = JSON.parse(JSON.stringify(CONTACTS_FIELDS))
-fields.splice(CONTACTS_FIELDS.length-1,1)
+fields.splice(CONTACTS_FIELDS.length - 1, 1)
 
 export default [
     ...fields,

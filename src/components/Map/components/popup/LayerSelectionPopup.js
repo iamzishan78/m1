@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
     Grid, Card, CardHeader, CardContent, Accordion, AccordionSummary, Typography,
-    List, ListItem, ListItemText
+    List, ListItem, ListItemText, Tooltip
 } from "@material-ui/core";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
@@ -13,6 +13,9 @@ import LayerSelectionIcon from "components/Shared/svgIcons/layerSelection";
 // contexts
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
+import { copy } from "utils/helper";
+import polylabel from "polylabel";
+import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -70,6 +73,12 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: "#031d40",
         },
         color: "white",
+    },
+    heading: {
+        width: '345px',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
     },
     accordian: {
         color: 'white',
@@ -132,12 +141,39 @@ function LayerSelectionPopup(props) {
                 return properties.shapeLabel
             } else if (layer.source === 'units_source') {
                 return `${properties.uNumber ? properties.uNumber + '-' : ''}${properties.shapeLabel}`
+            } else if (properties.layerShapeName) {
+                return layer.properties.Unit_Name || layer.layer.id
             } else
                 return `${properties.agreementNumber ? properties.agreementNumber + '-' : ''}${properties.agreementName}`
         }
     }
 
     const selectLayer = (layer) => {
+        if (layer.properties.layerShapeName) {
+            const jsonLayer = copy(layer)
+
+            jsonLayer.properties.shapeCenter = polylabel(jsonLayer.geometry.coordinates);
+            if (props.map)
+                drawBoundary(props.map, jsonLayer);
+
+            props.setStateApp((state) => {
+                return {
+                    ...state,
+                    selectedUserDefinedLayer: jsonLayer,
+                    selectedParcel: null,
+                };
+            });
+            props.setStateApp((state) => {
+                if (!state.showDrawShapesPopup && state.shapeEditMode !== 'redraw') {
+                    props.createUDPopUp(jsonLayer.properties);
+                }
+                return state;
+            });
+            props.map?.resize?.();
+
+            return
+        }
+
         let newPath
         if (layer.source === 'wellsVT') {
             newPath = `/map/wells/${layer.properties.id}/${layer.properties.latitude}/${layer.properties.longitude}`;
@@ -147,6 +183,13 @@ function LayerSelectionPopup(props) {
 
         history.location.pathname !== newPath && history.replace(newPath);
     }
+
+    selectionLayers.forEach((selectionLayer) => {
+        selectionLayer.sourceKey = selectionLayer.source
+        if (selectionLayer?.properties?.layerShapeName)
+            selectionLayer.sourceKey = selectionLayer?.properties.layerShapeName
+    })
+
     if (search)
         selectionLayers = selectionLayers.filter((selectionLayer) => {
             const properties = selectionLayer?.properties
@@ -159,9 +202,8 @@ function LayerSelectionPopup(props) {
             } else
                 return startsWith(search, [properties.agreementNumber, properties.agreementName])
         })
-    const groupFeatures = _.groupBy(selectionLayers, 'source');
+    const groupFeatures = _.groupBy(selectionLayers, 'sourceKey');
     // console.log(groupFeatures)
-
     function GetTitle() {
         const classes = useStyles();
 
@@ -209,7 +251,11 @@ function LayerSelectionPopup(props) {
                                     aria-controls="panel1a-content"
                                     id="panel1a-header"
                                 >
-                                    <Typography className={classes.heading}>{getSourceName(key)}</Typography>
+                                    {
+                                        getSourceName(key).length > 38 ? <Tooltip title={getSourceName(key)}>
+                                            <Typography className={classes.heading}>{getSourceName(key)}</Typography>
+                                        </Tooltip> : <Typography className={classes.heading}>{getSourceName(key)}</Typography>
+                                    }
                                 </AccordionSummary>
                                 <List component="nav" aria-label="secondary mailbox folders">
                                     {
