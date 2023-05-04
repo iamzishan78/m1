@@ -42,7 +42,7 @@ function ContactParcelInterestTable(props) {
   const [columns, Columns] = useState([]);
   const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
   const [searchedRows, setSearchedRows] = useState([])
-  const [selectedYear, setSelectedYear] = useState(2021)  // production selected year state 
+  const [selectedYear, setSelectedYear] = useState(2022)  // production selected year state 
 
   // queries 
   const [getContactParcelInterests, { data: dataContactParcels, loading }] = useLazyQuery(CONTACT_PARCEL_INTERESTS, { fetchPolicy: "cache-and-network", skip: true });
