@@ -1,3 +1,4 @@
+import ListChips from "components/Common/ListChips";
 import vf_currency, { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 import { history } from "store";
 
@@ -362,6 +363,19 @@ const UnitInterestsHeadCells = [
         }
     },
     {
+        name: "deals",
+        label: "Associated Deals",
+        esKey: "deals.keyword",
+        options: {
+            customRender: (value) => {
+                return value && <ListChips list={value} />
+            },
+            setCellProps: () => ({ style: { minWidth: "200px" } }),
+            sort: true,
+            filter: true,
+        },
+    },
+    {
         name: "tags", label: "Tags", esKey: 'tags.tag.keyword', options: { sort: true, filter: true }
     },
     {
@@ -381,6 +395,7 @@ const UnitInterestsHeadCells = [
         name: "detailCard",
         label: " ",
         options: {
+            display: false,
             filter: false,
             sort: false,
             searchable: false,

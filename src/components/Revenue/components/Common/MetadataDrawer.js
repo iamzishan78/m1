@@ -442,7 +442,7 @@ MetadataDrawer.defaultProps = {
   title: "Metadata",
   documentsTitle: "Documents",
   showDescription: true,
-  commentsWidth: "600px",
+  commentsWidth: "570px",
   viewAllDocuments: false,
   ownerTitle: "Owner",
   ownerPlaceHolder: "Assign Approver",

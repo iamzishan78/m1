@@ -13,8 +13,9 @@ import { useStyles, StyledMenu, StyledMenuItem } from "components/Land/style";
 
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
+import AdvanceSearch from "components/Land/components/AdvanceSearch";
 
-export default function QuickActionsPanel({ children, title, actions, handlePanelStateChange, quickActionsPanelState, activeModule }) {
+export default function QuickActionsPanel({ children, title, actions, handlePanelStateChange, quickActionsPanelState, activeModule, PanelAction }) {
   const classes = useStyles();
   const history = useHistory();
 
@@ -47,12 +48,12 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
             </IconButton>
           </Grid>
         </Grid>
-        <Divider />
+        {PanelAction ? <PanelAction/> : <Divider />}
         <div style={{ paddingLeft: '23px' }}>
-          <Typography variant="body2" className={classes.quickActionText}>
+          <Typography  className={classes.quickActionText}>
             Quick Actions
           </Typography>
-          <StyledMenu>
+          <StyledMenu id="quickActionPanel">
             {Object.keys(actions)
               .filter((key) => !actions[key].isExcluded)
               .map(
@@ -74,6 +75,7 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
               )}
           </StyledMenu>
         </div>
+        <AdvanceSearch activeModule={activeModule} />
       </Drawer>
       <FeatureFlag feature={FEATURES[activeModule.featureFlag]} noCheck={activeModule.noCheck}>
         <div

@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Switch, Route, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { makeStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
+import MenuItem from "@material-ui/core/MenuItem";
 
 // import { toggleQuickActionsPanel, setActiveModule } from "store/actions/contactActions";
 import { setActiveModule, toggleQuickActionsPanel } from "store/actions/commonActions";
@@ -13,34 +14,11 @@ import LandAnalytics from "components/Analytics/components/Land";
 import ActivitiesDashboard from "components/Activities/components/ActivitiesDashboard";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import QuickActionPanel from "components/Land/components/QuickActionPanel";
-import ContactsTable from "components/Table/Contact/ContactsTable";
-
+import Grid from "@material-ui/core/Grid";
+import { Tab, Tabs } from "@material-ui/core";
+import FilterIcon from "components/Shared/svgIcons/filter";
+import ViewColumnIcon from "components/Shared/svgIcons/view_column";
 import { analyticsManagementRoutes } from "utils/data";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginTop: "65px",
-    "& div": {
-      "&>.MuiPaper-root": {
-        display: "flex",
-        "flex-direction": "column",
-        height: "calc(100vh - 65px)",
-        // top: "65px",
-        position: "relative",
-        "align-items": "stretch",
-        "&>.MuiPaper-root": {
-          display: "contents",
-        },
-        "&>:nth-child(3)": {
-          height: "inherit !important",
-        },
-        "&> table": {
-          bottom: 0,
-        },
-      },
-    },
-  },
-}));
 
 const Components = {
   Land: LandAnalytics,
@@ -49,7 +27,6 @@ const Components = {
 };
 
 export default function Analytics() {
-  const classes = useStyles();
   const location = useLocation();
   const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
@@ -57,8 +34,8 @@ export default function Analytics() {
   const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
 
   useEffect(() => {
-    const option = Object.values(analyticsManagementRoutes).find((item) => {     
-      return item.link === location.pathname
+    const option = Object.values(analyticsManagementRoutes).find((item) => {
+      return item.link === location.pathname;
     });
     if (option) {
       dispatch(setActiveModule(option));
@@ -81,18 +58,18 @@ export default function Analytics() {
 
   useEffect(() => {
     const allPaths = JSON.parse(JSON.stringify(analyticsManagementRoutes));
-    const feature = stateApp.user?.features?.find(feature => feature.name === FEATURES.ANALYTICS);
-    const allAllowedPaths = {}
-    if(feature?.JSON){
-      const data = JSON.parse(feature.JSON)
-      Object.keys(allPaths).forEach(path => {
-        if(data.options.includes(allPaths[path].value)){
-          allAllowedPaths[path] = allPaths[path]
+    const feature = stateApp.user?.features?.find((feature) => feature.name === FEATURES.ANALYTICS);
+    const allAllowedPaths = {};
+    if (feature?.JSON) {
+      const data = JSON.parse(feature.JSON);
+      Object.keys(allPaths).forEach((path) => {
+        if (data.options.includes(allPaths[path].value)) {
+          allAllowedPaths[path] = allPaths[path];
         }
-      })
+      });
     }
-    setAllowablePaths(allAllowedPaths)
-  },[stateApp?.user])
+    setAllowablePaths(allAllowedPaths);
+  }, [stateApp?.user]);
 
   return (
     <>
@@ -103,14 +80,11 @@ export default function Analytics() {
           quickActionsPanelState={quickActionsPanelState}
           activeModule={activeModule}
           actions={sidePanelOptions}
+          // PanelAction={PanelAction}
         >
           {Object.keys(allowedPaths).map((option) => (
             <Switch>
-              <Route
-                exact
-                path={allowedPaths[option].link}
-                component={Components[allowedPaths[option].component]}
-              />
+              <Route exact path={allowedPaths[option].link} component={Components[allowedPaths[option].component]} />
             </Switch>
           ))}
         </QuickActionPanel>
@@ -118,3 +92,70 @@ export default function Analytics() {
     </>
   );
 }
+
+const PanelAction = () => {
+  const [tab, setTab] = useState(0);
+  const a11yProps = (index) => ({
+    id: `full-width-tab-${index}`,
+    "aria-controls": `full-width-tabpanel-${index}`,
+  });
+  const layerIcons = React.useMemo(() => {
+    return [
+      {
+        action: "layer",
+        icon: <FilterIcon fill="#fff" fontSize="medium" />,
+      },
+      {
+        action: "heatMaps",
+        icon: <ViewColumnIcon fill="#fff" fontSize="medium" />,
+      },
+    ];
+  }, []);
+
+  return (
+    <StyledMenuHActionHeader>
+      <Grid container direction="row" justify="space-between" alignItems="center">
+        <Grid item>
+          <Tabs value={tab} aria-label="find-map-tabs" indicatorColor="primary" textColor="primary" variant="fullWidth">
+            {layerIcons.map((action, index) => (
+              <Tab icon={action.icon} {...a11yProps(index)} onClick={() => setTab(index)} />
+            ))}
+          </Tabs>
+        </Grid>
+      </Grid>
+    </StyledMenuHActionHeader>
+  );
+};
+
+const StyledMenuHActionHeader = withStyles((theme) => ({
+  root: {
+    display: "flex",
+    justifyContent: "flex-start",
+    backgroundColor: "#0e111a !important",
+    minHeight: "53px !important",
+    "&>.MuiTouchRipple-root": {
+      borderBottom: "5px solid #263451",
+      marginBottom: "6px",
+    },
+    "& .MuiTabs-root": {
+      "& .MuiTabs-scroller": {
+        "& .MuiTabs-flexContainer": {
+          width: "150px",
+          "& .MuiButtonBase-root": {
+            minWidth: "0px !important",
+          },
+          "& .MuiTab-textColorPrimary": {
+            color: "white",
+          },
+        },
+      },
+      "& .MuiTabs-indicator": {
+        // marginLeft: "6px",
+        height: "5px",
+        // width: "25px !important",
+        backgroundColor: "#1CB6DA",
+        zIndex: 1,
+      },
+    },
+  },
+}))(MenuItem);

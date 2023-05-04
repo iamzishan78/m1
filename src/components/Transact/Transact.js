@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect, useRef, useMemo } from "react";
 import { useMutation, useLazyQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 import { get } from "lodash";
+import Chip from '@material-ui/core/Chip';
 
 import { AppContext } from "../../AppContext";
 import { TransactContext } from "./TransactContext";
@@ -29,6 +30,8 @@ import { validateEmail } from "components/Login/loginHelpers";
 import { GETPIPELINE } from "graphQL/useQueryPipeline";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
 import PipelinesFetchHoc from "components/Transact/components/Common/PipelinesFetchHoc";
+import { Box } from "@material-ui/core";
+import { getOppositeHexColor } from "utils/helper";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,6 +55,9 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "150px",
     display: "flex",
     "flex-direction": "column",
+    '& :hover': {
+      backgroundColor: "rgb(217, 217, 217)",
+    }
   },
   cardHeaderStyle: {
     display: "flex",
@@ -133,7 +139,7 @@ const useStyles = makeStyles((theme) => ({
     },
     "& div": {
       "&>.MuiPaper-root": {
-        "&>:nth-child(3)": { minHeight: "calc(100vh - 258px) !important" },
+        "&>:nth-child(3)": { minHeight: "calc(100vh - 258px) !important", maxHeight: "calc(100vh - 258px) !important" },
       },
     },
     "& .MuiToolbar-root": { textAlign: "initial" },
@@ -161,11 +167,11 @@ const useStyles = makeStyles((theme) => ({
 
 const formatDate = (date) => moment.parseZone(new Date(date)).format("MM/DD/YY");
 const CARD_FIELD_MAPPER = {
-  dueDate:{ label:  "Due Date", format: (value) => formatDate(value)},
-  receivedDate:{ label:  "Deal Received", format: (value) => formatDate(value)},
-  bidDate:{ label: "Bid Date", format: (value) => formatDate(value)},
-  closeDate:{ label: "Close Date", format: (value) => formatDate(value)},
-  offerPrice:{ label: "Offer Price", format: (value) => vf_currency(value)},
+  dueDate: { label: "Due Date", format: (value) => formatDate(value) },
+  receivedDate: { label: "Deal Received", format: (value) => formatDate(value) },
+  bidDate: { label: "Bid Date", format: (value) => formatDate(value) },
+  closeDate: { label: "Close Date", format: (value) => formatDate(value) },
+  offerPrice: { label: "Offer Price", format: (value) => vf_currency(value) },
 };
 
 const Transact = () => {
@@ -535,7 +541,7 @@ const Transact = () => {
 
   const GetCard = React.memo((cardProps) => {
     const CardClasses = useStyles(cardProps);
-    const { metadata, title, description, id, laneId } = cardProps;
+    const { metadata, title, description, id, laneId, tags } = cardProps;
     let owner = null;
     let ownerId = null;
     let ownerEmail = null;
@@ -568,22 +574,29 @@ const Transact = () => {
 
           <div className={CardClasses.cardSubheading}>
             {
-                fieldsOnCardToShow?.filter(field => metadata[field])?.map(field =>
-                  <>
-                    <br />
-                    <span>
-                      {CARD_FIELD_MAPPER[field]?.label} {"   "}
-                      <span style={{ fontWeight: "normal" }}>{metadata[field] && CARD_FIELD_MAPPER[field].format(metadata[field])}</span>
-                    </span>
-                  </>
-                  )
+              fieldsOnCardToShow?.filter(field => metadata[field])?.map(field =>
+                <>
+                  <br />
+                  <span>
+                    {CARD_FIELD_MAPPER[field]?.label} {"   "}
+                    <span style={{ fontWeight: "normal" }}>{metadata[field] && CARD_FIELD_MAPPER[field].format(metadata[field])}</span>
+                  </span>
+                </>
+              )
             }
           </div>
         </header>
         {
           showDescription &&
-            <div className={CardClasses.cardDescStyle}>{desc}</div>
+          <div className={CardClasses.cardDescStyle}>{desc}</div>
         }
+        <Box display={"flex"} flexWrap="wrap" style={{ gap: '5px', paddingBottom: 5}}>
+          {
+            tags?.length > 0 && 
+            tags.map(tag => 
+                <Chip style={{ height: 25, background: tag.color || "powderblue", color: getOppositeHexColor(tag.color || "powderblue")}} label={tag.tag} />)
+          }
+        </Box>
       </article>
     );
   });
