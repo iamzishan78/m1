@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { get } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "AppContext";
@@ -13,6 +13,7 @@ import ActivitiesTable from "components/Table/Activities/ActivitiesTable";
 import ContactWellInterestTable from "components/Table/Contact/ContactWellInterestTable";
 import ContactParcelInterestTable from "components/Table/Contact/ContactParcelInterestTable";
 import ContactTaxRollInterestTable from "components/Table/Contact/ContactTaxRollInterestTable";
+import ContactRelatedAgreementTable from "components/Table/Contact/ContactRelatedAgreementTable";
 import UnitInterestsTable from "components/Table/Unit/UnitInterestsTable";
 import ContactDealsProvider from "components/DealsDetailCard/ContactDealsProvider";
 import ContactDocumentsProvider from "components/ViewDocuments/ContactDocumentsProvider";
@@ -21,6 +22,7 @@ import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@m
 import { contactDetailInitialData } from "./data";
 
 import { CONTACT_SUMMARY } from "graphQL/useQueryContactSummary";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -202,16 +204,18 @@ function MapGridCard(props) {
                     {contactDetailInitialData.map((row) => {
                       const Icon = row.Icon;
                       return (
-                        <ListItem button selected={row.value === searchTapValue.value} onClick={() => handleSearchPanelChange(row)}>
-                          <ListItemIcon style={{ minWidth: "40px" }}>
-                            <Icon />
-                          </ListItemIcon>
-                          <ListItemText
-                            id={row.label}
-                            primary={`${row.label} ${row.label !== "Contact Info" ? `(${get(contactSummaryData, `contactSummary.${row.value}`, 0)})` : ""
-                              }`}
-                          />
-                        </ListItem>
+                        <FeatureFlag feature={row.feature} noCheck={!row.feature}>
+                          <ListItem button selected={row.value === searchTapValue.value} onClick={() => handleSearchPanelChange(row)}>
+                            <ListItemIcon style={{ minWidth: "40px" }}>
+                              <Icon />
+                            </ListItemIcon>
+                            <ListItemText
+                              id={row.label}
+                              primary={`${row.label} ${row.showCounts ? `(${get(contactSummaryData, `contactSummary.${row.value}`, 0)})` : ""
+                                }`}
+                            />
+                          </ListItem>
+                        </FeatureFlag>
                       );
                     })}
                   </List>
@@ -275,7 +279,7 @@ function MapGridCard(props) {
                         onTractCount={() => { }}
                       />
                     )}
-                    {searchTapValue.value === "parcelInterests" && (
+                    {searchTapValue.value === "tractInterests" && (
                       <ContactParcelInterestTable
                         parent="contactAssocTaxRollInterests"
                         header={"Tract Interests"}
@@ -287,6 +291,17 @@ function MapGridCard(props) {
                     )}
                     {searchTapValue.value === "deals" && <ContactDealsProvider />}
                     {searchTapValue.value === "documents" && <ContactDocumentsProvider contactId={props.contactData._id} />}
+                    {searchTapValue.value === "relatedAgreements" && 
+                      <ContactRelatedAgreementTable 
+                        dense
+                        moduleId={props.contactData._id}
+                        setDrawer={props.setDrawer}
+                        setCounter={() => {}}
+                        esFilters={[{ field: "contact._id", value: props.contactData._id }]}
+                        targetLabel="Shape" 
+                        setESFilters={() => { }}
+                        onTractCount={() => { }}
+                      />}
                   </div>
                 </Grid>
               </Grid>

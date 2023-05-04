@@ -24,6 +24,7 @@ import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 
 
 // functions
+import { getDateWithoutTime } from "components/Shared/functions";
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
 import moment from "moment";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
@@ -442,16 +443,8 @@ export default function DocumentDetails(props) {
               margin="none"
               fullWidth
               onChange={(event) => {
-                const splittedDate = event?.target?.value.split("-")
-                if (splittedDate.length === 3) {
-                  const newDate = new Date()
-                  newDate.setYear(Number(splittedDate[0]))
-                  newDate.setMonth(Number(splittedDate[1]) - 1)
-                  newDate.setDate(Number(splittedDate[2]))
-                  setNewDocument({ ...newDocument, dateTime: newDate })
-                } else {
-                  setNewDocument({ ...newDocument, dateTime: null })
-                }
+                const dateTime = getDateWithoutTime(event?.target?.value);
+                setNewDocument({ ...newDocument, dateTime: dateTime });
               }}
 
               InputLabelProps={{

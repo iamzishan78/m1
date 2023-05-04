@@ -62,6 +62,7 @@ function AgreementOwnersTractsTable(props) {
       hit.BlockTownship = isTX ? hit.block : hit.township
       hit.SectionRange = isTX ? hit.section : hit.range
       hit.AbstractSection = isTX ? hit.abstract : hit.section
+      hit.department = _.get(hit, 'tract.department')
       return hit;
     });
   };
@@ -71,7 +72,13 @@ function AgreementOwnersTractsTable(props) {
       props.setLoading(true);
       updateShapeOwners({
         variables: {
-          shapeOwners: ids.map((_id) => ({ _id, isDeleted: true, shapeId: props.customLayer?._id })),
+          shapeType: 'Agreement',
+          shapeOwners: ids.map((_id, i) => ({ 
+            _id, isDeleted: true, 
+            shapeId: props.customLayer?._id, 
+            relatedObject: props.rows.find(r => r._id === ids[i])?.contact?._id,
+            tract: { ...props.rows.find(r => r._id === ids[i])?.tract, isDeleted: true } 
+          })),
         },
         refetchQueries: ["getCustomLayer", "getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
         awaitRefetchQueries: true

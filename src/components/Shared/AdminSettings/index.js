@@ -8,7 +8,7 @@ import { useLocation } from "react-router-dom";
 
 const menuOptions = [
   { label: "Code Mapping", value: "code_mapping" },
-  { label: "Validations", value: "validation", disabled: true },
+  // { label: "Validations", value: "validation", disabled: true },
 ];
 
 const useStyles = makeStyles((theme) => ({
