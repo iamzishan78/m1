@@ -23,7 +23,7 @@ export default function RevenueStatements() {
   const [statementCount, setStatementCount] = useState(0);
   const [approvedCount, setApprovedCount] = useState(0);
   const [unapprovedCount, setUnapprovedCount] = useState(0);
-  const [potentialIssuesList, setPotentialIssuesList] = useState([]);
+  const [potentialIssuesCount, setPotentialIssuesCount] = useState(0);
   const [esFilters, ESFilters] = useState([]);
   const [filterToggle, setFilterToggle] = React.useState(false);
 
@@ -42,7 +42,7 @@ export default function RevenueStatements() {
     ESFilters(newFilter);
   };
 
-  const onGettingStatements = useCallback((statementsList) => {
+  const onGettingStatements = (statementsList) => {
     if (statementsList.statementCount) {
       const checks = statementsList.statementCount;
       const approved = statementsList?.approvedCount;
@@ -55,11 +55,9 @@ export default function RevenueStatements() {
       setApprovedCount(0);
       setUnapprovedCount(0);
     }
-  }, []);
+  };
 
-  const onGettingPotentialIssues = useCallback((issues) => {
-    setPotentialIssuesList(issues);
-  }, []);
+  const onGettingPotentialIssues = (count) => setPotentialIssuesCount(count);
 
   return (
     <>
@@ -83,7 +81,7 @@ export default function RevenueStatements() {
             checks={statementCount}
             approvedCount={approvedCount}
             unapprovedCount={unapprovedCount}
-            potentialIssues={potentialIssuesList}
+            potentialIssuesCount={potentialIssuesCount}
             revenueSearchQuery={stateApp.revenueSearchQuery}
           />
 

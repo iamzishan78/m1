@@ -16,7 +16,8 @@ import { UPSERTCOMMENT } from "graphQL/useMutationUpsertComment";
 import { REMOVECOMMENT } from "graphQL/useMutationRemoveComment";
 import { COMMENTSBYOBJECTIDQUERY } from "graphQL/useQueryCommentsByObjectId";
 import CommentField from "components/Shared/components/Fields/CommentField";
-
+import { updatePinComments } from "store/actions/commonActions";
+import { useSelector, useDispatch } from "react-redux";
 import ReactTimeAgo from "react-time-ago";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
@@ -81,6 +82,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridStyle: {
     padding: "12px 0px",
+    flexWrap: 'nowrap'
   },
   bold: {
     fontWeight: "bold",
@@ -104,19 +106,20 @@ const useStyles = makeStyles((theme) => ({
   inlineFlex: {
     display: "inline-flex",
   },
-  containerWrapper:{
-    display:'flex',
-    justifyContent:'flex-start',
-    alignItems:'center',
-    gap:'10px'
+  containerWrapper: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: '10px'
   }
 }));
 
 export default function DealComment(props) {
-  const { targetSourceId,contactData } = props;
+  const { targetSourceId, contactData } = props;
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
   const [users, setUsers] = useState([]);
+  const dispatch = useDispatch();
   const [comment, setComment] = useState("");
   const [editCommentId, setEditCommentId] = useState("");
   const [editComment, setEditComment] = useState("");
@@ -127,6 +130,9 @@ export default function DealComment(props) {
   const [showActions, setShowActions] = useState(false);
   const [showCommentActionId, setShowCommentActionId] = useState(null);
   const [loadingComments, setLoadingComments] = useState(true);
+  const [pinnedArray, setPinnedArray] = React.useState([])
+  const [isMinimize, setIsMinimize] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
 
   const [removeComment] = useMutation(REMOVECOMMENT);
   const [upsertComment, { data: newlyAddedComment }] = useMutation(UPSERTCOMMENT);
@@ -298,6 +304,62 @@ export default function DealComment(props) {
     setEditComment("");
     setEditCommentId("");
   };
+  const pinToTop = (eachComment) => {
+
+   const newCommentList = commentsArray.map(c => {
+
+     if (c._id === eachComment) {
+       console.log("ddaat", c)
+       return {
+         ...c,
+         isPinned: true,
+         _id: eachComment
+       };
+     }
+     return {
+       ...c,
+       isPinned: false,
+     };
+   });
+   dispatch(updatePinComments(newCommentList));
+   upsertComment({
+     variables: {
+       comment: {
+         _id: eachComment,
+         pin: true,
+       },
+     },
+     refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+     awaitRefetchQueries: true,
+   });
+   setShowCommentActionId(null)
+   //  commentsArray
+   // let temp = commentsArray
+ }
+ const unpinFromTop = (eachComment) => {
+   const newCommentList = commentsArray.map((c) => {
+     if (c.id === eachComment) {
+       return {
+         ...c,
+         isPinned: false,
+       };
+     }
+     return c;
+   });
+    dispatch(updatePinComments(newCommentList));
+    upsertComment({
+      variables: {
+        comment: {
+          _id: eachComment,
+          pin: false,
+        },
+      },
+      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      awaitRefetchQueries: true,
+    });
+    setShowCommentActionId(null)
+    setLoadingComments(true)
+ }
 
   const addNewComment = (value) => {
     setLoadingComments(true);
@@ -344,17 +406,50 @@ export default function DealComment(props) {
             });
           });
           let tempArray = dataComments.commentsByObjectId.concat(activittyData);
-          setCommentsArray(sortArrayBasedOnTs([...tempArray]));
+          
+          // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
+
+      
+        let temp = []
+        let tempArr = sortArrayBasedOnTs([...tempArray])
+
+        tempArr.map(item => {
+          if (item.pin === true) {
+            temp.push(item)
+          }
+        })
+
+        console.log("before", tempArr)
+        const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
+        console.log("after", trueFirst)
+        setCommentsArray(tempArray)
+        setPinnedArray(trueFirst)
         } else {
-          setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
+          
+          // setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
+          let temp = []
+
+        // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
+        let tempArr = sortArrayBasedOnTs([...dataComments.commentsByObjectId])
+        tempArr.map(item => {
+          if (item.pin === true) {
+            temp.push(item)
+          }
+        })
+        console.log("before", tempArr)
+
+        const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
+        console.log("after", trueFirst)
+        setCommentsArray(tempArr)
+        setPinnedArray(temp)
         }
       }
-    }catch (e){
-      console.log("modifying the Comment Error",e);
-    }finally {
+    } catch (e) {
+      console.log("modifying the Comment Error", e);
+    } finally {
       setLoadingComments(false);
     }
-  }, [stateApp?.activeDeal?.activity,dataComments]);
+  }, [stateApp?.activeDeal?.activity, dataComments]);
   return (
     <div className={classes.container}>
       <div className={classes.comment} id="commentsContainer">
@@ -377,14 +472,118 @@ export default function DealComment(props) {
               </div>
             )}
 
+            {pinnedArray.map((eachComment, index) => {
+              const pinnedComment = eachComment.pin;
+              let indexToShow = pinnedArray.length > 3 ? pinnedArray.length - 3 : 0;
+              return (
+                <Fragment key={index}>
+                  {(showAllComments || index >= indexToShow) && (
+                    <Grid
+                      container
+                      // className={classes.gridStyle}
+                      className={pinnedComment ? classes.pinned : classes.gridStyle}
+                      onMouseOver={() => setShowCommentActionId(eachComment._id)}
+                      onMouseLeave={() => setShowCommentActionId(null)}
+                    >
+                      <Grid item style={{ maxWidth: "55px" }}>
+                        <IconButton style={{ marginTop: "3px", marginLeft: "12px" }}>
+                          {profilesInfo[eachComment.user?.email]?.profileImage || eachComment.isNew ? (
+                            <Avatar
+                              src={eachComment.isNew ? profileImage : profilesInfo[eachComment.user?.email].profileImage}
+                              size="38"
+                              round
+                            />
+                          ) : (
+                            <Avatar name={eachComment.user?.name} size="38" round />
+                          )}
+                        </IconButton>
+                      </Grid>
+                      <Grid item className={classes.paddingCreateTask}>
+                        <div>
+                          <div className={classes.containerWrapper}>
+                            <span className={classes.bold}>{eachComment.user?.name}</span>
+                            <span>{
+                              <ReactTimeAgo
+                                className={classes.commentTime}
+                                date={
+                                  new Date(Number(eachComment.ts))
+                                }
+                                locale="en-US"
+                              />
+                            }</span>
+                          </div>
+                          {eachComment.isActivity === true && (
+                            <>
+                              <div className={`${classes.whiteSpace}`}>
+                                {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
+                              </div>
+                              <div className={`${classes.whiteSpace}`}>
+                                START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
+                              </div>
+                              <div className={`${classes.whiteSpace}`}>
+                                END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
+                              </div>
+                            </>
+                          )}
+                          {eachComment.isPinned && <span> created this task.</span>}
+
+                          {!eachComment.isPinned && (
+                            <>
+                              {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+                              {eachComment.user?.email === stateApp.user.email &&
+                                showCommentActionId === eachComment._id &&
+                                editCommentId !== eachComment._id && (
+                                  <div className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}>
+                                    <ActionMenu
+                                      eachComment={eachComment}
+                                      setEditCommentId={setEditCommentId}
+                                      setEditComment={setEditComment}
+                                      deleteComment={deleteComment}
+                                      unpinFromTop={unpinFromTop}
+                                      pinToTop={pinToTop}
+                                    />
+                                  </div>
+                                )}
+                            </>
+                          )}
+                        </div>
+                        {!eachComment.isPinned && (
+                          <>
+                            {editCommentId !== eachComment._id ? (
+                              <CommonCommentText users={users} eachComment={eachComment} />
+                            ) : (
+                              <div className={classes.border}>
+                                <CommentField
+                                  isEdit
+                                  profilesInfo={profilesInfo}
+                                  users={users}
+                                  comment={editComment}
+                                  showActions={showActions}
+                                  setEditCommentId={setEditCommentId}
+                                  setComment={setEditComment}
+                                  upsertComment={updateComment}
+                                />
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </Grid>
+                    </Grid>
+                  )}
+                </Fragment>
+              );
+            })}
             {commentsArray.map((eachComment, index) => {
+              const pinnedComment = eachComment.pin;
+              const duplicate = (commentsArray.filter((obj => obj._id === eachComment._id)).length > 0) && (pinnedArray.filter((obj => obj._id === eachComment._id)).length > 0)
               let indexToShow = commentsArray.length > 3 ? commentsArray.length - 3 : 0;
               return (
                 <Fragment key={index}>
                   {(showAllComments || index >= indexToShow) && (
                     <Grid
                       container
-                      className={classes.gridStyle}
+                      // className={classes.gridStyle}
+                      className={pinnedComment ? classes.tracking : classes.gridStyle}
                       onMouseOver={() => setShowCommentActionId(eachComment._id)}
                       onMouseLeave={() => setShowCommentActionId(null)}
                     >
@@ -442,6 +641,8 @@ export default function DealComment(props) {
                                       setEditCommentId={setEditCommentId}
                                       setEditComment={setEditComment}
                                       deleteComment={deleteComment}
+                                      unpinFromTop={unpinFromTop}
+                                      pinToTop={pinToTop}
                                     />
                                   </div>
                                 )}
@@ -456,13 +657,17 @@ export default function DealComment(props) {
                               <div className={classes.border}>
                                 <CommentField
                                   isEdit
+                                  setIsEdit={setIsEdit}
                                   profilesInfo={profilesInfo}
                                   users={users}
                                   comment={editComment}
                                   showActions={showActions}
                                   setEditCommentId={setEditCommentId}
                                   setComment={setEditComment}
-                                  upsertComment={updateComment}
+                                  updateCommentData={updateComment}
+                                  isMinimize={isMinimize}
+                                  setIsMinimize={setIsMinimize}
+                                  setShowActions={setShowActions}
                                 />
                               </div>
                             )}
@@ -490,11 +695,9 @@ export default function DealComment(props) {
             <Grid item xs={11} className={classes.paddingLeft10}>
               <div
                 className={classes.border}
-                style={{ width: "calc(23vw)", paddingBottom: "20px", paddingRight: "13px" }}
+                style={{ width: "calc(23vw)", paddingRight: "13px" }}
                 onClick={() => {
-                  if (!showActions) {
                     setShowActions(true);
-                  }
                 }}
                 onBlur={() => {
                   if (showActions && !comment) {
@@ -509,6 +712,8 @@ export default function DealComment(props) {
                   showActions={showActions}
                   setComment={setComment}
                   upsertComment={addNewComment}
+                  isMinimize={isMinimize}
+                  setIsMinimize={setIsMinimize}
                 />
               </div>
             </Grid>
@@ -519,7 +724,7 @@ export default function DealComment(props) {
   );
 }
 
-const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComment }) => {
+const ActionMenu = ({ pinToTop, unpinFromTop,eachComment, setEditCommentId, setEditComment, deleteComment }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -529,7 +734,8 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  console.log("data---",eachComment)
+  const pinnedComment = eachComment.pin;
   return (
     <>
       <ExpandMoreIcon id="expandCommentActionIcon" aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} />
@@ -548,6 +754,7 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
           onClick={(event) => {
             setEditCommentId(eachComment._id);
             setEditComment(eachComment.comment);
+            setShowActions(true);
             handleClose();
           }}
         >
@@ -556,6 +763,16 @@ const ActionMenu = ({ eachComment, setEditCommentId, setEditComment, deleteComme
         <MenuItem textcolor="red" id="deleteComment" onClick={() => deleteComment(eachComment._id)}>
           Delete Comment
         </MenuItem>
+        {/* pinnedComment */}
+        {pinnedComment ?
+          <MenuItem textcolor="red" onClick={() => unpinFromTop(eachComment._id)} id="unpin" data-cy="unpin">
+            Unpin
+          </MenuItem>
+          :
+          <MenuItem textcolor="red" onClick={() => pinToTop(eachComment._id)} id="pintotop" data-cy="pintotop">
+            Pin To Top
+          </MenuItem>
+        }
       </Menu>
     </>
   );

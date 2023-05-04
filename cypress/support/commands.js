@@ -40,8 +40,8 @@ Cypress.Commands.add("checkAndLogin", () => {
     cy.log('==== STEP: LOGGING IN ===')
     cy.get('body').then(($body) => {
         if ($body.find('#workSpaceSignin').length) {
-            cy.get('input').type(workSpace)
-            cy.get('.MuiButtonBase-root').click()
+            cy.get('input').type(workSpace, { force: true })
+            cy.get('.MuiButtonBase-root').click({ force: true })
 
             cy.get('#signInName', { timeout: longTimeout }).should('be.visible').type(loginCredential.email)
             cy.get('#password').type(loginCredential.passsword)
@@ -49,6 +49,11 @@ Cypress.Commands.add("checkAndLogin", () => {
             cy.get('#next').click()
         }
     })
+})
+
+//This command will set visbility to hidden for css element
+Cypress.Commands.add('hide', { prevSubject: 'element' }, (subject) => {
+    subject.css('visibility', 'hidden');
 })
 
 // This command is to type  in autocomplete search bar and then select first matched option
@@ -390,6 +395,15 @@ Cypress.Commands.add('addComment', () => {
     cy.get("#txtArea", { timeout: longTimeout }).should('be.visible').type("A cypress comment")
     cy.get("#commentButton").click()
 })
+
+
+
+// Cypress.Commands.add('pintotop', () => {
+//     cy.get('#pintotop').click();
+//     cy.get('#pintotop').should('have.text', 'Unpin');
+//     cy.get('#pintotop').click();
+//     cy.get('#pintotop').should('have.text', 'Pin');
+// })
 
 // This command will delete agreement then will verify too
 Cypress.Commands.add('deleteAndVerifyAgreement', (agreementName, agreementNumber) => {
