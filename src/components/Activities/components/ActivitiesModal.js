@@ -472,6 +472,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
           dateTime: new Date(dateTime).toUTCString(),
           endDateTime: new Date(endDateTime).toUTCString(),
           isClosed: closed,
+          user:stateApp.user._id,
           createdBy: stateApp?.user?._id,
         },
       },
@@ -500,6 +501,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
           contactName: nameAutValue?.name,
           dealId,
           isClosed: closed,
+          user:stateApp.user._id
         },
       },
     });
