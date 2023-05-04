@@ -3771,7 +3771,21 @@ function SubTable(props) {
         buttonLabel = "+ ADD INTEREST";
       }
       if (props.addAble?.type === "deals") {
-        buttonLabel = "+ ADD DEAL";
+        buttonLabel = "ADD NEW DEAL";
+
+        menuOptions = {
+          text: "Add to Existing Deal",
+          isShow: true,
+          action: () => {
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              dealDialog: true,
+              addExistingDeal: true,
+              activeDeal: { cardId: null, laneId: null },
+            }));
+
+          },
+        };
       }
       if (props.addAble && props.parent === "UserManagement") {
         buttonLabel = "+ ADD USER";
@@ -3791,6 +3805,7 @@ function SubTable(props) {
           },
         };
       }
+
       if (props.addAble?.type === "suggestedOwnerToParcel") {
         buttonLabel = "+ ADD TO PARCEL";
       }
@@ -3894,7 +3909,6 @@ function SubTable(props) {
               </Button>
             )}
             {(props.addAble?.type === "wellInterest" ||
-              props.addAble?.type === "deals" ||
               props.addAble?.type === "suggestedOwnerToParcel" ||
               (props.addAble && props.parent === "UserManagement") ||
               props.addAble?.type === "revenueStatementDetails") && (
@@ -3908,6 +3922,7 @@ function SubTable(props) {
                 </Button>
               )}
             {(
+              props.addAble?.type === "deals" ||
               props.addAble?.type === "contact" ||
               props.addAble?.type === "ownerToParcel" ||
               props.addAble?.type === "ownerToUnit") && (
