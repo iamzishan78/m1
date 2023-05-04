@@ -55,17 +55,6 @@ const ContactsHeadCells = [
     },
   },
   {
-    name: "title",
-    label: "Title",
-    esKey: 'title.keyword',
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: true,
-    },
-  },
-  {
     name: "firstName",
     label: "First Name",
     esKey: 'firstName.keyword',
@@ -244,6 +233,39 @@ const ContactsHeadCells = [
       // display: true,
       filter: true,
       searchable: false,
+      sort: true,
+    },
+  },
+  {
+    name: "account",
+    label: "Account",
+    esKey: 'account.keyword',
+    options: {
+      display: true,
+      filter: true,
+      searchable: false,
+      sort: true,
+    },
+  },
+  {
+    name: "department",
+    label: "Department",
+    esKey: 'department.keyword',
+    options: {
+      display: true,
+      filter: true,
+      searchable: true,
+      sort: true,
+    },
+  },
+  {
+    name: "title",
+    label: "Title",
+    esKey: 'title.keyword',
+    options: {
+      display: true,
+      filter: true,
+      searchable: true,
       sort: true,
     },
   },

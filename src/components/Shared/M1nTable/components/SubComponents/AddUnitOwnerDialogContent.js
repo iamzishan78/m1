@@ -25,7 +25,7 @@ import { addTrailingZeros } from "components/Shared/functions";
 import { Controller, useForm } from "react-hook-form";
 import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
 import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
-import ContactStatus from 'components/ContactDetailCard/components/ContactStatus';
+import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
