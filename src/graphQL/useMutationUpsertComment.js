@@ -11,6 +11,7 @@ export const UPSERTCOMMENT = gql`
         comment
         ts
         public
+        pin
         commentedOn
         objectType
         user {

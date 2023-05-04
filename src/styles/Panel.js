@@ -1,5 +1,5 @@
-import { createMuiTheme, makeStyles } from '@material-ui/core/styles';
-const PanelTheme = createMuiTheme({
+import { createTheme, makeStyles } from '@material-ui/core/styles';
+const PanelTheme = createTheme({
     overrides: {
       MuiAccordionSummary: {
         root: {

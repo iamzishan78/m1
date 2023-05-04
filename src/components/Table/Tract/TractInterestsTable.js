@@ -47,6 +47,10 @@ function TractInterestTable(props) {
   }
 
   useEffect(() => {
+    props.setSelectedGridView(GridViewModule || defaultView);
+  }, [GridViewModule]);
+
+  useEffect(() => {
     setTableMeta({
       extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
       searchFields: [
@@ -84,6 +88,7 @@ function TractInterestTable(props) {
       ],
 
       defaultSort: { field: '_ts', order: 'desc' },
+      downloadAll: props.parent === "TractInterestsTable" ? { exportPx: '121px' } : undefined,
       polygon: stateApp?.currentFeature?.geometry && {
         type: "geo_intersects",
         field: "geoJSON",

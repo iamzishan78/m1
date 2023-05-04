@@ -45,7 +45,7 @@ function ContactWellInterestTable(props) {
   const setLoading = (newState) => { setStateIfDeepEqual(Loading, newState); };
   const [dataTracks, DataTracks] = useState(null);
   const setDataTracks = (newState) => { setStateIfDeepEqual(DataTracks, newState); };
-  const [selectedYear, setSelectedYear] = useState(2021)  // production selected year state 
+  const [selectedYear, setSelectedYear] = useState(2022)  // production selected year state 
 
   // queries 
   const [tracksByObjectType, { data: constDataTracks }] = useLazyQuery(TRACKSBYOBJECTTYPE, { fetchPolicy: "cache-and-network", });

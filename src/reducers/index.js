@@ -14,6 +14,7 @@ import common from 'store/reducers/commonReducer';
 import app from 'store/reducers/appReducer';
 import entity from 'store/reducers/entityReducer';
 import session from 'store/reducers/sessionReducer';
+import pin from './PinToTop';
 
 const createRootReducer = (history) =>
   combineReducers({
@@ -31,7 +32,9 @@ const createRootReducer = (history) =>
     common,
     entity,
     app,
-    session
+    session,
+    pin
+    
   });
 
 export default createRootReducer;
