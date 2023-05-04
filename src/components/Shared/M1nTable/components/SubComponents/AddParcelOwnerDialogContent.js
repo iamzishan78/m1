@@ -165,7 +165,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         name,
         ownerEntity,
         qtr,
-        deals
+        deals,
         grossAcres
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });

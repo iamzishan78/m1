@@ -14,19 +14,6 @@ const AssociateContactWellHeadCells = [
       viewColumns: false,
     },
   },
-  {
-    name: "name",
-    label: "Owner Name",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
   // hide custom render of blue link for now as it is not consistent with unit interests
   //{ name: "parcelName", label: "Tract Name", options:{setCellProps: () => ({ style: { minWidth: "200px", maxWidth: "200px", fontWeight: 600, color: "#17aadd", } }),}},
   { name: "parcelName", label: "Tract Name", options: { setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }), } },
@@ -38,6 +25,19 @@ const AssociateContactWellHeadCells = [
   { name: "abstract", label: "Abstract/ Section" },
   { name: "grantee", label: "Alternate Survey" },
   { name: "qtr_calls", label: "QTR Calls" },
+  {
+    name: "name",
+    label: "Owner Name",
+    options: {
+      display: true,
+      filter: true,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: true,
+    },
+  },
   {
     name: "qtr", label: "QTR",
     options: {
