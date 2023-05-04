@@ -9,7 +9,7 @@ import CheckDetailsEditableTable from "./CheckDetailsEditableTable";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(3),
+    padding: theme.spacing(2),
   },
   inputModeButton: {
     width: "200px",

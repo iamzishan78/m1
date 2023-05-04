@@ -13,11 +13,11 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DragIndicator from "@material-ui/icons/DragIndicator";
 import { AppContext } from "AppContext";
 import List from "@material-ui/core/List";
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createTheme } from "@material-ui/core/styles";
 import { deepEqualObjects } from "../../../functions";
 import LayerItem from "./LayerItem";
 
-const theme = createMuiTheme({
+const theme = createTheme({
     overrides: {
         MuiSvgIcon: {
             root: {

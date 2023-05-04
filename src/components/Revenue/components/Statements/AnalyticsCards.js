@@ -99,7 +99,7 @@ export default function AnalyticsCards(props) {
               <div>{props.potentialIssues.length}</div>
             </div> */}
             <Typography variant="h6" component="div" className={classes.cardNumberTypography} style={{ color: "red" }}>
-              {props.potentialIssues.length}
+              {props.potentialIssuesCount}
             </Typography>
           </CardContent>
 

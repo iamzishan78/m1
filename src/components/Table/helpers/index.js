@@ -64,11 +64,12 @@ export const handleCustomFilterColumns = (TableHeader, filterObject) => {
 
 export const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column) => {
   if (!TableHeader) return
-
   if (selectedGridView?.columns) {
     const col = selectedGridView.columns.find(col => col.name === column.name)
     if (col && typeof col.display !== 'undefined') {
       column.options.display = col.display;
+      if (col.hasOwnProperty("viewColumns"))
+        column.options.viewColumns = col.viewColumns;
       if (column.esKey && !column.noFilter) {
         column.options.filter = true;
       }

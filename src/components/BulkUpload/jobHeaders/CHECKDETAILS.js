@@ -351,6 +351,12 @@ const checkDetailsKeys = [
         actual_key: "product",
     },
     {
+        label: "Property Description",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.description",
+    },
+    {
         label: "Decimal Interest",
         mapped_key: "",
         required: false,
