@@ -39,7 +39,7 @@ function ShapeGridWellsTable(props) {
     // function states 
     const [columns, Columns] = useState([]);
     const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
-    const [selectedYear, setSelectedYear] = useState(2021)  // production selected year state 
+    const [selectedYear, setSelectedYear] = useState(2022)  // production selected year state 
 
     // queries 
     // i have no idea why skip works, but if we dont use it, a query variable change during pagination will

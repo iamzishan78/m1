@@ -13,6 +13,7 @@ import { AppContext } from "AppContext";
 import CloseIcon from "@material-ui/icons/Close";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
+import moment from "moment";
 
 import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from "@material-ui/core";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
@@ -20,6 +21,7 @@ import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete
 import { KeyboardDatePicker } from "@material-ui/pickers";
 import UploadZone from "../../Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
+import { Clear } from "@material-ui/icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import DeleteIcon from "@material-ui/icons/Delete";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
@@ -39,6 +41,7 @@ import AutoCompleteDocumentList from "components/Shared/Forms/Fields/AutoComplet
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
 import { grey600, grey400 } from "material-ui/styles/colors";
 import { GET_PARCELS_FILES } from "graphQL/useQueryGetParcelFiles";
+
 
 const filter = createFilterOptions();
 
@@ -165,7 +168,13 @@ const useStyles = makeStyles({
         fill: grey600,
       },
     },
-  }
+  },
+  dateRoot: {
+    color: "grey",
+    "& input": {
+      marginLeft: "20px",
+    },
+  },
 });
 
 export default function RelatedFile(props) {
@@ -514,6 +523,7 @@ export default function RelatedFile(props) {
         {selectedType !== "update" && (
           <>
             <ListItem
+              id="newExisitingTab"
               style={{
                 flexDirection: "column",
                 justifyContent: "start",
@@ -532,6 +542,7 @@ export default function RelatedFile(props) {
                   New Document
                 </h4>
                 <h4
+                  id="existingDocumentTab"
                   onClick={() => {
                     setSelectedType("existing");
                   }}
@@ -650,6 +661,7 @@ export default function RelatedFile(props) {
           <TextField
             className={classes.maxWidth}
             multiline
+            id="fileNumber"
             disabled={selectedType === "existing"}
             value={newDocument?.documentNumber}
             onChange={(e) => {
@@ -671,6 +683,7 @@ export default function RelatedFile(props) {
           <TextField
             className={classes.maxWidth}
             multiline
+            id="fileName"
             disabled={selectedType === "existing"}
             value={newDocument?.documentName}
             onChange={(e) => {
@@ -690,6 +703,7 @@ export default function RelatedFile(props) {
         >
           <h4>File Type</h4>
           <DocumentType
+            id="fileType"
             disabled={selectedType === "existing"}
             className={classes.maxWidth}
             documentTypes={documentTypes}
@@ -710,14 +724,14 @@ export default function RelatedFile(props) {
           }}
         >
           <h4>File Date</h4>
-          <KeyboardDatePicker
+          {/* <KeyboardDatePicker
             className={classes.maxWidth}
             disableToolbar
             disabled={selectedType === "existing"}
             variant="inline"
             format="MM/DD/YYYY"
             margin="normal"
-            id="date-picker-inline"
+            id="fileDate"
             value={newDocument?.dateTime ? new Date(newDocument.dateTime) : null}
             onChange={(date) => {
               setNewDocument({
@@ -728,7 +742,47 @@ export default function RelatedFile(props) {
             KeyboardButtonProps={{
               "aria-label": "change date",
             }}
-          />
+          /> */}
+            <TextField
+              // autoOk
+              type="date"
+              id="filedate"
+              //variant="outlined"
+              defaultValue={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
+              value={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
+              margin="none"
+              fullWidth
+              onChange={(event) => {
+                const splittedDate = event?.target?.value.split("-")
+                if (splittedDate.length === 3) {
+                  const newDate = new Date()
+                  newDate.setYear(Number(splittedDate[0]))
+                  newDate.setMonth(Number(splittedDate[1]) - 1)
+                  newDate.setDate(Number(splittedDate[2]))
+                  setNewDocument({ ...newDocument, dateTime: newDate })
+                } else {
+                  setNewDocument({ ...newDocument, dateTime: "" })
+                }
+              }}
+
+              InputLabelProps={{
+                shrink: true,
+              }}
+              disableToolbar
+              KeyboardButtonProps={{ "aria-label": "change date" }}
+              format="MM/DD/YYYY"
+              PopoverProps={{ disablePortal: false }}
+              InputProps={{
+                endAdornment: (
+                  <IconButton onClick={(event) => setNewDocument({ ...newDocument, dateTime: "" })}>
+                    <Clear style={{ height: 22, width: 22 }} />
+                  </IconButton>
+                ),
+                classes: {
+                  root: classes.dateRoot,
+                },
+              }}
+            />
         </ListItem>
         {/* <ListItem
           style={{
@@ -769,6 +823,7 @@ export default function RelatedFile(props) {
           }}>
             <h4>Book</h4>
             <TextField
+              id="book"
               className={classes.maxWidth}
               multiline
               value={newDocument?.book}
@@ -786,6 +841,7 @@ export default function RelatedFile(props) {
           }}>
             <h4>Page</h4>
             <TextField
+              id="page"
               className={classes.maxWidth}
               multiline
               value={newDocument?.page}
@@ -800,6 +856,7 @@ export default function RelatedFile(props) {
           <div>
             <h4>Instrument #</h4>
             <TextField
+              id="instrument"
               className={classes.maxWidth}
               multiline
               value={newDocument?.instrument}
@@ -1008,10 +1065,12 @@ export default function RelatedFile(props) {
         </Button>
 
         <Button
+          id="saveDocumentButton"
           variant="contained"
           color="secondary"
           size="medium"
           disableElevation
+          id="addFile"
           disabled={(!fileData && !newDocument.fileId) || (selectedType === "existing" && !newDocument.fileId)}
           onClick={() => {
             if (selectedType === "existing") {

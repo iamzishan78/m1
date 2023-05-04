@@ -1,4 +1,5 @@
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
+import ListChips from "components/Common/ListChips";
 import vf_currency, { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 import { GlobalStickyStyles } from "GlobalSettings";
 import { history } from "store";
@@ -133,6 +134,14 @@ const UnitInterestsHeadCells = [
             filter: true
         }
     },
+    {
+        name: "name", label: "Owner Name", esKey: 'contact.entityDetail.name.keyword',
+        options: {
+            dbName: "contact.entityDetail.name",
+            sort: true,
+            filter: true
+        }
+    },
     // {
     //     name: "QtrCalls", label: "QTR Calls", esKey: 'qtr.keyword', 
     //     options: { 
@@ -166,13 +175,7 @@ const UnitInterestsHeadCells = [
     //     }
     // },
     // {
-    //     name: "name", label: "Owner Name", esKey: 'contact.entityDetail.name.keyword', 
-    //     options: { 
-    //         dbName: "contact.entityDetail.name",
-    //         sort: true, 
-    //         filter: true 
-    //     }
-    // },
+
     {
         name: "working_interest", label: "Working Interest", esKey: 'working_interest',
         options: {
@@ -361,6 +364,19 @@ const UnitInterestsHeadCells = [
         }
     },
     {
+        name: "deals",
+        label: "Associated Deals",
+        esKey: "deals.keyword",
+        options: {
+            customRender: (value) => {
+                return value && <ListChips list={value} />
+            },
+            setCellProps: () => ({ style: { minWidth: "200px" } }),
+            sort: true,
+            filter: true,
+        },
+    },
+    {
         name: "tags", label: "Tags", esKey: 'tags.tag.keyword', options: { sort: true, filter: true }
     },
     {
@@ -380,6 +396,7 @@ const UnitInterestsHeadCells = [
         name: "detailCard",
         label: " ",
         options: {
+            display: false,
             filter: false,
             sort: false,
             searchable: false,

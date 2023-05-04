@@ -61,6 +61,7 @@ function TractInterestOwnerTable(props) {
   const appliedFilters = [
     { field: "shape._id", value: customLayer._id },
     { field: "contact.IsDeleted", value: "false" },
+    { field: "descriptor", value: "ParcelDescriptor" }
   ];
 
   const formatHits = (hits) => {

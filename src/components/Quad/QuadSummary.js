@@ -8,7 +8,7 @@ import {
   emphasize,
   withStyles,
   MuiThemeProvider,
-  createMuiTheme
+  createTheme
 } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -109,7 +109,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const toggleTheme = createMuiTheme({
+const toggleTheme = createTheme({
   overrides: {
     MuiToggleButton: {
       root: {

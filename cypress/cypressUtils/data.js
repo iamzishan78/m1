@@ -66,7 +66,7 @@ export const agreementObj = {
     bounusPayment: { value: "1000", id: "#field-bounusPayment" },
     acquisitionID: { value: "103 - Meiners", id: "#field-acquisitionID" },
     acquisitionDate: { value: "2022-01-01", id: "#field-acquisitionDate" },
-    totalAcquisitionCost: { value: "103 - Meiners", id: "#field-totalAcquisitionCost" },
+    totalAcquisitionCost: { value: "101", id: "#field-totalAcquisitionCost" },
     Prospect: { value: "100 - Delta", id: "#field-prospectID" },
     internalCompany: { value: "924 - M1neral", id: "#field-internalCompany" },
     state: { value: "TEXAS", id: "#field-state" },
