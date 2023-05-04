@@ -38,7 +38,7 @@ function ShapeGridTaxOwnersTable(props) {
     // function states 
     const [columns, Columns] = useState([]);
     const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
-    const [selectedYear, setSelectedYear] = useState(2021)  // production selected year state 
+    const [selectedYear, setSelectedYear] = useState(2022)  // production selected year state 
     const [count, setCount] = useState()  // local state for async count query
 
     // queries 

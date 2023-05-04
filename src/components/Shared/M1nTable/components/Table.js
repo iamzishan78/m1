@@ -123,7 +123,7 @@ import ViewColumnIcon from "../../svgIcons/view_column";
 import CheckIcon from "@material-ui/icons/Check";
 import AddUnitOwnerDialogContent from "./SubComponents/AddUnitOwnerDialogContent";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
-import Link from "@material-ui/core/Link";
+// import Link from "@material-ui/core/Link";
 import AddActivityDialog from "components/ContactDetailCard/components/AddActivityDialog";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import { CONTACT } from "graphQL/useQueryContact";
@@ -131,6 +131,7 @@ import ReactSelectField from "./SubComponents/ReactSelectField";
 import TableBody from "./MUIDataTable/TableBody";
 import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOfferPrice";
 
+import { Link } from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 
@@ -551,7 +552,7 @@ function SubTable(props) {
   const [cumulative, Cumulative] = useState({});
   const [columns, setColumns] = useState([]);
   const [tableStyle, setTableStyle] = useState(classes);
-  const [year, setYear] = React.useState(2021);
+  const [year, setYear] = React.useState(2022);
   const [total, Total] = useState(false);
   const [rows, Rows] = useState([]);
   const [_selectedRows, setSelectedRows] = useState([]);
@@ -1413,26 +1414,27 @@ function SubTable(props) {
                           size="35"
                           round
                         />
-                        <p
+                        <Link
+                          to={`/contact/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
                           className={classes.clickableCell}
-                          style={{
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center",
-                            minWidth: "300px",
-                          }}
-                          onClick={() => {
-                            history.push(`/contact/details/${tableMeta.rowData[0]}`);
-                          }}
                         >
-                          {tableMeta.rowData[nameIndex]}
+                          <p
 
-                          {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
-                            <FeatureFlag feature={FEATURES.IDICORE}>
-                              <MonetizationOnIcon className={classes.monetizationIcon} />
-                            </FeatureFlag>
-                          )}
-                        </p>
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              minWidth: "300px",
+                            }}
+                          >
+                            {tableMeta.rowData[nameIndex]}
+                            {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
+                              <FeatureFlag feature={FEATURES.IDICORE}>
+                                <MonetizationOnIcon className={classes.monetizationIcon} />
+                              </FeatureFlag>
+                            )}
+                          </p>
+                        </Link>
                       </div>
                     );
                   } else {
@@ -1506,7 +1508,7 @@ function SubTable(props) {
                             getWell({
                               variables: { wellId: value },
                             });
-                          } else if (props.parent === "assocTaxRollInterests" && props.targetLabel === "unit") {
+                          } else if (props.parent === "assocTaxRollInterests" && (props.targetLabel === "unit" || props.targetLabel === 'contactUnits')) {
                             let selectedUnit = props.rows.find((row) => {
                               return row.shape._id === tableMeta.rowData[2];
                             })?.shape;
@@ -1793,8 +1795,7 @@ function SubTable(props) {
                         if (!disabled) {
                           type = coordinates?.objToPopulateSearchLayer?.objectType || type;
                           if (column.name === "Well") coordinates.wellId = props.rows[tableMeta.rowIndex]?.well.globalWell;
-                          handleClickFlyToIcon(type, coordinates);
-                          dispatch(setMapGridCardState({ mapGridCardActivated: false }));
+                          handleClickFlyToIcon(type, coordinates, true);
                         }
                       }}
                       value={value}
@@ -1915,7 +1916,7 @@ function SubTable(props) {
                   const splitNumber = value?.split("_");
 
                   const isSnapGrid = column.options.isSnapGrid || false
-
+                  const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
                   return (
                     <div
                       style={{
@@ -1939,21 +1940,9 @@ function SubTable(props) {
                         >
                           <ColumnWithLink
                             value={splitNumber?.[0]
-                              ? `${splitNumber?.[0].trim()} - ${tableMeta?.rowData[2]}`
-                              : tableMeta?.rowData[2]}
-                            link={isSnapGrid && tableMeta.rowData[3] ? `/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}` : `/land/agreement/details/${tableMeta.rowData[0]}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-
-                              if (isSnapGrid && tableMeta.rowData[3])
-                                history.push(`/map/${tableMeta.rowData[3].toLowerCase()}s/${tableMeta.rowData[0]}`,
-                                  { showAgreementBreadcrumb: false }
-                                );
-                              else if (!isSnapGrid)
-                                history.push(`/land/agreement/details/${tableMeta.rowData[0]}`,
-                                  { showAgreementBreadcrumb: true }
-                                );
-                            }}
+                              ? `${splitNumber?.[0].trim()} - ${row_line.agreementName}`
+                              : row_line.agreementName}
+                            link={isSnapGrid && tableMeta.rowData[3] ? `/map/${tableMeta.rowData[3].toLowerCase()}s/${row_line.agreementId || tableMeta.rowData[0]}` : `/land/agreement/details/${row_line.agreementId || tableMeta.rowData[0]}`}
                           />
                           {/* <Box
                             onClick={(e) => {
@@ -2199,9 +2188,7 @@ function SubTable(props) {
                           <Convert_contact style={{ margin: "4px" }} />
                         ) : (
                           <Link
-                            href={
-                              window.location.origin
-                              +
+                            to={
                               `/contact/details/${value}/?tenant=${window.sessionStorage.getItem("tenantName")}`
                             }
                             onClick={(e) => e.preventDefault()}>
@@ -2522,7 +2509,6 @@ function SubTable(props) {
                                   },
                                   fontWeight: "bold",
                                   justifyContent: "flex-start",
-                                  paddingRight: '40px',
                                 }}
 
                                 onClick={(e) => {
@@ -3785,7 +3771,21 @@ function SubTable(props) {
         buttonLabel = "+ ADD INTEREST";
       }
       if (props.addAble?.type === "deals") {
-        buttonLabel = "+ ADD DEAL";
+        buttonLabel = "ADD NEW DEAL";
+
+        menuOptions = {
+          text: "Add to Existing Deal",
+          isShow: true,
+          action: () => {
+            setStateApp((stateApp) => ({
+              ...stateApp,
+              dealDialog: true,
+              addExistingDeal: true,
+              activeDeal: { cardId: null, laneId: null },
+            }));
+
+          },
+        };
       }
       if (props.addAble && props.parent === "UserManagement") {
         buttonLabel = "+ ADD USER";
@@ -3805,6 +3805,7 @@ function SubTable(props) {
           },
         };
       }
+
       if (props.addAble?.type === "suggestedOwnerToParcel") {
         buttonLabel = "+ ADD TO PARCEL";
       }
@@ -3872,7 +3873,7 @@ function SubTable(props) {
           <div
             style={
               props.addAble?.type === "contact" ? {
-                marginRight: "67px",
+                marginRight: "105px",
                 marginTop: "5px",
               } : {
                 display: "inline",
@@ -3908,7 +3909,6 @@ function SubTable(props) {
               </Button>
             )}
             {(props.addAble?.type === "wellInterest" ||
-              props.addAble?.type === "deals" ||
               props.addAble?.type === "suggestedOwnerToParcel" ||
               (props.addAble && props.parent === "UserManagement") ||
               props.addAble?.type === "revenueStatementDetails") && (
@@ -3922,6 +3922,7 @@ function SubTable(props) {
                 </Button>
               )}
             {(
+              props.addAble?.type === "deals" ||
               props.addAble?.type === "contact" ||
               props.addAble?.type === "ownerToParcel" ||
               props.addAble?.type === "ownerToUnit") && (
@@ -3950,6 +3951,15 @@ function SubTable(props) {
               </ButtonGroup>
             )}
 
+            {props.addAble?.type === "contact" && (
+              <div style={{ display: "inline", position: "absolute", right: "120px", top: "5px" }}>
+                <IconButton onClick={props.onDownload} disabled={props.isExporting}>
+                  <Tooltip title="Download CSV" aria-label="add">
+                    <CloudDownloadIcon />
+                  </Tooltip>
+                </IconButton>
+              </div>
+            )}
             {props.addAble?.type === "contact" && (
               <>
                 <FeatureFlag feature={FEATURES.IDICORE}>
@@ -4398,10 +4408,14 @@ function SubTable(props) {
     || props.header === "Activities"
     || props.header === "Agreements"
     || props.header === "Tracts"
+    || props.header === "Campaigns"
+    || props.header === "Exhibit A"
     || props.parent === "UnitsTable"
     || props.parent === "TractTable"
     || props.parent === "WellsTable"
+    || props.parent === "Contacts"
     || props.parent === "TractInterestsTable"
+    || props.parent === "RevenuePropertiesTable"
   ) {
     // adds the print and export options in the Flow grid and the Activities grid
     if (props.targetLabel !== 'activitiesDashboard') {
@@ -4462,6 +4476,9 @@ function SubTable(props) {
           <MenuItem selected={year === 2021} value={2021}>
             2021
           </MenuItem>
+          <MenuItem selected={year === 2022} value={2022}>
+            2022
+          </MenuItem>
         </Select>
       </Box>
     );
@@ -4497,37 +4514,37 @@ function SubTable(props) {
     }
   };
 
-  const checkStatementValidation = (checkId) => {
-    const response = props.potentialIssues.filter((issue) => {
-      if (issue.key === checkId) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-    if (response.length > 0) {
-      return true;
-    } else {
-      return false;
-    }
-  };
+  // const checkStatementValidation = (checkId) => {
+  //   const response = props.potentialIssues.filter((issue) => {
+  //     if (issue.key === checkId) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   });
+  //   if (response.length > 0) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // };
 
-  //  revenue data set
-  const getRevenueStatementRows = () => {
-    let dataSet = rows?.map((item) => ({
-      checkNumber: `${item?.checkNumber}_${item?._id}`,
-      purchaserName: item?.payor?.name || "",
-      checkAmount: item?.checkAmount || "",
-      checkDate: moment.parseZone(item?.checkDate).format("MM/DD/yyyy") || "",
-      depositDate: moment.parseZone(item?.depositDate).format("MM/DD/yyyy") || "",
-      lines: item?.checkDetail?.lines || 0,
-      checkId: item?.sourceId,
-      source: item?.source || "",
-      status: item?.status || "Imported",
-      validation: checkStatementValidation(item._id) || null,
-    }));
-    return dataSet;
-  };
+  // //  revenue data set
+  // const getRevenueStatementRows = () => {
+  //   let dataSet = rows?.map((item) => ({
+  //     checkNumber: `${item?.checkNumber}_${item?._id}`,
+  //     purchaserName: item?.payor?.name || "",
+  //     checkAmount: item?.checkAmount || "",
+  //     checkDate: moment.parseZone(item?.checkDate).format("MM/DD/yyyy") || "",
+  //     depositDate: moment.parseZone(item?.depositDate).format("MM/DD/yyyy") || "",
+  //     lines: item?.checkDetail?.lines || 0,
+  //     checkId: item?.sourceId,
+  //     source: item?.source || "",
+  //     status: item?.status || "Imported",
+  //     validation: checkStatementValidation(item._id) || null,
+  //   }));
+  //   return dataSet;
+  // };
 
 
 
@@ -4572,11 +4589,9 @@ function SubTable(props) {
           data={
             props.parent === "ownersPerParcel" || props.parent === 'boundary_grid_owners'
               ? searchedRows
-              : props.addAble?.type === "RevenueStatement"
-                ? getRevenueStatementRows()
-                : rows
-                  ? rows
-                  : []
+              : rows.length
+                ? rows
+                : []
           }
           // columns={
           //   props.parent === "ownersPerParcel" ? false :
