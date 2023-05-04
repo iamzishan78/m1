@@ -1,5 +1,7 @@
+import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import ListChips from "components/Common/ListChips";
 import vf_currency, { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
+import { GlobalStickyStyles } from "GlobalSettings";
 import { history } from "store";
 
 const UnitInterestsHeadCells = [
@@ -29,21 +31,20 @@ const UnitInterestsHeadCells = [
             dbName: "shape.shapeJson.properties.shapeLabel",
             sort: true,
             filter: true,
-            setCellProps: () => ({ style: { minWidth: "250px" } }),
-            //hide custom render of blue link for now as it is not consistent with tract interests
-            // customRender: (value, tableMeta, updateValue) => {
-            //     return (
-            //       <p
-            //         onClick={(e) => {
-            //           e.stopPropagation();
-            //             history.push(`/map/units/${tableMeta.rowData[2]}`, { showUnitsBreadcrumb: true });
-            //         }}
-            //         style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-            //       >
-            //         {value}
-            //       </p>
-            //     );
-            //   },
+            ...GlobalStickyStyles({
+                setCellProps: {
+                    left: '77px',
+                    padding: "0px 25px 0px 35px"
+                },
+                setCellHeaderProps: {
+                    left: '77px',
+                }
+            }),
+            customRender: (value, tableMeta) => {
+                const unitInterestId = tableMeta.rowData[2]
+
+                return <ColumnWithLink value={value} link={`/map/units/${unitInterestId}`} />;
+            },
         }
     },
     {

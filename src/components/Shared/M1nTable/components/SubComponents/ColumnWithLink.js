@@ -12,7 +12,7 @@ const useStyles = makeStyles(() => ({
     cursor: "pointer",
   },
   link: {
-    color: GlobalStyles.colors.lightBlue,
+    color: `${GlobalStyles.colors.lightBlue} !important`,
     maxWidth: "380px",
     whiteSpace: "nowrap",
     overflow: "hidden",
