@@ -2,7 +2,7 @@ import React from "react";
 import { TransactContextProvider } from "./TransactContext";
 import { makeStyles } from "@material-ui/core/styles";
 import Transact from "./Transact";
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
+import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme) => ({
   transactWrapper: {
     width: "100%",

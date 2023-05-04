@@ -235,9 +235,7 @@ export default function DetailInfo(props) {
     return (
       <FormGroup style={{ display: "block" }}>
         <FormControlLabel
-          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""} ${
-            !showEmpty ? classes.switchTextDeselected : ""
-          }`}
+          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""} ${!showEmpty ? classes.switchTextDeselected : ""}`}
           control={
             <React.Fragment>
               <AntSwitch

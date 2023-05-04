@@ -44,7 +44,7 @@ function ParcelDetailsRunsheetTable(props) {
   const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
   const [searchedRows, setSearchedRows] = useState([])
   const [showSlider, setShowSlider] = useState(false)
-  const [selectedYear, setSelectedYear] = useState(2021)  // production selected year state 
+  const [selectedYear, setSelectedYear] = useState(2022)  // production selected year state 
   const [numPages, setNumPages] = useState(null);
 
   // queries 

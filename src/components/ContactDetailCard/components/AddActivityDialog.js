@@ -394,7 +394,8 @@ function AddActivityDialog(props) {
           dateTime: new Date(dateTime).toUTCString(),
           endDateTime: new Date(endDateTime).toUTCString(),
           isClosed: closed?.value,
-          user:stateApp.user._id
+          user:stateApp.user._id,
+          createdBy: stateApp?.user?._id,
         },
       },
       refetchQueries: ["getContact"],
@@ -425,7 +426,8 @@ function AddActivityDialog(props) {
           contactName: contactData?.name,
           dealId,
           isClosed: closed.value,
-          user:stateApp.user._id
+          user:stateApp.user._id,
+          createdBy: stateApp?.user?._id,
         },
       },
     });

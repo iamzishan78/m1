@@ -58,7 +58,7 @@ function AgreementsTable(props) {
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
   let GridViewModule = userGridViewSettings[`Agreements`] || {};
-  GridViewModule.columns = _.get(GridViewModule,'columns',[]).map(obj =>
+  GridViewModule.columns = _.get(GridViewModule, 'columns', []).map(obj =>
     excludeFromViewColumns.includes(obj.name) ? { ...obj, "viewColumns": false } : obj
   );
 
