@@ -92,7 +92,7 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
           },
         },
       },
-      includeEmpty: selectedFilter === "All Dates" ? true : undefined,
+      // includeEmpty: selectedFilter === "All Dates" ? true : undefined,
     });
 
     if (propertyFilter[0]) {

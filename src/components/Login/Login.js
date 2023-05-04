@@ -410,7 +410,7 @@ const Login = (props) => {
       //do some error stuff
       return;
     }
-    const userSettingsResp = await userSettings(mongoUser._id, authGraphQLResponse.authenticationToken, authGraphQLToken.idToken);
+    const userSettingsResp = await userSettings(mongoUser._id, authGraphQLResponse.authenticationToken, authGraphQLToken.idToken, 'baseMap');
     if (userSettingsResp) {
       const { activeBaseMap, mapDefaultPosition } = userSettingsResp;
       mapVars = { ...mapVars, ...mapDefaultPosition };
@@ -479,13 +479,13 @@ const Login = (props) => {
       .catch((error) => console.log(error));
   }
 
-  async function userSettings(userId, authToken, idToken) {
+  async function userSettings(userId, authToken, idToken, type) {
     var options = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query: USER_MAP_SETTINGS, variables: { user: userId } }),
+      body: JSON.stringify({ query: USER_MAP_SETTINGS, variables: { user: userId, type } }),
     };
     let endpoint = stateApp.apolloClientEndpoint;
     options = setApolloHeaders(options, authToken, idToken);

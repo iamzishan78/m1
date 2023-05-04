@@ -17,6 +17,7 @@ export const GETALLACTIVITIES = gql`
       name
       isClosed
       createdBy
+      outcome
     }
   }
 `;

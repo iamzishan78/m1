@@ -10,7 +10,7 @@ import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import PencilEditIcon from "components/ContactDetailCard/components/FieldContent/PencilEditIcon";
 import MergeHistory from "components/ContactDetailCard/components/FieldContent/MergeHistory";
 import CopyPurchaseInfo from "components/ContactDetailCard/components/FieldContent/CopyPurchaseInfo";
-import { textFieldLabels, getHrefValue, LinkTypes, FieldTypes } from "components/ContactDetailCard/components/FieldContent/helper";
+import { textFieldLabels, getHrefValue, LinkTypes, FieldTypes, outcomeOptions } from "components/ContactDetailCard/components/FieldContent/helper";
 import useStyles from "components/ContactDetailCard/components/FieldContent/style";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
@@ -23,7 +23,8 @@ import { get } from "lodash";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import EntityType from "./EntityType";
 import CampaignNameField from "./CampaignNameField";
-import ContactStatus from "components/ContactDetailCard/components/ContactStatus";
+// import ContactStatus from "components/ContactDetailCard/components/ContactStatus";
+import AutoCompleteAddNewField from "./AutoCompleteAddNewField";
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -82,6 +83,7 @@ export default function FieldContent({
   // const [getCampaignFilters, { data: campaignfiltersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   const [statusOptions, setStatusOptions] = useState([]);
+  const entityTypeOptions = ['INDIVIDUAL', 'CORPORATION', 'NON-PROFIT', 'TRUST']
 
   useEffect(() => {
     getFilters({
@@ -142,16 +144,47 @@ export default function FieldContent({
     }
   }, [edit]);
 
-  const handleEditClick = (e) => {
+  const getOrganizedContent = () => {
+    let textArray = [];
+    for (const key in showContent) {
+      if (showContent.hasOwnProperty(key) && showContent[key] && showContent[key] !== "") {
+        if (
+          key === "zip" ||
+          key === "country" ||
+          key === "zipAlt" ||
+          key === "countryAlt" ||
+          key === "title" ||
+          key === "firstName" ||
+          key === "middleName" ||
+          key === "lastName" ||
+          key === "suffix"
+        ) {
+          textArray = [[textArray.join(", "), showContent[key]].join(" ")];
+        } else if (key === "jobTitle") {
+          textArray = [[textArray.join(", "), showContent[key]].join(" - ")];
+        } else if (key === "contactOwner" || key === "contactOwnerId") {
+          if (key === "contactOwner") textArray.push(showContent[key] || "");
+        } else textArray.push(showContent[key]);
+      }
+    }
+
+    return textArray;
+  }
+
+  const handleEditClick = (e, isCopy = false) => {
     e.persist();
     e.preventDefault();
-    setEdit(!edit ? e.currentTarget : null);
+    if (isCopy) {
+      navigator.clipboard.writeText(getOrganizedContent() || "")
+    }
+    else
+      setEdit(!edit ? e.currentTarget : null);
   };
 
   const keyDownHandler = (event, fieldNames) => {
+    event.stopPropagation();
     const fields = {};
     fieldNames.forEach(field => fields[field] = content[field]);
-    event.stopPropagation();
     if (event.key === "Escape") {
       setEdit(null);
       setEditContent({ ...fields });
@@ -169,6 +202,7 @@ export default function FieldContent({
     setEdit(null);
     setEditContent({ ...fields });
   }
+
 
   const handleUpdating = (val = null) => {
     if (fieldType == FieldTypes.Contact) {
@@ -348,7 +382,7 @@ export default function FieldContent({
           ) : fieldName === "ownerType" ? (
             <EntityType
               className={classes.maxWidth}
-              options={statusOptions}
+              options={entityTypeOptions}
               setDocumentType={(value) => {
                 let val = value.name;
                 const data = contactStatusOptions.find((s) => s.label === val);
@@ -360,6 +394,28 @@ export default function FieldContent({
                   [fieldName]: val,
                 }));
               }}
+              value={editContent[fieldName] === null ? "" : editContent[fieldName]}
+              onKeyDown={(event) => keyDownHandler(event, [fieldName])}
+              onBlur={() => onBlurHandler([fieldName])}
+            />
+          ) : fieldName === "outcome" ? (
+            <AutoCompleteAddNewField
+              id="contact-detail-outcome"
+              queryParams={{
+                esIndex: "contacts_flat",
+                filterKey: "outcome.keyword",
+                size: 50,
+              }}
+              onChange={(data) => {
+                debugger
+                setEditContent((editContent) => ({
+                  ...editContent,
+                  [fieldName]: data.name || "",
+                }));
+
+                handleUpdating(data.name);
+              }}
+              defaultOptions={outcomeOptions}
               value={editContent[fieldName] === null ? "" : editContent[fieldName]}
               onKeyDown={(event) => keyDownHandler(event, [fieldName])}
               onBlur={() => onBlurHandler([fieldName])}
@@ -403,28 +459,8 @@ export default function FieldContent({
     }
   }
 
-  let textArray = [];
-  for (const key in showContent) {
-    if (showContent.hasOwnProperty(key) && showContent[key] && showContent[key] !== "") {
-      if (
-        key === "zip" ||
-        key === "country" ||
-        key === "zipAlt" ||
-        key === "countryAlt" ||
-        key === "title" ||
-        key === "firstName" ||
-        key === "middleName" ||
-        key === "lastName" ||
-        key === "suffix"
-      ) {
-        textArray = [[textArray.join(", "), showContent[key]].join(" ")];
-      } else if (key === "jobTitle") {
-        textArray = [[textArray.join(", "), showContent[key]].join(" - ")];
-      } else if (key === "contactOwner" || key === "contactOwnerId") {
-        if (key === "contactOwner") textArray.push(showContent[key] || "");
-      } else textArray.push(showContent[key]);
-    }
-  }
+  let textArray = getOrganizedContent()
+
 
   const renderOutput = content.campaignName ? (
     <CampaignNameField
@@ -460,6 +496,7 @@ export default function FieldContent({
           setAnchorEl={setEdit}
           content={inputsArray}
           onClick={handleEditClick}
+          isCopy={true}
         />
       )}
       {fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />}

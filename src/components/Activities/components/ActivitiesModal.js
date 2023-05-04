@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
@@ -39,6 +39,8 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
 import Typography from "@material-ui/core/Typography";
 import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from "../../../graphQL/useMutationActivity";
+import AutoCompleteAddNewField from "components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField";
+import { outcomeOptions } from "components/ContactDetailCard/components/FieldContent/helper";
 
 const useStyles = makeStyles((theme) => ({
   dialogExpCard: {
@@ -199,12 +201,14 @@ const activityStatusOptions = [
 ];
 
 export default function ActivitiesModal({ events, setSelectedActivityId }) {
+  const outcomeFieldRef = useRef();
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
   const history = useHistory();
   const [addNew, setAddNew] = useState(true);
   const [activityType, setActivityType] = useState("");
   const [activityName, setActivityName] = useState("");
+  const [outcome, setOutcome] = useState("");
   const [closed, setClosed] = useState(false);
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
@@ -327,6 +331,8 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
         name: selectedActivity.contactName,
         _id: selectedActivity.contactId,
       });
+      setOutcome(selectedActivity.outcome)
+      outcomeFieldRef.current?.updateDefaultValue(selectedActivity.outcome);
       setStartDate(moment.parseZone(selectedActivity.start).format("yyyy-MM-DD"));
       setStartTime(moment.parseZone(selectedActivity.start).format("HH:mm"));
       setCalenderDate(selectedActivity.start);
@@ -456,6 +462,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
           type: activityType,
           name: activityName,
           notes,
+          outcome,
           ownerId: owner.id,
           ownerName: owner.name,
           contactId: nameAutValue._id,
@@ -485,6 +492,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
           dateTime: new Date(dateTime).toUTCString(),
           endDateTime: new Date(endDateTime).toUTCString(),
           notes,
+          outcome,
           ownerId: owner.id,
           ownerName: owner.name,
           contactId: nameAutValue?._id,
@@ -511,7 +519,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
   };
 
   const dealValue = openDeals.find((deal) => deal._id === dealId) || null;
-
+  console.log("--*-*-*- selectedActivity *-*-*-*-", selectedActivity, outcomeFieldRef);
   return (
     <Dialog
       className={classes.dialogExpCard}
@@ -619,6 +627,24 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                     <ContactMailIcon /> <span>Mailer</span>
                   </span>
                 </div>
+              </div>
+              <div className={classes.row}>
+                <span className={classes.rowIcon}></span>
+                <AutoCompleteAddNewField
+                  ref={outcomeFieldRef}
+                  queryParams={{
+                    esIndex: "contacts_flat",
+                    filterKey: "outcome.keyword",
+                    size: 50,
+                  }}
+                  onChange={(data) => {
+                    setOutcome(data.name)
+                  }}
+                  defaultOptions={outcomeOptions}
+                  value={outcome}
+                  style={{ width: "76%", marginRight: 24 }}
+                  inputProps={{ variant: "outlined", size: "small", label: "Outcome" }}
+                />
               </div>
               <div className={classes.row}>
                 <span className={classes.rowIcon}>

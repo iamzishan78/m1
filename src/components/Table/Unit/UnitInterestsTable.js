@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useHistory } from "react-router-dom";
 import { Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -24,7 +24,7 @@ import { setColumnsData } from "components/Table/helpers";
 const useStyles = makeStyles((theme) => ({
   tractInterestTable: {
     "& ::-webkit-scrollbar": {
-      height: "0.7em !important",
+      height: "0.7em !important"
     },
   },
   container: {
@@ -78,13 +78,13 @@ function UnitInterestsTable(props) {
 
   const startPaginationAt = 10;
   // const esIndex = 'shapeowners_flat';
-  const esStaticFilters = [
+  const esStaticFilters = useMemo(() => [
     {
       field: "shape.layer",
       value: "unit",
     },
     ...esFilters
-  ];
+  ], [esFilters]);
 
   const count = tableData?.total || 0;
   const options = {
@@ -115,7 +115,7 @@ function UnitInterestsTable(props) {
         filters: esStaticFilters,
       },
     });
-  }, [props.parent, esSearch]);
+  }, [props.parent, esSearch, esStaticFilters]);
 
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
@@ -134,6 +134,7 @@ function UnitInterestsTable(props) {
             ?.filter((el) => el)
             ?.map((qtr, i) => `${qtr}/${i + 1}`)
             ?.join();
+          hit.unitCampaign = hit.contact.campaignName;
           hit.tags =
             hit?.tags?.length > 0
               ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]

@@ -262,13 +262,16 @@ export const getBasicInfoExpContent = (contactData) => {
     },
     Website: {
       data: { website: contactData?.website },
-      linkType: LinkTypes.None,
+      linkType: LinkTypes.Simple,
     },
     "Industry Type": {
       data: { industryType: contactData?.industryType },
       linkType: LinkTypes.None,
     },
-
+    Outcome: {
+      data: { outcome: contactData?.outcome },
+      linkType: LinkTypes.None,
+    },
     "Campaign Name": {
       data: { campaignName },
       linkType: LinkTypes.None,
@@ -716,6 +719,24 @@ export const SUMMARY_FIELDS = (contactData) => {
       position: "right",
       value: getLastUpdatedByValue(contactData),
       disabled: true,
+    },
+    {
+      label: "Account",
+      key: "account",
+      type: "autocomplete",
+      position: "left",
+    },
+    {
+      label: "Department",
+      key: "department",
+      type: "text",
+      position: "right",
+    },
+    {
+      label: "Title",
+      key: "title",
+      type: "text",
+      position: "left",
     },
   ];
 }
