@@ -1372,8 +1372,12 @@ function SubTable(props) {
                         }}
                       >
                         <Grid container spacing={0} direction="row"
-                          style={{ position: 'absolute' }}
-                          className={classes.agreementNumber}
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            // position: 'absolute'  
+                          }}
+                            className={classes.agreementNumber}
                         >
                           <Grid item
                             style={{
@@ -1387,7 +1391,9 @@ function SubTable(props) {
                             />
                           </Grid>
                           {column.label !== 'Contact Name' &&
-                            <Grid item>
+                            <Grid style={{
+                              marginRight:"20px"
+                            }} item>
                               <GridComments value={commentValue} targetSourceId={targetSourceId} tableMeta={tableMeta} />
                             </Grid>
                           }

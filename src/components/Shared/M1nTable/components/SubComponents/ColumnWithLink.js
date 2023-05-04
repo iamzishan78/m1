@@ -13,7 +13,7 @@ const useStyles = makeStyles(() => ({
   },
   link: {
     color: GlobalStyles.colors.lightBlue,
-    maxWidth: "300px",
+    maxWidth: "350px",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
@@ -23,6 +23,10 @@ const useStyles = makeStyles(() => ({
     "&:hover": {
       textDecoration: "underline !important",
       fontWeight: GlobalStyles.font.boldFontWeight,
+      whiteSpace: "normal",
+      wordBreak:"break-all",
+      overflow: "visible",
+      textOverflow: "initial"
     },
   }
 }));
