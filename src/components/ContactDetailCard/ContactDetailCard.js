@@ -724,7 +724,7 @@ function ContactDetailCard(props) {
                       }));
                     }}
                   >
-                    Add Deal
+                    Add New Deal
                   </Button>
                   <Button
                     className={classes.contactDataButton}
