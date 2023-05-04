@@ -13,7 +13,7 @@ const useStyles = makeStyles(() => ({
   },
   link: {
     color: GlobalStyles.colors.lightBlue,
-    maxWidth: "350px",
+    maxWidth: "380px",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
       textDecoration: "underline !important",
       fontWeight: GlobalStyles.font.boldFontWeight,
       whiteSpace: "normal",
-      wordBreak:"break-all",
+      wordBreak: "break-all",
       overflow: "visible",
       textOverflow: "initial"
     },
