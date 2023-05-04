@@ -8,10 +8,10 @@ const useStyles = makeStyles((theme) => ({
       if (noMargin) return "fit-content";
     },
     borderRadius: "4px",
-    "& #contPencilIcon, & #mergeTypeIcon": {
+    "& #contPencilIcon, & #mergeTypeIcon, & #copyIcon": {
       visibility: "hidden",
     },
-    "&:hover #contPencilIcon, &:hover #mergeTypeIcon": {
+    "&:hover #contPencilIcon, &:hover #mergeTypeIcon, &:hover #copyIcon": {
       visibility: "visible",
     },
   },

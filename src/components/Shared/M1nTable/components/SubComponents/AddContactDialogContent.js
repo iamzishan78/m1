@@ -20,7 +20,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { GETMONGOUSERS } from "../../../../../graphQL/useQueryGetUsers";
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
-import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
+import { contactStatusOptions, featureFlagChanges } from "components/ContactDetailedInfo/helper";
+import { useSelector } from "react-redux";
 
 const phonenumber = (inputtxt) => {
   if (inputtxt.match(/^([0-9]||-|\(|\)|\.|,)+$/) !== null) {
@@ -105,6 +106,11 @@ export default function AddContactDialogContent(props) {
     contactOwner: ""
     // owners: props.parent ? [props.parent] : [],
   });
+
+  const { user } = useSelector(state => state.app);
+  const showGenericPhones = React.useMemo(() => {
+    return user.features?.find(f => f.name === "showGenericPhones")
+  }, [user]);
 
   const [
     getPaginatedContacts,
@@ -379,29 +385,10 @@ export default function AddContactDialogContent(props) {
                 });
               }}
               value={newContact.ownerType ?? ""}
-            />:
-          </Grid>
-          <Grid item xs={6}>
-            <h3>Mobile Phone</h3>
-            <TextField
-              id="mobilePhone"
-              size="small"
-              //placeholder="E.g. xxx-xxx-xxxx"
-              className={classes.maxWidth}
-              multiline
-              value={newContact.mobilePhone}
-              onChange={(e) => {
-                if (phonenumber(e.target.value)) {
-                  setNewContact({
-                    ...newContact,
-                    mobilePhone: e.target.value,
-                  });
-                }
-              }}
             />
           </Grid>
           <Grid item xs={6}>
-            <h3>Home Phone</h3>
+            <h3>{featureFlagChanges(showGenericPhones, "Home Phone")}</h3>
             <TextField
               id="homePhone"
               size="small"
@@ -414,6 +401,25 @@ export default function AddContactDialogContent(props) {
                   setNewContact({
                     ...newContact,
                     homePhone: e.target.value,
+                  });
+                }
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <h3>{featureFlagChanges(showGenericPhones, "Mobile Phone")}</h3>
+            <TextField
+              id="mobilePhone"
+              size="small"
+              //placeholder="E.g. xxx-xxx-xxxx"
+              className={classes.maxWidth}
+              multiline
+              value={newContact.mobilePhone}
+              onChange={(e) => {
+                if (phonenumber(e.target.value)) {
+                  setNewContact({
+                    ...newContact,
+                    mobilePhone: e.target.value,
                   });
                 }
               }}

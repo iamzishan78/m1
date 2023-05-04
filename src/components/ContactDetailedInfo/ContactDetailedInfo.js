@@ -56,7 +56,7 @@ const AntSwitch = withStyles((theme) => ({
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    paddingRight: "20px",
+    paddingRight: "25px",
     paddingLeft: "15px",
   },
   avatar: {
@@ -235,9 +235,7 @@ export default function DetailInfo(props) {
     return (
       <FormGroup style={{ display: "block" }}>
         <FormControlLabel
-          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""} ${
-            !showEmpty ? classes.switchTextDeselected : ""
-          }`}
+          className={`${classes.switchButtom}${props.publicLeftBottom ? classes.publicLeftBottom : ""} ${!showEmpty ? classes.switchTextDeselected : ""}`}
           control={
             <React.Fragment>
               <AntSwitch

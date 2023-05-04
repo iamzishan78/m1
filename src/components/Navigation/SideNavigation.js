@@ -20,6 +20,7 @@ import Typography from "@material-ui/core/Typography";
 import FlowIcon from "@material-ui/icons/Repeat";
 import ActivityIcon from "@material-ui/icons/Event";
 import SearchIcon from "@material-ui/icons/Search";
+import MapIcon from '@material-ui/icons/Map';
 import BarChartIcon from "@material-ui/icons/BarChart";
 import EditIcon from "@material-ui/icons/Edit";
 import LandScapeIcon from "components/Shared/svgIcons/LandscapeBlackIcon";
@@ -190,7 +191,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
             <div className={classes.tabContent}>
               <Tooltip title="Map" placement="right" classes={{ tooltip: classes.iconTooltip }}>
                 <ListItemIcon className={classes.sideNavIcon}>
-                  <SearchIcon />
+                  <MapIcon />
                 </ListItemIcon>
               </Tooltip>
               <ListItemText className={`${classes.sideNavText} uppercase`} primary="Map" />
@@ -291,7 +292,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               button
               selected={stateNav.selectedMenuIndexRevenue === 1}
               onClick={(event) => {
-                handleListItemClick("/revenue/statements");
+                handleListItemClick("/revenue/properties");
               }}
               key="Revenue"
             >

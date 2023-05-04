@@ -8,6 +8,7 @@ import ClearSharpIcon from "@material-ui/icons/ClearSharp";
 import CheckSharpIcon from "@material-ui/icons/CheckSharp";
 import Button from "@material-ui/core/Button";
 import useStyles from 'components/ContactDetailCard/components/FieldContent/style'
+import CopyIcon from "components/Shared/svgIcons/CopyIcon";
 
 function PencilEditIcon({
     onClick,
@@ -15,6 +16,7 @@ function PencilEditIcon({
     setAnchorEl,
     content,
     handleUpdating,
+    isCopy = false,
 }) {
     const classes = useStyles();
     return (
@@ -55,6 +57,19 @@ function PencilEditIcon({
                     ))}
                 </Grid>
             </EditionPopover>
+            {isCopy && (
+                <Tooltip title={"Copy"} placement="top">
+                    <IconButton
+                        size="small"
+                        onClick={(e) => {
+                            onClick(e, true);
+                        }}
+                    >
+                        <CopyIcon id="copyIcon" />
+                    </IconButton>
+                </Tooltip>
+            )}
+
             <Tooltip title={"Edit"} placement="top">
                 <IconButton
                     size="small"

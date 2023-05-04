@@ -16,6 +16,8 @@ export const GETALLACTIVITIES = gql`
       contactName
       name
       isClosed
+      createdBy
+      outcome
     }
   }
 `;

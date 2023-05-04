@@ -28,7 +28,7 @@ function PropertyRevenueDetailsTable(props) {
             filters: [{ field: "property._id.keyword", value: propertyId }],
             TableHeader: copy(TableHeader),
             esIndex: "checkdetails_flat",
-            startPaginationAt: 50,
+            startPaginationAt: 10,
             formatHits,
         });
 
@@ -62,7 +62,7 @@ function PropertyRevenueDetailsTable(props) {
                 uploadIcon={null}
                 dense={props.dense ? props.dense : undefined}
                 orderByTracks={false}
-                startPaginationAt={null}
+                startPaginationAt={10}
                 onTableChange={props.onTableChange}
                 options={props.options}
                 addAble={{ type: 'revenueStatementDetails' }}

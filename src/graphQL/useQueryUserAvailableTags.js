@@ -5,3 +5,9 @@ export const USERAVAILABLETAGSQUERY = gql`
     userAvailableTags(userId: $userId)
   }
 `;
+
+export const GETDEALTAGOPTIONS = gql`
+  query getDealTagOptions($userId: ID) {
+    getDealTagOptions(userId: $userId)
+  }
+`;

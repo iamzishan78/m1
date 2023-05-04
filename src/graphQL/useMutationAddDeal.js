@@ -35,6 +35,16 @@ export const ADDDEAL = gql`
   }
 `;
 
+export const DEAL_DESCRIPTOR = gql`
+  mutation dealDescriptor($deal: JSON) {
+    dealDescriptor(deal: $deal) {
+      success
+      message
+      error
+    }
+  }
+`;
+
 export const CREATE_DEAL_DEFAULT_SETTINGS = gql`
   mutation createDealDefaultSettings($stageDealDescriptors: [JSON], $dealId: ID) {
     createDealDefaultSettings(stageDealDescriptors: $stageDealDescriptors, dealId: $dealId)
