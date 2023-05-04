@@ -50,6 +50,8 @@ import CustomAvatar from "components/Shared/ui/CustomAvatar";
 
 import MapProvider from "components/Map/MapProvider";
 import { getRandomColor } from "components/Shared/functions/ui";
+import AssociatedFlowDealDetails from "../AssociatedFlowDealDetails";
+import { createPortal } from "react-dom/cjs/react-dom.production.min";
 import ExistingDeal from "./ExistingDeal";
 
 function NumberFormatCustom(props) {
@@ -1829,6 +1831,13 @@ function AddDealDialog(props) {
           </div>
         )}
       </div>
+      {
+        stateApp.transactBarView === "Grid" &&
+        createPortal(<AssociatedFlowDealDetails
+          contacts={stateApp.activeDeal?.contacts.map(contact => contact._id)}
+          deal={stateApp?.activeDeal?.cardId}
+        />, document.body)
+      }
     </>
   );
 }
