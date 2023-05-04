@@ -3,6 +3,7 @@ import { FormControl, InputLabel, ListItem, ListItemText, Menu, MenuItem, Select
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/styles";
 import AutoCompleteESShapeLayer from "components/Shared/Forms/Fields/AutoCompleteESShapeLayer";
+import { SHAPE_TYPE } from "components/Navigation/components/Utils/consts";
 
 const useStyles = makeStyles({
   selectedType: {
@@ -26,10 +27,46 @@ const useStyles = makeStyles({
   }
 });
 
-const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpenShapeDetail, updateAndOpenShapeDetail, classes }) => {
+const OPTIONS = {
+  agreement: {
+    label: 'Agreement',
+    types: [
+      { value: 'contract', label: 'Contract', },
+      { value: 'deed', label: 'Deed', },
+      { value: 'lease', label: 'Lease', },
+      { value: 'surface', label: 'Surface/Row', },
+    ],
+    selectedType: 'lease',
+    layerType: 'agreement',
+    layerKey: 'shapeJson.properties.type',
+    searchFields: SHAPE_TYPE['agreements'].SEARCH_FIELDS,
+  },
+  tract: {
+    label: 'Tract',
+    types: [
+      { value: 'parcel', label: 'Tract', }
+    ],
+    selectedType: 'parcel',
+    layerType: 'parcel',
+    layerKey: 'layer',
+    searchFields: SHAPE_TYPE['tracts'].SEARCH_FIELDS,
+  },
+  unit: {
+    label: 'Unit',
+    types: [
+      { value: 'unit', label: 'Unit', }
+    ],
+    selectedType: 'unit',
+    layerType: 'unit',
+    layerKey: 'shapeJson.properties.type',
+    searchFields: SHAPE_TYPE['units'].SEARCH_FIELDS,
+  },
+}
+
+const ShapeTypeMenu = ({ shapeAnchorEl, setShapeAnchorEl, saveAndOpenShapeDetail, updateAndOpenShapeDetail, classes, type }) => {
   const [selectedType, setSelectedType] = useState("new");
-  const [selectedShapeType, setSelectedShapeType] = useState('lease');
-  const [selectedAgreement, setSelectedAgreement] = useState();
+  const [selectedShapeType, setSelectedShapeType] = useState(OPTIONS[type].selectedType);
+  const [selectedShape, setSelectedShape] = useState();
   const shapeActionClasses = useStyles();
 
   return (
@@ -38,7 +75,7 @@ const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpe
         id="simple-menu"
         elevation={0}
         getContentAnchorEl={null}
-        anchorEl={agreementAnchorEl}
+        anchorEl={shapeAnchorEl}
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
@@ -46,10 +83,11 @@ const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpe
         PaperProps={{
           style: {
             marginLeft: '173px',
+            minWidth: '334px'
           },
         }}
-        open={Boolean(agreementAnchorEl)}
-        onClose={() => setAgreementAnchorEl(null)}
+        open={Boolean(shapeAnchorEl)}
+        onClose={() => setShapeAnchorEl(null)}
         className={classes.parcelPopover}
       >
         <ListItem
@@ -66,7 +104,7 @@ const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpe
               }}
               className={selectedType === "new" ? shapeActionClasses.selectedType : shapeActionClasses.unSelectedType}
             >
-              New Agreement
+              New {OPTIONS[type].label}
             </h4>
             <h4
               onClick={() => {
@@ -75,39 +113,42 @@ const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpe
               className={selectedType === "existing" ? shapeActionClasses.selectedType : shapeActionClasses.unSelectedType}
               style={{ marginLeft: "20px" }}
             >
-              Existing Agreement
+              Existing {OPTIONS[type].label}
             </h4>
           </ListItemText>
         </ListItem>
         {
           selectedType === "new" && <>
             <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
-              <InputLabel id="agreement-outlined-label">
-                Agreement Type
+              <InputLabel id={`${type}-outlined-label`}>
+              {OPTIONS[type].label} Type
               </InputLabel>
               <Select
-                labelId="agreement-outlined-label"
+                labelId={`${type}-outlined-label`}
                 defaultValue={'lease'}
-                id="agreement-outlined"
+                id={`${type}-outlined`}
                 value={selectedShapeType}
                 fullWidth
                 onChange={(e) => { setSelectedShapeType(e.target.value) }}
-                label="Agreement Type"
+                label={`${OPTIONS[type].label} Type`}
               >
-                <MenuItem value={"contract"} >Contract</MenuItem>
-                <MenuItem value={"deed"} >Deed</MenuItem>
-                <MenuItem value={"lease"} >Lease</MenuItem>
-                <MenuItem value={"surface"} >Surface/Row</MenuItem>
+                {OPTIONS[type].types.map(({value, label}) => (
+                  <MenuItem value={value}>{label}</MenuItem>
+                ))}
               </Select>
             </FormControl>
           </>
         }
         {
-          selectedType === 'existing' && <>
-            <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
-              <AutoCompleteESShapeLayer label='Agreement Search' filters={[{ "field": "shapeJson.properties.type", "value": 'agreement' }]} setSelectedShapeLayer={setSelectedAgreement} />
-            </FormControl>
-          </>
+          selectedType === 'existing' && <div 
+              onKeyDown={e => {
+                if(e.key === 'n')
+                  e.stopPropagation()
+              }}>
+                <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
+                  <AutoCompleteESShapeLayer label={`${OPTIONS[type].label} Search`} filters={[{ "field": OPTIONS[type].layerKey, "value": OPTIONS[type].layerType }]} setSelectedShapeLayer={setSelectedShape} searchFields={OPTIONS[type].searchFields} />
+                </FormControl>
+            </div>
         }
 
         <div className={shapeActionClasses.dialogFooter}>
@@ -117,7 +158,7 @@ const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpe
             size="medium"
             className={classes.footerButton}
             style={{ margin: "0px 15px 0px 0px" }}
-            onClick={() => { setAgreementAnchorEl(null) }}
+            onClick={() => { setShapeAnchorEl(null) }}
           >
             Cancel
           </Button>
@@ -127,10 +168,10 @@ const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpe
             color="primary"
             id="addShapeButton"
             size="medium"
-            disabled={selectedType === 'new' ? !selectedType : !selectedAgreement}
+            disabled={selectedType === 'new' ? !selectedType : !selectedShape}
             disableElevation
             onClick={() => {
-              selectedType === 'new' ? saveAndOpenShapeDetail("agreement", selectedShapeType) : updateAndOpenShapeDetail(selectedAgreement)
+              selectedType === 'new' ? saveAndOpenShapeDetail(type, selectedShapeType) : updateAndOpenShapeDetail(selectedShape)
             }}
             className={classes.footerButton}
           >
@@ -142,4 +183,4 @@ const AgreementTypeMenu = ({ agreementAnchorEl, setAgreementAnchorEl, saveAndOpe
   );
 };
 
-export default AgreementTypeMenu;
+export default ShapeTypeMenu;

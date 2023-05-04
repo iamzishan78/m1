@@ -379,6 +379,7 @@ const UnitInterestsHeadCells = [
         name: "detailCard",
         label: " ",
         options: {
+            display: false,
             filter: false,
             sort: false,
             searchable: false,

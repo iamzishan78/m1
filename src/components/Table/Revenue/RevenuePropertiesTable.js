@@ -73,6 +73,7 @@ function RevenuePropertiesTable(props) {
       startPaginationAt: 50,
       defaultSort: { field: "name.keyword", order: "asc" },
       formatHits,
+      downloadAll: { exportPx: '121px' },
       // initializeGenericData: { key: "_id", actions: genericDataActions },
     });
     // eslint-disable-next-line
@@ -95,7 +96,6 @@ function RevenuePropertiesTable(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props?.total, props.dependencyUpdate]);
 
-  delete props.options.customToolbar;
   delete props.options.customToolbarSelect;
   delete props.options.onRowClick;
   props.options.search = props.searchBar;

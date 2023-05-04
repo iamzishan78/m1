@@ -136,6 +136,46 @@ function createCSVDownload(columns, data, options, downloadCSV) {
     downloadCSV(csv, options.downloadOptions.filename);
 }
 
+function convertToTitleCase(str) {
+    if (!str || str === '' || typeof str !== 'string') return str
+
+    // Replace underscores and hyphens with spaces
+    str = str.replace(/[_-]/g, ' ');
+
+    // Split the string by spaces
+    let words = str.split(' ');
+
+    // Capitalize the first letter of each word
+    words = words.map(word => {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    });
+
+    // Join the words with spaces
+    str = words.join(' ');
+
+    // Extract and append the number at the end of the string, if present
+    let regex = /\d+$/;
+    let match = str.match(regex);
+    if (match) {
+        let number = match[0];
+        str = str.replace(regex, '') + ' ' + number;
+    }
+
+    return str;
+}
+
+function removeEmptyArrayKeys(obj) {
+    const copyObj = JSON.parse(JSON.stringify(obj))
+
+    for (let key in copyObj) {
+        if (!copyObj[key] || (Array.isArray(copyObj[key]) && copyObj[key].length === 0)) {
+            delete copyObj[key];
+        }
+    }
+
+    return copyObj;
+}
+
 export {
     buildMap,
     getPageValue,
@@ -147,4 +187,6 @@ export {
     warnDeprecated,
     warnInfo,
     escapeDangerousCSVCharacters,
+    convertToTitleCase,
+    removeEmptyArrayKeys
 };

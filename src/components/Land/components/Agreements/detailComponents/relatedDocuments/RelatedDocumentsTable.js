@@ -45,6 +45,7 @@ function AgreementDocumentsTable(props) {
       return (
         <div style={{ display: "inline", float: "left", marginRight: "15px", marginTop: "5px" }}>
           <Button
+            id="addRelatedDcmnButton"
             color="secondary"
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {
@@ -109,7 +110,7 @@ function AgreementDocumentsTable(props) {
       props.setTableMeta({
         shapeType: props.shapeType,
         addableName: "Tract",
-        searchFields: ["*"],
+        searchFields: ["_all"],
         filters: [{ field: "shapeObj._id", value: moduleId }],
         TableHeader: TableHeader,
         esIndex: "documents_flat",
