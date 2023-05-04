@@ -46,7 +46,6 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
     return filterValue
   }
 
-  console.log("filterList : ", filterList)
   const filterValue = getDefaltValue();
   const [open, setOpen] = useState(false);
   const [, setStateApp] = useContext(AppContext);
