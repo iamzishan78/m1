@@ -247,6 +247,7 @@ export default function MapControls(props) {
             currentFeature: undefined,
             showDrawShapesPopup: true,
             editDraw: true,
+            showAddShapePopup: false,
           }));
         } else {
           clearMapAndCloseShapeActionsPopup(stateApp, setStateApp);

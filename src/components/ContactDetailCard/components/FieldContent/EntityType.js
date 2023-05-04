@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import TextField from "@material-ui/core/TextField";
@@ -62,20 +62,17 @@ export default function EntityType({ setDocumentType, value, ...other }) {
     setSearch(value);
   };
 
+  const getOptions = useMemo(() => options.map((type) => ({_id: type, name: type})), [options])
+
   return (
     <Autocomplete
       id="entityType"
-
       defaultValue={search}
       value={search}
       disableListWrap
       classes={classes}
       oepn={true}
-      options={
-        options?.map((type) => {
-          return { _id: type, name: type };
-        }) ?? []
-      }
+      options={getOptions}
       getOptionLabel={(option) => {
         // Value selected with enter, right from the input
         if (typeof option === "string") {
@@ -99,7 +96,7 @@ export default function EntityType({ setDocumentType, value, ...other }) {
           <Grid container spacing={0}>
             <Grid container item xs={12} alignItems="center">
               <Grid item xs>
-                <span style={{ fontWeight: 400 }}>{option.name}</span>
+                <span style={{ fontWeight: 400 }}>{option}</span>
               </Grid>
             </Grid>
           </Grid>
@@ -125,7 +122,9 @@ export default function EntityType({ setDocumentType, value, ...other }) {
         return filtered;
       }}
       onChange={(event, newValue) => {
-        if (newValue && newValue._id) {
+        if(typeof newValue === "string"){
+          setDocumentType({ _id: newValue, name: newValue})
+        } else if (newValue && newValue._id) {
           if (newValue._id !== "newEntity") setDocumentType(newValue);
           else setDocumentType({ _id: "newEntity", name: newValue.name });
         } else {
