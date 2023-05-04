@@ -31,19 +31,30 @@ TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
 
 const useStyles = makeStyles((theme) => ({
-  container: {
+  container: ({ isFileDetail }) => ({
     backgroundColor: "#F6F8F9",
     "& .MuiFormControl-marginDense": {
       margin: "0px !important",
     },
-    height: "auto",
+    height: isFileDetail ? "calc(100vh - 395px)" : "100%",
     minHeight: "200px",
-  },
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end'
+  }),
   comment: ({ commentsHeight }) => ({
     position: "relative",
     overflow: "auto",
     padding: "14px 0px",
-    maxHeight: "calc(100vh - 916px)",
+
+    '& *': {
+      overflowAnchor: 'none'
+    },
+
+    '& #checkIf': {
+      overflowAnchor: 'auto',
+      height: '1px'
+    }
   }),
   hideMenuIcon: {
     visibility: "hidden",
@@ -80,6 +91,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridStyle: {
     padding: "12px 0px",
+    flexWrap: 'nowrap'
   },
   bold: {
     fontWeight: "bold",
@@ -98,7 +110,11 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-flex",
   },
   commentContent: {
-    width: "84%",
+    flex: '1 1 auto',
+    maxWidth: "calc(100% - 55px)",
+    overflowWrap: 'break-word',
+    wordWrap: 'break-word',
+    wordBreak: 'break-word',
   },
   commentTypeSection: {
     fontWeight: "bold",
@@ -106,18 +122,13 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     marginBottom: "5px",
   },
-  pinned: {
-    borderLeftWidth: "initial",
-    borderLeftStyle: "inset",
-    borderLeftColor: "#ffd107",
-    background: "#FFF4EA"
-  },
-  tracking: {
-    borderLeftWidth: "initial",
-    borderLeftStyle: "inset",
-    borderLeftColor: "#ffd107",
-
-  },
+  commentWords: {
+    // display: 'inline-block',
+    overflowWrap: 'break-word',
+    wordWrap: 'break-word',
+    wordBreak: 'break-word',
+    hyphens: 'auto'
+  }
 }));
 
 function urlify(text) {
@@ -154,31 +165,31 @@ export const CommonCommentText = ({ eachComment, users }) => {
                     return (
                       <>
                         {" "}
-                        <span className="blue">
+                        <p className={`${classes.commentWords} blue`}>
                           {firstPart}@{users.find((user) => user._id === id)?.name}
                           {secondPart}{" "}
-                        </span>
+                        </p>
                         {splittedWord.length > 1 && <br />}{" "}
                       </>
                     );
                   } else
                     return (
-                      <span>
+                      <p className={classes.commentWords}>
                         {sWord} <br />{" "}
-                      </span>
+                      </p>
                     );
                 })}
               </>
             );
           }
 
-          return <span>{splittedWord}</span>;
+          return <p className={classes.commentWords}>{splittedWord}</p>;
         } else {
           const _word = index !== formatComment.length - 1 ? `${word} ` : word;
           const sanitizedData = () => ({
             __html: DOMPurify.sanitize(urlify(_word)),
           });
-          return <span dangerouslySetInnerHTML={sanitizedData()}></span>;
+          return <span className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()}></span>;
         }
       })}
     </div>
@@ -187,7 +198,7 @@ export const CommonCommentText = ({ eachComment, users }) => {
 
 export default function CommentComponent(props) {
   const { targetSourceId, commentsHeight } = props;
-  const classes = useStyles({ commentsHeight });
+  const classes = useStyles({ commentsHeight, isFileDetail: props.targetLabel === 'file' || false });
   const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
   const { pinComment } = useSelector(state => state.pin);
@@ -256,12 +267,13 @@ export default function CommentComponent(props) {
     // debugger
     if (dataComments && dataComments.commentsByObjectId) {
       if (props.activityLog && props.activityLog.length > 0) {
-        let activittyData = [];
+        let activityData = [];
         props.activityLog.forEach((element) => {
-          activittyData.push({
+          activityData.push({
             user: { name: element.ownerName, email: element.ownerName },
             activityData: element,
             comment: element.notes,
+            outcome: element.outcome,
             ts: new Date(element._ts.includes("GMT") ? element._ts : Number(element._ts)).getTime(),
             isActivity: true,
             isEdited: false,
@@ -480,12 +492,13 @@ export default function CommentComponent(props) {
 
 
   useEffect(() => {
-    if (commentsArray?.length > 0 && scrollIntoView)
+    if (commentsArray?.length > 0 && scrollIntoView) {
       commentContainerRef?.current?.scrollIntoView({
         behavior: "smooth",
         block: "start",
         inline: "start",
       });
+    }
   }, [commentsArray, scrollIntoView]);
 
   const addNewComment = (value) => {
@@ -536,390 +549,181 @@ export default function CommentComponent(props) {
   };
 
   return (
-    <SizeMe>
-      {({ size }) => (
-        <div className={classes.container}>
-
-          {/* 
-          {Object.values(pinComment).map((pin, index) => {
-            return commentsArray.map((eachComment, index) => {
-              if (pin._id === eachComment._id) {
-
-                return (
-                  <Grid
-                    id="commentsArea"
-                    container
-                    className={pin.isPinned ? classes.pinned : classes.gridStyle}
-                    onMouseOver={() => setShowCommentActionId(eachComment?._id)}
-                    onMouseLeave={() => setShowCommentActionId(null)}
+    <>
+      <div className={classes.container}>
+        <div className={classes.comment} id="commentsContainer">
+          {!loadingComments ? (
+            <>
+              {!showAllComments && commentsArray.length > 7 && (
+                <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
+                  <span
+                    onClick={() => {
+                      setShowAllComments(true);
+                    }}
                   >
-                    <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
-                      <IconButton>
-                        {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
-                          <Avatar
-                            src={eachComment.isNew ? profileImage : profilesInfo[eachComment?.user?.email].profileImage}
-                            size="38"
-                            round
-                          />
-                        ) : (
-                          <Avatar name={eachComment?.user?.name} size="38" round />
-                        )}
-                      </IconButton>
-                    </Grid>
+                    {getCount()} more comments
+                  </span>
+                </div>
+              )}
+              {showAllComments && commentsArray.length > 7 && (
+                <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
+                  <span onClick={() => setShowAllComments(false)}>Hide Earlier Comments</span>
+                </div>
+              )}
 
-                    <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
-                      <div>
-                        <span className={classes.bold}>{eachComment?.user?.name}</span>
-                        {!isNaN(eachComment.ts) && (
-                          <ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />
-                        )}
-                        {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
-                        {eachComment?.user?.email === stateApp.user.email &&
-                          showCommentActionId === eachComment._id &&
-                          editCommentId !== eachComment._id && (
-                            <div
-                              className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
-                                eachComment?.user?.email === stateApp.user.email &&
-                                showCommentActionId === eachComment._id &&
-                                editCommentId !== eachComment._id
-                              ) && classes.hideMenuIcon
-                                }`}
-                            >
-                              <ActionMenu
-                                eachComment={eachComment}
+              {commentsArray.map((eachComment, index) => {
+                let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
+                return (
+                  <Fragment key={index}>
+                    {(showAllComments || index >= indexToShow) && (
+                      <Grid
+                        id="commentsArea"
+                        container
+                        className={classes.gridStyle}
+                        onMouseOver={() => setShowCommentActionId(eachComment?._id)}
+                        onMouseLeave={() => setShowCommentActionId(null)}
+                      >
+                        <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
+                          <IconButton>
+                            {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
+                              <Avatar
+                                src={eachComment.isNew ? profileImage : profilesInfo[eachComment?.user?.email].profileImage}
+                                size="38"
+                                round
+                              />
+                            ) : (
+                              <Avatar name={eachComment?.user?.name} size="38" round />
+                            )}
+                          </IconButton>
+                        </Grid>
+                        <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
+                          <div>
+                            <span className={classes.bold}>{eachComment?.user?.name}</span>
+                            {!isNaN(eachComment.ts) && (
+                              <ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />
+                            )}
+                            {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+                            {eachComment?.user?.email === stateApp.user.email &&
+                              showCommentActionId === eachComment._id &&
+                              editCommentId !== eachComment._id && (
+                                <div
+                                  className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
+                                    eachComment?.user?.email === stateApp.user.email &&
+                                    showCommentActionId === eachComment._id &&
+                                    editCommentId !== eachComment._id
+                                  ) && classes.hideMenuIcon
+                                    }`}
+                                >
+                                  <ActionMenu
+                                    eachComment={eachComment}
+                                    setEditCommentId={setEditCommentId}
+                                    setEditComment={setEditComment}
+                                    deleteComment={deleteComment}
+                                    setShowActions={setShowActions}
+                                    setIsEdit={setIsEdit}
+                                  />
+                                </div>
+                              )}
+                          </div>
+                          {eachComment.isActivity === true && (
+                            <>
+                              <div className={`${classes.whiteSpace}`}>
+                                {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
+                              </div>
+                              <div className={`${classes.whiteSpace}`}>
+                                START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
+                              </div>
+                              <div className={`${classes.whiteSpace}`}>
+                                END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
+                              </div>
+                              {eachComment.activityData.outcome && (
+                                <div className={`${classes.whiteSpace}`}>
+                                  OUTCOME: {eachComment.activityData.outcome}
+                                </div>
+                              )}
+                            </>
+                          )}
+                          {editCommentId !== eachComment._id ? (
+                            <CommonCommentText users={users} eachComment={eachComment} />
+                          ) : (
+                            <div className={classes.border}>
+                              <CommentField
+                                isEdit={isEdit}
+                                profilesInfo={profilesInfo}
+                                users={users}
+                                comment={editComment}
+                                showActions={showActions}
                                 setEditCommentId={setEditCommentId}
-                                setEditComment={setEditComment}
-                                deleteComment={deleteComment}
-                                setShowActions={setShowActions}
+                                setComment={setEditComment}
+                                upsertComment={updateComment}
                                 setIsEdit={setIsEdit}
-                                unpinFromTop={unpinFromTop}
-                                pinToTop={pinToTop}
+                                setShowActions={setShowActions}
                               />
                             </div>
                           )}
-                      </div>
-                      {eachComment.isActivity === true && (
-                        <>
-                          <div className={`${classes.whiteSpace}`}>
-                            {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
-                          </div>
-                          <div className={`${classes.whiteSpace}`}>
-                            START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
-                          </div>
-                          <div className={`${classes.whiteSpace}`}>
-                            END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
-                          </div>
-                        </>
-                      )}
-                      {editCommentId !== eachComment._id ? (
-                        <CommonCommentText users={users} eachComment={eachComment} />
-                      ) : (
-                        <div className={classes.border}>
-                          <CommentField
-                            isEdit={isEdit}
-                            profilesInfo={profilesInfo}
-                            users={users}
-                            comment={editComment}
-                            showActions={showActions}
-                            setEditCommentId={setEditCommentId}
-                            setComment={setEditComment}
-                            upsertComment={updateComment}
-                            setIsEdit={setIsEdit}
-                            setShowActions={setShowActions}
-                          />
-                        </div>
-                      )}
-                    </Grid>
-                  </Grid>
-                )
-              }
-            });
-          })} */}
-
-
-
-
-          <div className={classes.comment} id="commentsContainer">
-            {!loadingComments ? (
-              <>
-                {!showAllComments && commentsArray.length > 7 && (
-                  <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
-                    <span
-                      onClick={() => {
-                        setShowAllComments(true);
-                      }}
-                    >
-                      {getCount()} more comments
-                    </span>
-                  </div>
-                )}
-
-
-                {showAllComments && commentsArray.length > 7 && (
-                  <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
-                    <span onClick={() => setShowAllComments(false)}>Hide Earlier Comments</span>
-                  </div>
-                )}
-
-
-                {pinnedArray.map((eachComment, index) => {
-                  const pinnedComment = eachComment.pin;
-                  console.log(pinnedComment, "pppppppppp");
-                  let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
-                  return (
-                    <Fragment key={index}>
-                      {(showAllComments || index >= indexToShow) && (
-                        <Grid
-                          id="commentsArea"
-                          container
-                          className={pinnedComment ? classes.pinned : classes.gridStyle}
-                          onMouseOver={() => setShowCommentActionId(eachComment?._id)}
-                          onMouseLeave={() => setShowCommentActionId(null)}
-                        >
-                          <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
-                            <IconButton>
-                              {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
-                                <Avatar
-                                  src={eachComment.isNew ? profileImage : profilesInfo[eachComment?.user?.email].profileImage}
-                                  size="38"
-                                  round
-                                />
-                              ) : (
-                                <Avatar name={eachComment?.user?.name} size="38" round />
-                              )}
-                            </IconButton>
-                          </Grid>
-                          <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
-                            <div>
-                              <span className={classes.bold}>{eachComment?.user?.name}</span>
-                              {!isNaN(eachComment.ts) && (
-                                <ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />
-                              )}
-                              {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
-                              {eachComment?.user?.email === stateApp.user.email &&
-                                showCommentActionId === eachComment._id &&
-                                editCommentId !== eachComment._id && (
-                                  <div
-                                    className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
-                                      eachComment?.user?.email === stateApp.user.email &&
-                                      showCommentActionId === eachComment._id &&
-                                      editCommentId !== eachComment._id
-                                    ) && classes.hideMenuIcon
-                                      }`}
-                                  >
-                                    <ActionMenu
-                                      eachComment={eachComment}
-                                      setEditCommentId={setEditCommentId}
-                                      setEditComment={setEditComment}
-                                      deleteComment={deleteComment}
-                                      setShowActions={setShowActions}
-                                      setIsEdit={setIsEdit}
-                                      unpinFromTop={unpinFromTop}
-                                      pinToTop={pinToTop}
-                                      showActions={showActions}
-                                    />
-                                  </div>
-                                )}
-                            </div>
-                            {eachComment.isActivity === true && (
-                              <>
-                                <div className={`${classes.whiteSpace}`}>
-                                  {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
-                                </div>
-                                <div className={`${classes.whiteSpace}`}>
-                                  START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
-                                </div>
-                                <div className={`${classes.whiteSpace}`}>
-                                  END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
-                                </div>
-                              </>
-                            )}
-                            {editCommentId !== eachComment._id ? (
-                              <CommonCommentText users={users} eachComment={eachComment} />
-                            ) : (
-                              <div className={classes.border}>
-                                <CommentField
-                                  isEdit={isEdit}
-                                  profilesInfo={profilesInfo}
-                                  users={users}
-                                  comment={editComment}
-                                  showActions={showActions}
-                                  setEditCommentId={setEditCommentId}
-                                  setComment={setEditComment}
-                                  upsertComment={updateComment}
-                                  setIsEdit={setIsEdit}
-                                  setShowActions={setShowActions}
-
-                                />
-                              </div>
-                            )}
-                          </Grid>
                         </Grid>
-                      )}
-                    </Fragment>
-                  );
-                })}
-
-                {commentsArray.map((eachComment, index) => {
-                  const pinnedComment = eachComment.pin;
-                  console.log(pinnedComment, "pppppppppp");
-                  const duplicate = (commentsArray.filter((obj => obj._id === eachComment._id)).length > 0) && (pinnedArray.filter((obj => obj._id === eachComment._id)).length > 0)
-                  let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
-                  return (
-                    <Fragment key={index}>
-                      {(showAllComments || index >= indexToShow) && (
-                        <Grid
-                          id="commentsArea"
-                          container
-                          className={pinnedComment ? classes.tracking : classes.gridStyle}
-                          //     className={pinnedComment ? (duplicate?classes.tracking: classes.pinned) : classes.gridStyle}
-                          onMouseOver={() => setShowCommentActionId(eachComment?._id)}
-                          onMouseLeave={() => setShowCommentActionId(null)}
-                        >
-                          <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
-                            <IconButton>
-                              {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
-                                <Avatar
-                                  src={eachComment.isNew ? profileImage : profilesInfo[eachComment?.user?.email].profileImage}
-                                  size="38"
-                                  round
-                                />
-                              ) : (
-                                <Avatar name={eachComment?.user?.name} size="38" round />
-                              )}
-                            </IconButton>
-                          </Grid>
-                          <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
-                            <div>
-                              <span className={classes.bold}>{eachComment?.user?.name}</span>
-                              {!isNaN(eachComment.ts) && (
-                                <ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />
-                              )}
-                              {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
-                              {eachComment?.user?.email === stateApp.user.email &&
-                                showCommentActionId === eachComment._id &&
-                                editCommentId !== eachComment._id && (
-                                  <div
-                                    className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
-                                      eachComment?.user?.email === stateApp.user.email &&
-                                      showCommentActionId === eachComment._id &&
-                                      editCommentId !== eachComment._id
-                                    ) && classes.hideMenuIcon
-                                      }`}
-                                  >
-                                    <ActionMenu
-                                      eachComment={eachComment}
-                                      setEditCommentId={setEditCommentId}
-                                      setEditComment={setEditComment}
-                                      deleteComment={deleteComment}
-                                      setShowActions={setShowActions}
-                                      setIsEdit={setIsEdit}
-                                      unpinFromTop={unpinFromTop}
-                                      pinToTop={pinToTop}
-                                      showActions={showActions}
-                                    />
-                                  </div>
-                                )}
-                            </div>
-                            {eachComment.isActivity === true && (
-                              <>
-                                <div className={`${classes.whiteSpace}`}>
-                                  {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
-                                </div>
-                                <div className={`${classes.whiteSpace}`}>
-                                  START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
-                                </div>
-                                <div className={`${classes.whiteSpace}`}>
-                                  END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
-                                </div>
-                              </>
-                            )}
-                            {editCommentId !== eachComment._id ? (
-                              <CommonCommentText users={users} eachComment={eachComment} />
-                            ) : (
-                              <div className={classes.border}>
-                                <CommentField
-                                  isEdit={isEdit}
-                                  profilesInfo={profilesInfo}
-                                  users={users}
-                                  comment={editComment}
-                                  showActions={showActions}
-                                  setEditCommentId={setEditCommentId}
-                                  setComment={setEditComment}
-                                  upsertComment={updateComment}
-                                  setIsEdit={setIsEdit}
-                                  setShowActions={setShowActions}
-
-                                />
-                              </div>
-                            )}
-                          </Grid>
-                        </Grid>
-                      )}
-                    </Fragment>
-                  );
-                })}
-              </>
-            ) : (
-              <CircularProgress color="secondary"></CircularProgress>
-            )}
-            <div id="checkIf" ref={commentContainerRef} />
-          </div>
-          {!editCommentId && (
-            <div
-              style={{
-                paddingBottom: "20px",
-                // position: "absolute",
-                // bottom: "0px",
-                width: "100%",
-              }}
-            >
-              <Grid container>
-                <Grid item style={{ maxWidth: "55px" }}>
-                  <IconButton
-                    className={classes.commentView}
-                  // style={{ top: "3px" }}
-                  >
-                    {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
-                  </IconButton>
-                </Grid>
-                <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
-                  <SizeMe>
-                    {({ size }) => (
-                      <div
-                        className={classes.border}
-                        style={{ paddingBottom: "20px" }}
-                        onClick={() => {
-                          if (!showActions) {
-                            setShowActions(true);
-                          }
-                        }}
-                        onBlur={() => {
-                          if (showActions && !comment) {
-                            setShowActions(false);
-                          }
-                        }}
-                      >
-                        <CommentField
-                          profilesInfo={profilesInfo}
-                          users={users}
-                          comment={comment}
-                          showActions={showActions}
-                          setComment={setComment}
-                          upsertComment={addNewComment}
-                          showCommentType={props.showCommentType}
-                        // fieldWidth={`${size - 23}px`}
-                        />
-                      </div>
+                      </Grid>
                     )}
-                  </SizeMe>
-                </Grid>
-              </Grid>
-            </div>
+                  </Fragment>
+                );
+              })}
+            </>
+          ) : (
+            <CircularProgress color="secondary"></CircularProgress>
           )}
+          <div id="checkIf" ref={commentContainerRef} />
         </div>
-      )}
-    </SizeMe>
+        {!editCommentId && (
+          <div
+            style={{
+              paddingBottom: "20px",
+              // position: "absolute",
+              // bottom: "0px",
+              width: "100%",
+            }}
+          >
+            <Grid container alignItems="center">
+              <Grid item style={{ maxWidth: "55px" }}>
+                <IconButton
+                  className={classes.commentView}
+                // style={{ top: "3px" }}
+                >
+                  {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
+                </IconButton>
+              </Grid>
+              <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
+                <>
+                  <div
+                    className={classes.border}
+                    style={{ paddingBottom: "20px" }}
+                    onClick={() => {
+                      if (!showActions) {
+                        setShowActions(true);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (showActions && !comment) {
+                        setShowActions(false);
+                      }
+                    }}
+                  >
+                    <CommentField
+                      profilesInfo={profilesInfo}
+                      users={users}
+                      comment={comment}
+                      showActions={showActions}
+                      setComment={setComment}
+                      upsertComment={addNewComment}
+                      showCommentType={props.showCommentType}
+                    />
+                  </div>
+                </>
+              </Grid>
+            </Grid>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -944,26 +748,26 @@ export const CommentText = ({ eachComment, users }) => {
                     let id = sWord.split("{{")[1];
                     id = id.split("}}")[0];
                     return (
-                      <span className="blue">
+                      <p className={`${classes.commentWords} blue`}>
                         {firstPart}@{users.find((user) => user._id === id)?.name}
                         {secondPart}{" "}
-                      </span>
+                      </p>
                     );
                   } else if (sWord === "") return <br />;
                   else
                     return (
-                      <span>
+                      <p className={classes.commentWords}>
                         {sWord} <br />{" "}
-                      </span>
+                      </p>
                     );
                 })}
               </>
             );
           }
 
-          return <span>{splittedWord}</span>;
+          return <p className={classes.commentWords}>{splittedWord}</p>;
         } else {
-          return <span>{word} </span>;
+          return <p className={classes.commentWords}>{word} </p>;
         }
       })}
     </div>

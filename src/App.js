@@ -61,6 +61,7 @@ import { Provider as ReduxProvider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
 import configureStore, { history } from "./store";
 import AnalyticsProvider from "components/Analytics/AnalyticsProvider";
+import AdminProvider from "components/Admin/AdminProvider";
 // user management
 const store = configureStore(/ provide initial state if any /);
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
@@ -348,6 +349,7 @@ function App() {
                         <PrivateRoute exact path="/alerts" component={AlertsProvider} />
                         <PrivateRoute exact path="/titleopinion" component={TitleOpinionProvider} />
                         <PrivateRoute title="Contacts" path="/contacts" component={ContactsProvider} />
+                        <PrivateRoute title="Admin" path="/admin" component={AdminProvider} />
                         <PrivateRoute exact path="/contact/details/:contactId" component={ContactDetailsProvider} />
                         <PrivateRoute
                           exact

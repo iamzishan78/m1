@@ -72,14 +72,7 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
     label: "Property",
     esKey: "number.keyword",
     options: {
-      ...GlobalStickyStyles({
-        setCellProps: {
-          left: isReportingGroup ? "77px" : "108px",
-        },
-        setCellHeaderProps: {
-          left: isReportingGroup ? "77px" : "108px",
-        }
-      }),
+      ...GlobalStickyStyles({ isReportingGroup }),
 
       // setCellProps: () => ({
       //   style: {

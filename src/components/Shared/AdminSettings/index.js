@@ -8,7 +8,7 @@ import { useLocation } from "react-router-dom";
 
 const menuOptions = [
   { label: "Code Mapping", value: "code_mapping" },
-  { label: "Validations", value: "validation", disabled: true },
+  // { label: "Validations", value: "validation", disabled: true },
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const AdminSettings = () => {
-  const settingsFor = useLocation().pathname.split('/')[1]
+  const settingsFor = useLocation().pathname.split("/")[2];
 
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState(menuOptions[0].value);

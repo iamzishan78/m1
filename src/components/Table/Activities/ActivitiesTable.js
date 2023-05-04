@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import get from "lodash/get";
+import moment from "moment";
 // context
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import { Container, Dialog, IconButton, ButtonGroup, Button } from "@material-ui/core";
@@ -22,6 +23,8 @@ import { usetableStyles } from "../Styles";
 import { UPDATE_PROPERTY_INTEREST } from "graphQL/useMutationUpdatepropertyInterest";
 import { activityTypes } from "utils/data";
 import { getRangeFilters } from "utils/helper";
+import Chip from '@material-ui/core/Chip';
+import { TableFilterList } from "mui-datatables";
 
 export const getFilters = (appliedFilters) => {
   let filters = [];
@@ -62,6 +65,22 @@ export const getFilters = (appliedFilters) => {
     if (!filters.length && appliedFilters.length) filters = appliedFilters;
   }
   return filters;
+};
+
+
+const CustomChip = ({ label, onDelete }) => {
+  if (["Expiration", "Option to Extend"].includes(label))
+    return null
+  return (
+    <Chip
+      label={label}
+      onDelete={onDelete}
+    />
+  );
+};
+
+const CustomFilterList = (props) => {
+  return <TableFilterList {...props} ItemComponent={CustomChip} />;
 };
 
 function ActivitiesTable(props) {
@@ -109,23 +128,78 @@ function ActivitiesTable(props) {
   };
 
   useEffect(() => {
+    const filters = [
+      ...getFilters(appliedFilters),
+      { field: 'type.keyword', value: 'Expiration', notInclude: true },
+      { field: 'type.keyword', value: 'Option to Extend', notInclude: true },
+    ]
+
+    if (props?.activityFilterByType && props?.activityFilterByType !== "all") {
+      filters.push({ field: "type.keyword", value: props.activityFilterByType })
+    }
+    if (props?.activityFilterByType && props?.activityFilterByOwner !== "all") {
+      filters.push({ field: "ownerId.keyword", value: props.activityFilterByOwner })
+    }
+    const today = moment().format("yyyy-MM-DD");
+    switch (props.activityFilterByTime) {
+
+      case "upcoming":
+        filters.push({
+          field: 'dateTime',
+          value: {
+            gte: `${today}T00:00:00.000Z`,
+          },
+          type: "range"
+        });
+        break;
+      case "overdue":
+        filters.push({
+          field: 'endDateTime',
+          value: {
+            lte: `${today}T00:00:00.000Z`,
+          },
+          type: "range"
+        });
+        filters.push({ field: "isClosed", value: false });
+        break;
+      case "open":
+        filters.push({
+          field: "isClosed",
+          value: false
+        });
+        break;
+      case "closed":
+        filters.push({
+          field: "isClosed",
+          value: true
+        });
+        break;
+
+      default:
+        break;
+    }
+
+
     props.setTableMeta({
       filters: [
         ...getFilters(appliedFilters),
+        { field: 'category.keyword', value: 'CRM', includeEmpty: true },
         { field: 'type.keyword', value: 'Expiration', notInclude: true },
         { field: 'type.keyword', value: 'Option to Extend', notInclude: true }
       ],
       extendSearchQuery: stateApp.activitySearchQuery,
+      filters,
       searchFields,
       TableHeader: copy(TableHeader),
       esIndex,
       startPaginationAt: 25,
       formatHits,
+      exportPx: props.parent === 'Contact' ? "121px" : undefined,
       defaultSort: { field: "lastUpdateAt", order: "desc" },
       setAppliedFilters: props.filtersChange,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateApp.activitySearchQuery, props.filterToggle]);
+  }, [stateApp.activitySearchQuery, props.filterToggle, props.activityFilterByType, props.activityFilterByTime, props.activityFilterByOwner]);
 
   useEffect(() => {
     if (clickedRow) {
@@ -264,6 +338,9 @@ function ActivitiesTable(props) {
         parent={props.parent}
         setColumnsBase={[]}
         {...props.esHocProps}
+        component={{
+          TableFilterList: CustomFilterList,
+        }}
       />
       <ActivitiesModal setSelectedActivityId={setSelectedActivityId} events={events} />
     </Container>

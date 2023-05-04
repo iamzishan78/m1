@@ -39,22 +39,39 @@ const ActivitiesHeadCells = [
     label: "Start Date",
     esKey: "dateTime",
     options: {
-      display: true,
+      setCellProps: () => ({ style: { minWidth: "185px" } }),
       sort: true,
       filter: true,
     },
-    style: { minWidth: 185 }
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
   },
+
   {
     name: "end",
     label: "End Date",
     esKey: "endDateTime",
     options: {
+      setCellProps: () => ({ style: { minWidth: "185px" } }),
+      sort: true,
+      filter: true,
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+  {
+    name: "outcome",
+    label: "Outcome",
+    esKey: "outcome.keyword",
+    options: {
       display: true,
       sort: true,
       filter: true,
     },
-    style: { minWidth: 185 }
   },
   {
     name: "dealName",
@@ -101,12 +118,19 @@ const ActivitiesHeadCells = [
   {
     name: "isClosed",
     label: "Completed?",
+    esKey: "isClosed",
     options: {
       ignoreGlobal: true,
       display: true,
       sort: true,
       filter: true,
     },
+    custom: {
+      formatedFilterOptions: [
+        { value: 'true', label: "Completed" },
+        { value: 'false', label: "Not Completed" },
+      ]
+    }
   },
 
 ];

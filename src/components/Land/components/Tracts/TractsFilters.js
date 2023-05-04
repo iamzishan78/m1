@@ -5,7 +5,6 @@ import { makeStyles } from "@material-ui/styles";
 import { useSelector } from "react-redux";
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
-import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { updateUserGridViewSettingAction } from "store/actions/sessionActions";
 import { AppContext } from "AppContext";
 import { tractFilterColumnsHeader, tractInterestFilterColumnsHeader } from "utils/data";
@@ -140,7 +139,7 @@ const TractsFilters = ({ selectedTractTab }) => {
             <Grid
                 container
                 alignItems="center"
-                style={{ padding: "5px 36px 5px 45px", maxWidth: "1350px" }}
+                style={{ padding: "5px 36px 5px 14px", maxWidth: "1350px" }}
                 // justifyContent="space-between"
                 spacing={2}
             >
@@ -154,7 +153,7 @@ const TractsFilters = ({ selectedTractTab }) => {
                             value: "parcel"
                         }]
                         let filterList = [[''], [''], [''], ['']]
-                        const gridViewFilters = TractGridViewModule?.filters
+                        const gridViewFilters = TractInterestGridViewModule?.filters
 
                         if (gridViewFilters && typeof filterColumn?.filterKey === 'string') {
                             const gridViewFilter = gridViewFilters.find(filter => filter.field === filterColumn?.filterKey)
@@ -175,14 +174,14 @@ const TractsFilters = ({ selectedTractTab }) => {
                                     esIndex={"shapeowners_flat"}
                                     variant="outlined"
                                     setFilters={setFilters}
-                                    filterList={[[''], [''], [''], ['']]}
+                                    filterList={filterList}
                                     column={filterColumn}
                                     disabled={filterColumn?.disabled}
                                     index={index}
                                     custom={Array.isArray(filterColumn.filterKey) ? custom : undefined}
                                     onChange={onChange}
                                     query={GET_ES_SIMPLE_FILTER}
-                                    searchFields={["*"]}
+                                    searchFields={[filterColumn.filterKey]}
                                     filters={appliedFilters}
                                     extendSearchQuery={""}
                                 />

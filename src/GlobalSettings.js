@@ -64,7 +64,7 @@ const GlobalSettings = {
         maxWidth: "492px",
         whiteSpace: "pre-wrap",
         position: "sticky",
-        left: "108px",
+        left: "124px",
         zIndex: 200,
         boxShadow: "inset -1px 0px 0px 0px lightgrey",
         padding: "0px 25px 0px 0px",
@@ -76,7 +76,7 @@ const GlobalSettings = {
       style: {
         position: "sticky",
         zIndex: 201,
-        left: "108px",
+        left: "124px",
         paddingLeft: "25px !important",
       },
     }),
@@ -144,7 +144,7 @@ const GlobalSettings = {
   },
 };
 
-export const GlobalStickyStyles = ({ setCellProps = {}, setCellHeaderProps = {} }) => {
+export const GlobalStickyStyles = ({ setCellProps = {}, setCellHeaderProps = {}, isSnapGrid = false, isReportingGroup = false }) => {
   return {
     setCellProps: () => ({
       style: {
@@ -152,7 +152,7 @@ export const GlobalStickyStyles = ({ setCellProps = {}, setCellHeaderProps = {} 
         minWidth: setCellProps?.maxWidth || "450px",
         whiteSpace: "pre-wrap",
         position: "sticky",
-        left: "108px",
+        left: isSnapGrid || isReportingGroup ? "77px" : "124px",
         zIndex: 200,
         boxShadow: "inset -1px 0px 0px 0px lightgrey",
         padding: "0px 25px 0px 0px",
@@ -165,9 +165,8 @@ export const GlobalStickyStyles = ({ setCellProps = {}, setCellHeaderProps = {} 
         maxWidth: "450px",
         minWidth: setCellProps?.maxWidth || "450px",
         position: "sticky",
-        paddingLeft: '35px',
         zIndex: 201,
-        left: "108px",
+        left: isSnapGrid || isReportingGroup ? "77px" : "124px",
         ...setCellHeaderProps,
       },
     }),

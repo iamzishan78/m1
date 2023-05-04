@@ -82,6 +82,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridStyle: {
     padding: "12px 0px",
+    flexWrap: 'nowrap'
   },
   bold: {
     fontWeight: "bold",
@@ -105,28 +106,16 @@ const useStyles = makeStyles((theme) => ({
   inlineFlex: {
     display: "inline-flex",
   },
-  containerWrapper:{
-    display:'flex',
-    justifyContent:'flex-start',
-    alignItems:'center',
-    gap:'10px'
-  },
-  pinned: {
-    borderLeftWidth: "initial",
-    borderLeftStyle: "inset",
-    borderLeftColor: "#ffd107",
-    background: "#FFF4EA"
-  },
-  tracking: {
-    borderLeftWidth: "initial",
-    borderLeftStyle: "inset",
-    borderLeftColor: "#ffd107",
-
-  },
+  containerWrapper: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: '10px'
+  }
 }));
 
 export default function DealComment(props) {
-  const { targetSourceId,contactData } = props;
+  const { targetSourceId, contactData } = props;
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
   const [users, setUsers] = useState([]);
@@ -142,6 +131,8 @@ export default function DealComment(props) {
   const [showCommentActionId, setShowCommentActionId] = useState(null);
   const [loadingComments, setLoadingComments] = useState(true);
   const [pinnedArray, setPinnedArray] = React.useState([])
+  const [isMinimize, setIsMinimize] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
 
   const [removeComment] = useMutation(REMOVECOMMENT);
   const [upsertComment, { data: newlyAddedComment }] = useMutation(UPSERTCOMMENT);
@@ -453,12 +444,12 @@ export default function DealComment(props) {
         setPinnedArray(temp)
         }
       }
-    }catch (e){
-      console.log("modifying the Comment Error",e);
-    }finally {
+    } catch (e) {
+      console.log("modifying the Comment Error", e);
+    } finally {
       setLoadingComments(false);
     }
-  }, [stateApp?.activeDeal?.activity,dataComments]);
+  }, [stateApp?.activeDeal?.activity, dataComments]);
   return (
     <div className={classes.container}>
       <div className={classes.comment} id="commentsContainer">
@@ -513,26 +504,26 @@ export default function DealComment(props) {
                             <span className={classes.bold}>{eachComment.user?.name}</span>
                             <span>{
                               <ReactTimeAgo
-                                  className={classes.commentTime}
-                                  date={
-                                    new Date(Number(eachComment.ts))
-                                  }
-                                  locale="en-US"
+                                className={classes.commentTime}
+                                date={
+                                  new Date(Number(eachComment.ts))
+                                }
+                                locale="en-US"
                               />
                             }</span>
                           </div>
                           {eachComment.isActivity === true && (
-                              <>
-                                <div className={`${classes.whiteSpace}`}>
-                                  {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
-                                </div>
-                                <div className={`${classes.whiteSpace}`}>
-                                  START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
-                                </div>
-                                <div className={`${classes.whiteSpace}`}>
-                                  END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
-                                </div>
-                              </>
+                            <>
+                              <div className={`${classes.whiteSpace}`}>
+                                {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
+                              </div>
+                              <div className={`${classes.whiteSpace}`}>
+                                START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
+                              </div>
+                              <div className={`${classes.whiteSpace}`}>
+                                END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
+                              </div>
+                            </>
                           )}
                           {eachComment.isPinned && <span> created this task.</span>}
 
@@ -666,13 +657,17 @@ export default function DealComment(props) {
                               <div className={classes.border}>
                                 <CommentField
                                   isEdit
+                                  setIsEdit={setIsEdit}
                                   profilesInfo={profilesInfo}
                                   users={users}
                                   comment={editComment}
                                   showActions={showActions}
                                   setEditCommentId={setEditCommentId}
                                   setComment={setEditComment}
-                                  upsertComment={updateComment}
+                                  updateCommentData={updateComment}
+                                  isMinimize={isMinimize}
+                                  setIsMinimize={setIsMinimize}
+                                  setShowActions={setShowActions}
                                 />
                               </div>
                             )}
@@ -700,11 +695,9 @@ export default function DealComment(props) {
             <Grid item xs={11} className={classes.paddingLeft10}>
               <div
                 className={classes.border}
-                style={{ width: "calc(23vw)", paddingBottom: "20px", paddingRight: "13px" }}
+                style={{ width: "calc(23vw)", paddingRight: "13px" }}
                 onClick={() => {
-                  if (!showActions) {
                     setShowActions(true);
-                  }
                 }}
                 onBlur={() => {
                   if (showActions && !comment) {
@@ -719,6 +712,8 @@ export default function DealComment(props) {
                   showActions={showActions}
                   setComment={setComment}
                   upsertComment={addNewComment}
+                  isMinimize={isMinimize}
+                  setIsMinimize={setIsMinimize}
                 />
               </div>
             </Grid>
@@ -759,6 +754,7 @@ const ActionMenu = ({ pinToTop, unpinFromTop,eachComment, setEditCommentId, setE
           onClick={(event) => {
             setEditCommentId(eachComment._id);
             setEditComment(eachComment.comment);
+            setShowActions(true);
             handleClose();
           }}
         >
