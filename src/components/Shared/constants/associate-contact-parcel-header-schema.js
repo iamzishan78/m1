@@ -1,3 +1,5 @@
+import ListChips from "components/Common/ListChips";
+
 const AssociateContactWellHeadCells = [
   {
     name: "_id",
@@ -63,7 +65,19 @@ const AssociateContactWellHeadCells = [
   { name: "cost_bearing_high_value", label: "Cost Bearing High Value" },
   { name: "depthFrom", label: "Depth From" },
   { name: "depthTo", label: "Depth To" },
-
+  {
+    name: "deals",
+    label: "Associated Deals",
+    esKey: "deals.keyword",
+    options: {
+      customRender: (value) => {
+        return value && <ListChips list={value} />
+      },
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      sort: true,
+      filter: true,
+    },
+  },
   {
     name: "parcelId",
     options: {

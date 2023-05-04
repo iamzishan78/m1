@@ -29,6 +29,7 @@ import ContactStatus from 'components/ContactDetailCard/components/ContactStatus
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
+import AssociatedDealField from "components/ContactDetailCard/components/FieldContent/AssociatedDealField";
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 
@@ -99,7 +100,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerEntity,
         contactStatus,
         ownerType,
-        contact
+        contact,
+        deals
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
@@ -114,7 +116,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         contactStatus: contactStatus || contact.contactStatus,
         ownerType,
         customLayer,
-        campaignName: contact.campaignName
+        campaignName: contact.campaignName,
+        deals
       }
       let calculatedNRA = calculateNRA(royalty_interest, orri, nri);
       let calculatedOfferPrice = calculateOfferPrice(nra)
@@ -189,7 +192,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   };
 
   const handleAddUpdate = (ownerToAdd) => {
-
     if (ownerToAdd.nra) {
       ownerToAdd.nra = addTrailingZeros(parseFloat(ownerToAdd.nra).toFixed(8));
     }
@@ -700,6 +702,27 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   name="campaignName"
                   render={(params) => (
                     <CampaignNameField
+                      {...params}
+                      className={classes.maxWidth}
+                      onChange={(values, id) => {
+                        params.onChange(values);
+                      }}
+                      fullWidth
+                      targetLabel="Contact"
+                      simpleChips
+                    />
+                  )}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <h3>Associated Deals</h3>
+
+                <Controller
+                  control={control}
+                  name="deals"
+                  render={(params) => (
+                    <AssociatedDealField
                       {...params}
                       className={classes.maxWidth}
                       onChange={(values, id) => {
