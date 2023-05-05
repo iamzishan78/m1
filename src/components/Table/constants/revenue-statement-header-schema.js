@@ -1,4 +1,6 @@
-import { history } from "store";
+import { GlobalStickyStyles } from "GlobalSettings";
+import vf_currency from "components/Shared/valueformatters/vf_currency";
+import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 
 const RevenueStatementHeadCells = [
   {
@@ -10,30 +12,44 @@ const RevenueStatementHeadCells = [
     label: "Check Number",
     esKey: "checkNumber.keyword",
     options: {
+      ...GlobalStickyStyles({
+        setCellProps: {
+          left: "124px",
+        },
+        setCellHeaderProps: {
+          left: "124px",
+        },
+      }),
+      customRender: (value, tableMeta) => <ColumnWithLink
+        value={(value ? `${value} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]) || "NA"}
+        link={`/revenue/statement/details/${tableMeta.rowData[0]}`}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      />,
       sort: true,
       filter: true,
-      customRender: (value, tableMeta, updateValue) => {
-        return <p
-          onClick={(e) => {
-            e.stopPropagation();
-            history.push(`/revenue/statement/details/${tableMeta.rowData[0]}`);
-          }}
-          style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-        >
-          {value || 'N/A'}
-        </p>
-      },
     },
   },
   {
     name: "purchaserName",
     label: "Purchaser Name",
     esKey: "payor.name.keyword",
+    options: {
+      display: false,
+    },
   },
   {
     name: "checkAmount",
     label: "Check Amount",
     esKey: "checkAmount",
+    options: {
+      sort: true,
+      filter: true,
+      customRender: (value) => {
+        return value ? <p>{value ? `${vf_currency(value?.toFixed(2))}` : ""}</p> : <p style={{ color: "#898989b0" }}>N/A</p>;
+      },
+    },
   },
   {
     name: "checkDate",
@@ -72,9 +88,10 @@ const RevenueStatementHeadCells = [
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
-    options: { 
+    options: {
       ignoreGlobal: true,
-      sort: true, filter: true 
+      sort: true,
+      filter: true,
     },
   },
   {
@@ -102,21 +119,24 @@ const RevenueStatementHeadCells = [
           <div> </div>
         </>
       ),
-      display: true, sort: false, filter: false, viewColumns: false
+      display: true,
+      sort: false,
+      filter: false,
+      viewColumns: false,
     },
     custom: {
       key_as_string: true,
       formatedFilterOptions: [
         {
           label: "Validated",
-          value: 'true',
+          value: "true",
         },
         {
           label: "Potential Issues",
-          value: 'false'
+          value: "false",
         },
-      ]
-    }
+      ],
+    },
   },
 ];
 

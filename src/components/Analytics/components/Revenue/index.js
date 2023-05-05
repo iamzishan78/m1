@@ -3,7 +3,7 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Grid, Button, Divider, Tab, Tabs } from "@material-ui/core";
+import { Grid, Divider, Tab, Tabs } from "@material-ui/core";
 
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
@@ -14,7 +14,7 @@ import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
-    margin: '100px 0 10px'
+    margin: "75px 0 10px",
   },
   actionBar: {
     backgroundColor: "#f7f7f7",
@@ -78,11 +78,9 @@ const StyledTab = withStyles((theme) => ({
   selected: {},
 }))((props) => <Tab disableRipple {...props} />);
 
-export default function RevenueAnalytics() {
+export default function RevenueAnalytics(props) {
   const classes = useStyles();
-  const propertiesReportGroup = useSelector(
-    ({ Revenue }) => Revenue.propertiesReportGroup
-  );
+  const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
   const [tab, setTab] = useState(0);
   const [fromDate, setFromDate] = React.useState(null);
   const [toDate, setToDate] = React.useState(null);
@@ -113,9 +111,7 @@ export default function RevenueAnalytics() {
 
   useEffect(() => {
     setFromDate(moment().startOf("year").format("yyyy-MM-DD"));
-    setToDate(
-      moment().subtract(1, "months").endOf("month").format("yyyy-MM-DD")
-    );
+    setToDate(moment().subtract(1, "months").endOf("month").format("yyyy-MM-DD"));
   }, []);
   const onChangeDates = (fromDate, toDate) => {
     const months = [];
@@ -135,12 +131,9 @@ export default function RevenueAnalytics() {
     setMonths(months);
   };
 
-  const [getPortfolioSummary, { data: portfolioSummary }] = useLazyQuery(
-    GET_PORTFOLIO_GROSS_REVENUE_SUMMARY,
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
+  const [getPortfolioSummary, { data: portfolioSummary, loading }] = useLazyQuery(GET_PORTFOLIO_GROSS_REVENUE_SUMMARY, {
+    fetchPolicy: "no-cache",
+  });
 
   useEffect(() => {
     getPortfolioSummary({
@@ -162,20 +155,14 @@ export default function RevenueAnalytics() {
           aria-label="ant example"
         >
           <StyledTab label="Time Series" />
-          <StyledTab label="Comparison" />
+          <StyledTab label="Comparison" disabled />
           {/* <StyledTab label="Properties" /> */}
         </StyledTabs>
       </div>
       <div className={classes.actionBar}>
-        <Grid
-          container
-          direction="row"
-          display="flex"
-          spacing={4}
-          style={{ padding: "0px 36px" }}
-        >
+        <Grid container direction="row" display="flex" spacing={4} style={{ padding: "0px 36px" }}>
           <Grid item xs={8} md={6} style={{ marginTop: "4px" }}>
-            <Grid container display="flex" alignItems="center" spacing={3}>
+            <Grid container display="flex" alignItems="center" spacing={3} justifyContent="space-between">
               <CustomDates
                 onChangeDates={onChangeDates}
                 fromDate={fromDate}
@@ -211,6 +198,8 @@ export default function RevenueAnalytics() {
       <DetailTabsSection
         monthsInterval={monthsInterval}
         portfolioSummary={portfolioSummary?.getPortfolioSummary || {}}
+        {...props}
+        loading={loading}
       />
     </>
   );

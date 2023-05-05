@@ -1,5 +1,6 @@
 import { GlobalStickyStyles } from "GlobalSettings";
 import ColumnWithLink from "../M1nTable/components/SubComponents/ColumnWithLink";
+import ListChips from "components/Common/ListChips";
 
 const AssociateContactWellHeadCells = [
   {
@@ -12,19 +13,6 @@ const AssociateContactWellHeadCells = [
       download: false,
       print: false,
       empty: false,
-      viewColumns: false,
-    },
-  },
-  {
-    name: "name",
-    label: "Owner Name",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
       viewColumns: false,
     },
   },
@@ -56,6 +44,19 @@ const AssociateContactWellHeadCells = [
   { name: "grantee", label: "Alternate Survey" },
   { name: "qtr_calls", label: "QTR Calls" },
   {
+    name: "name",
+    label: "Owner Name",
+    options: {
+      display: true,
+      filter: true,
+      searchable: false,
+      sort: true,
+      download: false,
+      print: false,
+      viewColumns: true,
+    },
+  },
+  {
     name: "qtr", label: "QTR",
     options: {
       display: false,
@@ -82,7 +83,19 @@ const AssociateContactWellHeadCells = [
   { name: "cost_bearing_high_value", label: "Cost Bearing High Value" },
   { name: "depthFrom", label: "Depth From" },
   { name: "depthTo", label: "Depth To" },
-
+  {
+    name: "deals",
+    label: "Associated Deals",
+    esKey: "deals.keyword",
+    options: {
+      customRender: (value) => {
+        return value && <ListChips list={value} />
+      },
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      sort: true,
+      filter: true,
+    },
+  },
   {
     name: "parcelId",
     options: {
@@ -155,6 +168,7 @@ const AssociateContactWellHeadCells = [
     name: "detailCard",
     label: " ",
     options: {
+      display: false,
       filter: false,
       sort: false,
       searchable: false,
