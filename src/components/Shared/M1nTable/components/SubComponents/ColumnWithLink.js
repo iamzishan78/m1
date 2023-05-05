@@ -8,7 +8,7 @@ import GlobalStyles from "GlobalStyles";
 
 const useStyles = makeStyles(() => ({
   root: {
-    color: GlobalStyles.colors.lightBlue,
+    color: `${GlobalStyles.colors.lightBlue} !important`,
     cursor: "pointer",
   },
   link: {
