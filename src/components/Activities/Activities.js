@@ -18,7 +18,7 @@ import ActivitiesAppBar from "./components/ActivitiesAppbar";
 import ActivitiesModal from "./components/ActivitiesModal";
 import { AppContext } from "../../AppContext";
 import ActivitiesTable from "../../components/Table/Activities/ActivitiesTable";
-import {ActivitiesContext} from './ActivitiesContext';
+import { ActivitiesContext } from './ActivitiesContext';
 
 
 const localizer = momentLocalizer(moment);
@@ -178,6 +178,7 @@ const Activities = () => {
             ownerId: act.ownerId,
             type: act.type,
             name: act.name,
+            creator: { name: act?.createdBy?.name }
             // isContact: act.contactId,
           };
         })
