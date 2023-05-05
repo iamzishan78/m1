@@ -124,6 +124,7 @@ const StyledListItem2 = withStyles((theme) => ({
     fontFamily: "Poppins",
     backgroundColor: theme.palette.common.white,
     color: "#263451",
+    padding:"4px 0px 4px 0",
     border: "2px solid #263451",
     borderRadius: "5px",
     marginTop: "15px",
@@ -171,7 +172,7 @@ export default function AddLayer(props) {
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [openM1, setOpenM1] = React.useState(true);
-  const [openUD, setOpenUD] = React.useState(true);
+  const [isOpenUserDefinedLayers, setIsOpenUserDefinedLayers] = React.useState(true);
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openUDLayers, setUDLayersStates] = useState([]);
@@ -221,7 +222,7 @@ export default function AddLayer(props) {
     }
   }, [stateApp.layers]);
 
-  const handleChange = () => {
+  const handleCurrentLayersChange = () => {
     setCurrentLayers((currentLayers) => { handleApplyChange(currentLayers); return currentLayers; })
   };
 
@@ -237,7 +238,7 @@ export default function AddLayer(props) {
   };
 
   const handleClickUDList = () => {
-    setOpenUD(!openUD);
+    setIsOpenUserDefinedLayers(!isOpenUserDefinedLayers);
   };
 
   const changeShowAble = (layer) => {
@@ -254,8 +255,73 @@ export default function AddLayer(props) {
     }
 
     setCurrentLayers(update(currentLayers, updatefn));
-    handleChange()
+    handleCurrentLayersChange()
   };
+  
+
+
+  const checkAllLayers = (layers, layerType) => {
+    let check = true;
+    if (layers) {
+      for (let index = 0; index < layers.length; index++) {
+        if (layers[index].type === "group") {
+          if (layers[index].layers.find((layer) => layer.layerSettings.showable === false)) check = false
+        } else if (layers[index].layerSettings.showable === false) {
+          check = false
+        }
+      }
+    }
+    if (layerType === "M1") {
+      setSelectAllMinerallayers(check)
+    } else if (layerType === "UD") {
+      setSelectAllClientlayers(check)
+    }
+  }
+
+  useEffect(() => {
+    checkAllLayers(M1Layers, "M1")
+    checkAllLayers(UdLayers, "UD")
+  }, []);
+
+  useEffect(() => {
+    checkAllLayers(M1Layers, "M1")
+    checkAllLayers(UdLayers, "UD")
+  }, [currentLayers]);
+
+  const [selectAllMinerallayers, setSelectAllMinerallayers] = useState(false)
+  const [selectAllClientlayers, setSelectAllClientlayers] = useState(false)
+
+  const changeAlllayers = (layers, value, layerType) => {
+
+    const updatedLayers = layers.map(layer => {
+      const updatefn = {};
+      if (layer.type === "group") {
+        layer.layers.forEach((l) => {
+          const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
+          updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
+        });
+      } else {
+        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
+        updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
+      }
+      return updatefn
+    });
+
+    let result = currentLayers
+    for (let index = 0; index < updatedLayers.length; index++) {
+      result = update(result, updatedLayers[index])
+    }
+
+    setCurrentLayers(result);
+    if (layerType === "M1") {
+      setSelectAllMinerallayers(value)
+    } else if (layerType === "UD") {
+      setSelectAllClientlayers(value)
+    }
+
+    handleCurrentLayersChange()
+  }
+
 
   const changeLayerName = (layer, name) => {
     const updatefn = {};
@@ -270,7 +336,7 @@ export default function AddLayer(props) {
     }
 
     setCurrentLayers(update(currentLayers, updatefn));
-    handleChange()
+    handleCurrentLayersChange()
   };
 
   const handleApplyChange = (currentLayers) => {
@@ -490,6 +556,13 @@ export default function AddLayer(props) {
 
               <div onClick={(e) => e.stopPropagation()}>
                 <StyledListItem2 button onClick={handleClickM1List}>
+                <Checkbox
+                    checked={selectAllMinerallayers}
+                    color="darkgray"
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) => {changeAlllayers(M1Layers,!selectAllMinerallayers,"M1")}}
+                    inputProps={{ "aria-label": "primary checkbox" }}
+                  />
                   <ListItemText primary="M1neral Platform Layers" />
                   {openM1 ? <ExpandLess /> : <ExpandMore />}
                 </StyledListItem2>
@@ -512,12 +585,20 @@ export default function AddLayer(props) {
                   </List>
                 </Collapse>
                 <StyledListItem2 button onClick={handleClickUDList}>
+                <Checkbox
+                    checked={selectAllClientlayers}
+                    color="darkgray"
+                    
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) => {changeAlllayers(UdLayers,!selectAllClientlayers,"UD")}}
+                    inputProps={{ "aria-label": "primary checkbox" }}
+                  />
                   <ListItemText primary="Client Specific Layers" />
-                  {openUD ? <ExpandLess /> : <ExpandMore />}
+                  {isOpenUserDefinedLayers ? <ExpandLess /> : <ExpandMore />}
                 </StyledListItem2>
 
                 {/* Custom */}
-                <Collapse in={openUD} timeout="auto" unmountOnExit>
+                <Collapse in={isOpenUserDefinedLayers} timeout="auto" unmountOnExit>
                   <List className={classes.list}>
                     {UdLayers.map((layer, index) => {
                       const labelId = `udlayer-list-label-${index}`;
