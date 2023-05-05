@@ -43,7 +43,7 @@ const RevenueStatementHeadCells = [
         },
     },
     {
-        name: "purchaser", label: "Purchaser", esKey: 'property.purchaser.keyword', options: { sort: true, filter: true }
+        name: "purchaser", label: "Purchaser", esKey: 'property.purchaser.name.keyword', options: { sort: true, filter: true }
     },
     {
         name: "checkDate", label: "Check Date", esKey: 'checkDate', custom: { key_as_string: true, isDate: true }, options: { sort: true, filter: true }

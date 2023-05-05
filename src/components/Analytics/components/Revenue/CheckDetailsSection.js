@@ -20,6 +20,7 @@ function CheckDetailsSection(props) {
         return hits.map((hit) => {
             hit.number = hit?.property?.number;
             hit.name = hit?.property?.name;
+            hit.purchaser = hit?.property?.purchaser?.name;
             hit.state = hit.property?.state;
             hit.county = hit.property?.county;
             hit.ownerNumber = hit.property?.ownerNumber;
