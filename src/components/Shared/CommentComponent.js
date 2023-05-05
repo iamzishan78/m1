@@ -264,7 +264,7 @@ export default function CommentComponent(props) {
   }, [targetSourceId]);
 
   useEffect(() => {
-    // debugger
+    let allComments = [];
     if (dataComments && dataComments.commentsByObjectId) {
       if (props.activityLog && props.activityLog.length > 0) {
         let activityData = [];
@@ -281,41 +281,16 @@ export default function CommentComponent(props) {
             __typename: "Comment",
           });
         });
-        let tempArray = dataComments.commentsByObjectId.concat(activityData);
-        // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
-        let temp = []
-        let tempArr = sortArrayBasedOnTs([...tempArray])
-
-        tempArr.forEach(item => {
-          if (item.pin === true) {
-            temp.push(item)
-          }
-        })
-
-        console.log("before", tempArr)
-        const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
-        console.log("after", trueFirst)
-        setCommentsArray(tempArray)
-        setPinnedArray(trueFirst)
+        allComments = dataComments.commentsByObjectId.concat(activityData);
 
       } else {
-        // setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
-        let temp = []
-
-        // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
-        let tempArr = sortArrayBasedOnTs([...dataComments.commentsByObjectId])
-        tempArr.map(item => {
-          if (item.pin === true) {
-            temp.push(item)
-          }
-        })
-        console.log("before", tempArr)
-
-        const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
-        console.log("after", trueFirst)
-        setCommentsArray(tempArr)
-        setPinnedArray(temp)
+        allComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId])
       }
+      let pinnedComments = allComments.filter(comment => comment.pin);
+      pinnedComments = sortArrayBasedOnTs(pinnedComments);
+      let unPinnedComments = allComments.filter(comment => !comment.pin);
+      unPinnedComments = sortArrayBasedOnTs(unPinnedComments);
+      setCommentsArray([...pinnedComments, ...unPinnedComments]);
     }
     setLoadingComments(false);
   }, [dataComments, props.activityLog]);
