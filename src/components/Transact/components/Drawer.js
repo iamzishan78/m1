@@ -5,6 +5,7 @@ import DescriptionIcon from "@material-ui/icons/DescriptionSharp";
 import CheckmarkIcon from "@material-ui/icons/CheckBoxOutlined";
 import ShareIcon from "@material-ui/icons/Share";
 import FolderIcon from "@material-ui/icons/Folder";
+import GridOnIcon from '@material-ui/icons/GridOn';
 import HomeIcon from "@material-ui/icons/HomeOutlined";
 import IdentityIcon from "@material-ui/icons/PermIdentity";
 import FlowIcon from "@material-ui/icons/Repeat";
@@ -62,6 +63,13 @@ export default function Drawer(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles(props);
   const { dealSettingsNumber } = props;
+
+  const onClick = (key) => {
+    if(key === "Grid" && stateApp.transactBarView === key){
+      key = "Deal"
+    }
+    setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))
+  }
 
   const drawerIcons = {
     // Comments: (props) => <MessageIcon {...props} />,
@@ -134,6 +142,19 @@ export default function Drawer(props) {
         <PanoramaIcon {...props} />
       </Badge>
     ),
+    Grid: (props) => {
+      return (
+        <Badge
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          color="primary"
+        >
+          <GridOnIcon {...props} />
+        </Badge>
+      )
+    }
     // reserve this for automations potentially
     // Progress: (props) => (
     //   <Badge
@@ -153,7 +174,7 @@ export default function Drawer(props) {
         <Tooltip title={key} placement="left">
           <div
             className={`${classes.icon} ${stateApp.transactBarView === key ? classes.activeIcon : classes.inactiveIcon}`}
-            onClick={() => setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))}
+            onClick={() => onClick(key)}
           >
             {drawerIcons[key]({
               ...props,

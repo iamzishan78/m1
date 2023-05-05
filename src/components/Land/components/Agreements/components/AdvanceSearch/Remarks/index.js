@@ -26,8 +26,8 @@ const useStyles = makeStyles((theme) => ({
 const remartsTypeFilters = [
   {
     label: "Remark Type",
-    filterKey: "comments.commentType.keyword",
-    searchFields: ["comments.commentType"],
+    filterKey: "comments.commentTypeData.commentType.keyword",
+    searchFields: ["comments.commentTypeData.commentType"],
   },
 ];
 
@@ -35,7 +35,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index }) 
   const params = {
     esIndex: "shapes_flat",
     variant: "outlined",
-    setFilters: () => {},
+    setFilters: () => { },
     filterList,
     column: {
       label: filter.label,
@@ -59,28 +59,20 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index }) 
 export default function ProvisionsFilters(props) {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [filterList, setFilterList] = useState([[], [], [], []]);
+  const [filterList, setFilterList] = useState([[]]);
 
-  const onFilterChange = React.useMemo(
-    () =>
-      debounce((request, callback, index) => {
-        const { filterKey } = callback;
-        const landProvisionsFilters = [...stateApp.landSearchFilters.provisions];
-        const _index = landProvisionsFilters.findIndex((f) => f.field === filterKey);
-        if (_index === -1 && request[0]) landProvisionsFilters.push({ field: filterKey, value: request[0] });
-        else if (request.length > 0 && request[0]) landProvisionsFilters[_index].value = request[0];
-        else if (_index !== -1) landProvisionsFilters.splice(_index, 1);
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          landSearchFilters: { ...stateApp.landSearchFilters, provisions: landProvisionsFilters },
-        }));
+  const onFilterChange =
+    debounce((request, callback, index) => {
+      const { filterKey } = callback;
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        landSearchFilters: { ...stateApp.landSearchFilters, [filterKey]: request[0] },
+      }));
 
-        let _filterList = [...filterList];
-        _filterList[index] = request;
-        setFilterList(_filterList);
-      }, 1000),
-    [stateApp.landSearchFilters.provisions]
-  );
+      let _filterList = [...filterList];
+      _filterList[index] = request;
+      setFilterList(_filterList);
+    }, 1000)
 
   return (
     <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
@@ -89,8 +81,7 @@ export default function ProvisionsFilters(props) {
           <AutoCompleteDropdown
             classes={classes}
             onChange={(request, top, callback) => {
-              if (filter.customOnChange) request[0] = filter.customOnChange(request[0]);
-              //   onFilterChange(request, callback, index);
+              onFilterChange(request, callback, index);
             }}
             filter={filter}
             filterList={filterList}

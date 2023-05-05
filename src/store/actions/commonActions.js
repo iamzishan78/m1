@@ -1,4 +1,4 @@
-import { TOGGLE_QUICK_ACTIONS_PANEL, SET_ACTIVE_MODULE, SET_REDUX_KEY, TOGGLE_BULK_UPLOAD, EXEC_COMMON_ASYNC_EXPORT_JOB } from "store/type";
+import { UPDATE_PIN_COMMENTS, TOGGLE_QUICK_ACTIONS_PANEL, SET_ACTIVE_MODULE, SET_REDUX_KEY, TOGGLE_BULK_UPLOAD, EXEC_COMMON_ASYNC_EXPORT_JOB } from "store/type";
 
 export const toggleBulkUploadAction = (payload) => ({ type: TOGGLE_BULK_UPLOAD, payload });
 
@@ -31,3 +31,9 @@ export const execCommonAsyncExportJobAction = {
   }),
   REJECTED: () => ({ type: EXEC_COMMON_ASYNC_EXPORT_JOB.REJECTED }),
 };
+export const updatePinComments = (newCommentList) => {
+  return {
+    type: UPDATE_PIN_COMMENTS,
+    payload: newCommentList
+  }
+}

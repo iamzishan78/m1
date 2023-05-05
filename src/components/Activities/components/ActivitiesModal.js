@@ -26,8 +26,8 @@ import DocumentIcon from "@material-ui/icons/DescriptionOutlined";
 import PersonIcon from "@material-ui/icons/Person";
 import RecentActorsIcon from "@material-ui/icons/RecentActors";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+// import Checkbox from "@material-ui/core/Checkbox";
+// import FormControlLabel from "@material-ui/core/FormControlLabel";
 import AutocompEntityNamesVirtualizeList from "../../Shared/M1nTable/components/SubComponents/AutocompEntityNamesVirtualizeList";
 import { setStateIfDeepEqual } from "../../Shared/functions";
 import { Calendar, momentLocalizer } from "react-big-calendar";
@@ -39,6 +39,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { GETMONGOUSERS } from "../../../graphQL/useQueryGetUsers";
 import Typography from "@material-ui/core/Typography";
 import { ADDACTIVITY, DELETEACTIVITY, UPDATEACTIVITY } from "../../../graphQL/useMutationActivity";
+import { workspaceTenantName } from "components/Shared/functions";
 import AutoCompleteAddNewField from "components/ContactDetailCard/components/FieldContent/AutoCompleteAddNewField";
 import { outcomeOptions } from "components/ContactDetailCard/components/FieldContent/helper";
 
@@ -195,6 +196,10 @@ const initialErrors = {
 };
 
 const localizer = momentLocalizer(moment);
+const activityStatusOptions = [
+  { label: 'Open', value: false },
+  { label: 'Complete', value: true }
+];
 
 export default function ActivitiesModal({ events, setSelectedActivityId }) {
   const outcomeFieldRef = useRef();
@@ -467,6 +472,8 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
           dateTime: new Date(dateTime).toUTCString(),
           endDateTime: new Date(endDateTime).toUTCString(),
           isClosed: closed,
+          user:stateApp.user._id,
+          createdBy: stateApp?.user?._id,
         },
       },
     });
@@ -494,6 +501,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
           contactName: nameAutValue?.name,
           dealId,
           isClosed: closed,
+          user:stateApp.user._id
         },
       },
     });
@@ -507,11 +515,13 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
     });
   };
 
-  const handleOnContactView = () => nameAutValue._id && history.push(`/contact/details/${nameAutValue._id}`);
-
   const handleOnDealClick = () => {
-    // handle Deal Click we need to get lane id
+    const { _id: stageId, pipeline } = dealValue.stage;
+    const dealId = dealValue._id;
+    return `/flow/${pipeline}/lane/${stageId}/card/${dealId}?tenant=${workspaceTenantName()}`;
   };
+
+  const handleOnContactView = () => `/contact/details/${nameAutValue._id}?tenant=${workspaceTenantName()}`;
 
   const dealValue = openDeals.find((deal) => deal._id === dealId) || null;
   console.log("--*-*-*- selectedActivity *-*-*-*-", selectedActivity, outcomeFieldRef);
@@ -714,28 +724,16 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                   />
                 </div>
               </div>
-              <div className={classes.row}>
-                <span className={classes.rowIcon}>
-                  <PersonIcon />
-                </span>
-                <div style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}>
-                  <Autocomplete
-                    className={clsx(classes.fieldWidth, !owner.id && errors.owner && classes.error)}
-                    options={users.filter((u) => u.text)}
-                    onChange={(e, user) => {
-                      setOwner({ name: user?.text, id: user?.value });
-                    }}
-                    value={users.find((user) => user.value === owner.id) || null}
-                    getOptionLabel={(option) => option.text}
-                    getOptionSelected={(option) => option.value === owner.id}
-                    renderInput={(params) => <TextField margin="dense" {...params} variant="outlined" label="Activity Owner" />}
-                  />
-                </div>
-              </div>
 
               <div className={classes.row}>
                 <span className={classes.rowIcon}>
-                  <MonetizationOnIcon onClick={handleOnDealClick} color={dealValue ? "secondary" : "disabled"} />
+                  {dealValue ? (
+                    <a href={handleOnDealClick()} className={classes.rowIcon}>
+                      <MonetizationOnIcon color="secondary" />
+                    </a>
+                  ) : (
+                    <MonetizationOnIcon color="disabled" />
+                  )}
                 </span>
                 <div style={{ width: "76%", marginRight: 24 }}>
                   <Autocomplete
@@ -768,7 +766,13 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
               </div>
               <div className={classes.row}>
                 <span className={classes.rowIcon}>
-                  <RecentActorsIcon onClick={handleOnContactView} color={nameAutValue?._id ? "secondary" : "disabled"} />
+                  {nameAutValue?._id ? (
+                    <a href={handleOnContactView()} >
+                      <RecentActorsIcon color="secondary" />
+                    </a>
+                  ) : (
+                    <RecentActorsIcon color="disabled" />
+                  )}
                 </span>
                 <div className={classes.fieldWidth}>
                   <AutocompEntityNamesVirtualizeList
@@ -803,6 +807,40 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
               </div>
 
               <div className={classes.row}>
+                <span className={classes.rowIcon}>
+                  <PersonIcon />
+                </span>
+                <div style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}>
+                  <Autocomplete
+                    className={clsx(classes.fieldWidth, !owner.id && errors.owner && classes.error)}
+                    options={users.filter((u) => u.text)}
+                    onChange={(e, user) => {
+                      setOwner({ name: user?.text, id: user?.value });
+                    }}
+                    value={users.find((user) => user.value === owner.id) || null}
+                    getOptionLabel={(option) => option.text}
+                    getOptionSelected={(option) => option.value === owner.id}
+                    renderInput={(params) => <TextField margin="dense" {...params} variant="outlined" label="Activity Owner" />}
+                  />
+
+                  {!addNew &&
+                    <div
+                      style={{ width: "76%", marginTop: "22.5px" }}
+                    >
+                      <TextField
+                        label="Activity Created By"
+                        disabled
+                        className={classes.fieldWidth}
+                        InputProps={{ readOnly: true }}
+                        value={selectedActivity?.creator?.name}
+                        margin="dense" variant="outlined"
+                      />
+                    </div>
+                  }
+                </div>
+              </div>
+
+              {/* <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
                 <div style={{ width: "76%", marginRight: 24 }}>
                   <TextField
@@ -810,6 +848,24 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                     variant="outlined"
                     className={clsx(classes.marginBottom, classes.inputField, classes.fieldWidth)}
                     placeholder="Organization"
+                  />
+                </div>
+              </div> */}
+
+              <div className={classes.row}>
+                <span className={classes.rowIcon}></span>
+                <div
+                  style={{ width: "76%", margin: "0px 24px 7.5px 0px", marginRight: 24 }}
+                >
+                  <Autocomplete
+                    id="activity-status"
+                    disableClearable
+                    className={classes.fieldWidth}
+                    options={activityStatusOptions}
+                    onChange={(event, option) => setClosed(option.value)}
+                    value={activityStatusOptions.find((option) => option.value === closed)}
+                    getOptionLabel={(option) => option.label}
+                    renderInput={(params) => <TextField {...params} margin="dense" variant="outlined" label="Activity Status" />}
                   />
                 </div>
               </div>
@@ -832,11 +888,11 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
               <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
                 <div className={classes.btnGroup} style={{ width: "76%", marginRight: 24 }}>
-                  <FormControlLabel
+                  {/* <FormControlLabel
                     enabled
                     control={<Checkbox id="markAsDone" checked={closed} onChange={(e) => setClosed(e.target.checked)} color="primary" />}
                     label="Mark as done"
-                  />
+                  /> */}
                   <Button
                     className={classes.marginLeft}
                     variant="contained"

@@ -42,7 +42,7 @@ function ContactParcelInterestTable(props) {
   const [columns, Columns] = useState([]);
   const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
   const [searchedRows, setSearchedRows] = useState([])
-  const [selectedYear, setSelectedYear] = useState(2021)  // production selected year state 
+  const [selectedYear, setSelectedYear] = useState(2022)  // production selected year state 
 
   // queries 
   const [getContactParcelInterests, { data: dataContactParcels, loading }] = useLazyQuery(CONTACT_PARCEL_INTERESTS, { fetchPolicy: "cache-and-network", skip: true });
@@ -59,11 +59,18 @@ function ContactParcelInterestTable(props) {
 
   useEffect(() => {
     // if (props.parent && props.parent === "assocTaxRollInterests") {
+    const payload = {
+      filters: [{ field: 'contact._id', value: props.contactId }]
+    }
+
+    if(typeof props.contactId === "object" && Array.isArray(props.contactId)){
+      payload.contactIds = props.contactId
+    } else {
+      payload.contactId = props.contactId
+    }
+
     getContactParcelInterests({
-      variables: {
-        contactId: props.contactId,
-        filters: [{ field: 'contact._id', value: props.contactId }]
-      },
+      variables: payload,
     });
     // }
   }, [getContactParcelInterests, props.contactId, props.parent]);

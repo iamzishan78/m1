@@ -8,12 +8,12 @@ import GlobalStyles from "GlobalStyles";
 
 const useStyles = makeStyles(() => ({
   root: {
-    color: GlobalStyles.colors.lightBlue,
+    color: `${GlobalStyles.colors.lightBlue} !important`,
     cursor: "pointer",
   },
   link: {
-    color: GlobalStyles.colors.lightBlue,
-    maxWidth: "300px",
+    color: `${GlobalStyles.colors.lightBlue} !important`,
+    maxWidth: "380px",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
@@ -23,6 +23,10 @@ const useStyles = makeStyles(() => ({
     "&:hover": {
       textDecoration: "underline !important",
       fontWeight: GlobalStyles.font.boldFontWeight,
+      whiteSpace: "normal",
+      wordBreak: "break-all",
+      overflow: "visible",
+      textOverflow: "initial"
     },
   }
 }));
