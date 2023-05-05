@@ -281,7 +281,7 @@ export default function CommentComponent(props) {
             __typename: "Comment",
           });
         });
-        let tempArray = dataComments.commentsByObjectId.concat(activittyData);
+        let tempArray = dataComments.commentsByObjectId.concat(activityData);
         // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
         let temp = []
         let tempArr = sortArrayBasedOnTs([...tempArray])
