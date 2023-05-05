@@ -22,14 +22,14 @@ const AssociateContactWellHeadCells = [
       ...GlobalStickyStyles({
         setCellProps: {
           left: '77px',
-          padding: "0px 25px 0px 35px"
+          padding: "0px 0px 0px 16px"
         },
         setCellHeaderProps: {
           left: '77px',
         }
       }),
       customRender: (value, tableMeta) => {
-        const tractInterestId = tableMeta.rowData[26];
+        const tractInterestId = tableMeta.rowData[27];
 
         return <ColumnWithLink value={value} link={`/map/parcels/${tractInterestId}`} />;
       },
