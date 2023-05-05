@@ -165,10 +165,10 @@ export const CommonCommentText = ({ eachComment, users }) => {
                     return (
                       <>
                         {" "}
-                        <p className={`${classes.commentWords} blue`}>
+                        <span className={`${classes.commentWords} blue`}>
                           {firstPart}@{users.find((user) => user._id === id)?.name}
                           {secondPart}{" "}
-                        </p>
+                        </span>
                         {splittedWord.length > 1 && <br />}{" "}
                       </>
                     );
@@ -281,12 +281,12 @@ export default function CommentComponent(props) {
             __typename: "Comment",
           });
         });
-        let tempArray = dataComments.commentsByObjectId.concat(activittyData);
+        let tempArray = dataComments.commentsByObjectId.concat(activityData);
         // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
         let temp = []
         let tempArr = sortArrayBasedOnTs([...tempArray])
 
-        tempArr.map(item => {
+        tempArr.forEach(item => {
           if (item.pin === true) {
             temp.push(item)
           }
@@ -466,7 +466,7 @@ export default function CommentComponent(props) {
   }
   const unpinFromTop = (eachComment) => {
     // debugger
-    const commentsArray1 = Object.values(pinComments);
+    // const commentsArray1 = Object.values(pinComments);
     const newCommentList = commentsArray.map((c) => {
       if (c.id === eachComment) {
         return {
@@ -621,6 +621,8 @@ export default function CommentComponent(props) {
                                     deleteComment={deleteComment}
                                     setShowActions={setShowActions}
                                     setIsEdit={setIsEdit}
+                                    pinToTop={pinToTop}
+                                    unpinFromTop={unpinFromTop}
                                   />
                                 </div>
                               )}
