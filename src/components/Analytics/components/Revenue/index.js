@@ -154,7 +154,7 @@ export default function RevenueAnalytics(props) {
           }}
           aria-label="ant example"
         >
-          <StyledTab label="Time Series" />
+          <StyledTab label="Income Stmt" />
           <StyledTab label="Comparison" disabled />
           {/* <StyledTab label="Properties" /> */}
         </StyledTabs>
