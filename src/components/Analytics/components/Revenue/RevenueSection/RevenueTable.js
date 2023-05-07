@@ -79,7 +79,7 @@ export default function AcccessibleTable({ monthsInterval, items }) {
   const classes = useStyles();
 
   const formatRow = (item, value) => {
-    if (item.name === 'Adjustments') return `(${vf_number(value.toFixed(2))})`
+    if (item.name === 'Adjustments') return `${vf_number(value.toFixed(2))}`
     if (item.name === 'Net Revenue') return <span style={{ fontSize: '16px', fontWeight: '700' }}>{vf_number(value.toFixed(2))}</span>
     return vf_number(value.toFixed(2))
   }
