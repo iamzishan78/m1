@@ -1,3 +1,5 @@
+import { GlobalStickyStyles } from "GlobalSettings";
+import ColumnWithLink from "../M1nTable/components/SubComponents/ColumnWithLink";
 import ListChips from "components/Common/ListChips";
 import { GlobalStickyStyles } from "GlobalSettings";
 import ColumnWithLink from "../M1nTable/components/SubComponents/ColumnWithLink";

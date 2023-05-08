@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Grid, makeStyles } from "@material-ui/core";
 
+import { AppContext } from "AppContext";
 import ExhibitA from "./ExhibitA";
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
+import { copy, getSearchFields } from "components/Shared/functions";
+import TableHeader from "components/Table/constants/analytics-land-exhibita-schema";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -98,6 +101,7 @@ const filterColumnsHeader = [
 
 export default function ExhibitATabPanel() {
   const classes = useStyles();
+  const [stateApp] = useContext(AppContext);
   const initialFilterList = [["All"], ["All"], ["All"], ["All"], ["All"], ["All"]];
   const [, setFilters] = useState([]);
 
@@ -203,9 +207,9 @@ export default function ExhibitATabPanel() {
                     custom={filterColumn.custom ? filterColumn.custom : undefined}
                     onChange={onChange}
                     query={GET_ES_SIMPLE_FILTER}
-                    searchFields={[`'${filterColumn.filterKey}'`]}
+                    searchFields={getSearchFields(copy(TableHeader), [])}
                     filters={appliedFilters}
-                    extendSearchQuery={""}
+                    extendSearchQuery={stateApp.landAnalyticsSearchQuery}
                     inputSize="small"
                   />
                 </Grid>
@@ -223,6 +227,7 @@ export default function ExhibitATabPanel() {
           parent="AcerageDetail"
           esIndex="shapetracts_flat"
           setESFilters={setESFilters}
+          landSearchQuery={stateApp.landAnalyticsSearchQuery}
         />
       </div>
     </>

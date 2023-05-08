@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Divider,
   makeStyles,
@@ -6,7 +6,7 @@ import {
   Tabs,
   withStyles,
 } from "@material-ui/core";
-
+import { AppContext } from "AppContext";
 import AcerageSummaryTabPanel from "./AcerageSummary";
 import AcerageDetailsTabPanel from "./AcerageDetails";
 import ExhibitATabPanel from "./ExhibitA";
@@ -75,7 +75,7 @@ const StyledTab = withStyles((theme) => ({
 
 export default function LandAnalytics() {
   const classes = useStyles();
-
+  const [stateApp, setStateApp] = useContext(AppContext);
   const [tab, setTab] = useState(0);
 
   return (
@@ -85,19 +85,21 @@ export default function LandAnalytics() {
           value={tab}
           onChange={(event, tab) => {
             setTab(tab);
+            setStateApp((state) => ({ ...state, landAnalyticsSearchQuery: '' }));
+            
           }}
           aria-label="ant example"
         >
           {/* <StyledTab label="Acreage Summary" /> */}
-          {/* <StyledTab label="Acreage Detail" /> */}
+          <StyledTab label="Acreage Detail" />
           <StyledTab label="Exhibit A" />
           <StyledTab label="Well Master" />
         </StyledTabs>
       </div>
       {/* {tab === 0 && <AcerageSummaryTabPanel />} */}
-      {/* {tab === 1 && <AcerageDetailsTabPanel />} */}
-      {tab === 0 && <ExhibitATabPanel />}
-      {tab === 1 && <WellMasterTabPanel />}
+      {tab === 0 && <AcerageDetailsTabPanel />}
+      {tab === 1 && <ExhibitATabPanel />}
+      {tab === 2 && <WellMasterTabPanel />}
       {/* <AnalyticsCards cards={cards} /> */}
       <Divider className={classes.divider} />
     </>

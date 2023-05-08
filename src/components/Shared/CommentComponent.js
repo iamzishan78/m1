@@ -165,10 +165,10 @@ export const CommonCommentText = ({ eachComment, users }) => {
                     return (
                       <>
                         {" "}
-                        <p className={`${classes.commentWords} blue`}>
+                        <span className={`${classes.commentWords} blue`}>
                           {firstPart}@{users.find((user) => user._id === id)?.name}
                           {secondPart}{" "}
-                        </p>
+                        </span>
                         {splittedWord.length > 1 && <br />}{" "}
                       </>
                     );
@@ -264,7 +264,7 @@ export default function CommentComponent(props) {
   }, [targetSourceId]);
 
   useEffect(() => {
-    // debugger
+    let allComments = [];
     if (dataComments && dataComments.commentsByObjectId) {
       if (props.activityLog && props.activityLog.length > 0) {
         let activityData = [];
@@ -281,41 +281,16 @@ export default function CommentComponent(props) {
             __typename: "Comment",
           });
         });
-        let tempArray = dataComments.commentsByObjectId.concat(activittyData);
-        // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
-        let temp = []
-        let tempArr = sortArrayBasedOnTs([...tempArray])
-
-        tempArr.map(item => {
-          if (item.pin === true) {
-            temp.push(item)
-          }
-        })
-
-        console.log("before", tempArr)
-        const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
-        console.log("after", trueFirst)
-        setCommentsArray(tempArray)
-        setPinnedArray(trueFirst)
+        allComments = dataComments.commentsByObjectId.concat(activityData);
 
       } else {
-        // setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
-        let temp = []
-
-        // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
-        let tempArr = sortArrayBasedOnTs([...dataComments.commentsByObjectId])
-        tempArr.map(item => {
-          if (item.pin === true) {
-            temp.push(item)
-          }
-        })
-        console.log("before", tempArr)
-
-        const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
-        console.log("after", trueFirst)
-        setCommentsArray(tempArr)
-        setPinnedArray(temp)
+        allComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId])
       }
+      let pinnedComments = allComments.filter(comment => comment.pin);
+      pinnedComments = sortArrayBasedOnTs(pinnedComments);
+      let unPinnedComments = allComments.filter(comment => !comment.pin);
+      unPinnedComments = sortArrayBasedOnTs(unPinnedComments);
+      setCommentsArray([...pinnedComments, ...unPinnedComments]);
     }
     setLoadingComments(false);
   }, [dataComments, props.activityLog]);
@@ -466,7 +441,7 @@ export default function CommentComponent(props) {
   }
   const unpinFromTop = (eachComment) => {
     // debugger
-    const commentsArray1 = Object.values(pinComments);
+    // const commentsArray1 = Object.values(pinComments);
     const newCommentList = commentsArray.map((c) => {
       if (c.id === eachComment) {
         return {
@@ -621,6 +596,8 @@ export default function CommentComponent(props) {
                                     deleteComment={deleteComment}
                                     setShowActions={setShowActions}
                                     setIsEdit={setIsEdit}
+                                    pinToTop={pinToTop}
+                                    unpinFromTop={unpinFromTop}
                                   />
                                 </div>
                               )}
