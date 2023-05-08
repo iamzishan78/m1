@@ -203,14 +203,14 @@ function AssociatedFlowDetails(props) {
 
                 <Grid item md={10} style={{ padding: "0px" }}>
                   <div style={{ position: "relative" }} classes={classes.gridTables}>
-                    
+
                     {searchTapValue.value === "unitInterests" && (
                       <UnitInterestsTable
                         parent="assocTaxRollInterests"
                         header={"Unit Interests"}
                         targetLabel="contactUnits"
                         id="unitInterestTable"
-                        esFilters={[{ field: "contact._id", value: props.contacts,}]}
+                        esFilters={[{ field: "contact._id", value: props.contacts, }]}
                         esIndex="shapeowners_flat"
                         setESFilters={() => { }}
                         onTractCount={() => { }}

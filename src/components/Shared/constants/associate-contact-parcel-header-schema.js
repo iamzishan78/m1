@@ -1,4 +1,6 @@
 import ListChips from "components/Common/ListChips";
+import { GlobalStickyStyles } from "GlobalSettings";
+import ColumnWithLink from "../M1nTable/components/SubComponents/ColumnWithLink";
 
 const AssociateContactWellHeadCells = [
   {
@@ -15,8 +17,27 @@ const AssociateContactWellHeadCells = [
     },
   },
   // hide custom render of blue link for now as it is not consistent with unit interests
-  //{ name: "parcelName", label: "Tract Name", options:{setCellProps: () => ({ style: { minWidth: "200px", maxWidth: "200px", fontWeight: 600, color: "#17aadd", } }),}},
-  { name: "parcelName", label: "Tract Name", options: { setCellProps: () => ({ style: { minWidth: "250px", maxWidth: "250px" } }), } },
+  {
+    name: "parcelName", label: "Tract Name", options: {
+      dbName: "shape.shapeJson.properties.shapeLabel",
+      sort: true,
+      filter: true,
+      ...GlobalStickyStyles({
+        setCellProps: {
+          left: '77px',
+          padding: "0px 25px 0px 35px"
+        },
+        setCellHeaderProps: {
+          left: '77px',
+        }
+      }),
+      customRender: (value, tableMeta) => {
+        const parcelId = tableMeta.rowData[27]
+
+        return <ColumnWithLink value={value} link={`/map/parcels/${parcelId}`} />;
+      },
+    }
+  },
   { name: "state", label: "State" },
   { name: "county", label: "County" },
   { name: "survey", label: "Survey/ Meridian" },
