@@ -176,7 +176,8 @@ export default function AddLayer(props) {
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openUDLayers, setUDLayersStates] = useState([]);
-
+  const [selectAllMinerallayers, setSelectAllMinerallayers] = useState(false)
+  const [selectAllClientlayers, setSelectAllClientlayers] = useState(false)
   const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
@@ -184,6 +185,17 @@ export default function AddLayer(props) {
   
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [actionItem, setActionItem] = React.useState(null);
+
+  useEffect(() => {
+    checkAllLayers(M1Layers, "M1")
+    checkAllLayers(UdLayers, "UD")
+  }, [currentLayers]);
+
+  useEffect(() => {
+    if (stateApp.layers) {
+      setCurrentLayers(stateApp.layers);
+    }
+  }, [stateApp.layers]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -216,12 +228,6 @@ export default function AddLayer(props) {
 
   useOnClickOutside({ current: anchorEl }, handleMenuClose);
   
-  useEffect(() => {
-    if (stateApp.layers) {
-      setCurrentLayers(stateApp.layers);
-    }
-  }, [stateApp.layers]);
-
   const handleCurrentLayersChange = () => {
     setCurrentLayers((currentLayers) => { handleApplyChange(currentLayers); return currentLayers; })
   };
@@ -250,8 +256,6 @@ export default function AddLayer(props) {
     handleCurrentLayersChange()
   };
   
-
-
   const checkAllLayers = (layers, layerType) => {
     let check = true;
     if (layers) {
@@ -270,20 +274,7 @@ export default function AddLayer(props) {
     }
   }
 
-  useEffect(() => {
-    checkAllLayers(M1Layers, "M1")
-    checkAllLayers(UdLayers, "UD")
-  }, []);
-
-  useEffect(() => {
-    checkAllLayers(M1Layers, "M1")
-    checkAllLayers(UdLayers, "UD")
-  }, [currentLayers]);
-
-  const [selectAllMinerallayers, setSelectAllMinerallayers] = useState(false)
-  const [selectAllClientlayers, setSelectAllClientlayers] = useState(false)
-
-  const changeAlllayers = (layers, value, layerType) => {
+  const handleCheckAllLayers = (layers, value, layerType) => {
 
     const updatedLayers = layers.map(layer => {
       const updatefn = {};
@@ -313,7 +304,6 @@ export default function AddLayer(props) {
 
     handleCurrentLayersChange()
   }
-
 
   const changeLayerName = (layer, name) => {
     const updatefn = {};
@@ -548,11 +538,11 @@ export default function AddLayer(props) {
 
               <div onClick={(e) => e.stopPropagation()}>
                 <StyledListItem2 button onClick={()=>setOpenM1(!openM1)}>
-                <Checkbox
+                  <Checkbox
                     checked={selectAllMinerallayers}
                     color="darkgray"
                     onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => {changeAlllayers(M1Layers,!selectAllMinerallayers,"M1")}}
+                    onChange={(e) => { handleCheckAllLayers(M1Layers, !selectAllMinerallayers, "M1") }}
                     inputProps={{ "aria-label": "primary checkbox" }}
                   />
                   <ListItemText primary="M1neral Platform Layers" />
@@ -577,12 +567,11 @@ export default function AddLayer(props) {
                   </List>
                 </Collapse>
                 <StyledListItem2 button onClick={()=>setIsOpenUserDefinedLayers(!isOpenUserDefinedLayers)}>
-                <Checkbox
+                  <Checkbox
                     checked={selectAllClientlayers}
                     color="darkgray"
-                    
                     onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => {changeAlllayers(UdLayers,!selectAllClientlayers,"UD")}}
+                    onChange={(e) => { handleCheckAllLayers(UdLayers, !selectAllClientlayers, "UD") }}
                     inputProps={{ "aria-label": "primary checkbox" }}
                   />
                   <ListItemText primary="Client Specific Layers" />

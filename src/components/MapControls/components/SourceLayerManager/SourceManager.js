@@ -230,6 +230,8 @@ function SourceManager(props) {
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openUDLayers, setUDLayersStates] = useState([]);
+  const [selectAllMineralSources,setSelectAllMineralSources]=useState(false)
+  const [selectAllUserSources,setSelectAllUserSources]=useState(false)
 
   const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
   const [updateDataset] = useMutation(UPDATE_DATASET, { refetchQueries: ["getDatasets"], awaitRefetchQueries: true });
@@ -241,6 +243,19 @@ function SourceManager(props) {
       setCurrentLayers(stateApp.layers);
     }
   }, [currentLayers, stateApp.layers]);
+
+  useEffect(() => {
+    checkAllMineralSources(M1Layers)
+    checkAllUserSources(stateApp.datasets)
+  }, []);
+
+  useEffect(() => {
+    checkAllMineralSources(M1Layers)
+  },[currentLayers])
+
+  useEffect(() => {
+    checkAllUserSources(stateApp.datasets)
+  },[stateApp.datasets])
 
   const handleClose = () => {
     setStateMapControls((stateMapControls) => ({
@@ -256,9 +271,6 @@ function SourceManager(props) {
     setCurrentLayers((currentLayers) => { handleApplyChange(currentLayers); return currentLayers; })
   };
 
-  const [selectAllMineralSources,setSelectAllMineralSources]=useState(false)
-  const [selectAllUserSources,setSelectAllUserSources]=useState(false)
-  
   const handleApplyChange = (currentLayers) => {
     if (!deepEqual(currentLayers, stateApp.layers)) {
       const layersToUpdate = [];
@@ -276,14 +288,13 @@ function SourceManager(props) {
           });
         }
       }
-      
+
       // //// saving to stateApp
       setStateApp(stateApp => ({
         ...stateApp,
         layers: [...currentLayers],
       }));
 
-      
       //// saving to mongo
       if (layersToUpdate.length > 0) {
         updateManyLayer({
@@ -300,8 +311,7 @@ function SourceManager(props) {
       }
     }
   };
-  
-  
+
   // For mineral sources
   const changeShowAble = (layer) => {
     const updatefn = {};
@@ -319,7 +329,6 @@ function SourceManager(props) {
     setCurrentLayers(update(currentLayers, updatefn));
     handleCurrentLayersChange()
   };
-
 
   const checkAllMineralSources = sources => {
     let check = true;
@@ -344,19 +353,6 @@ function SourceManager(props) {
     }
     setSelectAllUserSources(check)
   }
-
-  useEffect(() => {
-    checkAllMineralSources(M1Layers)
-    checkAllUserSources(stateApp.datasets)
-  }, []);
-
-  useEffect(() => {
-    checkAllMineralSources(M1Layers)
-  },[currentLayers])
-
-  useEffect(() => {
-    checkAllUserSources(stateApp.datasets)
-  },[stateApp.datasets])
 
   const changeAllMineralSources = (sources, value) => {
 
@@ -385,7 +381,7 @@ function SourceManager(props) {
   }
 
   const changeAllUserSources = (sources, value) => {
-    const settings={}
+    const settings = {}
     const layersSettingsToUpdate = [];
     for (let index = 0; index < sources.length; index++) {
       const updatefn = {};
@@ -399,8 +395,8 @@ function SourceManager(props) {
         }
       });
 
-      settings[sources[index]._id]=value
-    
+      settings[sources[index]._id] = value
+
       const newLayers = update(currentLayers, updatefn)
       setCurrentLayers(newLayers);
       const datasetIndex = stateApp.datasets.findIndex(d => d._id === sources[index]._id);
@@ -408,7 +404,7 @@ function SourceManager(props) {
       stateApp.datasets[datasetIndex] = sources[index]
       setTimeout(() => { setStateApp((stateApp) => ({ ...stateApp, layers: newLayers })); }, 0)
     }
-    
+
     updateUserMapSettings({
       variables: {
         settings: {
@@ -420,16 +416,14 @@ function SourceManager(props) {
     });
 
     if (layersSettingsToUpdate.length > 0)
-        updateManyUserLayerSettings({
-          variables: {
-            manySettings: layersSettingsToUpdate,
-          },
-        });
+      updateManyUserLayerSettings({
+        variables: {
+          manySettings: layersSettingsToUpdate,
+        },
+      });
 
     setSelectAllUserSources(value)
   }
-
-
 
   const handleDatasetChange = (dataset, value) => {
     const updatefn = {};
@@ -707,13 +701,13 @@ function SourceManager(props) {
                 </Typography>
                 <div onClick={(e) => e.stopPropagation()}>
                   <StyledListItem2 button  onClick={()=>setOpenM1(!openM1)} className={openM1 ? 'isOpen' : ''}>
-                  <Checkbox
-                    checked={selectAllMineralSources}
-                    color="darkgray"
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => {changeAllMineralSources(M1Layers,!selectAllMineralSources)}}
-                    inputProps={{ "aria-label": "primary checkbox" }}
-                  />
+                    <Checkbox
+                      checked={selectAllMineralSources}
+                      color="darkgray"
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) => { changeAllMineralSources(M1Layers, !selectAllMineralSources) }}
+                      inputProps={{ "aria-label": "primary checkbox" }}
+                    />
                     <ListItemText  primary="M1neral Platform Sources" />
                     {openM1 ? <ExpandLess /> : <ExpandMore />}
                   </StyledListItem2>
@@ -841,54 +835,54 @@ function SourceManager(props) {
                   </Collapse>
 
 
-                  <StyledListItem2 button  onClick={()=>setIsOpenUserSources(!isOpenUserSources)} className={isOpenUserSources ? 'isOpen' : ''}>
-                  <Checkbox
-                    checked={selectAllUserSources}
-                    color="darkgray"
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => {changeAllUserSources(stateApp.datasets,!selectAllUserSources)}}
-                    inputProps={{ "aria-label": "primary checkbox" }}
-                  />
-                    <ListItemText  primary="User Uploaded Sources" />
+                  <StyledListItem2 button onClick={() => setIsOpenUserSources(!isOpenUserSources)} className={isOpenUserSources ? 'isOpen' : ''}>
+                    <Checkbox
+                      checked={selectAllUserSources}
+                      color="darkgray"
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) => { changeAllUserSources(stateApp.datasets, !selectAllUserSources) }}
+                      inputProps={{ "aria-label": "primary checkbox" }}
+                    />
+                    <ListItemText primary="User Uploaded Sources" />
                     {isOpenUserSources ? <ExpandLess /> : <ExpandMore />}
                   </StyledListItem2>
                   <Collapse in={isOpenUserSources} timeout="auto" unmountOnExit>
-                     {stateApp.datasets.map((dataset) => (
-                       <Fragment key={dataset.sourceName}>
-                         {
-                           dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 className={openDataSets[dataset.sourceName] ? 'isOpen' : ''} style={{ paddingLeft: '0px' }} button onClick={() => setOpenDataSets({ ...openDataSets, [dataset.sourceName]: !openDataSets[dataset.sourceName] })}>
-                             <Checkbox
-                               id={"source-checkbox-" + dataset.sourceName}
-                               checked={dataset.visibility}
-                               color="darkgray"
-                               onClick={(e) => e.stopPropagation()}
-                               onChange={() => { handleDatasetChange(dataset, !dataset.visibility); }}
-                               inputProps={{ "aria-label": "primary checkbox" }}
-                             />
-                             <EditableTextField onChange={datasetNameChange} item={dataset} name={dataset.sourceName} isEditable={true} openEditField={openEditField(dataset.sourceName)} />
-                             {/* <ListItemText primary={dataset.sourceName} /> */}
-                             <MoreHorizIcon id={"more-horiz-" + dataset.sourceName} aria-controls={"source-menu"} className={"moreSourceIcon " + classes.moreSourceIcon} onClick={(e) => { e.stopPropagation(); handleClick(e); setActionItem({ dataset }) }} />
-                             {openDataSets[dataset.sourceName] ? <ExpandLess /> : <ExpandMore />}
-                           </StyledListItem2>
-                             <Collapse in={openDataSets[dataset.sourceName]} timeout="auto" unmountOnExit>
-                               <List className={classes.list}>
-                                 {dataset.categories.map((layer, index) => {
-                                   // const labelId = `m1layer-list-label-${index}`;
-                                   return (
-                                     <StyledListItem key={index} ContainerComponent="li" style={{ padding: 10 }}>
-                                       <EditableTextField onChange={datasetNameChange} item={layer} name={layer.layerName || layer.name} isEditable={true} openEditField={openEditField(layer.layerName || layer.name)} />
+                    {stateApp.datasets.map((dataset) => (
+                      <Fragment key={dataset.sourceName}>
+                        {
+                          dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 className={openDataSets[dataset.sourceName] ? 'isOpen' : ''} style={{ paddingLeft: '0px' }} button onClick={() => setOpenDataSets({ ...openDataSets, [dataset.sourceName]: !openDataSets[dataset.sourceName] })}>
+                            <Checkbox
+                              id={"source-checkbox-" + dataset.sourceName}
+                              checked={dataset.visibility}
+                              color="darkgray"
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={() => { handleDatasetChange(dataset, !dataset.visibility); }}
+                              inputProps={{ "aria-label": "primary checkbox" }}
+                            />
+                            <EditableTextField onChange={datasetNameChange} item={dataset} name={dataset.sourceName} isEditable={true} openEditField={openEditField(dataset.sourceName)} />
+                            {/* <ListItemText primary={dataset.sourceName} /> */}
+                            <MoreHorizIcon id={"more-horiz-" + dataset.sourceName} aria-controls={"source-menu"} className={"moreSourceIcon " + classes.moreSourceIcon} onClick={(e) => { e.stopPropagation(); handleClick(e); setActionItem({ dataset }) }} />
+                            {openDataSets[dataset.sourceName] ? <ExpandLess /> : <ExpandMore />}
+                          </StyledListItem2>
+                            <Collapse in={openDataSets[dataset.sourceName]} timeout="auto" unmountOnExit>
+                              <List className={classes.list}>
+                                {dataset.categories.map((layer, index) => {
+                                  // const labelId = `m1layer-list-label-${index}`;
+                                  return (
+                                    <StyledListItem key={index} ContainerComponent="li" style={{ padding: 10 }}>
+                                      <EditableTextField onChange={datasetNameChange} item={layer} name={layer.layerName || layer.name} isEditable={true} openEditField={openEditField(layer.layerName || layer.name)} />
 
-                                       {/* <ListItemText style={{ padding: '5px 0px 5px 40px' }} id={labelId} primary={truncate(layer.layerName || layer.name, 30)} /> */}
-                                       <MoreHorizIcon aria-controls={"more-source-menu"} className={"moreIcon " + classes.moreIcon} onClick={(e) => { handleClick(e); setActionItem({ dataset, category: layer }) }} />
-                                     </StyledListItem>
-                                   );
-                                 })}
-                               </List>
-                             </Collapse></> : <></>
-                         }
+                                      {/* <ListItemText style={{ padding: '5px 0px 5px 40px' }} id={labelId} primary={truncate(layer.layerName || layer.name, 30)} /> */}
+                                      <MoreHorizIcon aria-controls={"more-source-menu"} className={"moreIcon " + classes.moreIcon} onClick={(e) => { handleClick(e); setActionItem({ dataset, category: layer }) }} />
+                                    </StyledListItem>
+                                  );
+                                })}
+                              </List>
+                            </Collapse></> : <></>
+                        }
 
-                     </Fragment>))
-                  }
+                      </Fragment>))
+                    }
                   </Collapse>
                 </div>
               </div>
