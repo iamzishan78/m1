@@ -3,7 +3,7 @@ import update from "immutability-helper";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../../MapControlsContext";
 import { AppContext } from "AppContext";
-import { Typography, Divider, MenuItem, Menu, Popper, ClickAwayListener, MenuList, Paper, Grow } from "@material-ui/core";
+import { Typography, Divider, MenuItem, Popper, ClickAwayListener, MenuList, Paper, Grow } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
 import Checkbox from "@material-ui/core/Checkbox";
 import { Collapse } from "@material-ui/core";
@@ -30,7 +30,6 @@ import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import UploadIcon from "components/Shared/svgIcons/uploadIcon";
 import EditableTextField from "components/Shared/components/Fields/EditableTextField";
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
 import { truncate } from "components/Shared/functions";
 
 import proj4 from "proj4";
@@ -139,7 +138,7 @@ const StyledListItem2 = withStyles((theme) => ({
     borderRadius: "5px",
     marginTop: "15px",
     marginBottom: "5px",
-    padding:"4px 0px 4px 0",
+    padding: "4px 0px 4px 0",
     "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
       color: "#827F7F"
     },
@@ -230,8 +229,8 @@ function SourceManager(props) {
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openUDLayers, setUDLayersStates] = useState([]);
-  const [selectAllMineralSources,setSelectAllMineralSources]=useState(false)
-  const [selectAllUserSources,setSelectAllUserSources]=useState(false)
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [actionItem, setActionItem] = React.useState(null);
 
   const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
   const [updateDataset] = useMutation(UPDATE_DATASET, { refetchQueries: ["getDatasets"], awaitRefetchQueries: true });
@@ -244,29 +243,46 @@ function SourceManager(props) {
     }
   }, [currentLayers, stateApp.layers]);
 
-  useEffect(() => {
-    checkAllMineralSources(M1Layers)
-    checkAllUserSources(stateApp.datasets)
-  }, []);
+  const M1Layers = React.useMemo(() => {
+    const layers = currentLayers.filter((layer) => layer.layerCategory === "M1 Layer" || ['Parcels', 'Agreements', 'Units', 'Area of Interest'].includes(layer.groupName || layer.layerName));
+    const groupHandled = [];
+    for (let index = 0; index < layers.length; index++) {
+      const UdLayer = layers[index];
+      if (UdLayer.groupId && !groupHandled.includes(UdLayer.groupId)) {
+        groupHandled.push(UdLayer.groupId);
+        const groupLayers = layers.filter((ul) => ul.groupId === UdLayer.groupId);
+        layers.splice(index, 0, { type: "group", collapsed: true, name: UdLayer.groupName, id: UdLayer.groupId, layers: groupLayers });
+        index = 0;
+      }
+    }
+    return layers.filter((UdLayer) => !((UdLayer.layerCategory === "M1 Layer" || UdLayer.groupName === "Agreements") && UdLayer.groupId));
+  }, [currentLayers]);
 
-  useEffect(() => {
-    checkAllMineralSources(M1Layers)
-  },[currentLayers])
+  const selectAllMineralSources = React.useMemo(() => {
+    let check = true;
 
-  useEffect(() => {
-    checkAllUserSources(stateApp.datasets)
-  },[stateApp.datasets])
+    if (M1Layers.length) {
+      for (let index = 0; index < M1Layers.length; index++) {
+        if (M1Layers[index].type === "group") {
+          if (M1Layers[index].layers.find((layer) => layer.layerSettings.showable === false)) check = false
+        } else if (M1Layers[index].layerSettings.showable === false) {
+          check = false
+        }
+      }
+    }
+    return check;
+  }, [currentLayers]);
 
-  const handleClose = () => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      addLayer: false,
-      manageSourceLayer: false,
-      manageLayer: false,
-    }));
-  };
+  const selectAllUserSources = React.useMemo(() => {
+    let check = true, sources = stateApp.datasets;
+    if (sources) {
+      for (let index = 0; index < sources.length; index++) {
+        if (sources[index].visibility === false) check = false
+      }
+    }
+    return check;
+  }, [stateApp.datasets]);
 
- 
   const handleCurrentLayersChange = () => {
     setCurrentLayers((currentLayers) => { handleApplyChange(currentLayers); return currentLayers; })
   };
@@ -330,30 +346,6 @@ function SourceManager(props) {
     handleCurrentLayersChange()
   };
 
-  const checkAllMineralSources = sources => {
-    let check = true;
-    if (sources.length) {
-      for (let index = 0; index < sources.length; index++) {
-        if (sources[index].type === "group") {
-          if (sources[index].layers.find((layer) => layer.layerSettings.showable === false)) check = false
-        } else if (sources[index].layerSettings.showable === false) {
-          check = false
-        }
-      }
-    }
-    setSelectAllMineralSources(check)
-  }
-
-  const checkAllUserSources = sources => {
-    let check = true
-    if (sources) {
-      for (let index = 0; index < sources.length; index++) {
-        if (sources[index].visibility === false) check = false
-      }
-    }
-    setSelectAllUserSources(check)
-  }
-
   const changeAllMineralSources = (sources, value) => {
 
     const updatedLayers = sources.map(layer => {
@@ -376,7 +368,6 @@ function SourceManager(props) {
     }
 
     setCurrentLayers(result);
-    setSelectAllMineralSources(value)
     handleCurrentLayersChange()
   }
 
@@ -401,7 +392,7 @@ function SourceManager(props) {
       setCurrentLayers(newLayers);
       const datasetIndex = stateApp.datasets.findIndex(d => d._id === sources[index]._id);
       sources[index].visibility = value
-      stateApp.datasets[datasetIndex] = sources[index]
+      stateApp.datasets[datasetIndex] = sources[index];
       setTimeout(() => { setStateApp((stateApp) => ({ ...stateApp, layers: newLayers })); }, 0)
     }
 
@@ -421,8 +412,6 @@ function SourceManager(props) {
           manySettings: layersSettingsToUpdate,
         },
       });
-
-    setSelectAllUserSources(value)
   }
 
   const handleDatasetChange = (dataset, value) => {
@@ -615,26 +604,6 @@ function SourceManager(props) {
     return true
   }
 
-  const M1Layers = React.useMemo(() => {
-    const layers = currentLayers.filter((layer) => layer.layerCategory === "M1 Layer" || ['Parcels', 'Agreements', 'Units', 'Area of Interest'].includes(layer.groupName || layer.layerName));
-    const groupHandled = [];
-    for (let index = 0; index < layers.length; index++) {
-      const UdLayer = layers[index];
-      if (UdLayer.groupId && !groupHandled.includes(UdLayer.groupId)) {
-        groupHandled.push(UdLayer.groupId);
-        const groupLayers = layers.filter((ul) => ul.groupId === UdLayer.groupId);
-        layers.splice(index, 0, { type: "group", collapsed: true, name: UdLayer.groupName, id: UdLayer.groupId, layers: groupLayers });
-        index = 0;
-      }
-    }
-    return layers.filter((UdLayer) => !((UdLayer.layerCategory === "M1 Layer" || UdLayer.groupName === "Agreements") && UdLayer.groupId));
-  }, [currentLayers]);
-
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [actionItem, setActionItem] = React.useState(null);
-
-
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -700,7 +669,7 @@ function SourceManager(props) {
                   Select one or more of the available sources below to add them to your current map view
                 </Typography>
                 <div onClick={(e) => e.stopPropagation()}>
-                  <StyledListItem2 button  onClick={()=>setOpenM1(!openM1)} className={openM1 ? 'isOpen' : ''}>
+                  <StyledListItem2 button onClick={() => setOpenM1(!openM1)} className={openM1 ? 'isOpen' : ''}>
                     <Checkbox
                       checked={selectAllMineralSources}
                       color="darkgray"
@@ -708,7 +677,7 @@ function SourceManager(props) {
                       onChange={(e) => { changeAllMineralSources(M1Layers, !selectAllMineralSources) }}
                       inputProps={{ "aria-label": "primary checkbox" }}
                     />
-                    <ListItemText  primary="M1neral Platform Sources" />
+                    <ListItemText primary="M1neral Platform Sources" />
                     {openM1 ? <ExpandLess /> : <ExpandMore />}
                   </StyledListItem2>
                   <Collapse in={openM1} timeout="auto" unmountOnExit>

@@ -124,7 +124,7 @@ const StyledListItem2 = withStyles((theme) => ({
     fontFamily: "Poppins",
     backgroundColor: theme.palette.common.white,
     color: "#263451",
-    padding:"4px 0px 4px 0",
+    padding: "4px 0px 4px 0",
     border: "2px solid #263451",
     borderRadius: "5px",
     marginTop: "15px",
@@ -169,26 +169,23 @@ export default function AddLayer(props) {
   const classes = useStyles();
   let history = useHistory();
 
-  const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [openM1, setOpenM1] = React.useState(true);
   const [isOpenUserDefinedLayers, setIsOpenUserDefinedLayers] = React.useState(true);
   const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openUDLayers, setUDLayersStates] = useState([]);
-  const [selectAllMinerallayers, setSelectAllMinerallayers] = useState(false)
-  const [selectAllClientlayers, setSelectAllClientlayers] = useState(false)
+  const [selectAllMinerallayers, setSelectAllMinerallayers] = React.useState(false);
+  const [selectAllClientlayers, setSelectAllClientlayers] = React.useState(false);
   const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
-  const [updateDataset] = useMutation(UPDATE_DATASET, { refetchQueries: ["getDatasets"], awaitRefetchQueries: true });
-  
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [actionItem, setActionItem] = React.useState(null);
 
   useEffect(() => {
-    checkAllLayers(M1Layers, "M1")
-    checkAllLayers(UdLayers, "UD")
+    checkAllLayers(M1Layers, "M1");
+    checkAllLayers(UdLayers, "UD");
   }, [currentLayers]);
 
   useEffect(() => {
@@ -227,16 +224,9 @@ export default function AddLayer(props) {
   }
 
   useOnClickOutside({ current: anchorEl }, handleMenuClose);
-  
+
   const handleCurrentLayersChange = () => {
     setCurrentLayers((currentLayers) => { handleApplyChange(currentLayers); return currentLayers; })
-  };
-
-  const windowClose = () => {
-    setStateMapControls((stateMapControls) => ({
-      ...stateMapControls,
-      addLayer: false,
-    }));
   };
 
   const changeShowAble = (layer) => {
@@ -253,9 +243,9 @@ export default function AddLayer(props) {
     }
 
     setCurrentLayers(update(currentLayers, updatefn));
-    handleCurrentLayersChange()
+    handleCurrentLayersChange();
   };
-  
+
   const checkAllLayers = (layers, layerType) => {
     let check = true;
     if (layers) {
@@ -268,9 +258,9 @@ export default function AddLayer(props) {
       }
     }
     if (layerType === "M1") {
-      setSelectAllMinerallayers(check)
+      setSelectAllMinerallayers(check);
     } else if (layerType === "UD") {
-      setSelectAllClientlayers(check)
+      setSelectAllClientlayers(check);
     }
   }
 
@@ -302,7 +292,7 @@ export default function AddLayer(props) {
       setSelectAllClientlayers(value)
     }
 
-    handleCurrentLayersChange()
+    handleCurrentLayersChange();
   }
 
   const changeLayerName = (layer, name) => {
@@ -318,7 +308,7 @@ export default function AddLayer(props) {
     }
 
     setCurrentLayers(update(currentLayers, updatefn));
-    handleCurrentLayersChange()
+    handleCurrentLayersChange();
   };
 
   const handleApplyChange = (currentLayers) => {
@@ -472,31 +462,6 @@ export default function AddLayer(props) {
     return res;
   }
 
-  async function handleFileInput(fileObj) {
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      universalCircularLoaderAct: true,
-    }));
-    let originalData;
-    let fileContent = await handleFileAsync(fileObj);
-    if (fileContent?.originalData) {
-      originalData = fileContent.originalData;
-      fileContent = fileContent.data;
-    }
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      universalCircularLoaderAct: false,
-    }));
-
-    if (fileContent?.featureTypes)
-      setStateMapControls({
-        ...stateMapControls,
-        layerAddControl: fileContent.featureTypes?.length > 1 ? "addGroup" : "add",
-        fileUploadedContent: fileContent,
-        fileUploadedOriginalContent: originalData,
-      });
-  }
-
   const checkIfDeleteAllow = (layer) => {
     if (layer.name === 'Agreements' || layer.groupName === 'Agreements')
       return false;
@@ -537,7 +502,7 @@ export default function AddLayer(props) {
               </Typography>
 
               <div onClick={(e) => e.stopPropagation()}>
-                <StyledListItem2 button onClick={()=>setOpenM1(!openM1)}>
+                <StyledListItem2 button onClick={() => setOpenM1(!openM1)}>
                   <Checkbox
                     checked={selectAllMinerallayers}
                     color="darkgray"
@@ -566,7 +531,7 @@ export default function AddLayer(props) {
                     })}
                   </List>
                 </Collapse>
-                <StyledListItem2 button onClick={()=>setIsOpenUserDefinedLayers(!isOpenUserDefinedLayers)}>
+                <StyledListItem2 button onClick={() => setIsOpenUserDefinedLayers(!isOpenUserDefinedLayers)}>
                   <Checkbox
                     checked={selectAllClientlayers}
                     color="darkgray"
@@ -613,7 +578,7 @@ export default function AddLayer(props) {
                                   isEditable={false}
                                   showExpandIcon
                                   openUd={openUDLayers.includes(index)}
-                                  openEditField={layer?.id===actionItem?.group?.id && actionItem?.type==='editName'}
+                                  openEditField={layer?.id === actionItem?.group?.id && actionItem?.type === 'editName'}
                                 />
                                 {checkIfDeleteAllow(layer) && <MoreHorizIcon aria-controls={"source-menu"} className={"moreIcon " + classes.moreIcon} onClick={(e) => { e.stopPropagation(); handleClick(e); setActionItem({ group: layer }) }} />}
                               </StyledListItem>
@@ -629,7 +594,7 @@ export default function AddLayer(props) {
                                       inputProps={{ "aria-label": "primary checkbox" }}
                                     />
                                     {/* Group Layer */}
-                                    <EditableTextField onChange={changeLayerName} item={groupLayer} name={groupLayer.layerName} isEditable={false} openEditField={groupLayer?.layerId===actionItem?.layer?.layerId && actionItem?.type==='editName'} />
+                                    <EditableTextField onChange={changeLayerName} item={groupLayer} name={groupLayer.layerName} isEditable={false} openEditField={groupLayer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'} />
                                     {checkIfDeleteAllow(groupLayer) && <MoreHorizIcon aria-controls={"source-menu"} className={"moreSourceIcon " + classes.moreSourceIcon} onClick={(e) => { e.stopPropagation(); handleClick(e); setActionItem({ layer: groupLayer }) }} />}
                                   </StyledListItem>
                                 ))}
@@ -651,7 +616,7 @@ export default function AddLayer(props) {
                             {layer.layerType === "file layer" ? (
                               <>
                                 {/* Layer */}
-                                <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} isEditable={false} openEditField={layer?.layerId===actionItem?.layer?.layerId && actionItem?.type==='editName' } />
+                                <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} isEditable={false} openEditField={layer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'} />
 
                                 {checkIfDeleteAllow(layer) && <MoreHorizIcon aria-controls={"source-menu"} className={"moreSourceIcon " + classes.moreSourceIcon} onClick={(e) => { e.stopPropagation(); handleClick(e); setActionItem({ layer }) }} />}
                               </>
@@ -719,7 +684,7 @@ export default function AddLayer(props) {
                 <ClickAwayListener onClickAway={handleMenuClose}>
                   <MenuList autoFocusItem={Boolean(anchorEl)} id="menu-list-grow">
                     <MenuItem onClick={(e) => { e.stopPropagation(); setActionItem((actionItem) => ({ ...actionItem, type: 'editName' })); handleMenuClose() }}><EditIcon /> Edit Name</MenuItem>
-                    <MenuItem onClick={(e) => { e.stopPropagation(); setOpenDeleteDialog(actionItem.layer||actionItem.group); handleMenuClose() }}><DeleteIcon /> Delete</MenuItem>
+                    <MenuItem onClick={(e) => { e.stopPropagation(); setOpenDeleteDialog(actionItem.layer || actionItem.group); handleMenuClose() }}><DeleteIcon /> Delete</MenuItem>
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
