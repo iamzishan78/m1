@@ -233,14 +233,6 @@ export default function AddLayer(props) {
     }));
   };
 
-  const handleClickM1List = () => {
-    setOpenM1(!openM1);
-  };
-
-  const handleClickUDList = () => {
-    setIsOpenUserDefinedLayers(!isOpenUserDefinedLayers);
-  };
-
   const changeShowAble = (layer) => {
     const updatefn = {};
     if (layer.type === "group") {
@@ -555,7 +547,7 @@ export default function AddLayer(props) {
               </Typography>
 
               <div onClick={(e) => e.stopPropagation()}>
-                <StyledListItem2 button onClick={handleClickM1List}>
+                <StyledListItem2 button onClick={()=>setOpenM1(!openM1)}>
                 <Checkbox
                     checked={selectAllMinerallayers}
                     color="darkgray"
@@ -584,7 +576,7 @@ export default function AddLayer(props) {
                     })}
                   </List>
                 </Collapse>
-                <StyledListItem2 button onClick={handleClickUDList}>
+                <StyledListItem2 button onClick={()=>setIsOpenUserDefinedLayers(!isOpenUserDefinedLayers)}>
                 <Checkbox
                     checked={selectAllClientlayers}
                     color="darkgray"

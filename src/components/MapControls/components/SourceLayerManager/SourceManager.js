@@ -251,13 +251,6 @@ function SourceManager(props) {
     }));
   };
 
-  const handleClickM1List = () => {
-    setOpenM1(!openM1);
-  };
-
-  const handleClickUserSourcesList = () => {
-    setIsOpenUserSources(!isOpenUserSources)
-  }
  
   const handleCurrentLayersChange = () => {
     setCurrentLayers((currentLayers) => { handleApplyChange(currentLayers); return currentLayers; })
@@ -713,7 +706,7 @@ function SourceManager(props) {
                   Select one or more of the available sources below to add them to your current map view
                 </Typography>
                 <div onClick={(e) => e.stopPropagation()}>
-                  <StyledListItem2 button  onClick={handleClickM1List} className={openM1 ? 'isOpen' : ''}>
+                  <StyledListItem2 button  onClick={()=>setOpenM1(!openM1)} className={openM1 ? 'isOpen' : ''}>
                   <Checkbox
                     checked={selectAllMineralSources}
                     color="darkgray"
@@ -848,7 +841,7 @@ function SourceManager(props) {
                   </Collapse>
 
 
-                  <StyledListItem2 button  onClick={handleClickUserSourcesList} className={isOpenUserSources ? 'isOpen' : ''}>
+                  <StyledListItem2 button  onClick={()=>setIsOpenUserSources(!isOpenUserSources)} className={isOpenUserSources ? 'isOpen' : ''}>
                   <Checkbox
                     checked={selectAllUserSources}
                     color="darkgray"
