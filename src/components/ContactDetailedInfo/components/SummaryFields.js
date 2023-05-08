@@ -10,10 +10,11 @@ import EmailOutlinedIcon from "@material-ui/icons/EmailOutlined";
 import { makeStyles } from "@material-ui/core/styles";
 
 import vf_number from "components/Shared/valueformatters/vf_number";
-import ContactStatus from 'components/ContactDetailCard/components/ContactStatus'
+import AutoCompleteWithAddNew from 'components/ContactDetailCard/components/AutoCompleteWithAddNew'
 import { SUMMARY_FIELDS, featureFlagChanges } from "components/ContactDetailedInfo/helper";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
+import { contactNewStatusOptions } from "components/ContactDetailedInfo/helper";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -143,7 +144,7 @@ export default function SummaryFields({ contactData }) {
   return (
     <Grid container alignItems="center" justify="space-between" display="flex" direction="column" className={classes.container}>
       {SUMMARY_FIELDS(contactData).map((field, key) => (
-        <Grid item key={key} style={{ position: "relative", width: "100%", marginRight: "30px", maxWidth: "44%", flexBasis: "11%" }}>
+        <Grid item key={key} style={{ position: "relative", width: "100%", marginRight: "30px", maxWidth: "44%", flexBasis: "7%" }}>
           <Grid container className={classes.gridStyle}>
             <Grid item style={{ display: "flex" }}>
               <div id={field.label} className={classes.fieldLabel}>{featureFlagChanges(showGenericPhones, field.label)}</div>
@@ -224,11 +225,13 @@ export default function SummaryFields({ contactData }) {
                           }}
                         />
                       ) : (
-                        <ContactStatus
+                        <AutoCompleteWithAddNew
                           className={classes.maxWidth}
                           setValue={(value) => {
                             updateFieldData(field.key, value.name);
                           }}
+                          fieldKey={field.key}
+                          defaultOptions={field.key === "status" ? contactNewStatusOptions : []}
                           value={contactData[field.key] ?? ""}
                           variant="outlined"
                         />

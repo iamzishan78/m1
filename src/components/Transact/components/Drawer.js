@@ -5,6 +5,7 @@ import DescriptionIcon from "@material-ui/icons/DescriptionSharp";
 import CheckmarkIcon from "@material-ui/icons/CheckBoxOutlined";
 import ShareIcon from "@material-ui/icons/Share";
 import FolderIcon from "@material-ui/icons/Folder";
+import GridOnIcon from '@material-ui/icons/GridOn';
 import HomeIcon from "@material-ui/icons/HomeOutlined";
 import IdentityIcon from "@material-ui/icons/PermIdentity";
 import FlowIcon from "@material-ui/icons/Repeat";
@@ -62,6 +63,23 @@ export default function Drawer(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const classes = useStyles(props);
   const { dealSettingsNumber } = props;
+
+  const onClick = (key) => {
+    if (key === "Grid")
+      setStateApp((stateApp) => ({ ...stateApp, transactBarShowGrid: !stateApp.transactBarShowGrid }))
+    else
+      setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))
+  }
+
+  const getClass = (classes, key) => {
+    if (key === "Grid" && stateApp.transactBarShowGrid) {
+      return classes.activeIcon;
+    }
+
+    return stateApp.transactBarView === key ? classes.activeIcon : classes.inactiveIcon;
+  }
+
+  console.log(stateApp)
 
   const drawerIcons = {
     // Comments: (props) => <MessageIcon {...props} />,
@@ -134,6 +152,19 @@ export default function Drawer(props) {
         <PanoramaIcon {...props} />
       </Badge>
     ),
+    Grid: (props) => {
+      return (
+        <Badge
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          color="primary"
+        >
+          <GridOnIcon {...props} />
+        </Badge>
+      )
+    }
     // reserve this for automations potentially
     // Progress: (props) => (
     //   <Badge
@@ -149,20 +180,26 @@ export default function Drawer(props) {
   };
   return (
     <div className={classes.root}>
-      {Object.keys(drawerIcons).map((key) => (
-        <Tooltip title={key} placement="left">
-          <div
-            className={`${classes.icon} ${stateApp.transactBarView === key ? classes.activeIcon : classes.inactiveIcon}`}
-            onClick={() => setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))}
-          >
-            {drawerIcons[key]({
-              ...props,
-              opacity: "1",
-              height: "30"
-            })}
-          </div>
-        </Tooltip>
-      ))}
+      {Object.keys(drawerIcons).map((key) => {
+        if (key === "Grid" && !stateApp.activeDeal?.contacts) {
+          return null; // exclude Grid icon if activeDeal.contacts doesn't exist
+        }
+
+        return (
+          <Tooltip title={key} placement="left">
+            <div
+              className={`${classes.icon} ${getClass(classes, key)}`}
+              onClick={() => onClick(key)}
+            >
+              {drawerIcons[key]({
+                ...props,
+                opacity: "1",
+                height: "30"
+              })}
+            </div>
+          </Tooltip>
+        );
+      })}
     </div>
   );
 }

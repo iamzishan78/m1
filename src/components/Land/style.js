@@ -2,11 +2,11 @@ import React from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import MenuItem from "@material-ui/core/MenuItem";
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createTheme } from "@material-ui/core/styles";
 
 const drawerWidth = 425;
 
-export const theme = createMuiTheme({
+export const theme = createTheme({
   overrides: {
     MuiSvgIcon: {
       root: {

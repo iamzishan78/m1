@@ -23,7 +23,7 @@ import { get } from "lodash";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import EntityType from "./EntityType";
 import CampaignNameField from "./CampaignNameField";
-import ContactStatus from "components/ContactDetailCard/components/ContactStatus";
+// import ContactStatus from "components/ContactDetailCard/components/ContactStatus";
 import AutoCompleteAddNewField from "./AutoCompleteAddNewField";
 
 const filter = createFilterOptions();
@@ -144,10 +144,41 @@ export default function FieldContent({
     }
   }, [edit]);
 
-  const handleEditClick = (e) => {
+  const getOrganizedContent = () => {
+    let textArray = [];
+    for (const key in showContent) {
+      if (showContent.hasOwnProperty(key) && showContent[key] && showContent[key] !== "") {
+        if (
+          key === "zip" ||
+          key === "country" ||
+          key === "zipAlt" ||
+          key === "countryAlt" ||
+          key === "title" ||
+          key === "firstName" ||
+          key === "middleName" ||
+          key === "lastName" ||
+          key === "suffix"
+        ) {
+          textArray = [[textArray.join(", "), showContent[key]].join(" ")];
+        } else if (key === "jobTitle") {
+          textArray = [[textArray.join(", "), showContent[key]].join(" - ")];
+        } else if (key === "contactOwner" || key === "contactOwnerId") {
+          if (key === "contactOwner") textArray.push(showContent[key] || "");
+        } else textArray.push(showContent[key]);
+      }
+    }
+
+    return textArray;
+  }
+
+  const handleEditClick = (e, isCopy = false) => {
     e.persist();
     e.preventDefault();
-    setEdit(!edit ? e.currentTarget : null);
+    if (isCopy) {
+      navigator.clipboard.writeText(getOrganizedContent() || "")
+    }
+    else
+      setEdit(!edit ? e.currentTarget : null);
   };
 
   const keyDownHandler = (event, fieldNames) => {
@@ -171,6 +202,7 @@ export default function FieldContent({
     setEdit(null);
     setEditContent({ ...fields });
   }
+
 
   const handleUpdating = (val = null) => {
     if (fieldType == FieldTypes.Contact) {
@@ -426,28 +458,8 @@ export default function FieldContent({
     }
   }
 
-  let textArray = [];
-  for (const key in showContent) {
-    if (showContent.hasOwnProperty(key) && showContent[key] && showContent[key] !== "") {
-      if (
-        key === "zip" ||
-        key === "country" ||
-        key === "zipAlt" ||
-        key === "countryAlt" ||
-        key === "title" ||
-        key === "firstName" ||
-        key === "middleName" ||
-        key === "lastName" ||
-        key === "suffix"
-      ) {
-        textArray = [[textArray.join(", "), showContent[key]].join(" ")];
-      } else if (key === "jobTitle") {
-        textArray = [[textArray.join(", "), showContent[key]].join(" - ")];
-      } else if (key === "contactOwner" || key === "contactOwnerId") {
-        if (key === "contactOwner") textArray.push(showContent[key] || "");
-      } else textArray.push(showContent[key]);
-    }
-  }
+  let textArray = getOrganizedContent()
+
 
   const renderOutput = content.campaignName ? (
     <CampaignNameField
@@ -483,6 +495,7 @@ export default function FieldContent({
           setAnchorEl={setEdit}
           content={inputsArray}
           onClick={handleEditClick}
+          isCopy={true}
         />
       )}
       {fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />}
