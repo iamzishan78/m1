@@ -65,10 +65,18 @@ export default function Drawer(props) {
   const { dealSettingsNumber } = props;
 
   const onClick = (key) => {
-    if(key === "Grid" && stateApp.transactBarView === key){
-      key = "Deal"
+    if (key === "Grid")
+      setStateApp((stateApp) => ({ ...stateApp, transactBarShowGrid: !stateApp.transactBarShowGrid }))
+    else
+      setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))
+  }
+
+  const getClass = (classes, key) => {
+    if (key === "Grid" && stateApp.transactBarShowGrid) {
+      return classes.activeIcon;
     }
-    setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))
+
+    return stateApp.transactBarView === key ? classes.activeIcon : classes.inactiveIcon;
   }
 
   const drawerIcons = {
@@ -173,7 +181,7 @@ export default function Drawer(props) {
       {Object.keys(drawerIcons).map((key) => (
         <Tooltip title={key} placement="left">
           <div
-            className={`${classes.icon} ${stateApp.transactBarView === key ? classes.activeIcon : classes.inactiveIcon}`}
+            className={`${classes.icon} ${getClass(classes, key)}`}
             onClick={() => onClick(key)}
           >
             {drawerIcons[key]({

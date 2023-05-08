@@ -788,7 +788,7 @@ function AddDealDialog(props) {
   };
 
   const showPlusAddIcon = () => {
-    if (tFActive || tagInputSearch) return false;
+    // if (tFActive || tagInputSearch) return false;
     return true;
   };
 
@@ -1832,7 +1832,7 @@ function AddDealDialog(props) {
         )}
       </div>
       {
-        stateApp.transactBarView === "Grid" &&
+        stateApp.transactBarShowGrid &&
         createPortal(<AssociatedFlowDealDetails
           contacts={stateApp.activeDeal?.contacts.map(contact => contact._id)}
           deal={stateApp?.activeDeal?.cardId}
