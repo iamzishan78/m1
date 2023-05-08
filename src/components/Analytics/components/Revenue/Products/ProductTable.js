@@ -128,7 +128,7 @@ export default function ProductTable({ monthsInterval, items, name, unit }) {
                         <span style={{ display: "flex" }}>{selectedItems[index] ? <ArrowDropDownIcon style={{ cursor: "pointer" }} onClick={() => setSelectedItems({ ...selectedItems, [index]: false })} /> :
                           <ArrowDropRight style={{ cursor: "pointer" }} onClick={() => setSelectedItems({ ...selectedItems, [index]: true })} />
                         }
-                          {item.name}{index === 0 && unit ? `(${unit})` : ''}
+                          {item.name}{index === 0 && unit ? ` (${unit})` : ''}
                         </span>
                         <span style={{ display: 'grid', marginLeft: '25px', fontWeight: '200' }}> {selectedItems[index] && Object.keys(item.breakDown).map((key) => key ? <span>{key}</span> : <span>-</span>)}</span>
                       </Box>

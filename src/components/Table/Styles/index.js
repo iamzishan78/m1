@@ -20,7 +20,12 @@ export const usetableStyles = makeStyles(() => ({
     '& .MuiTableRow-footer': {
       visibility: (p) => p.isHideFooter ? 'hidden' : '',
       display: (p) => p.isHideFooter ? 'none' : '',
-    }
+    },
+    "& .MuiGrid-item": {
+      display: "flex",
+      alignItems: "center",
+
+    },
   },
   subComponentsClasses: {
     "& .MuiTableHead-root": {

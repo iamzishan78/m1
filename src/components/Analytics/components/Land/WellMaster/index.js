@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   FormControl,
   Grid,
@@ -8,6 +8,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { useSelector } from "react-redux";
+import { AppContext } from "AppContext";
 
 import WellMaster from "./WellMaster";
 import ReportGroupHeader from "components/Shared/ReportGroupHeader";
@@ -41,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ExhibitATabPanel() {
   const classes = useStyles();
+  const [stateApp] = useContext(AppContext);
   const propertiesReportGroup = useSelector(
     ({ Revenue }) => Revenue.propertiesReportGroup
   );
@@ -171,6 +173,7 @@ export default function ExhibitATabPanel() {
         targetLabel="acerage"
         parent="AcerageDetail"
         setESFilters={setESFilters}
+        landSearchQuery={stateApp.landAnalyticsSearchQuery}
       />
     </>
   );

@@ -396,7 +396,7 @@ const SummarySection = ({ checkId }) => {
 
                             <div className="flex" style={{ minWidth: "60px", alignItems: "center", justifyContent: "center" }}>
                               <Typography varient="h6" className={classes.textTransform}>
-                                {item.name === 'Adjustments' ? `( ${item.value} )` : item.value}
+                                {item.name === 'Adjustments' ? `${item.value}` : item.value}
                               </Typography>
                             </div>
                           </div>
@@ -511,7 +511,7 @@ const SummarySection = ({ checkId }) => {
 
                       <div className="flex" style={{ minWidth: "60px", alignItems: "center", justifyContent: "center" }}>
                         <Typography varient="h6" className={classes.textTransform}>
-                          {wrapWithBrackets(Number(item.value).toFixed(2))}
+                          {Number(item.value).toFixed(2)}
                           {/* {item.name === "Total Adjustments" ? Number(item.value).toFixed(2) : wrapWithBrackets(Number(item.value).toFixed(2))} */}
                         </Typography>
                       </div>
