@@ -7,6 +7,7 @@ export const OPENDEALS = gql`
         _id
         name
         ts
+        stage
       }
     }
   }

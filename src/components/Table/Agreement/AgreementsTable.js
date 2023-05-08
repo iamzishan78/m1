@@ -58,7 +58,7 @@ function AgreementsTable(props) {
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
   let GridViewModule = userGridViewSettings[`Agreements`] || {};
-  GridViewModule.columns = _.get(GridViewModule,'columns',[]).map(obj =>
+  GridViewModule.columns = _.get(GridViewModule, 'columns', []).map(obj =>
     excludeFromViewColumns.includes(obj.name) ? { ...obj, "viewColumns": false } : obj
   );
 
@@ -190,12 +190,8 @@ function AgreementsTable(props) {
 
   const getAdvanceSearchFilters = () => {
     let filters = [];
-    Object.keys(stateApp.landSearchFilters).forEach(key => {
-      if (stateApp.landSearchFilters[key] && stateApp.landSearchFilters[key].length)
-        filters.push({
-          field: key,
-          value: stateApp.landSearchFilters[key]
-        });
+    Object.values(stateApp.landSearchFilters).forEach(filter => {
+      filters = [...filters, ...filter];
     });
     return _.uniq(filters);
   }

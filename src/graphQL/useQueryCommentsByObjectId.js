@@ -9,6 +9,7 @@ export const COMMENTSBYOBJECTIDQUERY = gql`
       ts
       isEdited
       public
+      pin
       user {
         name
         email

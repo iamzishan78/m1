@@ -37,3 +37,6 @@ export const SET_REVENUE_PROPERTIES_DATA = "SET_REVENUE_PROPERTIES_DATA"; // For
 // Documents
 export const SET_DOCUMENT_ID_AS_DESCRIPTOR = 'SET_DOCUMENT_ID_AS_DESCRIPTOR' // will be used for fetching wells attached
 export const WELLS_FROM_DOCUMENTS = 'WELLS_FROM_DOCUMENTS'
+
+ 
+
