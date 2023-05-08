@@ -8,6 +8,11 @@ export const agreementTypes = [
   { label: "Surface/ROW", value: "surface" },
 ];
 
+export const agreementStatusOptions = [
+  { label: "Active", value: "ACTIVE" },
+  { label: "Inactive", value: "INACTIVE" }
+];
+
 const fieldsList = (activeUser) => {
   return [
     {
@@ -42,7 +47,8 @@ const fieldsList = (activeUser) => {
     },
     {
       label: "Agreement Status",
-      type: "autocomplete",
+      type: "select",
+      options: agreementStatusOptions,
       key: "agreementStatus",
     },
     {
