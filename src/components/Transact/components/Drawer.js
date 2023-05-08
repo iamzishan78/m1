@@ -65,11 +65,21 @@ export default function Drawer(props) {
   const { dealSettingsNumber } = props;
 
   const onClick = (key) => {
-    if(key === "Grid" && stateApp.transactBarView === key){
-      key = "Deal"
-    }
-    setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))
+    if (key === "Grid")
+      setStateApp((stateApp) => ({ ...stateApp, transactBarShowGrid: !stateApp.transactBarShowGrid }))
+    else
+      setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))
   }
+
+  const getClass = (classes, key) => {
+    if (key === "Grid" && stateApp.transactBarShowGrid) {
+      return classes.activeIcon;
+    }
+
+    return stateApp.transactBarView === key ? classes.activeIcon : classes.inactiveIcon;
+  }
+
+  console.log(stateApp)
 
   const drawerIcons = {
     // Comments: (props) => <MessageIcon {...props} />,
@@ -170,20 +180,26 @@ export default function Drawer(props) {
   };
   return (
     <div className={classes.root}>
-      {Object.keys(drawerIcons).map((key) => (
-        <Tooltip title={key} placement="left">
-          <div
-            className={`${classes.icon} ${stateApp.transactBarView === key ? classes.activeIcon : classes.inactiveIcon}`}
-            onClick={() => onClick(key)}
-          >
-            {drawerIcons[key]({
-              ...props,
-              opacity: "1",
-              height: "30"
-            })}
-          </div>
-        </Tooltip>
-      ))}
+      {Object.keys(drawerIcons).map((key) => {
+        if (key === "Grid" && !stateApp.activeDeal?.contacts) {
+          return null; // exclude Grid icon if activeDeal.contacts doesn't exist
+        }
+
+        return (
+          <Tooltip title={key} placement="left">
+            <div
+              className={`${classes.icon} ${getClass(classes, key)}`}
+              onClick={() => onClick(key)}
+            >
+              {drawerIcons[key]({
+                ...props,
+                opacity: "1",
+                height: "30"
+              })}
+            </div>
+          </Tooltip>
+        );
+      })}
     </div>
   );
 }

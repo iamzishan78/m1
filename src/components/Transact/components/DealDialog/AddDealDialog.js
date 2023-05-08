@@ -788,7 +788,7 @@ function AddDealDialog(props) {
   };
 
   const showPlusAddIcon = () => {
-    if (tFActive || tagInputSearch) return false;
+    // if (tFActive || tagInputSearch) return false;
     return true;
   };
 
@@ -1278,13 +1278,14 @@ function AddDealDialog(props) {
   }, [dealSettings]);
 
   const handleClickDialogClose = () => {
-    if (stateApp.transactBarView === "Map") {
-      setStateApp((state) => ({
-        ...state,
-        transactBarView: "Deal"
-      }));
-      return;
-    }
+    setStateApp((state) => {
+      const newState = { ...state, transactBarShowGrid: false };
+      if (state.transactBarView === "Map")
+        newState.transactBarView = "Deal";
+
+      return newState;
+    });
+
 
     if (!updateDealLoading && !addContactLoading) {
       if (history.location.pathname.includes("lane")) {
@@ -1832,7 +1833,7 @@ function AddDealDialog(props) {
         )}
       </div>
       {
-        stateApp.transactBarView === "Grid" &&
+        stateApp.transactBarShowGrid &&
         createPortal(<AssociatedFlowDealDetails
           contacts={stateApp.activeDeal?.contacts.map(contact => contact._id)}
           deal={stateApp?.activeDeal?.cardId}
