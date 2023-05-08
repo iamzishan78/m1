@@ -90,7 +90,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
   }
 
   const displayValue = (value) => {
-    return value ? <span>({vf_number(value.toFixed(2))})</span> : <span>-</span>
+    return value ? <span>{vf_number(value.toFixed(2))}</span> : <span>-</span>
   }
 
   return (
@@ -160,6 +160,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
                 </TableRow>
               </TableHead>
               <TableBody>
+                {console.log('item',items)}
                 {items.map((item, index) => (
                   <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
                     {monthsInterval.map((month) => <TableCell scope="row" >

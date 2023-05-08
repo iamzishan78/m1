@@ -4,10 +4,7 @@ import _ from "underscore";
 import { useHistory } from "react-router-dom";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import FormControl from "@material-ui/core/FormControl";
-
-import Grid from "@material-ui/core/Grid";
+import { TextField, FormControl, Grid, Chip } from "@material-ui/core";
 import { AppContext } from "AppContext";
 import { TransactContext } from "components/Transact/TransactContext";
 import { CONTACT } from "graphQL/useQueryContact";
@@ -37,6 +34,7 @@ import { UPDATE_STAGE_DEAL_DESCRIPTOR } from "graphQL/useMutationUpdateStageDeal
 import { UPDATESTAGEDEALDESCRIPTORS } from "graphQL/useMutationUpdateStageDealDescriptors";
 import { showErrorMessage, showSuccessMessage } from "actions";
 
+import DealTags from "../../../Shared/DealTagger";
 import PropTypes from "prop-types";
 import NumberFormat from "react-number-format";
 import Documents from "components/Shared/Documents";
@@ -52,6 +50,8 @@ import CustomAvatar from "components/Shared/ui/CustomAvatar";
 
 import MapProvider from "components/Map/MapProvider";
 import { getRandomColor } from "components/Shared/functions/ui";
+import AssociatedFlowDealDetails from "../AssociatedFlowDealDetails";
+import { createPortal } from "react-dom/cjs/react-dom.production.min";
 import ExistingDeal from "./ExistingDeal";
 
 function NumberFormatCustom(props) {
@@ -276,6 +276,66 @@ const useStyles = makeStyles((theme) => ({
   dealContainer: {
     maxHeight: "calc(100vh - 147px) !important",
   },
+  tags: {
+    "& fieldset": {
+      border: "none",
+    },
+    width: "100%",
+  },
+
+  rootDiv: {
+    width: ({ width }) => (width ? width : "500px"),
+    "& > * + *": {
+      marginTop: theme.spacing(5),
+    },
+    "& .MuiAutocomplete-clearIndicator": {
+      display: "none",
+    },
+  },
+  publicLeftBottom: {
+    float: "none",
+    flexDirection: "row",
+    alignSelf: "unset",
+    margin: 0,
+    "& .MuiTypography-root": {
+      display: "none",
+    },
+    "& .h4Before": { margin: "0 13px", color: "#202020 !important" },
+    "& .h4After": { margin: "0 0 0 13px", color: "#B7B7B7 !important" },
+  },
+  chip: {
+    "& .MuiAutocomplete-inputRoot": { minHeight: "56px" },
+    "& .MuiChip-root": {
+      backgroundColor: "#ECEDED",
+      color: "#606060",
+      fontWeight: '700'
+    },
+  },
+  input: {
+    "& input": {
+      caretColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "transparent"),
+      color: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "#008ebf"),
+      backgroundColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "#D5F4FF"),
+      maxWidth: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "33px"),
+      width: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "33px"),
+      height: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "32px"),
+      fontSize: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "25px"),
+      margin: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "3px"),
+      padding: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "0px !important"),
+      borderRadius: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "50%"),
+      textAlign: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "center"),
+      cursor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "pointer"),
+      "&:hover": {
+        boxShadow: ({ showPlusAddIcon }) =>
+          !showPlusAddIcon ? "" : "0px 2px 2px -1px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.12), 0px 1px 10px 0px rgba(0,0,0,0.1)",
+        backgroundColor: ({ showPlusAddIcon }) => (!showPlusAddIcon ? "" : "rgba(0, 0, 0, 0.08)"),
+      },
+      transition: ({ showPlusAddIcon }) =>
+        !showPlusAddIcon
+          ? ""
+          : "background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+    },
+  },
 }));
 
 const newContact = {
@@ -315,6 +375,7 @@ function AddDealDialog(props) {
   const [bidDate, setBidDate] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [closeDate, setCloseDate] = useState("");
+  const [tags, setTags] = useState([]);
   const [originationDate, setOriginationDate] = useState(null);
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", id: 0, _id: 0 });
@@ -724,6 +785,11 @@ function AddDealDialog(props) {
           handleClose();
         } else dispatch(showErrorMessage("An error occurred."));
       });
+  };
+
+  const showPlusAddIcon = () => {
+    // if (tFActive || tagInputSearch) return false;
+    return true;
   };
 
   const addUpdateDeal = async (newContact = null, closeAfterUpdate = true) => {
@@ -1212,13 +1278,14 @@ function AddDealDialog(props) {
   }, [dealSettings]);
 
   const handleClickDialogClose = () => {
-    if (stateApp.transactBarView === "Map") {
-      setStateApp((state) => ({
-        ...state,
-        transactBarView: "Deal"
-      }));
-      return;
-    }
+    setStateApp((state) => {
+      const newState = { ...state, transactBarShowGrid: false };
+      if (state.transactBarView === "Map")
+        newState.transactBarView = "Deal";
+
+      return newState;
+    });
+
 
     if (!updateDealLoading && !addContactLoading) {
       if (history.location.pathname.includes("lane")) {
@@ -1765,6 +1832,13 @@ function AddDealDialog(props) {
           </div>
         )}
       </div>
+      {
+        stateApp.transactBarShowGrid &&
+        createPortal(<AssociatedFlowDealDetails
+          contacts={stateApp.activeDeal?.contacts.map(contact => contact._id)}
+          deal={stateApp?.activeDeal?.cardId}
+        />, document.body)
+      }
     </>
   );
 }

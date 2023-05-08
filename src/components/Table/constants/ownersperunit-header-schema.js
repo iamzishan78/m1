@@ -1,6 +1,7 @@
 import vf_currency from "components/Shared/valueformatters/vf_currency";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import { GlobalStickyStyles } from "GlobalSettings";
+import ListChips from "components/Common/ListChips";
 
 const OwnersPerUnitHeadCells = [
   {
@@ -128,6 +129,19 @@ const OwnersPerUnitHeadCells = [
         // } else {
         //   return value.campaignName?.map((v, index) => `${v}${index < value?.length - 1 ? ", " : ""}`);
         // }
+      },
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "deals",
+    label: "Associated Deals",
+    esKey: "deals.name.keyword",
+    options: {
+      customRender: (value) => {
+        return value && <ListChips list={value} />
       },
       setCellProps: () => ({ style: { minWidth: "200px" } }),
       sort: true,

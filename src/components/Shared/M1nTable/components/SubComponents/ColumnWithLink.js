@@ -2,18 +2,18 @@ import React from "react";
 import { history } from "store";
 import { Link as RouterLink } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import { Box } from "@material-ui/core";
+import { Box, Tooltip } from "@material-ui/core";
 
 import GlobalStyles from "GlobalStyles";
 
 const useStyles = makeStyles(() => ({
   root: {
-    color: GlobalStyles.colors.lightBlue,
+    color: `${GlobalStyles.colors.lightBlue} !important`,
     cursor: "pointer",
   },
   link: {
-    color: GlobalStyles.colors.lightBlue,
-    maxWidth: "300px",
+    color: `${GlobalStyles.colors.lightBlue} !important`,
+    maxWidth: "380px",
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
@@ -44,9 +44,11 @@ const ColumnWithLink = ({ value, link, ...rest }) => {
       {!rest.disabled ? (
         <div className={classes.root}>
           {link ? (
-            <RouterLink to={`${link}/?tenant=${window.sessionStorage.getItem("tenantName")}`} className={classes.link}>
-              {value}
-            </RouterLink>
+            <Tooltip title={value} arrow>
+              <RouterLink to={`${link}/?tenant=${window.sessionStorage.getItem("tenantName")}`} className={classes.link}>
+                {value}
+              </RouterLink>
+            </Tooltip>
           ) : (
             value
           )}

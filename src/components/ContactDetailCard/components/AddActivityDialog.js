@@ -394,6 +394,8 @@ function AddActivityDialog(props) {
           dateTime: new Date(dateTime).toUTCString(),
           endDateTime: new Date(endDateTime).toUTCString(),
           isClosed: closed?.value,
+          user: stateApp.user._id,
+          createdBy: stateApp?.user?._id,
         },
       },
       refetchQueries: ["getContact"],
@@ -424,6 +426,8 @@ function AddActivityDialog(props) {
           contactName: contactData?.name,
           dealId,
           isClosed: closed.value,
+          user: stateApp.user._id,
+          createdBy: stateApp?.user?._id,
         },
       },
     });
@@ -741,6 +745,19 @@ function AddActivityDialog(props) {
           />
         )}
       />
+      <TextField
+        label="Activity Created By"
+        className={clsx(
+          // classes.fieldWidth,
+          classes.inputField,
+          activityName === "" && errors.activityName && classes.error
+        )}
+        disabled
+        fullWidth
+        InputProps={{ readOnly: true }}
+        value={stateApp?.user?.name}
+        margin="dense" variant="outlined"
+      />
       <Autocomplete
         className={clsx(!owner.id && errors.owner && classes.error)}
         options={activityStatus}
@@ -760,6 +777,7 @@ function AddActivityDialog(props) {
           />
         )}
       />
+
       <div className={classes.btnGroup} style={{ width: "100%" }}>
         {/*<FormControlLabel*/}
         {/*  enabled*/}
