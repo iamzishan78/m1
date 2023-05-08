@@ -1278,13 +1278,14 @@ function AddDealDialog(props) {
   }, [dealSettings]);
 
   const handleClickDialogClose = () => {
-    if (stateApp.transactBarView === "Map") {
-      setStateApp((state) => ({
-        ...state,
-        transactBarView: "Deal"
-      }));
-      return;
-    }
+    setStateApp((state) => {
+      const newState = { ...state, transactBarShowGrid: false };
+      if (state.transactBarView === "Map")
+        newState.transactBarView = "Deal";
+
+      return newState;
+    });
+
 
     if (!updateDealLoading && !addContactLoading) {
       if (history.location.pathname.includes("lane")) {
