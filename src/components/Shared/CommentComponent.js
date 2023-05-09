@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   comment: ({ commentsHeight }) => ({
     position: "relative",
     overflow: "auto",
-    padding: "14px 0px",
+    padding: "5px 0px",
 
     '& *': {
       overflowAnchor: 'none'
@@ -88,6 +88,16 @@ const useStyles = makeStyles((theme) => ({
   whiteSpace: {
     whiteSpace: "pre-wrap",
     marginTop: "5px",
+  },
+  pinnedGrid: {
+    flexWrap: 'nowrap',
+    backgroundColor: "#FFF6EE"
+  },
+  pinnedCommentBar: {
+    display: "flex",
+    minHeight: "10px",
+    width: "5px",
+    backgroundColor: "#EFC480"
   },
   gridStyle: {
     padding: "12px 0px",
@@ -145,7 +155,7 @@ export const CommonCommentText = ({ eachComment, users }) => {
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
-      {get(eachComment, "commentType") && (
+      {get(eachComment, "commentType") && eachComment.pin !== true && (
         <span className={classes.commentTypeSection}>{get(eachComment, "commentType.commentType", get(eachComment, "commentType"))}</span>
       )}
       {formatComment.map((word, index) => {
@@ -336,6 +346,11 @@ export default function CommentComponent(props) {
       setProfileImage(profileImage);
     }
   }, [profiledata]);
+
+  const pinnedComment = React.useMemo(() => {
+    const comment = commentsArray.find((comment) => comment.pin === true);
+    return comment;
+  }, [commentsArray]);
 
   const sortArrayBasedOnTs = (array) => {
     const compare = (a, b) => {
@@ -529,6 +544,46 @@ export default function CommentComponent(props) {
         <div className={classes.comment} id="commentsContainer">
           {!loadingComments ? (
             <>
+              {pinnedComment && (
+                <Fragment>
+
+                  <Grid
+                    id="commentsArea"
+                    container
+                    className={classes.pinnedGrid}
+                    onMouseOver={() => setShowCommentActionId(pinnedComment?._id)}
+                    onMouseLeave={() => setShowCommentActionId(null)}
+                    pinned
+                  >
+                    <div className={classes.pinnedCommentBar}></div>
+                    <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
+                      <IconButton>
+                        {profilesInfo[pinnedComment?.user?.email]?.profileImage || pinnedComment.isNew ? (
+                          <Avatar
+                            src={pinnedComment.isNew ? profileImage : profilesInfo[pinnedComment?.user?.email].profileImage}
+                            size="38"
+                            round
+                          />
+                        ) : (
+                          <Avatar name={pinnedComment?.user?.name} size="38" round />
+                        )}
+                      </IconButton>
+                    </Grid>
+                    <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`} style={{ marginTop: "5px" }}>
+                      <div>
+                        <span className={classes.bold}>{pinnedComment?.user?.name}</span>
+                        {!isNaN(pinnedComment.ts) && (
+                          <ReactTimeAgo className={classes.commentTime} date={new Date(Number(pinnedComment.ts))} locale="en-US" />
+                        )}
+                        {pinnedComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+                      </div>
+                      <CommonCommentText users={users} eachComment={pinnedComment} />
+                    </Grid>
+                  </Grid>
+                </Fragment>
+
+              )}
+
               {!showAllComments && commentsArray.length > 7 && (
                 <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
                   <span
