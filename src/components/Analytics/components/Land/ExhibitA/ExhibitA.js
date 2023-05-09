@@ -26,6 +26,7 @@ function ExhibitATable(props) {
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
       hit.agreementNumber = hit.shape.shapeJson.properties.agreementNumber;
+      hit.agreementStatus = hit.shape.shapeJson.properties.agreementStatus;
       hit.agreementName = hit.shape.shapeJson.properties.agreementName;
       hit.agreementType = agreementTypes.find((type) => type.value === hit.shape.shapeJson.properties.agreementType || type.label === hit.shape.shapeJson.properties.agreementType)?.label;
       hit.agreementId = hit.shape._id;

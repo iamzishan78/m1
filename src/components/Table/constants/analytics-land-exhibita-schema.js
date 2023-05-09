@@ -83,7 +83,12 @@ const AcerageSummaryHeadCells = [
       isDate: true,
     },
   },
-
+  {
+    name: "agreementStatus",
+    label: "Agreement Status",
+    esKey: "shape.shapeJson.properties.agreementStatus.keyword",
+    options: { sort: true, filter: true, display: true },
+  },
   {
     name: "tractName",
     label: "Tract Name",

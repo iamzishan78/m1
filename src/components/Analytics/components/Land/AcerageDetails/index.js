@@ -61,14 +61,20 @@ export default function AcerageDetailTabPanel() {
     const newESFilters = [];
 
     // Add available values to filters
-    ["agreementType", "agreementSubType", "internalCompany", "acquisitionID", "prospectID"].map(field => {
-      if(externalFilters[field] !== "All")
+    [
+      "agreementType",
+      "agreementSubType",
+      "internalCompany",
+      "acquisitionID",
+      "prospectID",
+    ].map((field) => {
+      if (externalFilters[field] !== "All")
         newESFilters.push({
           field: `${field}.keyword`,
           value: externalFilters[field],
         });
-    })
-    
+    });
+
     ESFilters(newESFilters);
   }, [externalFilters]);
 
@@ -78,84 +84,85 @@ export default function AcerageDetailTabPanel() {
 
   const handleFilterChange = (field, newValue) => {
     setExtFilters({ ...externalFilters, [field]: newValue || "All" });
-  }
+  };
 
   return (
     <>
-    <div className={classes.actionBar}>
-      <Grid
-        container
-        direction="row"
-        display="flex"
-        alignItems="center"
-        spacing={2}
-        style={{ padding: "0px 36px" }}
-      >
-        <Grid item xs={12} md={2} style={{ marginTop: "4px" }}>
-          <Grid container display="flex" alignItems="center" spacing={3}>
-            <FormControl
-              variant="outlined"
-              required
-              className={classes.formControl}
-            >
-              <InputLabel id="demo-simple-select-required-label">
-                Agreement Type
-              </InputLabel>
-              <Select
-                labelId="demo-simple-select-outlined-label"
-                id="demo-simple-select-outlined"
-                value={externalFilters.agreementType}
-                onChange={({ target }) => {}}
-                label="Agreement Type"
-                fullWidth
-                className={classes.select}
+      {/* <div className={classes.actionBar}>
+        <Grid
+          container
+          direction="row"
+          display="flex"
+          alignItems="center"
+          spacing={2}
+          style={{ padding: "0px 36px" }}
+        >
+          <Grid item xs={12} md={2} style={{ marginTop: "4px" }}>
+            <Grid container display="flex" alignItems="center" spacing={3}>
+              <FormControl
+                variant="outlined"
+                required
+                className={classes.formControl}
               >
-                <MenuItem value={"lease"}>Lease</MenuItem>
-                <MenuItem value={"deed"}>Deed</MenuItem>
-                <MenuItem value={"contract"}>Contract</MenuItem>
-                <MenuItem value={"surface"}>Surface/ROW</MenuItem>
-              </Select>
-            </FormControl>
+                <InputLabel id="demo-simple-select-required-label">
+                  Agreement Type
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-outlined-label"
+                  id="demo-simple-select-outlined"
+                  value={externalFilters.agreementType}
+                  onChange={({ target }) => {}}
+                  label="Agreement Type"
+                  fullWidth
+                  className={classes.select}
+                >
+                  <MenuItem value={"lease"}>Lease</MenuItem>
+                  <MenuItem value={"deed"}>Deed</MenuItem>
+                  <MenuItem value={"contract"}>Contract</MenuItem>
+                  <MenuItem value={"surface"}>Surface/ROW</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
           </Grid>
-        </Grid>
-        {/* Similar Filter Fields */}
-        {[
-          "agreementSubType",
-          "internalCompany",
-          "acquisitionID",
-          "prospectID",
-        ].map((field) => (
+          {[
+            "agreementSubType",
+            "internalCompany",
+            "acquisitionID",
+            "prospectID",
+          ].map((field) => (
+            <Grid item xs={12} md={2}>
+              <AutoCompleteTypeComponent
+                fullWidth
+                value={externalFilters[field]}
+                shapeType="Agreement"
+                typeKey={field}
+                variant="outlined"
+                createable={false}
+                onChange={(e, newValue) =>
+                  handleFilterChange(field, newValue?.name)
+                }
+                autoFocus={false}
+                id={`field-${field}`}
+              />
+            </Grid>
+          ))}
           <Grid item xs={12} md={2}>
-            <AutoCompleteTypeComponent
-              fullWidth
-              value={externalFilters[field]}
-              shapeType="Agreement"
-              typeKey={field}
-              variant="outlined"
-              createable={false}
-              onChange={(e, newValue) => handleFilterChange(field, newValue?.name)}
-              autoFocus={false}
-              id={`field-${field}`}
-            />
-          </Grid>
-        ))}
-        <Grid item xs={12} md={2}>
-          <Grid container display="flex" className={classes.actionsGrid}>
-            <ReportGroupHeader
-              type="Agreements"
-              esFilters={externalFilters.reportingGroup}
-              setESFilters={(value) => setESFilters(value)}
-              setFilterToggle={() => {}}
-              isBackground={false}
-              noUpdate={true}
-              strechedWidth
-              isShrink
-              noPadding
-            />
+            <Grid container display="flex" className={classes.actionsGrid}>
+              <ReportGroupHeader
+                type="Agreements"
+                esFilters={externalFilters.reportingGroup}
+                setESFilters={(value) => setESFilters(value)}
+                setFilterToggle={() => {}}
+                isBackground={false}
+                noUpdate={true}
+                strechedWidth
+                isShrink
+                noPadding
+              />
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
-      </div>
+      </div> */}
       <AcerageDetail
         header="Acreage Detail"
         esFilters={[]}

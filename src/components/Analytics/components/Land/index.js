@@ -91,14 +91,14 @@ export default function LandAnalytics() {
           aria-label="ant example"
         >
           {/* <StyledTab label="Acreage Summary" /> */}
-          <StyledTab label="Acreage Detail" />
           <StyledTab label="Exhibit A" />
+          <StyledTab label="Acreage Detail" />
           <StyledTab label="Well Master" />
         </StyledTabs>
       </div>
       {/* {tab === 0 && <AcerageSummaryTabPanel />} */}
-      {tab === 0 && <AcerageDetailsTabPanel />}
-      {tab === 1 && <ExhibitATabPanel />}
+      {tab === 0 && <ExhibitATabPanel />}
+      {tab === 1 && <AcerageDetailsTabPanel />}
       {tab === 2 && <WellMasterTabPanel />}
       {/* <AnalyticsCards cards={cards} /> */}
       <Divider className={classes.divider} />
