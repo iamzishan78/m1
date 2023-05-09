@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
   },
   whiteSpace: {
     whiteSpace: "pre-wrap",
-    marginTop: "5px",
+    margin: "5px 0px",
   },
   pinnedGrid: {
     flexWrap: 'nowrap',
@@ -532,54 +532,60 @@ export default function CommentComponent(props) {
     return indexToShow;
   };
 
+  const pinnedCommentsJsx = React.useMemo(() => (
+    <>
+      {pinnedComments?.map((pinnedComment, key) => (
+        <Fragment key={key}>
+          <Grid
+            id="commentsArea"
+            container
+            className={classes.pinnedGrid}
+            onMouseOver={() => setShowCommentActionId(pinnedComment?._id)}
+            onMouseLeave={() => setShowCommentActionId(null)}
+            pinned
+          >
+            <div className={classes.pinnedCommentBar}></div>
+            <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
+              <IconButton>
+                {profilesInfo[pinnedComment?.user?.email]?.profileImage || pinnedComment.isNew ? (
+                  <Avatar
+                    src={pinnedComment.isNew ? profileImage : profilesInfo[pinnedComment?.user?.email].profileImage}
+                    size="38"
+                    round
+                  />
+                ) : (
+                  <Avatar name={pinnedComment?.user?.name} size="38" round />
+                )}
+              </IconButton>
+            </Grid>
+            <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`} style={{ marginTop: "5px" }}>
+              <div>
+                <span className={classes.bold}>{pinnedComment?.user?.name}</span>
+                {!isNaN(pinnedComment.ts) && (
+                  <ReactTimeAgo className={classes.commentTime} date={new Date(Number(pinnedComment.ts))} locale="en-US" />
+                )}
+                {pinnedComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+              </div>
+              <CommonCommentText users={users} eachComment={pinnedComment} />
+            </Grid>
+          </Grid>
+        </Fragment>
+      ))}
+    </>
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [pinnedComments]);
+
   return (
     <>
       <div className={classes.container}>
         <div className={classes.comment} id="commentsContainer">
           {!loadingComments ? (
             <>
-              {pinnedComments && (
-                pinnedComments.map((pinnedComment) => {
-                  return (
-                    <Fragment>
-                      <Grid
-                        id="commentsArea"
-                        container
-                        className={classes.pinnedGrid}
-                        onMouseOver={() => setShowCommentActionId(pinnedComment?._id)}
-                        onMouseLeave={() => setShowCommentActionId(null)}
-                        pinned
-                      >
-                        <div className={classes.pinnedCommentBar}></div>
-                        <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
-                          <IconButton>
-                            {profilesInfo[pinnedComment?.user?.email]?.profileImage || pinnedComment.isNew ? (
-                              <Avatar
-                                src={pinnedComment.isNew ? profileImage : profilesInfo[pinnedComment?.user?.email].profileImage}
-                                size="38"
-                                round
-                              />
-                            ) : (
-                              <Avatar name={pinnedComment?.user?.name} size="38" round />
-                            )}
-                          </IconButton>
-                        </Grid>
-                        <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`} style={{ marginTop: "5px" }}>
-                          <div>
-                            <span className={classes.bold}>{pinnedComment?.user?.name}</span>
-                            {!isNaN(pinnedComment.ts) && (
-                              <ReactTimeAgo className={classes.commentTime} date={new Date(Number(pinnedComment.ts))} locale="en-US" />
-                            )}
-                            {pinnedComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
-                          </div>
-                          <CommonCommentText users={users} eachComment={pinnedComment} />
-                        </Grid>
-                      </Grid>
-                    </Fragment>
-                  )
-                })
 
-              )}
+              {
+                // This will return a new grid for pinned comments
+                pinnedCommentsJsx
+              }
 
               {!showAllComments && commentsArray.length > 7 && (
                 <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
@@ -666,9 +672,7 @@ export default function CommentComponent(props) {
                                 END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
                               </div>
                               {eachComment.activityData.outcome && (
-                                <div className={`${classes.whiteSpace}`}>
-                                  OUTCOME: {eachComment.activityData.outcome}
-                                </div>
+                                <div className={`${classes.whiteSpace}`}>OUTCOME: {eachComment.activityData.outcome}</div>
                               )}
                             </>
                           )}
