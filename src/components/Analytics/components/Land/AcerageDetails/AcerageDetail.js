@@ -27,6 +27,7 @@ function AcerageDetail(props) {
       hit._id = hit.shape._id;
       hit.agreementNumber = hit.shape.shapeJson.properties.agreementNumber;
       hit.agreementName = hit.shape.shapeJson.properties.agreementName;
+      hit.agreementStatus = hit.shape.shapeJson.properties.agreementStatus;
       hit.agreementSubtype = hit.shape.shapeJson.properties.agreementSubtype;
       hit.layerSubType = hit.shape.shapeJson.properties.layerSubType;
       hit.rightsType = hit.shape.shapeJson.properties.rightsType;
@@ -67,6 +68,7 @@ function AcerageDetail(props) {
       filters: fixedFilters,
       selectedGridView: { filters: [] },
       startPaginationAt: 25,
+      downloadAll: { exportPx: '176px' },
       // defaultSort: { field: "name.keyword", order: "asc" },
       formatHits,
     });
@@ -92,7 +94,7 @@ function AcerageDetail(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props?.total, props.dependencyUpdate]);
 
-  delete props.options.customToolbar;
+  // delete props.options.customToolbar;
   delete props.options.customToolbarSelect;
   delete props.options.onRowClick;
   props.options.search = props.searchBar;
