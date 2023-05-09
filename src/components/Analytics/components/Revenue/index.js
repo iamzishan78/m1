@@ -167,6 +167,8 @@ export default function RevenueAnalytics(props) {
         >
           <StyledTab label="Time Series" />
           <StyledTab label="Check Details" />
+          <StyledTab label="Income Stmt" />
+          <StyledTab label="Comparison" disabled />
           {/* <StyledTab label="Properties" /> */}
         </StyledTabs>
       </div>

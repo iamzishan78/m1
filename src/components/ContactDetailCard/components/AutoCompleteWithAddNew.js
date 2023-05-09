@@ -9,7 +9,7 @@ import { Typography, Grid, TextField } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
 import { useLazyQuery } from "@apollo/client";
 
-import { contactNewStatusOptions } from "components/ContactDetailedInfo/helper";
+
 
 const useStyles = makeStyles({
   inputRoot: {
@@ -25,22 +25,22 @@ const useStyles = makeStyles({
 });
 
 const filter = createFilterOptions();
-const ContactStatus = ({ setValue, value, ...other }) => {
+const AutoCompleteWithAddNew = ({ setValue, value, fieldKey, defaultOptions = [], ...other }) => {
   const classes = useStyles();
   const [search, setSearch] = useState(value);
-  const [newStatusOptions, setNewStatusOptions] = useState([]);
+  const [options, setOptions] = useState([]);
   const onInputChange = (event, value) => {
     setSearch(value);
   };
 
-  const [getContactStatusFilters, { data: contactStatusFiltersData }] =
+  const [getContactFieldOptions, { data: contactFieldOptions }] =
     useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
-    getContactStatusFilters({
+    getContactFieldOptions({
       variables: {
         esIndex: "contacts_flat",
-        filterKey: "contactStatus.keyword",
+        filterKey: fieldKey + ".keyword",
         size: 50,
       },
     });
@@ -51,23 +51,25 @@ const ContactStatus = ({ setValue, value, ...other }) => {
   }, [value])
 
   useEffect(() => {
-    if (contactStatusFiltersData?.getESFilterList?.hits) {
-      let filterData = contactStatusFiltersData.getESFilterList.hits.map(
+    if (contactFieldOptions?.getESFilterList?.hits) {
+      let filterData = contactFieldOptions.getESFilterList.hits.map(
         (hit) => hit.key
       );
-      for (let i = 0; i < contactNewStatusOptions.length; i++) {
+      for (let i = 0; i < defaultOptions.length; i++) {
         filterData = filterData.filter(
           (d) =>
-            d !== contactNewStatusOptions[i].value &&
-            d !== contactNewStatusOptions[i].label
+            d !== defaultOptions[i].value &&
+            d !== defaultOptions[i].label
         );
       }
-      for (let i = 0; i < contactNewStatusOptions.length; i++) {
-        filterData.push(contactNewStatusOptions[i].label);
+      for (let i = 0; i < defaultOptions.length; i++) {
+        filterData.push(defaultOptions[i].label);
       }
-      setNewStatusOptions(filterData);
+
+      filterData = filterData.filter(item => item.trim())
+      setOptions(filterData);
     }
-  }, [contactStatusFiltersData]);
+  }, [contactFieldOptions]);
 
   return (
     <Autocomplete
@@ -76,7 +78,7 @@ const ContactStatus = ({ setValue, value, ...other }) => {
       disableListWrap
       classes={classes}
       options={
-        newStatusOptions?.map((type) => {
+        options?.map((type) => {
           return { _id: type, name: type };
         }) ?? []
       }
@@ -158,4 +160,4 @@ const ContactStatus = ({ setValue, value, ...other }) => {
   );
 };
 
-export default ContactStatus;
+export default AutoCompleteWithAddNew;
