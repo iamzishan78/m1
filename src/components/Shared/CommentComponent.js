@@ -96,7 +96,7 @@ const useStyles = makeStyles((theme) => ({
   pinnedCommentBar: {
     display: "flex",
     minHeight: "10px",
-    width: "5px",
+    minWidth: "5px",
     backgroundColor: "#EFC480"
   },
   gridStyle: {
@@ -347,9 +347,9 @@ export default function CommentComponent(props) {
     }
   }, [profiledata]);
 
-  const pinnedComment = React.useMemo(() => {
-    const comment = commentsArray.find((comment) => comment.pin === true);
-    return comment;
+  const pinnedComments = React.useMemo(() => {
+    const pinnedComments = commentsArray.filter((comment) => comment.pin === true);
+    return pinnedComments;
   }, [commentsArray]);
 
   const sortArrayBasedOnTs = (array) => {
@@ -544,43 +544,46 @@ export default function CommentComponent(props) {
         <div className={classes.comment} id="commentsContainer">
           {!loadingComments ? (
             <>
-              {pinnedComment && (
-                <Fragment>
-
-                  <Grid
-                    id="commentsArea"
-                    container
-                    className={classes.pinnedGrid}
-                    onMouseOver={() => setShowCommentActionId(pinnedComment?._id)}
-                    onMouseLeave={() => setShowCommentActionId(null)}
-                    pinned
-                  >
-                    <div className={classes.pinnedCommentBar}></div>
-                    <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
-                      <IconButton>
-                        {profilesInfo[pinnedComment?.user?.email]?.profileImage || pinnedComment.isNew ? (
-                          <Avatar
-                            src={pinnedComment.isNew ? profileImage : profilesInfo[pinnedComment?.user?.email].profileImage}
-                            size="38"
-                            round
-                          />
-                        ) : (
-                          <Avatar name={pinnedComment?.user?.name} size="38" round />
-                        )}
-                      </IconButton>
-                    </Grid>
-                    <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`} style={{ marginTop: "5px" }}>
-                      <div>
-                        <span className={classes.bold}>{pinnedComment?.user?.name}</span>
-                        {!isNaN(pinnedComment.ts) && (
-                          <ReactTimeAgo className={classes.commentTime} date={new Date(Number(pinnedComment.ts))} locale="en-US" />
-                        )}
-                        {pinnedComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
-                      </div>
-                      <CommonCommentText users={users} eachComment={pinnedComment} />
-                    </Grid>
-                  </Grid>
-                </Fragment>
+              {pinnedComments && (
+                pinnedComments.map((pinnedComment) => {
+                  return (
+                    <Fragment>
+                      <Grid
+                        id="commentsArea"
+                        container
+                        className={classes.pinnedGrid}
+                        onMouseOver={() => setShowCommentActionId(pinnedComment?._id)}
+                        onMouseLeave={() => setShowCommentActionId(null)}
+                        pinned
+                      >
+                        <div className={classes.pinnedCommentBar}></div>
+                        <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
+                          <IconButton>
+                            {profilesInfo[pinnedComment?.user?.email]?.profileImage || pinnedComment.isNew ? (
+                              <Avatar
+                                src={pinnedComment.isNew ? profileImage : profilesInfo[pinnedComment?.user?.email].profileImage}
+                                size="38"
+                                round
+                              />
+                            ) : (
+                              <Avatar name={pinnedComment?.user?.name} size="38" round />
+                            )}
+                          </IconButton>
+                        </Grid>
+                        <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`} style={{ marginTop: "5px" }}>
+                          <div>
+                            <span className={classes.bold}>{pinnedComment?.user?.name}</span>
+                            {!isNaN(pinnedComment.ts) && (
+                              <ReactTimeAgo className={classes.commentTime} date={new Date(Number(pinnedComment.ts))} locale="en-US" />
+                            )}
+                            {pinnedComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+                          </div>
+                          <CommonCommentText users={users} eachComment={pinnedComment} />
+                        </Grid>
+                      </Grid>
+                    </Fragment>
+                  )
+                })
 
               )}
 
