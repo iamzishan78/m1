@@ -45,8 +45,6 @@ const useStyles = makeStyles((theme) => ({
   comment: ({ commentsHeight }) => ({
     position: "relative",
     overflow: "auto",
-    padding: "5px 0px",
-
     '& *': {
       overflowAnchor: 'none'
     },
@@ -239,7 +237,6 @@ export default function CommentComponent(props) {
     fetchPolicy: "cache-first",
   });
   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(COMMENTSBYOBJECTIDQUERY, { fetchPolicy: "no-cache" });
-  const [pinnedArray, setPinnedArray] = React.useState([])
   useEffect(() => {
     getAllMongoUsers();
   }, [getAllMongoUsers]);
@@ -296,11 +293,8 @@ export default function CommentComponent(props) {
       } else {
         allComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId])
       }
-      let pinnedComments = allComments.filter(comment => comment.pin);
-      pinnedComments = sortArrayBasedOnTs(pinnedComments);
-      let unPinnedComments = allComments.filter(comment => !comment.pin);
-      unPinnedComments = sortArrayBasedOnTs(unPinnedComments);
-      setCommentsArray([...pinnedComments, ...unPinnedComments]);
+      allComments = sortArrayBasedOnTs(allComments);
+      setCommentsArray(allComments);
     }
     setLoadingComments(false);
   }, [dataComments, props.activityLog]);
