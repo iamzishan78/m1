@@ -407,7 +407,6 @@ export default function FieldContent({
                 size: 50,
               }}
               onChange={(data) => {
-                debugger
                 setEditContent((editContent) => ({
                   ...editContent,
                   [fieldName]: data.name || "",

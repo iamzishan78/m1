@@ -19,19 +19,22 @@ const AssociateContactWellHeadCells = [
   // hide custom render of blue link for now as it is not consistent with unit interests
   {
     name: "parcelName", label: "Tract Name", options: {
+      dbName: "shape.shapeJson.properties.shapeLabel",
+      sort: true,
+      filter: true,
       ...GlobalStickyStyles({
         setCellProps: {
           left: '77px',
-          padding: "0px 0px 0px 16px"
+          padding: "0px 25px 0px 35px"
         },
         setCellHeaderProps: {
           left: '77px',
         }
       }),
       customRender: (value, tableMeta) => {
-        const tractInterestId = tableMeta.rowData[27];
+        const parcelId = tableMeta.rowData[27]
 
-        return <ColumnWithLink value={value} link={`/map/parcels/${tractInterestId}`} />;
+        return <ColumnWithLink value={value} link={`/map/parcels/${parcelId}`} />;
       },
     }
   },
