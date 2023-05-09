@@ -176,11 +176,13 @@ function UnitInterestOwnerTable(props) {
   };
 
   const onExport = () => {
-    let rowsData = [];
-    const rows = props.selectedRowsValues || props.rows;
-    props.selectedRows.forEach((data) => {
-      rowsData.push(rows[data.dataIndex]);
-    });
+    let rowsData = props.selectedRowsValues || []
+    if(rowsData?.length === 0){
+      let rows = props.rows
+      props.selectedRows.forEach((data) => {
+        rowsData.push(rows[data.dataIndex]);
+      });
+    }
     setSelectedRows(rowsData);
     setOpenCustomDialog("exportOwnersAndContact");
   };
