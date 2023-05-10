@@ -147,13 +147,13 @@ function urlify(text) {
   });
 }
 
-export const CommonCommentText = ({ eachComment, users }) => {
+export const CommonCommentText = ({ eachComment, users, commentSection }) => {
   const classes = useStyles();
   let formatComment = (eachComment?.comment || "").split(" ");
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
-      {get(eachComment, "commentType") && eachComment.pin !== true && (
+      {get(eachComment, "commentType") && commentSection !== "pinned" && (
         <span className={classes.commentTypeSection}>{get(eachComment, "commentType.commentType", get(eachComment, "commentType"))}</span>
       )}
       {formatComment.map((word, index) => {
@@ -566,7 +566,7 @@ export default function CommentComponent(props) {
                 )}
                 {pinnedComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
               </div>
-              <CommonCommentText users={users} eachComment={pinnedComment} />
+              <CommonCommentText users={users} eachComment={pinnedComment} commentSection={"pinned"} />
             </Grid>
           </Grid>
         </Fragment>
@@ -616,6 +616,7 @@ export default function CommentComponent(props) {
                         onMouseOver={() => setShowCommentActionId(eachComment?._id)}
                         onMouseLeave={() => setShowCommentActionId(null)}
                       >
+                        {eachComment.pin && <div className={classes.pinnedCommentBar}></div>}
                         <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
                           <IconButton>
                             {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
