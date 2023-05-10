@@ -104,6 +104,20 @@ function DocumentsTable(props) {
   const startPaginationAt = 50;
 
   useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const fileId = queryParams.get("docId");
+    if (fileId && [...props.rows].length > 0) {
+      const selectedDocument = props.rows.find((document) => document.fileId === fileId);
+      if (selectedDocument) {
+        setStateApp((state) => ({
+          ...state,
+          selectedDocument,
+        }));
+      }
+    }
+  }, [props.rows]);
+
+  useEffect(() => {
     if (props.refetch === false) return;
 
     let queryFilters = selectedGridView?.filters ? selectedGridView?.filters : [];
