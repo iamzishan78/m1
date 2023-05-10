@@ -173,6 +173,8 @@ const AppProvider = (props) => {
             const currentLayers = [...stateApp.layers];
             const index = currentLayers.findIndex((l) => l.identifier === identifier);
 
+            if (index === -1) return stateApp
+
             const updatedLayer = {
               ...currentLayers[index],
               layerSettings: {
