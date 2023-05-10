@@ -106,7 +106,7 @@ function DocumentsTable(props) {
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const fileId = queryParams.get("docId");
-    if (fileId && [...props.rows].length > 0) {
+    if (fileId && props.rows.length) {
       const selectedDocument = props.rows.find((document) => document.fileId === fileId);
       if (selectedDocument) {
         setStateApp((state) => ({
