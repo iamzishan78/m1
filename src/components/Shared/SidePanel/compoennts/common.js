@@ -55,9 +55,7 @@ export const ifLayerHaveData = (layer, stateApp) => {
         (layer.identifier === "Search" &&
             !(stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0) &&
             !(stateApp.landGridListFromSearch && stateApp.landGridListFromSearch.length > 0)
-            ) ||
-        (layer.identifier === "Tracked Wells" &&
-            !(stateApp.trackedwells && stateApp.trackedwells.length > 0)) ||
+        ) ||
         (layer.identifier === "Tracked Owners" &&
             !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
     )
