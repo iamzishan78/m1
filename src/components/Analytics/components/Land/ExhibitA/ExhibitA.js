@@ -204,7 +204,7 @@ function ExhibitATable(props) {
                     marginTop: "5px",
                     right: "225px",
                   }}>
-                    <>Includes inactive agreements</>
+                    <>Include inactive agreements</>
                     <Switch
                     classes={{
                       switchBase: styles.switchBase,
