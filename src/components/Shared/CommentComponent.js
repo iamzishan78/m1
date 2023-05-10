@@ -147,13 +147,13 @@ function urlify(text) {
   });
 }
 
-export const CommonCommentText = ({ eachComment, users, isPinned }) => {
+export const CommonCommentText = ({ eachComment, users }) => {
   const classes = useStyles();
   let formatComment = (eachComment?.comment || "").split(" ");
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
-      {get(eachComment, "commentType") && !isPinned && (
+      {get(eachComment, "commentType") && !eachComment.pin && (
         <span className={classes.commentTypeSection}>{get(eachComment, "commentType.commentType", get(eachComment, "commentType"))}</span>
       )}
       {formatComment.map((word, index) => {
@@ -566,14 +566,13 @@ export default function CommentComponent(props) {
                 )}
                 {pinnedComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
               </div>
-              <CommonCommentText users={users} eachComment={pinnedComment} isPinned={pinnedComment.pin}  />
+              <CommonCommentText users={users} eachComment={pinnedComment} />
             </Grid>
           </Grid>
         </Fragment>
       ))}
     </>
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  ), [pinnedComments]);
+  ), [pinnedComments, profileImage, profilesInfo, users]);
 
   return (
     <>
