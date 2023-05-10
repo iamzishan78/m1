@@ -147,13 +147,13 @@ function urlify(text) {
   });
 }
 
-export const CommonCommentText = ({ eachComment, users }) => {
+export const CommonCommentText = ({ eachComment, users, isPinned }) => {
   const classes = useStyles();
   let formatComment = (eachComment?.comment || "").split(" ");
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
-      {get(eachComment, "commentType") && !eachComment.pin && (
+      {get(eachComment, "commentType") && !isPinned && (
         <span className={classes.commentTypeSection}>{get(eachComment, "commentType.commentType", get(eachComment, "commentType"))}</span>
       )}
       {formatComment.map((word, index) => {
@@ -566,7 +566,7 @@ export default function CommentComponent(props) {
                 )}
                 {pinnedComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
               </div>
-              <CommonCommentText users={users} eachComment={pinnedComment} />
+              <CommonCommentText users={users} eachComment={pinnedComment} isPinned />
             </Grid>
           </Grid>
         </Fragment>
