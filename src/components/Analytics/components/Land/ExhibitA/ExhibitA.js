@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Container } from "@material-ui/core";
 import { useDispatch } from "react-redux";
+import { makeStyles } from '@material-ui/core/styles';
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHeader from "components/Table/constants/analytics-land-exhibita-schema";
 import get from "lodash/get";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import Switch from '@material-ui/core/Switch';
+import { Tooltip, IconButton } from "@material-ui/core";
 // QUERIES
 import { deepEqualObjects, copy } from "components/Shared/functions";
 // Utilities
@@ -14,8 +18,45 @@ import TableESHOC from "components/Table/TableESHOC";
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
 
+const useStyles = makeStyles(() =>({
+    root: {
+      width: 54,
+      height: 40,
+      padding: 0,
+      '&. MuiIconButton-root': {
+        margin: 0
+      }
+    },
+    switchBase: {
+      padding: 0,
+      backgroundColor: "transparent !important",
+      '&$checked': {
+        color: 'white',
+        '& + $track': {
+          backgroundColor: '#D4E7F1',
+          opacity: 1,
+          border: 'none',
+        },
+      },
+    },
+    thumb: {
+      width: 20,
+      height: 20,
+      marginTop: 9
+    },
+    track: {
+      backgroundColor: '#616A6E',
+      opacity: 1,
+    },
+    checked: {},
+    focusVisible: {},
+  })
+);
+
 function ExhibitATable(props) {
   const classes = usetableStyles();
+  const styles = useStyles();
+  const [toggle, setToggle] = useState(false)
   const { esIndex, setESFilters } = props;
   // redux
   const dispatch = useDispatch();
@@ -64,9 +105,26 @@ function ExhibitATable(props) {
     return hits;
   };
 
+  // useEffect(() => {
+  //   if(toggle){
+  //     setESFilters([...esFilters, { field: "shape.shapeJson.properties.agreementStatus.keyword", value: ["Active", "ACTIVE"] }])
+  //   }else{
+  //     const filters = esFilters ? copy(esFilters) : [];
+  //     const index = filters.findIndex(d => (d.field === 'shape.shapeJson.properties.agreementStatus.keyword' && d.value.includes('Active') && d.value.includes('ACTIVE')))
+  //     if(index > -1){
+  //       filters.splice(index, 1)
+  //     }
+  //     setESFilters(filters)
+  //   }
+  
+  // },[toggle])
+
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : [];
     const fixedFilters = [];
+    if(toggle){
+      fixedFilters.push({ field: "shape.shapeJson.properties.agreementStatus.keyword", value: ["Active", "ACTIVE"] })
+    }
     // if (formatedFilter[0] && formatedFilter[0].value.range) {
     //   formatedFilter[0].type = "range";
     //   formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field];
@@ -89,7 +147,7 @@ function ExhibitATable(props) {
       setAppliedFilters: props.filterChange,
     });
     // eslint-disable-next-line
-  }, [props.landSearchQuery, props.filterToggle, refetchData, esFilters]);
+  }, [props.landSearchQuery, props.filterToggle, refetchData, esFilters, toggle]);
 
   useEffect(() => {
     dispatch(setRevenuePropertyData({ loading: props.loading, data: props.rows }));
@@ -123,7 +181,47 @@ function ExhibitATable(props) {
           orderByTracks={false}
           startPaginationAt={props.startPaginationAt}
           onTableChange={props.onTableChange}
-          options={{ ...props.options, ...props.customOptions }}
+          options={{ 
+            ...props.options, 
+            ...props.customOptions,
+            customToolbar: () => {
+              return (
+                <>
+                  <div style={{
+                    display: "inline",
+                    position: "absolute",
+                    right: "121px",
+                  }}>
+                    <IconButton onClick={props.onDownload} disabled={props.isExporting}>
+                        <Tooltip title="Download to CSV" aria-label="add">
+                            <CloudDownloadIcon />
+                        </Tooltip>
+                    </IconButton>
+                  </div>
+                  <div style={{
+                    display: "inline",
+                    position: "absolute",
+                    marginTop: "5px",
+                    right: "225px",
+                  }}>
+                    <>Includes inactive agreements</>
+                    <Switch
+                    classes={{
+                      switchBase: styles.switchBase,
+                      thumb: styles.thumb,
+                      track: styles.track,
+                      checked: styles.checked,
+                    }}
+                      checked={toggle}
+                      onChange={() => setToggle(!toggle)}
+                      name="checkedB"
+                      color="primary"
+                    />
+                  </div>
+              </>
+              )
+            }
+          }}
           parent={props.parent}
           setColumnsBase={[]}
           setRefetchData={setRefetchData}
