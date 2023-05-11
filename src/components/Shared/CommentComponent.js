@@ -153,7 +153,7 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
-      {get(eachComment, "commentType") && !isPinned && (
+      {get(eachComment, "commentType") && !isPinned && get(eachComment, "commentType.commentType", get(eachComment, "commentType")) !== "General" && (
         <span className={classes.commentTypeSection}>{get(eachComment, "commentType.commentType", get(eachComment, "commentType"))}</span>
       )}
       {formatComment.map((word, index) => {
