@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
 export default function AcerageDetailTabPanel() {
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 166px)" }
   const propertiesReportGroup = useSelector(
     ({ Revenue }) => Revenue.propertiesReportGroup
   );
@@ -171,6 +172,7 @@ export default function AcerageDetailTabPanel() {
         esIndex="shapetracts_flat"
         landAnalyticsSearchQuery={stateApp.landAnalyticsSearchQuery}
         setESFilters={setESFilters}
+        loadMore={loadMore}
       />
     </>
   );
