@@ -2,7 +2,6 @@ import React, { useRef, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavigationContext } from "../NavigationContext";
 import FilterTags from "./FilterTags";
-import FilterTrackedWells from "./FilterTrackedWells";
 import Grid from "@material-ui/core/Grid";
 import { useLazyQuery } from "@apollo/client";
 import { AppContext } from "../../../AppContext";
@@ -68,10 +67,6 @@ export default function FilterFormProduction() {
     <Grid container item spacing={2} style={{ padding: "8px", width: "100%", margin: "0" }}>
       <Grid item sm={12} className={classes.gridItem}>
         <FilterTags />
-      </Grid>
-
-      <Grid item sm={12} className={classes.gridItem}>
-        <FilterTrackedWells />
       </Grid>
     </Grid>
   );

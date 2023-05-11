@@ -306,8 +306,6 @@ export default function CheckboxList(props) {
         !(
           stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0
         )) ||
-      (layer.identifier === "Tracked Wells" &&
-        !(stateApp.trackedwells && stateApp.trackedwells.length > 0)) ||
       (layer.identifier === "Tracked Owners" &&
         !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
     )
@@ -459,51 +457,51 @@ export default function CheckboxList(props) {
                                 )}
                                 {layer.layerSettings.interaction
                                   .interactionAble && (
-                                  <div
-                                    style={{
-                                      paddingRight: 20,
-                                      height: "42px",
-                                      width: "42px",
-                                    }}
-                                  >
-                                    <Checkbox
-                                      icon={
-
-                                        <CancelOutlinedIcon
-                                          htmlColor={
-                                            !ifLayerHaveData(layer)
-                                              ? "rgb(127, 149, 199)"
-                                              : "#12abe0"
-                                          }
-                                        />
-
-                                      }
-                                      checkedIcon={
-                                        <ClickIcon
-                                          color={
-                                            !ifLayerHaveData(layer)
-                                              ? "rgb(127, 149, 199)"
-                                              : "#12abe0"
-                                          }
-                                        />
-                                      }
-                                      edge="start"
-                                      checked={
-                                        layer.layerSettings.interaction
-                                          .interactionDetail.click
-                                      }
-                                      tabIndex={-1}
-                                      disableRipple
-                                      inputProps={{
-                                        "aria-labelledby": labelId,
+                                    <div
+                                      style={{
+                                        paddingRight: 20,
+                                        height: "42px",
+                                        width: "42px",
                                       }}
-                                      onChange={handleToggleInteraction(
-                                        layer,
-                                        index
-                                      )}
-                                    />
-                                  </div>
-                                )}
+                                    >
+                                      <Checkbox
+                                        icon={
+
+                                          <CancelOutlinedIcon
+                                            htmlColor={
+                                              !ifLayerHaveData(layer)
+                                                ? "rgb(127, 149, 199)"
+                                                : "#12abe0"
+                                            }
+                                          />
+
+                                        }
+                                        checkedIcon={
+                                          <ClickIcon
+                                            color={
+                                              !ifLayerHaveData(layer)
+                                                ? "rgb(127, 149, 199)"
+                                                : "#12abe0"
+                                            }
+                                          />
+                                        }
+                                        edge="start"
+                                        checked={
+                                          layer.layerSettings.interaction
+                                            .interactionDetail.click
+                                        }
+                                        tabIndex={-1}
+                                        disableRipple
+                                        inputProps={{
+                                          "aria-labelledby": labelId,
+                                        }}
+                                        onChange={handleToggleInteraction(
+                                          layer,
+                                          index
+                                        )}
+                                      />
+                                    </div>
+                                  )}
                                 <FormControlLabel
                                   control={
                                     <Switch
