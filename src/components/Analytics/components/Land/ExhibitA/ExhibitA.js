@@ -122,7 +122,7 @@ function ExhibitATable(props) {
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : [];
     const fixedFilters = [];
-    if(toggle){
+    if(!toggle){
       fixedFilters.push({ field: "shape.shapeJson.properties.agreementStatus.keyword", value: ["Active", "ACTIVE"] })
     }
     // if (formatedFilter[0] && formatedFilter[0].value.range) {
@@ -140,7 +140,7 @@ function ExhibitATable(props) {
       esIndex: esIndex,
       filters: fixedFilters,
       selectedGridView: { filters: [] },
-      startPaginationAt: 25,
+      startPaginationAt: 100,
       defaultSort: { field: "_ts", order: "desc" },
       formatHits,
       downloadAll: { exportPx: '121px' },
@@ -204,7 +204,7 @@ function ExhibitATable(props) {
                     marginTop: "5px",
                     right: "225px",
                   }}>
-                    <>Includes inactive agreements</>
+                    <>Include inactive agreements</>
                     <Switch
                     classes={{
                       switchBase: styles.switchBase,
@@ -226,6 +226,7 @@ function ExhibitATable(props) {
           setColumnsBase={[]}
           setRefetchData={setRefetchData}
           refetchData={refetchData}
+          {...props.esHocProps}
         />
       </Container>
     </>
