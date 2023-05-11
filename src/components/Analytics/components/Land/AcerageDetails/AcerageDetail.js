@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Container } from "@material-ui/core";
 import { useDispatch } from "react-redux";
+import { makeStyles } from '@material-ui/core/styles';
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHeader from "components/Table/constants/analytics-land-acerage-details-schema";
 import { esExtentedSearch } from "components/Shared/functions";
+import { Tooltip, IconButton } from "@material-ui/core";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import Switch from '@material-ui/core/Switch';
 // QUERIES
 import { deepEqualObjects, copy } from "components/Shared/functions";
 // Utilities
@@ -12,9 +16,46 @@ import { usetableStyles } from "components/Table/Styles";
 import { setRevenuePropertyData } from "actions";
 import TableESHOC from "components/Table/TableESHOC";
 
+const useStyles = makeStyles(() =>({
+  root: {
+    width: 54,
+    height: 40,
+    padding: 0,
+    '&. MuiIconButton-root': {
+      margin: 0
+    }
+  },
+  switchBase: {
+    padding: 0,
+    backgroundColor: "transparent !important",
+    '&$checked': {
+      color: 'white',
+      '& + $track': {
+        backgroundColor: '#D4E7F1',
+        opacity: 1,
+        border: 'none',
+      },
+    },
+  },
+  thumb: {
+    width: 20,
+    height: 20,
+    marginTop: 9
+  },
+  track: {
+    backgroundColor: '#616A6E',
+    opacity: 1,
+  },
+  checked: {},
+  focusVisible: {},
+})
+);
+
 function AcerageDetail(props) {
   const classes = usetableStyles();
+  const styles = useStyles();
   const { esIndex, setESFilters } = props;
+  const [toggle, setToggle] = useState(false)
   // redux
   const dispatch = useDispatch();
   const [refetchData, setRefetchData] = useState(false);
@@ -52,6 +93,9 @@ function AcerageDetail(props) {
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : [];
     const fixedFilters = [];
+    if(!toggle){
+      fixedFilters.push({ field: "shape.shapeJson.properties.agreementStatus.keyword", value: ["Active", "ACTIVE"] })
+    }
     if (formatedFilter[0] && formatedFilter[0].value.range) {
       formatedFilter[0].type = "range";
       formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field];
@@ -73,7 +117,7 @@ function AcerageDetail(props) {
       formatHits,
     });
     // eslint-disable-next-line
-  }, [props.landAnalyticsSearchQuery, props.filterToggle, refetchData]);
+  }, [props.landAnalyticsSearchQuery, props.filterToggle, refetchData, toggle]);
 
   useEffect(() => {
     // setESFilters(props.initialFilters);
@@ -121,11 +165,52 @@ function AcerageDetail(props) {
           orderByTracks={false}
           startPaginationAt={props.startPaginationAt}
           onTableChange={props.onTableChange}
-          options={{ ...props.options, ...props.customOptions }}
+          options={{ 
+            ...props.options, 
+            ...props.customOptions,
+            customToolbar: () => {
+              return (
+                <>
+                  <div style={{
+                    display: "inline",
+                    position: "absolute",
+                    right: "121px",
+                  }}>
+                    <IconButton onClick={props.onDownload} disabled={props.isExporting}>
+                        <Tooltip title="Download to CSV" aria-label="add">
+                            <CloudDownloadIcon />
+                        </Tooltip>
+                    </IconButton>
+                  </div>
+                  <div style={{
+                    display: "inline",
+                    position: "absolute",
+                    marginTop: "5px",
+                    right: "225px",
+                  }}>
+                    <>Includes inactive agreements</>
+                    <Switch
+                      classes={{
+                        switchBase: styles.switchBase,
+                        thumb: styles.thumb,
+                        track: styles.track,
+                        checked: styles.checked,
+                      }}
+                      checked={toggle}
+                      onChange={() => setToggle(!toggle)}
+                      name="checkedB"
+                      color="primary"
+                    />
+                  </div>
+              </>
+              )
+            } 
+          }}
           parent={props.parent}
           setColumnsBase={[]}
           setRefetchData={setRefetchData}
           refetchData={refetchData}
+          {...props.esHocProps}
         />
       </Container>
     </>

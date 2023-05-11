@@ -122,7 +122,7 @@ function ExhibitATable(props) {
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : [];
     const fixedFilters = [];
-    if(toggle){
+    if(!toggle){
       fixedFilters.push({ field: "shape.shapeJson.properties.agreementStatus.keyword", value: ["Active", "ACTIVE"] })
     }
     // if (formatedFilter[0] && formatedFilter[0].value.range) {
@@ -140,7 +140,7 @@ function ExhibitATable(props) {
       esIndex: esIndex,
       filters: fixedFilters,
       selectedGridView: { filters: [] },
-      startPaginationAt: 25,
+      startPaginationAt: 50,
       defaultSort: { field: "_ts", order: "desc" },
       formatHits,
       downloadAll: { exportPx: '121px' },
@@ -226,6 +226,7 @@ function ExhibitATable(props) {
           setColumnsBase={[]}
           setRefetchData={setRefetchData}
           refetchData={refetchData}
+          {...props.esHocProps}
         />
       </Container>
     </>
