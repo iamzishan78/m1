@@ -140,7 +140,7 @@ function ExhibitATable(props) {
       esIndex: esIndex,
       filters: fixedFilters,
       selectedGridView: { filters: [] },
-      startPaginationAt: 50,
+      startPaginationAt: 100,
       defaultSort: { field: "_ts", order: "desc" },
       formatHits,
       downloadAll: { exportPx: '121px' },

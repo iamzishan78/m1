@@ -111,7 +111,7 @@ function AcerageDetail(props) {
       esIndex: esIndex,
       filters: fixedFilters,
       selectedGridView: { filters: [] },
-      startPaginationAt: 25,
+      startPaginationAt: 100,
       downloadAll: { exportPx: '176px' },
       // defaultSort: { field: "name.keyword", order: "asc" },
       formatHits,
