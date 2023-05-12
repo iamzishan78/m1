@@ -107,7 +107,6 @@ export default function TransferDataManager(props) {
   };
 
   const handleContinue = async () => {
-
     const sourceData = await client.query({
       query: GET_ES_SIMPLE_SEARCH,
       variables: {
@@ -119,10 +118,10 @@ export default function TransferDataManager(props) {
             "bool": {
               "should": [
                 {
-                  "term": { "properties.layerGeometry.keyword": "Polygon" }
+                  "term": { "properties.layerGeometry": "Polygon" }
                 },
                 {
-                  "term": { "properties.layerGeometry.keyword": "MultiPolygon" }
+                  "term": { "properties.layerGeometry": "MultiPolygon" }
                 }
               ]
             }
@@ -130,7 +129,7 @@ export default function TransferDataManager(props) {
             "bool": {
               "should": [
                 {
-                  "term": { "properties.layerGeometry.keyword": selectedSourceCategory.layerGeometry }
+                  "term": { "properties.layerGeometry": selectedSourceCategory.layerGeometry }
                 }
               ]
             }
