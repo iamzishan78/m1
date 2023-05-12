@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import FormControl from "@material-ui/core/FormControl";
@@ -61,12 +61,18 @@ export default function ProvisionsFilters(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [filterList, setFilterList] = useState([[]]);
 
+  useEffect(() => {
+    if (stateApp.landSearchFilters?.remarksTypes?.length === 0) {
+      setFilterList([[]]);
+    }
+  }, [stateApp.landSearchFilters?.remarksTypes]);
+
   const onFilterChange =
     debounce((request, callback, index) => {
       const { filterKey } = callback;
       setStateApp((stateApp) => ({
         ...stateApp,
-        landSearchFilters: { ...stateApp.landSearchFilters, [filterKey]: request[0] },
+        landSearchFilters: { ...stateApp.landSearchFilters, remarksTypes: [{ field: filterKey, value: request[0] }] },
       }));
 
       let _filterList = [...filterList];
