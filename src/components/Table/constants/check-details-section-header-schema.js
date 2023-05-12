@@ -55,7 +55,7 @@ const RevenueStatementHeadCells = [
         name: "ownerNumber", label: "Owner Number", esKey: 'property.ownerNumber.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "owner", label: "Owner", esKey: 'property.owner.keyword', options: { sort: true, filter: true }
+        name: "_owner", label: "Owner", esKey: 'property._owner.name.keyword', options: { sort: true, filter: true }
     },
     {
         name: "depositDate", label: "Deposit Date", esKey: 'depositDate', custom: { key_as_string: true, isDate: true }, options: { sort: true, filter: true }

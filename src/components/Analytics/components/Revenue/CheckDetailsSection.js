@@ -10,7 +10,34 @@ import convert_date from "components/Shared/valueformatters/convert_date.js";
 
 import { makeStyles } from "@material-ui/styles";
 
-const useStyles = makeStyles((theme) => ({}));
+const useStyles = makeStyles((theme) => ({
+    container: {
+        padding: "0 !important",
+        "& .MuiTableCell-head": {
+            paddingLeft: (p) => (p.isAgreementsTable ? "17px !important" : " "),
+        },
+
+        "& .MuiTableRow-hover": {
+            "&:hover": {
+                "& .MuiTableCell-root": {
+                    backgroundColor: "#dfdfdf !important",
+                },
+            },
+        },
+        // "& ::-webkit-scrollbar": {
+        //   height: "0.7em !important",
+        // },
+        '& .MuiTableRow-footer': {
+            visibility: (p) => p.isHideFooter ? 'hidden' : '',
+            display: (p) => p.isHideFooter ? 'none' : '',
+        },
+        "& .MuiGrid-item": {
+            display: "flex",
+            alignItems: "center",
+
+        },
+    },
+}));
 
 function CheckDetailsSection(props) {
     const classes = useStyles();
@@ -24,7 +51,7 @@ function CheckDetailsSection(props) {
             hit.state = hit.property?.state;
             hit.county = hit.property?.county;
             hit.ownerNumber = hit.property?.ownerNumber;
-            hit.owner = hit.property?.owner;
+            hit._owner = hit.property?._owner?.name;
             hit.checkAmount = hit.check?.checkAmount;
             hit.source = hit.check.source;
             hit.sourceId = hit.check.sourceId;
@@ -43,6 +70,7 @@ function CheckDetailsSection(props) {
             TableHeader: copy(TableHeader),
             esIndex: "checkdetails_flat",
             startPaginationAt: 50,
+            defaultSort: { field: "flatSyncAt", order: "desc" },
             formatHits,
         });
 
@@ -53,8 +81,7 @@ function CheckDetailsSection(props) {
     return (
         <Container
             maxWidth={false}
-            className={classes.container}
-            id={props.id ? props.id : props.parent}
+            className={`${classes.container}`}
         >
             <Table
                 style={{ backgroundColor: "#fff" }}
