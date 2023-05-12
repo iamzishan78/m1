@@ -11,6 +11,7 @@ import convert_date from "components/Shared/valueformatters/convert_date.js";
 import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles((theme) => ({
+
     container: {
         padding: "0 !important",
         "& .MuiTableCell-head": {
@@ -36,7 +37,15 @@ const useStyles = makeStyles((theme) => ({
             alignItems: "center",
 
         },
-    },
+        '& .MuiTableHead-root, .MuiTableRow-head, .MuiPaper-root > .MuiToolbar-gutters': {
+            // zIndex: '9999',s
+            position: 'sticky',
+            top: 0
+        },
+        '& .MUIDataTable-responsiveBase': {
+            maxHeight: '35vh'
+        }
+    }
 }));
 
 function CheckDetailsSection(props) {

@@ -33,15 +33,15 @@ const useStyles = makeStyles((theme) => ({
     height: "10px",
     backgroundColor: "#f3f3f3",
   },
+
   sectionCard: {
-    height: "500px",
-    padding: "20px 15px",
-    maxWidth: "100%",
-    margin: "0 auto",
-    background: "#ffffff",
-    borderBottonLeftRadius: 8,
-    borderBottomRightRadius: 8,
-  }
+
+    "& div": {
+      "&>.MuiPaper-root": {
+        "&>:nth-child(3)": { minHeight: "calc(100vh - 265px) !important", maxHeight: '35vh' },
+      },
+    },
+  },
 }));
 
 const StyledTabs = withStyles({
@@ -220,7 +220,7 @@ export default function RevenueAnalytics(props) {
       )}
 
       {tab === 1 &&
-        <div className={`${classes.sectionCard} flex column justifyStart alignStart w-100`}>
+        <div className={`${classes.sectionCard}`}>
           <CheckDetailsSection />
         </div>
       }

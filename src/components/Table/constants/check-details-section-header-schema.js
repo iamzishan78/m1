@@ -29,7 +29,7 @@ const RevenueStatementHeadCells = [
                     paddingLeft: '0px',
                 }
             }),
-            sort: true, filter: false,
+            sort: true, filter: false, viewColumns: false,
 
             customRender: (value, tableMeta) => {
 
