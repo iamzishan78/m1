@@ -9,9 +9,7 @@ const RevenueStatementHeadCells = [
     {
         name: "number", label: "Property #", esKey: 'property.number.keyword', options: { display: false, sort: false, filter: true, style: { minWidth: 250 }, }
     },
-    {
-        name: "name", label: "Property Name", esKey: 'property.name.keyword', options: { display: false, sort: false, filter: true }
-    },
+
     {
         /// this is the control column for properties 
         name: "number",
@@ -49,7 +47,7 @@ const RevenueStatementHeadCells = [
         name: "purchaser", label: "Purchaser", esKey: 'property.purchaser.name.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "checkDate", label: "Check Date", esKey: 'checkDate', custom: { key_as_string: true, isDate: true }, options: { sort: true, filter: true }
+        name: "checkDate", label: "Check Date", esKey: 'check.checkDate', custom: { key_as_string: true, isDate: true }, options: { sort: true, filter: true }
     },
     {
         name: "ownerNumber", label: "Owner Number", esKey: 'property.ownerNumber.keyword', options: { sort: true, filter: true }
@@ -58,10 +56,10 @@ const RevenueStatementHeadCells = [
         name: "_owner", label: "Owner", esKey: 'property._owner.name.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "depositDate", label: "Deposit Date", esKey: 'depositDate', custom: { key_as_string: true, isDate: true }, options: { sort: true, filter: true }
+        name: "depositDate", label: "Deposit Date", esKey: 'check.depositDate', custom: { key_as_string: true, isDate: true }, options: { sort: true, filter: true }
     },
     {
-        name: "checkAmount", label: "Check Amount", esKey: 'check.checkAmount.keyword', options: { sort: true, filter: true }
+        name: "checkAmount", label: "Check Amount", esKey: 'check.checkAmount', options: { sort: true, filter: true }
     },
     {
         name: "source", label: "Source", esKey: 'check.source.keyword', options: { sort: true, filter: true }
@@ -110,7 +108,7 @@ const RevenueStatementHeadCells = [
         name: "ownerTax", label: "Owner Tax Amt", esKey: 'ownerTax', options: { sort: true, filter: true }
     },
     {
-        name: "taxType", label: "Tax Type", esKey: 'taxType', options: { sort: true, filter: true }
+        name: "taxType", label: "Tax Type", esKey: 'taxType.keyword', options: { sort: true, filter: true }
     },
     {
         name: "ownerDeducts", label: "Deduct Amt", esKey: 'ownerDeducts', options: { sort: true, filter: true }
