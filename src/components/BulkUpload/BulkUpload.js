@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const rawJobs = [
+export let rawJobs = [
   { name: 'Import Contacts', type: 'CONTACTS' },
   { name: 'Import Contact Well Interests', type: 'CONTACTS_WELL_INTEREST' },
   { name: 'Interest Owner Upload', type: 'PARCELINTERESTS' },
@@ -89,6 +89,8 @@ export default function BulkUpload(props) {
   if (initialJob.type === 'SHAPE_TO_M1_LAYER' && stateApp.transferData) {
     initialJob.m1neralHeaders = stateApp.transferData.selectedSourceCategory.m1neralHeaders
     initialJob.mappedHeadersFromCSV = stateApp.transferData.selectedSourceCategory.mappedHeadersFromCSV
+  } else {
+    rawJobs = rawJobs.filter((rawJob) => rawJob.type !== 'SHAPE_TO_M1_LAYER')
   }
 
   const [selectedJob, setSelectedJob] = useState(initialJob);
