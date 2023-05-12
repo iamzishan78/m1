@@ -51,6 +51,12 @@ const AcerageSummaryHeadCells = [
     options: { sort: true, filter: true, display: true },
   },
   {
+    name: "agreementStatus",
+    label: "Agreement Status",
+    esKey: "shape.shapeJson.properties.agreementStatus.keyword",
+    options: { sort: true, filter: true, display: true },
+  },
+  {
     name: "agreementState", label: "State", esKey: [
       'shape.shapeJson.properties.originalProperties.State.keyword',
       'shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword'

@@ -38,11 +38,18 @@ export default function CustomDataFilters(props) {
   const [selectedValue, setSelectedValue] = useState(null);
   const agreementDetails = useSelector(({ Land }) => Land.agreement?.activeAgreement?.shape)?.properties;
 
-
   const [getCustomKey, { data: customData, loading }] = useLazyQuery(
     GET_ALL_CUSTOM_DATA_KEYS,
     { fetchPolicy: "no-cache" }
   );
+
+  useEffect(() => {
+    if (stateApp.landSearchFilters?.customData.length === 0) {
+      setKey(null);
+      setSelectedValue(null);
+      setSelectedKey(null);
+    }
+  }, [stateApp.landSearchFilters?.customData]);
 
   useEffect(() => {
     getCustomKey({

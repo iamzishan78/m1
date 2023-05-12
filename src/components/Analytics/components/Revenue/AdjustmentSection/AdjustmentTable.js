@@ -128,7 +128,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
 
                     </TableCell>
                     <TableCell scope="row" className={`${classes.leftRightColoredBorderCell}`}>
-                      <span>({item.total.toFixed(2)})</span>
+                      <span>{item.total.toFixed(2)}</span>
                       <span style={{ display: 'grid' }}> {selectedItems[index] && Object.values(item.breakDown).map((value) => displayValue(value))}</span>
                     </TableCell>
                   </TableRow>

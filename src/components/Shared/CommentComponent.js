@@ -45,8 +45,6 @@ const useStyles = makeStyles((theme) => ({
   comment: ({ commentsHeight }) => ({
     position: "relative",
     overflow: "auto",
-    padding: "14px 0px",
-
     '& *': {
       overflowAnchor: 'none'
     },
@@ -87,7 +85,17 @@ const useStyles = makeStyles((theme) => ({
   },
   whiteSpace: {
     whiteSpace: "pre-wrap",
-    marginTop: "5px",
+    margin: "5px 0px",
+  },
+  pinnedGrid: {
+    flexWrap: 'nowrap',
+    backgroundColor: "#FFF6EE"
+  },
+  pinnedCommentBar: {
+    display: "flex",
+    minHeight: "10px",
+    minWidth: "5px",
+    backgroundColor: "#EFC480"
   },
   gridStyle: {
     padding: "12px 0px",
@@ -139,13 +147,13 @@ function urlify(text) {
   });
 }
 
-export const CommonCommentText = ({ eachComment, users }) => {
+export const CommonCommentText = ({ eachComment, users, isPinned }) => {
   const classes = useStyles();
   let formatComment = (eachComment?.comment || "").split(" ");
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
-      {get(eachComment, "commentType") && (
+      {get(eachComment, "commentType") && !isPinned && get(eachComment, "commentType.commentType", get(eachComment, "commentType")) !== "General" && (
         <span className={classes.commentTypeSection}>{get(eachComment, "commentType.commentType", get(eachComment, "commentType"))}</span>
       )}
       {formatComment.map((word, index) => {
@@ -229,7 +237,6 @@ export default function CommentComponent(props) {
     fetchPolicy: "cache-first",
   });
   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(COMMENTSBYOBJECTIDQUERY, { fetchPolicy: "no-cache" });
-  const [pinnedArray, setPinnedArray] = React.useState([])
   useEffect(() => {
     getAllMongoUsers();
   }, [getAllMongoUsers]);
@@ -286,11 +293,8 @@ export default function CommentComponent(props) {
       } else {
         allComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId])
       }
-      let pinnedComments = allComments.filter(comment => comment.pin);
-      pinnedComments = sortArrayBasedOnTs(pinnedComments);
-      let unPinnedComments = allComments.filter(comment => !comment.pin);
-      unPinnedComments = sortArrayBasedOnTs(unPinnedComments);
-      setCommentsArray([...pinnedComments, ...unPinnedComments]);
+      allComments = sortArrayBasedOnTs(allComments);
+      setCommentsArray(allComments);
     }
     setLoadingComments(false);
   }, [dataComments, props.activityLog]);
@@ -336,6 +340,11 @@ export default function CommentComponent(props) {
       setProfileImage(profileImage);
     }
   }, [profiledata]);
+
+  const pinnedComments = React.useMemo(() => {
+    const pinnedComments = commentsArray.filter((comment) => comment.pin === true);
+    return pinnedComments;
+  }, [commentsArray]);
 
   const sortArrayBasedOnTs = (array) => {
     const compare = (a, b) => {
@@ -523,12 +532,60 @@ export default function CommentComponent(props) {
     return indexToShow;
   };
 
+  const pinnedCommentsJsx = React.useMemo(() => (
+    <>
+      {pinnedComments?.map((pinnedComment, key) => (
+        <Fragment key={key}>
+          <Grid
+            id="commentsArea"
+            container
+            className={classes.pinnedGrid}
+            onMouseOver={() => setShowCommentActionId(pinnedComment?._id)}
+            onMouseLeave={() => setShowCommentActionId(null)}
+            pinned
+          >
+            <div className={classes.pinnedCommentBar}></div>
+            <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
+              <IconButton>
+                {profilesInfo[pinnedComment?.user?.email]?.profileImage || pinnedComment.isNew ? (
+                  <Avatar
+                    src={pinnedComment.isNew ? profileImage : profilesInfo[pinnedComment?.user?.email].profileImage}
+                    size="38"
+                    round
+                  />
+                ) : (
+                  <Avatar name={pinnedComment?.user?.name} size="38" round />
+                )}
+              </IconButton>
+            </Grid>
+            <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`} style={{ marginTop: "5px" }}>
+              <div>
+                <span className={classes.bold}>{pinnedComment?.user?.name}</span>
+                {!isNaN(pinnedComment.ts) && (
+                  <ReactTimeAgo className={classes.commentTime} date={new Date(Number(pinnedComment.ts))} locale="en-US" />
+                )}
+                {pinnedComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+              </div>
+              <CommonCommentText users={users} eachComment={pinnedComment} isPinned />
+            </Grid>
+          </Grid>
+        </Fragment>
+      ))}
+    </>
+  ), [pinnedComments, profileImage, profilesInfo, users]);
+
   return (
     <>
       <div className={classes.container}>
         <div className={classes.comment} id="commentsContainer">
           {!loadingComments ? (
             <>
+
+              {
+                // This will return a new grid for pinned comments
+                pinnedCommentsJsx
+              }
+
               {!showAllComments && commentsArray.length > 7 && (
                 <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
                   <span
@@ -558,6 +615,7 @@ export default function CommentComponent(props) {
                         onMouseOver={() => setShowCommentActionId(eachComment?._id)}
                         onMouseLeave={() => setShowCommentActionId(null)}
                       >
+                        {eachComment.pin && <div className={classes.pinnedCommentBar}></div>}
                         <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
                           <IconButton>
                             {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
@@ -614,9 +672,7 @@ export default function CommentComponent(props) {
                                 END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
                               </div>
                               {eachComment.activityData.outcome && (
-                                <div className={`${classes.whiteSpace}`}>
-                                  OUTCOME: {eachComment.activityData.outcome}
-                                </div>
+                                <div className={`${classes.whiteSpace}`}>OUTCOME: {eachComment.activityData.outcome}</div>
                               )}
                             </>
                           )}
