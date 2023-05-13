@@ -431,7 +431,7 @@ export default function DetailComponents(props) {
                       <SummarySection checkId={checkId} />
                     </div>
                     <div style={{ backgroundColor: "#f3f3f3", height: 24 }} />
-                    <div className={classes.checkDetailsSection} ref={tab === 2 ? selectedTabRef : null}>
+                    <div className={classes.table} ref={tab === 2 ? selectedTabRef : null}>
                       <CheckDetailsSection checkId={checkId} />
                     </div>
                   </div>

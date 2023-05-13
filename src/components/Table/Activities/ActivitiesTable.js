@@ -272,7 +272,7 @@ function ActivitiesTable(props) {
   return (
     <Container
       maxWidth={false}
-      className={`${classes.container} ${!applyCustomClasses && classes.subComponentsClasses}`}
+      className={`${classes.container} `}
       id={props.id ? props.id : props.parent || "activitiesTable"}
     >
       <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
