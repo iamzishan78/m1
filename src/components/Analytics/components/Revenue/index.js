@@ -97,6 +97,8 @@ export default function RevenueAnalytics(props) {
   const [monthsInterval, setMonths] = useState([]);
   const [propertyFilter, setPropertyFilter] = useState([]);
   const [lastCheckMinDate, setLastCheckMinDate] = useState("");
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 166px)" }
+
 
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: "no-cache",
@@ -165,10 +167,10 @@ export default function RevenueAnalytics(props) {
           }}
           aria-label="ant example"
         >
-          <StyledTab label="Time Series" />
-          <StyledTab label="Check Details" />
-          <StyledTab label="Income Stmt" />
-          <StyledTab label="Comparison" disabled />
+          <StyledTab label="Income Statement" />
+          <StyledTab label="Comparison" />
+          {/* <StyledTab label="Income Stmt" /> */}
+          {/* <StyledTab label="Comparison" disabled /> */}
           {/* <StyledTab label="Properties" /> */}
         </StyledTabs>
       </div>
@@ -221,7 +223,10 @@ export default function RevenueAnalytics(props) {
 
       {tab === 1 &&
         <div className={`${classes.sectionCard}`}>
-          <CheckDetailsSection />
+          <CheckDetailsSection 
+            header="Check Details"
+            loadMore={loadMore}
+          />
         </div>
       }
 

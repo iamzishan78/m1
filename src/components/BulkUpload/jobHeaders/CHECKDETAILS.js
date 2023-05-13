@@ -333,7 +333,7 @@ const checkDetailsKeys = [
         actual_key: "property.number",
     },
     {
-        label: "Internal Prop #",
+        label: "Accounting Ref ID",
         mapped_key: "",
         required: false,
         actual_key: "property.internalID",

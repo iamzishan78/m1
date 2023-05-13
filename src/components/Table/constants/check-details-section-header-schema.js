@@ -6,9 +6,6 @@ const RevenueStatementHeadCells = [
     {
         name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
     },
-    {
-        name: "number", label: "Property #", esKey: 'property.number.keyword', options: { display: false, sort: false, filter: true, style: { minWidth: 250 }, }
-    },
 
     {
         /// this is the control column for properties 
@@ -42,6 +39,9 @@ const RevenueStatementHeadCells = [
                 />
             },
         },
+    },
+    {
+        name: "number", label: "Property #", esKey: 'property.number.keyword', options: { display: false, sort: false, filter: true, style: { minWidth: 250 }, }
     },
     {
         name: "purchaser", label: "Purchaser", esKey: 'property.purchaser.name.keyword', options: { sort: true, filter: true }

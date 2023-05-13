@@ -157,7 +157,7 @@ export default function HeaderSection(props) {
 
       if (!number && !internalID) {
         dispatch(
-          showInfoMessage("Internal Prop # or Operator Prop # is required.")
+          showInfoMessage("Accounting Ref ID or Operator Prop # is required.")
         );
         history.goBack();
       }
@@ -271,7 +271,7 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Internal Prop #</div>
+                <div className={classes.label}>Accounting Ref ID</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
