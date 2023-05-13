@@ -175,12 +175,12 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
   },
   {
     name: "internalID",
-    label: "Internal Prop #",
+    label: "Accounting Ref ID",
     esKey: "internalID.keyword",
     options: {
       customHeadLabelRender: () => (
         <>
-          <div style={{ minWidth: 100 }}>Internal Prop #</div>
+          <div style={{ minWidth: 100 }}>Accounting Ref ID</div>
         </>
       ),
       sort: true,

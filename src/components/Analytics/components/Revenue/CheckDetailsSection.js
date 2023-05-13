@@ -62,12 +62,12 @@ function CheckDetailsSection(props) {
             hit.ownerNumber = hit.property?.ownerNumber;
             hit._owner = hit.property?._owner?.name;
             hit.checkAmount = hit.check?.checkAmount;
-            hit.source = hit.check.source;
-            hit.sourceId = hit.check.sourceId;
+            hit.source = hit.check?.source;
+            hit.sourceId = hit.check?.sourceId;
             hit.propertyName = hit.property.name;
             hit.date = hit.date ? convert_date(hit.date) : null;
-            hit.checkDate = hit.check.checkDate ? convert_date(hit.check.checkDate) : null;
-            hit.depositDate = hit.check.depositDate ? convert_date(hit.check.depositDate) : null;
+            hit.checkDate = hit.check?.checkDate ? convert_date(hit.check.checkDate) : null;
+            hit.depositDate = hit.check?.depositDate ? convert_date(hit.check.depositDate) : null;
             hit.propertyId = hit?.property?._id;
             return hit;
         });
@@ -78,9 +78,10 @@ function CheckDetailsSection(props) {
             filters: [],
             TableHeader: copy(TableHeader),
             esIndex: "checkdetails_flat",
-            startPaginationAt: 50,
+            startPaginationAt: 100,
             defaultSort: { field: "flatSyncAt", order: "desc" },
             formatHits,
+            downloadAll: { exportPx: '176px' },
         });
 
     }, [setTableMeta]);

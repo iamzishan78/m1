@@ -449,7 +449,6 @@ export default function CommentComponent(props) {
     // let temp = commentsArray
   }
   const unpinFromTop = (eachComment) => {
-    // debugger
     // const commentsArray1 = Object.values(pinComments);
     const newCommentList = commentsArray.map((c) => {
       if (c.id === eachComment) {
