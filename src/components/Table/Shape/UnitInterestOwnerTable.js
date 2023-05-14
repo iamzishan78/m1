@@ -4,7 +4,13 @@ import { useHistory } from "react-router-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import EditIcon from "@material-ui/icons/Edit";
-import { Container, Button, Tooltip, IconButton, CircularProgress } from "@material-ui/core";
+import {
+  Container,
+  Button,
+  Tooltip,
+  IconButton,
+  CircularProgress,
+} from "@material-ui/core";
 import { useMutation } from "@apollo/client";
 
 import { AppContext } from "AppContext";
@@ -20,13 +26,14 @@ import ExportOwnersAndContacts from "components/Shared/ExportOwnerAndContacts";
 import AddUnitOwnerDialogContent from "components/Shared/M1nTable/components/SubComponents/AddUnitOwnerDialogContent";
 import BuyContactsInfoDialogContent from "components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
-import { AssignOwnerToContactDrawerContainer } from 'store/containers';
+import { AssignOwnerToContactDrawerContainer } from "store/containers";
 
 import TableHeader from "components/Table/constants/ownersperunit-header-schema";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import { deepEqualObjects, copy } from "components/Shared/functions";
 import { addTrailingZeros } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
+import { forEach } from "lodash";
 
 const genericDataActions = ["comments", "tracks", "ifAreContacts"];
 const interestKeys = [
@@ -44,22 +51,30 @@ function UnitInterestOwnerTable(props) {
   const [selectedRows, setSelectedRows] = useState([]);
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [resetSelectedRow, setResetSelectedRow] = useState(false);
-  const [stateApp,] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const { customLayer, esIndex, clickedRow } = props;
 
   const [openCustomDialog, setOpenCustomDialog] = useState("");
   const [selectedOwner, setSelectedOwner] = useState(null);
 
-  const [updateShapeOwners, { data: updateData }] = useMutation(UPDATE_SHAPE_OWNERS, {
-    onCompleted: () => {
-      props.setLoading(false);
-      setSelectedRows([])
-    },
+  const [updateShapeOwners, { data: updateData }] = useMutation(
+    UPDATE_SHAPE_OWNERS,
+    {
+      onCompleted: () => {
+        props.setLoading(false);
+        setSelectedRows([]);
+      },
 
-    onError: (err) => { },
-    refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
-  });
+      onError: (err) => {},
+      refetchQueries: [
+        "getESPaginatedList",
+        "getESSimpleSearch",
+        "getESFilterList",
+      ],
+      awaitRefetchQueries: true,
+    }
+  );
 
   const searchFields = ["contact.entityDetail.name", "_all"];
   const appliedFilters = [
@@ -81,11 +96,10 @@ function UnitInterestOwnerTable(props) {
         }
       });
       if (hit?.tags?.length > 0) {
-        const tags = hit.tags.map((tag) => tag.tag)
+        const tags = hit.tags.map((tag) => tag.tag);
         if (tags[0]) {
-          hit.tags = [[tags], hit.tags.length]
+          hit.tags = [[tags], hit.tags.length];
         }
-
       } else {
         hit.tags = [[], 0];
       }
@@ -120,11 +134,11 @@ function UnitInterestOwnerTable(props) {
 
   useEffect(() => {
     if (props.initialFilters.length > 2) {
-      props.setIsFiltered(true)
+      props.setIsFiltered(true);
     } else {
-      props.setIsFiltered(false)
+      props.setIsFiltered(false);
     }
-  }, [props.initialFilters])
+  }, [props.initialFilters]);
 
   useEffect(() => {
     if (clickedRow) {
@@ -158,7 +172,19 @@ function UnitInterestOwnerTable(props) {
         awaitRefetchQueries: true,
       });
     }
-    setResetSelectedRow(!resetSelectedRow)
+    setResetSelectedRow(!resetSelectedRow);
+  };
+
+  const onExport = () => {
+    let rowsData = props.selectedRowsValues || []
+    if(rowsData?.length === 0){
+      let rows = props.rows
+      props.selectedRows.forEach((data) => {
+        rowsData.push(rows[data.dataIndex]);
+      });
+    }
+    setSelectedRows(rowsData);
+    setOpenCustomDialog("exportOwnersAndContact");
   };
 
   const customOptions = {
@@ -179,8 +205,8 @@ function UnitInterestOwnerTable(props) {
               bulkUploadShape: {
                 id: props.customLayer._id,
                 shapeLabel: props.customLayer.name,
-                shapeType: "Unit"
-              }
+                shapeType: "Unit",
+              },
             }));
             history.push("/bulkupload");
           },
@@ -214,79 +240,85 @@ function UnitInterestOwnerTable(props) {
               display: "flex",
             }}
           >
-            {(!props.selectedRows || props.selectedRows?.length === 0) && <CircularProgress size={40} color="secondary" style={{ marginRight: '1em' }} />}
-            <Button
-              color="secondary"
-              startIcon={<EditIcon color="white" />}
-              className={classes.multiSelectionTopBarButtons}
-              disabled={!props.selectedRows || props.selectedRows?.length === 0}
-              onClick={() => {
-                let owners = [];
-
-                const rows = props.selectedRowsValues || props.rows
-                for (let i in props.selectedRows) {
-                  owners.push({
-                    ...rows[props.selectedRows[i].dataIndex],
-                    _id: rows[props.selectedRows[i].dataIndex].contact._id
-                  });
-                }
-                setSelectedRows(owners);
-                setOpenCustomDialog("bulkUpdate");
-              }}
-            >
-              Bulk Update
-            </Button>
-            <Button
-              color="secondary"
-              startIcon={<CloudDownloadIcon color="white" />}
-              className={classes.multiSelectionTopBarButtons}
-              disabled={!props.selectedRows || props.selectedRows?.length === 0}
-              onClick={() => {
-                let owners = [];
-
-                const rows = props.selectedRowsValues || props.rows
-                for (let i in props.selectedRows) {
-                  owners.push(
-                    rows[props.selectedRows[i].dataIndex]
-                  );
-                }
-                setSelectedRows(owners);
-                setOpenCustomDialog("exportOwnersAndContact");
-              }}
-            >
-              Export
-            </Button>
-            <FeatureFlag feature={FEATURES.IDICORE}>
-              <Button
+            {(!props.selectedRows || props.selectedRows?.length === 0) && (
+              <CircularProgress
+                size={40}
                 color="secondary"
-                startIcon={<RequestPageIcon color="white" />}
-                className={classes.multiSelectionTopBarButtons}
-                disabled={!props.selectedRows || props.selectedRows?.length === 0}
-                onClick={() => setOpenCustomDialog("buyContactsInfoData")}
-              >
-                Contact Data
-              </Button>
-            </FeatureFlag>
+                style={{ marginRight: "1em" }}
+              />
+            )}
+            {props.selectedRows && props.selectedRows?.length !== 0 && (
+              <>
+                <Button
+                  color="secondary"
+                  startIcon={<EditIcon color="white" />}
+                  className={classes.multiSelectionTopBarButtons}
+                  disabled={
+                    !props.selectedRows || props.selectedRows?.length === 0
+                  }
+                  onClick={() => {
+                    let owners = [];
 
-            <Tooltip title={"Delete"}>
-              <IconButton
-                size="medium"
-                style={{ margin: "0 5px" }}
-                disabled={!props.selectedRows || props.selectedRows?.length === 0}
-                onClick={(e) => {
-                  setOpenCustomDialog("deleteOwner");
-                }}
-                aria-label="delete"
-              >
-                <DeleteIcon />
-              </IconButton>
-            </Tooltip>
+                    const rows = props.selectedRowsValues || props.rows;
+                    for (let i in props.selectedRows) {
+                      owners.push({
+                        ...rows[props.selectedRows[i].dataIndex],
+                        _id: rows[props.selectedRows[i].dataIndex].contact._id,
+                      });
+                    }
+                    setSelectedRows(owners);
+                    setOpenCustomDialog("bulkUpdate");
+                  }}
+                >
+                  Bulk Update
+                </Button>
+                <Button
+                  color="secondary"
+                  startIcon={<CloudDownloadIcon color="white" />}
+                  className={classes.multiSelectionTopBarButtons}
+                  disabled={
+                    !props.selectedRows || props.selectedRows?.length === 0
+                  }
+                  onClick={onExport}
+                >
+                  Export
+                </Button>
+                <FeatureFlag feature={FEATURES.IDICORE}>
+                  <Button
+                    color="secondary"
+                    startIcon={<RequestPageIcon color="white" />}
+                    className={classes.multiSelectionTopBarButtons}
+                    disabled={
+                      !props.selectedRows || props.selectedRows?.length === 0
+                    }
+                    onClick={() => setOpenCustomDialog("buyContactsInfoData")}
+                  >
+                    Contact Data
+                  </Button>
+                </FeatureFlag>
+
+                <Tooltip title={"Delete"}>
+                  <IconButton
+                    size="medium"
+                    style={{ margin: "0 5px" }}
+                    disabled={
+                      !props.selectedRows || props.selectedRows?.length === 0
+                    }
+                    onClick={(e) => {
+                      setOpenCustomDialog("deleteOwner");
+                    }}
+                    aria-label="delete"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              </>
+            )}
           </div>
         </div>
       );
-    }
-
-  }
+    },
+  };
 
   return (
     <Container
@@ -296,9 +328,9 @@ function UnitInterestOwnerTable(props) {
     >
       {openCustomDialog === "exportOwnersAndContact" && (
         <ExportOwnersAndContacts
+          filters={[...props.initialFilters, ...appliedFilters]}
           onClose={() => setOpenCustomDialog("")}
           search={props.activeSearchRef.current}
-          filters={[...props.initialFilters, ...appliedFilters]}
           total={props.options.count}
           isSelectAll={isSelectAll}
           rows={selectedRows}
@@ -353,12 +385,13 @@ function UnitInterestOwnerTable(props) {
           )}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
-          {`Do you want to permanently delete the unit owner${props.selectedRows &&
+          {`Do you want to permanently delete the unit owner${
+            props.selectedRows &&
             props.selectedRows.length > 1 &&
             props.selectedRows.length > 1
-            ? "s"
-            : ""
-            }?`}
+              ? "s"
+              : ""
+          }?`}
         </DeleteConfirmationDialogContent>
       )}
       <Table
@@ -391,7 +424,7 @@ function UnitInterestOwnerTable(props) {
         }}
         options={{
           ...props.options,
-          ...customOptions
+          ...customOptions,
         }}
         parent={props.parent}
         setColumnsBase={[]}

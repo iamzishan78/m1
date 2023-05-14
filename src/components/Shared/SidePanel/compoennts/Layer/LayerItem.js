@@ -98,7 +98,6 @@ function LayerItem({ layer, index, provided, type, handleToggle, labelId, stateA
     if (
       (layer.identifier === "User Tags" && !(stateApp.wellListFromTagsFilter && stateApp.wellListFromTagsFilter.length > 0)) ||
       (layer.identifier === "Search" && !(stateApp.wellListFromSearch && stateApp.wellListFromSearch.length > 0)) ||
-      (layer.identifier === "Tracked Wells" && !(stateApp.trackedwells && stateApp.trackedwells.length > 0)) ||
       (layer.identifier === "Tracked Owners" && !(stateApp.trackedOwnerWells && stateApp.trackedOwnerWells.length > 0))
     )
       return false;

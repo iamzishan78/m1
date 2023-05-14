@@ -80,7 +80,6 @@ const ExportOwnerAndContacts = ({
   const exportDisabled = !exportContacts && !exportInterestOwners;
 
   const onExport = () => {
-    onClose();
     dispatch(execCommonAsyncExportJobAction.STARTED({
       jobType: 'EXPORTCSV',
       client,
@@ -107,6 +106,9 @@ const ExportOwnerAndContacts = ({
         },
       }
     }));
+    setTimeout(() => {
+      onClose();
+    }, 2000)
   };
 
   return (

@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Grid, makeStyles } from "@material-ui/core";
 
+import { AppContext } from "AppContext";
 import ExhibitA from "./ExhibitA";
 import { AutoCompleteFilter } from "components/Table/AutoCompleteFilter";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { agreementTypes } from "components/ShapeDetailCard/Common/SummaryTable/agreementDefaultData";
+import { copy, getSearchFields } from "components/Shared/functions";
+import TableHeader from "components/Table/constants/analytics-land-exhibita-schema";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -36,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
       "&>.MuiPaper-root": {
         display: "flex",
         "flex-direction": "column",
-        height: "calc(100vh - 240px)",
+        // height: "calc(100vh - 240px)",
         position: "relative",
         boxShadow: "none",
         "align-items": "stretch",
@@ -98,6 +101,8 @@ const filterColumnsHeader = [
 
 export default function ExhibitATabPanel() {
   const classes = useStyles();
+  const [stateApp] = useContext(AppContext);
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 166px)" }
   const initialFilterList = [["All"], ["All"], ["All"], ["All"], ["All"], ["All"]];
   const [, setFilters] = useState([]);
 
@@ -203,9 +208,9 @@ export default function ExhibitATabPanel() {
                     custom={filterColumn.custom ? filterColumn.custom : undefined}
                     onChange={onChange}
                     query={GET_ES_SIMPLE_FILTER}
-                    searchFields={[`'${filterColumn.filterKey}'`]}
+                    searchFields={getSearchFields(copy(TableHeader), [])}
                     filters={appliedFilters}
-                    extendSearchQuery={""}
+                    extendSearchQuery={stateApp.landAnalyticsSearchQuery}
                     inputSize="small"
                   />
                 </Grid>
@@ -214,15 +219,17 @@ export default function ExhibitATabPanel() {
           </Grid>
         </Grid>
       </div>
-      <div className={classes.gridRoot}>
+      <div >
         <ExhibitA
           filterChange={filterChange}
           header="Exhibit A"
           esFilters={tableFilters}
           targetLabel="acerage"
-          parent="AcerageDetail"
+          parent="ExhibitA"
           esIndex="shapetracts_flat"
           setESFilters={setESFilters}
+          loadMore={loadMore}
+          landSearchQuery={stateApp.landAnalyticsSearchQuery}
         />
       </div>
     </>

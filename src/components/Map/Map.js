@@ -1387,7 +1387,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
               if (map.getLayer(layerId)) {
                 if (
                   ifDefaultLayers(layer.identifier) ||
-                  layer.identifier === "Tracked Wells" ||
                   layer.identifier === "Tracked Owners" ||
                   layer.identifier === "User Tags" ||
                   layer.identifier === "Search"
@@ -1466,7 +1465,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             layerId === "welllines" ||
             layerId === "wellpermitlines" ||
             ifDefaultLayers(layerId) ||
-            layerId === "Tracked Wells" ||
             layerId === "Tracked Owners" ||
             layerId === "Tags Filter" ||
             layerId === "Search" ||
@@ -1584,9 +1582,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           let data = null;
           if (layer.layerPaintProps && layer.layerPaintProps.length > 0) {
             switch (layer.identifier) {
-              case "Tracked Wells":
-                data = stateApp.trackedwells;
-                break;
               case "Tracked Owners":
                 data = stateApp.trackedOwnerWells;
                 break;
@@ -2323,7 +2318,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
               "wellpoints",
               "welllines",
               "wellpermitlines",
-              "Tracked Wells",
               "Tracked Owners",
               "Tags Filter",
               //"permits",
@@ -2462,7 +2456,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           "wellpoints",
           "welllines",
           "wellpermitlines",
-          "Tracked Wells",
           "Tracked Owners",
           "Tags Filter",
           //"permits",
@@ -2506,7 +2499,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           "wellpoints",
           "welllines",
           "wellpermitlines",
-          "Tracked Wells",
           "Tracked Owners",
           "Tags Filter",
           //"permits",
@@ -2545,7 +2537,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           "wellpoints",
           "welllines",
           "wellpermitlines",
-          "Tracked Wells",
           "Tracked Owners",
           "Tags Filter",
           //"permits",
@@ -2623,7 +2614,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           "wellpoints",
           "welllines",
           "wellpermitlines",
-          "Tracked Wells",
           "Tracked Owners",
           "Tags Filter",
           //"permits",
@@ -2792,7 +2782,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         const filterLayers = [
           "GLOLeaseLabels",
           "GLOUnitLabels",
-          "Tracked Wells",
           "Tracked Owners",
           "Tags Filter",
           "interest",
@@ -2809,7 +2798,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           if (filterCustomArray[filterLayer]) {
             if (
               [
-                "Tracked Wells",
                 "Tracked Owners",
                 "Tags Filter",
                 //"permits",
@@ -2855,7 +2843,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
               if (layer) {
                 if (
                   [
-                    "Tracked Wells",
                     "Tracked Owners",
                     "Tags Filter",
                     //"permits",
@@ -4206,7 +4193,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         map.setFilter("wellsHeatmapTVD", [">", ["get", "trueVerticalDepth"], 0]);
 
         const filterLayers = [
-          "Tracked Wells",
           "Tracked Owners",
           "Tags Filter",
           //"permits",
@@ -5399,7 +5385,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   //         const points = stateApp.map.queryRenderedFeatures({
   //           layers: [
   //             "wellpoints",
-  //             // "Tracked Wells",
   //             // "Tags Filter",
   //             // "Search",
   //           ],

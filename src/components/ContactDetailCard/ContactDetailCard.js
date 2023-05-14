@@ -724,7 +724,7 @@ function ContactDetailCard(props) {
                       }));
                     }}
                   >
-                    Add Deal
+                    Add New Deal
                   </Button>
                   <Button
                     className={classes.contactDataButton}
@@ -756,7 +756,7 @@ function ContactDetailCard(props) {
               <div className={classes.summarySection}>
                 <Grid item xs={12} container spacing={0} style={{
                   padding: "5px 20px",
-                  height: "550px",
+                  height: "650px",
                   // marginBottom: "-100px",
                   // marginTop: "20px",
                   textAlign: "center"

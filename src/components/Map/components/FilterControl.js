@@ -181,7 +181,6 @@ function FilterControl() {
         dataWells.bulkTrackAllUntrackAll.success
       ) {
         dispatch(showSuccessMessage("Wells are successfully tracked"));
-        stateApp.toggleLayersActivity("Tracked Wells", true);
       } else {
         dispatch(showErrorMessage("The tracking process failed."));
       }

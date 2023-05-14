@@ -333,7 +333,7 @@ const checkDetailsKeys = [
         actual_key: "property.number",
     },
     {
-        label: "Internal Prop #",
+        label: "Accounting Ref ID",
         mapped_key: "",
         required: false,
         actual_key: "property.internalID",
@@ -349,6 +349,12 @@ const checkDetailsKeys = [
         mapped_key: "",
         required: false,
         actual_key: "product",
+    },
+    {
+        label: "Property Description",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.description",
     },
     {
         label: "Decimal Interest",

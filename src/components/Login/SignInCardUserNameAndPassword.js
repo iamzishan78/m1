@@ -6,7 +6,7 @@ import {
   ThemeProvider,
   withStyles,
   makeStyles,
-  createMuiTheme,
+  createTheme,
 } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import { Card, TextField, Button, Typography } from "@material-ui/core";

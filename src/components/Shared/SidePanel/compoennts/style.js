@@ -5,10 +5,10 @@ import MenuItem from "@material-ui/core/MenuItem";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItem from "@material-ui/core/ListItem";
 import Select from "@material-ui/core/Select";
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createTheme } from "@material-ui/core/styles";
 import { scrollbarStyle } from "styles/common";
 
-export const theme = createMuiTheme({
+export const theme = createTheme({
   overrides: {
     MuiSvgIcon: {
       root: {

@@ -166,7 +166,7 @@ function M1nTable(props) {
   const setDataTracks = (newState) => {
     setStateIfDeepEqual(DataTracks, newState);
   };
-  const [selectedYear, setSelectedYear] = useState(2021); // production selected year state
+  const [selectedYear, setSelectedYear] = useState(2022); // production selected year state
 
   // selectors
   const { searchloading, searchResultData, selectedOwnerWellIntsSummary } = useSelector(({ MapGridCard }) => MapGridCard);
@@ -426,163 +426,6 @@ function M1nTable(props) {
     //  dataOwnersWells
   ]);
   ////////////Tracked Owners end///////////////////////////////////////////////
-
-  ////////////Tracked Wells begin///////////////////////////////////////////////
-  useEffect(() => {
-    if (props.parent && props.parent === "trackWells") {
-      setTargetLabel("well");
-      if (props.header) {
-        setHeader(props.header);
-      } else {
-        setHeader("Wells");
-      }
-      setAddAble(false);
-    }
-  }, [props.parent, props.header]);
-
-  useEffect(() => {
-    if (props.parent && props.parent === "trackWells" && dataTracks) {
-      if (dataTracks.length !== 0) {
-        getWells({
-          variables: {
-            wellIdArray: dataTracks,
-          },
-        });
-        getCommentsCounter({
-          variables: {
-            objectsIdsArray: dataTracks,
-            userId: stateApp.user.mongoId,
-          },
-        });
-        getTagSamples({
-          variables: {
-            objectsIdsArray: dataTracks,
-            userId: stateApp.user.mongoId,
-          },
-        });
-      } else {
-        setRows([]);
-        setLoading(false);
-      }
-    }
-  }, [dataTracks]);
-
-  useEffect(() => {
-    if (dataWells?.wells)
-      if (props.parent && props.parent === "trackWells" && dataWells) {
-        if (
-          dataWells.wells &&
-          dataWells.wells.results &&
-          dataWells.wells.results.length > 0 &&
-          dataCommentsCounter &&
-          dataCommentsCounter.commentsCounter &&
-          dataTagSamples &&
-          dataTagSamples.tagSamples
-        ) {
-          let wells = [...dataWells.wells.results];
-          wells = wells.map((w) => {
-            let well = { ...w };
-
-            //// temporary to fix the ticks dates fields comming from the rest api
-            if (well.permitApprovedDate && well.permitApprovedDate != "null")
-              well.permitApprovedDate = ticksToDateString(well.permitApprovedDate);
-            if (well.spudDate && well.spudDate != "null") well.spudDate = ticksToDateString(well.spudDate);
-            if (well.completionDate && well.completionDate != "null") well.completionDate = ticksToDateString(well.completionDate);
-            if (well.firstProductionDate && well.firstProductionDate != "null")
-              well.firstProductionDate = ticksToDateString(well.firstProductionDate);
-            //// temporary end
-
-            well.isTracked = true;
-            well.commentsCounter = 0;
-            well.tags = [[], 0];
-
-            well.coordinates = {};
-            if (well.Longitude && well.Latitude) well.coordinates.center = [well.Longitude, well.Latitude];
-            if (well.longitude && well.latitude) well.coordinates.center = [well.longitude, well.latitude];
-
-            for (let i = 0; i < dataCommentsCounter.commentsCounter.length; i++) {
-              if (well.id === dataCommentsCounter.commentsCounter[i]._id) {
-                well.commentsCounter = dataCommentsCounter.commentsCounter[i].total;
-                break;
-              }
-            }
-            for (let i = 0; i < dataTagSamples.tagSamples.length; i++) {
-              if (well.id === dataTagSamples.tagSamples[i]._id) {
-                well.tags = [dataTagSamples.tagSamples[i].tags, dataTagSamples.tagSamples[i].total];
-
-                break;
-              }
-            }
-            return well;
-          });
-
-          let availableTags = [];
-          dataTagSamples.tagSamples.map((sample) => {
-            availableTags = [...availableTags, ...sample.tags];
-          });
-          const cleanAvailableTags = [...new Set(availableTags)];
-
-          setRows(wells);
-
-          const flyToColumn = {
-            name: "coordinates",
-            label: " ",
-            options: {
-              filter: false,
-              sort: false,
-              searchable: false,
-              download: false,
-              print: false,
-              viewColumns: false,
-            },
-          };
-
-          setColumns([
-            ...(cleanAvailableTags.length > 0
-              ? WellsHeadCells.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filterOptions: {
-                        ...column.options.filterOptions,
-                        names: cleanAvailableTags,
-                      },
-                    },
-                  };
-                }
-                return column;
-              })
-              : WellsHeadCells.map((column) => {
-                if (column.name === "tags") {
-                  return {
-                    ...column,
-                    options: {
-                      ...column.options,
-                      filter: false,
-                    },
-                  };
-                }
-                return column;
-              })),
-            flyToColumn,
-          ]);
-
-          setStateApp((state) => ({
-            ...state,
-            trackedwells: wells,
-          }));
-          setLoading(false);
-        } else {
-          if (dataWells.wells && dataWells.wells.results && dataWells.wells.results.length === 0) {
-            setRows([]);
-            setLoading(false);
-          }
-        }
-      }
-  }, [dataWells, dataTagSamples, dataCommentsCounter]);
-  ////////////Tracked Wells end///////////////////////////////////////////////
 
   // ////////////Grid Wells begin///////////////////////////////////////////////
   // useEffect(() => {
@@ -2500,7 +2343,7 @@ function M1nTable(props) {
 
       if (props.filteredTabTransactData) {
         setRows([...props.filteredTabTransactData]);
-        
+
         setColumns(TransactDealsHeadCells(props.flowLineType));
       }
     }

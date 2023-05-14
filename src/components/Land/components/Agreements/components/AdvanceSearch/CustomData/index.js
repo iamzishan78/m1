@@ -38,11 +38,18 @@ export default function CustomDataFilters(props) {
   const [selectedValue, setSelectedValue] = useState(null);
   const agreementDetails = useSelector(({ Land }) => Land.agreement?.activeAgreement?.shape)?.properties;
 
-
   const [getCustomKey, { data: customData, loading }] = useLazyQuery(
     GET_ALL_CUSTOM_DATA_KEYS,
     { fetchPolicy: "no-cache" }
   );
+
+  useEffect(() => {
+    if (stateApp.landSearchFilters?.customData.length === 0) {
+      setKey(null);
+      setSelectedValue(null);
+      setSelectedKey(null);
+    }
+  }, [stateApp.landSearchFilters?.customData]);
 
   useEffect(() => {
     getCustomKey({
@@ -103,7 +110,7 @@ export default function CustomDataFilters(props) {
     // Removing the keys that are already in agreementDetails
     allKeys = allKeys.filter(key => !(key.value.replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase()) in (agreementDetails || {})))
 
-    return allKeys
+    return allKeys.filter((key)=>!Array.isArray(key.label))
   }, [customData, agreementDetails])
 
   const getValueOptions = useMemo(() => {

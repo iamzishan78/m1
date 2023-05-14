@@ -80,7 +80,7 @@ const AutoCompleteDropdown = ({ classes, onChange, filter, filterList, index, ap
     onChange,
     query: GET_ES_SIMPLE_FILTER,
     searchFields: filter.searchFields,
-    filters: [{ field: "shapeJson.properties.type.keyword", value: "agreement" }, ...appliedFilters.filter((af, i) => i < index)],
+    filters: [{ field: "shapeJson.properties.type.keyword", value: "agreement" }, ...appliedFilters],
     extendSearchQuery: "",
     custom: filter.custom,
     aggsType: "nested"

@@ -345,7 +345,7 @@ export default function CSVFileReader(props) {
                   <TableHead>
                     <TableRow>
                       {M1neral_headers[props.selectedJob.type]
-                        .filter((jobKey) => jobKey.showAsSample !== false)
+                        ?.filter((jobKey) => jobKey.showAsSample !== false)
                         .map((jobKeys, index) => (
                           <React.Fragment>
                             <StyledTableCell align="left">{jobKeys.label}</StyledTableCell>

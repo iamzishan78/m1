@@ -157,7 +157,7 @@ export default function HeaderSection(props) {
 
       if (!number && !internalID) {
         dispatch(
-          showInfoMessage("Internal Prop # or Operator Prop # is required.")
+          showInfoMessage("Accounting Ref ID or Operator Prop # is required.")
         );
         history.goBack();
       }
@@ -271,7 +271,7 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Internal Prop #</div>
+                <div className={classes.label}>Accounting Ref ID</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
@@ -742,36 +742,6 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-
-
-          {/* <Grid item xs={7}>
-            <Grid container className={classes.gridStyle}>
-              <Grid item xs={2}>
-                <div className={classes.label}>Status</div>
-              </Grid>
-              <Grid item xs={9}>
-                <Controller
-                  control={control}
-                  name="status"
-                  render={(params) => (
-                    <Select
-                      {...params}
-                      id="status-simple-select-outlined-label"
-                      variant="outlined"
-                      value={params.value ? params.value : ""}
-                      fullWidth
-                      onChange={(e) => {
-                        updatePropertyData("status", e.target.value);
-                      }}
-                    >
-                      <MenuItem value="In Pay">In Pay</MenuItem>
-                      <MenuItem value="Not in Pay">Not in Pay</MenuItem>
-                    </Select>
-                  )}
-                />
-              </Grid>
-            </Grid>
-          </Grid> */}
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
@@ -1038,6 +1008,38 @@ export default function HeaderSection(props) {
               </Grid>
             </Grid>
           </Grid>
+
+        <Grid item xs={12}>
+            <Grid
+              container
+              className={`${classes.gridStyle} ${classes.textArea}`}
+            >
+              <Grid item style={{ flexBasis: "10.3%" }}>
+                <div className={classes.label}>Property Description</div>
+              </Grid>
+              <Grid item style={{ flexBasis: "84.8%" }}>
+                <Controller
+                    control={control}
+                    name="description"
+                    render={(params) => (
+                      <TextField
+                        {...params}
+                        className={classes.textField}
+                        variant="outlined"
+                        margin="dense"
+                        type="text"
+                        fullWidth
+                        onChange={(e) => {
+                          params.onChange(e.target.value);
+                        }}
+                        onBlur={(e) => handleUpdate("description", e.target.value)}
+                      />
+                    )}
+                  />
+              </Grid>
+            </Grid>
+          </Grid>
+
 
           <Grid item xs={12}>
             <Grid
