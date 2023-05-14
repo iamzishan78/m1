@@ -32,6 +32,9 @@ import UploadIcon from "components/Shared/svgIcons/uploadIcon";
 import EditableTextField from "components/Shared/components/Fields/EditableTextField";
 import { truncate } from "components/Shared/functions";
 
+import { Grid, AccordionDetails, Chip } from "@material-ui/core";
+import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from "@material-ui/icons";
+
 import proj4 from "proj4";
 // cra webpack hack to call this a png to get included in bundle
 import conus from "components/Shared/constants/nadgrids/conus.png";
@@ -805,13 +808,22 @@ function SourceManager(props) {
 
 
                   <StyledListItem2 button onClick={() => setIsOpenUserSources(!isOpenUserSources)} className={isOpenUserSources ? 'isOpen' : ''}>
-                    <Checkbox
+                    {/* <Checkbox
                       checked={selectAllUserSources}
                       color="darkgray"
                       onClick={(e) => e.stopPropagation()}
                       onChange={(e) => { changeAllUserSources(stateApp.datasets, !selectAllUserSources) }}
                       inputProps={{ "aria-label": "primary checkbox" }}
-                    />
+                    /> */}
+                    <IconButton
+                      size="small"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        changeAllUserSources(stateApp.datasets, !selectAllUserSources)
+                      }}
+                    >
+                  <ClearButton />
+                  </IconButton>
                     <ListItemText primary="User Uploaded Sources" />
                     {isOpenUserSources ? <ExpandLess /> : <ExpandMore />}
                   </StyledListItem2>
