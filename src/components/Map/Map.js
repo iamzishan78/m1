@@ -619,10 +619,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         const layers = copy(layerStates.allLayerSettingsByUser)
         for (let i = 0; i < layers.length; i++) {
           const layer = layers[i];
-          if (layer.layerType === "file layer" && !layer.layerSettings?.visiable) {
+          const visible = layer.layerSettings.showable && layer.layerSettings.visiable !== false;
+          if (layer.layerType === "file layer" && !visible) {
             layer.fileViewed = false
           }
-          if (layer.layerType === "file layer" && layer.layerSettings?.visiable) {
+          if (layer.layerType === "file layer" && visible) {
             layer.fileViewed = true
             setFileRequestCounter(1);
             viewFile({
@@ -664,13 +665,14 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           layers[index] = { ...layers[index], fileUrl: uri, fileName: name };
         }
       });
-      setLayersData([...layers]);
 
       let nextLayerIndex;
 
       if (layerIndex < layersData.length - 1)
         for (let i = layerIndex + 1; i < layers.length; i++) {
-          if (layers[i].layerType == "file layer" && !layers[i].fileUrl && layers[i].layerSettings.visiable && layers[i].fileViewed !== true) {
+          const visible = layers[i].layerSettings.showable && layers[i].layerSettings.visiable !== false;
+          if (layers[i].layerType == "file layer" && !layers[i].fileUrl && visible && layers[i].fileViewed !== true) {
+            layers[i].fileViewed = false
             setFileRequestCounter(1);
             viewFile({
               variables: {
@@ -679,8 +681,12 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             });
             nextLayerIndex = i;
             break;
+          } else {
+            layers[i].fileViewed = false
           }
         }
+
+      setLayersData([...layers]);
       //// no more file layers to looks for
       if (!nextLayerIndex) {
         setStateApp((stateApp) => ({
@@ -1628,7 +1634,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
               }
             }
             beforeLayer = setLayer(layerData.fileUrl, layer.identifier, map, beforeLayer);
-          } else if (layerData.fileViewed === false && layer.layerSettings?.visiable) {
+          } else if (layerData.fileViewed === false && layer.layerSettings?.visiable && layer.layerSettings?.showable) {
+            layerData.fileViewed = true;
             setFileRequestCounter(1);
             viewFile({
               variables: {
