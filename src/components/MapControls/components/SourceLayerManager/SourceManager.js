@@ -645,6 +645,7 @@ function SourceManager(props) {
 
   return (
     <div id="sourceManagerDiv" style={{ height: "100%", display: "flex", width: "100%" }}>
+      {console.log('STATEAPP',stateApp)}
       <DropzoneAreaBase onAdd={handleFileInput}
         onDelete={(fileObj) => { }}
         onAlert={(message, variant) => { }}
@@ -819,7 +820,7 @@ function SourceManager(props) {
                       size="small"
                       onClick={(event) => {
                         event.stopPropagation();
-                        changeAllUserSources(stateApp.datasets, !selectAllUserSources)
+                        changeAllUserSources(stateApp.datasets, false)
                       }}
                     >
                   <ClearButton />
