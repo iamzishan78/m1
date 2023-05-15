@@ -439,7 +439,7 @@ function SourceManager(props) {
   const handleDatasetChange = (dataset, value) => {
     const updatefn = {};
     const layersSettingsToUpdate = [];
-    console.log('STATEAPP',stateApp.datasets.filter((row) => row.visibility == true).length);
+    console.log('STATEAPP',stateApp);
 
     if(stateApp.datasets.filter((row) => row.visibility == true).length < source_limit || value == 0)
     {
