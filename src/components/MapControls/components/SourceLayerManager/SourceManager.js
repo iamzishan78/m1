@@ -32,6 +32,9 @@ import UploadIcon from "components/Shared/svgIcons/uploadIcon";
 import EditableTextField from "components/Shared/components/Fields/EditableTextField";
 import { truncate } from "components/Shared/functions";
 
+import { Grid, AccordionDetails, Chip } from "@material-ui/core";
+import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from "@material-ui/icons";
+
 import proj4 from "proj4";
 // cra webpack hack to call this a png to get included in bundle
 import conus from "components/Shared/constants/nadgrids/conus.png";
@@ -43,6 +46,10 @@ import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 import { UPDATE_DATASET } from "graphQL/useMutationDataset";
 import { hookStateApp } from "hookstate";
 import { useHookstate } from '@hookstate/core';
+
+import { showInfoMessage } from "actions";
+import { useDispatch } from "react-redux";
+
 
 const GCS_North_American_1927 =
   'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
@@ -221,7 +228,9 @@ export default function SourceManagerContainer(props) {
 
 function SourceManager(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   let history = useHistory();
+  const source_limit = 3;
 
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const { stateApp, setStateApp } = props;
@@ -421,40 +430,55 @@ function SourceManager(props) {
   }
 
   const handleDatasetChange = (dataset, value) => {
-    const updatefn = {};
-    const layersSettingsToUpdate = [];
-    currentLayers.forEach((clayer, layerIndex) => {
-      if (clayer.file === dataset.file) {
-        console.log(clayer.file, clayer)
-        updatefn[layerIndex] = { layerSettings: { showable: { $set: value }, visiable: { $set: value } } };
-        layersSettingsToUpdate.push({
-          _id: clayer._id,
-          layerSettings: { ...clayer.layerSettings, showable: value, visiable: value }
-        });
-      }
-    });
-    updateUserMapSettings({
-      variables: {
-        settings: {
-          user: stateApp.user.mongoId,
-          type: 'DatasetVisibility',
-          settings: { [dataset._id]: value },
-        },
-      },
-    });
-    if (layersSettingsToUpdate.length > 0)
-      updateManyUserLayerSettings({
+    { console.log('STATEAPP BEFORE DATASET', dataset) }
+    { console.log('STATEAPP BEFORE VALUE', value) }
+
+    if (stateApp.datasets.filter((row) => row.visibility == true).length < source_limit || value == 0) {
+      const updatefn = {};
+      const layersSettingsToUpdate = [];
+      currentLayers.forEach((clayer, layerIndex) => {
+        if (clayer.file === dataset.file) {
+          console.log(clayer.file, clayer)
+          updatefn[layerIndex] = { layerSettings: { showable: { $set: value }, visiable: { $set: value } } };
+          layersSettingsToUpdate.push({
+            _id: clayer._id,
+            layerSettings: { ...clayer.layerSettings, showable: value, visiable: value }
+          });
+        }
+      });
+      updateUserMapSettings({
         variables: {
-          manySettings: layersSettingsToUpdate,
+          settings: {
+            user: stateApp.user.mongoId,
+            type: 'DatasetVisibility',
+            settings: { [dataset._id]: value },
+          },
         },
       });
+      if (layersSettingsToUpdate.length > 0)
+        updateManyUserLayerSettings({
+          variables: {
+            manySettings: layersSettingsToUpdate,
+          },
+        });
 
-    const newLayers = update(currentLayers, updatefn)
-    setCurrentLayers(newLayers);
-    const datasetIndex = stateApp.datasets.findIndex(d => d._id === dataset._id);
-    dataset.visibility = value
-    stateApp.datasets[datasetIndex] = dataset
-    updateStateLayers(newLayers)
+      const newLayers = update(currentLayers, updatefn)
+      setCurrentLayers(newLayers);
+
+
+
+      const datasetIndex = stateApp.datasets.findIndex(d => d._id === dataset._id);
+      dataset.visibility = value
+      stateApp.datasets[datasetIndex] = dataset
+      updateStateLayers(newLayers)
+    }
+
+    else {
+      dispatch(
+        showInfoMessage("Cannot add source. Number of active sources cannot exceed " + source_limit)
+      );
+    }
+
   }
 
   const changeLayerName = (layer, name) => {
@@ -649,6 +673,10 @@ function SourceManager(props) {
 
   return (
     <div id="sourceManagerDiv" style={{ height: "100%", display: "flex", width: "100%" }}>
+      {console.log('STATEAPP', stateApp)}
+      {console.log('STATEAPP source length', stateApp.datasets.filter((row) => row.visibility == true).length)}
+      {console.log('STATEAPP open datasets', openDataSets)}
+
       <DropzoneAreaBase onAdd={handleFileInput}
         onDelete={(fileObj) => { }}
         onAlert={(message, variant) => { }}
@@ -812,13 +840,22 @@ function SourceManager(props) {
 
 
                   <StyledListItem2 button onClick={() => setIsOpenUserSources(!isOpenUserSources)} className={isOpenUserSources ? 'isOpen' : ''}>
-                    <Checkbox
+                    {/* <Checkbox
                       checked={selectAllUserSources}
                       color="darkgray"
                       onClick={(e) => e.stopPropagation()}
                       onChange={(e) => { changeAllUserSources(stateApp.datasets, !selectAllUserSources) }}
                       inputProps={{ "aria-label": "primary checkbox" }}
-                    />
+                    /> */}
+                    <IconButton
+                      size="small"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        changeAllUserSources(stateApp.datasets, false)
+                      }}
+                    >
+                      <ClearButton />
+                    </IconButton>
                     <ListItemText primary="User Uploaded Sources" />
                     {isOpenUserSources ? <ExpandLess /> : <ExpandMore />}
                   </StyledListItem2>
