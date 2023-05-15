@@ -2574,12 +2574,12 @@ function SubTable(props) {
                         id={tableMeta.rowData[0]}
                         entityId={tableMeta.rowData[1]}
                         content={{
-                          address1: tableMeta.rowData[2],
-                          address2: tableMeta.rowData[3],
-                          city: tableMeta.rowData[4],
-                          state: tableMeta.rowData[5],
-                          zip: tableMeta.rowData[6],
-                          country: tableMeta.rowData[7],
+                          address1: tableMeta.rowData[props.columns.findIndex((val) => val.name === "address1")],
+                          address2: tableMeta.rowData[props.columns.findIndex((val) => val.name === "address2")],
+                          city: tableMeta.rowData[props.columns.findIndex((val) => val.name === "city")],
+                          state: tableMeta.rowData[props.columns.findIndex((val) => val.name === "state")],
+                          zip: tableMeta.rowData[props.columns.findIndex((val) => val.name === "zip")],
+                          country: tableMeta.rowData[props.columns.findIndex((val) => val.name === "country")],
                         }}
                         targetLabel={props.targetLabel}
                         nonEditable={!column.editable}
