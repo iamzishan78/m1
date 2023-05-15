@@ -45,6 +45,10 @@ import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 import { UPDATE_DATASET } from "graphQL/useMutationDataset";
 
+import { showInfoMessage } from "actions";
+import { useDispatch } from "react-redux";
+
+
 const GCS_North_American_1927 =
   'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
 proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@conus,null +no_defs");
@@ -222,7 +226,9 @@ export default function SourceManagerContainer(props) {
 
 function SourceManager(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   let history = useHistory();
+  const source_limit = 3;
 
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const { stateApp, setStateApp } = props;
@@ -418,6 +424,11 @@ function SourceManager(props) {
   }
 
   const handleDatasetChange = (dataset, value) => {
+    {console.log('STATEAPP BEFORE DATASET',dataset)}
+    {console.log('STATEAPP BEFORE VALUE',value)}
+
+    if(stateApp.datasets.filter((row) => row.visibility == true).length < source_limit || value == 0)
+    {
     const updatefn = {};
     const layersSettingsToUpdate = [];
     currentLayers.forEach((clayer, layerIndex) => {
@@ -447,10 +458,25 @@ function SourceManager(props) {
 
     const newLayers = update(currentLayers, updatefn)
     setCurrentLayers(newLayers);
+
+
+
     const datasetIndex = stateApp.datasets.findIndex(d => d._id === dataset._id);
     dataset.visibility = value
     stateApp.datasets[datasetIndex] = dataset
+  
+
+
     setTimeout(() => { setStateApp((stateApp) => ({ ...stateApp, layers: newLayers })); }, 0)
+  }
+
+  else
+  {
+    dispatch(
+      showInfoMessage("Cannot add source. Number of active sources cannot exceed " + source_limit)
+    );
+  }
+
   }
 
   const changeLayerName = (layer, name) => {
@@ -646,6 +672,9 @@ function SourceManager(props) {
   return (
     <div id="sourceManagerDiv" style={{ height: "100%", display: "flex", width: "100%" }}>
       {console.log('STATEAPP',stateApp)}
+      {console.log('STATEAPP source length',stateApp.datasets.filter((row) => row.visibility == true).length)}
+      {console.log('STATEAPP open datasets',openDataSets)}
+
       <DropzoneAreaBase onAdd={handleFileInput}
         onDelete={(fileObj) => { }}
         onAlert={(message, variant) => { }}
