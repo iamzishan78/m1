@@ -461,7 +461,6 @@ function SourceManager(props) {
 
 
 
-    console.log('STATEAPP --- WORKED!');
     const datasetIndex = stateApp.datasets.findIndex(d => d._id === dataset._id);
     dataset.visibility = value
     stateApp.datasets[datasetIndex] = dataset
@@ -473,7 +472,6 @@ function SourceManager(props) {
 
   else
   {
-    console.log('STATEAPP --- NOT WORKED!');
     dispatch(
       showInfoMessage("Cannot add source. Number of active sources cannot exceed " + source_limit)
     );
