@@ -44,6 +44,13 @@ import { UPDATE_DATASET } from "graphQL/useMutationDataset";
 import { hookStateApp } from "hookstate";
 import { useHookstate } from '@hookstate/core';
 
+import { showInfoMessage } from "actions";
+import { useDispatch } from "react-redux";
+import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from "@material-ui/icons";
+
+
+
+
 const GCS_North_American_1927 =
   'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
 proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@conus,null +no_defs");
@@ -213,6 +220,8 @@ const SourceManagerMemo = memo(SourceManager);
 export default function SourceManagerContainer(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
 
+
+
   const setStateAppCallback = useCallback(setStateApp, [])
   const stateAppMemo = useMemo(() => ({ layers: stateApp.layers, user: stateApp.user, datasets: stateApp.datasets }), [stateApp.user, stateApp.datasets, stateApp.layers])
 
@@ -222,6 +231,9 @@ export default function SourceManagerContainer(props) {
 function SourceManager(props) {
   const classes = useStyles();
   let history = useHistory();
+
+  const dispatch = useDispatch();
+  const source_limit = 3;
 
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const { stateApp, setStateApp } = props;
@@ -379,6 +391,12 @@ function SourceManager(props) {
   const changeAllUserSources = (sources, value) => {
     const settings = {}
     const layersSettingsToUpdate = [];
+
+    console.log('STATEAPP',stateApp.datasets.filter((row) => row.visibility == true).length);
+
+    if(stateApp.datasets.filter((row) => row.visibility == true).length < source_limit || value == 0)
+    {
+
     for (let index = 0; index < sources.length; index++) {
       const updatefn = {};
       currentLayers.forEach((clayer, layerIndex) => {
@@ -417,6 +435,16 @@ function SourceManager(props) {
           manySettings: layersSettingsToUpdate,
         },
       });
+
+    }
+
+    else
+    {
+      dispatch(
+        showInfoMessage("Cannot add source. Number of active sources cannot exceed " + source_limit)
+      );
+    }
+
   }
 
   const handleDatasetChange = (dataset, value) => {
@@ -811,13 +839,26 @@ function SourceManager(props) {
 
 
                   <StyledListItem2 button onClick={() => setIsOpenUserSources(!isOpenUserSources)} className={isOpenUserSources ? 'isOpen' : ''}>
-                    <Checkbox
+                    
+                    
+                    {/* <Checkbox
                       checked={selectAllUserSources}
                       color="darkgray"
                       onClick={(e) => e.stopPropagation()}
                       onChange={(e) => { changeAllUserSources(stateApp.datasets, !selectAllUserSources) }}
                       inputProps={{ "aria-label": "primary checkbox" }}
-                    />
+                    /> */}
+
+                    <IconButton
+                        size="small"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          changeAllUserSources(stateApp.datasets, false)
+                        }}
+                      >
+                    <ClearButton />
+                    </IconButton>
+
                     <ListItemText primary="User Uploaded Sources" />
                     {isOpenUserSources ? <ExpandLess /> : <ExpandMore />}
                   </StyledListItem2>
