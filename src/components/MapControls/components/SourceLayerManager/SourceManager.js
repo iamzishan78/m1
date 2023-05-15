@@ -233,7 +233,7 @@ function SourceManager(props) {
   let history = useHistory();
 
   const dispatch = useDispatch();
-  const source_limit = 3;
+  const source_limit = 20;
 
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const { stateApp, setStateApp } = props;
@@ -481,7 +481,7 @@ function SourceManager(props) {
   else
   {
     dispatch(
-      showInfoMessage("Cannot add source. Number of active sources cannot exceed " + source_limit)
+      showInfoMessage("Cannot add additional source. Number of active sources cannot exceed " + source_limit)
     );
   }
 

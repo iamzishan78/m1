@@ -176,7 +176,7 @@ export default function AddLayer(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
   let history = useHistory();
-  const layer_limit = 10;
+  const layer_limit = 20;
 
   const [stateApp] = useContext(AppContext);
   const hookState = useHookstate(hookStateApp);
@@ -267,7 +267,7 @@ export default function AddLayer(props) {
     else
       {
         dispatch(
-          showInfoMessage("Cannot add source. Number of active layers cannot exceed " + layer_limit)
+          showInfoMessage("Cannot add additional layer. Number of active layers cannot exceed " + layer_limit)
         );
       }
 
