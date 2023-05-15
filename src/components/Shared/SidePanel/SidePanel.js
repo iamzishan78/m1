@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import AddLayerIcon from "@material-ui/icons/Queue";
 import { MapControlsContext } from "../../MapControls/MapControlsContext";
 import { AppContext } from "AppContext";
 import Panel from "./compoennts/Panel";
 import { UPDATELAYERSETTINGS } from "graphQL/useMutationUpdateLayerSettings";
-import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "actions";
-import { GET_LAYER_GROUPS } from "graphQL/useQueryLayerGroup";
+import { hookStateApp } from "hookstate";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -80,9 +79,7 @@ export default function SidePanel() {
   const { selectedControl: panelType } = stateMapControls;
 
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [getLayerGroups, { data: layerGroupData }] = useLazyQuery(GET_LAYER_GROUPS);
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
-  const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
   const openManager = (type) => {
     setStateMapControls((stateMapControls) => ({
@@ -107,10 +104,6 @@ export default function SidePanel() {
       icon: <AddLayerIcon />,
     },
   };
-
-  useEffect(() => {
-    getLayerGroups({ variables: { userId: stateApp.user.mongoId } })
-  }, [getLayerGroups])
 
   //   for BaseMap Panel
   useEffect(() => {
@@ -167,10 +160,8 @@ export default function SidePanel() {
           const layer = currentLayers.find((layer) => layer.identifier === 'Land Grid')
           if (layer) {
             layer.layerSettings.visiable = !layer.layerSettings.visiable
-            setStateApp((stateApp) => ({
-              ...stateApp,
-              layers: [...currentLayers],
-            }));
+            hookStateApp.layers.set([...currentLayers])
+            stateApp.layers = [...currentLayers]
             // saving to mongo
             updateLayerSettings({
               variables: {
@@ -198,228 +189,18 @@ export default function SidePanel() {
     }
   }, [panelType, stateApp.baseMapLayers, stateApp.checkedBaseLayers]);
 
-  const getEmptyGroupAndLayer = (group, type) => {
-    if (type === 'layer')
-      return {
-        emptyLayer: true,
-        collapsed: true,
-        groupName: group.name,
-        groupId: group.groupId,
-        visiable: true,
-        showable: true,
-        name: "",
-        depth: 1,
-        type: "layer",
-        id: group.groupId + 'layer',
-      }
-
-    if (type === 'group')
-      return {
-        depth: 0,
-        type: "group",
-        collapsed: true,
-        showable: true,
-        visiable: true,
-        name: group.name,
-        id: group.groupId,
-      }
-  }
-
   //   for Layer Panel
   useEffect(() => {
-    if ((panelType === "layer" || panelType === null) && layerGroupData?.getLayerGroups) {
-      const layerGroups = layerGroupData?.getLayerGroups
-      const groupHandled = [];
-      const layerAndGroups = [];
-      stateApp.layers &&
-        stateApp.layers.forEach((item) => {
-          if (item.layerSettings) {
-            if (item.groupId && !groupHandled.includes(item.groupId)) {
-              groupHandled.push(item.groupId);
-              const groups = stateApp.layers.filter((i) => i.groupId === item.groupId);
-              const visiable = !!groups.find((i) => i.layerSettings.visiable);
-              const showable = !!groups.find((i) => i.layerSettings.showable);
-              layerAndGroups.push({
-                depth: 0,
-                type: "group",
-                collapsed: true,
-                showable,
-                visiable,
-                name: item.groupName,
-                id: item.groupId,
-              });
-              groups.forEach((item) => {
-                layerAndGroups.push({
-                  ...item,
-                  collapsed: true,
-                  name: item.layerName,
-                  showable: item.layerSettings.showable,
-                  visiable: item.layerSettings.visiable,
-                  depth: 1,
-                  type: "layer",
-                  id: item._id,
-                });
-              });
-            }
-            if (!item.groupId) {
-              const showable = item.layerSettings.showable && item.identifier !== "Tracked Owners" && item.identifier !== "Land Grid" && item.identifier !== "Agreement";
-              layerAndGroups.push({
-                ...item,
-                visiable: item.layerSettings.visiable,
-                showable,
-                name: item.layerName === "Parcels" ? "Tracts" : item.layerName,
-                depth: 0,
-                type: "layer",
-                id: item._id,
-              });
-            }
-          }
-        });
+    if ((panelType === "layer" || panelType === null)) {
+      if (panelTitle !== "Layers")
+        setPanelTitle("Layers");
+      if (panelButton !== panelButtons[panelType])
+        setPanelButton(panelButtons[panelType]);
+      if (headerFilters !== null)
+        setHeaderFilters(null);
 
-      if (layerAndGroups.length > 0) {
-        const emptyGroups = layerGroups.filter((layerGroup) => !groupHandled.includes(layerGroup.groupId))
-        emptyGroups.forEach((emptyGroup) => {
-          if (!emptyGroup.above) {
-            layerAndGroups.unshift(getEmptyGroupAndLayer(emptyGroup, 'layer'));
-            layerAndGroups.unshift(getEmptyGroupAndLayer(emptyGroup, 'group'));
-            return
-          }
-          if (!emptyGroup.below) {
-            layerAndGroups.push(getEmptyGroupAndLayer(emptyGroup, 'group'));
-            layerAndGroups.push(getEmptyGroupAndLayer(emptyGroup, 'layer'));
-            return
-          }
-
-          const index = layerAndGroups.findIndex((layerAndGroup) => layerAndGroup.id === emptyGroup.above)
-          if (index && layerAndGroups[index]?.type === 'layer') {
-            layerAndGroups.splice(index + 1, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
-            layerAndGroups.splice(index + 2, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
-            return
-          }
-          if (index && layerAndGroups[index]?.type === 'group') {
-            layerAndGroups.splice(index + 2, 0, getEmptyGroupAndLayer(emptyGroup, 'group'));
-            layerAndGroups.splice(index + 3, 0, getEmptyGroupAndLayer(emptyGroup, 'layer'));
-            return
-          }
-        })
-      }
-
-      setPanelItems(layerAndGroups);
-      setPanelTitle("Layers");
-      setPanelButton(panelButtons[panelType]);
-      setHeaderFilters(null);
-
-      setDragFunction(() => (result) => {
-        if (!result.destination) {
-          return;
-        }
-        const isSourceGroup = result.source.droppableId !== "droppableM1";
-        const isDestinationGroup = result.destination.droppableId !== "droppableM1";
-
-        if (isDestinationGroup) {
-          let group = layerAndGroups.find((layer) => layer.groupId === result.destination.droppableId);
-          result.destination.index += group.groups[0].position;
-        }
-        if (isSourceGroup) {
-          let group = layerAndGroups.find((layer) => layer.groupId === result.source.droppableId);
-          result.source.index += group.groups[0].position;
-          // result.destination.index -= 1
-        }
-        if (!isSourceGroup && !isDestinationGroup && layerAndGroups[result.source.index - 1]?.groupId) {
-          // let source = result.source.index;
-          let destination = result.destination.index;
-          let newOrder = { reorderedLayers: stateApp.layers };
-          let layersToUpdate = [];
-          layerAndGroups[result.source.index - 1].groups.forEach((layer, index) => {
-            newOrder = reorderLayers(newOrder.reorderedLayers, layer.position, destination++);
-            if (layerAndGroups[result.source.index - 1].groups.length - 1 === index) {
-              layersToUpdate = [...layersToUpdate, ...newOrder.layersToUpdate];
-            } else {
-              layersToUpdate.push(newOrder.layersToUpdate[0]);
-            }
-          });
-          setStateApp({
-            ...stateApp,
-            layers: [...newOrder.reorderedLayers],
-          });
-          updateManyUserLayerSettings({
-            variables: {
-              manySettings: layersToUpdate,
-            },
-          });
-        } else if (result.source.index !== result.destination.index) {
-          stateApp.layers.find((l, index) => {
-            if (l.position === result.source.index) {
-              if (isSourceGroup && !isDestinationGroup)
-                stateApp.layers[index] = { ...stateApp.layers[index], groupId: null, groupName: null };
-              if (!isSourceGroup && isDestinationGroup) {
-                const groupLayer = stateApp.layers.find((l) => l.groupId === result.destination.droppableId);
-                stateApp.layers[index] = { ...stateApp.layers[index], groupId: groupLayer.groupId, groupName: groupLayer.groupName };
-              }
-              return true;
-            }
-            return false;
-          });
-
-          const { reorderedLayers, layersToUpdate } = reorderLayers(stateApp.layers, result.source.index, result.destination.index);
-
-          setStateApp({ ...stateApp, layers: [...reorderedLayers] });
-
-          // updateManyUserLayerSettings({
-          //   variables: {
-          //     manySettings: layersToUpdate,
-          //   },
-          // });
-        } else if (result.destination.droppableId !== result.source.droppableId) {
-          const layerIndex = stateApp.layers.findIndex((layer) => layer.position === result.source.index);
-          if (result.destination.droppableId !== "droppableM1") {
-            const groupLayer = stateApp.layers.find((l) => l.groupId === result.destination.droppableId);
-
-            stateApp.layers[layerIndex] = { ...stateApp.layers[layerIndex], groupId: groupLayer.groupId, groupName: groupLayer.groupName };
-          } else {
-            stateApp.layers[layerIndex] = { ...stateApp.layers[layerIndex], groupId: null, groupName: null };
-          }
-          setStateApp({ ...stateApp, layers: [...stateApp.layers] });
-          // updateLayerSettings({
-          //   variables: {
-          //     settings: {
-          //       _id: stateApp.layers[layerIndex]._id,
-          //       layerSettings: stateApp.layers[layerIndex].layerSettings,
-          //     },
-          //   },
-          // });
-        }
-      });
-
-      setToggleFunction(() => ({ layer, index }) => {
-        const currentLayers = [...stateApp.layers];
-        const updatedLayer = {
-          ...layer,
-          layerSettings: {
-            ...layer.layerSettings,
-            visiable: !layer.layerSettings.visiable,
-          },
-        };
-
-        //// saving to stateApp
-        currentLayers[index] = updatedLayer;
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          layers: [...currentLayers],
-        }));
-
-        // saving to mongo
-        updateLayerSettings({
-          variables: {
-            settings: {
-              _id: updatedLayer._id,
-              layerSettings: updatedLayer.layerSettings,
-            },
-          },
-        });
-      });
     }
-  }, [panelType, stateApp.layers, layerGroupData?.getLayerGroups]);
+  }, [panelType]);
 
   //   for HeatMap Panel
   useEffect(() => {
@@ -501,7 +282,7 @@ export default function SidePanel() {
     }
   }, [panelType]);
 
-  return panelItems ? (
+  return panelItems || panelTitle === "Layers" ? (
     <Panel
       type={panelType}
       headerButton={panelButton}

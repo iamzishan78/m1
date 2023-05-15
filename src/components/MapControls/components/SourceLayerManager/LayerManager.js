@@ -12,7 +12,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import { deepEqual, deepEqualObjects } from "components/Shared/functions";
+import { copy, deepEqual, deepEqualObjects } from "components/Shared/functions";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { useMutation } from "@apollo/client";
 import shp from "shpjs";
@@ -39,7 +39,8 @@ import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 import { useHistory } from "react-router-dom";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
-import { UPDATE_DATASET } from "graphQL/useMutationDataset";
+import { useHookstate } from '@hookstate/core';
+import { hookStateApp } from "hookstate";
 
 const GCS_North_American_1927 =
   'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
@@ -169,10 +170,11 @@ export default function AddLayer(props) {
   const classes = useStyles();
   let history = useHistory();
 
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
+  const hookState = useHookstate(hookStateApp);
   const [openM1, setOpenM1] = React.useState(true);
   const [isOpenUserDefinedLayers, setIsOpenUserDefinedLayers] = React.useState(true);
-  const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
+  const [currentLayers, setCurrentLayers] = React.useState([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openUDLayers, setUDLayersStates] = useState([]);
   const [selectAllMinerallayers, setSelectAllMinerallayers] = React.useState(false);
@@ -183,16 +185,21 @@ export default function AddLayer(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [actionItem, setActionItem] = React.useState(null);
 
+  const updateStateLayers = (currentLayers) => {
+    stateApp.layers = currentLayers;
+    hookStateApp.layers.set(currentLayers)
+  }
+
   useEffect(() => {
     checkAllLayers(M1Layers, "M1");
     checkAllLayers(UdLayers, "UD");
   }, [currentLayers]);
 
   useEffect(() => {
-    if (stateApp.layers) {
-      setCurrentLayers(stateApp.layers);
+    if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
+      setCurrentLayers(copy(hookState.layers.get({ noproxy: true })));
     }
-  }, [stateApp.layers]);
+  }, [currentLayers, hookState.layers]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -312,11 +319,11 @@ export default function AddLayer(props) {
   };
 
   const handleApplyChange = (currentLayers) => {
-    if (!deepEqual(currentLayers, stateApp.layers)) {
+    if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
       const layersToUpdate = [];
       const layersSettingsToUpdate = [];
       for (let i = 0; i < currentLayers.length; i++) {
-        if (!deepEqualObjects(currentLayers[i], stateApp.layers[i])) {
+        if (!deepEqualObjects(currentLayers[i], hookState.layers.get({ noproxy: true })[i])) {
           layersSettingsToUpdate.push({
             _id: currentLayers[i]._id,
             layerSettings: currentLayers[i].layerSettings,
@@ -330,10 +337,7 @@ export default function AddLayer(props) {
       }
 
       //// saving to stateApp
-      setStateApp({
-        ...stateApp,
-        layers: [...currentLayers],
-      });
+      updateStateLayers([...currentLayers])
 
       //// saving to mongo
       if (layersToUpdate.length > 0) {

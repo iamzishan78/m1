@@ -12,16 +12,24 @@ import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 import { useMutation } from "@apollo/client";
 import { deepEqual } from "components/Shared/functions";
 import { useStyles } from '../style';
+import { hookStateApp } from "hookstate";
 
 const FileTree = ({ layerMap, panelItems }) => {
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
+
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
   const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, { refetchQueries: ["getLayerGroups"], awaitRefetchQueries: true });
+
   const [items, setItems] = React.useState(layerMap);
   const itemsRef = React.useRef([]);
   const currentItem = React.useRef();
   const classes = useStyles();
+
+  const updateStateLayers = (currentLayers) => {
+    stateApp.layers = currentLayers;
+    hookStateApp.layers.set(currentLayers)
+  }
 
   const checkforUpdate = (updateFn, item, index, key) => {
     if (item[key] !== layerMap[index][key]) {
@@ -53,7 +61,8 @@ const FileTree = ({ layerMap, panelItems }) => {
               updateFn[index] = {
                 ...updateFn[index],
                 layerSettings: { $set: layerMap[index].layerSettings },
-                showable: { $set: layerMap[index].showable },
+                showable: { $set: layerMap[index].layerSettings.showable },
+                visiable: { $set: layerMap[index].layerSettings.visiable },
                 layerPaintProps: { $set: layerMap[index].layerPaintProps },
                 groupName: { $set: layerMap[index].groupName },
                 layerName: { $set: layerMap[index].layerName }
@@ -121,10 +130,7 @@ const FileTree = ({ layerMap, panelItems }) => {
 
     setItems(update(items, updateFn));
 
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      layers: currentLayers.filter((l) => l.type !== "group" && !l.emptyLayer),
-    }));
+    updateStateLayers(currentLayers.filter((l) => l.type !== "group" && !l.emptyLayer))
 
     updateManyUserLayerSettings({
       variables: { manySettings: layersToUpdate.map((layer) => ({ _id: layer._id, layerSettings: layer.layerSettings })) },
@@ -192,7 +198,7 @@ const FileTree = ({ layerMap, panelItems }) => {
         },
       });
     } else {
-      setStateApp({ ...stateApp, layers: [...layersWithoutGroup] });
+      updateStateLayers([...layersWithoutGroup])
     }
 
 
@@ -207,10 +213,7 @@ const FileTree = ({ layerMap, panelItems }) => {
     const index = panelItems.findIndex((item) => item._id === layer._id);
     currentLayers[index] = layer;
     setItems(currentLayers);
-    setStateApp((stateApp) => ({
-      ...stateApp,
-      layers: currentLayers.filter((l) => l.type !== "group" && !l.emptyLayer),
-    }));
+    updateStateLayers(currentLayers.filter((l) => l.type !== "group" && !l.emptyLayer))
 
     // saving to mongo
     updateLayerSettings({

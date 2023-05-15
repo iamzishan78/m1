@@ -86,6 +86,8 @@ import {
   showIfUserDefinedLayer,
 } from "components/Shared/functions/shapeLayer";
 import LayerSelectionPopup from "./components/popup/LayerSelectionPopup";
+import { useHookstate } from '@hookstate/core';
+import { hookStateApp } from "hookstate";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -136,6 +138,7 @@ let hoveredAbstractId = null;
 
 function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial = true, width, hideShape = false, layerPadding = null }) {
   // context states
+  const hookState = useHookstate(hookStateApp);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const history = useHistory();
@@ -500,6 +503,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   }
 
   useEffect(() => {
+    if (hookState.layers.get().length === 0 && stateApp?.layers?.length > 0)
+      hookState.layers.set(stateApp.layers)
+  }, [stateApp.layers]);
+
+  useEffect(() => {
     if (paramId) {
       getCustomLayer();
     }
@@ -634,8 +642,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             break;
           }
         }
-
-        setLayersData(layers);
+        hookState.layers.set(layers)
+        // setLayersData(layers);
       }
     }
   }, [layerStates]);
@@ -654,7 +662,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       // });
       // response = await response.json();
 
-      let layers = layersData.slice(0);
+      const hookStateLayers = copy(hookState.layers.get({ noproxy: true }))
+      let layers = hookStateLayers.slice(0);
       let currentLayer = { ...layers[layerIndex] };
       // currentLayer.fileContent = response;
       currentLayer.fileName = name;
@@ -668,11 +677,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
       let nextLayerIndex;
 
-      if (layerIndex < layersData.length - 1)
+      if (layerIndex < hookStateLayers.length - 1)
         for (let i = layerIndex + 1; i < layers.length; i++) {
           const visible = layers[i].layerSettings.showable && layers[i].layerSettings.visiable !== false;
           if (layers[i].layerType == "file layer" && !layers[i].fileUrl && visible && layers[i].fileViewed !== true) {
-            layers[i].fileViewed = false
+            layers[i].fileViewed = true
             setFileRequestCounter(1);
             viewFile({
               variables: {
@@ -686,7 +695,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           }
         }
 
-      setLayersData([...layers]);
+      hookState.layers.set(layers)
+      // setLayersData([...layers]);
       //// no more file layers to looks for
       if (!nextLayerIndex) {
         setStateApp((stateApp) => ({
@@ -703,7 +713,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       const fileId = result.id;
       if (result.uri && result.internalKey) {
         const layerIndex = stateApp.layers.findIndex((layer) => layer.file === fileId);
-        handleFileAsync(result, layerIndex);
+        const layer = hookState.layers.get().find((layer) => layer.file === fileId);
+        handleFileAsync(result, layerIndex, layer);
       } else if (fileId && fileRequestCounter < 30) {
         let waitBeforeRequestAgain = setTimeout(() => {
           setFileRequestCounter(fileRequestCounter + 1);
@@ -760,9 +771,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   const setLayer = (data, identifier, map, bLayer = null) => {
     let beforelayer = bLayer;
     //// configIndex = actual layer index
-    const configIndex = stateApp.layers.findIndex((value) => value.identifier === identifier);
+    const hookStateLayers = hookState.layers.get({ noproxy: true })
+    const configIndex = hookStateLayers.findIndex((value) => value.identifier === identifier);
     //// config = actual layer
-    const config = stateApp.layers[configIndex];
+    const config = hookStateLayers[configIndex];
     const paintProps = config.layerPaintProps;
     const layerSettings = config.layerSettings;
     for (let i = (paintProps ? paintProps.length : 0) - 1; i >= 0; i--) {
@@ -1290,7 +1302,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       } else {
         // For user defined layers details popup
         let shapeCenter,
-          featureLayer = { ...feature.layer, ...stateApp.layers.find((l) => l.identifier === feature.layer.id) };
+          featureLayer = { ...feature.layer, ...hookState.layers.get().find((l) => l.identifier === feature.layer.id) };
         if (
           (featureLayer.layerGeometry === "LineString" && feature.geometry.type === "LineString") ||
           (featureLayer.layerGeometry === "MultiLineString" && feature.geometry.type === "LineString")
@@ -1367,7 +1379,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         ...state, popupOpen: false, layerSelectionPopup: false,
       }));
 
-      stateApp.layers?.forEach((layer) => {
+      hookState.layers.get()?.forEach((layer) => {
         const interaction = layer.layerSettings.interaction.interactionAble && layer.layerSettings.interaction.interactionDetail.click;
         const visible = layer.layerSettings.showable && layer.layerSettings.visiable !== false;
         if ((interaction && visible) || (interaction && layer.layerType === "file layer")) {
@@ -1497,7 +1509,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         for (const popUp of popUps) popUp.remove()
       }
 
-      const fileLayers = stateApp.layers.filter(layer => layer.layerType === 'file layer').map(layer => layer.identifier)
+      const fileLayers = hookState.layers.get().filter(layer => layer.layerType === 'file layer').map(layer => layer.identifier)
 
       const allLayerIds = [...defaultLayers, ...fileLayers]
 
@@ -1543,13 +1555,14 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       MapRightClick({ mapRightClickHandler })
       setMapClick({ mapClickHandler });
     }
-  }, [map, stateApp.layers, customLayerData, stateApp.selectedUserDefinedLayer]);
+  }, [map, hookState.layers, customLayerData, stateApp.selectedUserDefinedLayer]);
 
   useEffect(() => {
+    const hookStateAppLayers = hookState.layers.get({ noproxy: true })
     let beforeLayer = null;
-    if (stateApp.layers && stateApp.layers.length > 0 && map) {
-      for (let i = 0; i < stateApp.layers.length; i++) {
-        const layer = stateApp.layers[i];
+    if (hookStateAppLayers && hookStateAppLayers.length > 0 && map) {
+      for (let i = 0; i < hookStateAppLayers.length; i++) {
+        const layer = hookStateAppLayers[i];
         if (layer.layerType === "vector layer") {
           const props = layer.layerPaintProps;
           const visible = layer.layerSettings && layer.layerSettings.showable && layer.layerSettings.visiable !== false;
@@ -1617,8 +1630,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
               }
             }
           }
-        } else if (layer.layerType === "file layer") {
-          let layerData = layersData.find((l) => l.file === layer.file);
+        }
+        else if (layer.layerType === "file layer") {
+          let layerData = hookStateAppLayers.find((l) => l.file === layer.file);
           if (layerData.fileUrl) {
             if (layerData.layerPaintProps?.[0]?.sourceProps) {
               if (!map?.getSource(layerData.layerPaintProps[0].sourceProps)) {
@@ -1629,8 +1643,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
               }
             }
             beforeLayer = setLayer(layerData.fileUrl, layer.identifier, map, beforeLayer);
-          } else if (layerData.fileViewed === false && layer.layerSettings?.visiable && layer.layerSettings?.showable) {
-            layerData.fileViewed = true;
+          } else if (layerData.fileViewed !== true && layer.layerSettings?.visiable && layer.layerSettings?.showable) {
             setFileRequestCounter(1);
             viewFile({
               variables: {
@@ -1642,8 +1655,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       }
     }
   }, [
-    layersData,
-    stateApp.layers,
+    hookState.layers,
     stateApp.trackedOwnerWells,
     stateApp.trackedwells,
     stateApp.wellListFromTagsFilter,

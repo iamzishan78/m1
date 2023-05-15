@@ -12,7 +12,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import { deepEqual, deepEqualObjects } from "components/Shared/functions";
+import { copy, deepEqual, deepEqualObjects } from "components/Shared/functions";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { useMutation } from "@apollo/client";
 import { DropzoneAreaBase } from "material-ui-dropzone";
@@ -41,6 +41,8 @@ import { FEATURES } from "components/Shared/FeatureFlag/common";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 import { UPDATE_DATASET } from "graphQL/useMutationDataset";
+import { hookStateApp } from "hookstate";
+import { useHookstate } from '@hookstate/core';
 
 const GCS_North_American_1927 =
   'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
@@ -223,10 +225,11 @@ function SourceManager(props) {
 
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const { stateApp, setStateApp } = props;
+  const hookState = useHookstate(hookStateApp);
   const [openM1, setOpenM1] = React.useState(true);
   const [isOpenUserSources, setIsOpenUserSources] = React.useState(true);
   const [openDataSets, setOpenDataSets] = React.useState({});
-  const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
+  const [currentLayers, setCurrentLayers] = React.useState([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openUDLayers, setUDLayersStates] = useState([]);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -237,11 +240,17 @@ function SourceManager(props) {
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
   const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, { refetchQueries: ["getUserMapSettings"], awaitRefetchQueries: true });
 
+  const updateStateLayers = (currentLayers) => {
+    stateApp.layers = currentLayers;
+    console.log('currentLayers', currentLayers.find((l) => l.file === '60bfa0f203bc682dd4e016f2'))
+    hookStateApp.layers.set(currentLayers)
+  }
+
   useEffect(() => {
-    if (!deepEqual(currentLayers, stateApp.layers)) {
-      setCurrentLayers(stateApp.layers);
+    if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
+      setCurrentLayers(copy(hookState.layers.get({ noproxy: true })));
     }
-  }, [currentLayers, stateApp.layers]);
+  }, [currentLayers, hookState.layers]);
 
   const M1Layers = React.useMemo(() => {
     const layers = currentLayers.filter((layer) => layer.layerCategory === "M1 Layer" || ['Parcels', 'Agreements', 'Units', 'Area of Interest'].includes(layer.groupName || layer.layerName));
@@ -288,11 +297,11 @@ function SourceManager(props) {
   };
 
   const handleApplyChange = (currentLayers) => {
-    if (!deepEqual(currentLayers, stateApp.layers)) {
+    if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
       const layersToUpdate = [];
       const layersSettingsToUpdate = [];
       for (let i = 0; i < currentLayers.length; i++) {
-        if (!deepEqualObjects(currentLayers[i], stateApp.layers[i])) {
+        if (!deepEqualObjects(currentLayers[i], hookState.layers.get({ noproxy: true })[i])) {
           layersSettingsToUpdate.push({
             _id: currentLayers[i]._id,
             layerSettings: currentLayers[i].layerSettings,
@@ -306,10 +315,7 @@ function SourceManager(props) {
       }
 
       // //// saving to stateApp
-      setStateApp(stateApp => ({
-        ...stateApp,
-        layers: [...currentLayers],
-      }));
+      updateStateLayers([...currentLayers])
 
       //// saving to mongo
       if (layersToUpdate.length > 0) {
@@ -381,7 +387,7 @@ function SourceManager(props) {
           updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
           layersSettingsToUpdate.push({
             _id: clayer._id,
-            layerSettings: { ...clayer.layerSettings, showable: value }
+            layerSettings: { ...clayer.layerSettings, showable: value, visiable: value }
           });
         }
       });
@@ -393,7 +399,7 @@ function SourceManager(props) {
       const datasetIndex = stateApp.datasets.findIndex(d => d._id === sources[index]._id);
       sources[index].visibility = value
       stateApp.datasets[datasetIndex] = sources[index];
-      setTimeout(() => { setStateApp((stateApp) => ({ ...stateApp, layers: newLayers })); }, 0)
+      updateStateLayers(newLayers)
     }
 
     updateUserMapSettings({
@@ -419,10 +425,11 @@ function SourceManager(props) {
     const layersSettingsToUpdate = [];
     currentLayers.forEach((clayer, layerIndex) => {
       if (clayer.file === dataset.file) {
-        updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
+        console.log(clayer.file, clayer)
+        updatefn[layerIndex] = { layerSettings: { showable: { $set: value }, visiable: { $set: value } } };
         layersSettingsToUpdate.push({
           _id: clayer._id,
-          layerSettings: { ...clayer.layerSettings, showable: value }
+          layerSettings: { ...clayer.layerSettings, showable: value, visiable: value }
         });
       }
     });
@@ -447,7 +454,7 @@ function SourceManager(props) {
     const datasetIndex = stateApp.datasets.findIndex(d => d._id === dataset._id);
     dataset.visibility = value
     stateApp.datasets[datasetIndex] = dataset
-    setTimeout(() => { setStateApp((stateApp) => ({ ...stateApp, layers: newLayers })); }, 0)
+    updateStateLayers(newLayers)
   }
 
   const changeLayerName = (layer, name) => {

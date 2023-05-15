@@ -436,13 +436,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
             {type === "base" && getBasemapImageBox()}
 
             {type === "layer" &&
-              (layerMap && layerMap[0]?.type ? (
-                <SortableLayer layerMap={layerMap} panelItems={panelItems} />
-              ) : (
-                <Box height="calc(100vh - 50px - 122px)" bgcolor="#0e111a" display="flex" justifyContent="center">
-                  <CircularProgress style={{ top: "50%", position: "absolute" }} size={40} color="secondary" />
-                </Box>
-              ))}
+              (<SortableLayer search={search} mongoId={stateApp.user.mongoId} />)}
             {type === "base" && (
               <Box height="calc((100vh - 50px) - 631px)" overflow='hidden scroll' >
                 <Collapse in={true} timeout="auto" unmountOnExit>
