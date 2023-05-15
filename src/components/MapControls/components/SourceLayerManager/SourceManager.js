@@ -392,10 +392,7 @@ function SourceManager(props) {
     const settings = {}
     const layersSettingsToUpdate = [];
 
-    console.log('STATEAPP',stateApp.datasets.filter((row) => row.visibility == true).length);
 
-    if(stateApp.datasets.filter((row) => row.visibility == true).length < source_limit || value == 0)
-    {
 
     for (let index = 0; index < sources.length; index++) {
       const updatefn = {};
@@ -436,20 +433,16 @@ function SourceManager(props) {
         },
       });
 
-    }
-
-    else
-    {
-      dispatch(
-        showInfoMessage("Cannot add source. Number of active sources cannot exceed " + source_limit)
-      );
-    }
 
   }
 
   const handleDatasetChange = (dataset, value) => {
     const updatefn = {};
     const layersSettingsToUpdate = [];
+    console.log('STATEAPP',stateApp.datasets.filter((row) => row.visibility == true).length);
+
+    if(stateApp.datasets.filter((row) => row.visibility == true).length < source_limit || value == 0)
+    {
     currentLayers.forEach((clayer, layerIndex) => {
       if (clayer.file === dataset.file) {
         console.log(clayer.file, clayer)
@@ -482,6 +475,16 @@ function SourceManager(props) {
     dataset.visibility = value
     stateApp.datasets[datasetIndex] = dataset
     updateStateLayers(newLayers)
+
+  }
+
+  else
+  {
+    dispatch(
+      showInfoMessage("Cannot add source. Number of active sources cannot exceed " + source_limit)
+    );
+  }
+
   }
 
   const changeLayerName = (layer, name) => {
