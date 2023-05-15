@@ -12,7 +12,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import { deepEqual, deepEqualObjects } from "components/Shared/functions";
+import { copy, deepEqual, deepEqualObjects } from "components/Shared/functions";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { useMutation } from "@apollo/client";
 import shp from "shpjs";
@@ -31,6 +31,7 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { Popper, Grow, Paper, MenuList, MenuItem } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from "@material-ui/icons";
 
 import proj4 from "proj4";
 // cra webpack hack to call this a png to get included in bundle
@@ -39,7 +40,12 @@ import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 import { useHistory } from "react-router-dom";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
-import { UPDATE_DATASET } from "graphQL/useMutationDataset";
+import { useHookstate } from '@hookstate/core';
+import { hookStateApp } from "hookstate";
+
+import { showInfoMessage } from "actions";
+import { useDispatch } from "react-redux";
+
 
 const GCS_North_American_1927 =
   'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
@@ -166,13 +172,17 @@ const StyledListItem = withStyles((theme) => ({
 }))(ListItem);
 
 export default function AddLayer(props) {
+
+  const dispatch = useDispatch();
   const classes = useStyles();
   let history = useHistory();
+  const layer_limit = 20;
 
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
+  const hookState = useHookstate(hookStateApp);
   const [openM1, setOpenM1] = React.useState(true);
   const [isOpenUserDefinedLayers, setIsOpenUserDefinedLayers] = React.useState(true);
-  const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
+  const [currentLayers, setCurrentLayers] = React.useState([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openUDLayers, setUDLayersStates] = useState([]);
   const [selectAllMinerallayers, setSelectAllMinerallayers] = React.useState(false);
@@ -183,16 +193,21 @@ export default function AddLayer(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [actionItem, setActionItem] = React.useState(null);
 
+  const updateStateLayers = (currentLayers) => {
+    stateApp.layers = currentLayers;
+    hookStateApp.layers.set(currentLayers)
+  }
+
   useEffect(() => {
     checkAllLayers(M1Layers, "M1");
     checkAllLayers(UdLayers, "UD");
   }, [currentLayers]);
 
   useEffect(() => {
-    if (stateApp.layers) {
-      setCurrentLayers(stateApp.layers);
+    if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
+      setCurrentLayers(copy(hookState.layers.get({ noproxy: true })));
     }
-  }, [stateApp.layers]);
+  }, [currentLayers, hookState.layers]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -230,20 +245,34 @@ export default function AddLayer(props) {
   };
 
   const changeShowAble = (layer) => {
-    const updatefn = {};
-    if (layer.type === "group") {
-      const value = !!layer.layers.find((l) => l.layerSettings.showable);
-      layer.layers.forEach((l) => {
-        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
-        updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } };
-      });
-    } else {
-      const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
-      updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings.showable } } };
-    }
 
-    setCurrentLayers(update(currentLayers, updatefn));
-    handleCurrentLayersChange();
+    if(currentLayers.filter((row) => row.layerSettings.showable == true).length < layer_limit || !layer.layerSettings.showable == 0)
+      {
+        const updatefn = {};
+        if (layer.type === "group") {
+          const value = !!layer.layers.find((l) => l.layerSettings.showable);
+          layer.layers.forEach((l) => {
+            const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
+            updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } };
+          });
+        } else {
+          const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
+          updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings.showable } } };
+        }
+
+        setCurrentLayers(update(currentLayers, updatefn));
+        handleCurrentLayersChange();
+      }
+
+    else
+      {
+        dispatch(
+          showInfoMessage("Cannot add additional layer. Number of active layers cannot exceed " + layer_limit)
+        );
+      }
+
+
+
   };
 
   const checkAllLayers = (layers, layerType) => {
@@ -312,11 +341,11 @@ export default function AddLayer(props) {
   };
 
   const handleApplyChange = (currentLayers) => {
-    if (!deepEqual(currentLayers, stateApp.layers)) {
+    if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
       const layersToUpdate = [];
       const layersSettingsToUpdate = [];
       for (let i = 0; i < currentLayers.length; i++) {
-        if (!deepEqualObjects(currentLayers[i], stateApp.layers[i])) {
+        if (!deepEqualObjects(currentLayers[i], hookState.layers.get({ noproxy: true })[i])) {
           layersSettingsToUpdate.push({
             _id: currentLayers[i]._id,
             layerSettings: currentLayers[i].layerSettings,
@@ -330,10 +359,7 @@ export default function AddLayer(props) {
       }
 
       //// saving to stateApp
-      setStateApp({
-        ...stateApp,
-        layers: [...currentLayers],
-      });
+      updateStateLayers([...currentLayers])
 
       //// saving to mongo
       if (layersToUpdate.length > 0) {
@@ -532,13 +558,23 @@ export default function AddLayer(props) {
                   </List>
                 </Collapse>
                 <StyledListItem2 button onClick={() => setIsOpenUserDefinedLayers(!isOpenUserDefinedLayers)}>
-                  <Checkbox
+                  {/* <Checkbox
                     checked={selectAllClientlayers}
                     color="darkgray"
                     onClick={(e) => e.stopPropagation()}
                     onChange={(e) => { handleCheckAllLayers(UdLayers, !selectAllClientlayers, "UD") }}
                     inputProps={{ "aria-label": "primary checkbox" }}
-                  />
+                  /> */}
+
+                    <IconButton
+                      size="small"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleCheckAllLayers(UdLayers, false, "UD")
+                      }}
+                    >
+                  <ClearButton />
+                  </IconButton>
                   <ListItemText primary="Client Specific Layers" />
                   {isOpenUserDefinedLayers ? <ExpandLess /> : <ExpandMore />}
                 </StyledListItem2>

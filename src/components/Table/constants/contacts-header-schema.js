@@ -141,7 +141,7 @@ const ContactsHeadCells = [
     name: "address1",
     label: "Primary Address 1",
     options: {
-      display: true,
+      display: false,
       filter: true,
       searchable: true,
       sort: true,
@@ -154,7 +154,7 @@ const ContactsHeadCells = [
     name: "address2",
     label: "Primary Address 2",
     options: {
-      display: true,
+      display: false,
       filter: true,
       searchable: true,
       sort: true,
@@ -167,7 +167,7 @@ const ContactsHeadCells = [
     name: "city",
     label: "City",
     options: {
-      display: true,
+      display: false,
       filter: true,
       searchable: true,
       sort: true,
@@ -180,7 +180,7 @@ const ContactsHeadCells = [
     name: "state",
     label: "State",
     options: {
-      display: true,
+      display: false,
       filter: true,
       searchable: true,
       sort: true,
@@ -193,7 +193,7 @@ const ContactsHeadCells = [
     name: "zip",
     label: "Zip",
     options: {
-      display: true,
+      display: false,
       filter: true,
       searchable: true,
       sort: true,

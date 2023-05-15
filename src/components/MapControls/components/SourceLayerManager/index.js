@@ -6,7 +6,7 @@ import { Grid, Typography, Divider } from "@material-ui/core";
 import { Close as CloseButton } from "@material-ui/icons";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import { deepEqual, deepEqualObjects } from "components/Shared/functions";
+import { copy, deepEqual, deepEqualObjects } from "components/Shared/functions";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { useMutation } from "@apollo/client";
 import { IconButton } from "@material-ui/core";
@@ -14,6 +14,8 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 import SourceManager from "./SourceManager";
 import LayerManager from "./LayerManager";
+import { useHookstate } from '@hookstate/core';
+import { hookStateApp } from "hookstate";
 
 const useStyles = makeStyles((theme) => ({
     subHeaderItem: {
@@ -93,17 +95,18 @@ export default function SourceLayerManager(props) {
     const [selectedType, setSelectedType] = useState('source');
 
     const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
-    const [stateApp, setStateApp] = useContext(AppContext);
-    const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
+    const [stateApp] = useContext(AppContext);
+    const hookState = useHookstate(hookStateApp);
+    const [currentLayers, setCurrentLayers] = React.useState([]);
 
     const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
     const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
     useEffect(() => {
-        if (!deepEqual(currentLayers, stateApp.layers)) {
-            setCurrentLayers(stateApp.layers);
+        if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
+            setCurrentLayers(copy(hookState.layers.get({ noproxy: true })));
         }
-    }, [currentLayers, stateApp.layers]);
+    }, [currentLayers, hookState.layers]);
 
     const handleClose = () => {
         setStateMapControls((stateMapControls) => ({
@@ -114,15 +117,17 @@ export default function SourceLayerManager(props) {
         }));
     };
 
-
-
+    const updateStateLayers = (currentLayers) => {
+        stateApp.layers = currentLayers;
+        hookStateApp.layers.set(currentLayers)
+    }
 
     const handleApplyChange = () => {
-        if (!deepEqual(currentLayers, stateApp.layers)) {
+        if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
             const layersToUpdate = [];
             const layersSettingsToUpdate = [];
             for (let i = 0; i < currentLayers.length; i++) {
-                if (!deepEqualObjects(currentLayers[i], stateApp.layers[i])) {
+                if (!deepEqualObjects(currentLayers[i], hookState.layers.get({ noproxy: true }))) {
                     layersSettingsToUpdate.push({
                         _id: currentLayers[i]._id,
                         layerSettings: currentLayers[i].layerSettings,
@@ -136,11 +141,7 @@ export default function SourceLayerManager(props) {
             }
 
             //// saving to stateApp
-            setStateApp({
-                ...stateApp,
-                layers: [...currentLayers],
-            });
-
+            updateStateLayers([...currentLayers])
             //// saving to mongo
             if (layersToUpdate.length > 0) {
                 updateManyLayer({
