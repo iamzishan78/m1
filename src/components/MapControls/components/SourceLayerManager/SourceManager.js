@@ -424,9 +424,6 @@ function SourceManager(props) {
   }
 
   const handleDatasetChange = (dataset, value) => {
-    {console.log('STATEAPP BEFORE DATASET',dataset)}
-    {console.log('STATEAPP BEFORE VALUE',value)}
-
     if(stateApp.datasets.filter((row) => row.visibility == true).length < source_limit || value == 0)
     {
     const updatefn = {};

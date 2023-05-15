@@ -31,6 +31,7 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { Popper, Grow, Paper, MenuList, MenuItem } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from "@material-ui/icons";
 
 import proj4 from "proj4";
 // cra webpack hack to call this a png to get included in bundle
@@ -40,6 +41,10 @@ import { useHistory } from "react-router-dom";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { UPDATE_DATASET } from "graphQL/useMutationDataset";
+
+import { showInfoMessage } from "actions";
+import { useDispatch } from "react-redux";
+
 
 const GCS_North_American_1927 =
   'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
@@ -166,8 +171,11 @@ const StyledListItem = withStyles((theme) => ({
 }))(ListItem);
 
 export default function AddLayer(props) {
+
+  const dispatch = useDispatch();
   const classes = useStyles();
   let history = useHistory();
+  const layer_limit = 10;
 
   const [stateApp, setStateApp] = useContext(AppContext);
   const [openM1, setOpenM1] = React.useState(true);
@@ -230,20 +238,34 @@ export default function AddLayer(props) {
   };
 
   const changeShowAble = (layer) => {
-    const updatefn = {};
-    if (layer.type === "group") {
-      const value = !!layer.layers.find((l) => l.layerSettings.showable);
-      layer.layers.forEach((l) => {
-        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
-        updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } };
-      });
-    } else {
-      const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
-      updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings.showable } } };
-    }
 
-    setCurrentLayers(update(currentLayers, updatefn));
-    handleCurrentLayersChange();
+    if(currentLayers.filter((row) => row.layerSettings.showable == true).length < layer_limit || !layer.layerSettings.showable == 0)
+      {
+        const updatefn = {};
+        if (layer.type === "group") {
+          const value = !!layer.layers.find((l) => l.layerSettings.showable);
+          layer.layers.forEach((l) => {
+            const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
+            updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } };
+          });
+        } else {
+          const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
+          updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings.showable } } };
+        }
+
+        setCurrentLayers(update(currentLayers, updatefn));
+        handleCurrentLayersChange();
+      }
+
+    else
+      {
+        dispatch(
+          showInfoMessage("Cannot add source. Number of active layers cannot exceed " + layer_limit)
+        );
+      }
+
+
+
   };
 
   const checkAllLayers = (layers, layerType) => {
@@ -532,13 +554,23 @@ export default function AddLayer(props) {
                   </List>
                 </Collapse>
                 <StyledListItem2 button onClick={() => setIsOpenUserDefinedLayers(!isOpenUserDefinedLayers)}>
-                  <Checkbox
+                  {/* <Checkbox
                     checked={selectAllClientlayers}
                     color="darkgray"
                     onClick={(e) => e.stopPropagation()}
                     onChange={(e) => { handleCheckAllLayers(UdLayers, !selectAllClientlayers, "UD") }}
                     inputProps={{ "aria-label": "primary checkbox" }}
-                  />
+                  /> */}
+
+                    <IconButton
+                      size="small"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleCheckAllLayers(UdLayers, false, "UD")
+                      }}
+                    >
+                  <ClearButton />
+                  </IconButton>
                   <ListItemText primary="Client Specific Layers" />
                   {isOpenUserDefinedLayers ? <ExpandLess /> : <ExpandMore />}
                 </StyledListItem2>
