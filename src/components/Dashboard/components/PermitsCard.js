@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom';
 import CardHeader from "@material-ui/core/CardHeader";
 import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
@@ -17,12 +18,15 @@ import Iframe from 'react-iframe';
 const useStyles = makeStyles((theme) => ({
   header: {
     padding: "8px 8px 0 8px",
-    backgroundColor:'#FFFFFF',
+    backgroundColor: '#FFFFFF',
     color: 'black'
   },
   frame: {
     padding: "8px",
   },
+  analyticsBody: {
+    position: 'relative', top: "20px"
+  }
 }));
 
 const DragHandle = sortableHandle(() => (
@@ -34,26 +38,32 @@ const DragHandle = sortableHandle(() => (
 
 
 const PermitsCard = ({ title }) => {
-
-
   const classes = useStyles();
-  
-  return (
-    <div>
-    <CardHeader
-      //action={<DragHandle />}
-      title={'Permits by State/County'}
-      className={classes.header}
-    />
 
-    <div className={classes.frame}>
-    <Iframe 
-      width="100%"
-      height="700px"
-      paddintTop="10px"
-      url="https://app.powerbi.com/view?r=eyJrIjoiY2ExMzQ4Y2ItYzlkMy00NThkLTkxMGMtNTQ3ZjY0YzZjZTc1IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9" 
-      /> 
-    </div>
+  const location = useLocation();
+  const { pathname } = location;
+
+  const isPermitsAnalytics = pathname.includes('analytics');
+  const frameClassNames = [classes.frame];
+  if (isPermitsAnalytics)
+    frameClassNames.push(classes.analyticsBody);
+
+  return (
+    <div style={{ overflow: "hidden" }} className="permitContainer">
+      <CardHeader
+        //action={<DragHandle />}
+        title={'Permits by State/County'}
+        className={classes.header}
+      />
+
+      <div style={{ height: isPermitsAnalytics && "97vh" }} className={frameClassNames.join(' ')}>
+        <Iframe
+          width="100%"
+          height={isPermitsAnalytics ? "98%" : "700px"}
+          paddintTop="10px"
+          url="https://app.powerbi.com/view?r=eyJrIjoiY2ExMzQ4Y2ItYzlkMy00NThkLTkxMGMtNTQ3ZjY0YzZjZTc1IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9"
+        />
+      </div>
 
     </div>
 
