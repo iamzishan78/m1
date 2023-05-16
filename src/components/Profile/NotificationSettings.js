@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { Box, FormControlLabel, makeStyles, Checkbox } from "@material-ui/core";
+import MuiDialogContent from "@material-ui/core/DialogContent";
 // component
 import { ProfileContext } from './ProfileContext';
 
@@ -23,6 +24,9 @@ const NotificationSettings = () => {
     if (name === "flowModule") {
       newNotificationsState.newDealsAssigned = checked;
       newNotificationsState.dealEntersAssignedLane = checked;
+    } else if (name === "activities") {
+      newNotificationsState.newTaskAssigned = checked;
+      newNotificationsState.myClosedTasks = checked;
     } else {
       newNotificationsState[name] = checked;
     }
@@ -37,7 +41,8 @@ const NotificationSettings = () => {
   };
 
   return (
-    <Box p={2}>
+    <MuiDialogContent>
+      <Box style={{ padding: "6px" }}>
       <h3>Send me email notifications for the following:</h3>
       <dl>
         <dt>
@@ -95,8 +100,50 @@ const NotificationSettings = () => {
             disabled={stateProfile.isSaving}
           />
         </dt>
+        <dt>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={!!notificationPreferences?.newTaskAssigned ||
+                  !!notificationPreferences?.myClosedTasks}
+                onChange={handleCheckboxChange}
+                name="activities"
+              />
+            }
+            className={classes.boldCheckboxLabel}
+            label="Activities/Tasks"
+            disabled={stateProfile.isSaving}
+          />
+        </dt>
+        <dd>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={!!notificationPreferences?.newTaskAssigned}
+                onChange={handleCheckboxChange}
+                name="newTaskAssigned"
+              />
+            }
+            label="New Tasks that are assigned to me"
+            disabled={stateProfile.isSaving}
+          />
+        </dd>
+        <dd>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={!!notificationPreferences?.myClosedTasks}
+                onChange={handleCheckboxChange}
+                name="myClosedTasks"
+              />
+            }
+            label="Closed Tasks created by me assigned to others"
+            disabled={stateProfile.isSaving}
+          />
+        </dd>
       </dl>
     </Box>
+    </MuiDialogContent>
   );
 }
 
