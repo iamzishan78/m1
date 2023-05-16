@@ -56,10 +56,10 @@ const PermitsCard = ({ title }) => {
         className={classes.header}
       />
 
-      <div className={frameClassNames.join(' ')}>
+      <div style={{ height: isPermitsAnalytics && "97vh" }} className={frameClassNames.join(' ')}>
         <Iframe
           width="100%"
-          height="700px"
+          height={isPermitsAnalytics ? "98%" : "700px"}
           paddintTop="10px"
           url="https://app.powerbi.com/view?r=eyJrIjoiY2ExMzQ4Y2ItYzlkMy00NThkLTkxMGMtNTQ3ZjY0YzZjZTc1IiwidCI6IjA5YzE2ZGM1LTMxMjQtNGVjNi1hMzFhLTEyNWIzMjVmNWRlMiIsImMiOjJ9"
         />

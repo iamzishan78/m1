@@ -56,10 +56,10 @@ const ProdCard = ({ title }) => {
         className={classes.header}
       />
 
-      <div className={frameClassNames.join(' ')}>
+      <div style={{ height: isPermitsAnalytics && "97vh" }} className={frameClassNames.join(' ')}>
         <Iframe
           width="100%"
-          height="700px"
+          height={isPermitsAnalytics ? "98%" : "700px"}
           //height="10000px"
           position='relative'
           display='initial'
