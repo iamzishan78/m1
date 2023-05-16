@@ -45,6 +45,7 @@ import { hookStateApp } from "hookstate";
 
 import { showInfoMessage } from "actions";
 import { useDispatch } from "react-redux";
+import Button from "@material-ui/core/Button";
 
 
 const GCS_North_American_1927 =
@@ -90,6 +91,18 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       color: "darkblue",
     },
+  },
+  multiSelectionTopBarButtons: {
+    margin: "0px 5px",
+    padding: "0px 5px",
+    // fontWeight: "600",
+    // backgroundColor: "rgba(1, 17, 51, 1)",
+    // color: "#fff",
+    border: "1px solid #B3B3B3",
+    // "&:hover": {
+    //   backgroundColor: "#263451",
+    //   color: "#fff",
+    // },
   },
   uploaderText: {
     color: "#828282",
@@ -558,15 +571,7 @@ export default function AddLayer(props) {
                   </List>
                 </Collapse>
                 <StyledListItem2 button onClick={() => setIsOpenUserDefinedLayers(!isOpenUserDefinedLayers)}>
-                  {/* <Checkbox
-                    checked={selectAllClientlayers}
-                    color="darkgray"
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => { handleCheckAllLayers(UdLayers, !selectAllClientlayers, "UD") }}
-                    inputProps={{ "aria-label": "primary checkbox" }}
-                  /> */}
-
-                    <IconButton
+                    {/* <IconButton
                       size="small"
                       onClick={(event) => {
                         event.stopPropagation();
@@ -574,8 +579,19 @@ export default function AddLayer(props) {
                       }}
                     >
                   <ClearButton />
-                  </IconButton>
-                  <ListItemText primary="Client Specific Layers" />
+                  </IconButton> */}
+                  <ListItemText style={{ paddingLeft: '20px' }} primary="Client Specific Layers" />
+                      <Button
+                        color="secondary"
+                        startIcon={<ClearButton />}
+                        className={classes.multiSelectionTopBarButtons}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleCheckAllLayers(UdLayers, false, "UD")
+                        }}
+                      >
+                        CLEAR ALL
+                      </Button>
                   {isOpenUserDefinedLayers ? <ExpandLess /> : <ExpandMore />}
                 </StyledListItem2>
 
