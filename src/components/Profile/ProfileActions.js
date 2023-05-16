@@ -50,14 +50,14 @@ const ProfileActions = () => {
 
   return (
     <DialogActions>
-      <Button
+      {/* <Button
         variant="outlined"
         onClick={handleClose}
         color="primary"
         style={{ textTransform: "none" }}
       >
         Cancel
-      </Button>
+      </Button> */}
       <Button
         style={{ backgroundColor: "#00abed", color: "white" }}
         variant="contained"
