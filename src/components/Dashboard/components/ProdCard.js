@@ -49,7 +49,7 @@ const ProdCard = ({ title }) => {
     frameClassNames.push(classes.analyticsBody);
 
   return (
-    <div className="prodContainer">
+    <div style={{ overflow: "hidden" }} className="prodContainer">
       <CardHeader
         // action={<DragHandle />}
         title={'Production by State/County'}

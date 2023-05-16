@@ -49,7 +49,7 @@ const PermitsCard = ({ title }) => {
     frameClassNames.push(classes.analyticsBody);
 
   return (
-    <div className="permitContainer">
+    <div style={{ overflow: "hidden" }} className="permitContainer">
       <CardHeader
         //action={<DragHandle />}
         title={'Permits by State/County'}

@@ -49,7 +49,7 @@ const RigsCard = ({ title }) => {
     frameClassNames.push(classes.analyticsBody);
 
   return (
-    <div>
+    <div style={{ overflow: "hidden" }}>
       <CardHeader
         //action={<DragHandle />}
         title={'Rigs by Region'}
