@@ -31,6 +31,8 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import UploadIcon from "components/Shared/svgIcons/uploadIcon";
 import EditableTextField from "components/Shared/components/Fields/EditableTextField";
 import { truncate } from "components/Shared/functions";
+import Button from "@material-ui/core/Button";
+
 
 import proj4 from "proj4";
 // cra webpack hack to call this a png to get included in bundle
@@ -103,6 +105,18 @@ const useStyles = makeStyles((theme) => ({
     border: "2px dashed #999",
     padding: "10px",
     borderRadius: "5px",
+  },
+  multiSelectionTopBarButtons: {
+    margin: "0px 5px",
+    padding: "0px 5px",
+    // fontWeight: "600",
+    // backgroundColor: "rgba(1, 17, 51, 1)",
+    // color: "#fff",
+    border: "1px solid #B3B3B3",
+    // "&:hover": {
+    //   backgroundColor: "#263451",
+    //   color: "#fff",
+    // },
   },
   contentRoot: {
     padding: "15px",
@@ -843,26 +857,19 @@ function SourceManager(props) {
 
                   <StyledListItem2 button onClick={() => setIsOpenUserSources(!isOpenUserSources)} className={isOpenUserSources ? 'isOpen' : ''}>
                     
-                    
-                    {/* <Checkbox
-                      checked={selectAllUserSources}
-                      color="darkgray"
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={(e) => { changeAllUserSources(stateApp.datasets, !selectAllUserSources) }}
-                      inputProps={{ "aria-label": "primary checkbox" }}
-                    /> */}
-
-                    <IconButton
-                        size="small"
+                    <ListItemText style={{ paddingLeft: '20px' }} primary="User Uploaded Sources" />
+                      <Button
+                        color="secondary"
+                        startIcon={<ClearButton />}
+                        className={classes.multiSelectionTopBarButtons}
                         onClick={(event) => {
                           event.stopPropagation();
                           changeAllUserSources(stateApp.datasets, false)
                         }}
                       >
-                    <ClearButton />
-                    </IconButton>
+                        CLEAR ALL
+                      </Button>
 
-                    <ListItemText primary="User Uploaded Sources" />
                     {isOpenUserSources ? <ExpandLess /> : <ExpandMore />}
                   </StyledListItem2>
                   <Collapse in={isOpenUserSources} timeout="auto" unmountOnExit>
