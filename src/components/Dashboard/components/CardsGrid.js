@@ -90,10 +90,10 @@ const CardGrid = () => {
   const [items, setItems] = useState([
     { el: <Notifications title={7} />, size: "2x", key: 1 },
     { el: <Tasks title={8} />, size: "2x", key: 8 },
-    { el: <RigsCard title={5} />, size: "2x", key: 2 },
-    { el: <PermitsCard title={6} />, size: "2x", key: 3 },
-    { el: <ProdCard title={1} />, size: "2x", key: 4 }, 
-    { el: <StockCard title={3} />, size: "x", key: 5 },
+    // { el: <RigsCard title={5} />, size: "2x", key: 2 },
+    // { el: <PermitsCard title={6} />, size: "2x", key: 3 },
+    // { el: <ProdCard title={1} />, size: "2x", key: 4 }, 
+    { el: <StockCard title={3} />, size: "2x", key: 5 },
     { el: <TwitterCard title={2} />, size: "x", key: 6 },
     { el: <RSSFeed title={4} />, size: "x", key: 7 },
 

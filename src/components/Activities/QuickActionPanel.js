@@ -1,4 +1,4 @@
-import React, {useContext,useState} from "react";
+import React, { useContext, useState } from "react";
 import clsx from "clsx";
 import { useHistory } from "react-router-dom";
 import { IconButton } from "@material-ui/core";
@@ -41,17 +41,17 @@ const useToolbarStyles = makeStyles((theme) => ({
       position: "absolute",
       transform: "scale(35)"
     },
-    '& .MuiInput-root':{
-      display:'flex',
-      justifyContent:'center',
-      backgroundColor:'black'
+    '& .MuiInput-root': {
+      display: 'flex',
+      justifyContent: 'center',
+      backgroundColor: 'black'
     },
-    '& .MuiInputBase-input':{
+    '& .MuiInputBase-input': {
       width: '50%'
     },
-    '& .MuiPickersBasePicker':{
-      pickerView:{
-        backgroundColor:"black"
+    '& .MuiPickersBasePicker': {
+      pickerView: {
+        backgroundColor: "black"
       }
     }
   },
@@ -73,7 +73,7 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
   const classes = useStyles();
   const history = useHistory();
   const calenderClasses = useToolbarStyles();
-  const [activityApp,setActivityApp] = useContext(ActivitiesContext);
+  const [activityApp, setActivityApp] = useContext(ActivitiesContext);
 
   const [value, onChange] = useState(new Date());
 
@@ -83,74 +83,74 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
 
 
   const handleCalender = (date) => {
-    setActivityApp({...activityApp,selectedDate:date});
+    setActivityApp({ ...activityApp, selectedDate: date });
   }
   return (
-      <>
-        <Drawer
-            className={classes.drawer}
-            variant="persistent"
-            anchor="left"
-            open={quickActionsPanelState}
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-        >
-          <Grid container direction="row" justify="space-between" display="flex" className={classes.header}>
-            <Grid item style={{ alignItems: "center" }}>
-              <Typography variant="h5" style={{ fontWeight: "normal" }}>
-                {title}
-              </Typography>
-            </Grid>
-            <Grid item>
-              <IconButton className={classes.iconArrow} color="secondary" onClick={() => handlePanelStateChange(false)}>
-                <>
-                  <ChevronLeftIcon />
-                  <MenuIcon className={classes.menuIcon} />
-                </>
-              </IconButton>
-            </Grid>
+    <>
+      <Drawer
+        className={classes.drawer}
+        variant="persistent"
+        anchor="left"
+        open={quickActionsPanelState}
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+      >
+        <Grid container direction="row" justify="space-between" display="flex" className={classes.header}>
+          <Grid item style={{ alignItems: "center" }}>
+            <Typography variant="h5" style={{ fontWeight: "normal" }}>
+              {title}
+            </Typography>
           </Grid>
-          <Divider />
-          <Typography variant="body2" className={classes.quickActionText}>
-            Quick Actions
-          </Typography>
-          <StyledMenu>
-            {Object.keys(actions)
-                .filter((key) => !actions[key].isExcluded)
-                .map(
-                    (key, index) =>
-                        actions[key].featureFlag && (
-                            <FeatureFlag feature={FEATURES[actions[key].featureFlag]} noCheck={actions[key].noCheck}>
-                              <StyledMenuItem
-                                  onClick={() => handleMenuItemClick(actions[key].link)}
-                                  key={index}
-                                  isSelected
-                                  style={{
-                                    backgroundColor: activeModule.title === actions[key].title ? "#4B618F" : "",
-                                  }}
-                              >
-                                <ListItemText id={`${actions[key].title} 101`}>{actions[key].title}</ListItemText>
-                              </StyledMenuItem>
-                            </FeatureFlag>
-                        )
-                )}
-          </StyledMenu>
-          
-        </Drawer>
-        <FeatureFlag feature={FEATURES[activeModule.featureFlag]} noCheck={activeModule.noCheck}>
-          <div
-              className={clsx({
-                [classes.landRootExpanded]: quickActionsPanelState,
-                [classes.landRootCollapsed]: !quickActionsPanelState,
-              })}
-          >
-            {children}
-          </div>
-          <div className={classes.pulloutBox} onClick={() => handlePanelStateChange(!quickActionsPanelState)}>
-            {quickActionsPanelState ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
-          </div>
-        </FeatureFlag>
-      </>
+          <Grid item>
+            <IconButton className={classes.iconArrow} color="secondary" onClick={() => handlePanelStateChange(false)}>
+              <>
+                <ChevronLeftIcon />
+                <MenuIcon className={classes.menuIcon} />
+              </>
+            </IconButton>
+          </Grid>
+        </Grid>
+        <Divider />
+        <Typography variant="body2" className={classes.quickActionText}>
+          Quick Actions
+        </Typography>
+        <StyledMenu>
+          {Object.keys(actions)
+            .filter((key) => !actions[key].isExcluded)
+            .map(
+              (key, index) =>
+                actions[key].featureFlag && (
+                  <FeatureFlag feature={FEATURES[actions[key].featureFlag]} noCheck={actions[key].noCheck}>
+                    <StyledMenuItem
+                      onClick={() => handleMenuItemClick(actions[key].link)}
+                      key={index}
+                      isSelected
+                      style={{
+                        backgroundColor: activeModule.title === actions[key].title ? "#4B618F" : "",
+                      }}
+                    >
+                      <ListItemText id={`${actions[key].title} 101`}>{actions[key].title}</ListItemText>
+                    </StyledMenuItem>
+                  </FeatureFlag>
+                )
+            )}
+        </StyledMenu>
+
+      </Drawer>
+      <FeatureFlag feature={FEATURES[activeModule.featureFlag]} noCheck={activeModule.noCheck}>
+        <div
+          className={clsx({
+            [classes.landRootExpanded]: quickActionsPanelState,
+            [classes.landRootCollapsed]: !quickActionsPanelState,
+          })}
+        >
+          {children}
+        </div>
+        <div className={classes.pulloutBox} onClick={() => handlePanelStateChange(!quickActionsPanelState)}>
+          {quickActionsPanelState ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
+        </div>
+      </FeatureFlag>
+    </>
   );
 }

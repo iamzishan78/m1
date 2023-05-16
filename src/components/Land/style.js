@@ -48,6 +48,9 @@ export const useStyles = makeStyles((theme) => ({
     "& .MuiDivider-root": {
       backgroundColor: "#263451",
     },
+    "& .MuiCardHeader-content": {
+      padding: "10px"
+    }
   },
   drawerPaper: {
     width: drawerWidth,
@@ -73,6 +76,9 @@ export const useStyles = makeStyles((theme) => ({
   header: {
     padding: "10px 5px 15px 10px",
     alignItems: "center",
+  },
+  permritContainer: {
+    padding: "10px 5px 15px 10px",
   },
   pulloutBox: {
     zIndex: 1000,
