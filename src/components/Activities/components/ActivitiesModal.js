@@ -464,15 +464,15 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
           name: activityName,
           notes,
           outcome,
-          ownerId: owner.id,
-          ownerName: owner.name,
+          ownerId: owner?.id,
+          ownerName: owner?.name,
           contactId: nameAutValue._id,
           contactName: nameAutValue.name,
           dealId,
           dateTime: new Date(dateTime).toUTCString(),
           endDateTime: new Date(endDateTime).toUTCString(),
           isClosed: closed,
-          user:stateApp.user._id,
+          user: stateApp.user._id,
           createdBy: stateApp?.user?._id,
         },
       },
@@ -501,7 +501,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
           contactName: nameAutValue?.name,
           dealId,
           isClosed: closed,
-          user:stateApp.user._id
+          user: stateApp.user._id
         },
       },
     });
