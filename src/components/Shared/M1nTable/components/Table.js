@@ -4819,25 +4819,6 @@ function SubTable(props) {
                   ? true
                   : false
               }
-              // maxWidth={
-              //   openDialog === "owner" || openDialog === "wellsPerOwner" || openDialog === "ownerContacts"
-              //     ? "xl"
-              //     : openDialog === "owner" ||
-              //       openDialog === "ownersPerContacts" ||
-              //       openDialog === "wellsPerOwner" ||
-              //       openDialog === "owner" ||
-              //       openDialog === "wellsPerOwner" ||
-              //       openDialog === "buyContactsInfo" ||
-              //       openDialog === "sendMailers" ||
-              //       openDialog === "printLabels" ||
-              //       openDialog === "deleteUser" ||
-              //       openDialog === "deleteWellInterest" ||
-              //       openDialog === "deleteParcelDocument" ||
-              //       openDialog === "deleteWellDocument" ||
-              //       openDialog === "addParcelInterestsToEntity"
-              //       ? true
-              //       : false
-              // }
               maxWidth={
                 openDialog === "owner" || openDialog === "wellsPerOwner" || openDialog === "ownerContacts"
                   ? "xl"
@@ -4915,18 +4896,6 @@ function SubTable(props) {
                   {`Do you want to create a new Contact from this Owner?`}
                 </MakeItAContactConfirmationDialogContent>
               )}
-
-              {/* {openDialog === "addOwnerToParcel" && (
-              <AddParcelOwnerDialogContent
-                onClose={() => {
-                  setSelectedRow(null);
-                  handleCloseDialog();
-                }}
-                customLayerId={props.addAble?.customLayerId}
-                selectedRow={selectedRow}
-                setSelectedRow={setSelectedRow}
-              />
-            )} */}
               {openDialog === "addParcelInterestsToEntity" && (
                 <AddParcelToEntityDialogContent onClose={handleCloseDialog} entityId={props.addAble?.entityId} />
               )}

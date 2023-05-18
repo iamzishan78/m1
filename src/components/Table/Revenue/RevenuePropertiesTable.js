@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Container } from "@material-ui/core";
+import { Container, Dialog } from "@material-ui/core";
 import { useDispatch } from "react-redux";
+import { useMutation } from "@apollo/client";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHeader from "components/Table/constants/revenue-properties-header-schema";
 
@@ -11,6 +12,8 @@ import { usetableStyles } from "../Styles";
 // actions
 import { setRevenuePropertyData } from "actions";
 import TableESHOC from "../TableESHOC";
+import { DELETE_REVENUE_PROPERTIES } from "graphQL/useMutationDeletePropeties";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 const genericDataActions = ["tags", "comments"];
 
@@ -27,6 +30,7 @@ function RevenuePropertiesTable(props) {
   const [refetchData, setRefetchData] = useState(false);
 
   const esFilters = props.esFilters ? props.esFilters : [];
+  const [removeProperties] = useMutation(DELETE_REVENUE_PROPERTIES);
 
   const formatHits = (hits) => {
     hits = hits.map((hit) => {
@@ -58,9 +62,6 @@ function RevenuePropertiesTable(props) {
     if (formatedFilter[0] && formatedFilter[0].type === "range") {
       fixedFilters.push(formatedFilter[0]);
     }
-
-    // fixedFilters[1].type = "value";
-    // fixedFilters[1].value = "";
 
     props.setInitialFilters(formatedFilter);
     props.setTableMeta({
@@ -96,14 +97,42 @@ function RevenuePropertiesTable(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props?.total, props.dependencyUpdate]);
 
-  delete props.options.customToolbarSelect;
   delete props.options.onRowClick;
   props.options.search = props.searchBar;
 
-  // console.log('PROPS BRO', props)
+  const deleteFunc = (ids) => {
+    if (ids.length > 0) {
+      props.setLoading(true);
+      removeProperties({
+        variables: {
+          properties: ids,
+        },
+        awaitRefetchQueries: true,
+        refetchQueries: ["getESSimpleSearch"]
+      }).then(() => {
+        props.setLoading(false);
+        props.setSelectedRows([]);
+      });
+    }
+  };
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
+      <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
+        {props.openDialog === "delete" && (
+          <DeleteConfirmationDialogContent
+            header={`Delete Properties`}
+            onClose={() => props.setOpenDialog(null)}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
+            setM1nSelectedRowsIndexes={props.setSelectedRows}
+          >
+            {`Do you want to delete the selected ${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "properties" : "property"
+              }?`}
+          </DeleteConfirmationDialogContent>
+        )}
+      </Dialog>
+
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
