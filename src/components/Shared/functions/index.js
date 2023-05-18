@@ -117,7 +117,8 @@ export function workspaceTenantName() {
   return workspaceName === "localhost" ? "EnerX" : workspaceName;
 }
 
-export function getDateWithoutTime(dateTime = "") {
+export function getDateWithoutTime(dateTime) {
+  if (!dateTime) dateTime = "";
   if (dateTime?.includes && dateTime.includes('/')) {
     const splittedDate = dateTime.split("/")
     const newDate = new Date()
