@@ -16,6 +16,10 @@ const RevenueStatementHeadCells = [
     options: { sort: true, filter: true },
   },
   {
+    name: "productType",
+    label: "Product Type"
+  },
+  {
     name: "interestAmount",
     label: "Interest Amount",
     esKey: "interestAmount",
@@ -33,6 +37,10 @@ const RevenueStatementHeadCells = [
       key_as_string: true,
       isDate: true,
     },
+  },
+  {
+    name: "endDate",
+    label: "End Date"
   },
   {
     name: "interestStatus",
