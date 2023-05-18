@@ -12,7 +12,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import { deepEqual, deepEqualObjects } from "components/Shared/functions";
+import { copy, deepEqual, deepEqualObjects } from "components/Shared/functions";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { useMutation } from "@apollo/client";
 import { DropzoneAreaBase } from "material-ui-dropzone";
@@ -31,6 +31,8 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import UploadIcon from "components/Shared/svgIcons/uploadIcon";
 import EditableTextField from "components/Shared/components/Fields/EditableTextField";
 import { truncate } from "components/Shared/functions";
+import Button from "@material-ui/core/Button";
+
 
 import proj4 from "proj4";
 // cra webpack hack to call this a png to get included in bundle
@@ -41,6 +43,15 @@ import { FEATURES } from "components/Shared/FeatureFlag/common";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 import { UPDATE_DATASET } from "graphQL/useMutationDataset";
+import { hookStateApp } from "hookstate";
+import { useHookstate } from '@hookstate/core';
+
+import { showInfoMessage } from "actions";
+import { useDispatch } from "react-redux";
+import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from "@material-ui/icons";
+
+
+
 
 const GCS_North_American_1927 =
   'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
@@ -94,6 +105,18 @@ const useStyles = makeStyles((theme) => ({
     border: "2px dashed #999",
     padding: "10px",
     borderRadius: "5px",
+  },
+  multiSelectionTopBarButtons: {
+    margin: "0px 5px",
+    padding: "0px 5px",
+    // fontWeight: "600",
+    // backgroundColor: "rgba(1, 17, 51, 1)",
+    // color: "#fff",
+    border: "1px solid #B3B3B3",
+    // "&:hover": {
+    //   backgroundColor: "#263451",
+    //   color: "#fff",
+    // },
   },
   contentRoot: {
     padding: "15px",
@@ -211,6 +234,8 @@ const SourceManagerMemo = memo(SourceManager);
 export default function SourceManagerContainer(props) {
   const [stateApp, setStateApp] = useContext(AppContext);
 
+
+
   const setStateAppCallback = useCallback(setStateApp, [])
   const stateAppMemo = useMemo(() => ({ layers: stateApp.layers, user: stateApp.user, datasets: stateApp.datasets }), [stateApp.user, stateApp.datasets, stateApp.layers])
 
@@ -221,12 +246,16 @@ function SourceManager(props) {
   const classes = useStyles();
   let history = useHistory();
 
+  const dispatch = useDispatch();
+  const source_limit = 20;
+
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const { stateApp, setStateApp } = props;
+  const hookState = useHookstate(hookStateApp);
   const [openM1, setOpenM1] = React.useState(true);
   const [isOpenUserSources, setIsOpenUserSources] = React.useState(true);
   const [openDataSets, setOpenDataSets] = React.useState({});
-  const [currentLayers, setCurrentLayers] = React.useState(stateApp.layers);
+  const [currentLayers, setCurrentLayers] = React.useState([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openUDLayers, setUDLayersStates] = useState([]);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -237,11 +266,16 @@ function SourceManager(props) {
   const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
   const [updateUserMapSettings] = useMutation(UPDATE_USER_MAP_SETTINGS, { refetchQueries: ["getUserMapSettings"], awaitRefetchQueries: true });
 
+  const updateStateLayers = (currentLayers) => {
+    stateApp.layers = currentLayers;
+    hookStateApp.layers.set(currentLayers)
+  }
+
   useEffect(() => {
-    if (!deepEqual(currentLayers, stateApp.layers)) {
-      setCurrentLayers(stateApp.layers);
+    if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
+      setCurrentLayers(copy(hookState.layers.get({ noproxy: true })));
     }
-  }, [currentLayers, stateApp.layers]);
+  }, [currentLayers, hookState.layers]);
 
   const M1Layers = React.useMemo(() => {
     const layers = currentLayers.filter((layer) => layer.layerCategory === "M1 Layer" || ['Parcels', 'Agreements', 'Units', 'Area of Interest'].includes(layer.groupName || layer.layerName));
@@ -288,11 +322,11 @@ function SourceManager(props) {
   };
 
   const handleApplyChange = (currentLayers) => {
-    if (!deepEqual(currentLayers, stateApp.layers)) {
+    if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
       const layersToUpdate = [];
       const layersSettingsToUpdate = [];
       for (let i = 0; i < currentLayers.length; i++) {
-        if (!deepEqualObjects(currentLayers[i], stateApp.layers[i])) {
+        if (!deepEqualObjects(currentLayers[i], hookState.layers.get({ noproxy: true })[i])) {
           layersSettingsToUpdate.push({
             _id: currentLayers[i]._id,
             layerSettings: currentLayers[i].layerSettings,
@@ -306,10 +340,7 @@ function SourceManager(props) {
       }
 
       // //// saving to stateApp
-      setStateApp(stateApp => ({
-        ...stateApp,
-        layers: [...currentLayers],
-      }));
+      updateStateLayers([...currentLayers])
 
       //// saving to mongo
       if (layersToUpdate.length > 0) {
@@ -374,6 +405,9 @@ function SourceManager(props) {
   const changeAllUserSources = (sources, value) => {
     const settings = {}
     const layersSettingsToUpdate = [];
+
+
+
     for (let index = 0; index < sources.length; index++) {
       const updatefn = {};
       currentLayers.forEach((clayer, layerIndex) => {
@@ -381,7 +415,7 @@ function SourceManager(props) {
           updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
           layersSettingsToUpdate.push({
             _id: clayer._id,
-            layerSettings: { ...clayer.layerSettings, showable: value }
+            layerSettings: { ...clayer.layerSettings, showable: value, visiable: value }
           });
         }
       });
@@ -393,7 +427,7 @@ function SourceManager(props) {
       const datasetIndex = stateApp.datasets.findIndex(d => d._id === sources[index]._id);
       sources[index].visibility = value
       stateApp.datasets[datasetIndex] = sources[index];
-      setTimeout(() => { setStateApp((stateApp) => ({ ...stateApp, layers: newLayers })); }, 0)
+      updateStateLayers(newLayers)
     }
 
     updateUserMapSettings({
@@ -412,17 +446,24 @@ function SourceManager(props) {
           manySettings: layersSettingsToUpdate,
         },
       });
+
+
   }
 
   const handleDatasetChange = (dataset, value) => {
     const updatefn = {};
     const layersSettingsToUpdate = [];
+    console.log('STATEAPP',stateApp);
+
+    if(stateApp.datasets.filter((row) => row.visibility == true).length < source_limit || value == 0)
+    {
     currentLayers.forEach((clayer, layerIndex) => {
       if (clayer.file === dataset.file) {
-        updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
+        console.log(clayer.file, clayer)
+        updatefn[layerIndex] = { layerSettings: { showable: { $set: value }, visiable: { $set: value } } };
         layersSettingsToUpdate.push({
           _id: clayer._id,
-          layerSettings: { ...clayer.layerSettings, showable: value }
+          layerSettings: { ...clayer.layerSettings, showable: value, visiable: value }
         });
       }
     });
@@ -447,7 +488,17 @@ function SourceManager(props) {
     const datasetIndex = stateApp.datasets.findIndex(d => d._id === dataset._id);
     dataset.visibility = value
     stateApp.datasets[datasetIndex] = dataset
-    setTimeout(() => { setStateApp((stateApp) => ({ ...stateApp, layers: newLayers })); }, 0)
+    updateStateLayers(newLayers)
+
+  }
+
+  else
+  {
+    dispatch(
+      showInfoMessage("Cannot add additional source. Number of active sources cannot exceed " + source_limit)
+    );
+  }
+
   }
 
   const changeLayerName = (layer, name) => {
@@ -805,14 +856,20 @@ function SourceManager(props) {
 
 
                   <StyledListItem2 button onClick={() => setIsOpenUserSources(!isOpenUserSources)} className={isOpenUserSources ? 'isOpen' : ''}>
-                    <Checkbox
-                      checked={selectAllUserSources}
-                      color="darkgray"
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={(e) => { changeAllUserSources(stateApp.datasets, !selectAllUserSources) }}
-                      inputProps={{ "aria-label": "primary checkbox" }}
-                    />
-                    <ListItemText primary="User Uploaded Sources" />
+                    
+                    <ListItemText style={{ paddingLeft: '20px' }} primary="User Uploaded Sources" />
+                      <Button
+                        color="secondary"
+                        startIcon={<ClearButton />}
+                        className={classes.multiSelectionTopBarButtons}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          changeAllUserSources(stateApp.datasets, false)
+                        }}
+                      >
+                        CLEAR ALL
+                      </Button>
+
                     {isOpenUserSources ? <ExpandLess /> : <ExpandMore />}
                   </StyledListItem2>
                   <Collapse in={isOpenUserSources} timeout="auto" unmountOnExit>

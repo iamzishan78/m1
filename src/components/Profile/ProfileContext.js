@@ -39,6 +39,8 @@ const ProfileContextProvider = (props) => {
         newDeals: false,
         dealEntersAssignedLane: false,
         mentions: false,
+        myClosedTasks: false,
+        newTaskAssigned: false
       },
     },
     isImageModalOpen: false,
