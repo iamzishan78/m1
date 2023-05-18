@@ -121,7 +121,7 @@ const fieldsList = (activeUser) => {
       },
     },
     {
-      label: "Prospect",
+      label: "Prospect ID",
       type: "autocomplete",
       key: "prospectID",
     },
