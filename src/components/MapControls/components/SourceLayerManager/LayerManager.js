@@ -48,15 +48,6 @@ import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
 
 
-const GCS_North_American_1927 =
-  'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
-proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@conus,null +no_defs");
-proj4.defs(GCS_North_American_1927, proj4.defs("EPSG:4267"));
-
-const GCS_North_American_1927_ALT1 =
-  'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]]';
-proj4.defs(GCS_North_American_1927_ALT1, proj4.defs("EPSG:4267"));
-
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
     backgroundColor: "#011133 !important",
@@ -259,30 +250,28 @@ export default function AddLayer(props) {
 
   const changeShowAble = (layer) => {
 
-    if(currentLayers.filter((row) => row.layerSettings.showable == true).length < layer_limit || !layer.layerSettings.showable == 0)
-      {
-        const updatefn = {};
-        if (layer.type === "group") {
-          const value = !!layer.layers.find((l) => l.layerSettings.showable);
-          layer.layers.forEach((l) => {
-            const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
-            updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } };
-          });
-        } else {
-          const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
-          updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings.showable } } };
-        }
-
-        setCurrentLayers(update(currentLayers, updatefn));
-        handleCurrentLayersChange();
+    if (currentLayers.filter((row) => row.layerSettings.showable == true).length < layer_limit || !layer.layerSettings.showable == 0) {
+      const updatefn = {};
+      if (layer.type === "group") {
+        const value = !!layer.layers.find((l) => l.layerSettings.showable);
+        layer.layers.forEach((l) => {
+          const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
+          updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } };
+        });
+      } else {
+        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
+        updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings.showable } } };
       }
 
-    else
-      {
-        dispatch(
-          showInfoMessage("Cannot add additional layer. Number of active layers cannot exceed " + layer_limit)
-        );
-      }
+      setCurrentLayers(update(currentLayers, updatefn));
+      handleCurrentLayersChange();
+    }
+
+    else {
+      dispatch(
+        showInfoMessage("Cannot add additional layer. Number of active layers cannot exceed " + layer_limit)
+      );
+    }
 
 
 
@@ -571,7 +560,7 @@ export default function AddLayer(props) {
                   </List>
                 </Collapse>
                 <StyledListItem2 button onClick={() => setIsOpenUserDefinedLayers(!isOpenUserDefinedLayers)}>
-                    {/* <IconButton
+                  {/* <IconButton
                       size="small"
                       onClick={(event) => {
                         event.stopPropagation();
@@ -581,17 +570,17 @@ export default function AddLayer(props) {
                   <ClearButton />
                   </IconButton> */}
                   <ListItemText style={{ paddingLeft: '20px' }} primary="Client Specific Layers" />
-                      <Button
-                        color="secondary"
-                        startIcon={<ClearButton />}
-                        className={classes.multiSelectionTopBarButtons}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          handleCheckAllLayers(UdLayers, false, "UD")
-                        }}
-                      >
-                        CLEAR ALL
-                      </Button>
+                  <Button
+                    color="secondary"
+                    startIcon={<ClearButton />}
+                    className={classes.multiSelectionTopBarButtons}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleCheckAllLayers(UdLayers, false, "UD")
+                    }}
+                  >
+                    CLEAR ALL
+                  </Button>
                   {isOpenUserDefinedLayers ? <ExpandLess /> : <ExpandMore />}
                 </StyledListItem2>
 
