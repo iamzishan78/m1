@@ -404,7 +404,6 @@ export default function WellCardDetails(props) {
             tabLabels={[
               "Production",
               "Interest Owners",
-              // "Contacts",
               "Completion",
               "Stimulation",
               "Formation",
@@ -421,7 +420,6 @@ export default function WellCardDetails(props) {
                           <OilSwitch
                             checked={stateWellCard.chartToggleOil}
                             onChange={handleChangeOil}
-                          //name="chartToggleOil"
                           />
                         }
                         label="Allocated Oil"
@@ -456,8 +454,6 @@ export default function WellCardDetails(props) {
                           />}
                         label="Multi-Axes"
                       />
-                      {/* --hide for now until we fix the data issues */}
-                      {/* <FormControlLabel disabled control={<Switch />} label="Log Scale" /> */}
                     </div>
                   </Grid>
                   <Grid item xs={12}>

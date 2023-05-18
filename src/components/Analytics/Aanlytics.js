@@ -12,6 +12,9 @@ import { FEATURES } from "components/Shared/FeatureFlag/common";
 import RevenueAnalytics from "components/Analytics/components/Revenue";
 import LandAnalytics from "components/Analytics/components/Land";
 import ActivitiesDashboard from "components/Activities/components/ActivitiesDashboard";
+import RigsCard from "components/Dashboard/components/RigsCard";
+import PermitsCard from "components/Dashboard/components/PermitsCard";
+import ProdCard from "components/Dashboard/components/ProdCard";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import Grid from "@material-ui/core/Grid";
@@ -24,6 +27,9 @@ const Components = {
   Land: LandAnalytics,
   Revenue: RevenueAnalytics,
   ActivitiesDashboard: ActivitiesDashboard,
+  RigsCard: RigsCard,
+  PermitsCard: PermitsCard,
+  ProdCard: ProdCard,
 };
 
 export default function Analytics() {
@@ -80,7 +86,7 @@ export default function Analytics() {
           quickActionsPanelState={quickActionsPanelState}
           activeModule={activeModule}
           actions={sidePanelOptions}
-          // PanelAction={PanelAction}
+        // PanelAction={PanelAction}
         >
           {Object.keys(allowedPaths).map((option) => (
             <Switch>

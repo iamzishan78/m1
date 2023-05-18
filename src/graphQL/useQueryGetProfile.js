@@ -63,6 +63,8 @@ export const GETPROFILE = gql`
           newDealsAssigned
           dealEntersAssignedLane
           mentions
+          myClosedTasks
+          newTaskAssigned
         }
       }
     }

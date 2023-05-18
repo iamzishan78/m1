@@ -464,15 +464,15 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
           name: activityName,
           notes,
           outcome,
-          ownerId: owner.id,
-          ownerName: owner.name,
+          ownerId: owner?.id,
+          ownerName: owner?.name,
           contactId: nameAutValue._id,
           contactName: nameAutValue.name,
           dealId,
           dateTime: new Date(dateTime).toUTCString(),
           endDateTime: new Date(endDateTime).toUTCString(),
           isClosed: closed,
-          user:stateApp.user._id,
+          user: stateApp.user._id,
           createdBy: stateApp?.user?._id,
         },
       },
@@ -501,7 +501,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
           contactName: nameAutValue?.name,
           dealId,
           isClosed: closed,
-          user:stateApp.user._id
+          user: stateApp.user._id
         },
       },
     });
@@ -869,22 +869,6 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
                   />
                 </div>
               </div>
-              {!addNew &&
-                <div className={classes.row}>
-                  <span className={classes.rowIcon}></span>
-                  <div
-                    style={{ width: "76%", margin: "7.5px 0", marginRight: 24 }}
-                  >
-                    <TextField
-                      label="Created By"
-                      className={classes.fieldWidth}
-                      InputProps={{ readOnly: true }}
-                      value={selectedActivity?.creator?.name}
-                      margin="dense" variant="outlined"
-                    />
-                  </div>
-                </div>
-              }
               <div className={classes.row}>
                 <span className={classes.rowIcon}></span>
                 <div className={classes.btnGroup} style={{ width: "76%", marginRight: 24 }}>
