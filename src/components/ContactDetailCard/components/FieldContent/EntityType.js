@@ -91,12 +91,12 @@ export default function EntityType({ setDocumentType, value, ...other }) {
       }}
       renderOption={(option) => {
         if (option._id === "newEntity") return <Typography style={{ color: "midnightblue" }}>Add '{option.name}'</Typography>;
-
         return (
           <Grid container spacing={0}>
             <Grid container item xs={12} alignItems="center">
               <Grid item xs>
-                <span style={{ fontWeight: 400 }}>{option.name}</span>
+                <span style={{ fontWeight: 400 }}>{typeof option === 'object' ? option.name : option}</span>
+
               </Grid>
             </Grid>
           </Grid>
