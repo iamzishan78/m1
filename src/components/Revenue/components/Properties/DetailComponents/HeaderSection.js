@@ -775,7 +775,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Internal Company</div>
+                <div className={classes.label}>Company ID</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
