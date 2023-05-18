@@ -28,6 +28,7 @@ function RevenuePropertiesTable(props) {
   // redux
   const dispatch = useDispatch();
   const [refetchData, setRefetchData] = useState(false);
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
   const esFilters = props.esFilters ? props.esFilters : [];
   const [removeProperties] = useMutation(DELETE_REVENUE_PROPERTIES);
@@ -112,6 +113,7 @@ function RevenuePropertiesTable(props) {
       }).then(() => {
         props.setLoading(false);
         props.setSelectedRows([]);
+        setResetSelectedRow(!resetSelectedRow);
       });
     }
   };
@@ -149,6 +151,7 @@ function RevenuePropertiesTable(props) {
         startPaginationAt={props.startPaginationAt}
         onTableChange={props.onTableChange}
         options={{ ...props.options, ...props.customOptions }}
+        resetSelectedRow={resetSelectedRow}
         parent={props.parent}
         setColumnsBase={[]}
         setRefetchData={setRefetchData}
