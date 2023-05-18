@@ -623,10 +623,19 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         layers: [...layerStates.allLayerSettingsByUser],
       }));
 
+      const hookStateLayers = copy(hookState.layers.get({ noproxy: true }))
+
       if (layerStates.allLayerSettingsByUser.length > 0) {
         const layers = copy(layerStates.allLayerSettingsByUser)
         for (let i = 0; i < layers.length; i++) {
           const layer = layers[i];
+          const hookStateLayer = hookStateLayers.find((l) => l._id === layer._id)
+          if (hookStateLayer) {
+            layer.fileName = hookStateLayer.fileName
+            layer.fileUrl = hookStateLayer.fileUrl
+            layer.fileViewed = hookStateLayer.fileViewed
+          }
+          if (hookStateLayer?.fileUrl && hookStateLayer?.fileViewed) continue
           const visible = layer.layerSettings.showable && layer.layerSettings.visiable !== false;
           if (layer.layerType === "file layer" && !visible) {
             layer.fileViewed = false
@@ -1633,6 +1642,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         }
         else if (layer.layerType === "file layer") {
           let layerData = hookStateAppLayers.find((l) => l.file === layer.file);
+          if (layerData?.layerName === 'la_units - 2 Layer')
+            console.log(layerData)
           if (layerData.fileUrl) {
             if (layerData.layerPaintProps?.[0]?.sourceProps) {
               if (!map?.getSource(layerData.layerPaintProps[0].sourceProps)) {
