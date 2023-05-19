@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from "react";
-import { Container } from "@material-ui/core";
+import { Container, Dialog } from "@material-ui/core";
 import { debounce, get } from "lodash";
 
 // context
@@ -18,12 +18,21 @@ import { usetableStyles } from "../Styles";
 
 // value formatters
 import convert_date from "components/Shared/valueformatters/convert_date.js";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { REMOVE_AGREEMENTS } from "graphQL/useMutationRemoveAgreements";
+import { useMutation } from "@apollo/client";
+import { REMOVE_WELLS } from "graphQL/useMutationRemoveWells";
 
 const startPaginationAt = 50;
 
 function MyWellsGridTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
+
+  const [removeWells] = useMutation(REMOVE_WELLS, {
+    refetchQueries: ["getESSimpleSearch"],
+    awaitRefetchQueries: true,
+  });
 
   useEffect(() => {
     setTableMeta({
@@ -44,7 +53,21 @@ function MyWellsGridTable(props) {
 
   useEffect(() => {
     props.setSelectedWell(props.clickedRow)
-  },[props.clickedRow])
+  }, [props.clickedRow])
+
+  const deleteFunc = (ids) => {
+    debugger
+    if (ids.length > 0) {
+      props.setLoading(true);
+      removeWells({
+        variables: {
+          wellIds: ids,
+        },
+      }).then(() => {
+        props.setLoading(false);
+      });
+    }
+  };
 
   const setTableMeta = React.useMemo(
     () =>
@@ -94,6 +117,20 @@ function MyWellsGridTable(props) {
 
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
+      <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
+        {props.openDialog === "delete" && (
+          <DeleteConfirmationDialogContent
+            header={`Delete Well(s)`}
+            onClose={() => props.setOpenDialog(null)}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
+            setM1nSelectedRowsIndexes={props.setSelectedRows}
+          >
+            {`Do you want to delete the selected Well${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+              }?`}
+          </DeleteConfirmationDialogContent>
+        )}
+      </Dialog>
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
