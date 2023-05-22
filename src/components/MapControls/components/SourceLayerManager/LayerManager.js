@@ -259,30 +259,28 @@ export default function AddLayer(props) {
 
   const changeShowAble = (layer) => {
 
-    if(currentLayers.filter((row) => row.layerSettings.showable == true).length < layer_limit || !layer.layerSettings.showable == 0)
-      {
-        const updatefn = {};
-        if (layer.type === "group") {
-          const value = !!layer.layers.find((l) => l.layerSettings.showable);
-          layer.layers.forEach((l) => {
-            const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
-            updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } };
-          });
-        } else {
-          const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
-          updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings.showable } } };
-        }
-
-        setCurrentLayers(update(currentLayers, updatefn));
-        handleCurrentLayersChange();
+    if (currentLayers.filter((row) => row.layerSettings.showable == true).length < layer_limit || !layer.layerSettings.showable == 0) {
+      const updatefn = {};
+      if (layer.type === "group") {
+        const value = !!layer.layers.find((l) => l.layerSettings.showable);
+        layer.layers.forEach((l) => {
+          const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
+          updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } };
+        });
+      } else {
+        const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
+        updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings.showable } } };
       }
 
-    else
-      {
-        dispatch(
-          showInfoMessage("Cannot add additional layer. Number of active layers cannot exceed " + layer_limit)
-        );
-      }
+      setCurrentLayers(update(currentLayers, updatefn));
+      handleCurrentLayersChange();
+    }
+
+    else {
+      dispatch(
+        showInfoMessage("Cannot add additional layer. Number of active layers cannot exceed " + layer_limit)
+      );
+    }
 
 
 
@@ -554,7 +552,9 @@ export default function AddLayer(props) {
                 </StyledListItem2>
                 <Collapse in={openM1} timeout="auto" unmountOnExit>
                   <List className={classes.list}>
-                    {M1Layers.map((layer, index) => {
+                    {M1Layers?.filter(
+                      (layer) => !props.search || layer.layerName?.toLowerCase().includes(props.search)
+                    )?.map((layer, index) => {
                       const labelId = `m1layer-list-label-${index}`;
                       return (
                         <StyledListItem key={index} ContainerComponent="li">
@@ -571,7 +571,7 @@ export default function AddLayer(props) {
                   </List>
                 </Collapse>
                 <StyledListItem2 button onClick={() => setIsOpenUserDefinedLayers(!isOpenUserDefinedLayers)}>
-                    {/* <IconButton
+                  {/* <IconButton
                       size="small"
                       onClick={(event) => {
                         event.stopPropagation();
@@ -581,24 +581,26 @@ export default function AddLayer(props) {
                   <ClearButton />
                   </IconButton> */}
                   <ListItemText style={{ paddingLeft: '20px' }} primary="Client Specific Layers" />
-                      <Button
-                        color="secondary"
-                        startIcon={<ClearButton />}
-                        className={classes.multiSelectionTopBarButtons}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          handleCheckAllLayers(UdLayers, false, "UD")
-                        }}
-                      >
-                        CLEAR ALL
-                      </Button>
+                  <Button
+                    color="secondary"
+                    startIcon={<ClearButton />}
+                    className={classes.multiSelectionTopBarButtons}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleCheckAllLayers(UdLayers, false, "UD")
+                    }}
+                  >
+                    CLEAR ALL
+                  </Button>
                   {isOpenUserDefinedLayers ? <ExpandLess /> : <ExpandMore />}
                 </StyledListItem2>
 
                 {/* Custom */}
                 <Collapse in={isOpenUserDefinedLayers} timeout="auto" unmountOnExit>
                   <List className={classes.list}>
-                    {UdLayers.map((layer, index) => {
+                    {UdLayers?.filter(
+                      (layer) => !props.search || layer.name?.toLowerCase().includes(props.search) || layer.layerName?.toLowerCase().includes(props.search)
+                    )?.map((layer, index) => {
                       const labelId = `udlayer-list-label-${index}`;
                       if (layer.type === "group") {
                         return (

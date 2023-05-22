@@ -2,8 +2,8 @@ import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../../MapControlsContext";
 import { AppContext } from "AppContext";
-import { Grid, Typography, Divider } from "@material-ui/core";
-import { Close as CloseButton } from "@material-ui/icons";
+import { Grid, Typography, Divider, Tooltip, InputBase } from "@material-ui/core";
+import { Close as CloseButton, Search as SearchIcon, Clear as ClearIcon } from "@material-ui/icons";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import { copy, deepEqual, deepEqualObjects } from "components/Shared/functions";
@@ -18,6 +18,29 @@ import { useHookstate } from '@hookstate/core';
 import { hookStateApp } from "hookstate";
 
 const useStyles = makeStyles((theme) => ({
+    search: {
+        position: "relative",
+        borderRadius: theme.shape.borderRadius,
+        marginLeft: 0,
+        marginTop: 0,
+        width: "100%",
+        [theme.breakpoints.up("sm")]: {
+            width: "auto",
+        },
+        "& .MuiInputBase-root": { width: "93% !important" },
+    },
+    iconSearch: {
+        zIndex: 1,
+        "&:hover": {
+            cursor: "pointer",
+        },
+    },
+    iconClear: {
+        zIndex: 1,
+        "&:hover": {
+            cursor: "pointer",
+        },
+    },
     subHeaderItem: {
         backgroundColor: "#011133 !important",
         minWidth: "350px",
@@ -102,6 +125,20 @@ export default function SourceLayerManager(props) {
     const [updateManyLayer] = useMutation(UPDATE_MANY_LAYER);
     const [updateManyUserLayerSettings] = useMutation(UPDATEMANYLAYERSETTINGS);
 
+
+    const [searchState, setSearchState] = useState(false);
+    const [search, setSearch] = useState();
+
+    const clearSearch = () => {
+        setTimeout(() => {
+            setSearch(null);
+            setSearchState(false);
+        }, 200);
+    };
+    const setSearchValue = (value) => {
+        setSearch(value);
+    };
+
     useEffect(() => {
         if (!deepEqual(currentLayers, hookState.layers.get({ noproxy: true }))) {
             setCurrentLayers(copy(hookState.layers.get({ noproxy: true })));
@@ -185,8 +222,8 @@ export default function SourceLayerManager(props) {
 
                 <ListItem
                     style={{
-                        flexDirection: "column",
-                        justifyContent: "start",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
                         alignItems: "start",
                     }}
                 >
@@ -211,9 +248,45 @@ export default function SourceLayerManager(props) {
                             LAYERS
                         </h4>
                     </ListItemText>
+                    <Grid item xs={7}>
+                        <div className={classes.search}>
+                            {
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'row-reverse'
+                                }} >
+                                    {searchState ? (
+                                        <Tooltip title="Clear" className={classes.iconClear}>
+                                            <IconButton size="small" htmlColor="white" onClick={clearSearch}>
+                                                <ClearIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    ) : <Tooltip title="Search" className={classes.iconSearch} onClick={() => setSearchState(true)}>
+                                        <SearchIcon />
+                                    </Tooltip>}
+                                    {searchState && <InputBase
+                                        // id="searchInput"
+                                        fullWidth
+                                        placeholder={`Search by ${selectedType} name`}
+                                        value={search}
+                                        classes={{
+                                            root: classes.inputRoot,
+                                            input: classes.inputInput,
+                                        }}
+                                        autoComplete="off"
+                                        inputProps={{ "aria-label": "search" }}
+                                        onFocus={() => setSearchState(true)}
+                                        onChange={(evt) => setSearchValue(evt.target.value)}
+                                        autoFocus
+                                    />
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </Grid>
                 </ListItem>
-                {selectedType === "source" && <SourceManager />}
-                {selectedType === "layer" && <LayerManager />}
+                {selectedType === "source" && <SourceManager search={search} />}
+                {selectedType === "layer" && <LayerManager search={search} />}
             </Grid>
         </ClickAwayListener>
     );
