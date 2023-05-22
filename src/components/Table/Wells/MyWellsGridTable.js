@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Container, Dialog } from "@material-ui/core";
 import { debounce, get } from "lodash";
 
@@ -28,6 +28,8 @@ const startPaginationAt = 50;
 function MyWellsGridTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
+
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
   const [removeWells] = useMutation(REMOVE_WELLS, {
     refetchQueries: ["getESSimpleSearch"],
@@ -65,6 +67,7 @@ function MyWellsGridTable(props) {
         },
       }).then(() => {
         props.setLoading(false);
+        setResetSelectedRow(!resetSelectedRow);
       });
     }
   };
@@ -144,6 +147,7 @@ function MyWellsGridTable(props) {
         orderByTracks={false}
         startPaginationAt={startPaginationAt}
         onTableChange={props.onTableChange}
+        resetSelectedRow={resetSelectedRow}
         options={{
           ...props.options,
           ...props.customOptions,
