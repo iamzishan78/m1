@@ -218,7 +218,7 @@ const CampaignDetail = ({ viewDoc }) => {
                             notchedOutline: classes.notchedOutline,
                           },
                         }}
-                        onBlur={({ target }) => updateCampaignInformation("name", target.value)}
+                        onBlur={({ target }) => updateCampaignInformation("name", target.value.trim())}
                       />
                     </FormControl>
                   )}
@@ -272,7 +272,7 @@ const CampaignDetail = ({ viewDoc }) => {
           {!viewDoc ? (
             <div
               className={classes.tabsSection}
-              // style={{ display: stateApp.viewDoc ? "none" : "" }}
+            // style={{ display: stateApp.viewDoc ? "none" : "" }}
             >
               <div id="parent-div" className={classes.tabsSectionDetails} onScroll={handleScroll}>
                 <div id="header-div" className={classes.tabDetailSection} ref={tab === 0 ? selectedTabRef : null}>
@@ -343,7 +343,7 @@ const CampaignDetail = ({ viewDoc }) => {
           onClose={() => setOpenDeleteDialog(false)}
           deleteFunc={() => updateCampaignInformation("isDeleted", true)}
           m1nSelectedRowsIds={[campaign.current?._id]}
-          setM1nSelectedRowsIndexes={() => {}}
+          setM1nSelectedRowsIndexes={() => { }}
         >
           {`Do you want to delete this campaign?`}
         </DeleteConfirmationDialogContent>
