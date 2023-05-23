@@ -158,10 +158,11 @@ function TractInterestOwnerTable(props) {
   const getRows = () => {
     const selectedRows = [];
     for (let i = 0; i < props.selectedRows.length; i++) {
-      selectedRows.push({
-        ...props.rows[props.selectedRows[i].index],
-        _id: props.rows[props.selectedRows[i].index].contactId,
-      });
+      if (props.rows[props.selectedRows[i].index])
+        selectedRows.push({
+          ...props.rows[props.selectedRows[i].index],
+          _id: props.rows[props.selectedRows[i].index].contactId,
+        });
     }
     return selectedRows;
   };
@@ -229,7 +230,7 @@ function TractInterestOwnerTable(props) {
           onClose={() => setOpenCustomDialog("")}
           deleteFunc={deleteFunc}
           m1nSelectedRowsIds={props.selectedRows.map(
-            (sR) => props.rows[sR.dataIndex]._id
+            (sR) => props.rows[sR.dataIndex]?._id
           )}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
@@ -313,7 +314,7 @@ function TractInterestOwnerTable(props) {
                       let owners = [];
                       for (let i in props.selectedRows) {
                         owners.push(
-                          props.rows[props.selectedRows[i].dataIndex]
+                          props.rows[props.selectedRows[i]?.dataIndex]
                         );
                       }
                       setSelectedRows(owners);
