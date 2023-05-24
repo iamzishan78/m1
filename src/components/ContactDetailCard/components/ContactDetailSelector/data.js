@@ -24,5 +24,5 @@ export const contactDetailInitialData = [
   { index: 1, value: "activities", Icon: ActivitiesIcon, label: "Activities", showCounts: true },
   { index: 7, value: "documents", Icon: DocumentsIcon, label: "Documents", showCounts: true },
   { index: 6, value: "deals", Icon: DealsIcon, label: "Deals", showCounts: true },
-  { index: 8, value: "relatedContacts", Icon: PeopleAltOutlinedIcon, label: "Related Contacts" },
+  { index: 8, value: "relatedContacts", Icon: PeopleAltOutlinedIcon, label: "Related Contacts", showCounts: true },
 ];
