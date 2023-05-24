@@ -126,7 +126,7 @@ function RevenuePropertiesTable(props) {
             header={`Delete Properties`}
             onClose={() => props.setOpenDialog(null)}
             deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
+            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
             {`Do you want to delete the selected ${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "properties" : "property"

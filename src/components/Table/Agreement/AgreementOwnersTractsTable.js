@@ -73,11 +73,11 @@ function AgreementOwnersTractsTable(props) {
       updateShapeOwners({
         variables: {
           shapeType: 'Agreement',
-          shapeOwners: ids.map((_id, i) => ({ 
-            _id, isDeleted: true, 
-            shapeId: props.customLayer?._id, 
+          shapeOwners: ids.map((_id, i) => ({
+            _id, isDeleted: true,
+            shapeId: props.customLayer?._id,
             relatedObject: props.rows.find(r => r._id === ids[i])?.contact?._id,
-            tract: { ...props.rows.find(r => r._id === ids[i])?.tract, isDeleted: true } 
+            tract: { ...props.rows.find(r => r._id === ids[i])?.tract, isDeleted: true }
           })),
         },
         refetchQueries: ["getCustomLayer", "getESPaginatedList", "getESSimpleSearch", "getESFilterList"],
@@ -177,7 +177,7 @@ function AgreementOwnersTractsTable(props) {
             header={`Delete Tract(s)`}
             onClose={() => props.setOpenDialog(null)}
             deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
+            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
             {`Do you want to delete the selected tract${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
