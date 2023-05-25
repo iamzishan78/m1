@@ -1,7 +1,7 @@
 import React from "react";
 import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import PropTypes from "prop-types";
 import ContactCardIcon from "components/Shared/svgIcons/contact_card";
 import ContactCardDisabledIcon from "components/Shared/svgIcons/contact_card_disabled";
@@ -16,8 +16,7 @@ import debounce from "lodash/debounce";
 // import value formatters
 import joinAddress from "components/Shared/valueformatters/join-address.js";
 import { AppContext } from "AppContext";
-
-const filter = createFilterOptions();
+import { fuzzySearch } from "../MUIDataTable/utils";
 
 const LISTBOX_PADDING = 8; // px
 
@@ -122,7 +121,7 @@ const useStyles = makeStyles({
         },
       },
   inputRoot: (props) =>
-  props.withContactCard
+    props.withContactCard
     && {
       "& .MuiAutocomplete-endAdornment": {
         right: "60px !important",
@@ -324,7 +323,7 @@ export default function AutocompEntityNamesVirtualizeList(props) {
       onInputChange={onInputChange}
       filterOptions={(options, params) => {
         if (props.addNew) {
-          const filtered = filter(options, params);
+          const filtered = fuzzySearch(options, params.inputValue)
 
           // Suggest the creation of a new value
           if (params.inputValue !== "") {
