@@ -5360,8 +5360,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       if (oneTimeMapBounds) {
         const { bounds, options } = oneTimeMapBounds
         const invalidCoordinate = bounds.find((coord) => isNaN(parseInt(coord[0])) || isNaN(parseInt(coord[1])))
-        if (!invalidCoordinate)
-          newMap.fitBounds(bounds, options);
+        if (!invalidCoordinate) {
+          try { newMap.fitBounds(bounds, options) } catch (e) { }
+        }
         setOneTimeMapBounds(null);
       }
     };
@@ -5372,8 +5373,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       if (oneTimeMapBounds) {
         const { bounds, options } = oneTimeMapBounds
         const invalidCoordinate = bounds.find((coord) => isNaN(parseInt(coord[0])) || isNaN(parseInt(coord[1])))
-        if (!invalidCoordinate)
-          map.fitBounds(bounds, options);
+        if (!invalidCoordinate) {
+          try { map.fitBounds(bounds, options) } catch (e) { }
+        }
         setOneTimeMapBounds(null);
       }
       // map.on("mousemove", mapMouseMove);
@@ -5604,12 +5606,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
     ) {
       let bounds = fitOverBounds();
       if (typeof bounds?.minLong !== "undefined")
-        map.fitBounds([
-          [bounds.minLong, bounds.minLat],
-          [bounds.maxLong, bounds.maxLat],
-        ], {
-          easing: () => 1,
-        });
+        try {
+          map?.fitBounds(bounds, {
+            easing: () => 1,
+          })
+        } catch (e) { }
     }
   }, [map, stateApp.fitBounds]);
 
@@ -6142,9 +6143,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         ];
 
         // map may be null when wellDetailCard is launched from somewhere else
-        map?.fitBounds(bbox, {
-          easing: () => 1,
-        });
+        try {
+          map?.fitBounds(bbox, {
+            easing: () => 1,
+          })
+        } catch (e) { }
       }
       // setStateApp((state) => ({
       //   ...state,

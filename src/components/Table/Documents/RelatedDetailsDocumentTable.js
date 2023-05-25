@@ -248,7 +248,7 @@ function RelatedDetailsDocumentTable(props) {
             header="Delete Document(s)"
             onClose={() => setOpenDialog(null)}
             deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
+            m1nSelectedRowsIds={selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
             setM1nSelectedRowsIndexes={setSelectedRows}
           >
             {`Do you want to permanently delete the document${selectedRows && selectedRows.length > 1 && selectedRows.length > 1 ? "s" : ""
