@@ -6163,7 +6163,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             easing: () => 1,
           })
         } catch (e) { }
-
       }
       // setStateApp((state) => ({
       //   ...state,
