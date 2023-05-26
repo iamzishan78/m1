@@ -183,7 +183,7 @@ const fuzzySearch = (items, query, queryKey = 'name') => {
     const ret = items.reduce((found, i) => {
         let matches = 0;
         search.forEach(s => {
-            if (i[queryKey].indexOf(s) > -1) {
+            if (i[queryKey].toLowerCase().indexOf(s.toLowerCase()) > -1) {
                 matches++;
             }
         })
