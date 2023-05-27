@@ -10,7 +10,7 @@ import { AppContext } from "AppContext";
 import { ColorPickerStyledBox, useLayerStyle, useStyles, WidthPicker } from "./Common";
 import { Autocomplete } from "@material-ui/lab";
 
-function LayerManager(props) {
+function NewLayerManager(props) {
   const [stateApp] = useContext(AppContext);
   const sourceProps = "" + uuid() + "_source"
 
@@ -215,4 +215,4 @@ function LayerManager(props) {
   );
 }
 
-export default LayerManager;
+export default NewLayerManager;
