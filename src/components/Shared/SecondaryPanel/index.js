@@ -3,10 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import { get } from "lodash";
 
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
-import AddALayer from "components/MapControls/components/addALayer";
 import SourceLayerManager from "components/MapControls/components/SourceLayerManager";
 import LayerStyling from "components/MapControls/components/Layer/LayerStyling";
-import LayerManager from "components/MapControls/components/Layer/LayerManager";
+import NewLayerManager from "components/MapControls/components/Layer/NewLayerManager";
 import { AppContext } from "AppContext";
 import TransferDataManager from "components/MapControls/components/TransferDataManager";
 
@@ -35,10 +34,9 @@ const Secondarypanel = () => {
   const classes = useStyles({ leftPixels });
   return (
     <div className={classes.root}>
-      {stateMapControls.manageLayer && <LayerManager />}
+      {stateMapControls.manageLayer && <NewLayerManager />}
       {stateMapControls.manageSourceLayer && <SourceLayerManager />}
       {stateMapControls.manageTransferData && <TransferDataManager />}
-      {stateMapControls.addLayer && <AddALayer />}
       {stateMapControls.selectedLayer && <LayerStyling layer={stateApp.selectedLayer} fileName={stateApp.selectedLayer.fileName} />}
     </div>
   );
