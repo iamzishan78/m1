@@ -34,9 +34,7 @@ import { truncate } from "components/Shared/functions";
 import Button from "@material-ui/core/Button";
 
 
-import proj4 from "proj4";
 // cra webpack hack to call this a png to get included in bundle
-import conus from "components/Shared/constants/nadgrids/conus.png";
 import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 import { useHistory } from "react-router-dom";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
@@ -49,18 +47,7 @@ import { useHookstate } from '@hookstate/core';
 import { showInfoMessage } from "actions";
 import { useDispatch } from "react-redux";
 import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from "@material-ui/icons";
-
-
-
-
-const GCS_North_American_1927 =
-  'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
-proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@conus,null +no_defs");
-proj4.defs(GCS_North_American_1927, proj4.defs("EPSG:4267"));
-
-const GCS_North_American_1927_ALT1 =
-  'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]]';
-proj4.defs(GCS_North_American_1927_ALT1, proj4.defs("EPSG:4267"));
+import JSZip from 'jszip';
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -517,6 +504,7 @@ function SourceManager(props) {
   const parseGeoForTypesAndNames = (geo, name) => {
     const layerTypes = [];
     const fileNames = [];
+    // Define the source and target projections
     geo.features.forEach((feature, index) => {
       feature.id = index + 1
       if (!feature.properties) {
@@ -574,47 +562,67 @@ function SourceManager(props) {
           .catch((error) => reject(error));
       });
     } else if (fileName.endsWith(".zip")) {
-      // load contiguous lower 48 us nadgrid
-      await new Promise((resolve, reject) => {
-        fetch(conus)
-          .then((response) => {
-            response.arrayBuffer().then((buffer) => {
-              const nadgrid = proj4.nadgrid("conus", buffer);
-              resolve(nadgrid);
-            });
-          })
-          .catch((err) => {
-            console.error(err);
-            resolve();
-          });
-      });
-
       res = await new Promise((resolve, reject) => {
-        fetch(inputFile).then((response) => {
-          response.arrayBuffer().then((buffer) => {
-            shp(buffer).then((geojson) => {
-              let allFileNames = [];
-              let allLayerTypes = [];
-              const name = fileName.replace(".zip", "");
-              if (Array.isArray(geojson)) {
-                geojson.forEach((geo) => {
-                  const { layerTypes, fileNames } = parseGeoForTypesAndNames(geo, name);
-                  allLayerTypes = allLayerTypes.concat(layerTypes);
-                  allFileNames = allFileNames.concat(fileNames);
-                });
-                const merged = geojsonMerge.merge(geojson);
-                merged.features.forEach((feature, index) => {
-                  feature.id = index + 1
-                })
-                merged.fileNames = allFileNames;
-                merged.featureTypes = allLayerTypes;
-                merged.groupName = fileName.replace(".zip", "");
-                resolve({ data: merged, originalData: { file: fileData, fileName, fileType } });
-              } else {
-                resolve({ data: singleGeojson(geojson, name), originalData: { file: fileData, fileName, fileType } });
-              }
-            });
+        fetch(inputFile).then(async (response) => {
+          const zip = await JSZip.loadAsync(response.arrayBuffer());
+
+          // Iterate through each file in the zip
+          const zipFiles = {}
+          zip.forEach(async (relativePath, zipEntry) => {
+            if (!zipEntry.dir && !relativePath.includes('xml') && !relativePath.includes('pdf')) {
+              const name = relativePath.split('.').slice(0, -1).join('.')
+              if (!zipFiles[name]) zipFiles[name] = []
+              zipFiles[name].push(zipEntry)
+            }
           });
+          const geojsons = []
+          const zipKeys = Object.keys(zipFiles)
+
+          for (let i = 0; i < zipKeys.length; i++) {
+            const zipKey = zipKeys[i]
+            const newZip = new JSZip();
+            zipFiles[zipKey].forEach((file) => {
+              newZip.file(file.name, file.async('arraybuffer'));
+            })
+            const newZipContent = await newZip.generateAsync({ type: 'blob' });
+
+            var formdata = new FormData();
+            formdata.append("upload", newZipContent, zipKey + '.zip');
+            formdata.append("rfc7946", "on");
+
+            var requestOptions = {
+              method: 'POST',
+              body: formdata,
+              redirect: 'follow'
+            };
+            // eslint-disable-next-line no-loop-func
+            res = await new Promise((resolve) => {
+              fetch("http://ogre.adc4gis.com/convert", requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                  const name = fileName.replace(".zip", "");
+                  geojsons.push(result)
+                  resolve({ data: singleGeojson(result, name), originalData: { file: fileData, fileName, fileType } });
+                })
+                .catch(error => console.log('error', error));
+            });
+          }
+
+          let allFileNames = [];
+          let allLayerTypes = [];
+          geojsons.forEach((geo) => {
+            const { layerTypes, fileNames } = parseGeoForTypesAndNames(geo, geo.name);
+            allLayerTypes = allLayerTypes.concat(layerTypes);
+            allFileNames = allFileNames.concat(fileNames);
+          });
+          const merged = geojsonMerge.merge(geojsons);
+          merged.features.forEach((feature, index) => {
+            feature.id = index + 1
+          })
+          merged.fileNames = allFileNames;
+          merged.featureTypes = allLayerTypes;
+          merged.groupName = fileName.replace(".zip", "");
+          resolve({ data: merged, originalData: { file: fileData, fileName, fileType } });
         });
       });
     }

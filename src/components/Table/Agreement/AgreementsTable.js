@@ -164,16 +164,16 @@ function AgreementsTable(props) {
   const onCustomKeyChange = (value = null, index, key) => {
     const rows = JSON.parse(JSON.stringify(props.rows));
     rows[index].custom_data = {
-      ...props.rows[index].custom_data,
+      ...props.rows[index]?.custom_data,
       [`${key}`]: value,
     };
     props.setRows(rows);
 
     const customLayer = {
       shapeJson: {
-        ...props.rows[index].shapeJson,
+        ...props.rows[index]?.shapeJson,
         properties: {
-          ...props.rows[index].shapeJson.properties,
+          ...props.rows[index]?.shapeJson.properties,
           custom_data: { [`${key}`]: value },
         },
       },
@@ -181,7 +181,7 @@ function AgreementsTable(props) {
 
     updateCustomLayer({
       variables: {
-        customLayerId: props.rows[index]._id,
+        customLayerId: props.rows[index]?._id,
         customLayer: customLayer,
       },
       refetchQueries: ["customLayer"],
@@ -220,7 +220,7 @@ function AgreementsTable(props) {
             header={`Delete Agreement(s)`}
             onClose={() => props.setOpenDialog(null)}
             deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
+            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
             {`Do you want to delete the selected agreement${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""

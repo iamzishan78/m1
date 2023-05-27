@@ -66,7 +66,7 @@ function UnitInterestOwnerTable(props) {
         setSelectedRows([]);
       },
 
-      onError: (err) => {},
+      onError: (err) => { },
       refetchQueries: [
         "getESPaginatedList",
         "getESSimpleSearch",
@@ -152,10 +152,11 @@ function UnitInterestOwnerTable(props) {
   const getRows = () => {
     const selectedRows = [];
     for (let i = 0; i < props.selectedRows.length; i++) {
-      selectedRows.push({
-        ...props.rows[props.selectedRows[i].index],
-        _id: props.rows[props.selectedRows[i].index].contactId,
-      });
+      if (props.rows[props.selectedRows[i].index])
+        selectedRows.push({
+          ...props.rows[props.selectedRows[i].index],
+          _id: props.rows[props.selectedRows[i].index].contactId,
+        });
     }
     return selectedRows;
   };
@@ -177,7 +178,7 @@ function UnitInterestOwnerTable(props) {
 
   const onExport = () => {
     let rowsData = props.selectedRowsValues || []
-    if(rowsData?.length === 0){
+    if (rowsData?.length === 0) {
       let rows = props.rows
       props.selectedRows.forEach((data) => {
         rowsData.push(rows[data.dataIndex]);
@@ -385,13 +386,12 @@ function UnitInterestOwnerTable(props) {
           )}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
-          {`Do you want to permanently delete the unit owner${
-            props.selectedRows &&
+          {`Do you want to permanently delete the unit owner${props.selectedRows &&
             props.selectedRows.length > 1 &&
             props.selectedRows.length > 1
-              ? "s"
-              : ""
-          }?`}
+            ? "s"
+            : ""
+            }?`}
         </DeleteConfirmationDialogContent>
       )}
       <Table

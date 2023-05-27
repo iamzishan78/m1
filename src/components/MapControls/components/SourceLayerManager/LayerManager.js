@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import update from "immutability-helper";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
-import { MapControlsContext } from "../../MapControlsContext";
 import { AppContext } from "AppContext";
 import { Typography } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
@@ -15,8 +14,6 @@ import ExpandMore from "@material-ui/icons/ExpandMore";
 import { copy, deepEqual, deepEqualObjects } from "components/Shared/functions";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { useMutation } from "@apollo/client";
-import shp from "shpjs";
-import geojsonMerge from "@mapbox/geojson-merge";
 import { IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
@@ -31,11 +28,8 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import { Popper, Grow, Paper, MenuList, MenuItem } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
-import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from "@material-ui/icons";
+import { Close as ClearButton } from "@material-ui/icons";
 
-import proj4 from "proj4";
-// cra webpack hack to call this a png to get included in bundle
-import conus from "components/Shared/constants/nadgrids/conus.png";
 import { UPDATE_MANY_LAYER } from "graphQL/useMutationUpdateManyLayer";
 import { useHistory } from "react-router-dom";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
@@ -47,15 +41,6 @@ import { showInfoMessage } from "actions";
 import { useDispatch } from "react-redux";
 import Button from "@material-ui/core/Button";
 
-
-const GCS_North_American_1927 =
-  'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
-proj4.defs("EPSG:4267", "+proj=longlat +ellps=clrk66 +datum=NAD27 +nadgrids=@conus,null +no_defs");
-proj4.defs(GCS_North_American_1927, proj4.defs("EPSG:4267"));
-
-const GCS_North_American_1927_ALT1 =
-  'GEOGCS["GCS_North_American_1927",DATUM["D_North_American_1927",SPHEROID["Clarke_1866",6378206.4,294.9786982]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295]]';
-proj4.defs(GCS_North_American_1927_ALT1, proj4.defs("EPSG:4267"));
 
 const useStyles = makeStyles((theme) => ({
   subHeaderItem: {
@@ -388,116 +373,6 @@ export default function AddLayer(props) {
       }
     }
   };
-
-  const parseGeoForTypesAndNames = (geo, name) => {
-    const layerTypes = [];
-    const fileNames = [];
-    geo.features.forEach((feature, index) => {
-      feature.id = index + 1
-      if (!feature.properties) {
-        feature.properties = {};
-      }
-      feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type };
-      if (!layerTypes.includes(feature.geometry.type) && feature.geometry.type !== 'MultiPolygon') {
-        layerTypes.push(feature.geometry.type);
-      }
-    });
-    layerTypes.forEach((layerType) => {
-      if (layerTypes.length > 1) {
-        fileNames.push(`${geo.fileName || name} - ${layerType}`);
-      } else {
-        fileNames.push(`${geo.fileName || name} `);
-      }
-    });
-    return { layerTypes, fileNames };
-  };
-
-  const singleGeojson = (geojson, groupName) => {
-    const { layerTypes, fileNames } = parseGeoForTypesAndNames(geojson, groupName);
-    geojson.fileNames = fileNames;
-    geojson.featureTypes = layerTypes;
-    geojson.groupName = groupName;
-    return geojson;
-  };
-
-  async function handleFileAsync(file) {
-    let inputFile = null;
-    let fileData = null;
-    let fileName = null;
-    let fileType = null;
-    if (Array.isArray(file)) {
-      inputFile = file[0].data;
-      fileData = file[0].file;
-      fileName = file[0].file.name;
-      fileType = file[0].file.type;
-    } else {
-      inputFile = file;
-      fileName = file.split("?")[0].split("/");
-      fileName = fileName[fileName.length - 1];
-    }
-    let res;
-    fileName = fileName.toLowerCase();
-    if (fileName.endsWith(".geojson")) {
-      res = await new Promise((resolve, reject) => {
-        fetch(inputFile)
-          .then((response) => {
-            return response.json();
-          })
-          .then((response) => {
-            resolve({
-              data: singleGeojson(response, fileName.replace(".geojson", "")),
-              originalData: { file: fileData, fileName, fileType },
-            });
-          })
-          .catch((error) => reject(error));
-      });
-    } else if (fileName.endsWith(".zip")) {
-      // load contiguous lower 48 us nadgrid
-      await new Promise((resolve, reject) => {
-        fetch(conus)
-          .then((response) => {
-            response.arrayBuffer().then((buffer) => {
-              const nadgrid = proj4.nadgrid("conus", buffer);
-              resolve(nadgrid);
-            });
-          })
-          .catch((err) => {
-            console.error(err);
-            resolve();
-          });
-      });
-
-      res = await new Promise((resolve, reject) => {
-        fetch(inputFile).then((response) => {
-          response.arrayBuffer().then((buffer) => {
-            shp(buffer).then((geojson) => {
-              let allFileNames = [];
-              let allLayerTypes = [];
-              const name = fileName.replace(".zip", "");
-              if (Array.isArray(geojson)) {
-                geojson.forEach((geo) => {
-                  const { layerTypes, fileNames } = parseGeoForTypesAndNames(geo, name);
-                  allLayerTypes = allLayerTypes.concat(layerTypes);
-                  allFileNames = allFileNames.concat(fileNames);
-                });
-                const merged = geojsonMerge.merge(geojson);
-                merged.features.forEach((feature, index) => {
-                  feature.id = index + 1
-                })
-                merged.fileNames = allFileNames;
-                merged.featureTypes = allLayerTypes;
-                merged.groupName = fileName.replace(".zip", "");
-                resolve({ data: merged, originalData: { file: fileData, fileName, fileType } });
-              } else {
-                resolve({ data: singleGeojson(geojson, name), originalData: { file: fileData, fileName, fileType } });
-              }
-            });
-          });
-        });
-      });
-    }
-    return res;
-  }
 
   const checkIfDeleteAllow = (layer) => {
     if (layer.name === 'Agreements' || layer.groupName === 'Agreements')
