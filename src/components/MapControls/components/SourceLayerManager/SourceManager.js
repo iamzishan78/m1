@@ -547,7 +547,7 @@ function SourceManager(props) {
     }
     let res;
     fileName = fileName.toLowerCase();
-    if (fileName.endsWith(".geojson")) {
+    if (fileName.endsWith(".geojson") || fileName.endsWith(".json")) {
       res = await new Promise((resolve, reject) => {
         fetch(inputFile)
           .then((response) => {
@@ -555,7 +555,7 @@ function SourceManager(props) {
           })
           .then((response) => {
             resolve({
-              data: singleGeojson(response, fileName.replace(".geojson", "")),
+              data: singleGeojson(response, fileName.replace(".geojson", "").replace(".json", "")),
               originalData: { file: fileData, fileName, fileType },
             });
           })
