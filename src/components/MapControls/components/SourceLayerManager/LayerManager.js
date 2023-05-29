@@ -427,7 +427,9 @@ export default function AddLayer(props) {
                 </StyledListItem2>
                 <Collapse in={openM1} timeout="auto" unmountOnExit>
                   <List className={classes.list}>
-                    {M1Layers.map((layer, index) => {
+                    {M1Layers?.filter(
+                      (layer) => !props.search || layer.layerName?.toLowerCase().includes(props.search)
+                    )?.map((layer, index) => {
                       const labelId = `m1layer-list-label-${index}`;
                       return (
                         <StyledListItem key={index} ContainerComponent="li">
@@ -471,7 +473,9 @@ export default function AddLayer(props) {
                 {/* Custom */}
                 <Collapse in={isOpenUserDefinedLayers} timeout="auto" unmountOnExit>
                   <List className={classes.list}>
-                    {UdLayers.map((layer, index) => {
+                    {UdLayers?.filter(
+                      (layer) => !props.search || layer.name?.toLowerCase().includes(props.search) || layer.layerName?.toLowerCase().includes(props.search)
+                    )?.map((layer, index) => {
                       const labelId = `udlayer-list-label-${index}`;
                       if (layer.type === "group") {
                         return (

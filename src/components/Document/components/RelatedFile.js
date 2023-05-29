@@ -743,46 +743,46 @@ export default function RelatedFile(props) {
               "aria-label": "change date",
             }}
           /> */}
-            <TextField
-              // autoOk
-              type="date"
-              id="filedate"
-              //variant="outlined"
-              defaultValue={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
-              value={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
-              margin="none"
-              fullWidth
-              onChange={(event) => {
-                const splittedDate = event?.target?.value.split("-")
-                if (splittedDate.length === 3) {
-                  const newDate = new Date()
-                  newDate.setYear(Number(splittedDate[0]))
-                  newDate.setMonth(Number(splittedDate[1]) - 1)
-                  newDate.setDate(Number(splittedDate[2]))
-                  setNewDocument({ ...newDocument, dateTime: newDate })
-                } else {
-                  setNewDocument({ ...newDocument, dateTime: "" })
-                }
-              }}
+          <TextField
+            // autoOk
+            type="date"
+            id="filedate"
+            //variant="outlined"
+            defaultValue={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
+            value={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
+            margin="none"
+            fullWidth
+            onChange={(event) => {
+              const splittedDate = event?.target?.value.split("-");
+              if (splittedDate.length === 3) {
+                const newDate = new Date();
+                newDate.setFullYear(Number(splittedDate[0])); // Use setFullYear instead of setYear
+                newDate.setMonth(Number(splittedDate[1]) - 1);
+                newDate.setDate(Number(splittedDate[2]));
+                setNewDocument({ ...newDocument, dateTime: newDate });
+              } else {
+                setNewDocument({ ...newDocument, dateTime: "" });
+              }
+            }}
 
-              InputLabelProps={{
-                shrink: true,
-              }}
-              disableToolbar
-              KeyboardButtonProps={{ "aria-label": "change date" }}
-              format="MM/DD/YYYY"
-              PopoverProps={{ disablePortal: false }}
-              InputProps={{
-                endAdornment: (
-                  <IconButton onClick={(event) => setNewDocument({ ...newDocument, dateTime: "" })}>
-                    <Clear style={{ height: 22, width: 22 }} />
-                  </IconButton>
-                ),
-                classes: {
-                  root: classes.dateRoot,
-                },
-              }}
-            />
+            InputLabelProps={{
+              shrink: true,
+            }}
+            disableToolbar
+            KeyboardButtonProps={{ "aria-label": "change date" }}
+            format="MM/DD/YYYY"
+            PopoverProps={{ disablePortal: false }}
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={(event) => setNewDocument({ ...newDocument, dateTime: "" })}>
+                  <Clear style={{ height: 22, width: 22 }} />
+                </IconButton>
+              ),
+              classes: {
+                root: classes.dateRoot,
+              },
+            }}
+          />
         </ListItem>
         {/* <ListItem
           style={{
