@@ -597,7 +597,7 @@ function SourceManager(props) {
             };
             // eslint-disable-next-line no-loop-func
             res = await new Promise((resolve) => {
-              fetch("http://ogre.adc4gis.com/convert", requestOptions)
+              fetch("https://ogre.adc4gis.com/convert", requestOptions)
                 .then(response => response.json())
                 .then(result => {
                   const name = fileName.replace(".zip", "");
