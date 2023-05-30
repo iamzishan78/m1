@@ -1,7 +1,7 @@
 /* eslint-disable import/no-anonymous-default-export */
 export default [
     {
-        label: "Property Number",
+        label: "Operator Prop #",
         mapped_key: "",
         required: false,
         actual_key: "property.number",
@@ -19,7 +19,7 @@ export default [
         actual_key: "property.description",
     },
     {
-        label: "Internal ID",
+        label: "Acct Ref ID",
         mapped_key: "",
         required: false,
         actual_key: "property.internalID",
