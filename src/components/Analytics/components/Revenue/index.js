@@ -12,6 +12,7 @@ import CustomDates from "components/Revenue/components/Common/CustomDates";
 import DetailTabsSection from "components/Analytics/components/Revenue/DetailTabsSection";
 import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import CheckDetailsSection from "./CheckDetailsSection";
+import CheckComparisonSection from "./CheckComparisonSection";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
@@ -169,6 +170,7 @@ export default function RevenueAnalytics(props) {
         >
           <StyledTab label="Income Statement" />
           <StyledTab label="Comparison" />
+          <StyledTab label="Check Comparison" />
           {/* <StyledTab label="Income Stmt" /> */}
           {/* <StyledTab label="Comparison" disabled /> */}
           {/* <StyledTab label="Properties" /> */}
@@ -224,6 +226,15 @@ export default function RevenueAnalytics(props) {
       {tab === 1 &&
         <div className={`${classes.sectionCard}`}>
           <CheckDetailsSection 
+            header="Check Details"
+            loadMore={loadMore}
+          />
+        </div>
+      }
+
+      {tab === 2 &&
+        <div className={`${classes.sectionCard}`}>
+          <CheckComparisonSection
             header="Check Details"
             loadMore={loadMore}
           />
