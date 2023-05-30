@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 export default [
     {
         label: "Property Number",
@@ -10,6 +11,12 @@ export default [
         mapped_key: "",
         required: false,
         actual_key: "property.name",
+    },
+    {
+        label: "Property Description",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.description",
     },
     {
         label: "Internal ID",
@@ -166,5 +173,17 @@ export default [
         mapped_key: "",
         required: false,
         actual_key: "property.approver",
+    },
+    {
+        label: "Purchaser Prop #",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.purchaserNumber",
+    },
+    {
+        label: "Purchaser",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.purchaser.name",
     },
 ];
