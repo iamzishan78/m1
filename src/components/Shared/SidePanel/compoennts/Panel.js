@@ -195,11 +195,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     else {
       switch (type) {
         case "layer":
-          setFilteredItems(panelItems.filter((i) => (i.layerName ?? i.name).toLowerCase().includes(search.toLowerCase())));
+          setFilteredItems(panelItems?.filter((i) => (i.layerName ?? i.name).toLowerCase().includes(search.toLowerCase())));
           break;
         case "base":
         case "heatMaps":
-          setFilteredItems(panelItems.filter((i) => i.name.toLowerCase().includes(search.toLowerCase())));
+          setFilteredItems(panelItems?.filter((i) => i.name.toLowerCase().includes(search.toLowerCase())));
           break;
         default:
       }
