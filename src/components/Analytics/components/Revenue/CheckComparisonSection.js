@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme) => ({
         "& .MuiTableCell-head": {
             paddingLeft: (p) => (p.isAgreementsTable ? "17px !important" : " "),
         },
-
         "& .MuiTableRow-hover": {
             "&:hover": {
                 "& .MuiTableCell-root": {
@@ -73,7 +72,7 @@ function CheckComparisonSection(props) {
             hit.date = hit.date ? convert_date(hit.date) : null;
             hit.checkDate = hit.check?.checkDate ? convert_date(hit.check.checkDate) : null;
             hit.depositDate = hit.check?.depositDate ? convert_date(hit.check.depositDate) : null;
-            hit.propertyId = hit.property?._id
+            hit.propertyId = hit.property?._id;
             hit.interestType = hit.property?.interest?.interestType;
             hit.interestAmount = hit.property?.interest?.interestAmount;
             hit.effectiveDate = hit.property?.interest?.effectiveDate;
