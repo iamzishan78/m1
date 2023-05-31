@@ -82,18 +82,19 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
   const updateFilters = () => {
     const filters = [];
 
-    filters.push({
-      field,
-      value: {
-        range: {
-          [field]: {
-            gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
-            lte: toDate ? `${toDate}T00:00:00.000Z` : null,
+    if (fromDate && toDate)
+      filters.push({
+        field,
+        value: {
+          range: {
+            [field]: {
+              gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
+              lte: toDate ? `${toDate}T00:00:00.000Z` : null,
+            },
           },
         },
-      },
-      // includeEmpty: selectedFilter === "All Dates" ? true : undefined,
-    });
+        // includeEmpty: selectedFilter === "All Dates" ? true : undefined,
+      });
 
     if (propertyFilter[0]) {
       filters.push(propertyFilter[0]);

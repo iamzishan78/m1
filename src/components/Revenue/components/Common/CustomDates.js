@@ -94,7 +94,7 @@ export default function Portfolio({
   // }
 
   const handleDateTypeChange = (date) => {
-    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate);
+    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate, true);
   };
   return (
     <>
