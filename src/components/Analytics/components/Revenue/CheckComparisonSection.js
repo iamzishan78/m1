@@ -3,7 +3,7 @@ import { Container } from "@material-ui/core";
 import TableESHOC from "components/Table/TableESHOC";
 import Table from "components/Shared/M1nTable/components/Table";
 import { deepEqualObjects, copy } from "components/Shared/functions";
-import TableHeader from 'components/Table/constants/check-details-section-header-schema';
+import TableHeader from 'components/Table/constants/check-comparison-header-schema';
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 import { makeStyles } from "@material-ui/styles";
 
@@ -47,9 +47,21 @@ function CheckComparisonSection(props) {
 
     const formatHits = (hits) => {
         return hits.map((hit) => {
-            hit.number = hit?.property?.number;
-            hit.name = hit?.property?.name;
-            hit.purchaser = hit?.property?.purchaser?.name;
+            hit.internalID = hit.property?.internalID;
+            hit.checkNumber = hit.check?.checkNumber;
+            hit.prospectID = hit.property?.prospectID;
+            hit.operator = hit.property?.operator?.name;
+            hit.status = hit.property?.status;
+            hit.wellApiNumber = hit.wells.length > 1 ? "MULTIPLE" : hit.wells[0]?.apiNumber || "";
+            hit.wellName = hit.wells.length > 1 ? "MULTIPLE" : hit.wells[0]?.wellName || "";
+            hit.purchaserNumber = hit.property?.purchaserNumber;
+            hit.acquisitionID = hit.property?.acquisitionID;
+            hit.internalCompany = hit.property?.internalCompany;
+            hit.accRefID = hit?.property?.internalID;
+            hit.companyID = hit?.property?.internalID;
+            hit.number = hit.property?.number;
+            hit.name = hit.property?.name;
+            hit.purchaser = hit.property?.purchaser?.name;
             hit.state = hit.property?.state;
             hit.county = hit.property?.county;
             hit.ownerNumber = hit.property?.ownerNumber;
@@ -57,11 +69,16 @@ function CheckComparisonSection(props) {
             hit.checkAmount = hit.check?.checkAmount;
             hit.source = hit.check?.source;
             hit.sourceId = hit.check?.sourceId;
-            hit.propertyName = hit.property.name;
+            hit.propertyName = hit.property?.name;
             hit.date = hit.date ? convert_date(hit.date) : null;
             hit.checkDate = hit.check?.checkDate ? convert_date(hit.check.checkDate) : null;
             hit.depositDate = hit.check?.depositDate ? convert_date(hit.check.depositDate) : null;
-            hit.propertyId = hit?.property?._id;
+            hit.propertyId = hit.property?._id
+            hit.interestType = hit.property?.interest?.interestType;
+            hit.interestAmount = hit.property?.interest?.interestAmount;
+            hit.effectiveDate = hit.property?.interest?.effectiveDate;
+            hit.interestStatus = hit.property?.interest?.status;
+            hit.costFree = hit.property?.interest?.costFree;
             return hit;
         });
     };
@@ -70,7 +87,7 @@ function CheckComparisonSection(props) {
         setTableMeta({
             filters: [],
             TableHeader: copy(TableHeader),
-            esIndex: "checkdetails_flat",
+            esIndex: "checkdetailsinterestscomparison_flat",
             startPaginationAt: 100,
             defaultSort: { field: "flatSyncAt", order: "desc" },
             formatHits,

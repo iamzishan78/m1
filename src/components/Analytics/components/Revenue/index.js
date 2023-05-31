@@ -235,7 +235,7 @@ export default function RevenueAnalytics(props) {
       {tab === 2 &&
         <div className={`${classes.sectionCard}`}>
           <CheckComparisonSection
-            header="Check Details"
+            header="Property DOI vs Checkstub Interest"
             loadMore={loadMore}
           />
         </div>
