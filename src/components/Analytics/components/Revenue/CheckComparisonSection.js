@@ -76,6 +76,7 @@ function CheckComparisonSection(props) {
             hit.interestType = hit.property?.interest?.interestType;
             hit.interestAmount = hit.property?.interest?.interestAmount;
             hit.effectiveDate = hit.property?.interest?.effectiveDate;
+            hit.endDate = hit.property?.interest?.endDate;
             hit.interestStatus = hit.property?.interest?.status;
             hit.costFree = hit.property?.interest?.costFree;
             return hit;
