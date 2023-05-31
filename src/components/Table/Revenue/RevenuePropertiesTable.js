@@ -15,7 +15,7 @@ import TableESHOC from "../TableESHOC";
 import { DELETE_REVENUE_PROPERTIES } from "graphQL/useMutationDeletePropeties";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
-const genericDataActions = ["tags", "comments"];
+const genericDataActions = ["comments"];
 
 export const statusData = [
   { label: "Not in Pay", value: "NotInPay" },
@@ -46,10 +46,6 @@ function RevenuePropertiesTable(props) {
       hit.amount = hit?.lastCheck?.netOwnerValue;
       hit.type = hit?.lastCheck?.interestType[0];
       hit.lastChecked = hit?.lastCheck?.checkDate ? new Date(hit?.lastCheck?.checkDate).toLocaleDateString() : "";
-      hit.tags =
-        hit?.tags?.length > 0
-          ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
-          : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       return hit;
     });
