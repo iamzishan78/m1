@@ -4,7 +4,6 @@ import { makeStyles } from "@material-ui/styles";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import { useLazyQuery } from "@apollo/client";
-import moment from "moment";
 import { useSelector } from "react-redux";
 import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import { MenuItem } from "material-ui";
@@ -55,15 +54,10 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
     onCompleted: (data) => {
       if (data?.getESMinValue) {
         setLastCheckMinDate(data?.getESMinValue);
-        // setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
-        // setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
       }
     },
   });
-  useEffect(() => {
-    setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
-    setToDate(moment().subtract(0, 'months').endOf('month').format('yyyy-MM-DD'));
-  }, []);
+
   useEffect(() => {
     getESMinValue({
       variables: {
@@ -82,18 +76,19 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
   const updateFilters = () => {
     const filters = [];
 
-    filters.push({
-      field,
-      value: {
-        range: {
-          [field]: {
-            gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
-            lte: toDate ? `${toDate}T00:00:00.000Z` : null,
+    if (fromDate && toDate)
+      filters.push({
+        field,
+        value: {
+          range: {
+            [field]: {
+              gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
+              lte: toDate ? `${toDate}T00:00:00.000Z` : null,
+            },
           },
         },
-      },
-      // includeEmpty: selectedFilter === "All Dates" ? true : undefined,
-    });
+        // includeEmpty: selectedFilter === "All Dates" ? true : undefined,
+      });
 
     if (propertyFilter[0]) {
       filters.push(propertyFilter[0]);
