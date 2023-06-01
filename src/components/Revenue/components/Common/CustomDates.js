@@ -67,11 +67,8 @@ export default function Portfolio({
 }) {
   const classes = useStyles();
   useEffect(() => {
-    if (isProperties) {
-      handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
-    } else {
-      handleDateTypeChange(CUSTOM_DATES.THIS_YEAR_TO_DATE);
-    }
+    handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+
     delete CUSTOM_DATES.THIS_WEEK;
     delete CUSTOM_DATES.LAST_WEEK;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -126,7 +123,7 @@ export default function Portfolio({
               style={{ backgroundColor: "white" }}
             />
           )}
-          defaultValue={defaultRange ? defaultRange : CUSTOM_DATES.THIS_YEAR_TO_DATE}
+          defaultValue={defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES}
           disableListWrap
           id="custom-date-dropdown"
         />
