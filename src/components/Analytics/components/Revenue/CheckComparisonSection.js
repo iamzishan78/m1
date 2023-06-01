@@ -1,4 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useLazyQuery } from "@apollo/client";
+import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { Container } from "@material-ui/core";
 import TableESHOC from "components/Table/TableESHOC";
 import Table from "components/Shared/M1nTable/components/Table";
@@ -41,8 +43,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function CheckComparisonSection(props) {
+
     const classes = useStyles();
     const { setTableMeta } = props;
+    const [propertiesCount, setPropertiesCount] = useState(0);
+    const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+        fetchPolicy: "no-cache",
+      });
 
     const formatHits = (hits) => {
         return hits.map((hit) => {
@@ -82,6 +89,17 @@ function CheckComparisonSection(props) {
             return hit;
         });
     };
+    useEffect(() => {
+        getCounts();
+    }, [props.rows]);
+
+    useEffect(() => {
+        if (props.total > 0) {
+            props.onGettingAnalytics({
+                properties: propertiesCount,
+            });
+        }
+    }, [propertiesCount, props.total]);
 
     useEffect(() => {
         setTableMeta({
@@ -96,6 +114,31 @@ function CheckComparisonSection(props) {
 
     }, [setTableMeta]);
 
+    const getCounts = async () => {
+        const properties = await getESCounts("property.IsDeleted", false, "term");
+        setPropertiesCount(properties);
+    };
+
+    const getESCounts = (key, value, type) => {
+        return new Promise((resolve, reject) => {
+            getESSimpleFilter({
+                variables: {
+                    esIndex: "checkdetailsinterestscomparison_flat",
+                    index: "checkdetailsinterestscomparison_flat",
+                    filters: [{ field: key, value: value, type }],
+                    filterKey: "property._id.keyword",
+                    filterAggs: { query: "", field: "property._id.keyword", size: props.total }
+                },
+                onCompleted: (res) => {
+                    resolve(res?.getESSimpleFilter?.hits?.length);
+                },
+                onError: (error) => {
+                    console.log(error);
+                    reject(0);
+                },
+            });
+        });
+    };
     return (
         <Container
             maxWidth={false}

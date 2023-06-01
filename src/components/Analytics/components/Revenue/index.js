@@ -13,6 +13,7 @@ import DetailTabsSection from "components/Analytics/components/Revenue/DetailTab
 import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import CheckDetailsSection from "./CheckDetailsSection";
 import CheckComparisonSection from "./CheckComparisonSection";
+import AnalyticsCards from "./Analytics";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
@@ -98,6 +99,7 @@ export default function RevenueAnalytics(props) {
   const [monthsInterval, setMonths] = useState([]);
   const [propertyFilter, setPropertyFilter] = useState([]);
   const [lastCheckMinDate, setLastCheckMinDate] = useState("");
+  const [propertiesCount, setPropertiesCount] = useState(0);
   const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 166px)" }
 
 
@@ -157,6 +159,10 @@ export default function RevenueAnalytics(props) {
     });
   }, [propertiesReportGroup, toDate, fromDate]);
 
+  const onGettingAnalytics = (analyticsList) => {
+    const properties = analyticsList.properties;
+    setPropertiesCount(properties);
+  };
 
   return (
     <>
@@ -234,9 +240,13 @@ export default function RevenueAnalytics(props) {
 
       {tab === 2 &&
         <div className={`${classes.sectionCard}`}>
+          <AnalyticsCards
+            properties={propertiesCount}
+          />
           <CheckComparisonSection
             header="Property DOI vs Checkstub Interest"
             loadMore={loadMore}
+            onGettingAnalytics={onGettingAnalytics}
           />
         </div>
       }
