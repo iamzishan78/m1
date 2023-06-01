@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
-          height: "calc(50vh + 96px) !important",
+          height: "calc(50vh + 50px) !important",
         },
       },
     },
