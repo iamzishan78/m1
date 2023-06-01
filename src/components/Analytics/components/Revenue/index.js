@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
@@ -7,12 +7,16 @@ import { Grid, Divider, Tab, Tabs } from "@material-ui/core";
 
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
-
+import { setStateIfDeepEqual } from "components/Shared/functions";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import DetailTabsSection from "components/Analytics/components/Revenue/DetailTabsSection";
 import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import CheckDetailsSection from "./CheckDetailsSection";
 import CheckComparisonSection from "./CheckComparisonSection";
+import { AppContext } from "AppContext";
+import { GET_UNMAPPED_PROPERTY_COUNT } from "graphQL/useQueryGetProperty";
+import AnalyticsCards from "./Analytics";
+
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
@@ -48,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 const StyledTabs = withStyles({
   root: {
     borderBottom: "1px solid #e8e8e8",
-    textTransform: "capitalize",
+    textTransform: "capitaliToze",
     padding: "0px 26px",
   },
   indicator: {
@@ -98,8 +102,8 @@ export default function RevenueAnalytics(props) {
   const [monthsInterval, setMonths] = useState([]);
   const [propertyFilter, setPropertyFilter] = useState([]);
   const [lastCheckMinDate, setLastCheckMinDate] = useState("");
+  const [propertiesCount, setPropertiesCount] = useState(0);
   const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 166px)" }
-
 
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: "no-cache",
@@ -157,6 +161,10 @@ export default function RevenueAnalytics(props) {
     });
   }, [propertiesReportGroup, toDate, fromDate]);
 
+  const onGettingAnalytics = (analyticsList) => {
+      const properties = analyticsList.properties;
+      setPropertiesCount(properties);
+  };
 
   return (
     <>
@@ -234,9 +242,13 @@ export default function RevenueAnalytics(props) {
 
       {tab === 2 &&
         <div className={`${classes.sectionCard}`}>
+          <AnalyticsCards
+          properties={propertiesCount}
+          />
           <CheckComparisonSection
             header="Property DOI vs Checkstub Interest"
             loadMore={loadMore}
+            onGettingAnalytics={onGettingAnalytics}
           />
         </div>
       }
