@@ -71,6 +71,9 @@ const RevenueStatementHeadCells = [
         name: "effectiveDate", label: "Effective Date", esKey: 'property.interest.effectiveDate', custom: { key_as_string: true, isDate: true }, options: { sort: true, filter: true }
     },
     {
+        name: "endDate", label: "End Date", esKey: 'property.interest.endDate', custom: { key_as_string: true, isDate: true }, options: { sort: true, filter: true }
+    },
+    {
         name: "interestStatus", label: "status", esKey: 'property.interest.status.keyword', options: { sort: true, filter: true }
     },
     {

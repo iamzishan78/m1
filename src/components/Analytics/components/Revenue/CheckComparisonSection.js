@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Container } from "@material-ui/core";
 import TableESHOC from "components/Table/TableESHOC";
 import Table from "components/Shared/M1nTable/components/Table";
@@ -6,6 +6,9 @@ import { deepEqualObjects, copy } from "components/Shared/functions";
 import TableHeader from 'components/Table/constants/check-comparison-header-schema';
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 import { makeStyles } from "@material-ui/styles";
+import { useLazyQuery } from "@apollo/client";
+import { GET_ES_SIMPLE_COUNT } from "graphQL/useQueryESCount";
+
 
 const useStyles = makeStyles((theme) => ({
 
@@ -41,8 +44,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function CheckComparisonSection(props) {
+
     const classes = useStyles();
     const { setTableMeta } = props;
+    const [propertiesCount, setPropertiesCount] = useState(0);
+    const [getESSimpleCount] = useLazyQuery(GET_ES_SIMPLE_COUNT, {
+        // context: { batch: true },
+        fetchPolicy: "no-cache",
+      });
 
     const formatHits = (hits) => {
         return hits.map((hit) => {
@@ -76,11 +85,23 @@ function CheckComparisonSection(props) {
             hit.interestType = hit.property?.interest?.interestType;
             hit.interestAmount = hit.property?.interest?.interestAmount;
             hit.effectiveDate = hit.property?.interest?.effectiveDate;
+            hit.endDate = hit.property?.interest?.endDate;
             hit.interestStatus = hit.property?.interest?.status;
             hit.costFree = hit.property?.interest?.costFree;
             return hit;
         });
     };
+    useEffect(() => {
+          getCounts();
+      }, [props.rows]);
+
+      useEffect(() => {
+        if (props.total > 0) {
+          props.onGettingAnalytics({
+            properties: propertiesCount,
+          });
+        }
+      }, [propertiesCount, props.total]);  
 
     useEffect(() => {
         setTableMeta({
@@ -95,7 +116,34 @@ function CheckComparisonSection(props) {
 
     }, [setTableMeta]);
 
+    const getCounts = async () => {
+        const properties = await getESCounts("property.IsDeleted", false);
+        setPropertiesCount(properties);
+    };
+
+    const getESCounts = (key, value, type) => {
+        return new Promise((resolve, reject) => {
+          getESSimpleCount({
+            variables: {
+              index: "checkdetailsinterestscomparison_flat",
+              filters: [{ field: "property.IsDeleted", value: false }],
+              search: {
+                query: "*",
+                fields: ["*"],
+              },
+            },
+            onCompleted: (res) => {
+              resolve(res.getESSimpleCount.total);
+            },
+            onError: (error) => {
+              console.log(error);
+              reject(0);
+            },
+          });
+        });
+      };
     return (
+        
         <Container
             maxWidth={false}
             className={`${classes.container}`}
