@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
@@ -12,7 +12,7 @@ import CustomDates from "components/Revenue/components/Common/CustomDates";
 import DetailTabsSection from "components/Analytics/components/Revenue/DetailTabsSection";
 import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import CheckDetailsSection from "./CheckDetailsSection";
-import CheckComparisonSection from "./CheckComparisonSection";
+import CheckComparisonTable from "./CheckComparisonSection/CheckComparisonTable";
 import AnalyticsCards from "./Analytics";
 import LastCheckDateFilter from "./Common/LastCheckDateFilter";
 
@@ -261,7 +261,7 @@ export default function RevenueAnalytics(props) {
           <AnalyticsCards
             properties={propertiesCount}
           />
-          <CheckComparisonSection
+          <CheckComparisonTable
             header="Property DOI vs Checkstub Interest"
             loadMore={loadMore}
             esFilters={esFilters}
