@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
             height: "calc(50vh + 50px) !important",
           },
           [theme.breakpoints.down('xl')]: {
-            height: "calc(35vh + 50px) !important",
+            height: "calc(35vh) !important",
           },
         },
       },
