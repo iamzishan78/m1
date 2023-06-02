@@ -30,6 +30,9 @@ const RevenueStatementHeadCells = [
       viewColumns: false,
 
       customRender: (value, tableMeta) => {
+        const interestAmount = tableMeta?.rowData[10];
+        const decimalInterest = tableMeta.rowData[29];
+        const showMismatchedFlag = interestAmount && decimalInterest && interestAmount !== decimalInterest;
         return (
           <div
             style={{
@@ -50,19 +53,17 @@ const RevenueStatementHeadCells = [
                 e.stopPropagation();
               }}
             />
-            {tableMeta?.rowData[10] &&
-              tableMeta?.rowData[29] &&
-              tableMeta?.rowData[10] !== tableMeta?.rowData[29] && (
-                <div style={{ marginLeft: "15px", cursor: "pointer" }}>
-                  <ErrorOutline
-                    style={{
-                      width: "17px",
-                      height: "17px",
-                      color: "red",
-                    }}
-                  />
-                </div>
-              )}
+            {showMismatchedFlag && (
+              <div style={{ marginLeft: "15px", cursor: "pointer" }}>
+                <ErrorOutline
+                  style={{
+                    width: "17px",
+                    height: "17px",
+                    color: "red",
+                  }}
+                />
+              </div>
+            )}
           </div>
         );
       },
