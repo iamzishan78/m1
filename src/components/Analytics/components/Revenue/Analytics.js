@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/styles";
 import { Grid, Card, CardContent, Typography } from "@material-ui/core";
-import { Warning as WarningIcon } from "@material-ui/icons";
 
 const useStyles = makeStyles(() => ({
   card: { borderRadius: "8px" },
@@ -40,11 +39,10 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-
 export default function AnalyticsCards(props) {
   const classes = useStyles();
   return (
-    <Grid container direction="row" display="flex" align="center" spacing={4} textAlign="left" style={{margin:"5px 5px 5px 5px"}} className={classes.root}>
+    <Grid container direction="row" display="flex" align="center" spacing={4} textAlign="left" style={{ margin: "5px" }} className={classes.root}>
       <Grid item md={3}>
         <Card variant="outlined" className={classes.card}>
           <CardContent className={classes.cardContent}>
