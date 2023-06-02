@@ -33,7 +33,12 @@ const useStyles = makeStyles((theme) => ({
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
-          height: "calc(50vh + 96px) !important",
+          [theme.breakpoints.up('xl')]: {
+            height: "calc(50vh + 50px) !important",
+          },
+          [theme.breakpoints.down('xl')]: {
+            height: "calc(35vh) !important",
+          },
         },
       },
     },
