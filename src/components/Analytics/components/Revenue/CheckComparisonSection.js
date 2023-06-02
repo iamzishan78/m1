@@ -90,7 +90,7 @@ function CheckComparisonSection(props) {
         });
     };
     useEffect(() => {
-        getCounts();
+        if (props?.total) getCounts();
     }, [props.rows]);
 
     useEffect(() => {
@@ -112,7 +112,7 @@ function CheckComparisonSection(props) {
             downloadAll: { exportPx: '176px' },
         });
 
-    }, [setTableMeta]);
+    }, [setTableMeta, props.esFilters]);
 
     const getCounts = async () => {
         const properties = await getESCounts("property.IsDeleted", false, "term");
