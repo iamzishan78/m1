@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useLazyQuery } from "@apollo/client";
+import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { Container } from "@material-ui/core";
 import TableESHOC from "components/Table/TableESHOC";
 import Table from "components/Shared/M1nTable/components/Table";
@@ -6,8 +8,6 @@ import { deepEqualObjects, copy } from "components/Shared/functions";
 import TableHeader from "components/Table/constants/check-comparison-header-schema";
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 import { makeStyles } from "@material-ui/styles";
-import { useLazyQuery } from "@apollo/client";
-import { GET_ES_SIMPLE_COUNT } from "graphQL/useQueryESCount";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -40,14 +40,42 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CheckComparisonTable(props) {
+function CheckComparisonSection(props) {
   const classes = useStyles();
   const { setTableMeta } = props;
   const [propertiesCount, setPropertiesCount] = useState(0);
-  const [getESSimpleCount] = useLazyQuery(GET_ES_SIMPLE_COUNT, {
-    // context: { batch: true },
+  const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
     fetchPolicy: "no-cache",
   });
+
+  useEffect(() => {
+    (async () => {
+      if (props?.total) {
+        const count = await getESCounts("property.IsDeleted", false, "term");
+        setPropertiesCount(count);
+      }
+    })();
+  }, [props.rows]);
+
+  useEffect(() => {
+    if (props.total > 0) {
+      props.onGettingAnalytics({
+        properties: propertiesCount,
+      });
+    }
+  }, [propertiesCount, props.total]);
+
+  useEffect(() => {
+    setTableMeta({
+      filters: [],
+      TableHeader: copy(TableHeader),
+      esIndex: "checkdetailsinterestscomparison_flat",
+      startPaginationAt: 100,
+      defaultSort: { field: "flatSyncAt", order: "desc" },
+      formatHits,
+      downloadAll: { exportPx: "176px" },
+    });
+  }, [setTableMeta, props.esFilters]);
 
   const formatHits = (hits) => {
     return hits.map((hit) => {
@@ -87,53 +115,18 @@ function CheckComparisonTable(props) {
       return hit;
     });
   };
-  useEffect(() => {
-    getCounts();
-  }, [props.rows]);
-
-  useEffect(() => {
-    if (props.total > 0) {
-      props.onGettingAnalytics({
-        properties: propertiesCount,
-      });
-    }
-  }, [propertiesCount, props.total]);
-
-  useEffect(() => {
-    setTableMeta({
-      filters: [],
-      TableHeader: copy(TableHeader),
-      esIndex: "checkdetailsinterestscomparison_flat",
-      startPaginationAt: 100,
-      defaultSort: { field: "flatSyncAt", order: "desc" },
-      formatHits,
-      downloadAll: { exportPx: "176px" },
-    });
-  }, [setTableMeta]);
-
-  const getCounts = async () => {
-    const properties = await getESCounts("property.IsDeleted", false);
-    setPropertiesCount(properties);
-  };
 
   const getESCounts = (key, value, type) => {
     return new Promise((resolve, reject) => {
-      getESSimpleCount({
+      getESSimpleFilter({
         variables: {
           index: "checkdetailsinterestscomparison_flat",
-          filters: [{ field: "property.IsDeleted", value: false }],
-          search: {
-            query: "*",
-            fields: ["*"],
-          },
+          filters: [{ field: key, value: value, type }],
+          filterKey: "property._id.keyword",
+          filterAggs: { query: "", field: "property._id.keyword", size: props.total },
         },
-        onCompleted: (res) => {
-          resolve(res.getESSimpleCount.total);
-        },
-        onError: (error) => {
-          console.log(error);
-          reject(0);
-        },
+        onCompleted: (res) => resolve(res?.getESSimpleFilter?.hits?.length),
+        onError: (error) => reject(error),
       });
     });
   };
@@ -162,4 +155,4 @@ function CheckComparisonTable(props) {
   );
 }
 
-export default React.memo(TableESHOC(CheckComparisonTable), deepEqualObjects);
+export default React.memo(TableESHOC(CheckComparisonSection), deepEqualObjects);
