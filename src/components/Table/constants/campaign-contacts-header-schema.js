@@ -524,7 +524,7 @@ const ContactsHeadCells = [
     esKey: "campaignName.keyword",
     options: {
       display: false,
-      filter: false,
+      filter: true,
       searchable: false,
       sort: true,
     },

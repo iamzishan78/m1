@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { MapControlsContext } from "../../MapControlsContext";
 import { AppContext } from "AppContext";
-import { Grid, Typography, Divider, Tooltip, InputBase } from "@material-ui/core";
+import { Grid, Typography, Divider, Tooltip, Input } from "@material-ui/core";
 import { Close as CloseButton, Search as SearchIcon, Clear as ClearIcon } from "@material-ui/icons";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -264,7 +264,7 @@ export default function SourceLayerManager(props) {
                                     ) : <Tooltip title="Search" className={classes.iconSearch} onClick={() => setSearchState(true)}>
                                         <SearchIcon />
                                     </Tooltip>}
-                                    {searchState && <InputBase
+                                    {searchState && <Input
                                         // id="searchInput"
                                         fullWidth
                                         placeholder={`Search by ${selectedType} name`}

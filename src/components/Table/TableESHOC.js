@@ -850,7 +850,7 @@ export const TableESHOC = (Component) => {
             } while (iter * max < total);
 
             allRows = selectedData
-            
+
             const hits = tableMeta.formatHits(copy(allRows))
             const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => c.display !== false && c.display !== "false" && c.label !== " "))
 
@@ -962,8 +962,8 @@ export const TableESHOC = (Component) => {
                                 meta.setSelectedRows([])
                                 setSelectedRowsValues(null)
                             }
-                            if(tableState.selectedRows.data.length > 0){
-                                for(let i = 0; i< tableState.selectedRows.data.length; i++){
+                            if (tableState.selectedRows.data.length > 0) {
+                                for (let i = 0; i < tableState.selectedRows.data.length; i++) {
                                     allRows.push(rows[tableState.selectedRows.data[i].index])
                                 }
                             }
@@ -1005,7 +1005,7 @@ export const TableESHOC = (Component) => {
         const count = tableData?.total || 0
 
         const options = {
-            rowsPerPageOptions: [10, 25, 50, 100],
+            rowsPerPageOptions: [10, 25, 50, 100, 250],
             count: count,
             serverSide: true,
             searchable: true,
