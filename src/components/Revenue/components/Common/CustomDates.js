@@ -156,7 +156,11 @@ export default function Portfolio({
                 )}`
               );
             } else {
-              setFromDate(event.target.value);
+              const values = event.target.value.split('-')
+
+              values[0] = +values[0] > 3000 ? values[0].substring(0, 4) : values[0]
+
+              setFromDate(values.join('-'));
             }
           }}
         />
@@ -182,7 +186,11 @@ export default function Portfolio({
                 )}`
               );
             } else {
-              setToDate(event.target.value);
+              const values = event.target.value.split('-')
+
+              values[0] = +values[0] > 3000 ? values[0].substring(0, 4) : values[0]
+
+              setToDate(values.join('-'));
             }
           }}
           InputLabelProps={{
