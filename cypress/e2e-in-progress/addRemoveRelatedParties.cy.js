@@ -1,4 +1,4 @@
-import { basic_timeouts, agreementObj } from "../../../cypressUtils/data";
+import { basic_timeouts, agreementObj } from "../cypressUtils/data";
 
 describe("Add/Remove Related Parties Spec", () => {
   it("passes", () => {

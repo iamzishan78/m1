@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { basic_timeouts, agreementObj } from "../../../cypressUtils/data"
+import { basic_timeouts, agreementObj } from "../../cypressUtils/data"
 
 describe('Add Metadata Agreement Spec', () => {
     it('passes', () => {
