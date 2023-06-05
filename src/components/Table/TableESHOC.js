@@ -346,7 +346,7 @@ export const TableESHOC = (Component) => {
             return hits;
         }
 
-        const setColumnsData = (tableCols) => {
+        const addColumnOptions = (tableCols) => {
             let { TableHeader, extendSearchQuery, esIndex, filters } = tableMeta
             let appliedFilters = initialFilters;
             if (filters && filters.length > 0) {
@@ -425,6 +425,13 @@ export const TableESHOC = (Component) => {
                     }
                 }
             });
+            return tableCols
+        }
+
+        const setColumnsData = (tableCols) => {
+            let { TableHeader } = tableMeta
+            tableCols = addColumnOptions(tableCols)
+
             const allFilters = (selectedGridView?.filters || []).concat(initialFilters)
             if (allFilters) {
                 tableCols.forEach((column, index) => {
@@ -1000,7 +1007,7 @@ export const TableESHOC = (Component) => {
                     }
                 }
             }
-            Columns(cols);
+            Columns(addColumnOptions([...cols]));
         };
 
         const count = tableData?.total || 0
