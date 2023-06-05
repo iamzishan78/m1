@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import { MenuItem } from "material-ui";
 import { MuiThemeProvider } from "material-ui/styles";
+import { dateFilterToDate } from "utils/helper";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -75,20 +76,20 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
 
   const updateFilters = () => {
     const filters = [];
-
-    if (fromDate && toDate)
+    if (fromDate && toDate) {
       filters.push({
         field,
         value: {
           range: {
             [field]: {
               gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
-              lte: toDate ? `${toDate}T00:00:00.000Z` : null,
+              lte: toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
             },
           },
         },
         // includeEmpty: selectedFilter === "All Dates" ? true : undefined,
       });
+    }
 
     if (propertyFilter[0]) {
       filters.push(propertyFilter[0]);

@@ -54,11 +54,6 @@ function RevenuePropertiesTable(props) {
 
   useEffect(() => {
     const formatedFilter = esFilters ? copy(esFilters) : []
-    const fixedFilters = []
-
-    if (formatedFilter[0] && formatedFilter[0].type === "range") {
-      fixedFilters.push(formatedFilter[0]);
-    }
 
     props.setInitialFilters(formatedFilter);
     props.setTableMeta({
@@ -66,7 +61,7 @@ function RevenuePropertiesTable(props) {
       searchFields: ["name^4", "_all"],
       TableHeader: copy(TableHeader(!!props.isReportingGroup)),
       esIndex: esIndex,
-      filters: fixedFilters,
+      filters: formatedFilter,
       selectedGridView: { filters: [] },
       startPaginationAt: 50,
       defaultSort: { field: "name.keyword", order: "asc" },
