@@ -7,11 +7,14 @@ import { Grid, Divider, Tab, Tabs } from "@material-ui/core";
 
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
-
+import { setStateIfDeepEqual } from "components/Shared/functions";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import DetailTabsSection from "components/Analytics/components/Revenue/DetailTabsSection";
 import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import CheckDetailsSection from "./CheckDetailsSection";
+import CheckComparisonTable from "./CheckComparisonSection/CheckComparisonTable";
+import AnalyticsCards from "./Analytics";
+import LastCheckDateFilter from "./Common/LastCheckDateFilter";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
@@ -47,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 const StyledTabs = withStyles({
   root: {
     borderBottom: "1px solid #e8e8e8",
-    textTransform: "capitalize",
+    textTransform: "capitaliToze",
     padding: "0px 26px",
   },
   indicator: {
@@ -90,6 +93,9 @@ const StyledTab = withStyles((theme) => ({
 
 export default function RevenueAnalytics(props) {
   const classes = useStyles();
+  const esIndex = "checkdetailsinterestscomparison_flat";
+  const [esFilters, ESFilters] = useState([]);
+  const [filterToggle, setFilterToggle] = React.useState(false);
   const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
   const [tab, setTab] = useState(0);
   const [fromDate, setFromDate] = React.useState(null);
@@ -97,8 +103,8 @@ export default function RevenueAnalytics(props) {
   const [monthsInterval, setMonths] = useState([]);
   const [propertyFilter, setPropertyFilter] = useState([]);
   const [lastCheckMinDate, setLastCheckMinDate] = useState("");
+  const [propertiesCount, setPropertiesCount] = useState(0);
   const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 166px)" }
-
 
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: "no-cache",
@@ -109,6 +115,10 @@ export default function RevenueAnalytics(props) {
         // setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
       }
     },
+  });
+
+  const [getPortfolioSummary, { data: portfolioSummary, loading }] = useLazyQuery(GET_PORTFOLIO_GROSS_REVENUE_SUMMARY, {
+    fetchPolicy: "no-cache",
   });
 
   useEffect(() => {
@@ -125,6 +135,16 @@ export default function RevenueAnalytics(props) {
     setFromDate(moment().startOf("year").format("yyyy-MM-DD"));
     setToDate(moment().subtract(1, "months").endOf("month").format("yyyy-MM-DD"));
   }, []);
+
+  useEffect(() => {
+    getPortfolioSummary({
+      variables: {
+        filters: propertiesReportGroup || [],
+        filterDate: { toDate: new Date(toDate), fromDate: new Date(fromDate) },
+      },
+    });
+  }, [propertiesReportGroup, toDate, fromDate]);
+
   const onChangeDates = (fromDate, toDate) => {
     const months = [];
     if (fromDate && toDate) {
@@ -143,20 +163,15 @@ export default function RevenueAnalytics(props) {
     setMonths(months);
   };
 
-  const [getPortfolioSummary, { data: portfolioSummary, loading }] = useLazyQuery(GET_PORTFOLIO_GROSS_REVENUE_SUMMARY, {
-    fetchPolicy: "no-cache",
-  });
 
-  useEffect(() => {
-    getPortfolioSummary({
-      variables: {
-        filters: propertiesReportGroup || [],
-        filterDate: { toDate: new Date(toDate), fromDate: new Date(fromDate) },
-      },
-    });
-  }, [propertiesReportGroup, toDate, fromDate]);
+  const onGettingAnalytics = (analyticsList) => {
+    const properties = analyticsList.properties;
+    setPropertiesCount(properties);
+  };
 
-
+  const setESFilters = (newFilter) => {
+    setStateIfDeepEqual(ESFilters, newFilter);
+  };
   return (
     <>
       <div className={classes.mainTabContainer}>
@@ -169,6 +184,7 @@ export default function RevenueAnalytics(props) {
         >
           <StyledTab label="Income Statement" />
           <StyledTab label="Comparison" />
+          <StyledTab label="Check Comparison" />
           {/* <StyledTab label="Income Stmt" /> */}
           {/* <StyledTab label="Comparison" disabled /> */}
           {/* <StyledTab label="Properties" /> */}
@@ -223,9 +239,33 @@ export default function RevenueAnalytics(props) {
 
       {tab === 1 &&
         <div className={`${classes.sectionCard}`}>
-          <CheckDetailsSection 
+          <CheckDetailsSection
             header="Check Details"
             loadMore={loadMore}
+          />
+        </div>
+      }
+
+      {tab === 2 &&
+        <div className={`${classes.sectionCard}`}>
+          <LastCheckDateFilter
+            field={"check.checkDate"}
+            esIndex={esIndex}
+            esFilters={esFilters}
+            setESFilters={setESFilters}
+            setFilterToggle={setFilterToggle}
+            filterToggle={filterToggle}
+            extraFitlers={["propertyGroup"]}
+          />
+          <Divider className={classes.divider} />
+          <AnalyticsCards
+            properties={propertiesCount}
+          />
+          <CheckComparisonTable
+            header="Property DOI vs Checkstub Interest"
+            loadMore={loadMore}
+            esFilters={esFilters}
+            onGettingAnalytics={onGettingAnalytics}
           />
         </div>
       }
