@@ -67,7 +67,7 @@ function CheckComparisonSection(props) {
 
   useEffect(() => {
     setTableMeta({
-      filters: [],
+      filters: props.esFilters,
       TableHeader: copy(TableHeader),
       esIndex: "checkdetailsinterestscomparison_flat",
       startPaginationAt: 100,
@@ -130,6 +130,7 @@ function CheckComparisonSection(props) {
       });
     });
   };
+
   return (
     <Container maxWidth={false} className={`${classes.container}`}>
       <Table
