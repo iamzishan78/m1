@@ -49,12 +49,10 @@ function CheckComparisonSection(props) {
 
   useEffect(() => {
     (async () => {
-      if (props?.total) {
-        const count = await getESCounts("property.IsDeleted", false, "term");
-        props.onGettingAnalytics({
-          properties: count,
-        });
-      }
+      const count = await getESCounts("property.IsDeleted", false, "term");
+      props.onGettingAnalytics({
+        properties: count,
+      });
     })();
   }, [props.rows]);
 

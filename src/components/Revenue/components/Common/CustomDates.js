@@ -90,9 +90,15 @@ export default function Portfolio({
   //   return new Date(new Date().getFullYear(), new Date().getMonth(), 0);
   // }
 
+  useEffect(() => {
+    if (lastCheckMinDate) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastCheckMinDate]);
+
   const handleDateTypeChange = (date) => {
-    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate, true);
+    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate);
   };
+
   return (
     <>
       {label && (
