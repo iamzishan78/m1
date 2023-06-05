@@ -12,6 +12,13 @@ export const copy = (data) => {
   return data ? JSON.parse(JSON.stringify(data)) : null;
 };
 
+export const dateFilterToDate = (date) => {
+  let endDate = new Date(`${date}T00:00:00.000Z`);
+  const nextMonth = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 1);
+  const lastDayOfMonth = new Date(nextMonth - 1);
+  return `${endDate.getFullYear()}-${endDate.getMonth() + 1}-${lastDayOfMonth.getDate()}`
+}
+
 export const dateIsValid = (date) => {
   try {
     date = new Date(
@@ -403,7 +410,7 @@ export const removeCommasFromString = (str) => {
 }
 
 
-export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFromDate, setToDate, minDate) => {
+export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFromDate, setToDate, minDate, setAllDateToNull = false) => {
   if (onChange) {
     onChange(date)
   }
@@ -450,6 +457,12 @@ export const handleCustomDateTypeChange = (date, onChange, CUSTOM_DATES, setFrom
       setToDate(`${currentYear - 1}-12-31`);
       break;
     case CUSTOM_DATES.ALL_DATES:
+      if (setAllDateToNull) {
+        setFromDate(null);
+        setToDate(null);
+        break;
+      }
+
       setFromDate(minDate ? `${moment(minDate).startOf('month').format("yyyy-MM-DD")}` : null);
       setToDate(`${moment().endOf('month').format('yyyy-MM-DD')}`);
       break;
@@ -486,16 +499,16 @@ export function generateColor() {
 }
 
 export function getOppositeHexColor(inputColor) {
- // Convert the background color to an RGB array
- const rgbArray = hexToRgb(inputColor);
+  // Convert the background color to an RGB array
+  const rgbArray = hexToRgb(inputColor);
 
- // Calculate the relative luminance of the color using the formula
- // from the WCAG 2.0 spec: https://www.w3.org/TR/WCAG20-TECHS/G18.html#G18-tests
- const relativeLuminance = 0.2126 * rgbArray[0] + 0.7152 * rgbArray[1] + 0.0722 * rgbArray[2];
+  // Calculate the relative luminance of the color using the formula
+  // from the WCAG 2.0 spec: https://www.w3.org/TR/WCAG20-TECHS/G18.html#G18-tests
+  const relativeLuminance = 0.2126 * rgbArray[0] + 0.7152 * rgbArray[1] + 0.0722 * rgbArray[2];
 
- // Return "black" if the relative luminance is less than 0.5,
- // "white" otherwise
- return relativeLuminance < 0.5 ? "black" : "white";
+  // Return "black" if the relative luminance is less than 0.5,
+  // "white" otherwise
+  return relativeLuminance < 0.5 ? "black" : "white";
 }
 
 // Helper function to convert a hex color to an RGB array

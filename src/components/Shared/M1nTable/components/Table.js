@@ -1788,7 +1788,7 @@ function SubTable(props) {
                   if (column.name === 'OwnerName' && !props.rows[tableMeta.rowIndex]?.wellCount > 0) disabled = true;
                   if (column.name === 'Operator' && !props.rows[tableMeta.rowIndex]?.totalWellCount > 0) disabled = true;
 
-                  const coordinates = props.rows[tableMeta.rowIndex].coordinates;
+                  const coordinates = props.rows[tableMeta.rowIndex]?.coordinates;
                   const data = props.rows.find(row => row.Id === coordinates?.objToPopulateSearchLayer?.objectId);
                   return (
                     <ColumnWithLink
@@ -1839,15 +1839,15 @@ function SubTable(props) {
                         onClick={(e) => {
                           e.stopPropagation();
                           // for unit wells we need to use globalWell instead of wellId
-                          if (props.targetLabel === 'owner' || props.targetLabel === 'operator' || props.rows[tableMeta.rowIndex].globalWell) {
+                          if (props.targetLabel === 'owner' || props.targetLabel === 'operator' || props.rows[tableMeta.rowIndex]?.globalWell) {
                             if (props.targetLabel === "well")
-                              value.wellId = props.rows[tableMeta.rowIndex].globalWell;
+                              value.wellId = props.rows[tableMeta.rowIndex]?.globalWell;
                             handleClickFlyToIcon(props.targetLabel, value);
                           } else if (props.parent === "UnitsTable" || props.parent === "search") {
                             const row_line = Object.assign({}, ...tableMeta.rowData.map((item, index) => ({ [props.columns[index]?.name]: item })));
                             openUnitDetailCard(row_line._id);
                           } else if (props.targetLabel === "well") {
-                            value.wellId = props.rows[tableMeta.rowIndex].globalWell;
+                            value.wellId = props.rows[tableMeta.rowIndex]?.globalWell;
                           }
                         }}
                         aria-label="fly"
@@ -2884,7 +2884,7 @@ function SubTable(props) {
                 customBodyRender: (value, tableMeta, updateValue) => {
                   if (column.isCustom && (column.type === "multiselect" || column.type === "dropdown")) {
                     let value = null;
-                    if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
+                    if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex]?.custom_data) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
                     }
                     return (
@@ -2905,7 +2905,7 @@ function SubTable(props) {
 
                   if (column.isCustom && column.type === "text") {
                     let value = null;
-                    if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex].custom_data) {
+                    if (props?.rows?.length > 0 && props.rows[tableMeta.rowIndex]?.custom_data) {
                       value = props.rows[tableMeta.rowIndex].custom_data[`${column.name}`];
                     }
                     return (
@@ -4819,25 +4819,6 @@ function SubTable(props) {
                   ? true
                   : false
               }
-              // maxWidth={
-              //   openDialog === "owner" || openDialog === "wellsPerOwner" || openDialog === "ownerContacts"
-              //     ? "xl"
-              //     : openDialog === "owner" ||
-              //       openDialog === "ownersPerContacts" ||
-              //       openDialog === "wellsPerOwner" ||
-              //       openDialog === "owner" ||
-              //       openDialog === "wellsPerOwner" ||
-              //       openDialog === "buyContactsInfo" ||
-              //       openDialog === "sendMailers" ||
-              //       openDialog === "printLabels" ||
-              //       openDialog === "deleteUser" ||
-              //       openDialog === "deleteWellInterest" ||
-              //       openDialog === "deleteParcelDocument" ||
-              //       openDialog === "deleteWellDocument" ||
-              //       openDialog === "addParcelInterestsToEntity"
-              //       ? true
-              //       : false
-              // }
               maxWidth={
                 openDialog === "owner" || openDialog === "wellsPerOwner" || openDialog === "ownerContacts"
                   ? "xl"
@@ -4915,18 +4896,6 @@ function SubTable(props) {
                   {`Do you want to create a new Contact from this Owner?`}
                 </MakeItAContactConfirmationDialogContent>
               )}
-
-              {/* {openDialog === "addOwnerToParcel" && (
-              <AddParcelOwnerDialogContent
-                onClose={() => {
-                  setSelectedRow(null);
-                  handleCloseDialog();
-                }}
-                customLayerId={props.addAble?.customLayerId}
-                selectedRow={selectedRow}
-                setSelectedRow={setSelectedRow}
-              />
-            )} */}
               {openDialog === "addParcelInterestsToEntity" && (
                 <AddParcelToEntityDialogContent onClose={handleCloseDialog} entityId={props.addAble?.entityId} />
               )}

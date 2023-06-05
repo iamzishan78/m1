@@ -67,11 +67,8 @@ export default function Portfolio({
 }) {
   const classes = useStyles();
   useEffect(() => {
-    if (isProperties) {
-      handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
-    } else {
-      handleDateTypeChange(CUSTOM_DATES.THIS_YEAR_TO_DATE);
-    }
+    handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+
     delete CUSTOM_DATES.THIS_WEEK;
     delete CUSTOM_DATES.LAST_WEEK;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -94,7 +91,7 @@ export default function Portfolio({
   // }
 
   const handleDateTypeChange = (date) => {
-    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate);
+    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate, true);
   };
   return (
     <>
@@ -126,7 +123,7 @@ export default function Portfolio({
               style={{ backgroundColor: "white" }}
             />
           )}
-          defaultValue={defaultRange ? defaultRange : CUSTOM_DATES.THIS_YEAR_TO_DATE}
+          defaultValue={defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES}
           disableListWrap
           id="custom-date-dropdown"
         />
@@ -159,7 +156,11 @@ export default function Portfolio({
                 )}`
               );
             } else {
-              setFromDate(event.target.value);
+              const values = event.target.value.split('-')
+
+              values[0] = +values[0] > 3000 ? values[0].substring(0, 4) : values[0]
+
+              setFromDate(values.join('-'));
             }
           }}
         />
@@ -185,7 +186,11 @@ export default function Portfolio({
                 )}`
               );
             } else {
-              setToDate(event.target.value);
+              const values = event.target.value.split('-')
+
+              values[0] = +values[0] > 3000 ? values[0].substring(0, 4) : values[0]
+
+              setToDate(values.join('-'));
             }
           }}
           InputLabelProps={{

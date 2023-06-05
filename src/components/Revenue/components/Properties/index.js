@@ -81,7 +81,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Properties() {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [isFiltered, setFiltered] = useState(null);
   // redux
   const [filterToggle, setFilterToggle] = React.useState(false);
 
@@ -139,7 +138,7 @@ export default function Properties() {
       key: "unmapped",
       points: 0,
       type: "warning",
-      filterable:true,
+      filterable: true,
     },
   ]
 
@@ -162,8 +161,6 @@ export default function Properties() {
         cardsDefault={cardsDefault}
         totalCount={propertiesCount}
         landSearchQuery={stateApp.revenueSearchQuery}
-        isFiltered={isFiltered}
-        setFiltered={setFiltered}
         setESFilters={setESFilters}
         filterToggle={filterToggle}
         setFilterToggle={setFilterToggle}
