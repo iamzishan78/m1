@@ -90,9 +90,15 @@ export default function Portfolio({
   //   return new Date(new Date().getFullYear(), new Date().getMonth(), 0);
   // }
 
+  useEffect(() => {
+    if (lastCheckMinDate) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastCheckMinDate]);
+
   const handleDateTypeChange = (date) => {
     handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate, true);
   };
+
   return (
     <>
       {label && (
@@ -149,7 +155,7 @@ export default function Portfolio({
             },
           }}
           onChange={(event) => {
-            if (event.target.value == "") {
+            if (event.target.value === "") {
               setFromDate(
                 `${Math.round(new Date().getFullYear())}-${getFlaggedMoment(
                   Math.ceil(new Date().getMonth()) + 1
@@ -179,7 +185,7 @@ export default function Portfolio({
           value={moment(toDate).format("yyyy-MM")}
           className={classes.inputFieldDate}
           onChange={(event) => {
-            if (event.target.value == "") {
+            if (event.target.value === "") {
               setToDate(
                 `${Math.round(new Date().getFullYear())}-${getFlaggedMoment(
                   Math.ceil(new Date().getMonth()) + 1
