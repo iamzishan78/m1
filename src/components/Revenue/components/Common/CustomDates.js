@@ -96,7 +96,7 @@ export default function Portfolio({
   }, [lastCheckMinDate]);
 
   const handleDateTypeChange = (date) => {
-    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate);
+    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate, true);
   };
 
   return (
@@ -155,7 +155,7 @@ export default function Portfolio({
             },
           }}
           onChange={(event) => {
-            if (event.target.value == "") {
+            if (event.target.value === "") {
               setFromDate(
                 `${Math.round(new Date().getFullYear())}-${getFlaggedMoment(
                   Math.ceil(new Date().getMonth()) + 1
@@ -185,7 +185,7 @@ export default function Portfolio({
           value={moment(toDate).format("yyyy-MM")}
           className={classes.inputFieldDate}
           onChange={(event) => {
-            if (event.target.value == "") {
+            if (event.target.value === "") {
               setToDate(
                 `${Math.round(new Date().getFullYear())}-${getFlaggedMoment(
                   Math.ceil(new Date().getMonth()) + 1
