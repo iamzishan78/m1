@@ -48,7 +48,7 @@ const RevenueStatementHeadCells = [
                     : value
                   : tableMeta?.rowData[2]
               }
-              link={`/revenue/property/details/${tableMeta.rowData[29]}`}
+              link={`/revenue/statement/details/${tableMeta.rowData[30]}`}
               onClick={(e) => {
                 e.stopPropagation();
               }}
@@ -242,6 +242,12 @@ const RevenueStatementHeadCells = [
     label: "Decimal Interest",
     esKey: "disbursement",
     options: { sort: true, filter: true }, //not mentioned in the ticket
+  },
+  {
+    name: "checkId",
+    label: "Check Id",
+    esKey: "check._id.keyword",
+    options: { display: false, sort: true, filter: true }, //not mentioned in the ticket
   },
   {
     name: "differnce",

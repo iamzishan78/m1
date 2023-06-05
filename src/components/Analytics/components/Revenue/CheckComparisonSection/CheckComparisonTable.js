@@ -95,6 +95,7 @@ function CheckComparisonSection(props) {
       hit.propertyName = hit.property?.name;
       hit.date = hit.date ? convert_date(hit.date) : null;
       hit.checkDate = hit.check?.checkDate ? convert_date(hit.check.checkDate) : null;
+      hit.checkId = hit.check?._id;
       hit.depositDate = hit.check?.depositDate ? convert_date(hit.check.depositDate) : null;
       hit.propertyId = hit.property?._id;
       hit.interestType = hit.property?.interest?.interestType;
