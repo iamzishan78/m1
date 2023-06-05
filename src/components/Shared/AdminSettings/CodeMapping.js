@@ -306,6 +306,7 @@ const CodeMapping = ({ settingsFor }) => {
                             column={selectedMeta}
                             value={value ? value.to : ""}
                             onCustomKeyChange={(value) => onSelect(value, selectedMeta, code)}
+                            isOptionsEditable={selectedMeta.name !== "product_type"}
                           />
                         )}
                       </Grid>
