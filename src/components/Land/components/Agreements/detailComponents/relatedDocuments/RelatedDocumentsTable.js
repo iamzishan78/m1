@@ -20,6 +20,7 @@ import { usetableStyles } from "./style";
 import { DELETEDESCRIPTORRELATEDFILE } from "graphQL/useMutationDeleteDescriptorFile";
 import { AppContext } from "AppContext";
 import { DrawerContext } from "../DrawerContext";
+import convert_date from "components/Shared/valueformatters/convert_date";
 
 function AgreementDocumentsTable(props) {
   const classes = usetableStyles();
@@ -49,9 +50,9 @@ function AgreementDocumentsTable(props) {
             color="secondary"
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {
-              if (!props.setDrawer)return
+              if (!props.setDrawer) return
               props.setDrawer("dcmnt");
-              setStateApp(stateApp => ({...stateApp, selectedDocument: null}))
+              setStateApp(stateApp => ({ ...stateApp, selectedDocument: null }))
             }}
           >
             + ADD DOCUMENT
@@ -82,11 +83,15 @@ function AgreementDocumentsTable(props) {
     onRowClick: (_, { dataIndex }) => {
       setDrawer('dcmnt')
 
-      setStateApp(stateApp => ({...stateApp, selectedDocument: props.rows[dataIndex]}))
+      setStateApp(stateApp => ({ ...stateApp, selectedDocument: props.rows[dataIndex] }))
     }
   };
 
   const formatHits = (hits) => {
+    hits = hits.map((hit) => {
+      hit.dateTime = hit.dateTime ? convert_date(hit.dateTime) : null;
+      return hit;
+    });
     return hits;
   };
   const deleteFunc = (ids) => {
