@@ -10,7 +10,6 @@ const useStyles = makeStyles((theme) => ({
     // padding: "0px 30px 30px",
     marginTop: "65px",
     // marginLeft: '-10px',
-    "height": "calc(100vh - 90px)",
   },
 }));
 

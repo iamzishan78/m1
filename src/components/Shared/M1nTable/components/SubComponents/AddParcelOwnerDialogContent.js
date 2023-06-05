@@ -387,7 +387,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
     if (interest3) nra = parseFloat(interest3 || 0) * parseFloat(gross_acers || 0)
 
-    nra = addTrailingZeros(nra.toFixed(8));
     if (workspaceSettings.settings?.map?.unitNra?.type === "custom" && workspaceSettings.settings?.map?.unitNra?.value) {
       nra = nra / Number(workspaceSettings.settings?.map?.unitNra?.value);
     }

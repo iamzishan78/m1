@@ -33,6 +33,7 @@ import { GET_AUTOCOMPLETE_PROPERTY_LIST } from "graphQL/useQueryGetProperty";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import { useDispatch } from "react-redux";
 import { showInfoMessage } from "actions";
+import { SHAPE_AUTOCOMPLETE_LIST } from "graphQL/useQueryShapeAutoCompleteList";
 
 const useStyles = makeStyles((theme) => ({
   titleText: {
@@ -145,7 +146,7 @@ export default function HeaderSection(props) {
   const [getPurchaserList, { data: purchaserList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
   const [getContactEntity, { data: contactEntityData }] = useLazyQuery(CONTACT_ENTITY);
   const { data: acquisitionOptions } = useQuery(GET_AUTOCOMPLETE_PROPERTY_LIST, { variables: { key: "acquisitionID" } });
-  const { data: prospectOptions } = useQuery(GET_AUTOCOMPLETE_PROPERTY_LIST, {
+  const { data: prospectOptions } = useQuery(SHAPE_AUTOCOMPLETE_LIST, {
     variables: { key: "prospectID" },
   });
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
@@ -774,7 +775,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Internal Company</div>
+                <div className={classes.label}>Company ID</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
@@ -805,7 +806,7 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Prospect</div>
+                <div className={classes.label}>Prospect ID</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
@@ -824,7 +825,7 @@ export default function HeaderSection(props) {
                         updatePropertyData("prospectID", e.target.value)
                       }
                       options={getMappedOptions(
-                        prospectOptions?.getAutoCompletePropertyList
+                        prospectOptions?.shapeAutoCompleteList
                       )}
                       getOptionLabel={(option) => {
                         // Value selected with enter, right from the input
@@ -1009,7 +1010,7 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-        <Grid item xs={12}>
+          <Grid item xs={12}>
             <Grid
               container
               className={`${classes.gridStyle} ${classes.textArea}`}
@@ -1019,23 +1020,23 @@ export default function HeaderSection(props) {
               </Grid>
               <Grid item style={{ flexBasis: "84.8%" }}>
                 <Controller
-                    control={control}
-                    name="description"
-                    render={(params) => (
-                      <TextField
-                        {...params}
-                        className={classes.textField}
-                        variant="outlined"
-                        margin="dense"
-                        type="text"
-                        fullWidth
-                        onChange={(e) => {
-                          params.onChange(e.target.value);
-                        }}
-                        onBlur={(e) => handleUpdate("description", e.target.value)}
-                      />
-                    )}
-                  />
+                  control={control}
+                  name="description"
+                  render={(params) => (
+                    <TextField
+                      {...params}
+                      className={classes.textField}
+                      variant="outlined"
+                      margin="dense"
+                      type="text"
+                      fullWidth
+                      onChange={(e) => {
+                        params.onChange(e.target.value);
+                      }}
+                      onBlur={(e) => handleUpdate("description", e.target.value)}
+                    />
+                  )}
+                />
               </Grid>
             </Grid>
           </Grid>

@@ -623,10 +623,19 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         layers: [...layerStates.allLayerSettingsByUser],
       }));
 
+      const hookStateLayers = copy(hookState.layers.get({ noproxy: true }))
+
       if (layerStates.allLayerSettingsByUser.length > 0) {
         const layers = copy(layerStates.allLayerSettingsByUser)
         for (let i = 0; i < layers.length; i++) {
           const layer = layers[i];
+          const hookStateLayer = hookStateLayers.find((l) => l._id === layer._id)
+          if (hookStateLayer) {
+            layer.fileName = hookStateLayer.fileName
+            layer.fileUrl = hookStateLayer.fileUrl
+            layer.fileViewed = hookStateLayer.fileViewed
+          }
+          if (hookStateLayer?.fileUrl && hookStateLayer?.fileViewed) continue
           const visible = layer.layerSettings.showable && layer.layerSettings.visiable !== false;
           if (layer.layerType === "file layer" && !visible) {
             layer.fileViewed = false
@@ -1633,6 +1642,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         }
         else if (layer.layerType === "file layer") {
           let layerData = hookStateAppLayers.find((l) => l.file === layer.file);
+          if (layerData?.layerName === 'la_units - 2 Layer')
+            console.log(layerData)
           if (layerData.fileUrl) {
             if (layerData.layerPaintProps?.[0]?.sourceProps) {
               if (!map?.getSource(layerData.layerPaintProps[0].sourceProps)) {
@@ -5360,8 +5371,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       if (oneTimeMapBounds) {
         const { bounds, options } = oneTimeMapBounds
         const invalidCoordinate = bounds.find((coord) => isNaN(parseInt(coord[0])) || isNaN(parseInt(coord[1])))
-        if (!invalidCoordinate)
-          newMap.fitBounds(bounds, options);
+        if (!invalidCoordinate) {
+          try { newMap.fitBounds(bounds, options) } catch (e) { }
+        }
         setOneTimeMapBounds(null);
       }
     };
@@ -5372,8 +5384,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       if (oneTimeMapBounds) {
         const { bounds, options } = oneTimeMapBounds
         const invalidCoordinate = bounds.find((coord) => isNaN(parseInt(coord[0])) || isNaN(parseInt(coord[1])))
-        if (!invalidCoordinate)
-          map.fitBounds(bounds, options);
+        if (!invalidCoordinate) {
+          try { map.fitBounds(bounds, options) } catch (e) { }
+        }
         setOneTimeMapBounds(null);
       }
       // map.on("mousemove", mapMouseMove);
@@ -5603,13 +5616,16 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       stateApp.fitBounds.minLong
     ) {
       let bounds = fitOverBounds();
+      bounds = [
+        [bounds.minLong, bounds.minLat],
+        [bounds.maxLong, bounds.maxLat],
+      ]
       if (typeof bounds?.minLong !== "undefined")
-        map.fitBounds([
-          [bounds.minLong, bounds.minLat],
-          [bounds.maxLong, bounds.maxLat],
-        ], {
-          easing: () => 1,
-        });
+        try {
+          map?.fitBounds(bounds, {
+            easing: () => 1,
+          })
+        } catch (e) { }
     }
   }, [map, stateApp.fitBounds]);
 
@@ -6142,9 +6158,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         ];
 
         // map may be null when wellDetailCard is launched from somewhere else
-        map?.fitBounds(bbox, {
-          easing: () => 1,
-        });
+        try {
+          map?.fitBounds(bbox, {
+            easing: () => 1,
+          })
+        } catch (e) { }
       }
       // setStateApp((state) => ({
       //   ...state,

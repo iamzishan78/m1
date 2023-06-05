@@ -74,9 +74,9 @@ const DocumentsHeadCells = [
     }
   },
   {
-    name: "documentDate",
+    name: "dateTime",
     label: "File Date",
-    esKey: 'documentDate',
+    esKey: 'dateTime',
     options: {
       filter: true
     },

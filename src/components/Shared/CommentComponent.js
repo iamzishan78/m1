@@ -357,7 +357,6 @@ export default function CommentComponent(props) {
 
     return array;
   };
-  console.log(commentsArray, "commentsArray");
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value

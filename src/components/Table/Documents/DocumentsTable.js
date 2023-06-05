@@ -472,14 +472,14 @@ function DocumentsTable(props) {
   const onCustomKeyChange = (value = null, index, key) => {
     const rows = JSON.parse(JSON.stringify(props.rows));
     rows[index].custom_data = {
-      ...props.rows[index].custom_data,
+      ...props.rows[index]?.custom_data,
       [`${key}`]: value,
     };
     props.setRows(rows);
     updateDocument({
       variables: {
         document: {
-          fileId: props.rows[index]._id,
+          fileId: props.rows[index]?._id,
           custom_data: { [`${key}`]: value },
         },
       },
