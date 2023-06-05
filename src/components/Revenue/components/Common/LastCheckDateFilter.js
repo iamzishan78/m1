@@ -73,22 +73,35 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
     updateFilters();
   }, [toDate, fromDate, status, propertyFilter]);
 
+  function getLastDayOfMonth(year, month) {
+    // Create a new date object for the next month's first day
+    const nextMonth = new Date(year, month + 1, 1);
+
+    // Subtract 1 day from the next month's first day
+    const lastDayOfMonth = new Date(nextMonth - 1);
+
+    // Return the day of the month (1-31)
+    return lastDayOfMonth.getDate();
+  }
+
   const updateFilters = () => {
     const filters = [];
-
-    if (fromDate && toDate)
+    if (fromDate && toDate) {
+      let endDate = new Date(`${toDate}T00:00:00.000Z`);
+      endDate = `${endDate.getFullYear()}-${endDate.getMonth() + 1}-${getLastDayOfMonth(endDate.getFullYear(), endDate.getMonth())}`
       filters.push({
         field,
         value: {
           range: {
             [field]: {
               gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
-              lte: toDate ? `${toDate}T00:00:00.000Z` : null,
+              lte: toDate ? `${endDate}T00:00:00.000Z` : null,
             },
           },
         },
         // includeEmpty: selectedFilter === "All Dates" ? true : undefined,
       });
+    }
 
     if (propertyFilter[0]) {
       filters.push(propertyFilter[0]);
