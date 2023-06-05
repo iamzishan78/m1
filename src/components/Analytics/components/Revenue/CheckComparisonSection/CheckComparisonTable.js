@@ -43,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
 function CheckComparisonSection(props) {
   const classes = useStyles();
   const { setTableMeta } = props;
-  const [propertiesCount, setPropertiesCount] = useState(0);
   const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
     fetchPolicy: "no-cache",
   });
@@ -52,18 +51,12 @@ function CheckComparisonSection(props) {
     (async () => {
       if (props?.total) {
         const count = await getESCounts("property.IsDeleted", false, "term");
-        setPropertiesCount(count);
+        props.onGettingAnalytics({
+          properties: count,
+        });
       }
     })();
   }, [props.rows]);
-
-  useEffect(() => {
-    if (props.total > 0) {
-      props.onGettingAnalytics({
-        properties: propertiesCount,
-      });
-    }
-  }, [propertiesCount, props.total]);
 
   useEffect(() => {
     setTableMeta({
@@ -121,7 +114,7 @@ function CheckComparisonSection(props) {
       getESSimpleFilter({
         variables: {
           index: "checkdetailsinterestscomparison_flat",
-          filters: [{ field: key, value: value, type }],
+          filters: [...props.esFilters, { field: key, value: value, type }],
           filterKey: "property._id.keyword",
           filterAggs: { query: "", field: "property._id.keyword", size: props.total },
         },
