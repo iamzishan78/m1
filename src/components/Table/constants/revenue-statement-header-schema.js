@@ -95,6 +95,11 @@ const RevenueStatementHeadCells = [
     esKey: "sourceId.keyword",
   },
   {
+    name: "approvalStatus",
+    label: "Approval Status",
+    esKey: "approvalStatus.keyword",
+  },
+  {
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",

@@ -79,9 +79,7 @@ function RevenueStatementTable(props) {
   }, [setTableMeta, formatHits, revenueSearchQuery, filterToggle]);
 
   useEffect(() => {
-    if (fixedFilters.length > 0) {
-      getCounts();
-    }
+    getCounts();
   }, [props.rows]);
 
   useEffect(() => {
