@@ -61,6 +61,16 @@ const RevenueStatementHeadCells = [
     },
   },
   {
+    name: "ownerName",
+    label: "Owner Name",
+    esKey: "payee.name.keyword",
+  },
+  {
+    name: "ownerNumber",
+    label: "Owner Number",
+    esKey: "payee.number.keyword",
+  },
+  {
     name: "depositDate",
     label: "Deposit Date",
     esKey: "depositDate",
