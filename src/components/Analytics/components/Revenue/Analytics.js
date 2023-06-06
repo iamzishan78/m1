@@ -55,6 +55,30 @@ export default function AnalyticsCards(props) {
           </CardContent>
         </Card>
       </Grid>
+      <Grid item md={3}>
+        <Card variant="outlined" className={classes.card}>
+          <CardContent className={classes.cardContent}>
+            <Typography variant="h6" component="div" className={classes.cardHeaderTypography}>
+              Mismatched Interests
+            </Typography>
+            <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
+              {props?.misMatchedInterests || 0}
+            </Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item md={3}>
+        <Card variant="outlined" className={classes.card}>
+          <CardContent className={classes.cardContent}>
+            <Typography variant="h6" component="div" className={classes.cardHeaderTypography}>
+              Potential Gain/Loss
+            </Typography>
+            <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
+              {props?.potentialGainLossSum || 0}
+            </Typography>
+          </CardContent>
+        </Card>
+      </Grid>
     </Grid>
   );
 }

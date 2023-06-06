@@ -260,6 +260,8 @@ export default function RevenueAnalytics(props) {
           <Divider className={classes.divider} />
           <AnalyticsCards
             properties={propertiesCount}
+            misMatchedInterests={0}
+            potentialGainLossSum={0}
           />
           <CheckComparisonTable
             header="Property DOI vs Checkstub Interest"

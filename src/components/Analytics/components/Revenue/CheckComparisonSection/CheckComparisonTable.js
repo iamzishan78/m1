@@ -8,6 +8,7 @@ import { deepEqualObjects, copy } from "components/Shared/functions";
 import TableHeader from "components/Table/constants/check-comparison-header-schema";
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 import { makeStyles } from "@material-ui/styles";
+import { GET_REVENUE_ANALYTICS_COUNT } from "graphQL/useQueryRevenueAnalyticsCounts";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -44,6 +45,9 @@ function CheckComparisonSection(props) {
   const classes = useStyles();
   const { setTableMeta } = props;
   const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+    fetchPolicy: "no-cache",
+  });
+  const [getRevenueAnalyticsCount] = useLazyQuery(GET_REVENUE_ANALYTICS_COUNT, {
     fetchPolicy: "no-cache",
   });
 
@@ -122,6 +126,21 @@ function CheckComparisonSection(props) {
       });
     });
   };
+
+  const getMisMatchedCount = () => {
+    return new Promise((resolve, reject) => {
+      getRevenueAnalyticsCount({
+        variables: {
+          index: "checkdetailsinterestscomparison_flat",
+          filters: [...props.esFilters],
+          filterKey: "property._id.keyword",
+          filterAggs: { query: "", field: "property._id.keyword", size: props.total || 0 },
+        },
+        onCompleted: (res) => resolve(res),
+        onError: (error) => reject(error),
+      });
+    });
+  }
 
   return (
     <Container maxWidth={false} className={`${classes.container}`}>
