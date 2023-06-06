@@ -717,7 +717,6 @@ export const TableESHOC = (Component) => {
                     let afterSort = rows && tableState.page > page ? rows[rows.length - 1]?.sort : null
                     let beforeSort = tableState.page === 0 ? null : rows && tableState.page < page ? rows[0]?.sort : null
 
-                    console.log(handleMultiFieldFilter(pageESVariables.variables.filters.concat(tableMeta.filters)))
                     gqlQuery({
                         ...pageESVariables,
                         variables: {
