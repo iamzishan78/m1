@@ -29,7 +29,7 @@ function LayerStyling(props) {
   const [, setStateMapControls] = useContext(MapControlsContext);
   const hookState = useHookstate(hookStateApp);
 
-  const [setStateApp] = useContext(AppContext);
+  const [, setStateApp] = useContext(AppContext);
   const [layerFeaturesCount, { data: layerDataCount }] = useLazyQuery(LAYERS_FEATURES_COUNT);
 
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
