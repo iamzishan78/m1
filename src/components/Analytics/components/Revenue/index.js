@@ -45,6 +45,13 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+
+  revenueTableInfContainer:{
+    paddingTop: theme.spacing(1),
+    // paddingLeft: "38px",
+    // paddingRight: "38px",
+    marginLeft: '-8px',
+  }
 }));
 
 const StyledTabs = withStyles({
@@ -256,7 +263,7 @@ export default function RevenueAnalytics(props) {
       }
 
       {tab === 2 &&
-        <div className={`${classes.sectionCard}`}>
+        <div className={`${classes.sectionCard}`}>  
           <LastCheckDateFilter
             field={"check.checkDate"}
             esIndex={esIndex}
@@ -266,13 +273,13 @@ export default function RevenueAnalytics(props) {
             filterToggle={filterToggle}
             extraFitlers={["propertyGroup"]}
           />
-          <Divider className={classes.divider} />
           <AnalyticsCards
             propertiesCount={propertiesCount}
             misMatchedInterestsCount={misMatchedInterestsCount}
             potentialGainLossSum={potentialGainLossSum}
             checksCount={checksCount}
           />
+          <div className={classes.revenueTableInfContainer}>
           <CheckComparisonTable
             header="Property DOI vs Checkstub Interest"
             loadMore={loadMore}
@@ -280,6 +287,7 @@ export default function RevenueAnalytics(props) {
             setESFilters={setESFilters}
             onGettingAnalytics={onGettingAnalytics}
           />
+          </div>
         </div>
       }
 

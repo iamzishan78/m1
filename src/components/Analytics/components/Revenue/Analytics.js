@@ -3,6 +3,12 @@ import { makeStyles } from "@material-ui/styles";
 import { Grid, Card, CardContent, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
+  root: {
+    padding: '0px 20px',
+    width: "100%",
+    margin: 0,
+    backgroundColor: "#fff",
+  },
   card: { borderRadius: "8px" },
   cardHeaderTypography: {
     fontWeight: "bolder",
@@ -49,7 +55,6 @@ export default function AnalyticsCards(props) {
       align="center"
       spacing={4}
       textAlign="left"
-      style={{ margin: "5px" }}
       className={classes.root}
     >
       <Grid item md={3}>
