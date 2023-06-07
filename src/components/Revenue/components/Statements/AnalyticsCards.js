@@ -97,7 +97,10 @@ export default function AnalyticsCards(props) {
     if (type === 'potentialIssues')
       filter = { field: "isAmountValidated", value: 'false', type: 'term' }
 
-    props.setAnalyticFilters(filter, !filtersState[type]); setFiltersState({ ...filtersState, [type]: !filtersState[type] })
+    let revert = {}
+    if (type !== 'potentialIssues')
+      revert = { [type === 'approved' ? 'unapproved' : 'approved']: false }
+    props.setAnalyticFilters(filter, !filtersState[type]); setFiltersState({ ...filtersState, ...revert, [type]: !filtersState[type] })
   }
 
   return (
