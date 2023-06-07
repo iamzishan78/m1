@@ -53,12 +53,21 @@ function CheckComparisonSection(props) {
 
   useEffect(() => {
     (async () => {
-      const count = await getESCounts("property.IsDeleted", false, "term");
+      const propertiesCount = await getESCounts("property.IsDeleted", false, "term");
+      const revenueComparisonAnalytics = await getRevenueComparisonAnalytics("property.IsDeleted", false, "term");
       props.onGettingAnalytics({
-        properties: count,
+        propertiesCount: propertiesCount,
+        checksCount: revenueComparisonAnalytics?.distinctChecksCount,
+        misMatchedInterestsCount: revenueComparisonAnalytics?.misMatchedCount,
+        potentialGainLossSum: revenueComparisonAnalytics?.potentialGainLossSum[0]?.totalSum,
       });
     })();
   }, [props.rows]);
+
+  useEffect(() => {
+    props.setESFilters(props.initialFilters);
+    // eslint-disable-next-line
+  }, [props.initialFilters]);
 
   useEffect(() => {
     setTableMeta({
@@ -127,20 +136,20 @@ function CheckComparisonSection(props) {
     });
   };
 
-  const getMisMatchedCount = () => {
+  const getRevenueComparisonAnalytics = (key, value, type) => {
     return new Promise((resolve, reject) => {
       getRevenueAnalyticsCount({
         variables: {
           index: "checkdetailsinterestscomparison_flat",
-          filters: [...props.esFilters],
+          filters: [...props.esFilters, { field: key, value: value, type }],
           filterKey: "property._id.keyword",
           filterAggs: { query: "", field: "property._id.keyword", size: props.total || 0 },
         },
-        onCompleted: (res) => resolve(res),
+        onCompleted: (res) => resolve(res?.getRevenueAnalyticsCounts?.result),
         onError: (error) => reject(error),
       });
     });
-  }
+  };
 
   return (
     <Container maxWidth={false} className={`${classes.container}`}>

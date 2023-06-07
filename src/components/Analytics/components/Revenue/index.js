@@ -104,6 +104,9 @@ export default function RevenueAnalytics(props) {
   const [propertyFilter, setPropertyFilter] = useState([]);
   const [lastCheckMinDate, setLastCheckMinDate] = useState("");
   const [propertiesCount, setPropertiesCount] = useState(0);
+  const [checksCount, setChecksCount] = useState(0);
+  const [misMatchedInterestsCount, setMisMatchedInterestsCount] = useState(0);
+  const [potentialGainLossSum, setPotentialGainLossSum] = useState(0);
   const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 166px)" }
 
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
@@ -165,8 +168,14 @@ export default function RevenueAnalytics(props) {
 
 
   const onGettingAnalytics = (analyticsList) => {
-    const properties = analyticsList.properties;
-    setPropertiesCount(properties);
+    const propertiesCount = analyticsList.propertiesCount;
+    const checksCount = analyticsList.checksCount;
+    const misMatchedInterestsCount = analyticsList.misMatchedInterestsCount;
+    const potentialGainLossSum = analyticsList.potentialGainLossSum;
+    setPropertiesCount(propertiesCount);
+    setChecksCount(checksCount);
+    setMisMatchedInterestsCount(misMatchedInterestsCount);
+    setPotentialGainLossSum(potentialGainLossSum);
   };
 
   const setESFilters = (newFilter) => {
@@ -259,14 +268,16 @@ export default function RevenueAnalytics(props) {
           />
           <Divider className={classes.divider} />
           <AnalyticsCards
-            properties={propertiesCount}
-            misMatchedInterests={0}
-            potentialGainLossSum={0}
+            propertiesCount={propertiesCount}
+            misMatchedInterestsCount={misMatchedInterestsCount}
+            potentialGainLossSum={potentialGainLossSum}
+            checksCount={checksCount}
           />
           <CheckComparisonTable
             header="Property DOI vs Checkstub Interest"
             loadMore={loadMore}
             esFilters={esFilters}
+            setESFilters={setESFilters}
             onGettingAnalytics={onGettingAnalytics}
           />
         </div>
