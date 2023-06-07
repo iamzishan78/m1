@@ -110,7 +110,7 @@ export default function AnalyticsCards(props) {
               className={classes.cardNumberTypography}
               style={{ color: "red" }}
             >
-              {props?.potentialGainLossSum || 0}
+              ${props?.potentialGainLossSum || 0}
             </Typography>
           </CardContent>
         </Card>
