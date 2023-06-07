@@ -5,6 +5,7 @@ import RevenueStatementTable from "components/Table/Revenue/RevenueStatementTabl
 import LastCheckDateFilter from "../Common/LastCheckDateFilter";
 
 import { makeStyles } from "@material-ui/core/styles";
+import { copy } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   revenueContainer: {
@@ -57,6 +58,15 @@ export default function RevenueStatements() {
     }
   };
 
+  const setAnalyticFilters = (filter, status) => {
+    let filters = copy(esFilters);
+    filters = filters.filter((f) => f.field !== filter.field)
+    if (status)
+      filters.push(filter)
+    setESFilters(filters)
+    setFilterToggle(!filterToggle)
+  }
+
   const onGettingPotentialIssues = (count) => setPotentialIssuesCount(count);
 
   return (
@@ -83,6 +93,7 @@ export default function RevenueStatements() {
             unapprovedCount={unapprovedCount}
             potentialIssuesCount={potentialIssuesCount}
             revenueSearchQuery={stateApp.revenueSearchQuery}
+            setAnalyticFilters={setAnalyticFilters}
           />
 
         </div>

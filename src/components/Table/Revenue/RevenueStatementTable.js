@@ -55,13 +55,13 @@ function RevenueStatementTable(props) {
   );
 
   const formatedFilter = esFilters ? copy(esFilters) : [];
-  const fixedFilters = [];
+  const fixedFilters = formatedFilter;
 
-  if (formatedFilter[0] && formatedFilter[0].value.range) {
-    formatedFilter[0].type = "range";
-    formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field];
-    fixedFilters.push(formatedFilter[0]);
-  }
+  // if (formatedFilter[0] && formatedFilter[0].value.range) {
+  //   formatedFilter[0].type = "range";
+  //   formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field];
+  //   fixedFilters.push(formatedFilter[0]);
+  // }
 
   useEffect(() => {
     setTableMeta({
