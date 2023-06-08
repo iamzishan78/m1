@@ -278,6 +278,8 @@ export default function RevenueAnalytics(props) {
             misMatchedInterestsCount={misMatchedInterestsCount}
             potentialGainLossSum={potentialGainLossSum}
             checksCount={checksCount}
+            esFilters={esFilters}
+            setESFilters={setESFilters}
           />
           <div className={classes.revenueTableInfContainer}>
           <CheckComparisonTable

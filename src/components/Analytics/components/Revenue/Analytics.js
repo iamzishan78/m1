@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/styles";
-import { Grid, Card, CardContent, Typography } from "@material-ui/core";
+import { Grid, Card, CardContent, Typography , IconButton} from "@material-ui/core";
+import FilterIcon from "components/Common/SvgIcons/Filter";
+import { copy } from "components/Shared/functions";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -43,10 +45,49 @@ const useStyles = makeStyles(() => ({
     lineHeight: "120%",
     textAlign: "left",
   },
+  filterButton: {
+    padding: 5,
+    "& .MuiIconButton-label": {
+      height: 24,
+      width: 24
+    },
+    "& svg": {
+      flex: 1,
+    },
+    "& .filter-alt": {
+      display: "none"
+    },
+    "&.active .filter-alt": {
+      display: 'block'
+    },
+    "&.active .filter-outlined": {
+      display: 'none'
+    },
+    "&:hover .filter-alt": {
+      display: 'inline-block'
+    },
+    "&:hover .filter-outlined": {
+      display: 'none'
+    },
+  }
 }));
 
 export default function AnalyticsCards(props) {
   const classes = useStyles();
+  const [isFiltered, setFiltered] = useState(null);
+  useEffect(() => {
+    // const findIndex = props.esFilters?.findIndex(f => f.field === "disbursement" && !f.value)
+    let filters = copy(props.esFilters);
+    filters = filters.filter((filter, index) => filter.field !== "isMisMatchedInterest")
+    if (isFiltered)
+      filters.push({
+        field: "isMisMatchedInterest",
+        value: true,
+        type: "term"
+      })
+    props.setESFilters(filters);
+  }, [isFiltered]);
+
   return (
     <Grid
       container
@@ -86,6 +127,19 @@ export default function AnalyticsCards(props) {
           <CardContent className={classes.cardContent}>
             <Typography variant="h6" component="div" className={classes.cardHeaderTypography}>
               Mismatched Interests
+              <IconButton
+                className={[
+                  classes.filterButton,
+                  "filterButton",
+                  (isFiltered === "misMatchedInterests" && "active") || "",
+                ]}
+                onClick={() => {
+                  setFiltered(isFiltered === "misMatchedInterests" ? "" : "misMatchedInterests");
+                }}
+              >
+                <FilterIcon className={"filter-alt"} />
+                <FilterIcon variant="outlined" className="filter-outlined" />
+              </IconButton>
             </Typography>
             <Typography
               variant="h6"
