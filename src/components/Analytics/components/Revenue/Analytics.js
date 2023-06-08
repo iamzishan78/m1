@@ -76,15 +76,14 @@ export default function AnalyticsCards(props) {
   const classes = useStyles();
   const [isFiltered, setFiltered] = useState(null);
   useEffect(() => {
-    // const findIndex = props.esFilters?.findIndex(f => f.field === "disbursement" && !f.value)
     let filters = copy(props.esFilters);
-    filters = filters.filter((filter, index) => filter.field !== "isMisMatchedInterest")
+    filters = filters.filter((filter, index) => filter.field !== "isMisMatchedInterest");
     if (isFiltered)
       filters.push({
         field: "isMisMatchedInterest",
         value: true,
         type: "term"
-      })
+      });
     props.setESFilters(filters);
   }, [isFiltered]);
 
