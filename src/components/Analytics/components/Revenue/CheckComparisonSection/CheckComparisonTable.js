@@ -120,21 +120,6 @@ function CheckComparisonSection(props) {
     });
   };
 
-  const getPropertiesCount = () => {
-    return new Promise((resolve, reject) => {
-      getESSimpleFilter({
-        variables: {
-          index: "checkdetailsinterestscomparison_flat",
-          filters: [...props.esFilters, { field: "property.IsDeleted", value: false, type: "term" }],
-          filterKey: "property._id.keyword",
-          filterAggs: { query: "", field: "property._id.keyword", size: props.total || 0 },
-        },
-        onCompleted: (res) => resolve(res?.getESSimpleFilter?.hits?.length),
-        onError: (error) => reject(error),
-      });
-    });
-  };
-
   const getRevenueComparisonAnalytics = async () => {
     const propertiesPromise = new Promise((resolve, reject) => {
       getESSimpleFilter({
@@ -165,7 +150,7 @@ function CheckComparisonSection(props) {
   };
 
   return (
-    <Container maxWidth={false} className={`${classes.container}`}>
+    <Container maxWidth={false} className={classes.container}>
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}

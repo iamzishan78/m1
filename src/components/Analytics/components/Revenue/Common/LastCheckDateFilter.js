@@ -80,7 +80,7 @@ const LastCheckDateFilter = ({
 
   const updateFilters = () => {
     let filters = copy(esFilters);
-    filters = filters.filter((filter) => filter.type !== "range" && filter.field !== "property.state.keyword");
+    filters = filters.filter((filter) => filter.type !== "range");
     if (fromDate && toDate)
       filters.push({
         field,
@@ -93,7 +93,8 @@ const LastCheckDateFilter = ({
 
     if (propertyFilter[0]) {
       filters.push({ ...propertyFilter[0], field: "property." + propertyFilter[0].field });
-    }
+    } else
+      filters.splice(filters.findIndex((el) => el.field === "property.state.keyword"), 1);
 
     if (status !== "ALL") {
       filters.push({
