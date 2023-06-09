@@ -114,7 +114,7 @@ export default function RevenueAnalytics(props) {
   const [checksCount, setChecksCount] = useState(0);
   const [misMatchedInterestsCount, setMisMatchedInterestsCount] = useState(0);
   const [potentialGainLossSum, setPotentialGainLossSum] = useState(0);
-  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 166px)" }
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 490px)" }
 
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: "no-cache",
@@ -263,7 +263,7 @@ export default function RevenueAnalytics(props) {
       }
 
       {tab === 2 &&
-        <div className={`${classes.sectionCard}`}>  
+        <>  
           <LastCheckDateFilter
             field={"check.checkDate"}
             esIndex={esIndex}
@@ -290,7 +290,7 @@ export default function RevenueAnalytics(props) {
             onGettingAnalytics={onGettingAnalytics}
           />
           </div>
-        </div>
+        </>
       }
 
     </>
