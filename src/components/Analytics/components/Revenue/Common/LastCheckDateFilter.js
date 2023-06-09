@@ -9,6 +9,7 @@ import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import { MenuItem } from "material-ui";
 import { MuiThemeProvider } from "material-ui/styles";
 import { dateFilterToDate } from "utils/helper";
+import { copy } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -38,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
 const LastCheckDateFilter = ({
   field,
   esIndex,
+  esFilters,
   setESFilters,
   filterToggle,
   setFilterToggle,
@@ -77,8 +79,8 @@ const LastCheckDateFilter = ({
   }, [toDate, fromDate, status, propertyFilter]);
 
   const updateFilters = () => {
-    const filters = [];
-
+    let filters = copy(esFilters);
+    filters = filters.filter((filter) => filter.type !== "range" && filter.field !== "property.state.keyword");
     if (fromDate && toDate)
       filters.push({
         field,
