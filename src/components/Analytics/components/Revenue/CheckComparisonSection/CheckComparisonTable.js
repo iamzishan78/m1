@@ -53,8 +53,7 @@ function CheckComparisonSection(props) {
 
   useEffect(() => {
     (async () => {
-      const propertiesCount = await getESCounts("property.IsDeleted", false, "term");
-      const revenueComparisonAnalytics = await getRevenueComparisonAnalytics("property.IsDeleted", false, "term");
+      const { propertiesCount, revenueComparisonAnalytics } = await getRevenueComparisonAnalytics("property.IsDeleted", false, "term");
       props.onGettingAnalytics({
         propertiesCount: propertiesCount,
         checksCount: revenueComparisonAnalytics?.distinctChecksCount,
@@ -121,12 +120,12 @@ function CheckComparisonSection(props) {
     });
   };
 
-  const getESCounts = (key, value, type) => {
+  const getPropertiesCount = () => {
     return new Promise((resolve, reject) => {
       getESSimpleFilter({
         variables: {
           index: "checkdetailsinterestscomparison_flat",
-          filters: [...props.esFilters, { field: key, value: value, type }],
+          filters: [...props.esFilters, { field: "property.IsDeleted", value: false, type: "term" }],
           filterKey: "property._id.keyword",
           filterAggs: { query: "", field: "property._id.keyword", size: props.total || 0 },
         },
@@ -136,8 +135,20 @@ function CheckComparisonSection(props) {
     });
   };
 
-  const getRevenueComparisonAnalytics = (key, value, type) => {
-    return new Promise((resolve, reject) => {
+  const getRevenueComparisonAnalytics = async () => {
+    const propertiesPromise = new Promise((resolve, reject) => {
+      getESSimpleFilter({
+        variables: {
+          index: "checkdetailsinterestscomparison_flat",
+          filters: [...props.esFilters, { field: "property.IsDeleted", value: false, type: "term" }],
+          filterKey: "property._id.keyword",
+          filterAggs: { query: "", field: "property._id.keyword", size: props.total || 0 },
+        },
+        onCompleted: (res) => resolve(res?.getESSimpleFilter?.hits?.length),
+        onError: (error) => reject(error),
+      });
+    });
+    const otherSummaryPromise = new Promise((resolve, reject) => {
       getRevenueAnalyticsCount({
         variables: {
           index: "checkdetailsinterestscomparison_flat",
@@ -149,6 +160,8 @@ function CheckComparisonSection(props) {
         onError: (error) => reject(error),
       });
     });
+    const [propertiesCount, revenueComparisonAnalytics] = await Promise.all([propertiesPromise, otherSummaryPromise]);
+    return { propertiesCount, revenueComparisonAnalytics };
   };
 
   return (
