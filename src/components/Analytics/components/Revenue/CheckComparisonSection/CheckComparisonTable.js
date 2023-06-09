@@ -141,7 +141,7 @@ function CheckComparisonSection(props) {
       getRevenueAnalyticsCount({
         variables: {
           index: "checkdetailsinterestscomparison_flat",
-          filters: [...props.esFilters, { field: key, value: value, type }],
+          filters: [...props.esFilters],
           filterKey: "property._id.keyword",
           filterAggs: { query: "", field: "property._id.keyword", size: props.total || 0 },
         },
