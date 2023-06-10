@@ -40,6 +40,8 @@ function RevenueStatementTable(props) {
       hits = hits.map((hit) => {
         hit.checkDate = hit.checkDate ? moment(new Date(hit.checkDate)).format("MM/DD/YYYY") : null;
         hit.depositDate = hit.depositDate ? moment(new Date(hit.depositDate)).format("MM/DD/YYYY") : null;
+        hit.ownerName = hit.payee?.name || ''
+        hit.ownerNumber = hit.payee?.number || ''
         hit = setGenricData(hit, hit._id, genericDataActions, genericDataActions);
         hit.tags =
           hit?.tags?.length > 0
@@ -53,13 +55,13 @@ function RevenueStatementTable(props) {
   );
 
   const formatedFilter = esFilters ? copy(esFilters) : [];
-  const fixedFilters = [];
+  const fixedFilters = formatedFilter;
 
-  if (formatedFilter[0] && formatedFilter[0].value.range) {
-    formatedFilter[0].type = "range";
-    formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field];
-    fixedFilters.push(formatedFilter[0]);
-  }
+  // if (formatedFilter[0] && formatedFilter[0].value.range) {
+  //   formatedFilter[0].type = "range";
+  //   formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field];
+  //   fixedFilters.push(formatedFilter[0]);
+  // }
 
   useEffect(() => {
     setTableMeta({
@@ -77,9 +79,7 @@ function RevenueStatementTable(props) {
   }, [setTableMeta, formatHits, revenueSearchQuery, filterToggle]);
 
   useEffect(() => {
-    if (fixedFilters.length > 0) {
-      getCounts();
-    }
+    getCounts();
   }, [props.rows]);
 
   useEffect(() => {
