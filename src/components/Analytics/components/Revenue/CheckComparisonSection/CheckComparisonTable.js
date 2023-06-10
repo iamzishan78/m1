@@ -8,6 +8,7 @@ import { deepEqualObjects, copy } from "components/Shared/functions";
 import TableHeader from "components/Table/constants/check-comparison-header-schema";
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 import { makeStyles } from "@material-ui/styles";
+import { GET_REVENUE_ANALYTICS_COUNT } from "graphQL/useQueryRevenueAnalyticsCounts";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -46,15 +47,26 @@ function CheckComparisonSection(props) {
   const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
     fetchPolicy: "no-cache",
   });
+  const [getRevenueAnalyticsCount] = useLazyQuery(GET_REVENUE_ANALYTICS_COUNT, {
+    fetchPolicy: "no-cache",
+  });
 
   useEffect(() => {
     (async () => {
-      const count = await getESCounts("property.IsDeleted", false, "term");
+      const { propertiesCount, revenueComparisonAnalytics } = await getRevenueComparisonAnalytics("property.IsDeleted", false, "term");
       props.onGettingAnalytics({
-        properties: count,
+        propertiesCount: propertiesCount,
+        checksCount: revenueComparisonAnalytics?.distinctChecksCount,
+        misMatchedInterestsCount: revenueComparisonAnalytics?.misMatchedCount,
+        potentialGainLossSum: revenueComparisonAnalytics?.potentialGainLossSum[0]?.totalSum,
       });
     })();
   }, [props.rows]);
+
+  useEffect(() => {
+    props.setESFilters(props.initialFilters);
+    // eslint-disable-next-line
+  }, [props.initialFilters]);
 
   useEffect(() => {
     setTableMeta({
@@ -108,12 +120,12 @@ function CheckComparisonSection(props) {
     });
   };
 
-  const getESCounts = (key, value, type) => {
-    return new Promise((resolve, reject) => {
+  const getRevenueComparisonAnalytics = async () => {
+    const propertiesPromise = new Promise((resolve, reject) => {
       getESSimpleFilter({
         variables: {
           index: "checkdetailsinterestscomparison_flat",
-          filters: [...props.esFilters, { field: key, value: value, type }],
+          filters: [...props.esFilters, { field: "property.IsDeleted", value: false, type: "term" }],
           filterKey: "property._id.keyword",
           filterAggs: { query: "", field: "property._id.keyword", size: props.total || 0 },
         },
@@ -121,10 +133,24 @@ function CheckComparisonSection(props) {
         onError: (error) => reject(error),
       });
     });
+    const otherSummaryPromise = new Promise((resolve, reject) => {
+      getRevenueAnalyticsCount({
+        variables: {
+          index: "checkdetailsinterestscomparison_flat",
+          filters: [...props.esFilters],
+          filterKey: "property._id.keyword",
+          filterAggs: { query: "", field: "property._id.keyword", size: props.total || 0 },
+        },
+        onCompleted: (res) => resolve(res?.getRevenueAnalyticsCounts?.result),
+        onError: (error) => reject(error),
+      });
+    });
+    const [propertiesCount, revenueComparisonAnalytics] = await Promise.all([propertiesPromise, otherSummaryPromise]);
+    return { propertiesCount, revenueComparisonAnalytics };
   };
 
   return (
-    <Container maxWidth={false} className={`${classes.container}`}>
+    <Container maxWidth={false} className={classes.container}>
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}

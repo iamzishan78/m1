@@ -12,11 +12,16 @@ export const copy = (data) => {
   return data ? JSON.parse(JSON.stringify(data)) : null;
 };
 
+const appendZeroIfSingle = (number) => {
+  const appenedNumber = number.toString().length === 1 ? '0' + number : number;
+  return appenedNumber;
+}
+
 export const dateFilterToDate = (date) => {
   let endDate = new Date(`${date}T00:00:00.000Z`);
   const nextMonth = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 1);
   const lastDayOfMonth = new Date(nextMonth - 1);
-  return `${endDate.getFullYear()}-${endDate.getMonth() + 1}-${lastDayOfMonth.getDate()}`
+  return `${endDate.getFullYear()}-${appendZeroIfSingle(endDate.getMonth() + 1)}-${appendZeroIfSingle(lastDayOfMonth.getDate())}`;
 }
 
 export const dateIsValid = (date) => {

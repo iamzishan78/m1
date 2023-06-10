@@ -45,6 +45,13 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+
+  revenueTableInfContainer:{
+    paddingTop: theme.spacing(1),
+    // paddingLeft: "38px",
+    // paddingRight: "38px",
+    marginLeft: '-8px',
+  }
 }));
 
 const StyledTabs = withStyles({
@@ -104,7 +111,10 @@ export default function RevenueAnalytics(props) {
   const [propertyFilter, setPropertyFilter] = useState([]);
   const [lastCheckMinDate, setLastCheckMinDate] = useState("");
   const [propertiesCount, setPropertiesCount] = useState(0);
-  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 166px)" }
+  const [checksCount, setChecksCount] = useState(0);
+  const [misMatchedInterestsCount, setMisMatchedInterestsCount] = useState(0);
+  const [potentialGainLossSum, setPotentialGainLossSum] = useState(0);
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 490px)" }
 
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: "no-cache",
@@ -165,8 +175,14 @@ export default function RevenueAnalytics(props) {
 
 
   const onGettingAnalytics = (analyticsList) => {
-    const properties = analyticsList.properties;
-    setPropertiesCount(properties);
+    const propertiesCount = analyticsList.propertiesCount;
+    const checksCount = analyticsList.checksCount;
+    const misMatchedInterestsCount = analyticsList.misMatchedInterestsCount;
+    const potentialGainLossSum = analyticsList.potentialGainLossSum;
+    setPropertiesCount(propertiesCount);
+    setChecksCount(checksCount);
+    setMisMatchedInterestsCount(misMatchedInterestsCount);
+    setPotentialGainLossSum(potentialGainLossSum);
   };
 
   const setESFilters = (newFilter) => {
@@ -247,7 +263,7 @@ export default function RevenueAnalytics(props) {
       }
 
       {tab === 2 &&
-        <div className={`${classes.sectionCard}`}>
+        <>  
           <LastCheckDateFilter
             field={"check.checkDate"}
             esIndex={esIndex}
@@ -257,17 +273,24 @@ export default function RevenueAnalytics(props) {
             filterToggle={filterToggle}
             extraFitlers={["propertyGroup"]}
           />
-          <Divider className={classes.divider} />
           <AnalyticsCards
-            properties={propertiesCount}
+            propertiesCount={propertiesCount}
+            misMatchedInterestsCount={misMatchedInterestsCount}
+            potentialGainLossSum={potentialGainLossSum}
+            checksCount={checksCount}
+            esFilters={esFilters}
+            setESFilters={setESFilters}
           />
+          <div className={classes.revenueTableInfContainer}>
           <CheckComparisonTable
             header="Property DOI vs Checkstub Interest"
             loadMore={loadMore}
             esFilters={esFilters}
+            setESFilters={setESFilters}
             onGettingAnalytics={onGettingAnalytics}
           />
-        </div>
+          </div>
+        </>
       }
 
     </>
