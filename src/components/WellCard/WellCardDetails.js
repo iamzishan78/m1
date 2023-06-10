@@ -263,7 +263,7 @@ export default function WellCardDetails(props) {
   }, []);
 
   useEffect(() => {
-    if (externalProductionDetail) {
+    if (externalProductionDetail?.externalProductionDetail) {
       let temp = [];
       externalProductionDetail.externalProductionDetail.forEach(element => {
         let temp_row = { ...element };

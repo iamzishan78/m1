@@ -47,7 +47,8 @@ const CustomFieldSelect = ({
   column,
   fullWidth,
   variant,
-  valueMarginLeft
+  valueMarginLeft,
+  isOptionsEditable
 }) => {
   const classes = useStyles();
   const [options, setOptions] = useState([]);
@@ -68,7 +69,7 @@ const CustomFieldSelect = ({
     const options = JSON.parse(JSON.stringify(dropdownOptions.filter(op => op.value?.toLowerCase()?.includes(search.toLowerCase()))));
     options.unshift(defaultValue);
     options.unshift({ label: 'search', value: 'search' });
-    options.push({ label: "edit", value: "editOption" });
+    if (isOptionsEditable) options.push({ label: "edit", value: "editOption" });
     setOptions(options);
     setSearch(search);
   }
