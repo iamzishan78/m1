@@ -22,9 +22,12 @@ function PropertyInterestDetailsTable(props) {
     refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList"], awaitRefetchQueries: true
   });
 
+  const convertUtcToDate = (Date) => Date ? moment(Date).utc(true).format("MM/DD/YYYY") : null; 
+
   const formatHits = (hits) => {
     return hits.map((hit) => {
-      hit.effectiveDate = hit.effectiveDate ? moment(hit.effectiveDate).utc(true).format("MM/DD/YYYY") : null;
+      hit.effectiveDate = convertUtcToDate(hit.effectiveDate);
+      hit.endDate = convertUtcToDate(hit.endDate); 
       hit.tags =
         hit?.tags?.length > 0
           ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
@@ -108,7 +111,7 @@ function PropertyInterestDetailsTable(props) {
             onClose={() => props.setOpenDialog(null)}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={props.selectedRows.map(
-              (sR) => props.rows[sR.dataIndex]._id
+              (sR) => props.rows[sR.dataIndex]?._id
             )}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >

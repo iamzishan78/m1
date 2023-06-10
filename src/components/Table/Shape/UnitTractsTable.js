@@ -231,7 +231,7 @@ function UnitTractsTable(props) {
             header="Delete Tracts(s)"
             onClose={() => setOpenDialog(null)}
             deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={selectedRows.map((sR => props.rows[sR.dataIndex]._id))}
+            m1nSelectedRowsIds={selectedRows.map((sR => props.rows[sR.dataIndex]?._id))}
             setM1nSelectedRowsIndexes={setSelectedRows}
           >
             {`Do you want to permanently delete the tracts${selectedRows &&
