@@ -3,10 +3,18 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Grid, Divider, Tab, Tabs } from "@material-ui/core";
+import { MuiThemeProvider } from "material-ui/styles";
+import { Grid, Divider, Tab, Tabs,FormControl, Select } from "@material-ui/core";
+import { MenuItem } from "material-ui";
+import sortBy from 'lodash/sortBy'
 
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
+import { WellCardContextProvider } from "components/WellCard/WellCardContext";
+import { WellProdChartContextProvider } from "components/WellProdChart/WellProdChartContext";
+import OverShortComparison from 'components/Revenue/components/Properties/DetailComponents/Validation/OverShortComparison'
+import MonthlyProductionChart from 'components/Revenue/components/Properties/DetailComponents/Validation/MonthlyProductionChart'
 import { setStateIfDeepEqual } from "components/Shared/functions";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import DetailTabsSection from "components/Analytics/components/Revenue/DetailTabsSection";
@@ -15,6 +23,7 @@ import CheckDetailsSection from "./CheckDetailsSection";
 import CheckComparisonTable from "./CheckComparisonSection/CheckComparisonTable";
 import AnalyticsCards from "./Analytics";
 import LastCheckDateFilter from "./Common/LastCheckDateFilter";
+import SalesVolumeComparisonTable from "./SalesVolumeComparisonSection/SalesVolumeComparisonTable";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
@@ -51,7 +60,15 @@ const useStyles = makeStyles((theme) => ({
     // paddingLeft: "38px",
     // paddingRight: "38px",
     marginLeft: '-8px',
-  }
+  },
+  viewSwitcher: {
+    height: "40px",
+    backgroundColor: "white",
+  },
+
+  formControl: {
+    width: "400px",
+  },
 }));
 
 const StyledTabs = withStyles({
@@ -109,13 +126,19 @@ export default function RevenueAnalytics(props) {
   const [toDate, setToDate] = React.useState(null);
   const [monthsInterval, setMonths] = useState([]);
   const [propertyFilter, setPropertyFilter] = useState([]);
+  const [propertiesIds, setPropertiesIds]=useState([]);
+  const [associatedWellIds, setAssociatedWellIds] = useState([]);
+  const [wellProductionData, setWellProductionData] = useState([]);
+  const [checkDetailsData, setCheckDetailsData] = useState([]);
+  const [startDate, setStartDate] = useState(null);
   const [lastCheckMinDate, setLastCheckMinDate] = useState("");
   const [propertiesCount, setPropertiesCount] = useState(0);
   const [checksCount, setChecksCount] = useState(0);
   const [misMatchedInterestsCount, setMisMatchedInterestsCount] = useState(0);
   const [potentialGainLossSum, setPotentialGainLossSum] = useState(0);
+  const [comparisonReport,setComparisonReport]=useState("checkDetailComparison");
   const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 490px)" }
-
+  console.log(propertiesIds);
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
@@ -130,6 +153,44 @@ export default function RevenueAnalytics(props) {
   const [getPortfolioSummary, { data: portfolioSummary, loading }] = useLazyQuery(GET_PORTFOLIO_GROSS_REVENUE_SUMMARY, {
     fetchPolicy: "no-cache",
   });
+
+  const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });
+  
+    useEffect(() => {
+      getESSimpleSearch({
+        variables: {
+            index: 'checkdetailsinterestscomparison_flat',
+            pagination: {
+                first: 10000,
+                after: null
+            },
+            search: {
+                query: "",
+                fields: [],
+            },
+            filters: []
+        }
+    })
+    },[esFilters])
+  
+    useEffect(() => {
+      if(elasticData?.getESSimpleSearch?.hits?.length > 0){
+        let data = []
+        for(let i = 0; i < elasticData?.getESSimpleSearch?.hits?.length; i++) {
+          const check = elasticData?.getESSimpleSearch?.hits[i]
+          data.push({
+            product: check.product,
+            ReportDate: check.date,
+            oil: check.product === 'OIL' ? check.grossPropertyVolume : 0,
+            gas: check.product === 'GAS' ? check.grossPropertyVolume : 0,
+            water: check.product === 'WATER' ? check.grossPropertyVolume : 0,
+          })
+        }
+        data = sortBy(data, ['ReportDate']);
+        setCheckDetailsData(data)
+      }
+      
+    },[elasticData])
 
   useEffect(() => {
     getESMinValue({
@@ -201,18 +262,42 @@ export default function RevenueAnalytics(props) {
           <StyledTab label="Income Statement" />
           <StyledTab label="Comparison" />
           <StyledTab label="Check Comparison" />
-          {/* <StyledTab label="Income Stmt" /> */}
-          {/* <StyledTab label="Comparison" disabled /> */}
-          {/* <StyledTab label="Properties" /> */}
+          <MuiThemeProvider>
+            <FormControl variant="outlined" className={classes.formControl}>
+              <Select
+                fullWidth
+                labelId="status-outlined-label"
+                id="status-filter"
+                value={comparisonReport}
+                className={classes.viewSwitcher}
+                onChange={(e) => setComparisonReport(e.target.value)}
+              >
+                <MenuItem value="checkDetailComparison">Check Detail Comparison</MenuItem>
+                <MenuItem value="SalesVolumeReport">Sales Volume vs Reported Production</MenuItem>
+              </Select>
+            </FormControl>
+          </MuiThemeProvider>
         </StyledTabs>
       </div>
 
       {tab === 0 && (
         <>
           <div className={classes.actionBar}>
-            <Grid container direction="row" display="flex" spacing={4} style={{ padding: "0px 36px" }}>
+            <Grid
+              container
+              direction="row"
+              display="flex"
+              spacing={4}
+              style={{ padding: "0px 36px" }}
+            >
               <Grid item xs={8} md={6} style={{ marginTop: "4px" }}>
-                <Grid container display="flex" alignItems="center" spacing={3} justifyContent="space-between">
+                <Grid
+                  container
+                  display="flex"
+                  alignItems="center"
+                  spacing={3}
+                  justifyContent="space-between"
+                >
                   <CustomDates
                     onChangeDates={onChangeDates}
                     fromDate={fromDate}
@@ -231,7 +316,7 @@ export default function RevenueAnalytics(props) {
                     type="Properties"
                     esFilters={propertiesReportGroup || []}
                     setESFilters={(value) => setPropertyFilter(value)}
-                    setFilterToggle={() => { }}
+                    setFilterToggle={() => {}}
                     isBackground={false}
                     noUpdate={true}
                     strechedWidth
@@ -253,17 +338,14 @@ export default function RevenueAnalytics(props) {
         </>
       )}
 
-      {tab === 1 &&
+      {tab === 1 && (
         <div className={`${classes.sectionCard}`}>
-          <CheckDetailsSection
-            header="Check Details"
-            loadMore={loadMore}
-          />
+          <CheckDetailsSection header="Check Details" loadMore={loadMore} />
         </div>
-      }
+      )}
 
-      {tab === 2 &&
-        <>  
+      {tab === 2 && (
+        <>
           <LastCheckDateFilter
             field={"check.checkDate"}
             esIndex={esIndex}
@@ -273,26 +355,62 @@ export default function RevenueAnalytics(props) {
             filterToggle={filterToggle}
             extraFitlers={["propertyGroup"]}
           />
-          <AnalyticsCards
-            propertiesCount={propertiesCount}
-            misMatchedInterestsCount={misMatchedInterestsCount}
-            potentialGainLossSum={potentialGainLossSum}
-            checksCount={checksCount}
-            esFilters={esFilters}
-            setESFilters={setESFilters}
-          />
-          <div className={classes.revenueTableInfContainer}>
-          <CheckComparisonTable
-            header="Property DOI vs Checkstub Interest"
-            loadMore={loadMore}
-            esFilters={esFilters}
-            setESFilters={setESFilters}
-            onGettingAnalytics={onGettingAnalytics}
-          />
-          </div>
-        </>
-      }
+          {comparisonReport === "SalesVolumeReport" ? (
+            <>
+              <Grid container direction="row" display="flex" justify="space-between">
+                <Grid item xs={6}>
+                  <WellCardContextProvider>
+                    <WellProdChartContextProvider>
+                      <MonthlyProductionChart
+                        filter={esFilters}
+                        propertiesIds={propertiesIds}
+                        setStartDate={setStartDate}
+                        wellProductionData={wellProductionData}
+                        setWellProductionData={setWellProductionData}
+                        setAssociatedWellIds={setAssociatedWellIds}
+                      />
+                    </WellProdChartContextProvider>
+                  </WellCardContextProvider>
+                </Grid>
+                <Grid item xs={6}>
+                  <OverShortComparison
+                    productionData={wellProductionData}
+                    checkData={[]}
+                  />
+                </Grid>
+              </Grid>
 
+              <SalesVolumeComparisonTable
+                targetLabel="propertyInterest"
+                parent="PropertyAssociatedWell"
+                setPropertiesIds={setPropertiesIds}
+                loadMore={{...loadMore,height: "calc(100vh - 790px)"}}
+                // propertyId={propertyId}
+              />
+            </>
+          ) : (
+            <>
+              <AnalyticsCards
+                propertiesCount={propertiesCount}
+                misMatchedInterestsCount={misMatchedInterestsCount}
+                potentialGainLossSum={potentialGainLossSum}
+                checksCount={checksCount}
+                esFilters={esFilters}
+                setESFilters={setESFilters}
+              />
+              <div className={classes.revenueTableInfContainer}>
+                <CheckComparisonTable
+                  header="Property DOI vs Checkstub Interest"
+                  loadMore={loadMore}
+                  esFilters={esFilters}
+                  setESFilters={setESFilters}
+                  onGettingAnalytics={onGettingAnalytics}
+                />
+              </div>
+            </>
+          )}
+        </>
+      )}
     </>
   );
 }

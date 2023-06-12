@@ -9,7 +9,7 @@ import { WellCardContext } from "components/WellCard/WellCardContext";
 import { WellProdChartContext } from "components/WellProdChart/WellProdChartContext";
 import { GET_ASSOCIATED_WELL_PRODUCTION_DATA } from "graphQL/useQueryAssociatedWellProductionData";
 
-const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellIds, wellProductionData, setWellProductionData }) => {
+const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellIds, wellProductionData, setWellProductionData, propertiesIds }) => {
     const [, setStateWellCard] = useContext(WellCardContext);
     const [, setStateWellProdChart] = useContext(WellProdChartContext);
     const [getAssociatedWellProductionData, { data: associatedWells }] = useLazyQuery(GET_ASSOCIATED_WELL_PRODUCTION_DATA);
@@ -104,11 +104,11 @@ const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellId
     useEffect(() => {
       getAssociatedWellProductionData({
         variables: {
-          relatedObject: propertyId,
+          relatedObjects: propertyId ? [propertyId] : propertiesIds,
         },
       });
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [propertyId,propertiesIds]);
   
     return (
     <WellProdChart />
