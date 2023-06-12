@@ -150,7 +150,7 @@ function ContactsTable(props) {
           : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
 
-      hit.campaignName = hit.campaignName[0].join(',')
+      hit.campaignName = hit.campaignName?.[0]?.join?.(',') || hit.campaignName
 
       return hit;
     });
