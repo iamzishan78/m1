@@ -3,9 +3,8 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { MuiThemeProvider } from "material-ui/styles";
-import { Grid, Divider, Tab, Tabs,FormControl, Select } from "@material-ui/core";
-import { MenuItem } from "material-ui";
+import { Grid, Divider, Tab, Tabs, TextField } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import sortBy from 'lodash/sortBy'
 
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
@@ -126,7 +125,7 @@ export default function RevenueAnalytics(props) {
   const [toDate, setToDate] = React.useState(null);
   const [monthsInterval, setMonths] = useState([]);
   const [propertyFilter, setPropertyFilter] = useState([]);
-  const [propertiesIds, setPropertiesIds]=useState([]);
+  const [propertiesIds, setPropertiesIds] = useState([]);
   const [associatedWellIds, setAssociatedWellIds] = useState([]);
   const [wellProductionData, setWellProductionData] = useState([]);
   const [checkDetailsData, setCheckDetailsData] = useState([]);
@@ -136,9 +135,8 @@ export default function RevenueAnalytics(props) {
   const [checksCount, setChecksCount] = useState(0);
   const [misMatchedInterestsCount, setMisMatchedInterestsCount] = useState(0);
   const [potentialGainLossSum, setPotentialGainLossSum] = useState(0);
-  const [comparisonReport,setComparisonReport]=useState("checkDetailComparison");
-  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 490px)" }
-  console.log(propertiesIds);
+  const [comparisonReport, setComparisonReport] = useState("Check Detail Comparison");
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 166px)" };
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
@@ -154,43 +152,46 @@ export default function RevenueAnalytics(props) {
     fetchPolicy: "no-cache",
   });
 
-  const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });
-  
-    useEffect(() => {
-      getESSimpleSearch({
-        variables: {
-            index: 'checkdetailsinterestscomparison_flat',
-            pagination: {
-                first: 10000,
-                after: null
-            },
-            search: {
-                query: "",
-                fields: [],
-            },
-            filters: []
-        }
-    })
-    },[esFilters])
-  
-    useEffect(() => {
-      if(elasticData?.getESSimpleSearch?.hits?.length > 0){
-        let data = []
-        for(let i = 0; i < elasticData?.getESSimpleSearch?.hits?.length; i++) {
-          const check = elasticData?.getESSimpleSearch?.hits[i]
-          data.push({
-            product: check.product,
-            ReportDate: check.date,
-            oil: check.product === 'OIL' ? check.grossPropertyVolume : 0,
-            gas: check.product === 'GAS' ? check.grossPropertyVolume : 0,
-            water: check.product === 'WATER' ? check.grossPropertyVolume : 0,
-          })
-        }
-        data = sortBy(data, ['ReportDate']);
-        setCheckDetailsData(data)
+  const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+    fetchPolicy: "no-cache",
+  });
+
+  useEffect(() => {
+    getESSimpleSearch({
+      variables: {
+        index: "checkdetailsinterestscomparison_flat",
+        pagination: {
+          first: 10000,
+          after: null,
+        },
+        search: {
+          query: "",
+          fields: [],
+        },
+        filters: [
+          //{field: 'date', type: 'range', value: esFilters[0]?.value}
+        ],
+      },
+    });
+  }, [esFilters]);
+
+  useEffect(() => {
+    if (elasticData?.getESSimpleSearch?.hits?.length > 0) {
+      let data = [];
+      for (let i = 0; i < elasticData?.getESSimpleSearch?.hits?.length; i++) {
+        const check = elasticData?.getESSimpleSearch?.hits[i];
+        data.push({
+          product: check.product,
+          ReportDate: check.date,
+          oil: check.product === "OIL" ? check.grossPropertyVolume : 0,
+          gas: check.product === "GAS" ? check.grossPropertyVolume : 0,
+          water: check.product === "WATER" ? check.grossPropertyVolume : 0,
+        });
       }
-      
-    },[elasticData])
+      data = sortBy(data, ["ReportDate"]);
+      setCheckDetailsData(data);
+    }
+  }, [elasticData]);
 
   useEffect(() => {
     getESMinValue({
@@ -262,21 +263,24 @@ export default function RevenueAnalytics(props) {
           <StyledTab label="Income Statement" />
           <StyledTab label="Comparison" />
           <StyledTab label="Check Comparison" />
-          <MuiThemeProvider>
-            <FormControl variant="outlined" className={classes.formControl}>
-              <Select
-                fullWidth
-                labelId="status-outlined-label"
-                id="status-filter"
-                value={comparisonReport}
-                className={classes.viewSwitcher}
-                onChange={(e) => setComparisonReport(e.target.value)}
-              >
-                <MenuItem value="checkDetailComparison">Check Detail Comparison</MenuItem>
-                <MenuItem value="SalesVolumeReport">Sales Volume vs Reported Production</MenuItem>
-              </Select>
-            </FormControl>
-          </MuiThemeProvider>
+          <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "395px" }}>
+            <Autocomplete
+              size="small"
+              onChange={(event, newValue) => setComparisonReport(newValue)}
+              options={
+                ["Check Detail Comparison",
+                  "Sales Volume vs Reported Production"]
+              }
+              renderInput={(params) => (
+                <form autoComplete="off">
+              <TextField {...params} variant="outlined" placeholder="" style={{ backgroundColor: "white" }} fullWidth={true} />
+            </form>
+              )}
+              defaultValue={"Check Detail Comparison"}
+              disableListWrap
+              id="custom-date-dropdown"
+            />
+          </Grid>
         </StyledTabs>
       </div>
 
@@ -355,7 +359,7 @@ export default function RevenueAnalytics(props) {
             filterToggle={filterToggle}
             extraFitlers={["propertyGroup"]}
           />
-          {comparisonReport === "SalesVolumeReport" ? (
+          {comparisonReport === "Sales Volume vs Reported Production" ? (
             <>
               <Grid container direction="row" display="flex" justify="space-between">
                 <Grid item xs={6}>
@@ -375,7 +379,7 @@ export default function RevenueAnalytics(props) {
                 <Grid item xs={6}>
                   <OverShortComparison
                     productionData={wellProductionData}
-                    checkData={[]}
+                    checkData={checkDetailsData}
                   />
                 </Grid>
               </Grid>
@@ -384,6 +388,7 @@ export default function RevenueAnalytics(props) {
                 targetLabel="propertyInterest"
                 parent="PropertyAssociatedWell"
                 setPropertiesIds={setPropertiesIds}
+                esFilters={esFilters}
                 loadMore={{...loadMore,height: "calc(100vh - 790px)"}}
                 // propertyId={propertyId}
               />
@@ -401,7 +406,7 @@ export default function RevenueAnalytics(props) {
               <div className={classes.revenueTableInfContainer}>
                 <CheckComparisonTable
                   header="Property DOI vs Checkstub Interest"
-                  loadMore={loadMore}
+                  loadMore={{ ...loadMore, height: "calc(100vh - 490px)" }}
                   esFilters={esFilters}
                   setESFilters={setESFilters}
                   onGettingAnalytics={onGettingAnalytics}

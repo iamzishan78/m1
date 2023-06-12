@@ -80,9 +80,9 @@ const LastCheckDateFilter = ({
 
   const updateFilters = () => {
     let filters = copy(esFilters);
-    filters = filters.filter((filter) => filter.type !== "range");
+    filters = filters.filter((filter) => filter.type !== "range" && filter.field !== "property.state.keyword");
     if (fromDate && toDate)
-      filters.push({
+      filters.unshift({
         field,
         value: {
           gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
@@ -91,10 +91,7 @@ const LastCheckDateFilter = ({
         type: "range",
       });
 
-    if (propertyFilter[0]) {
-      filters.push({ ...propertyFilter[0], field: "property." + propertyFilter[0].field });
-    } else
-      filters.splice(filters.findIndex((el) => el.field === "property.state.keyword"), 1);
+    if (propertyFilter[0]) filters.push({ ...propertyFilter[0], field: "property." + propertyFilter[0].field });
 
     if (status !== "ALL") {
       filters.push({

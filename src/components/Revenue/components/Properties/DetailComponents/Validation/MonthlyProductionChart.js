@@ -36,13 +36,18 @@ const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellId
           wellIds.push(data.well._id);
           if (data.well.productionData.length > 0) {
             let pData = JSON.parse(JSON.stringify(data.well.productionData));
-            if (filter[0].value.range.date.lte) {
+            if (filter[0]?.value?.range?.date?.lte) {
               pData = pData.filter((d) => moment(moment(d.data.ReportDate).format('MM/DD/yyyy')) <= moment(moment(filter[0].value.range.date.lte).format('MM/DD/yyyy')));
             }
-            if (filter[0].value.range.date.gte) {
+            if (filter[0]?.value?.range?.date?.gte) {
               pData = pData.filter((d) => moment(moment(d.data.ReportDate).format('MM/DD/yyyy')) >= moment(moment(filter[0].value.range.date.gte).format('MM/DD/yyyy')));
             }
-  
+            if (filter[0]?.value?.lte) {
+              pData = pData.filter((d) => moment(moment(d.data.ReportDate).format('MM/DD/yyyy')) <= moment(moment(filter[0]?.value?.lte).format('MM/DD/yyyy')));
+            }
+            if (filter[0]?.value?.gte) {
+              pData = pData.filter((d) => moment(moment(d.data.ReportDate).format('MM/DD/yyyy')) >= moment(moment(filter[0]?.value?.gte).format('MM/DD/yyyy')));
+            }  
             pData.forEach((production) => {
               production = JSON.parse(JSON.stringify(production.data));
               const date = moment(production.ReportDate).format("MM/yyyy");
