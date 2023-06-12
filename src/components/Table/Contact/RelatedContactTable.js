@@ -66,13 +66,13 @@ export const getFilters = (appliedFilters) => {
 
 
 const CustomChip = ({ label, onDelete }) => {
-  if(["Expiration", "Option to Extend"].includes(label))
+  if (["Expiration", "Option to Extend"].includes(label))
     return null
   return (
-      <Chip
-          label={label}
-          onDelete={onDelete}
-      />
+    <Chip
+      label={label}
+      onDelete={onDelete}
+    />
   );
 };
 
@@ -86,13 +86,14 @@ function RelatedContactsTable(props) {
   const [selectedRow, selectRow] = useState([]);
   const [stateApp, setStateApp] = useContext(AppContext);
   const { clickedRow, applyCustomClasses } = props;
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
   const [deleteRelatedContacts] = useMutation(DELETE_RELATED_CONTACT);
 
   useEffect(() => {
     props.setTableMeta({
       filters: [
-        ...getFilters([{ field: "relatedContacts.relatedObject", value: props.contactId}]),
+        ...getFilters([{ field: "relatedContacts.relatedObject", value: props.contactId }]),
       ],
       searchFields: [
         "name",
@@ -130,7 +131,7 @@ function RelatedContactsTable(props) {
   const formatHits = (hits) => {
     return hits.map((hit) => {
       const relationshipType = hit.relatedContacts.find(rc => rc.relatedObject == props.contactId);
-      if(relationshipType){
+      if (relationshipType) {
         hit.relationshipType = relationshipType.relationshipType;
       }
       return hit;
@@ -141,14 +142,17 @@ function RelatedContactsTable(props) {
     if (ids.length > 0) {
       props.setLoading(true);
       //write delete logic here
-      deleteRelatedContacts({ 
+      deleteRelatedContacts({
         variables: {
           descriptorObjects: ids,
           relatedObject: props.contactId
         },
-        refetchQueries: ["getESSimpleSearch"],
+        refetchQueries: ["getESSimpleSearch", "getContactSummary"],
         awaitRefetchQueries: true,
-      })
+      }).then(() => {
+        props.setLoading(false);
+        setResetSelectedRow(!resetSelectedRow);
+      });
     }
   };
 
@@ -188,6 +192,7 @@ function RelatedContactsTable(props) {
         uploadIcon={null}
         dense={props.dense ? props.dense : undefined}
         orderByTracks={false}
+        resetSelectedRow={resetSelectedRow}
         startPaginationAt={null}
         onTableChange={props.onTableChange}
         options={{
@@ -204,17 +209,17 @@ function RelatedContactsTable(props) {
                   float: "left",
                 }}
               >
-         
-                  <ButtonGroup variant="contained" style={{ height: "40px", margin: "4px" }} color="primary" aria-label="split button">
-                    <Button
-                      id="addRelatedContactBtn"
-                      color="primary"
-                      size="small"
-                      onClick={() => setStateApp({...stateApp, addRelatedContactDialog: true })}
-                    >
-                      + ADD RELATED CONTACT
-                    </Button>
-                  </ButtonGroup>
+
+                <ButtonGroup variant="contained" style={{ height: "40px", margin: "4px" }} color="primary" aria-label="split button">
+                  <Button
+                    id="addRelatedContactBtn"
+                    color="primary"
+                    size="small"
+                    onClick={() => setStateApp({ ...stateApp, addRelatedContactDialog: true })}
+                  >
+                    + ADD RELATED CONTACT
+                  </Button>
+                </ButtonGroup>
               </div>
             );
           },
@@ -246,9 +251,9 @@ function RelatedContactsTable(props) {
         component={{
           TableFilterList: CustomFilterList,
         }}
-        
+
       />
-      <AddRelatedContactModal width={"700px"} relatedObject={props.contactId}  />
+      <AddRelatedContactModal width={"700px"} relatedObject={props.contactId} />
     </Container>
   );
 }
