@@ -149,8 +149,12 @@ function ContactsTable(props) {
           ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
           : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
+
+      hit.campaignName = hit.campaignName[0].join(',')
+
       return hit;
     });
+
     return hits;
   };
 
