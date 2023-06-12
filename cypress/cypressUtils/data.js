@@ -4,7 +4,7 @@ export const loginCredential = {
 }
 
 export const baseUrls = {
-    enerx: "https://enerxgraphql.azurewebsites.net/api/m1graph?code=Rhr8LQFXNnl/TE26EVD296voKbGVWZQDupqWAAWMaZXjzvgdvktPqg==",
+    m1dev: "https://enerxgraphql.azurewebsites.net/api/m1graph?code=Rhr8LQFXNnl/TE26EVD296voKbGVWZQDupqWAAWMaZXjzvgdvktPqg==",
     localhost: "http://localhost:7071/api/m1graph"
 }
 
