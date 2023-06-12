@@ -24,6 +24,8 @@ const statusOptions = ["Active", "Inactive"];
 
 const costFreeOptions = ["No", "Yes - All Products", "Yes - Gas", "Yes - Oil", "Unknown"];
 
+const productTypeOptions = ["OIL", "GAS", "NGL", "ALL"];
+
 const useStyles = makeStyles((theme) => ({
   sideModal: {
     marginTop: 20,
@@ -206,6 +208,27 @@ const InterestDetailForm = (props) => {
           />
         </Grid>
         <Grid item xs={12} className={classes.fieldset}>
+          <label>Product Type</label>
+          <Controller
+            control={control}
+            name="productType"
+            defaultValue={null}
+            render={(params) => (
+              <Select
+                fullWidth
+                value={params.value}
+                onChange={(e) => {
+                  params.onChange(e.target.value);
+                }}
+              >
+                {productTypeOptions.map((option) => (
+                  <MenuItem value={option}>{option}</MenuItem>
+                ))}
+              </Select>
+            )}
+          />
+        </Grid>
+        <Grid item xs={12} className={classes.fieldset}>
           <label>Interest Amount</label>
           <Controller
             control={control}
@@ -227,6 +250,36 @@ const InterestDetailForm = (props) => {
           <Controller
             control={control}
             name="effectiveDate"
+            defaultValue={null}
+            render={(params) => (
+              <TextField
+                {...params}
+                type="date"
+                margin="dense"
+                fullWidth
+                value={params.value ? moment(params.value).utc(true).format("yyyy-MM-DD") : ""}
+                InputLabelProps={{ shrink: true }}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton
+                      onClick={(event) => {
+                        params.onChange("");
+                      }}
+                    >
+                      <Clear style={{ height: 22, width: 22 }} />
+                    </IconButton>
+                  ),
+                  classes: { root: classes.dateRoot },
+                }}
+              />
+            )}
+          />
+        </Grid>
+        <Grid item xs={12} className={classes.fieldset}>
+          <label>End Date</label>
+          <Controller
+            control={control}
+            name="endDate"
             defaultValue={null}
             render={(params) => (
               <TextField

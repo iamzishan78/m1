@@ -104,10 +104,12 @@ const AutoCompleteField = ({ placeholder, value, onChange, column, query, extend
         if (typeof option.key === "string") {
           return option
         } else {
-
           // const spliteData = option?.key.split(" ");
           const filterSpace = option?.key?.filter((item) => item !== '');
-          return `#-${filterSpace && filterSpace[0]}`
+
+          if (!filterSpace) return ''
+
+          return `#-${filterSpace[0]}${filterSpace[1] ? ` - ${filterSpace[1]}` : ''}`
         }
       }}
       onChange={(e, value, reason) => {

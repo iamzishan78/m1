@@ -258,12 +258,12 @@ export default function WellCardDetails(props) {
 
   useEffect(() => {
     getExternalProductionDetail({
-      variables: { id: stateApp.selectedWell.api, pageSize: "1000" },
+      variables: { id: stateApp.selectedWell.api, pageSize: "999" },
     });
   }, []);
 
   useEffect(() => {
-    if (externalProductionDetail) {
+    if (externalProductionDetail?.externalProductionDetail) {
       let temp = [];
       externalProductionDetail.externalProductionDetail.forEach(element => {
         let temp_row = { ...element };

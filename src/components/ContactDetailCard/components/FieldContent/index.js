@@ -382,7 +382,6 @@ export default function FieldContent({
           ) : fieldName === "ownerType" ? (
             <EntityType
               className={classes.maxWidth}
-              options={entityTypeOptions}
               setDocumentType={(value) => {
                 let val = value.name;
                 const data = contactStatusOptions.find((s) => s.label === val);

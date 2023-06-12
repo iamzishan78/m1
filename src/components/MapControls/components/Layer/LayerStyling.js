@@ -13,6 +13,8 @@ import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent.js";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import { LAYERS_FEATURES_COUNT } from "graphQL/useQueryLayerFeaturesCount";
 import { ColorPickerStyledBox, useLayerStyle, useStyles, WidthPicker } from "./Common";
+import { useHookstate } from "@hookstate/core";
+import { hookStateApp } from "hookstate";
 
 function LayerStyling(props) {
   const { layer, fileName } = props;
@@ -25,7 +27,9 @@ function LayerStyling(props) {
 
   const [rows, setRows] = useState(0);
   const [, setStateMapControls] = useContext(MapControlsContext);
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const hookState = useHookstate(hookStateApp);
+
+  const [, setStateApp] = useContext(AppContext);
   const [layerFeaturesCount, { data: layerDataCount }] = useLazyQuery(LAYERS_FEATURES_COUNT);
 
   const [updateLayerSettings] = useMutation(UPDATELAYERSETTINGS);
@@ -50,16 +54,19 @@ function LayerStyling(props) {
   };
 
   const handleApplyChanges = () => {
-    if ((stateApp.layers && layer &&
+    const hookStateAppLayers = hookState.layers.get({ noproxy: true })
+
+    if ((hookStateAppLayers && layer &&
       ((fillColor && fillColor.rgb && fillColor.alpha) || (strokeColor && strokeColor.rgb && strokeColor.alpha))) ||
       width || layer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
       layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability
     ) {
       let { currentLayer } = handleLayerChange()
       //// saving to stateApp
-      const currentLayers = [...stateApp.layers];
+      const currentLayers = [...hookStateAppLayers];
       const index = currentLayers.findIndex((l) => l.layerName === currentLayer.layerName);
       currentLayers[index] = currentLayer;
+      hookState.layers.set(currentLayers)
       setStateApp((stateApp) => ({ ...stateApp, layers: [...currentLayers] }));
 
       //// saving to mongo

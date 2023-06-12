@@ -61,6 +61,16 @@ const RevenueStatementHeadCells = [
     },
   },
   {
+    name: "ownerName",
+    label: "Owner Name",
+    esKey: "payee.name.keyword",
+  },
+  {
+    name: "ownerNumber",
+    label: "Owner Number",
+    esKey: "payee.number.keyword",
+  },
+  {
     name: "depositDate",
     label: "Deposit Date",
     esKey: "depositDate",
@@ -83,6 +93,11 @@ const RevenueStatementHeadCells = [
     name: "sourceId",
     label: "Check ID",
     esKey: "sourceId.keyword",
+  },
+  {
+    name: "approvalStatus",
+    label: "Approval Status",
+    esKey: "approvalStatus.keyword",
   },
   {
     name: "tags",
