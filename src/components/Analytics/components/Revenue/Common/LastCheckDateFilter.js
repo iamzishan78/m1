@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#f7f7f7",
     width: "100%",
     minHeight: "65px",
-    marginTop: "80px",
+    marginTop: "0",
   },
   actionsGrid: {
     marginTop: "6px",

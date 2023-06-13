@@ -26,6 +26,7 @@ import SalesVolumeComparisonTable from "./SalesVolumeComparisonSection/SalesVolu
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
+    display:"flex",
     margin: "75px 0 10px",
   },
   actionBar: {
@@ -265,7 +266,8 @@ export default function RevenueAnalytics(props) {
           <StyledTab label="Income Statement" />
           <StyledTab label="Comparison" />
           <StyledTab label="Check Comparison" />
-          <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "395px" }}>
+        </StyledTabs>
+        <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "395px" }}>
             <Autocomplete
               size="small"
               onChange={(event, newValue) => setComparisonReport(newValue)}
@@ -283,7 +285,6 @@ export default function RevenueAnalytics(props) {
               id="custom-date-dropdown"
             />
           </Grid>
-        </StyledTabs>
       </div>
 
       {tab === 0 && (
@@ -391,7 +392,7 @@ export default function RevenueAnalytics(props) {
                 parent="PropertyAssociatedWell"
                 setPropertiesIds={setPropertiesIds}
                 esFilters={esFilters}
-                loadMore={{...loadMore,height: "calc(100vh - 790px)"}}
+                loadMore={{ ...loadMore, height: "calc(100vh - 710px)" }}
               />
             </>
           ) : (
@@ -407,7 +408,7 @@ export default function RevenueAnalytics(props) {
               <div className={classes.revenueTableInfContainer}>
                 <CheckComparisonTable
                   header="Property DOI vs Checkstub Interest"
-                  loadMore={{ ...loadMore, height: "calc(100vh - 490px)" }}
+                  loadMore={{ ...loadMore, height: "calc(100vh - 410px)" }}
                   esFilters={esFilters}
                   setESFilters={setESFilters}
                   onGettingAnalytics={onGettingAnalytics}
