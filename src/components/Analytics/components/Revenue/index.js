@@ -21,12 +21,12 @@ import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import CheckDetailsSection from "./CheckDetailsSection";
 import CheckComparisonTable from "./CheckComparisonSection/CheckComparisonTable";
 import AnalyticsCards from "./Analytics";
-import LastCheckDateFilter from "./Common/LastCheckDateFilter";
+import LastCheckDateFilter from "components/Revenue/components/Common/LastCheckDateFilter";
 import SalesVolumeComparisonTable from "./SalesVolumeComparisonSection/SalesVolumeComparisonTable";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
-    display:"flex",
+    display: "flex",
     margin: "75px 0 10px",
   },
   actionBar: {
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
-  revenueTableInfContainer:{
+  revenueTableInfContainer: {
     paddingTop: theme.spacing(1),
     // paddingLeft: "38px",
     // paddingRight: "38px",
@@ -285,7 +285,7 @@ export default function RevenueAnalytics(props) {
             id="custom-date-dropdown"
           />
         </Grid>}
-        
+
       </div>
 
       {tab === 0 && (
@@ -324,7 +324,7 @@ export default function RevenueAnalytics(props) {
                     type="Properties"
                     esFilters={propertiesReportGroup || []}
                     setESFilters={(value) => setPropertyFilter(value)}
-                    setFilterToggle={() => {}}
+                    setFilterToggle={() => { }}
                     isBackground={false}
                     noUpdate={true}
                     strechedWidth
@@ -362,6 +362,7 @@ export default function RevenueAnalytics(props) {
             setFilterToggle={setFilterToggle}
             filterToggle={filterToggle}
             extraFitlers={["propertyGroup"]}
+            stateESKey="property."
           />
           {comparisonReport === "Sales Volume vs Reported Production" ? (
             <>
