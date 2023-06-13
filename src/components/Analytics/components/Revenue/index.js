@@ -157,23 +157,25 @@ export default function RevenueAnalytics(props) {
   });
 
   useEffect(() => {
+    const dateFilter = esFilters.find((filter) => filter.type === "range");
+    const formattedDateFilters = [];
+    if (dateFilter)
+      formattedDateFilters.push({ field: "date", type: "range", value: dateFilter?.value });
     getESSimpleSearch({
       variables: {
         index: "checkdetailsinterestscomparison_flat",
         pagination: {
-          first: 10000,
+          first: 2000,
           after: null,
         },
         search: {
           query: "",
           fields: [],
         },
-        filters: [
-          //{field: 'date', type: 'range', value: esFilters[0]?.value}
-        ],
+        filters: formattedDateFilters,
       },
     });
-  }, [esFilters]);
+  }, []);
 
   useEffect(() => {
     if (elasticData?.getESSimpleSearch?.hits?.length > 0) {
@@ -390,7 +392,6 @@ export default function RevenueAnalytics(props) {
                 setPropertiesIds={setPropertiesIds}
                 esFilters={esFilters}
                 loadMore={{...loadMore,height: "calc(100vh - 790px)"}}
-                // propertyId={propertyId}
               />
             </>
           ) : (

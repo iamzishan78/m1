@@ -24,14 +24,14 @@ function SalesVolumeComparisonTable(props) {
 
   useEffect(() => {
     props.setTableMeta({
-      filters: props.esFilters,
+      filters: [],
       TableHeader: copy(TableHeader),
       esIndex: "checkdetailsinterestscomparison_flat",
       startPaginationAt: 50,
       formatHits,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.setTableMeta, props.esFilters]);
+  }, [props.setTableMeta]);
 
   useEffect(() => {
     (async () => {
@@ -43,15 +43,18 @@ function SalesVolumeComparisonTable(props) {
       const propertyIds = properties?.map(obj => obj.key);
       if(propertyIds) props.setPropertiesIds(propertyIds);
     })();
-  }, [props.rows]);
+  }, [props.rows, props.esFilters]);
 
   const getDistinctProperties = async () => {
+    const formattedFilters = props.esFilters.map((filter) => {
+      return filter.field === "check.checkDate" ? { ...filter, field: "date" } : filter;
+    });
     const propertiesPromise = new Promise((resolve, reject) => {
       getESSimpleFilter({
         variables: {
           index: "checkdetailsinterestscomparison_flat",
           filters: [
-            ...props.esFilters,
+            ...formattedFilters,
             { field: "property.IsDeleted", value: false, type: "term" },
           ],
           filterKey: "property._id.keyword",
@@ -68,8 +71,6 @@ function SalesVolumeComparisonTable(props) {
   };
 
   const formatHits = (hits) => {
-    // const propertyIds = [...new Set(hits.map((hit) => hit.property?._id))];
-    // props.setPropertiesIds(propertyIds);
     return hits.map((hit) => {
       hit.propertyNumber = hit.property.number;
       hit.propertyName = hit.property.name;
@@ -94,10 +95,6 @@ function SalesVolumeComparisonTable(props) {
       return hit;
     });
   };
-
-  // const getFilters = () => {
-  //   return props.propertyId ? [{ field:'property._id.keyword', value: props.propertyId }] : []
-  // }
 
   return (
     <Container
