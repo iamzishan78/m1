@@ -5,15 +5,8 @@ import { useLazyQuery } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Grid, Divider, Tab, Tabs, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import sortBy from 'lodash/sortBy'
-
-import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
-import { WellCardContextProvider } from "components/WellCard/WellCardContext";
-import { WellProdChartContextProvider } from "components/WellProdChart/WellProdChartContext";
-import OverShortComparison from 'components/Revenue/components/Properties/DetailComponents/Validation/OverShortComparison'
-import MonthlyProductionChart from 'components/Revenue/components/Properties/DetailComponents/Validation/MonthlyProductionChart'
 import { setStateIfDeepEqual } from "components/Shared/functions";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import DetailTabsSection from "components/Analytics/components/Revenue/DetailTabsSection";
@@ -22,7 +15,7 @@ import CheckDetailsSection from "./CheckDetailsSection";
 import CheckComparisonTable from "./CheckComparisonSection/CheckComparisonTable";
 import AnalyticsCards from "./Analytics";
 import LastCheckDateFilter from "components/Revenue/components/Common/LastCheckDateFilter";
-import SalesVolumeComparisonTable from "./SalesVolumeComparisonSection/SalesVolumeComparisonTable";
+import AnalyticsCharts from "./SalesVolumeComparisonSection/AnalyticsCharts";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
@@ -47,10 +40,9 @@ const useStyles = makeStyles((theme) => ({
   },
 
   sectionCard: {
-
     "& div": {
       "&>.MuiPaper-root": {
-        "&>:nth-child(3)": { minHeight: "calc(100vh - 265px) !important", maxHeight: '35vh' },
+        "&>:nth-child(3)": { minHeight: "calc(100vh - 265px) !important", maxHeight: "35vh" },
       },
     },
   },
@@ -59,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(1),
     // paddingLeft: "38px",
     // paddingRight: "38px",
-    marginLeft: '-8px',
+    marginLeft: "-8px",
   },
   viewSwitcher: {
     height: "40px",
@@ -129,7 +121,6 @@ export default function RevenueAnalytics(props) {
   const [propertiesIds, setPropertiesIds] = useState([]);
   const [associatedWellIds, setAssociatedWellIds] = useState([]);
   const [wellProductionData, setWellProductionData] = useState([]);
-  const [checkDetailsData, setCheckDetailsData] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [lastCheckMinDate, setLastCheckMinDate] = useState("");
   const [propertiesCount, setPropertiesCount] = useState(0);
@@ -137,7 +128,7 @@ export default function RevenueAnalytics(props) {
   const [misMatchedInterestsCount, setMisMatchedInterestsCount] = useState(0);
   const [potentialGainLossSum, setPotentialGainLossSum] = useState(0);
   const [comparisonReport, setComparisonReport] = useState("Check Detail Comparison");
-  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 166px)" };
+  const loadMore = { type: "infiniteScroll", height: "calc(100vh - 166px)" };
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
@@ -152,49 +143,6 @@ export default function RevenueAnalytics(props) {
   const [getPortfolioSummary, { data: portfolioSummary, loading }] = useLazyQuery(GET_PORTFOLIO_GROSS_REVENUE_SUMMARY, {
     fetchPolicy: "no-cache",
   });
-
-  const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
-    fetchPolicy: "no-cache",
-  });
-
-  useEffect(() => {
-    const dateFilter = esFilters.find((filter) => filter.type === "range");
-    const formattedDateFilters = [];
-    if (dateFilter)
-      formattedDateFilters.push({ field: "date", type: "range", value: dateFilter?.value });
-    getESSimpleSearch({
-      variables: {
-        index: "checkdetailsinterestscomparison_flat",
-        pagination: {
-          first: 2000,
-          after: null,
-        },
-        search: {
-          query: "",
-          fields: [],
-        },
-        filters: formattedDateFilters,
-      },
-    });
-  }, []);
-
-  useEffect(() => {
-    if (elasticData?.getESSimpleSearch?.hits?.length > 0) {
-      let data = [];
-      for (let i = 0; i < elasticData?.getESSimpleSearch?.hits?.length; i++) {
-        const check = elasticData?.getESSimpleSearch?.hits[i];
-        data.push({
-          product: check.product,
-          ReportDate: check.date,
-          oil: check.product === "OIL" ? check.grossPropertyVolume : 0,
-          gas: check.product === "GAS" ? check.grossPropertyVolume : 0,
-          water: check.product === "WATER" ? check.grossPropertyVolume : 0,
-        });
-      }
-      data = sortBy(data, ["ReportDate"]);
-      setCheckDetailsData(data);
-    }
-  }, [elasticData]);
 
   useEffect(() => {
     getESMinValue({
@@ -238,7 +186,6 @@ export default function RevenueAnalytics(props) {
     setMonths(months);
   };
 
-
   const onGettingAnalytics = (analyticsList) => {
     const propertiesCount = analyticsList.propertiesCount;
     const checksCount = analyticsList.checksCount;
@@ -267,45 +214,31 @@ export default function RevenueAnalytics(props) {
           <StyledTab label="Comparison" />
           <StyledTab label="Check Comparison" />
         </StyledTabs>
-        {tab === 2 && <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "395px" }}>
-          <Autocomplete
-            size="small"
-            onChange={(event, newValue) => setComparisonReport(newValue)}
-            options={
-              ["Check Detail Comparison",
-                "Sales Volume vs Reported Production"]
-            }
-            renderInput={(params) => (
-              <form autoComplete="off">
-                <TextField {...params} variant="outlined" placeholder="" style={{ backgroundColor: "white" }} fullWidth={true} />
-              </form>
-            )}
-            defaultValue={"Check Detail Comparison"}
-            disableListWrap
-            id="custom-date-dropdown"
-          />
-        </Grid>}
-
+        {tab === 2 && (
+          <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "395px" }}>
+            <Autocomplete
+              size="small"
+              onChange={(event, newValue) => setComparisonReport(newValue)}
+              options={["Check Detail Comparison", "Sales Volume vs Reported Production"]}
+              renderInput={(params) => (
+                <form autoComplete="off">
+                  <TextField {...params} variant="outlined" placeholder="" style={{ backgroundColor: "white" }} fullWidth={true} />
+                </form>
+              )}
+              defaultValue={"Check Detail Comparison"}
+              disableListWrap
+              id="custom-date-dropdown"
+            />
+          </Grid>
+        )}
       </div>
 
       {tab === 0 && (
         <>
           <div className={classes.actionBar}>
-            <Grid
-              container
-              direction="row"
-              display="flex"
-              spacing={4}
-              style={{ padding: "0px 36px" }}
-            >
+            <Grid container direction="row" display="flex" spacing={4} style={{ padding: "0px 36px" }}>
               <Grid item xs={8} md={6} style={{ marginTop: "4px" }}>
-                <Grid
-                  container
-                  display="flex"
-                  alignItems="center"
-                  spacing={3}
-                  justifyContent="space-between"
-                >
+                <Grid container display="flex" alignItems="center" spacing={3} justifyContent="space-between">
                   <CustomDates
                     onChangeDates={onChangeDates}
                     fromDate={fromDate}
@@ -324,7 +257,7 @@ export default function RevenueAnalytics(props) {
                     type="Properties"
                     esFilters={propertiesReportGroup || []}
                     setESFilters={(value) => setPropertyFilter(value)}
-                    setFilterToggle={() => { }}
+                    setFilterToggle={() => {}}
                     isBackground={false}
                     noUpdate={true}
                     strechedWidth
@@ -365,38 +298,16 @@ export default function RevenueAnalytics(props) {
             stateESKey="property."
           />
           {comparisonReport === "Sales Volume vs Reported Production" ? (
-            <>
-              <Grid container direction="row" display="flex" justify="space-between">
-                <Grid style={{ marginTop: "30px" }} item xs={6}>
-                  <WellCardContextProvider>
-                    <WellProdChartContextProvider>
-                      <MonthlyProductionChart
-                        filter={esFilters}
-                        propertiesIds={propertiesIds}
-                        setStartDate={setStartDate}
-                        wellProductionData={wellProductionData}
-                        setWellProductionData={setWellProductionData}
-                        setAssociatedWellIds={setAssociatedWellIds}
-                      />
-                    </WellProdChartContextProvider>
-                  </WellCardContextProvider>
-                </Grid>
-                <Grid item xs={6}>
-                  <OverShortComparison
-                    productionData={wellProductionData}
-                    checkData={checkDetailsData}
-                  />
-                </Grid>
-              </Grid>
-
-              <SalesVolumeComparisonTable
-                targetLabel="propertyInterest"
-                parent="PropertyAssociatedWell"
-                setPropertiesIds={setPropertiesIds}
-                esFilters={esFilters}
-                loadMore={{ ...loadMore, height: "calc(100vh - 710px)" }}
-              />
-            </>
+            <AnalyticsCharts
+              esFilters={esFilters}
+              propertiesIds={propertiesIds}
+              setStartDate={setStartDate}
+              wellProductionData={wellProductionData}
+              setWellProductionData={setWellProductionData}
+              setAssociatedWellIds={setAssociatedWellIds}
+              setPropertiesIds={setPropertiesIds}
+              loadMore={{ ...loadMore, height: "calc(100vh - 710px)" }}
+            />
           ) : (
             <>
               <AnalyticsCards

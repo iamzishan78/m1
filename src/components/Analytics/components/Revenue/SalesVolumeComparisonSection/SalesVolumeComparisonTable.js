@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import get from 'lodash/get'
+import get from "lodash/get";
 // context
 import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
@@ -24,26 +24,22 @@ function SalesVolumeComparisonTable(props) {
 
   useEffect(() => {
     props.setTableMeta({
-      filters: [],
+      filters: props.esFilters,
       TableHeader: copy(TableHeader),
       esIndex: "checkdetailsinterestscomparison_flat",
       startPaginationAt: 50,
       formatHits,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.setTableMeta]);
+  }, [props.setTableMeta, props.esFilters]);
 
   useEffect(() => {
     (async () => {
-      const { properties } = await getDistinctProperties(
-        "property.IsDeleted",
-        false,
-        "term"
-      );
-      const propertyIds = properties?.map(obj => obj.key);
-      if(propertyIds) props.setPropertiesIds(propertyIds);
+      const { properties } = await getDistinctProperties("property.IsDeleted", false, "term");
+      const propertyIds = properties?.map((obj) => obj.key);
+      if (propertyIds) props.setPropertiesIds(propertyIds);
     })();
-  }, [props.rows, props.esFilters]);
+  }, [props.rows]);
 
   const getDistinctProperties = async () => {
     const formattedFilters = props.esFilters.map((filter) => {
@@ -53,10 +49,7 @@ function SalesVolumeComparisonTable(props) {
       getESSimpleFilter({
         variables: {
           index: "checkdetailsinterestscomparison_flat",
-          filters: [
-            ...formattedFilters,
-            { field: "property.IsDeleted", value: false, type: "term" },
-          ],
+          filters: [...formattedFilters, { field: "property.IsDeleted", value: false, type: "term" }],
           filterKey: "property._id.keyword",
           filterAggs: { query: "", field: "property._id.keyword", size: props.total || 0 },
         },
@@ -64,9 +57,7 @@ function SalesVolumeComparisonTable(props) {
         onError: (error) => reject(error),
       });
     });
-    const [properties] = await Promise.all([
-      propertiesPromise,
-    ]);
+    const [properties] = await Promise.all([propertiesPromise]);
     return { properties };
   };
 
@@ -78,15 +69,8 @@ function SalesVolumeComparisonTable(props) {
       hit.wellName = get(hit, "wells", []).map((w) => w.wellName);
       let pVolume = 0;
       get(hit, "wells", []).forEach((well) => {
-        const prod = well.production.find(
-          (p) => moment(p.data.ReportDate).format("MM/yyyy") === moment(hit.date).format("MM/yyyy")
-        );
-        if (prod)
-          pVolume =
-            pVolume +
-            prod.data[
-              `allocated${hit.product.charAt(0).toUpperCase() + hit.product.slice(1).toLowerCase()}`
-            ];
+        const prod = well.production.find((p) => moment(p.data.ReportDate).format("MM/yyyy") === moment(hit.date).format("MM/yyyy"));
+        if (prod) pVolume = pVolume + prod.data[`allocated${hit.product.charAt(0).toUpperCase() + hit.product.slice(1).toLowerCase()}`];
       });
       hit.statementVolume = hit.grossPropertyVolume;
       hit.reportedVolume = pVolume;
@@ -97,11 +81,7 @@ function SalesVolumeComparisonTable(props) {
   };
 
   return (
-    <Container
-      maxWidth={false}
-      className={classes.container}
-      id={props.id ? props.id : props.parent}
-    >
+    <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
@@ -124,7 +104,4 @@ function SalesVolumeComparisonTable(props) {
   );
 }
 
-export default React.memo(
-  TableESHOC(SalesVolumeComparisonTable),
-  deepEqualObjects
-);
+export default React.memo(TableESHOC(SalesVolumeComparisonTable), deepEqualObjects);

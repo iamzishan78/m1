@@ -43,7 +43,7 @@ const LastCheckDateFilter = ({
   filterToggle,
   setFilterToggle,
   extraFitlers = [],
-  stateESKey = ""
+  stateESKey = "",
 }) => {
   const classes = useStyles();
 
@@ -79,7 +79,7 @@ const LastCheckDateFilter = ({
   }, [toDate, fromDate, status, propertyFilter]);
 
   const updateFilters = () => {
-    let filters = copy(esFilters);
+    let filters = copy(esFilters) ?? [];
     filters = filters.filter((filter) => filter.type !== "range" && filter.field !== `${stateESKey}state.keyword`);
     if (fromDate && toDate)
       filters.unshift({
@@ -106,12 +106,7 @@ const LastCheckDateFilter = ({
 
   return (
     <div className={classes.actionBar}>
-      <Grid
-        container
-        alignItems="center"
-        spacing={2}
-        style={{ padding: "0px 36px 0px 45px", width: "100%" }}
-      >
+      <Grid container alignItems="center" spacing={2} style={{ padding: "0px 36px 0px 45px", width: "100%" }}>
         <CustomDates
           fromDate={fromDate}
           setFromDate={setFromDate}
@@ -128,7 +123,7 @@ const LastCheckDateFilter = ({
               type="Properties"
               esFilters={propertiesReportGroup || []}
               setESFilters={(value) => setPropertyFilter(value)}
-              setFilterToggle={() => { }}
+              setFilterToggle={() => {}}
               isBackground={false}
               noUpdate={true}
               strechedWidth
