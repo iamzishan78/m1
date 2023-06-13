@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
 
-  revenueTableInfContainer:{
+  revenueTableInfContainer: {
     paddingTop: theme.spacing(1),
     // paddingLeft: "38px",
     // paddingRight: "38px",
@@ -150,7 +150,7 @@ export default function RevenueAnalytics(props) {
     getPortfolioSummary({
       variables: {
         filters: propertiesReportGroup || [],
-        filterDate: { toDate: new Date(toDate), fromDate: new Date(fromDate) },
+        filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) },
       },
     });
   }, [propertiesReportGroup, toDate, fromDate]);
@@ -263,7 +263,7 @@ export default function RevenueAnalytics(props) {
       }
 
       {tab === 2 &&
-        <>  
+        <>
           <LastCheckDateFilter
             field={"check.checkDate"}
             esIndex={esIndex}
@@ -282,13 +282,13 @@ export default function RevenueAnalytics(props) {
             setESFilters={setESFilters}
           />
           <div className={classes.revenueTableInfContainer}>
-          <CheckComparisonTable
-            header="Property DOI vs Checkstub Interest"
-            loadMore={loadMore}
-            esFilters={esFilters}
-            setESFilters={setESFilters}
-            onGettingAnalytics={onGettingAnalytics}
-          />
+            <CheckComparisonTable
+              header="Property DOI vs Checkstub Interest"
+              loadMore={loadMore}
+              esFilters={esFilters}
+              setESFilters={setESFilters}
+              onGettingAnalytics={onGettingAnalytics}
+            />
           </div>
         </>
       }
