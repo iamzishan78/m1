@@ -365,7 +365,7 @@ export default function RevenueAnalytics(props) {
           {comparisonReport === "Sales Volume vs Reported Production" ? (
             <>
               <Grid container direction="row" display="flex" justify="space-between">
-                <Grid item xs={6}>
+                <Grid style={{ marginTop: "30px" }} item xs={6}>
                   <WellCardContextProvider>
                     <WellProdChartContextProvider>
                       <MonthlyProductionChart
