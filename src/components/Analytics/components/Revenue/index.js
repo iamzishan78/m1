@@ -267,24 +267,25 @@ export default function RevenueAnalytics(props) {
           <StyledTab label="Comparison" />
           <StyledTab label="Check Comparison" />
         </StyledTabs>
-        <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "395px" }}>
-            <Autocomplete
-              size="small"
-              onChange={(event, newValue) => setComparisonReport(newValue)}
-              options={
-                ["Check Detail Comparison",
-                  "Sales Volume vs Reported Production"]
-              }
-              renderInput={(params) => (
-                <form autoComplete="off">
-              <TextField {...params} variant="outlined" placeholder="" style={{ backgroundColor: "white" }} fullWidth={true} />
-            </form>
-              )}
-              defaultValue={"Check Detail Comparison"}
-              disableListWrap
-              id="custom-date-dropdown"
-            />
-          </Grid>
+        {tab === 2 && <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "395px" }}>
+          <Autocomplete
+            size="small"
+            onChange={(event, newValue) => setComparisonReport(newValue)}
+            options={
+              ["Check Detail Comparison",
+                "Sales Volume vs Reported Production"]
+            }
+            renderInput={(params) => (
+              <form autoComplete="off">
+                <TextField {...params} variant="outlined" placeholder="" style={{ backgroundColor: "white" }} fullWidth={true} />
+              </form>
+            )}
+            defaultValue={"Check Detail Comparison"}
+            disableListWrap
+            id="custom-date-dropdown"
+          />
+        </Grid>}
+        
       </div>
 
       {tab === 0 && (
