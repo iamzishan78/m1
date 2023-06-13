@@ -1,13 +1,16 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { AppContext } from "AppContext";
 import AnalyticsCards from "components/Revenue/components/Statements/AnalyticsCards";
 import RevenueStatementTable from "components/Table/Revenue/RevenueStatementTable";
-import LastCheckDateFilter from "../Common/LastCheckDateFilter";
+import LastCheckDateFilter from "components/Revenue/components/Common/LastCheckDateFilter";
 
 import { makeStyles } from "@material-ui/core/styles";
 import { copy } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    margin: "75px 0 10px",
+  },
   revenueContainer: {
     "& .MuiTableRow-root": {
       backgroundColor: 'red',
@@ -70,7 +73,7 @@ export default function RevenueStatements() {
   const onGettingPotentialIssues = (count) => setPotentialIssuesCount(count);
 
   return (
-    <>
+    <div className={classes.root}>
       <LastCheckDateFilter
         field={"checkDate"}
         esIndex={"checks_flat"}
@@ -117,6 +120,6 @@ export default function RevenueStatements() {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }
