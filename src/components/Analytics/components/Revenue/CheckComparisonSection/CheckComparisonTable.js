@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { Container } from "@material-ui/core";
