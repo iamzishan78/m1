@@ -5,6 +5,9 @@ import { useLazyQuery } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
 import { Grid, Divider, Tab, Tabs, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import sortBy from "lodash/sortBy";
+
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
 import { setStateIfDeepEqual } from "components/Shared/functions";
@@ -118,6 +121,7 @@ export default function RevenueAnalytics(props) {
   const [fromDate, setFromDate] = React.useState(null);
   const [toDate, setToDate] = React.useState(null);
   const [monthsInterval, setMonths] = useState([]);
+  const [checkDetailsData, setCheckDetailsData] = useState([]);
   const [propertyFilter, setPropertyFilter] = useState([]);
   const [lastCheckMinDate, setLastCheckMinDate] = useState("");
   const [propertiesCount, setPropertiesCount] = useState(0);
@@ -140,6 +144,48 @@ export default function RevenueAnalytics(props) {
   const [getPortfolioSummary, { data: portfolioSummary, loading }] = useLazyQuery(GET_PORTFOLIO_GROSS_REVENUE_SUMMARY, {
     fetchPolicy: "no-cache",
   });
+
+  const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+    fetchPolicy: "no-cache",
+  });
+
+  useEffect(() => {
+    const dateFilter = esFilters.find((filter) => filter.type === "range");
+    const formattedDateFilters = [];
+    if (dateFilter) formattedDateFilters.push({ field: "date", type: "range", value: dateFilter?.value });
+    getESSimpleSearch({
+      variables: {
+        index: "checkdetailsinterestscomparison_flat",
+        pagination: {
+          first: 2000,
+          after: null,
+        },
+        search: {
+          query: "",
+          fields: [],
+        },
+        filters: formattedDateFilters,
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    if (elasticData?.getESSimpleSearch?.hits?.length > 0) {
+      let data = [];
+      for (let i = 0; i < elasticData?.getESSimpleSearch?.hits?.length; i++) {
+        const check = elasticData?.getESSimpleSearch?.hits[i];
+        data.push({
+          product: check.product,
+          ReportDate: check.date,
+          oil: check.product === "OIL" ? check.grossPropertyVolume : 0,
+          gas: check.product === "GAS" ? check.grossPropertyVolume : 0,
+          water: check.product === "WATER" ? check.grossPropertyVolume : 0,
+        });
+      }
+      data = sortBy(data, ["ReportDate"]);
+      setCheckDetailsData(data);
+    }
+  }, [elasticData]);
 
   useEffect(() => {
     getESMinValue({
@@ -295,7 +341,7 @@ export default function RevenueAnalytics(props) {
             stateESKey="property."
           />
           {comparisonReport === "Sales Volume vs Reported Production" ? (
-            <SalesVolumeComparisonSection esFilters={esFilters} loadMore={loadMore} />
+            <SalesVolumeComparisonSection checkDetailsData={checkDetailsData} esFilters={esFilters} loadMore={loadMore} />
           ) : (
             <>
               <AnalyticsCards

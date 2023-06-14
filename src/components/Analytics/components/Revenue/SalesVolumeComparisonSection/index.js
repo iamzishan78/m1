@@ -6,7 +6,7 @@ import SalesVolumeComparisonTable from "./SalesVolumeComparisonTable";
 
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 
-export default function SalesVolumeComparisonSection({ esFilters, loadMore }) {
+export default function SalesVolumeComparisonSection({ checkDetailsData, esFilters, loadMore }) {
   //   const [propertyFilter, setPropertyFilter] = useState([]);
   const [propertiesIds, setPropertiesIds] = useState([]);
   const [associatedWellIds, setAssociatedWellIds] = useState([]);
@@ -51,6 +51,7 @@ export default function SalesVolumeComparisonSection({ esFilters, loadMore }) {
         propertiesIds={propertiesIds}
         setStartDate={setStartDate}
         wellProductionData={wellProductionData}
+        checkDetailsData={checkDetailsData}
         setWellProductionData={setWellProductionData}
         setAssociatedWellIds={setAssociatedWellIds}
       />
