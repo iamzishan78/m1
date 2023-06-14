@@ -15,7 +15,8 @@ import CheckDetailsSection from "./CheckDetailsSection";
 import CheckComparisonTable from "./CheckComparisonSection/CheckComparisonTable";
 import AnalyticsCards from "./Analytics";
 import LastCheckDateFilter from "components/Revenue/components/Common/LastCheckDateFilter";
-import AnalyticsCharts from "./SalesVolumeComparisonSection/AnalyticsCharts";
+
+import SalesVolumeComparisonSection from "./SalesVolumeComparisonSection";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
@@ -118,10 +119,6 @@ export default function RevenueAnalytics(props) {
   const [toDate, setToDate] = React.useState(null);
   const [monthsInterval, setMonths] = useState([]);
   const [propertyFilter, setPropertyFilter] = useState([]);
-  const [propertiesIds, setPropertiesIds] = useState([]);
-  const [associatedWellIds, setAssociatedWellIds] = useState([]);
-  const [wellProductionData, setWellProductionData] = useState([]);
-  const [startDate, setStartDate] = useState(null);
   const [lastCheckMinDate, setLastCheckMinDate] = useState("");
   const [propertiesCount, setPropertiesCount] = useState(0);
   const [checksCount, setChecksCount] = useState(0);
@@ -298,16 +295,7 @@ export default function RevenueAnalytics(props) {
             stateESKey="property."
           />
           {comparisonReport === "Sales Volume vs Reported Production" ? (
-            <AnalyticsCharts
-              esFilters={esFilters}
-              propertiesIds={propertiesIds}
-              setStartDate={setStartDate}
-              wellProductionData={wellProductionData}
-              setWellProductionData={setWellProductionData}
-              setAssociatedWellIds={setAssociatedWellIds}
-              setPropertiesIds={setPropertiesIds}
-              loadMore={{ ...loadMore, height: "calc(100vh - 710px)" }}
-            />
+            <SalesVolumeComparisonSection esFilters={esFilters} loadMore={loadMore} />
           ) : (
             <>
               <AnalyticsCards

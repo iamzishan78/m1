@@ -8,18 +8,8 @@ import { WellCardContextProvider } from "components/WellCard/WellCardContext";
 import { WellProdChartContextProvider } from "components/WellProdChart/WellProdChartContext";
 import OverShortComparison from "components/Revenue/components/Properties/DetailComponents/Validation/OverShortComparison";
 import MonthlyProductionChart from "components/Revenue/components/Properties/DetailComponents/Validation/MonthlyProductionChart";
-import SalesVolumeComparisonTable from "./SalesVolumeComparisonTable";
 
-const AnalyticsCharts = ({
-  esFilters,
-  propertiesIds,
-  setStartDate,
-  wellProductionData,
-  setWellProductionData,
-  setAssociatedWellIds,
-  setPropertiesIds,
-  loadMore,
-}) => {
+const AnalyticsCharts = ({ esFilters, propertiesIds, setStartDate, wellProductionData, setWellProductionData, setAssociatedWellIds }) => {
   const [checkDetailsData, setCheckDetailsData] = useState([]);
 
   const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
@@ -65,35 +55,25 @@ const AnalyticsCharts = ({
   }, [elasticData]);
 
   return (
-    <>
-      <Grid container direction="row" display="flex" justify="space-between">
-        <Grid style={{ marginTop: "30px" }} item xs={6}>
-          <WellCardContextProvider>
-            <WellProdChartContextProvider>
-              <MonthlyProductionChart
-                filter={esFilters}
-                propertiesIds={propertiesIds}
-                setStartDate={setStartDate}
-                wellProductionData={wellProductionData}
-                setWellProductionData={setWellProductionData}
-                setAssociatedWellIds={setAssociatedWellIds}
-              />
-            </WellProdChartContextProvider>
-          </WellCardContextProvider>
-        </Grid>
-        <Grid item xs={6}>
-          <OverShortComparison productionData={wellProductionData} checkData={checkDetailsData} />
-        </Grid>
+    <Grid container direction="row" display="flex" justify="space-between">
+      <Grid style={{ marginTop: "30px" }} item xs={6}>
+        <WellCardContextProvider>
+          <WellProdChartContextProvider>
+            <MonthlyProductionChart
+              filter={esFilters}
+              propertiesIds={propertiesIds}
+              setStartDate={setStartDate}
+              wellProductionData={wellProductionData}
+              setWellProductionData={setWellProductionData}
+              setAssociatedWellIds={setAssociatedWellIds}
+            />
+          </WellProdChartContextProvider>
+        </WellCardContextProvider>
       </Grid>
-
-      <SalesVolumeComparisonTable
-        targetLabel="propertyInterest"
-        parent="PropertyAssociatedWell"
-        setPropertiesIds={setPropertiesIds}
-        esFilters={esFilters}
-        loadMore={loadMore}
-      />
-    </>
+      <Grid item xs={6}>
+        <OverShortComparison productionData={wellProductionData} checkData={checkDetailsData} />
+      </Grid>
+    </Grid>
   );
 };
 
