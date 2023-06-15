@@ -255,7 +255,6 @@ const ReactSelectField = ({
 
       const waypointElement = document.getElementById(`waypoint-${startIndex - 5}`);
       if (waypointElement) {
-        waypointElement.click();
         waypointElement.scrollIntoView();
       }
     };    
