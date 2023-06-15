@@ -14,6 +14,7 @@ import { copy } from "components/Shared/functions";
 import { AppContext } from "AppContext";
 import { Grid, Tooltip, Typography } from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox";
+import { Waypoint } from 'react-waypoint';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,6 +82,7 @@ const ReactSelectField = ({
   const [showIcon, setShowIcon] = useState(showChevron);
 
   const [options, setOptions] = useState([]);
+  const [displayedOptions, setDisplayedOptions] = useState(100);
   const [, setStateApp] = useContext(AppContext);
 
   const defaultValue = {
@@ -237,13 +239,38 @@ const ReactSelectField = ({
   // };
 
   const CustomMenuList = (props) => {
+    const handleScroll = () => {
+      if (props.options.length >= dropdownOptions.length) {
+        return;
+      }
+  
+      const startIndex = props.options.length;
+      const endIndex = Math.min(startIndex + 100, dropdownOptions.length);
+      setDisplayedOptions(endIndex)
+      const nextOptions = dropdownOptions.slice(startIndex, endIndex);
+  
+      const updatedOptions = props.options.concat(nextOptions);
+
+      setOptions(updatedOptions);
+
+      const waypointElement = document.getElementById(`waypoint-${startIndex - 5}`);
+      if (waypointElement) {
+        waypointElement.click();
+        waypointElement.scrollIntoView();
+      }
+    };    
     
     return (
       <components.MenuList {...props}>
         <>
-          {props.options.map(opt => {
-            return (        
-              <MyOption setValue={props.setValue} opt={opt} />
+          {props.options.map((opt, index) => {
+            return (
+              <React.Fragment key={index}>
+              {index === props.options.length - 5 && (
+                <Waypoint onEnter={handleScroll} />
+              )}
+              <MyOption setValue={props.setValue} opt={opt} index={index}/>
+            </React.Fragment>
             )
           })}
         </>
@@ -252,11 +279,11 @@ const ReactSelectField = ({
   }
 
   
-  const MyOption = ({opt, setValue}) => {
+  const MyOption = ({opt, setValue, index}) => {
     const [ref, inView] = useInView();
     const pallete = colorPallete.find((pallete) => pallete.id === opt.palleteId);
     return (
-      <div ref={ref}>
+      <div ref={ref} id={`waypoint-${index}`}>
         {inView ? (
           <>
             {opt.value === "editOption" ? (
@@ -403,7 +430,9 @@ const ReactSelectField = ({
     const options = JSON.parse(JSON.stringify(dropdownOptions.filter(op => op.value?.toLowerCase()?.includes(search.toLowerCase()))));
     options.unshift(defaultValue);
     options.push({ label: "edit", value: "editOption" });
-    setOptions(options);
+    const endIndex = Math.min(displayedOptions, dropdownOptions.length);
+    const initialOptions = options.slice(0, endIndex);
+    setOptions(initialOptions);
   }
 
   const handleKeyDown = (e) => {
