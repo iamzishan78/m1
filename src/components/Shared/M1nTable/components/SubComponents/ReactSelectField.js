@@ -82,6 +82,7 @@ const ReactSelectField = ({
   const [showIcon, setShowIcon] = useState(showChevron);
 
   const [options, setOptions] = useState([]);
+  const [dropDownValues, setDropDownValues] = useState([]);
   const [displayedOptions, setDisplayedOptions] = useState(100);
   const [, setStateApp] = useContext(AppContext);
 
@@ -240,15 +241,15 @@ const ReactSelectField = ({
 
   const CustomMenuList = (props) => {
     const handleScroll = () => {
-      if (props.options.length >= dropdownOptions.length) {
+      if (props.options.length >= dropDownValues.length) {
         return;
       }
-  
+
       const startIndex = props.options.length;
-      const endIndex = Math.min(startIndex + 100, dropdownOptions.length);
+      const endIndex = Math.min(startIndex + 100, dropDownValues.length);
       setDisplayedOptions(endIndex)
-      const nextOptions = dropdownOptions.slice(startIndex, endIndex);
-  
+      const nextOptions = dropDownValues.slice(startIndex, endIndex);
+
       const updatedOptions = props.options.concat(nextOptions);
 
       setOptions(updatedOptions);
@@ -257,19 +258,19 @@ const ReactSelectField = ({
       if (waypointElement) {
         waypointElement.scrollIntoView();
       }
-    };    
-    
+    };
+
     return (
       <components.MenuList {...props}>
         <>
           {props.options.map((opt, index) => {
             return (
               <React.Fragment key={index}>
-              {index === props.options.length - 5 && (
-                <Waypoint onEnter={handleScroll} />
-              )}
+                {index === props.options.length - 5 && (
+                  <Waypoint onEnter={handleScroll} />
+                )}
               <MyOption setValue={props.setValue} opt={opt} index={index}/>
-            </React.Fragment>
+              </React.Fragment>
             )
           })}
         </>
@@ -277,7 +278,7 @@ const ReactSelectField = ({
     )
   }
 
-  
+
   const MyOption = ({opt, setValue, index}) => {
     const [ref, inView] = useInView();
     const pallete = colorPallete.find((pallete) => pallete.id === opt.palleteId);
@@ -366,7 +367,7 @@ const ReactSelectField = ({
                       }else{
                         setValue(opt, "deselect-option")
                       }
-                      
+
                     }}
                     color="default"
                     style={{ marginRight: 5 }}
@@ -412,7 +413,7 @@ const ReactSelectField = ({
             )}
           </>
         ): (  <div style={{ height: "30px"}}></div>)}
-    </div>
+      </div>
     )
   }
   // const Option = (props) => {
@@ -429,7 +430,8 @@ const ReactSelectField = ({
     const options = JSON.parse(JSON.stringify(dropdownOptions.filter(op => op.value?.toLowerCase()?.includes(search.toLowerCase()))));
     options.unshift(defaultValue);
     options.push({ label: "edit", value: "editOption" });
-    const endIndex = Math.min(displayedOptions, dropdownOptions.length);
+    setDropDownValues(options)
+    const endIndex = Math.min(displayedOptions, options.length);
     const initialOptions = options.slice(0, endIndex);
     setOptions(initialOptions);
   }
