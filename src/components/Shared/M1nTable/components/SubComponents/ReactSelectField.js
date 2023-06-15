@@ -5,6 +5,7 @@ import ArrowDropDownIcon from "@material-ui/lab/es/internal/svg-icons/ArrowDropD
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import EditIcon from "@material-ui/icons/Edit";
 import { makeStyles } from "@material-ui/core/styles";
+import { useInView } from "react-intersection-observer";
 
 import Select from 'react-select';
 import { components } from "react-select";
@@ -105,135 +106,298 @@ const ReactSelectField = ({
     onFilterChange("");
   }, [dropdownOptions]);
 
-  const Option = (props) => {
-    const palleteId = props?.options.find(opt => opt.value === props.value)?.palleteId
-    const pallete = colorPallete.find(
-      (pallete) => pallete.id === palleteId
-    );
+  // const Option = (props) => {
+  //   const palleteId = props?.options.find(opt => opt.value === props.value)?.palleteId
+  //   const pallete = colorPallete.find(
+  //     (pallete) => pallete.id === palleteId
+  //   );
+  //   return (
+  //     <components.Option {...props}>
+  //       {props.value === "editOption" ? (
+  //         <Grid
+  //           id={props}
+  //           style={{
+  //             "flex-wrap": "nowrap",
+  //             marginTop: "5px",
+  //             borderTop: "1px solid #959595",
+  //             padding: "8px 6px 2px 6px",
+  //           }}
+  //           container
+  //           spacing={0}
+  //           onClick={() => {
+  //             setIsOpen(false);
+  //             setStateApp((stateApp) => ({
+  //               ...stateApp,
+  //               selectedMeta: column,
+  //               showFieldModal: true,
+  //             }));
+  //           }}
+  //         >
+  //           <Grid
+  //             style={{
+  //               "flex-grow": 1,
+  //               width: "fit-content",
+  //               "max-width": "max-content",
+  //             }}
+  //             container
+  //             item
+  //             xs={2}
+  //             alignItems="center"
+  //           >
+  //             <EditIcon
+  //               style={{ alignSelf: "center", fontSize: 18, marginRight: 5 }}
+  //             />
+  //           </Grid>
+  //           <Grid
+  //             container
+  //             item
+  //             xs={10}
+  //             alignItems="center"
+  //             style={{
+  //               fontSize: 14,
+  //               "white-space": "nowrap",
+  //             }}
+  //           >
+  //             Edit options
+  //           </Grid>
+  //         </Grid>
+  //       ) : (
+  //         <Grid
+  //           style={{
+  //             "flex-grow": 1,
+  //             width: "fit-content",
+  //             "flex-wrap": "nowrap",
+  //           }}
+  //           className={classes.myClass}
+  //           container
+  //           spacing={0}
+  //         >
+  //           <Grid
+  //             style={{
+  //               "flex-grow": 1,
+  //               width: "fit-content",
+  //               "max-width": "max-content",
+  //             }}
+  //             container
+  //             item
+  //             xs={2}
+  //             alignItems="center"
+  //           >
+  //             <Checkbox
+  //               checked={
+  //                 value?.includes(props.value) ||
+  //                 (!value && props.value === defaultValue.label)
+  //               }
+  //               color="default"
+  //               style={{ marginRight: 5 }}
+  //               inputProps={{
+  //                 "aria-label": "checkbox with default color",
+  //               }}
+  //             />
+  //           </Grid>
+  //           <Grid
+  //             style={{
+  //               "flex-grow": 1,
+  //               width: "fit-content" /*"max-width": "max-content"*/,
+  //             }}
+  //             container
+  //             item
+  //             xs={10}
+  //             alignItems="center"
+  //           >
+  //             <Grid style={{ "flex-grow": 1, width: "fit-content" }} item xs>
+  //               <Tooltip title={props.value} placement="top">
+  //                 <Typography style={{
+  //                   width: "100%",
+  //                   fontWeight: 400,
+  //                   backgroundColor: pallete?.color,
+  //                   color: pallete?.textColor,
+  //                   padding: "3px 10px",
+  //                   borderRadius: 26,
+  //                   fontSize: 14,
+  //                   overflow: "hidden",
+  //                   "white-space": "nowrap",
+  //                   "text-overflow": "ellipsis",
+  //                   textOverflow: 'ellipsis',
+  //                   maxWidth: "187px"
+  //                 }}>
+  //                   {props.value
+  //                   }</Typography>
+
+  //               </Tooltip>
+
+  //             </Grid>
+  //           </Grid>
+  //         </Grid>
+  //       )}
+
+  //     </components.Option>
+
+  //   );
+  // };
+
+  const CustomMenuList = (props) => {
+    
     return (
-      <components.Option {...props}>
-        {props.value === "editOption" ? (
-          <Grid
-            id={props}
-            style={{
-              "flex-wrap": "nowrap",
-              marginTop: "5px",
-              borderTop: "1px solid #959595",
-              padding: "8px 6px 2px 6px",
-            }}
-            container
-            spacing={0}
-            onClick={() => {
-              setIsOpen(false);
-              setStateApp((stateApp) => ({
-                ...stateApp,
-                selectedMeta: column,
-                showFieldModal: true,
-              }));
-            }}
-          >
-            <Grid
-              style={{
-                "flex-grow": 1,
-                width: "fit-content",
-                "max-width": "max-content",
-              }}
-              container
-              item
-              xs={2}
-              alignItems="center"
-            >
-              <EditIcon
-                style={{ alignSelf: "center", fontSize: 18, marginRight: 5 }}
-              />
-            </Grid>
-            <Grid
-              container
-              item
-              xs={10}
-              alignItems="center"
-              style={{
-                fontSize: 14,
-                "white-space": "nowrap",
-              }}
-            >
-              Edit options
-            </Grid>
-          </Grid>
-        ) : (
-          <Grid
-            style={{
-              "flex-grow": 1,
-              width: "fit-content",
-              "flex-wrap": "nowrap",
-            }}
-            className={classes.myClass}
-            container
-            spacing={0}
-          >
-            <Grid
-              style={{
-                "flex-grow": 1,
-                width: "fit-content",
-                "max-width": "max-content",
-              }}
-              container
-              item
-              xs={2}
-              alignItems="center"
-            >
-              <Checkbox
-                checked={
-                  value?.includes(props.value) ||
-                  (!value && props.value === defaultValue.label)
-                }
-                color="default"
-                style={{ marginRight: 5 }}
-                inputProps={{
-                  "aria-label": "checkbox with default color",
+      <components.MenuList {...props}>
+        <>
+          {props.options.map(opt => {
+            return (        
+              <MyOption setValue={props.setValue} opt={opt} />
+            )
+          })}
+        </>
+      </components.MenuList>
+    )
+  }
+
+  
+  const MyOption = ({opt, setValue}) => {
+    const [ref, inView] = useInView();
+    const pallete = colorPallete.find((pallete) => pallete.id === opt.palleteId);
+    return (
+      <div ref={ref}>
+        {inView ? (
+          <>
+            {opt.value === "editOption" ? (
+              <Grid
+                id={opt.value}
+                style={{
+                  "flex-wrap": "nowrap",
+                  marginTop: "5px",
+                  borderTop: "1px solid #959595",
+                  padding: "8px 6px 2px 6px",
                 }}
-              />
-            </Grid>
-            <Grid
-              style={{
-                "flex-grow": 1,
-                width: "fit-content" /*"max-width": "max-content"*/,
-              }}
-              container
-              item
-              xs={10}
-              alignItems="center"
-            >
-              <Grid style={{ "flex-grow": 1, width: "fit-content" }} item xs>
-                <Tooltip title={props.value} placement="top">
-                  <Typography style={{
-                    width: "100%",
-                    fontWeight: 400,
-                    backgroundColor: pallete?.color,
-                    color: pallete?.textColor,
-                    padding: "3px 10px",
-                    borderRadius: 26,
+                container
+                spacing={0}
+                onClick={() => {
+                  setIsOpen(false);
+                  setStateApp((stateApp) => ({
+                    ...stateApp,
+                    selectedMeta: column,
+                    showFieldModal: true,
+                  }));
+                }}
+              >
+                <Grid
+                  style={{
+                    "flex-grow": 1,
+                    width: "fit-content",
+                    "max-width": "max-content",
+                  }}
+                  container
+                  item
+                  xs={2}
+                  alignItems="center"
+                >
+                  <EditIcon
+                    style={{ alignSelf: "center", fontSize: 18, marginRight: 5 }}
+                  />
+                </Grid>
+                <Grid
+                  container
+                  item
+                  xs={10}
+                  alignItems="center"
+                  style={{
                     fontSize: 14,
-                    overflow: "hidden",
                     "white-space": "nowrap",
-                    "text-overflow": "ellipsis",
-                    textOverflow: 'ellipsis',
-                    maxWidth: "187px"
-                  }}>
-                    {props.value
-                    }</Typography>
-
-                </Tooltip>
-
+                  }}
+                >
+                  Edit options
+                </Grid>
               </Grid>
-            </Grid>
-          </Grid>
-        )}
+            ) : (
+              <Grid
+                style={{
+                  "flex-grow": 1,
+                  width: "fit-content",
+                  "flex-wrap": "nowrap",
+                }}
+                className={classes.myClass}
+                container
+                spacing={0}
+              >
+                <Grid
+                  style={{
+                    "flex-grow": 1,
+                    width: "fit-content",
+                    "max-width": "max-content",
+                  }}
+                  container
+                  item
+                  xs={2}
+                  alignItems="center"
+                >
+                  <Checkbox
+                    checked={
+                      value?.includes(opt.value) ||
+                      (!value && opt.value === defaultValue.label)
+                    }
+                    onChange={(e)=> {
+                      if(e.target.checked){
+                        setValue(opt, "select-option")
+                      }else{
+                        setValue(opt, "deselect-option")
+                      }
+                      
+                    }}
+                    color="default"
+                    style={{ marginRight: 5 }}
+                    inputProps={{
+                      "aria-label": "checkbox with default color",
+                    }}
+                  />
+                </Grid>
+                <Grid
+                  style={{
+                    "flex-grow": 1,
+                    width: "fit-content" /*"max-width": "max-content"*/,
+                  }}
+                  container
+                  item
+                  xs={10}
+                  alignItems="center"
+                >
+                  <Grid style={{ "flex-grow": 1, width: "fit-content" }} item xs>
+                    <Tooltip title={opt.value} placement="top">
+                      <Typography style={{
+                        width: "100%",
+                        fontWeight: 400,
+                        backgroundColor: pallete?.color,
+                        color: pallete?.textColor,
+                        padding: "3px 10px",
+                        borderRadius: 26,
+                        fontSize: 14,
+                        overflow: "hidden",
+                        "white-space": "nowrap",
+                        "text-overflow": "ellipsis",
+                        textOverflow: 'ellipsis',
+                        maxWidth: "187px"
+                      }}>
+                        {opt.value}
+                      </Typography>
 
-      </components.Option>
+                    </Tooltip>
 
-    );
-  };
+                  </Grid>
+                </Grid>
+              </Grid>
+            )}
+          </>
+        ): (  <div style={{ height: "30px"}}></div>)}
+    </div>
+    )
+  }
+  // const Option = (props) => {
+  //   // const { onMouseMove, onMouseOver, ...rest } = props.innerProps;
+  //   // const newProps = { ...props, innerProps: rest };
+  //   return (
+  //     <components.Option {...props}>
+  //       {props.children}
+  //     </components.Option>
+  //   );
+  // };
 
   const onFilterChange = (search) => {
     const options = JSON.parse(JSON.stringify(dropdownOptions.filter(op => op.value?.toLowerCase()?.includes(search.toLowerCase()))));
@@ -410,6 +574,7 @@ const ReactSelectField = ({
           }
         >
           <Select
+            captureMenuScroll={false} 
             classNamePrefix='react-select'
             className='react-select-container'
             autoFocus
@@ -429,7 +594,7 @@ const ReactSelectField = ({
                 label: op.value,
               }))}
             filterOption={filterOptions}
-            components={{ DropdownIndicator, IndicatorSeparator: null, Option }}
+            components={{ DropdownIndicator, IndicatorSeparator: null, MenuList: CustomMenuList }}
             placeholder="Search for value"
             styles={selectStyles}
             tabSelectsValue={false}
