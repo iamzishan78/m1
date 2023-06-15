@@ -258,7 +258,7 @@ export default function WellCardDetails(props) {
 
   useEffect(() => {
     getExternalProductionDetail({
-      variables: { id: stateApp.selectedWell.api, pageSize: "1000" },
+      variables: { id: stateApp.selectedWell.api, pageSize: "999" },
     });
   }, []);
 

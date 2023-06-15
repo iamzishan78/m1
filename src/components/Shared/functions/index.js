@@ -114,7 +114,7 @@ export function customStartCaseString(str, isDate) {
 
 export function workspaceTenantName() {
   const workspaceName = window.sessionStorage.getItem("tenantName");
-  return workspaceName === "localhost" ? "EnerX" : workspaceName;
+  return workspaceName === "localhost" ? "m1dev" : workspaceName;
 }
 
 export function getDateWithoutTime(dateTime) {

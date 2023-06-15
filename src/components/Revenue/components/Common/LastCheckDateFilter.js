@@ -9,13 +9,13 @@ import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import { MenuItem } from "material-ui";
 import { MuiThemeProvider } from "material-ui/styles";
 import { dateFilterToDate } from "utils/helper";
+import { copy } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
     backgroundColor: "#f7f7f7",
     width: "100%",
     minHeight: "65px",
-    marginTop: "80px",
   },
   actionsGrid: {
     marginTop: "6px",
@@ -31,24 +31,30 @@ const useStyles = makeStyles((theme) => ({
   },
 
   formControl: {
-    width: '100%'
-  }
+    width: "100%",
+  },
 }));
 
-
-const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFilterToggle, extraFitlers = [] }) => {
+const LastCheckDateFilter = ({
+  field,
+  esIndex,
+  esFilters,
+  setESFilters,
+  filterToggle,
+  setFilterToggle,
+  extraFitlers = [],
+  stateESKey = "",
+}) => {
   const classes = useStyles();
 
-  const [selectedFilter, setSelectedFilter] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState("");
   const [fromDate, setFromDate] = React.useState(null);
   const [toDate, setToDate] = React.useState(null);
-  const [lastCheckMinDate, setLastCheckMinDate] = useState('');
-  const [status, setStatus] = useState('ALL');
+  const [lastCheckMinDate, setLastCheckMinDate] = useState("");
+  const [status, setStatus] = useState("ALL");
   const [propertyFilter, setPropertyFilter] = useState([]);
 
-  const propertiesReportGroup = useSelector(
-    ({ Revenue }) => Revenue.propertiesReportGroup
-  );
+  const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
 
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: "no-cache",
@@ -58,42 +64,34 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
       }
     },
   });
-
   useEffect(() => {
     getESMinValue({
       variables: {
         esIndex,
         field,
-        value_as_string: true
-      }
-    })
-  }, [getESMinValue])
-
+        value_as_string: true,
+      },
+    });
+  }, [getESMinValue]);
 
   useEffect(() => {
     updateFilters();
   }, [toDate, fromDate, status, propertyFilter]);
 
   const updateFilters = () => {
-    const filters = [];
-    if (fromDate && toDate) {
-      filters.push({
+    let filters = copy(esFilters) ?? [];
+    filters = filters.filter((filter) => filter.type !== "range" && filter.field !== `${stateESKey}state.keyword`);
+    if (fromDate && toDate)
+      filters.unshift({
         field,
         value: {
-          range: {
-            [field]: {
-              gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
-              lte: toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
-            },
-          },
+          gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
+          lte: toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
         },
-        // includeEmpty: selectedFilter === "All Dates" ? true : undefined,
+        type: "range",
       });
-    }
 
-    if (propertyFilter[0]) {
-      filters.push(propertyFilter[0]);
-    }
+    if (propertyFilter[0]) filters.push({ ...propertyFilter[0], field: stateESKey + propertyFilter[0].field });
 
     if (status !== "ALL") {
       filters.push({
@@ -108,19 +106,12 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
 
   return (
     <div className={classes.actionBar}>
-      <Grid
-        container
-        alignItems="center"
-        // justifyContent="space-between"
-        spacing={2}
-        style={{ padding: "0px 36px 0px 45px", width: "100%" }}
-      >
+      <Grid container alignItems="center" spacing={2} style={{ padding: "0px 36px 0px 45px", width: "100%" }}>
         <CustomDates
           fromDate={fromDate}
           setFromDate={setFromDate}
           toDate={toDate}
           setToDate={setToDate}
-          //label="Last Check"
           isProperties
           lastCheckMinDate={lastCheckMinDate}
           onChange={setSelectedFilter}
@@ -132,7 +123,7 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
               type="Properties"
               esFilters={propertiesReportGroup || []}
               setESFilters={(value) => setPropertyFilter(value)}
-              setFilterToggle={() => { }}
+              setFilterToggle={() => {}}
               isBackground={false}
               noUpdate={true}
               strechedWidth
@@ -163,10 +154,9 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
             </MuiThemeProvider>
           )}
         </Grid>
-
       </Grid>
     </div>
   );
-}
+};
 
-export default LastCheckDateFilter
+export default LastCheckDateFilter;
