@@ -301,11 +301,14 @@ const GnericSelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKey
   };
 
   const onSearchChange = (value) => {
-    const filterOptions = dropDownValues.filter(op => {
-      return op.value.toLowerCase()?.includes(value.toLowerCase());
-    });
-    console.log('filter', filterOptions)
-    setOptions(filterOptions)
+    if(value){
+      const filterOptions = dropDownValues.filter(op => {
+        return op.value.toLowerCase()?.includes(value.toLowerCase());
+      });
+      setOptions(filterOptions)
+    }else {
+      onFilterChange('')
+    }
   }
 
   return (
