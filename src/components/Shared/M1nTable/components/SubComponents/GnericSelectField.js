@@ -29,6 +29,7 @@ const GnericSelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKey
   const [displayedOptions, setDisplayedOptions] = useState(100);
   const [options, setOptions] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isFiltering, setIsFiltering] = useState(false)
   const [, setStateApp] = useContext(AppContext);
 
   const defaultValue = {
@@ -48,18 +49,19 @@ const GnericSelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKey
         return;
       }
 
-      const startIndex = props.options.length;
-      const endIndex = Math.min(startIndex + 100, dropDownValues.length);
-      setDisplayedOptions(endIndex)
-      const nextOptions = dropDownValues.slice(startIndex, endIndex);
+      if(!isFiltering){
+        const startIndex = props.options.length;
+        const endIndex = Math.min(startIndex + 100, dropDownValues.length);
+        setDisplayedOptions(endIndex)
+        const nextOptions = dropDownValues.slice(startIndex, endIndex);
 
-      const updatedOptions = props.options.concat(nextOptions);
+        const updatedOptions = props.options.concat(nextOptions);
 
-      setOptions(updatedOptions);
-
-      const waypointElement = document.getElementById(`waypoint-${startIndex - 5}`);
-      if (waypointElement) {
-        waypointElement.scrollIntoView();
+        setOptions(updatedOptions);
+        const waypointElement = document.getElementById(`waypoint-${startIndex - 5}`);
+        if (waypointElement) {
+          waypointElement.scrollIntoView();
+        }
       }
     };
 
@@ -302,11 +304,19 @@ const GnericSelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKey
 
   const onSearchChange = (value) => {
     if(value){
+      setIsFiltering(true)
       const filterOptions = dropDownValues.filter(op => {
         return op.value.toLowerCase()?.includes(value.toLowerCase());
       });
-      setOptions(filterOptions)
+      const objectToCheck = { label: "edit", value: "editOption" };
+      if (filterOptions.some(opt => opt.label === objectToCheck.label && opt.value === objectToCheck.value)) {
+        setOptions(filterOptions);
+      } else {
+        setOptions([...filterOptions, objectToCheck]);
+      }
     }else {
+      setIsFiltering(false)
+      setDisplayedOptions(100);
       onFilterChange('')
     }
   }
