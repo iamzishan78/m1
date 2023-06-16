@@ -31,10 +31,11 @@ export function vf_currency_to_fixed(value, toFixed) {
   return valueFormatter(value)
 }
 
-export function vf_currency_dollar_to_fixed(value, toFixed) {
+export function vf_currency_dollar(value, toFixed) {
   return (
-    <div style={{ display: "flex", alignItems: 'center' }}>
-      {value < 0 && "-"}{<AttachMoneyIcon style={{ fontSize: '2.5rem', margin: '0  -0.6rem' }} />}
+    <div style={{ display: "flex", alignItems: "center" }}>
+      {value < 0 && "-"}
+      {<AttachMoneyIcon style={{ fontSize: "2.5rem", margin: "0  -0.6rem" }} />}
       {vf_number(Math.abs(value?.toFixed(toFixed))) || 0}
     </div>
   );

@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/styles";
 import { Grid, Card, CardContent, Typography , IconButton} from "@material-ui/core";
 import FilterIcon from "components/Common/SvgIcons/Filter";
 import { copy } from "components/Shared/functions";
-import { vf_currency_dollar_to_fixed } from "components/Shared/valueformatters/vf_currency";
+import { vf_currency_dollar } from "components/Shared/valueformatters/vf_currency";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -164,7 +164,7 @@ export default function AnalyticsCards(props) {
               className={classes.cardNumberTypography}
               style={{ color: "red" }}
             >
-              {vf_currency_dollar_to_fixed(props?.potentialGainLossSum, 2)}
+              {vf_currency_dollar(props?.potentialGainLossSum, 2)}
             </Typography>
           </CardContent>
         </Card>
