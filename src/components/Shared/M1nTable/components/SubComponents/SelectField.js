@@ -301,7 +301,7 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
   const onSearchChange = (value) => {
     if(value){
       setDisplayedOptions(100)
-      const filterOptions = dropDownValues.filter(op => {
+      const filterOptions = dropdownOptions.filter(op => {
         return op.value.toLowerCase()?.includes(value.toLowerCase());
       });
       setDropDownValues(filterOptions)
