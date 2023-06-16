@@ -22,14 +22,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const GnericSelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange, column}) => {
+const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange, column}) => {
 
   const classes = useStyles();
   const [dropDownValues, setDropDownValues] = useState([]);
   const [displayedOptions, setDisplayedOptions] = useState(100);
   const [options, setOptions] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isFiltering, setIsFiltering] = useState(false)
   const [, setStateApp] = useContext(AppContext);
 
   const defaultValue = {
@@ -49,20 +48,18 @@ const GnericSelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKey
         return;
       }
 
-      if(!isFiltering){
-        const startIndex = props.options.length;
+      const updateArray = props.options.slice(0, props.options.length - 1);
+        const startIndex = updateArray.length;
         const endIndex = Math.min(startIndex + 100, dropDownValues.length);
         setDisplayedOptions(endIndex)
         const nextOptions = dropDownValues.slice(startIndex, endIndex);
+        const updatedOptions = updateArray.concat(nextOptions);
 
-        const updatedOptions = props.options.concat(nextOptions);
-
-        setOptions(updatedOptions);
+        setOptions([...updatedOptions, { label: "edit", value: "editOption" }]);
         const waypointElement = document.getElementById(`waypoint-${startIndex - 5}`);
         if (waypointElement) {
           waypointElement.scrollIntoView();
         }
-      }
     };
 
     return (
@@ -225,11 +222,10 @@ const GnericSelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKey
   const onFilterChange = (search) => {
     const filteroptions = JSON.parse(JSON.stringify(dropdownOptions.filter(op => op.value?.toLowerCase()?.includes(search.toLowerCase()))));
     filteroptions.unshift(defaultValue);
-    filteroptions.push({ label: "edit", value: "editOption" });
     setDropDownValues(filteroptions)
     const endIndex = Math.min(displayedOptions, filteroptions.length);
     const initialOptions = filteroptions.slice(0, endIndex);
-    setOptions(initialOptions);
+    setOptions([...initialOptions, { label: "edit", value: "editOption" }]);
   }
 
   const handleKeyDown = (e) => {
@@ -304,18 +300,14 @@ const GnericSelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKey
 
   const onSearchChange = (value) => {
     if(value){
-      setIsFiltering(true)
+      setDisplayedOptions(100)
       const filterOptions = dropDownValues.filter(op => {
         return op.value.toLowerCase()?.includes(value.toLowerCase());
       });
-      const objectToCheck = { label: "edit", value: "editOption" };
-      if (filterOptions.some(opt => opt.label === objectToCheck.label && opt.value === objectToCheck.value)) {
-        setOptions(filterOptions);
-      } else {
-        setOptions([...filterOptions, objectToCheck]);
-      }
+      setDropDownValues(filterOptions)
+      const endIndex = Math.min(100, filterOptions.length);
+      setOptions([...filterOptions.slice(0,endIndex), { label: "edit", value: "editOption" }]);
     }else {
-      setIsFiltering(false)
       setDisplayedOptions(100);
       onFilterChange('')
     }
@@ -356,4 +348,4 @@ const GnericSelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKey
   );
 };
 
-export default GnericSelectField;
+export default SelectField;

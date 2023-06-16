@@ -6,7 +6,7 @@ import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import { makeStyles } from "@material-ui/core/styles";
 import { copy } from "components/Shared/functions";
 import { Tooltip, Typography } from "@material-ui/core";
-import GnericSelectField from "./GnericSelectField";
+import SelectField from "./SelectField";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -191,7 +191,7 @@ const ReactSelectField = ({
 
           }
         >
-         <GnericSelectField 
+         <SelectField 
          dropdownOptions = {dropdownOptions} 
          value = {value}
          isSingleSelect = {isSingleSelect}
