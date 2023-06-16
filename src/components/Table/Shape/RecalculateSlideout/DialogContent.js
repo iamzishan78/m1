@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, DialogActions, IconButton, Box, Grid, Typography } from '@material-ui/core';
 import { CloseSharp } from '@material-ui/icons';
+import { useMutation } from '@apollo/client';
+import { RESET_OWNERS_CALCULATED_VALUES } from 'graphQL/useMutationResetOwnersCalculatedValues';
+import { useLocation } from "react-router-dom";
+import { hookStateApp } from 'hookstate';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -20,10 +25,35 @@ const useStyles = makeStyles(theme => ({
 
 function DialogContent({ rows, setRows, onClose }) {
   const classes = useStyles()
+  const location = useLocation()
+
+  const [resetOwnersCalculatedValues, { data: mutationData }] = useMutation(RESET_OWNERS_CALCULATED_VALUES);
 
   const onDelete = (row) => {
     setRows(rows.filter((r) => r._id !== row._id));
   };
+
+  const onUpdate = (row) => {
+    const slugs = location.pathname.split('/')
+    resetOwnersCalculatedValues({
+      variables: {
+        ownerIds: rows.map(row => row._id),
+        layerId: slugs[slugs.length - 1]
+      },
+      refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
+      awaitRefetchQueries: true,
+    });
+
+    hookStateApp.universalLoader.set(true)
+  };
+
+  useEffect(() => {
+    if (!mutationData) return
+
+    hookStateApp.universalLoader.set(false)
+    onClose()
+  }, [mutationData])
+
 
   return (
     <Box className={classes.root}>
@@ -75,7 +105,7 @@ function DialogContent({ rows, setRows, onClose }) {
           component="span"
           disabled={rows.length === 0}
           style={rows.length === 0 ? { backgroundColor: "grey", color: "white" } : { backgroundColor: "#00abed", color: "white" }}
-        // onClick={onAssign}
+          onClick={onUpdate}
         >
           Update
         </Button>
