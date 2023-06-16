@@ -43,7 +43,6 @@ const GnericSelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKey
   }, [dropdownOptions]);
 
   const CustomMenuList = (props) => {
-    console.log('dropDownValues', dropDownValues)
     const handleScroll = () => {
       if (props.options.length >= dropDownValues.length) {
         return;
