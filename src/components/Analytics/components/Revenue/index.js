@@ -211,8 +211,8 @@ export default function RevenueAnalytics(props) {
           aria-label="ant example"
         >
           <StyledTab label="Income Statement" />
-          <StyledTab label="Comparison" />
-          <StyledTab label="Check Comparison" />
+          <StyledTab label="Check Ledger" />
+          <StyledTab label="Comparisons" />
         </StyledTabs>
         {tab === 2 && (
           <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "395px" }}>
