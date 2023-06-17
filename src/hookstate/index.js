@@ -1,4 +1,6 @@
-import { hookstate } from '@hookstate/core';
+import { hookstate, useHookstate } from '@hookstate/core';
 
-export const hookStateApp = hookstate({ layers: [] });
+export const hookStateApp = hookstate({ layers: [], universalLoader: false });
+
+export const useHookStateApp = () => useHookstate(hookStateApp)
 
