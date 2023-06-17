@@ -931,6 +931,13 @@ export const TableESHOC = (Component) => {
                             }
                             const pageESVariables = copy(tableActions.pageESVariables)
 
+                            pageESVariables.variables.filters = handleMultiFieldFilter([
+                                ...(initialFilters ? initialFilters : []),
+                                ...(tableMeta.filters ? tableMeta.filters : []),
+                                ...(selectedGridView?.filters ? selectedGridView?.filters : []),
+                                ...(tableMeta.polygon) ? [tableMeta.polygon] : []
+                            ])
+
                             let searchQuery = pageESVariables?.search?.query
                             if (props.useWildeCard)
                                 searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;

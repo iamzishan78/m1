@@ -9,7 +9,7 @@ import { WellCardContext } from "components/WellCard/WellCardContext";
 import { WellProdChartContext } from "components/WellProdChart/WellProdChartContext";
 import { GET_ASSOCIATED_WELL_PRODUCTION_DATA } from "graphQL/useQueryAssociatedWellProductionData";
 
-const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellIds, wellProductionData, setWellProductionData }) => {
+const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellIds, wellProductionData, setWellProductionData, propertiesIds }) => {
     const [, setStateWellCard] = useContext(WellCardContext);
     const [, setStateWellProdChart] = useContext(WellProdChartContext);
     const [getAssociatedWellProductionData, { data: associatedWells }] = useLazyQuery(GET_ASSOCIATED_WELL_PRODUCTION_DATA);
@@ -36,13 +36,18 @@ const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellId
           wellIds.push(data.well._id);
           if (data.well.productionData.length > 0) {
             let pData = JSON.parse(JSON.stringify(data.well.productionData));
-            if (filter[0].value.range.date.lte) {
+            if (filter[0]?.value?.range?.date?.lte) {
               pData = pData.filter((d) => moment(moment(d.data.ReportDate).format('MM/DD/yyyy')) <= moment(moment(filter[0].value.range.date.lte).format('MM/DD/yyyy')));
             }
-            if (filter[0].value.range.date.gte) {
+            if (filter[0]?.value?.range?.date?.gte) {
               pData = pData.filter((d) => moment(moment(d.data.ReportDate).format('MM/DD/yyyy')) >= moment(moment(filter[0].value.range.date.gte).format('MM/DD/yyyy')));
             }
-  
+            if (filter[0]?.value?.lte) {
+              pData = pData.filter((d) => moment(moment(d.data.ReportDate).format('MM/DD/yyyy')) <= moment(moment(filter[0]?.value?.lte).format('MM/DD/yyyy')));
+            }
+            if (filter[0]?.value?.gte) {
+              pData = pData.filter((d) => moment(moment(d.data.ReportDate).format('MM/DD/yyyy')) >= moment(moment(filter[0]?.value?.gte).format('MM/DD/yyyy')));
+            }  
             pData.forEach((production) => {
               production = JSON.parse(JSON.stringify(production.data));
               const date = moment(production.ReportDate).format("MM/yyyy");
@@ -104,11 +109,11 @@ const ValidationChart = ({ filter, setStartDate, propertyId, setAssociatedWellId
     useEffect(() => {
       getAssociatedWellProductionData({
         variables: {
-          relatedObject: propertyId,
+          relatedObjects: propertyId ? [propertyId] : propertiesIds,
         },
       });
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [propertyId,propertiesIds]);
   
     return (
     <WellProdChart />

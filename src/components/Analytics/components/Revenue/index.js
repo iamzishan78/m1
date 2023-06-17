@@ -3,8 +3,8 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
 import { makeStyles, withStyles } from "@material-ui/styles";
-import { Grid, Divider, Tab, Tabs } from "@material-ui/core";
-
+import { Grid, Divider, Tab, Tabs, TextField } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
 import { setStateIfDeepEqual } from "components/Shared/functions";
@@ -14,10 +14,12 @@ import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import CheckDetailsSection from "./CheckDetailsSection";
 import CheckComparisonTable from "./CheckComparisonSection/CheckComparisonTable";
 import AnalyticsCards from "./Analytics";
-import LastCheckDateFilter from "./Common/LastCheckDateFilter";
+import LastCheckDateFilter from "components/Revenue/components/Common/LastCheckDateFilter";
+import AnalyticsCharts from "./SalesVolumeComparisonSection/AnalyticsCharts";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
+    display: "flex",
     margin: "75px 0 10px",
   },
   actionBar: {
@@ -38,10 +40,9 @@ const useStyles = makeStyles((theme) => ({
   },
 
   sectionCard: {
-
     "& div": {
       "&>.MuiPaper-root": {
-        "&>:nth-child(3)": { minHeight: "calc(100vh - 265px) !important", maxHeight: '35vh' },
+        "&>:nth-child(3)": { minHeight: "calc(100vh - 265px) !important", maxHeight: "35vh" },
       },
     },
   },
@@ -50,8 +51,16 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(1),
     // paddingLeft: "38px",
     // paddingRight: "38px",
-    marginLeft: '-8px',
-  }
+    marginLeft: "-8px",
+  },
+  viewSwitcher: {
+    height: "40px",
+    backgroundColor: "white",
+  },
+
+  formControl: {
+    width: "400px",
+  },
 }));
 
 const StyledTabs = withStyles({
@@ -109,13 +118,17 @@ export default function RevenueAnalytics(props) {
   const [toDate, setToDate] = React.useState(null);
   const [monthsInterval, setMonths] = useState([]);
   const [propertyFilter, setPropertyFilter] = useState([]);
+  const [propertiesIds, setPropertiesIds] = useState([]);
+  const [associatedWellIds, setAssociatedWellIds] = useState([]);
+  const [wellProductionData, setWellProductionData] = useState([]);
+  const [startDate, setStartDate] = useState(null);
   const [lastCheckMinDate, setLastCheckMinDate] = useState("");
   const [propertiesCount, setPropertiesCount] = useState(0);
   const [checksCount, setChecksCount] = useState(0);
   const [misMatchedInterestsCount, setMisMatchedInterestsCount] = useState(0);
   const [potentialGainLossSum, setPotentialGainLossSum] = useState(0);
-  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 490px)" }
-
+  const [comparisonReport, setComparisonReport] = useState("Check Detail Comparison");
+  const loadMore = { type: "infiniteScroll", height: "calc(100vh - 166px)" };
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
@@ -173,7 +186,6 @@ export default function RevenueAnalytics(props) {
     setMonths(months);
   };
 
-
   const onGettingAnalytics = (analyticsList) => {
     const propertiesCount = analyticsList.propertiesCount;
     const checksCount = analyticsList.checksCount;
@@ -199,12 +211,26 @@ export default function RevenueAnalytics(props) {
           aria-label="ant example"
         >
           <StyledTab label="Income Statement" />
-          <StyledTab label="Comparison" />
-          <StyledTab label="Check Comparison" />
-          {/* <StyledTab label="Income Stmt" /> */}
-          {/* <StyledTab label="Comparison" disabled /> */}
-          {/* <StyledTab label="Properties" /> */}
+          <StyledTab label="Check Ledger" />
+          <StyledTab label="Comparisons" />
         </StyledTabs>
+        {tab === 2 && (
+          <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "395px" }}>
+            <Autocomplete
+              size="small"
+              onChange={(event, newValue) => setComparisonReport(newValue)}
+              options={["Check Detail Comparison", "Sales Volume vs Reported Production"]}
+              renderInput={(params) => (
+                <form autoComplete="off">
+                  <TextField {...params} variant="outlined" placeholder="" style={{ backgroundColor: "white" }} fullWidth={true} />
+                </form>
+              )}
+              defaultValue={"Check Detail Comparison"}
+              disableListWrap
+              id="custom-date-dropdown"
+            />
+          </Grid>
+        )}
       </div>
 
       {tab === 0 && (
@@ -231,7 +257,7 @@ export default function RevenueAnalytics(props) {
                     type="Properties"
                     esFilters={propertiesReportGroup || []}
                     setESFilters={(value) => setPropertyFilter(value)}
-                    setFilterToggle={() => { }}
+                    setFilterToggle={() => {}}
                     isBackground={false}
                     noUpdate={true}
                     strechedWidth
@@ -253,16 +279,13 @@ export default function RevenueAnalytics(props) {
         </>
       )}
 
-      {tab === 1 &&
+      {tab === 1 && (
         <div className={`${classes.sectionCard}`}>
-          <CheckDetailsSection
-            header="Check Details"
-            loadMore={loadMore}
-          />
+          <CheckDetailsSection header="Check Details" loadMore={loadMore} />
         </div>
-      }
+      )}
 
-      {tab === 2 &&
+      {tab === 2 && (
         <>
           <LastCheckDateFilter
             field={"check.checkDate"}
@@ -272,27 +295,42 @@ export default function RevenueAnalytics(props) {
             setFilterToggle={setFilterToggle}
             filterToggle={filterToggle}
             extraFitlers={["propertyGroup"]}
+            stateESKey="property."
           />
-          <AnalyticsCards
-            propertiesCount={propertiesCount}
-            misMatchedInterestsCount={misMatchedInterestsCount}
-            potentialGainLossSum={potentialGainLossSum}
-            checksCount={checksCount}
-            esFilters={esFilters}
-            setESFilters={setESFilters}
-          />
-          <div className={classes.revenueTableInfContainer}>
-            <CheckComparisonTable
-              header="Property DOI vs Checkstub Interest"
-              loadMore={loadMore}
+          {comparisonReport === "Sales Volume vs Reported Production" ? (
+            <AnalyticsCharts
               esFilters={esFilters}
-              setESFilters={setESFilters}
-              onGettingAnalytics={onGettingAnalytics}
+              propertiesIds={propertiesIds}
+              setStartDate={setStartDate}
+              wellProductionData={wellProductionData}
+              setWellProductionData={setWellProductionData}
+              setAssociatedWellIds={setAssociatedWellIds}
+              setPropertiesIds={setPropertiesIds}
+              loadMore={{ ...loadMore, height: "calc(100vh - 710px)" }}
             />
-          </div>
+          ) : (
+            <>
+              <AnalyticsCards
+                propertiesCount={propertiesCount}
+                misMatchedInterestsCount={misMatchedInterestsCount}
+                potentialGainLossSum={potentialGainLossSum}
+                checksCount={checksCount}
+                esFilters={esFilters}
+                setESFilters={setESFilters}
+              />
+              <div className={classes.revenueTableInfContainer}>
+                <CheckComparisonTable
+                  header="Property DOI vs Checkstub Interest"
+                  loadMore={{ ...loadMore, height: "calc(100vh - 410px)" }}
+                  esFilters={esFilters}
+                  setESFilters={setESFilters}
+                  onGettingAnalytics={onGettingAnalytics}
+                />
+              </div>
+            </>
+          )}
         </>
-      }
-
+      )}
     </>
   );
 }

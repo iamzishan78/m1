@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { Container } from "@material-ui/core";
@@ -112,7 +112,7 @@ function CheckComparisonSection(props) {
       hit.propertyId = hit.property?._id;
       hit.interestType = hit.property?.interest?.interestType;
       hit.interestAmount = hit.property?.interest?.interestAmount;
-      hit.effectiveDate = hit.property?.interest?.effectiveDate;
+      hit.effectiveDate = hit.property?.interest?.effectiveDate ? convert_date(hit.property?.interest?.effectiveDate) : null;
       hit.endDate = hit.property?.interest?.endDate;
       hit.interestStatus = hit.property?.interest?.status;
       hit.costFree = hit.property?.interest?.costFree;
