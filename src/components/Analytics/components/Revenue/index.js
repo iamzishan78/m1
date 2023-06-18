@@ -163,7 +163,7 @@ export default function RevenueAnalytics(props) {
     getPortfolioSummary({
       variables: {
         filters: propertiesReportGroup || [],
-        filterDate: { toDate: new Date(toDate), fromDate: new Date(fromDate) },
+        filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) },
       },
     });
   }, [propertiesReportGroup, toDate, fromDate]);
