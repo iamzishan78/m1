@@ -24,6 +24,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { showInfoMessage } from "actions";
 import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+import { CurrencyFormatCustomWithoutPrefix } from "components/Shared/Forms/Formatting/CurrencyFormatCustomWithoutPrefix";
 
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -455,6 +456,7 @@ function HeaderFunction(props) {
                       startAdornment: (
                         <InputAdornment position="start"> $</InputAdornment>
                       ),
+                      inputComponent: CurrencyFormatCustomWithoutPrefix,
                       endAdornment:
                         !isEqualCheckAmount(params.value) ? (
                           <Tooltip title="Sum of line items not equal to check amount">
