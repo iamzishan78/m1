@@ -449,8 +449,7 @@ function HeaderFunction(props) {
                     type="text"
                     variant="outlined"
                     onChange={(e) => {
-                      params.onChange(e.target.value);
-                      handleUpdateCheck({ checkAmount: parseFloat(e.target.value) });
+                      params.onChange(parseFloat(e.target.value).toFixed(2));
                     }}
                     InputProps={{
                       startAdornment: (
@@ -464,8 +463,8 @@ function HeaderFunction(props) {
                           </Tooltip>
                         ) : null,
                     }}
-                    value={params.value || ""}
-                    onBlur={() => handleCheckAmount()}
+                    value={parseFloat(params.value).toFixed(2) || ""}
+                    onBlur={(e) => handleUpdateCheck({ checkAmount: Number(params.value) })}
                   />
                 )}
               />
