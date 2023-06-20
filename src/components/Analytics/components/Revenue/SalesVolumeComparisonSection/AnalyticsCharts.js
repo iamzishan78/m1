@@ -1,3 +1,4 @@
+import React from "react";
 import { Grid } from "@material-ui/core";
 
 import { WellCardContextProvider } from "components/WellCard/WellCardContext";
@@ -5,7 +6,9 @@ import { WellProdChartContextProvider } from "components/WellProdChart/WellProdC
 import OverShortComparison from "components/Revenue/components/Properties/DetailComponents/Validation/OverShortComparison";
 import MonthlyProductionChart from "components/Revenue/components/Properties/DetailComponents/Validation/MonthlyProductionChart";
 
-const AnalyticsCharts = ({ esFilters, propertiesIds, setStartDate, wellProductionData, setWellProductionData, setAssociatedWellIds, checkDetailsData }) => {
+const AnalyticsCharts = ({ esFilters, propertiesIds, setAssociatedWellIds, checkDetailsData }) => {
+  const [wellProductionData, setWellProductionData] = React.useState([]);
+  const [startDate, setStartDate] = React.useState(null);
 
   return (
     <Grid container direction="row" display="flex" justify="space-between">

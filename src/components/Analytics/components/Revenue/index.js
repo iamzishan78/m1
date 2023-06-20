@@ -331,7 +331,7 @@ export default function RevenueAnalytics(props) {
       {tab === 2 && (
         <>
           <LastCheckDateFilter
-            field={"check.checkDate"}
+            field="date"
             esIndex={esIndex}
             esFilters={esFilters}
             setESFilters={setESFilters}

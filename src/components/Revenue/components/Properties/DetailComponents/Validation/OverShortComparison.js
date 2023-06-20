@@ -94,16 +94,9 @@ const ApexChart = ({ productionData, checkData }) => {
       ];
       const activeCheckData = checkData.filter((d) => d.product === activeTab.toUpperCase());
       for (let i = 0; i < activeCheckData.length; i++) {
-        const pData = productionData.find((p) => {
-          const prodReportDate = moment(p.ReportDate).format("MM/yyyy");
-          const checkReportDate = moment(activeCheckData[i].ReportDate).format("MM/yyyy");
-          return p.ReportDate === moment(activeCheckData[i].ReportDate).format("MM/yyyy");
-        });
+        const pData = productionData.find((p) => p.ReportDate === moment(activeCheckData[i].ReportDate).format("MM/yyyy"));
         if (pData) {
           let label = moment(activeCheckData[i].ReportDate).format("MMM yyyy");
-          // if(moment(activeCheckData[i].ReportDate).month() === 0){
-          //   label = moment(activeCheckData[i].ReportDate).format('MMM yyyy')
-          // }
           if (!labels.find((l) => l === label)) labels.push(label);
           const index = labels.findIndex((l) => l === label);
           let d = activeCheckData[i][activeTab] - pData[`allocated${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`];

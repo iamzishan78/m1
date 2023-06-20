@@ -7,17 +7,12 @@ import SalesVolumeComparisonTable from "./SalesVolumeComparisonTable";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 
 export default function SalesVolumeComparisonSection({ checkDetailsData, esFilters, loadMore }) {
-  //   const [propertyFilter, setPropertyFilter] = useState([]);
   const [propertiesIds, setPropertiesIds] = useState([]);
   const [associatedWellIds, setAssociatedWellIds] = useState([]);
-  const [wellProductionData, setWellProductionData] = useState([]);
-  const [startDate, setStartDate] = useState(null);
 
   const [recordCount, setRecordCount] = useState(0);
 
-  const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
-    fetchPolicy: "no-cache",
-  });
+  const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
     (async () => {
@@ -49,10 +44,7 @@ export default function SalesVolumeComparisonSection({ checkDetailsData, esFilte
       <AnalyticsCharts
         esFilters={esFilters}
         propertiesIds={propertiesIds}
-        setStartDate={setStartDate}
-        wellProductionData={wellProductionData}
         checkDetailsData={checkDetailsData}
-        setWellProductionData={setWellProductionData}
         setAssociatedWellIds={setAssociatedWellIds}
       />
       <SalesVolumeComparisonTable
