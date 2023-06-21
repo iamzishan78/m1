@@ -35,21 +35,23 @@ function SalesVolumeComparisonTable(props) {
 
   const formatHits = (hits) => {
     return hits.map((hit) => {
-      hit.propertyNumber = hit.property.number;
-      hit.propertyName = hit.property.name;
-      hit.date = hit.date ? convert_date(hit.date) : null;
-      hit.apiNumber = get(hit, "wells", []).map((w) => w.apiNumber);
-      hit.wellName = get(hit, "wells", []).map((w) => w.wellName);
       let pVolume = 0;
       get(hit, "wells", []).forEach((well) => {
         const prod = well.production.find((p) => moment(p.data.ReportDate).format("MM/yyyy") === moment(hit.date).format("MM/yyyy"));
         if (prod) pVolume = pVolume + prod.data[`allocated${hit.product.charAt(0).toUpperCase() + hit.product.slice(1).toLowerCase()}`];
       });
-      hit.statementVolume = hit.grossPropertyVolume;
-      hit.reportedVolume = pVolume;
-      hit.overShort = hit.statementVolume - pVolume;
-      hit.difference = pVolume > 0 ? `${Math.round((hit.overShort * 100) / pVolume)}%` : null;
-      return hit;
+      return {
+        ...hit,
+        propertyNumber: hit.property.number,
+        propertyName: hit.property.name,
+        date: hit.date ? convert_date(hit.date) : null,
+        apiNumber: get(hit, "wells", []).map((w) => w.apiNumber),
+        wellName: get(hit, "wells", []).map((w) => w.wellName),
+        statementVolume: hit.grossPropertyVolume,
+        reportedVolume: pVolume,
+        overShort: hit.statementVolume - pVolume,
+        difference: pVolume > 0 ? `${Math.round((hit.overShort * 100) / pVolume)}%` : null,
+      };
     });
   };
 
