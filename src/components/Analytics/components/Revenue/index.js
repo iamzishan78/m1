@@ -128,6 +128,7 @@ export default function RevenueAnalytics(props) {
   const [checksCount, setChecksCount] = useState(0);
   const [misMatchedInterestsCount, setMisMatchedInterestsCount] = useState(0);
   const [potentialGainLossSum, setPotentialGainLossSum] = useState(0);
+  const [totalChecks, setTotalChecks] = useState(0);
   const [comparisonReport, setComparisonReport] = useState("Check Detail Comparison");
   const loadMore = { type: "infiniteScroll", height: "calc(100vh - 166px)" };
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
@@ -157,7 +158,7 @@ export default function RevenueAnalytics(props) {
       variables: {
         index: "checkdetailsinterestscomparison_flat",
         pagination: {
-          first: 2000,
+          first: totalChecks,
           after: null,
         },
         search: {
@@ -167,7 +168,7 @@ export default function RevenueAnalytics(props) {
         filters: formattedDateFilters,
       },
     });
-  }, []);
+  }, [totalChecks]);
 
   useEffect(() => {
     if (elasticData?.getESSimpleSearch?.hits?.length > 0) {
@@ -175,6 +176,10 @@ export default function RevenueAnalytics(props) {
       for (let i = 0; i < elasticData?.getESSimpleSearch?.hits?.length; i++) {
         const check = elasticData?.getESSimpleSearch?.hits[i];
         data.push({
+          wells: check.wells,
+          date: check.date,
+          state: check?.property?.state,
+          statementVolume: check.grossPropertyVolume || 0,
           product: check.product,
           ReportDate: check.date,
           oil: check.product === "OIL" ? check.grossPropertyVolume : 0,
@@ -359,6 +364,7 @@ export default function RevenueAnalytics(props) {
                   esFilters={esFilters}
                   setESFilters={setESFilters}
                   onGettingAnalytics={onGettingAnalytics}
+                  setTotalChecks={setTotalChecks}
                 />
               </div>
             </>

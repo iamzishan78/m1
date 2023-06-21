@@ -37,7 +37,7 @@ export default function SalesVolumeComparisonSection({ checkDetailsData, esFilte
         });
       });
     })();
-  }, [esFilters, recordCount]);
+  }, [recordCount]);
 
   return (
     <>

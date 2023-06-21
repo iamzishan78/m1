@@ -53,6 +53,7 @@ function CheckComparisonSection(props) {
 
   useEffect(() => {
     (async () => {
+      props.setTotalChecks(props.total);
       const { propertiesCount, revenueComparisonAnalytics } = await getRevenueComparisonAnalytics("property.IsDeleted", false, "term");
       props.onGettingAnalytics({
         propertiesCount: propertiesCount,

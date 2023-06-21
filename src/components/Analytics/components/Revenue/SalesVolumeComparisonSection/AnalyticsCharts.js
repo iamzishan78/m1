@@ -3,7 +3,7 @@ import { Grid } from "@material-ui/core";
 
 import { WellCardContextProvider } from "components/WellCard/WellCardContext";
 import { WellProdChartContextProvider } from "components/WellProdChart/WellProdChartContext";
-import OverShortComparison from "components/Revenue/components/Properties/DetailComponents/Validation/OverShortComparison";
+import OverShortComparison from "components/Analytics/components/Revenue/SalesVolumeComparisonSection/OverShortComparison";
 import MonthlyProductionChart from "components/Revenue/components/Properties/DetailComponents/Validation/MonthlyProductionChart";
 
 const AnalyticsCharts = ({ esFilters, propertiesIds, setAssociatedWellIds, checkDetailsData }) => {
@@ -27,7 +27,7 @@ const AnalyticsCharts = ({ esFilters, propertiesIds, setAssociatedWellIds, check
         </WellCardContextProvider>
       </Grid>
       <Grid item xs={6}>
-        <OverShortComparison productionData={wellProductionData} checkData={checkDetailsData} />
+        <OverShortComparison esFilters={esFilters} productionData={wellProductionData} checkData={checkDetailsData} />
       </Grid>
     </Grid>
   );
