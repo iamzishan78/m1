@@ -40,11 +40,22 @@ function SalesVolumeComparisonTable(props) {
       hit.date = hit.date ? convert_date(hit.date) : null;
       hit.apiNumber = get(hit, "wells", []).map((w) => w.apiNumber);
       hit.wellName = get(hit, "wells", []).map((w) => w.wellName);
-      let pVolume = 0;
+      let [pVolume, reportDate, oilProduction, gasProduction] = [0, null, null, null];
       get(hit, "wells", []).forEach((well) => {
+        const matchedProduction = well.production.find((p) => convert_date(p.data.ReportDate) === hit.date);
+
+        if (matchedProduction) {
+          reportDate = matchedProduction.data.ReportDate;
+          oilProduction = matchedProduction.data.allocatedOil;
+          gasProduction = matchedProduction.data.allocatedGas;
+        } 
+
         const prod = well.production.find((p) => moment(p.data.ReportDate).format("MM/yyyy") === moment(hit.date).format("MM/yyyy"));
         if (prod) pVolume = pVolume + prod.data[`allocated${hit.product.charAt(0).toUpperCase() + hit.product.slice(1).toLowerCase()}`];
       });
+      hit.reportDate = convert_date(reportDate);
+      hit.oilProduction = oilProduction;
+      hit.gasProduction = gasProduction;
       hit.statementVolume = hit.grossPropertyVolume;
       hit.reportedVolume = pVolume;
       hit.overShort = hit.statementVolume - pVolume;
