@@ -5,7 +5,7 @@ import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import moment from "moment";
-import { useLazyQuery } from "@apollo/client";
+import convert_date from "components/Shared/valueformatters/convert_date";
 
 import { deepEqualObjects, copy } from "components/Shared/functions";
 // Header Schemas
@@ -37,6 +37,7 @@ function SalesVolumeComparisonTable(props) {
     return hits.map((hit) => {
       hit.propertyNumber = hit.property.number;
       hit.propertyName = hit.property.name;
+      hit.date = hit.date ? convert_date(hit.date) : null;
       hit.apiNumber = get(hit, "wells", []).map((w) => w.apiNumber);
       hit.wellName = get(hit, "wells", []).map((w) => w.wellName);
       let pVolume = 0;
