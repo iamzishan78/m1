@@ -211,7 +211,7 @@ export default function RevenueAnalytics(props) {
     getPortfolioSummary({
       variables: {
         filters: propertiesReportGroup || [],
-        filterDate: { toDate: new Date(toDate), fromDate: new Date(fromDate) },
+        filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) },
       },
     });
   }, [propertiesReportGroup, toDate, fromDate]);
@@ -259,8 +259,8 @@ export default function RevenueAnalytics(props) {
           aria-label="ant example"
         >
           <StyledTab label="Income Statement" />
-          <StyledTab label="Comparison" />
-          <StyledTab label="Check Comparison" />
+          <StyledTab label="Check Ledger" />
+          <StyledTab label="Comparisons" />
         </StyledTabs>
         {tab === 2 && (
           <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "395px" }}>

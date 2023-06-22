@@ -47,6 +47,7 @@ function RevenueStatementTable(props) {
           hit?.tags?.length > 0
             ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
             : [[], 0];
+        hit.commentsCounter = hit.comments ? hit.comments.length : 0;
         return hit;
       });
       return hits;
