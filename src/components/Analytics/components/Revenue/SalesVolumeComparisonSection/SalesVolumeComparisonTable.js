@@ -5,10 +5,9 @@ import { Container } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 import moment from "moment";
-import { useLazyQuery } from "@apollo/client";
+import convert_date from "components/Shared/valueformatters/convert_date";
 
 import { deepEqualObjects, copy } from "components/Shared/functions";
-import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 // Header Schemas
 import TableHeader from "components/Table/constants/sales-production-header-schema";
 
@@ -18,9 +17,10 @@ import { usetableStyles } from "components/Table/Styles";
 function SalesVolumeComparisonTable(props) {
   const classes = usetableStyles();
 
-  const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
-    fetchPolicy: "no-cache",
-  });
+  useEffect(() => {
+    if ((props.recordCount && !props.options.count) || props.recordCount > props.options.count) return;
+    props.setRecordCount(props.options.count);
+  }, [props.options.count]);
 
   useEffect(() => {
     props.setTableMeta({
@@ -33,45 +33,29 @@ function SalesVolumeComparisonTable(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.setTableMeta, props.esFilters]);
 
-  useEffect(() => {
-    (async () => {
-      const { properties } = await getDistinctProperties("property.IsDeleted", false, "term");
-      const propertyIds = properties?.map((obj) => obj.key);
-      if (propertyIds) props.setPropertiesIds(propertyIds);
-    })();
-  }, [props.rows]);
-
-  const getDistinctProperties = async () => {
-    const formattedFilters = props.esFilters.map((filter) => {
-      return filter.field === "check.checkDate" ? { ...filter, field: "date" } : filter;
-    });
-    const propertiesPromise = new Promise((resolve, reject) => {
-      getESSimpleFilter({
-        variables: {
-          index: "checkdetailsinterestscomparison_flat",
-          filters: [...formattedFilters, { field: "property.IsDeleted", value: false, type: "term" }],
-          filterKey: "property._id.keyword",
-          filterAggs: { query: "", field: "property._id.keyword", size: props.total || 0 },
-        },
-        onCompleted: (res) => resolve(res?.getESSimpleFilter?.hits),
-        onError: (error) => reject(error),
-      });
-    });
-    const [properties] = await Promise.all([propertiesPromise]);
-    return { properties };
-  };
-
   const formatHits = (hits) => {
     return hits.map((hit) => {
       hit.propertyNumber = hit.property.number;
       hit.propertyName = hit.property.name;
+      hit.date = hit.date ? convert_date(hit.date) : null;
       hit.apiNumber = get(hit, "wells", []).map((w) => w.apiNumber);
       hit.wellName = get(hit, "wells", []).map((w) => w.wellName);
-      let pVolume = 0;
+      let [pVolume, reportDate, oilProduction, gasProduction] = [0, null, null, null];
       get(hit, "wells", []).forEach((well) => {
+        const matchedProduction = well.production.find((p) => convert_date(p.data.ReportDate) === hit.date);
+
+        if (matchedProduction) {
+          reportDate = matchedProduction.data.ReportDate;
+          oilProduction = matchedProduction.data.allocatedOil;
+          gasProduction = matchedProduction.data.allocatedGas;
+        } 
+
         const prod = well.production.find((p) => moment(p.data.ReportDate).format("MM/yyyy") === moment(hit.date).format("MM/yyyy"));
         if (prod) pVolume = pVolume + prod.data[`allocated${hit.product.charAt(0).toUpperCase() + hit.product.slice(1).toLowerCase()}`];
       });
+      hit.reportDate = convert_date(reportDate);
+      hit.oilProduction = oilProduction;
+      hit.gasProduction = gasProduction;
       hit.statementVolume = hit.grossPropertyVolume;
       hit.reportedVolume = pVolume;
       hit.overShort = hit.statementVolume - pVolume;

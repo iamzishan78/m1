@@ -459,8 +459,7 @@ export default function FieldContent({
 
   let textArray = getOrganizedContent()
 
-
-  const renderOutput = content.campaignName ? (
+  const renderOutput = Object.keys(content).includes('campaignName') ? (
     <CampaignNameField
       className={classes.maxWidth}
       onChange={(value) => {
