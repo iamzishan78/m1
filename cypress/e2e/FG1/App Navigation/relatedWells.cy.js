@@ -23,7 +23,7 @@ describe('Related Wells Spec' , () => {
               const agreement = hits.find(hit => hit?.agreementNumber)
               const agreementLabel = `${agreement.agreementNumber} - ${agreement.agreementName}`
   
-              const wellApiUrl = "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2020-06-30&queryType=full&count=true&%24filter=Latitude%20ne%20null%20and%20Longitude%20ne%20null&searchFields=WellName%2CApiNumber&$top=50&search=BRIT.-AMER.%20%26%20BOLSA~%20CHICA%2C%20%C3%82%E2%82%AC%C2%A6%201~"
+              const wellApiUrl = "https://m1search.search.windows.net/indexes/wellheader-index-m1corev3/docs?api-version=2020-06-30&queryType=full&count=true&%24filter=Latitude%20ne%20null%20and%20Longitude%20ne%20null&searchFields=WellName%2CApiNumber&$top=50&search=BRIT.-AMER.%20%26%20BOLSA~%20CHICA%2C%20%C3%82%E2%82%AC%C2%A6%201~"
               const relatedWellName = "BRIT.-AMER. & BOLSA CHICA, Â€¦ 1"
   
               cy.getTableCell('Agreement', 1).then(($cell) => {
