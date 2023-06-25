@@ -157,21 +157,17 @@ function urlify(text) {
   });
 }
 
-function getLikedPeoplesName(comment, myUserId) {
+export function getLikedPeoplesName(comment, myUserId) {
   const { likedBy } = comment;
-  let message = "";
   const names = (likedBy || []).map((user) => {
-    if (user._id === myUserId) return "You";
-    else return user.name || user.displayName;
+    if (user._id === myUserId) return <li>You</li>;
+    else return <li>{user.name || user.displayName}</li>;
   });
 
-  message = names.slice(0, 4).join(", ");
+  if(names.length < 1)
+    return null
 
-  if (names.length > 4) message += ` and +${names.length - 4} more`;
-
-  if (message) message += " liked this comment";
-
-  return message;
+  return <ul style={{listStyle: 'none', paddingLeft: 0}}>{names}</ul>;
 }
 export const CommonCommentText = ({ eachComment, users, isPinned }) => {
   const classes = useStyles();
@@ -712,18 +708,21 @@ export default function CommentComponent(props) {
                     callToggleCommentReactionMutation(pinnedComment)
                   }
                 >
-                  <Tooltip
-                    title={getLikedPeoplesName(
-                      pinnedComment,
-                      stateApp.user._id
-                    )}
-                  >
-                    {didILikedThisComment(pinnedComment) ? (
-                      <ThumbUpIcon />
-                    ) : (
-                      <ThumbUpAltOutlinedIcon />
-                    )}
-                  </Tooltip>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5}}>
+                    {pinnedComment.likedBy?.length > 0 && pinnedComment.likedBy?.length}
+                    <Tooltip
+                      title={<>{getLikedPeoplesName(
+                        pinnedComment,
+                        stateApp.user._id
+                      )}</>}
+                    >
+                      {didILikedThisComment(pinnedComment) ? (
+                        <ThumbUpIcon />
+                      ) : (
+                        <ThumbUpAltOutlinedIcon />
+                      )}
+                    </Tooltip>
+                  </div>
                 </IconButton>
               </Grid>
             </Grid>
@@ -914,18 +913,21 @@ export default function CommentComponent(props) {
                               callToggleCommentReactionMutation(eachComment)
                             }
                           >
-                            <Tooltip
-                              title={getLikedPeoplesName(
-                                eachComment,
-                                stateApp.user._id
-                              )}
-                            >
-                              {didILikedThisComment(eachComment) ? (
-                                <ThumbUpIcon />
-                              ) : (
-                                <ThumbUpAltOutlinedIcon />
-                              )}
-                            </Tooltip>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                              {eachComment?.likedBy?.length > 0 && eachComment?.likedBy?.length}
+                              <Tooltip
+                                title={<>{getLikedPeoplesName(
+                                  eachComment,
+                                  stateApp.user._id
+                                )}</>}
+                              >
+                                {didILikedThisComment(eachComment) ? (
+                                  <ThumbUpIcon />
+                                ) : (
+                                  <ThumbUpAltOutlinedIcon />
+                                )}
+                              </Tooltip>
+                            </div>
                           </IconButton>
                         </Grid>
                       </Grid>

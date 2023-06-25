@@ -1,12 +1,20 @@
-import React, { useState, useEffect, useContext, Fragment } from "react";
+import React, { useState, useEffect, useContext, Fragment, useCallback } from "react";
 
 import Avatar from "react-avatar";
-import Grid from "@material-ui/core/Grid";
-import { CircularProgress, Menu, MenuItem } from "@material-ui/core";
+import { CircularProgress, Menu, MenuItem, Grid, Tooltip, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import IconButton from "@material-ui/core/IconButton";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import {
+  ThumbUp as ThumbUpIcon,
+  ThumbUpAltOutlined as ThumbUpAltOutlinedIcon,
+  ExpandMore as ExpandMoreIcon,
+} from "@material-ui/icons";
+import moment from "moment";
+import ReactTimeAgo from "react-time-ago";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
+import ru from "javascript-time-ago/locale/ru";
+import { useSelector, useDispatch } from "react-redux";
 
 import { AppContext } from "AppContext";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
@@ -17,14 +25,9 @@ import { REMOVECOMMENT } from "graphQL/useMutationRemoveComment";
 import { COMMENTSBYOBJECTIDQUERY } from "graphQL/useQueryCommentsByObjectId";
 import CommentField from "components/Shared/components/Fields/CommentField";
 import { updatePinComments } from "store/actions/commonActions";
-import { useSelector, useDispatch } from "react-redux";
-import ReactTimeAgo from "react-time-ago";
-import TimeAgo from "javascript-time-ago";
-import en from "javascript-time-ago/locale/en";
-import ru from "javascript-time-ago/locale/ru";
 import { dateIsValid } from "utils/helper";
-import moment from "moment";
 import { CommonCommentText } from "components/Shared/CommentComponent";
+import { TOGGLECOMMENTREACTION } from "graphQL/userMutationToggleCommentReaction";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -114,6 +117,19 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+export function getLikedPeoplesName(comment, myUserId) {
+  const { likedBy } = comment || {};
+  const names = (likedBy || []).map((user) => {
+    if (user._id === myUserId) return <li>You</li>;
+    else return <li>{user.name || user.displayName}</li>;
+  });
+
+  if(names.length < 1)
+    return null
+
+  return <ul style={{listStyle: 'none', paddingLeft: 0}}>{names}</ul>;
+}
+
 export default function DealComment(props) {
   const { targetSourceId, contactData } = props;
   const classes = useStyles();
@@ -144,6 +160,10 @@ export default function DealComment(props) {
     fetchPolicy: "cache-first",
   });
   const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(COMMENTSBYOBJECTIDQUERY, { fetchPolicy: "no-cache" });
+  const [toggleCommentReaction, { data: resultToggleCommentReaction }] =
+    useMutation(TOGGLECOMMENTREACTION, {
+      refetchQueries: ["getCommentsByObjectId", "getCommentsByObjectsIds"],
+    });
 
   useEffect(() => {
     getAllMongoUsers();
@@ -450,6 +470,27 @@ export default function DealComment(props) {
       setLoadingComments(false);
     }
   }, [stateApp?.activeDeal?.activity, dataComments]);
+
+  const didILikedThisComment = useCallback(
+    (comment) => {
+      if (!stateApp?.user?._id) return false;
+
+      const likedBy = comment?.likedBy || [];
+      const find = likedBy.find((user) => user._id === stateApp.user._id);
+
+      return !!find;
+    },
+    [stateApp.user]
+  );
+
+  const callToggleCommentReactionMutation = useCallback((comment) => {
+    toggleCommentReaction({
+      variables: {
+        commentId: comment._id,
+      },
+    });
+  }, []);
+
   return (
     <div className={classes.container}>
       <div className={classes.comment} id="commentsContainer">
@@ -568,6 +609,30 @@ export default function DealComment(props) {
                           </>
                         )}
                       </Grid>
+                      --------------
+                      <Grid>
+                        <IconButton
+                          onClick={() =>
+                            callToggleCommentReactionMutation(pinnedComment)
+                          }
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 5}}>
+                            {pinnedComment.likedBy?.length > 0 && pinnedComment.likedBy?.length}
+                            <Tooltip
+                              title={<>{getLikedPeoplesName(
+                                pinnedComment,
+                                stateApp.user._id
+                              )}</>}
+                            >
+                              {didILikedThisComment(pinnedComment) ? (
+                                <ThumbUpIcon />
+                              ) : (
+                                <ThumbUpAltOutlinedIcon />
+                              )}
+                            </Tooltip>
+                          </div>
+                        </IconButton>
+                      </Grid>
                     </Grid>
                   )}
                 </Fragment>
@@ -673,6 +738,29 @@ export default function DealComment(props) {
                             )}
                           </>
                         )}
+                      </Grid>
+                      <Grid>
+                        <IconButton
+                          onClick={() =>
+                            callToggleCommentReactionMutation(eachComment)
+                          }
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 5}}>
+                            {eachComment.likedBy?.length > 0 && eachComment.likedBy?.length}
+                            <Tooltip
+                              title={<>{getLikedPeoplesName(
+                                pinnedComment,
+                                stateApp.user._id
+                              )}</>}
+                            >
+                              {didILikedThisComment(eachComment) ? (
+                                <ThumbUpIcon />
+                              ) : (
+                                <ThumbUpAltOutlinedIcon />
+                              )}
+                            </Tooltip>
+                          </div>
+                        </IconButton>
                       </Grid>
                     </Grid>
                   )}
