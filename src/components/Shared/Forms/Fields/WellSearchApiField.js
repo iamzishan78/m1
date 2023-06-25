@@ -32,7 +32,7 @@ function WellSearchApiField(props) {
         () =>
             debounce((request, callback) => {
                 const endpoint =
-                    "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2020-06-30&queryType=full&count=true&%24filter=Latitude%20ne%20null%20and%20Longitude%20ne%20null&searchFields=WellName%2CApiNumber&$top=" +
+                    "https://m1search.search.windows.net/indexes/wellheader-index-m1corev3/docs?api-version=2020-06-30&queryType=full&count=true&%24filter=Latitude%20ne%20null%20and%20Longitude%20ne%20null&searchFields=WellName%2CApiNumber&$top=" +
                     50 +
                     "&search=" +
                     encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
