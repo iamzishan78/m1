@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
   paddingCreateTask: {
     paddingLeft: "20px !important",
     paddingTop: "4px !important",
-    width: "90%",
+    flex: "1 1 auto",
   },
   moreComment: {
     padding: "10px",
@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridStyle: {
     padding: "12px 0px",
-    flexWrap: 'nowrap'
+    flexWrap: "nowrap",
   },
   bold: {
     fontWeight: "bold",
@@ -110,11 +110,11 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-flex",
   },
   containerWrapper: {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    gap: '10px'
-  }
+    display: "flex",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: "10px",
+  },
 }));
 
 export function getLikedPeoplesName(comment, myUserId) {
@@ -124,10 +124,9 @@ export function getLikedPeoplesName(comment, myUserId) {
     else return <li>{user.name || user.displayName}</li>;
   });
 
-  if(names.length < 1)
-    return null
-
-  return <ul style={{listStyle: 'none', paddingLeft: 0}}>{names}</ul>;
+  if (names.length < 1) return '';
+  console.log(" ------ names -----", names);
+  return <ul style={{ listStyle: "none", paddingLeft: 0 }}>{names}</ul>;
 }
 
 export default function DealComment(props) {
@@ -146,12 +145,13 @@ export default function DealComment(props) {
   const [showActions, setShowActions] = useState(false);
   const [showCommentActionId, setShowCommentActionId] = useState(null);
   const [loadingComments, setLoadingComments] = useState(true);
-  const [pinnedArray, setPinnedArray] = React.useState([])
+  const [pinnedArray, setPinnedArray] = React.useState([]);
   const [isMinimize, setIsMinimize] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
 
   const [removeComment] = useMutation(REMOVECOMMENT);
-  const [upsertComment, { data: newlyAddedComment }] = useMutation(UPSERTCOMMENT);
+  const [upsertComment, { data: newlyAddedComment }] =
+    useMutation(UPSERTCOMMENT);
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "cache-and-network",
   });
@@ -159,7 +159,10 @@ export default function DealComment(props) {
   const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
     fetchPolicy: "cache-first",
   });
-  const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(COMMENTSBYOBJECTIDQUERY, { fetchPolicy: "no-cache" });
+  const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
+    COMMENTSBYOBJECTIDQUERY,
+    { fetchPolicy: "no-cache" }
+  );
   const [toggleCommentReaction, { data: resultToggleCommentReaction }] =
     useMutation(TOGGLECOMMENTREACTION, {
       refetchQueries: ["getCommentsByObjectId", "getCommentsByObjectsIds"],
@@ -199,10 +202,14 @@ export default function DealComment(props) {
 
   useEffect(() => {
     if (dataComments && dataComments.commentsByObjectId) {
-      const sortedComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId]);
+      const sortedComments = sortArrayBasedOnTs([
+        ...dataComments.commentsByObjectId,
+      ]);
       if (stateApp.activeDeal._id && stateApp.activeDeal?.createdOn) {
         sortedComments.unshift(getPinnedComment());
       }
+
+      sortedComments.map((sc) => ({ ...sc, type: "comment" }));
       setCommentsArray(sortedComments);
     }
     setLoadingComments(false);
@@ -216,6 +223,7 @@ export default function DealComment(props) {
         ...newlyAddedComment.upsertComment.comment,
         user: { name: stateApp.user.name, email: stateApp.user.email },
         isNew: true,
+        type: "comment",
       });
       props.setNewCommentId(newlyAddedComment.upsertComment.comment._id);
       setCommentsArray(sortArrayBasedOnTs([...comments]));
@@ -238,7 +246,12 @@ export default function DealComment(props) {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (profiledata && profiledata.data && profiledata.data.profileByEmail && profiledata.data.profileByEmail.profile) {
+    if (
+      profiledata &&
+      profiledata.data &&
+      profiledata.data.profileByEmail &&
+      profiledata.data.profileByEmail.profile
+    ) {
       const {
         data: {
           profileByEmail: {
@@ -272,28 +285,31 @@ export default function DealComment(props) {
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value
-        .split("\n")
-        .map((line) => {
-          if (line.trim() !== ".") {
-            return line.trim();
-          }
-        })
-        .join("\n")
+          .split("\n")
+          .map((line) => {
+            if (line.trim() !== ".") {
+              return line.trim();
+            }
+          })
+          .join("\n")
       : `${value
-        .split("\n")
-        .map((line) => {
-          if (line.trim() !== ".") {
-            return line.trim();
-          }
-        })
-        .join("\n")}`;
+          .split("\n")
+          .map((line) => {
+            if (line.trim() !== ".") {
+              return line.trim();
+            }
+          })
+          .join("\n")}`;
 
   const updateComment = (value) => {
     setLoadingComments(true);
     upsertComment({
       variables: {
         comment: {
-          comment: typeof value === "object" ? newCommentCleaner(value.comment) : newCommentCleaner(value),
+          comment:
+            typeof value === "object"
+              ? newCommentCleaner(value.comment)
+              : newCommentCleaner(value),
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           _id: editCommentId,
@@ -301,7 +317,11 @@ export default function DealComment(props) {
           isEdited: true,
         },
       },
-      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
       awaitRefetchQueries: true,
     });
     setShowActions(false);
@@ -316,7 +336,11 @@ export default function DealComment(props) {
       variables: {
         commentId: id,
       },
-      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
       awaitRefetchQueries: true,
     });
     setShowActions(false);
@@ -325,47 +349,49 @@ export default function DealComment(props) {
     setEditCommentId("");
   };
   const pinToTop = (eachComment) => {
-
-   const newCommentList = commentsArray.map(c => {
-
-     if (c._id === eachComment) {
-       console.log("ddaat", c)
-       return {
-         ...c,
-         isPinned: true,
-         _id: eachComment
-       };
-     }
-     return {
-       ...c,
-       isPinned: false,
-     };
-   });
-   dispatch(updatePinComments(newCommentList));
-   upsertComment({
-     variables: {
-       comment: {
-         _id: eachComment,
-         pin: true,
-       },
-     },
-     refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
-     awaitRefetchQueries: true,
-   });
-   setShowCommentActionId(null)
-   //  commentsArray
-   // let temp = commentsArray
- }
- const unpinFromTop = (eachComment) => {
-   const newCommentList = commentsArray.map((c) => {
-     if (c.id === eachComment) {
-       return {
-         ...c,
-         isPinned: false,
-       };
-     }
-     return c;
-   });
+    const newCommentList = commentsArray.map((c) => {
+      if (c._id === eachComment) {
+        console.log("ddaat", c);
+        return {
+          ...c,
+          isPinned: true,
+          _id: eachComment,
+        };
+      }
+      return {
+        ...c,
+        isPinned: false,
+      };
+    });
+    dispatch(updatePinComments(newCommentList));
+    upsertComment({
+      variables: {
+        comment: {
+          _id: eachComment,
+          pin: true,
+        },
+      },
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
+      awaitRefetchQueries: true,
+    });
+    setShowCommentActionId(null);
+    //  commentsArray
+    // let temp = commentsArray
+  };
+  const unpinFromTop = (eachComment) => {
+    const newCommentList = commentsArray.map((c) => {
+      if (c.id === eachComment) {
+        return {
+          ...c,
+          isPinned: false,
+        };
+      }
+      return c;
+    });
     dispatch(updatePinComments(newCommentList));
     upsertComment({
       variables: {
@@ -374,26 +400,37 @@ export default function DealComment(props) {
           pin: false,
         },
       },
-      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
       awaitRefetchQueries: true,
     });
-    setShowCommentActionId(null)
-    setLoadingComments(true)
- }
+    setShowCommentActionId(null);
+    setLoadingComments(true);
+  };
 
   const addNewComment = (value) => {
     setLoadingComments(true);
     upsertComment({
       variables: {
         comment: {
-          comment: typeof value === "object" ? newCommentCleaner(value.comment) : newCommentCleaner(value),
+          comment:
+            typeof value === "object"
+              ? newCommentCleaner(value.comment)
+              : newCommentCleaner(value),
           public: true,
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           objectType: props.targetLabel,
         },
       },
-      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
       awaitRefetchQueries: true,
     });
     setShowActions(false);
@@ -404,7 +441,6 @@ export default function DealComment(props) {
     let indexToShow = commentsArray.length > 3 ? commentsArray?.length - 3 : 0;
     return indexToShow;
   };
-
 
   useEffect(() => {
     try {
@@ -418,50 +454,53 @@ export default function DealComment(props) {
               user: { name: element.ownerName, email: element.ownerName },
               activityData: element,
               comment: element.notes,
-              ts: new Date(element._ts.includes('GMT') ? element._ts : Number(element._ts)).getTime(),
+              ts: new Date(
+                element._ts.includes("GMT") ? element._ts : Number(element._ts)
+              ).getTime(),
               isActivity: true,
               isEdited: false,
               public: true,
               __typename: "Comment",
+              type: "activity",
             });
           });
           let tempArray = dataComments.commentsByObjectId.concat(activittyData);
-          
+
           // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
 
-      
-        let temp = []
-        let tempArr = sortArrayBasedOnTs([...tempArray])
+          let temp = [];
+          let tempArr = sortArrayBasedOnTs([...tempArray]);
 
-        tempArr.map(item => {
-          if (item.pin === true) {
-            temp.push(item)
-          }
-        })
+          tempArr.map((item) => {
+            if (item.pin === true) {
+              temp.push(item);
+            }
+          });
 
-        console.log("before", tempArr)
-        const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
-        console.log("after", trueFirst)
-        setCommentsArray(tempArray)
-        setPinnedArray(trueFirst)
+          console.log("before", tempArr);
+          const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
+          console.log("after", trueFirst);
+          setCommentsArray(tempArray);
+          setPinnedArray(trueFirst);
         } else {
-          
           // setCommentsArray(sortArrayBasedOnTs([...dataComments.commentsByObjectId]));
-          let temp = []
+          let temp = [];
 
-        // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
-        let tempArr = sortArrayBasedOnTs([...dataComments.commentsByObjectId])
-        tempArr.map(item => {
-          if (item.pin === true) {
-            temp.push(item)
-          }
-        })
-        console.log("before", tempArr)
+          // setCommentsArray(sortArrayBasedOnTs([...tempArray]));
+          let tempArr = sortArrayBasedOnTs([
+            ...dataComments.commentsByObjectId,
+          ]);
+          tempArr.map((item) => {
+            if (item.pin === true) {
+              temp.push(item);
+            }
+          });
+          console.log("before", tempArr);
 
-        const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
-        console.log("after", trueFirst)
-        setCommentsArray(tempArr)
-        setPinnedArray(temp)
+          const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
+          console.log("after", trueFirst);
+          setCommentsArray(tempArr);
+          setPinnedArray(temp);
         }
       }
     } catch (e) {
@@ -497,7 +536,10 @@ export default function DealComment(props) {
         {!loadingComments ? (
           <>
             {!showAllComments && commentsArray.length > 3 && (
-              <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
+              <div
+                className={classes.moreComment}
+                style={{ marginTop: 10, marginBottom: 10 }}
+              >
                 <span
                   onClick={() => {
                     setShowAllComments(true);
@@ -507,74 +549,117 @@ export default function DealComment(props) {
                 </span>
               </div>
             )}
+
             {showAllComments && commentsArray.length > 3 && (
-              <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
-                <span onClick={() => setShowAllComments(false)}>Hide Earlier Comments</span>
+              <div
+                className={classes.moreComment}
+                style={{ marginTop: 10, marginBottom: 10 }}
+              >
+                <span onClick={() => setShowAllComments(false)}>
+                  Hide Earlier Comments
+                </span>
               </div>
             )}
 
             {pinnedArray.map((eachComment, index) => {
               const pinnedComment = eachComment.pin;
-              let indexToShow = pinnedArray.length > 3 ? pinnedArray.length - 3 : 0;
+              let indexToShow =
+                pinnedArray.length > 3 ? pinnedArray.length - 3 : 0;
               return (
                 <Fragment key={index}>
                   {(showAllComments || index >= indexToShow) && (
                     <Grid
                       container
                       // className={classes.gridStyle}
-                      className={pinnedComment ? classes.pinned : classes.gridStyle}
-                      onMouseOver={() => setShowCommentActionId(eachComment._id)}
+                      className={
+                        pinnedComment ? classes.pinned : classes.gridStyle
+                      }
+                      onMouseOver={() =>
+                        setShowCommentActionId(eachComment._id)
+                      }
                       onMouseLeave={() => setShowCommentActionId(null)}
                     >
                       <Grid item style={{ maxWidth: "55px" }}>
-                        <IconButton style={{ marginTop: "3px", marginLeft: "12px" }}>
-                          {profilesInfo[eachComment.user?.email]?.profileImage || eachComment.isNew ? (
+                        <IconButton
+                          style={{ marginTop: "3px", marginLeft: "12px" }}
+                        >
+                          {profilesInfo[eachComment.user?.email]
+                            ?.profileImage || eachComment.isNew ? (
                             <Avatar
-                              src={eachComment.isNew ? profileImage : profilesInfo[eachComment.user?.email].profileImage}
+                              src={
+                                eachComment.isNew
+                                  ? profileImage
+                                  : profilesInfo[eachComment.user?.email]
+                                      .profileImage
+                              }
                               size="38"
                               round
                             />
                           ) : (
-                            <Avatar name={eachComment.user?.name} size="38" round />
+                            <Avatar
+                              name={eachComment.user?.name}
+                              size="38"
+                              round
+                            />
                           )}
                         </IconButton>
                       </Grid>
                       <Grid item className={classes.paddingCreateTask}>
                         <div>
                           <div className={classes.containerWrapper}>
-                            <span className={classes.bold}>{eachComment.user?.name}</span>
-                            <span>{
-                              <ReactTimeAgo
-                                className={classes.commentTime}
-                                date={
-                                  new Date(Number(eachComment.ts))
-                                }
-                                locale="en-US"
-                              />
-                            }</span>
+                            <span className={classes.bold}>
+                              {eachComment.user?.name}
+                            </span>
+                            <span>
+                              {
+                                <ReactTimeAgo
+                                  className={classes.commentTime}
+                                  date={new Date(Number(eachComment.ts))}
+                                  locale="en-US"
+                                />
+                              }
+                            </span>
                           </div>
                           {eachComment.isActivity === true && (
                             <>
                               <div className={`${classes.whiteSpace}`}>
-                                {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
+                                {eachComment.activityData.type
+                                  .replace(/_/g, " ")
+                                  .toUpperCase()}{" "}
+                                - {eachComment.activityData.name}
                               </div>
                               <div className={`${classes.whiteSpace}`}>
-                                START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
+                                START DATE:{" "}
+                                {moment(
+                                  eachComment.activityData.dateTime
+                                ).format("MM/DD/YYYY hh:mm A")}
                               </div>
                               <div className={`${classes.whiteSpace}`}>
-                                END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
+                                END DATE:{" "}
+                                {moment(
+                                  eachComment.activityData.endDateTime
+                                ).format("MM/DD/YYYY hh:mm A")}
                               </div>
                             </>
                           )}
-                          {eachComment.isPinned && <span> created this task.</span>}
+                          {eachComment.isPinned && (
+                            <span> created this task.</span>
+                          )}
 
                           {!eachComment.isPinned && (
                             <>
-                              {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
-                              {eachComment.user?.email === stateApp.user.email &&
+                              {eachComment.isEdited && (
+                                <span className={classes.commentTime}>
+                                  (Edited)
+                                </span>
+                              )}
+                              {eachComment.user?.email ===
+                                stateApp.user.email &&
                                 showCommentActionId === eachComment._id &&
                                 editCommentId !== eachComment._id && (
-                                  <div className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}>
+                                  <div
+                                    className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}
+                                  >
                                     <ActionMenu
                                       eachComment={eachComment}
                                       setEditCommentId={setEditCommentId}
@@ -582,6 +667,7 @@ export default function DealComment(props) {
                                       deleteComment={deleteComment}
                                       unpinFromTop={unpinFromTop}
                                       pinToTop={pinToTop}
+                                      setShowActions={setShowActions}
                                     />
                                   </div>
                                 )}
@@ -591,7 +677,10 @@ export default function DealComment(props) {
                         {!eachComment.isPinned && (
                           <>
                             {editCommentId !== eachComment._id ? (
-                              <CommonCommentText users={users} eachComment={eachComment} />
+                              <CommonCommentText
+                                users={users}
+                                eachComment={eachComment}
+                              />
                             ) : (
                               <div className={classes.border}>
                                 <CommentField
@@ -609,98 +698,155 @@ export default function DealComment(props) {
                           </>
                         )}
                       </Grid>
-                      --------------
-                      <Grid>
-                        <IconButton
-                          onClick={() =>
-                            callToggleCommentReactionMutation(pinnedComment)
-                          }
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 5}}>
-                            {pinnedComment.likedBy?.length > 0 && pinnedComment.likedBy?.length}
-                            <Tooltip
-                              title={<>{getLikedPeoplesName(
-                                pinnedComment,
-                                stateApp.user._id
-                              )}</>}
+                      {!eachComment.isActivity && (
+                        <Grid>
+                          <IconButton
+                            onClick={() =>
+                              callToggleCommentReactionMutation(pinnedComment)
+                            }
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 5,
+                              }}
                             >
-                              {didILikedThisComment(pinnedComment) ? (
-                                <ThumbUpIcon />
-                              ) : (
-                                <ThumbUpAltOutlinedIcon />
+                              {pinnedComment.likedBy?.length > 0 && (
+                                <span style={{ fontSize: "12px" }}>
+                                  {pinnedComment.likedBy?.length}
+                                </span>
                               )}
-                            </Tooltip>
-                          </div>
-                        </IconButton>
-                      </Grid>
+                              <Tooltip
+                                title={
+                                  <>
+                                    {getLikedPeoplesName(
+                                      pinnedComment,
+                                      stateApp.user._id
+                                    )}
+                                  </>
+                                }
+                              >
+                                {didILikedThisComment(pinnedComment) ? (
+                                  <ThumbUpIcon />
+                                ) : (
+                                  <ThumbUpAltOutlinedIcon />
+                                )}
+                              </Tooltip>
+                            </div>
+                          </IconButton>
+                        </Grid>
+                      )}
                     </Grid>
                   )}
                 </Fragment>
               );
             })}
+
             {commentsArray.map((eachComment, index) => {
               const pinnedComment = eachComment.pin;
-              const duplicate = (commentsArray.filter((obj => obj._id === eachComment._id)).length > 0) && (pinnedArray.filter((obj => obj._id === eachComment._id)).length > 0)
-              let indexToShow = commentsArray.length > 3 ? commentsArray.length - 3 : 0;
+              const duplicate =
+                commentsArray.filter((obj) => obj._id === eachComment._id)
+                  .length > 0 &&
+                pinnedArray.filter((obj) => obj._id === eachComment._id)
+                  .length > 0;
+              let indexToShow =
+                commentsArray.length > 3 ? commentsArray.length - 3 : 0;
               return (
                 <Fragment key={index}>
                   {(showAllComments || index >= indexToShow) && (
                     <Grid
                       container
                       // className={classes.gridStyle}
-                      className={pinnedComment ? classes.tracking : classes.gridStyle}
-                      onMouseOver={() => setShowCommentActionId(eachComment._id)}
+                      className={
+                        pinnedComment ? classes.tracking : classes.gridStyle
+                      }
+                      onMouseOver={() =>
+                        setShowCommentActionId(eachComment._id)
+                      }
                       onMouseLeave={() => setShowCommentActionId(null)}
                     >
                       <Grid item style={{ maxWidth: "55px" }}>
-                        <IconButton style={{ marginTop: "3px", marginLeft: "12px" }}>
-                          {profilesInfo[eachComment.user?.email]?.profileImage || eachComment.isNew ? (
+                        <IconButton
+                          style={{ marginTop: "3px", marginLeft: "12px" }}
+                        >
+                          {profilesInfo[eachComment.user?.email]
+                            ?.profileImage || eachComment.isNew ? (
                             <Avatar
-                              src={eachComment.isNew ? profileImage : profilesInfo[eachComment.user?.email].profileImage}
+                              src={
+                                eachComment.isNew
+                                  ? profileImage
+                                  : profilesInfo[eachComment.user?.email]
+                                      .profileImage
+                              }
                               size="38"
                               round
                             />
                           ) : (
-                            <Avatar name={eachComment.user?.name} size="38" round />
+                            <Avatar
+                              name={eachComment.user?.name}
+                              size="38"
+                              round
+                            />
                           )}
                         </IconButton>
                       </Grid>
                       <Grid item className={classes.paddingCreateTask}>
                         <div>
                           <div className={classes.containerWrapper}>
-                            <span className={classes.bold}>{eachComment.user?.name}</span>
-                            <span>{
-                              <ReactTimeAgo
+                            <span className={classes.bold}>
+                              {eachComment.user?.name}
+                            </span>
+                            <span>
+                              {
+                                <ReactTimeAgo
                                   className={classes.commentTime}
-                                  date={
-                                    new Date(Number(eachComment.ts))
-                                  }
+                                  date={new Date(Number(eachComment.ts))}
                                   locale="en-US"
-                              />
-                            }</span>
+                                />
+                              }
+                            </span>
                           </div>
                           {eachComment.isActivity === true && (
-                              <>
-                                <div className={`${classes.whiteSpace}`}>
-                                  {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
-                                </div>
-                                <div className={`${classes.whiteSpace}`}>
-                                  START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
-                                </div>
-                                <div className={`${classes.whiteSpace}`}>
-                                  END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
-                                </div>
-                              </>
+                            <>
+                              <div className={`${classes.whiteSpace}`}>
+                                {eachComment.activityData.type
+                                  .replace(/_/g, " ")
+                                  .toUpperCase()}{" "}
+                                - {eachComment.activityData.name}
+                              </div>
+                              <div className={`${classes.whiteSpace}`}>
+                                START DATE:{" "}
+                                {moment(
+                                  eachComment.activityData.dateTime
+                                ).format("MM/DD/YYYY hh:mm A")}
+                              </div>
+                              <div className={`${classes.whiteSpace}`}>
+                                END DATE:{" "}
+                                {moment(
+                                  eachComment.activityData.endDateTime
+                                ).format("MM/DD/YYYY hh:mm A")}
+                              </div>
+                            </>
                           )}
-                          {eachComment.isPinned && <span> created this task.</span>}
+                          {eachComment.isPinned && (
+                            <span> created this task.</span>
+                          )}
 
                           {!eachComment.isPinned && (
                             <>
-                              {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
-                              {eachComment.user?.email === stateApp.user.email &&
+                              {eachComment.isEdited && (
+                                <span className={classes.commentTime}>
+                                  (Edited)
+                                </span>
+                              )}
+                              {eachComment.user?.email ===
+                                stateApp.user.email &&
                                 showCommentActionId === eachComment._id &&
                                 editCommentId !== eachComment._id && (
-                                  <div className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}>
+                                  <div
+                                    className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex}`}
+                                  >
                                     <ActionMenu
                                       eachComment={eachComment}
                                       setEditCommentId={setEditCommentId}
@@ -717,7 +863,10 @@ export default function DealComment(props) {
                         {!eachComment.isPinned && (
                           <>
                             {editCommentId !== eachComment._id ? (
-                              <CommonCommentText users={users} eachComment={eachComment} />
+                              <CommonCommentText
+                                users={users}
+                                eachComment={eachComment}
+                              />
                             ) : (
                               <div className={classes.border}>
                                 <CommentField
@@ -739,29 +888,46 @@ export default function DealComment(props) {
                           </>
                         )}
                       </Grid>
-                      <Grid>
-                        <IconButton
-                          onClick={() =>
-                            callToggleCommentReactionMutation(eachComment)
-                          }
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 5}}>
-                            {eachComment.likedBy?.length > 0 && eachComment.likedBy?.length}
-                            <Tooltip
-                              title={<>{getLikedPeoplesName(
-                                pinnedComment,
-                                stateApp.user._id
-                              )}</>}
+                      {editCommentId !== eachComment._id &&
+                        !eachComment.isActivity && (
+                          <Grid>
+                            <IconButton
+                              onClick={() =>
+                                callToggleCommentReactionMutation(eachComment)
+                              }
                             >
-                              {didILikedThisComment(eachComment) ? (
-                                <ThumbUpIcon />
-                              ) : (
-                                <ThumbUpAltOutlinedIcon />
-                              )}
-                            </Tooltip>
-                          </div>
-                        </IconButton>
-                      </Grid>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 5,
+                                }}
+                              >
+                                {eachComment.likedBy?.length > 0 && (
+                                  <span style={{ fontSize: "12px" }}>
+                                    {eachComment.likedBy?.length}
+                                  </span>
+                                )}
+                                <Tooltip
+                                  title={
+                                    <>
+                                      {getLikedPeoplesName(
+                                        eachComment,
+                                        stateApp.user._id
+                                      )}
+                                    </>
+                                  }
+                                >
+                                  {didILikedThisComment(eachComment) ? (
+                                    <ThumbUpIcon />
+                                  ) : (
+                                    <ThumbUpAltOutlinedIcon />
+                                  )}
+                                </Tooltip>
+                              </div>
+                            </IconButton>
+                          </Grid>
+                        )}
                     </Grid>
                   )}
                 </Fragment>
@@ -777,7 +943,11 @@ export default function DealComment(props) {
           <Grid container>
             <Grid item xs={1}>
               <IconButton className={classes.commentView}>
-                {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
+                {profileImage ? (
+                  <Avatar src={profileImage} size="38" round />
+                ) : (
+                  <Avatar name={stateApp.user.name} size="38" round />
+                )}
               </IconButton>
             </Grid>
             <Grid item xs={11} className={classes.paddingLeft10}>
@@ -785,7 +955,7 @@ export default function DealComment(props) {
                 className={classes.border}
                 style={{ width: "calc(23vw)", paddingRight: "13px" }}
                 onClick={() => {
-                    setShowActions(true);
+                  setShowActions(true);
                 }}
                 onBlur={() => {
                   if (showActions && !comment) {
@@ -812,7 +982,15 @@ export default function DealComment(props) {
   );
 }
 
-const ActionMenu = ({ pinToTop, unpinFromTop,eachComment, setEditCommentId, setEditComment, deleteComment }) => {
+const ActionMenu = ({
+  pinToTop,
+  unpinFromTop,
+  eachComment,
+  setEditCommentId,
+  setEditComment,
+  deleteComment,
+  setShowActions,
+}) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -822,11 +1000,15 @@ const ActionMenu = ({ pinToTop, unpinFromTop,eachComment, setEditCommentId, setE
   const handleClose = () => {
     setAnchorEl(null);
   };
-  console.log("data---",eachComment)
   const pinnedComment = eachComment.pin;
   return (
     <>
-      <ExpandMoreIcon id="expandCommentActionIcon" aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} />
+      <ExpandMoreIcon
+        id="expandCommentActionIcon"
+        aria-controls={eachComment._id}
+        aria-haspopup="true"
+        onClick={handleClick}
+      />
       <Menu
         style={{ zIndex: "1305" }}
         id={eachComment._id}
@@ -848,19 +1030,33 @@ const ActionMenu = ({ pinToTop, unpinFromTop,eachComment, setEditCommentId, setE
         >
           Edit Comment
         </MenuItem>
-        <MenuItem textcolor="red" id="deleteComment" onClick={() => deleteComment(eachComment._id)}>
+        <MenuItem
+          textcolor="red"
+          id="deleteComment"
+          onClick={() => deleteComment(eachComment._id)}
+        >
           Delete Comment
         </MenuItem>
         {/* pinnedComment */}
-        {pinnedComment ?
-          <MenuItem textcolor="red" onClick={() => unpinFromTop(eachComment._id)} id="unpin" data-cy="unpin">
+        {pinnedComment ? (
+          <MenuItem
+            textcolor="red"
+            onClick={() => unpinFromTop(eachComment._id)}
+            id="unpin"
+            data-cy="unpin"
+          >
             Unpin
           </MenuItem>
-          :
-          <MenuItem textcolor="red" onClick={() => pinToTop(eachComment._id)} id="pintotop" data-cy="pintotop">
+        ) : (
+          <MenuItem
+            textcolor="red"
+            onClick={() => pinToTop(eachComment._id)}
+            id="pintotop"
+            data-cy="pintotop"
+          >
             Pin To Top
           </MenuItem>
-        }
+        )}
       </Menu>
     </>
   );

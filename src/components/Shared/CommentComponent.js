@@ -165,7 +165,7 @@ export function getLikedPeoplesName(comment, myUserId) {
   });
 
   if(names.length < 1)
-    return null
+    return "";
 
   return <ul style={{listStyle: 'none', paddingLeft: 0}}>{names}</ul>;
 }
@@ -708,13 +708,23 @@ export default function CommentComponent(props) {
                     callToggleCommentReactionMutation(pinnedComment)
                   }
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 5}}>
-                    {pinnedComment.likedBy?.length > 0 && pinnedComment.likedBy?.length}
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 5 }}
+                  >
+                    {pinnedComment.likedBy?.length > 0 && (
+                      <span style={{ fontSize: "12px" }}>
+                        {pinnedComment.likedBy?.length}
+                      </span>
+                    )}
                     <Tooltip
-                      title={<>{getLikedPeoplesName(
-                        pinnedComment,
-                        stateApp.user._id
-                      )}</>}
+                      title={
+                        <>
+                          {getLikedPeoplesName(
+                            pinnedComment,
+                            stateApp.user._id
+                          )}
+                        </>
+                      }
                     >
                       {didILikedThisComment(pinnedComment) ? (
                         <ThumbUpIcon />
@@ -913,13 +923,28 @@ export default function CommentComponent(props) {
                               callToggleCommentReactionMutation(eachComment)
                             }
                           >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                              {eachComment?.likedBy?.length > 0 && eachComment?.likedBy?.length}
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 5,
+                              }}
+                            >
+                              {eachComment?.likedBy?.length > 0 && (
+                                <span style={{ fontSize: "12px" }}>
+                                  {eachComment?.likedBy?.length}
+                                </span>
+                              )}
+
                               <Tooltip
-                                title={<>{getLikedPeoplesName(
-                                  eachComment,
-                                  stateApp.user._id
-                                )}</>}
+                                title={
+                                  <>
+                                    {getLikedPeoplesName(
+                                      eachComment,
+                                      stateApp.user._id
+                                    )}
+                                  </>
+                                }
                               >
                                 {didILikedThisComment(eachComment) ? (
                                   <ThumbUpIcon />
