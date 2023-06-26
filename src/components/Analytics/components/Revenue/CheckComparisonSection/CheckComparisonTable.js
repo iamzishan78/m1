@@ -70,9 +70,9 @@ function CheckComparisonSection(props) {
   }, [props.initialFilters]);
 
   useEffect(() => {
-    const barFilters = props.esFilters.filter((esFilter) => esFilter.field === "property.state.keyword" || esFilter.type === "range");
+    const requiredEsFilters = props.esFilters.filter((esFilter) => esFilter.field === "property.state.keyword" || esFilter.type === "range" || esFilter.field === "isMisMatchedInterest");
     setTableMeta({
-      filters: [...barFilters],
+      filters: requiredEsFilters,
       TableHeader: copy(TableHeader),
       esIndex: "checkdetailsinterestscomparison_flat",
       startPaginationAt: 50,
