@@ -30,8 +30,8 @@ const RevenueStatementHeadCells = [
       viewColumns: false,
 
       customRender: (value, tableMeta) => {
-        const interestAmount = tableMeta?.rowData[10];
-        const decimalInterest = tableMeta.rowData[29];
+        const interestAmount = tableMeta?.rowData[9];
+        const decimalInterest = tableMeta.rowData[28];
         const showMismatchedFlag = interestAmount && decimalInterest && interestAmount !== decimalInterest;
         return (
           <div
@@ -48,7 +48,7 @@ const RevenueStatementHeadCells = [
                     : value
                   : tableMeta?.rowData[2]
               }
-              link={`/revenue/statement/details/${tableMeta.rowData[30]}`}
+              link={`/revenue/statement/details/${tableMeta.rowData[29]}`}
               onClick={(e) => {
                 e.stopPropagation();
               }}
