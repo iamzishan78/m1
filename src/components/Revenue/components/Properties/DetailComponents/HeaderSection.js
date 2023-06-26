@@ -135,12 +135,14 @@ export default function HeaderSection(props) {
   const classes = useStyles();
   let history = useHistory();
   const dispatch = useDispatch();
-  const [, setStateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const { control, setValue, watch, register, reset } = useForm();
   const { propertyDetails, propertyOwnerContact, setEntityToConvert } = props;
   const [entityType, setEntityType] = useState("");
   const [searchOperator, setSearchOperator] = useState("");
   const [searchPurchaser, setSearchPurchaser] = useState("");
+  const [addNew, setAddNew] = useState(true);
+  const { selectedActivity } = stateApp;
 
   const [getOperatorList, { data: operatorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
   const [getPurchaserList, { data: purchaserList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
@@ -150,6 +152,12 @@ export default function HeaderSection(props) {
     variables: { key: "prospectID" },
   });
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
+
+  useEffect(() => {
+    if(selectedActivity === 'propertyDetail'){
+      setAddNew(false);
+    }
+  }, [selectedActivity]);
 
   useEffect(() => {
     return () => {
@@ -1041,36 +1049,37 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
+        {!addNew && 
           <Grid item xs={12}>
-            <Grid
-              container
-              className={`${classes.gridStyle} ${classes.textArea}`}
-            >
-              <Grid item style={{ flexBasis: "10.3%" }}>
-                <div className={classes.label}>M1 System ID</div>
-              </Grid>
-              <Grid item style={{ flexBasis: "84.8%" }}>
-                <Controller
-                  control={control}
-                  name="systemId"
-                  render={(params) => (
-                    <TextField
-                      {...params}
-                      className={classes.textField}
-                      variant="outlined"
-                      margin="dense"
-                      type="text"
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                      value={propertyDetails?._id}
-                    />
-                  )}
-                />
-              </Grid>
+          <Grid
+            container
+            className={`${classes.gridStyle} ${classes.textArea}`}
+          >
+            <Grid item style={{ flexBasis: "10.3%" }}>
+              <div className={classes.label}>M1 System ID</div>
+            </Grid>
+            <Grid item style={{ flexBasis: "84.8%" }}>
+              <Controller
+                control={control}
+                name="systemId"
+                render={(params) => (
+                  <TextField
+                    {...params}
+                    className={classes.textField}
+                    variant="outlined"
+                    margin="dense"
+                    type="text"
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    value={propertyDetails?._id}
+                  />
+                )}
+              />
             </Grid>
           </Grid>
-
+        </Grid>
+      }
 
           <Grid item xs={12}>
             <Grid
