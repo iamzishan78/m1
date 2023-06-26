@@ -75,12 +75,12 @@ const RevenueStatementHeadCells = [
     esKey: "property.number.keyword",
     options: { sort: true, filter: true, style: { minWidth: 250 } },
   },
-  {
-    name: "accRefID",
-    label: "Accounting Ref ID",
-    esKey: "property.internalID.keyword",
-    options: { sort: true, filter: true },
-  },
+  // {
+  //   name: "accRefID",
+  //   label: "Accounting Ref ID",
+  //   esKey: "property.internalID.keyword",
+  //   options: { sort: true, filter: true },
+  // },
   {
     name: "companyID",
     label: "Company ID",
