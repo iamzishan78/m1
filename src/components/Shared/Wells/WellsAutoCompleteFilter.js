@@ -23,7 +23,7 @@ import WellIcon from "../../Shared/svgIcons/well";
 import { CircularProgress } from "@material-ui/core";
 
 
-const wellCogIndexName = "wellheader-index";
+const wellCogIndexName = "wellheader-index-m1corev3";
 
 const calcScoreOpacity = (maxMin, score) => {
   if (maxMin[0] === maxMin[1]) return 0;
