@@ -123,7 +123,7 @@ const LastCheckDateFilter = ({
               type="Properties"
               esFilters={propertiesReportGroup || []}
               setESFilters={(value) => setPropertyFilter(value)}
-              setFilterToggle={() => {}}
+              setFilterToggle={() => { }}
               isBackground={false}
               noUpdate={true}
               strechedWidth
@@ -132,28 +132,7 @@ const LastCheckDateFilter = ({
             />
           )}
         </Grid>
-        <Grid item xs md={2}>
-          {extraFitlers.includes("status") && (
-            <MuiThemeProvider>
-              <FormControl variant="outlined" className={classes.formControl}>
-                <InputLabel id="status-outlined-label">Status</InputLabel>
 
-                <Select
-                  fullWidth
-                  labelId="status-outlined-label"
-                  id="status-filter"
-                  value={status ? status : ""}
-                  className={classes.viewSwitcher}
-                  onChange={(e) => setStatus(e.target.value)}
-                >
-                  <MenuItem value="ALL">All</MenuItem>
-                  <MenuItem value="InPay">In Pay</MenuItem>
-                  <MenuItem value="NotInPay">Not In Pay</MenuItem>
-                </Select>
-              </FormControl>
-            </MuiThemeProvider>
-          )}
-        </Grid>
       </Grid>
     </div>
   );
