@@ -32,7 +32,7 @@ const RevenueStatementHeadCells = [
       customRender: (value, tableMeta) => {
         const interestAmount = tableMeta?.rowData[9];
         const decimalInterest = tableMeta.rowData[28];
-        const showMismatchedFlag = interestAmount && decimalInterest && interestAmount !== decimalInterest;
+        const showMismatchedFlag = interestAmount !== decimalInterest;
         return (
           <div
             style={{
