@@ -135,14 +135,12 @@ export default function HeaderSection(props) {
   const classes = useStyles();
   let history = useHistory();
   const dispatch = useDispatch();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [, setStateApp] = useContext(AppContext);
   const { control, setValue, watch, register, reset } = useForm();
   const { propertyDetails, propertyOwnerContact, setEntityToConvert } = props;
   const [entityType, setEntityType] = useState("");
   const [searchOperator, setSearchOperator] = useState("");
   const [searchPurchaser, setSearchPurchaser] = useState("");
-  const [addNew, setAddNew] = useState(true);
-  const { selectedActivity } = stateApp;
 
   const [getOperatorList, { data: operatorList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
   const [getPurchaserList, { data: purchaserList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
@@ -152,12 +150,6 @@ export default function HeaderSection(props) {
     variables: { key: "prospectID" },
   });
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
-
-  useEffect(() => {
-    if(selectedActivity === 'propertyDetail'){
-      setAddNew(false);
-    }
-  }, [selectedActivity]);
 
   useEffect(() => {
     return () => {
@@ -1049,7 +1041,6 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-        {!addNew && 
           <Grid item xs={12}>
           <Grid
             container
@@ -1079,7 +1070,6 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
         </Grid>
-      }
 
           <Grid item xs={12}>
             <Grid

@@ -1,9 +1,8 @@
 import { GlobalStickyStyles } from "GlobalSettings";
 import WellIcon from '../../../components/Shared/svgIcons/well.js';
 import { ErrorOutline } from "@material-ui/icons";
-import React, { useContext } from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
-import { AppContext } from "../../../AppContext"
 
 const styles = {
   width: "fit-content",
@@ -14,7 +13,6 @@ const styles = {
 
 const ComponentPropertyName = ({ value, tableMeta }) => {
   const history = useHistory();
-  const [stateApp, setStateApp] = useContext(AppContext);
 
   return (
     <div
@@ -26,7 +24,6 @@ const ComponentPropertyName = ({ value, tableMeta }) => {
     >
       <p
         onClick={(e) => {
-          setStateApp(() => ({ ...stateApp, selectedActivity: 'propertyDetail' }))
           e.stopPropagation();
           history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
         }}
