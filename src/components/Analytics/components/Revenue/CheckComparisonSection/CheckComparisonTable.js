@@ -76,7 +76,7 @@ function CheckComparisonSection(props) {
       TableHeader: copy(TableHeader),
       esIndex: "checkdetailsinterestscomparison_flat",
       startPaginationAt: 50,
-      //defaultSort: { field: "flatSyncAt", order: "desc" },
+      defaultSort: { field: "flatSyncAt", order: "desc" },
       formatHits,
       downloadAll: { exportPx: "176px" },
     });
