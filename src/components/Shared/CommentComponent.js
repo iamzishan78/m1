@@ -702,7 +702,7 @@ export default function CommentComponent(props) {
                   isPinned
                 />
               </Grid>
-              <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
+              <Grid item style={{ maxWidth: "75px", padding: "0px" }}>
                 <IconButton
                   onClick={() =>
                     callToggleCommentReactionMutation(pinnedComment)
@@ -917,7 +917,7 @@ export default function CommentComponent(props) {
                             </div>
                           )}
                         </Grid>
-                        <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
+                        <Grid item style={{ maxWidth: "75px", padding: "0px" }}>
                           <IconButton
                             onClick={() =>
                               callToggleCommentReactionMutation(eachComment)
