@@ -54,12 +54,22 @@ function CheckComparisonSection(props) {
   useEffect(() => {
     (async () => {
       props.setTotalChecks(props.total);
-      const { propertiesCount, revenueComparisonAnalytics } = await getRevenueComparisonAnalytics("property.IsDeleted", false, "term");
+      const { propertiesCount, revenueComparisonAnalytics } = await getRevenueComparisonAnalytics(
+        "property.IsDeleted",
+        false,
+        "term"
+      );
+      const { propertyNumbersHits } = await getPropertyNumbers();
+      const { checkNumbersHits } = await getCheckNumbers();
+      const propertyNumbers = propertyNumbersHits ? propertyNumbersHits.map((hit) => hit.key) : [];
+      const checkNumbers = checkNumbersHits ? checkNumbersHits.map((hit) => hit.key) : [];
       props.onGettingAnalytics({
         propertiesCount: propertiesCount,
         checksCount: revenueComparisonAnalytics?.distinctChecksCount,
         misMatchedInterestsCount: revenueComparisonAnalytics?.misMatchedCount,
         potentialGainLossSum: revenueComparisonAnalytics?.potentialGainLossSum[0]?.totalSum,
+        propertyNumbers: propertyNumbers,
+        checkNumbers: checkNumbers,
       });
     })();
   }, [props.rows]);
@@ -70,7 +80,22 @@ function CheckComparisonSection(props) {
   }, [props.initialFilters]);
 
   useEffect(() => {
-    const requiredEsFilters = props.esFilters.filter((esFilter) => esFilter.field === "property.state.keyword" || esFilter.type === "range" || esFilter.field === "isMisMatchedInterest");
+    let requiredEsFilters = props.esFilters.filter(
+      (esFilter) =>
+        esFilter.field === "property.state.keyword" ||
+        esFilter.type === "range" ||
+        esFilter.field === "isMisMatchedInterest"
+    );
+    if (!props.initialFilters.find((initialFilter) => initialFilter.field === "check.checkNumber.keyword")) {
+      const checkNumberFilter = props.esFilters.find((esFilter) => esFilter.field === "check.checkNumber.keyword");
+      if (checkNumberFilter) requiredEsFilters.push(checkNumberFilter);
+    }
+
+    if (!props.initialFilters.find((initialFilter) => initialFilter.field === "property.number.keyword")) {
+      const propertyNumberFilter = props.esFilters.find((esFilter) => esFilter.field === "property.number.keyword");
+      if (propertyNumberFilter) requiredEsFilters.push(propertyNumberFilter);
+    }
+
     setTableMeta({
       filters: requiredEsFilters,
       TableHeader: copy(TableHeader),
@@ -121,6 +146,40 @@ function CheckComparisonSection(props) {
       return hit;
     });
   };
+
+  const getPropertyNumbers = async () => {
+    const propertyNumberPromise = new Promise((resolve, reject) => {
+      getESSimpleFilter({
+        variables: {
+          index: "checkdetailsinterestscomparison_flat",
+          filters: [...props.esFilters, { field: "property.IsDeleted", value: false, type: "term" }],
+          filterKey: "property.number.keyword",
+          filterAggs: { query: "", field: "property.number.keyword", size: props.total || 0 },
+        },
+        onCompleted: (res) => resolve(res?.getESSimpleFilter?.hits),
+        onError: (error) => reject(error),
+      });
+    });
+    const [propertyNumbersHits] = await Promise.all([propertyNumberPromise]);
+    return { propertyNumbersHits };
+  }
+
+  const getCheckNumbers = async () => {
+    const checkNumbersPromise = new Promise((resolve, reject) => {
+      getESSimpleFilter({
+        variables: {
+          index: "checkdetailsinterestscomparison_flat",
+          filters: [...props.esFilters, { field: "property.IsDeleted", value: false, type: "term" }],
+          filterKey: "check.checkNumber.keyword",
+          filterAggs: { query: "", field: "check.checkNumber.keyword", size: props.total || 0 },
+        },
+        onCompleted: (res) => resolve(res?.getESSimpleFilter?.hits),
+        onError: (error) => reject(error),
+      });
+    });
+    const [checkNumbersHits] = await Promise.all([checkNumbersPromise]);
+    return { checkNumbersHits };
+  }
 
   const getRevenueComparisonAnalytics = async () => {
     const propertiesPromise = new Promise((resolve, reject) => {

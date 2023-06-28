@@ -12,7 +12,7 @@ const RevenueStatementHeadCells = [
     /// this is the control column for properties
     name: "checkNumber",
     label: "Check Number",
-    esKey: "property.checkNumber.keyword",
+    esKey: "check.checkNumber.keyword",
     options: {
       ...GlobalStickyStyles({
         setCellProps: {
@@ -26,7 +26,7 @@ const RevenueStatementHeadCells = [
         },
       }),
       sort: true,
-      filter: false,
+      filter: true,
       viewColumns: false,
 
       customRender: (value, tableMeta) => {
@@ -71,7 +71,7 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "number",
-    label: "Operator Prop #",
+    label: "Operator Prop # / Property Number",
     esKey: "property.number.keyword",
     options: { sort: true, filter: true, style: { minWidth: 250 } },
   },
