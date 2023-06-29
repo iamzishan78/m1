@@ -141,7 +141,7 @@ const LastCheckDateFilter = ({
               type="Properties"
               esFilters={propertiesReportGroup || []}
               setESFilters={(value) => setPropertyFilter(value)}
-              setFilterToggle={() => {}}
+              setFilterToggle={() => { }}
               isBackground={false}
               noUpdate={true}
               strechedWidth
