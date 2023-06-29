@@ -131,10 +131,14 @@ export default function Properties() {
     {
       heading: "In Pay",
       points: 0,
+      key: "inpay",
+      filterable: true,
     },
     {
       heading: "Not In Pay",
       points: 0,
+      key: "notinpay",
+      filterable: true,
     },
     {
       heading: "Unmapped",

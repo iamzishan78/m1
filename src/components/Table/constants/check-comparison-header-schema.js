@@ -12,7 +12,7 @@ const RevenueStatementHeadCells = [
     /// this is the control column for properties
     name: "checkNumber",
     label: "Check Number",
-    esKey: "property.checkNumber.keyword",
+    esKey: "check.checkNumber.keyword",
     options: {
       ...GlobalStickyStyles({
         setCellProps: {
@@ -26,13 +26,13 @@ const RevenueStatementHeadCells = [
         },
       }),
       sort: true,
-      filter: false,
+      filter: true,
       viewColumns: false,
 
       customRender: (value, tableMeta) => {
-        const interestAmount = tableMeta?.rowData[10];
-        const decimalInterest = tableMeta.rowData[29];
-        const showMismatchedFlag = interestAmount && decimalInterest && interestAmount !== decimalInterest;
+        const interestAmount = tableMeta?.rowData[9];
+        const decimalInterest = tableMeta.rowData[28];
+        const showMismatchedFlag = interestAmount !== decimalInterest;
         return (
           <div
             style={{
@@ -48,7 +48,7 @@ const RevenueStatementHeadCells = [
                     : value
                   : tableMeta?.rowData[2]
               }
-              link={`/revenue/statement/details/${tableMeta.rowData[30]}`}
+              link={`/revenue/statement/details/${tableMeta.rowData[29]}`}
               onClick={(e) => {
                 e.stopPropagation();
               }}
@@ -71,16 +71,16 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "number",
-    label: "Operator Prop #",
+    label: "Operator Prop # / Property Number",
     esKey: "property.number.keyword",
     options: { sort: true, filter: true, style: { minWidth: 250 } },
   },
-  {
-    name: "accRefID",
-    label: "Accounting Ref ID",
-    esKey: "property.internalID.keyword",
-    options: { sort: true, filter: true },
-  },
+  // {
+  //   name: "accRefID",
+  //   label: "Accounting Ref ID",
+  //   esKey: "property.internalID.keyword",
+  //   options: { sort: true, filter: true },
+  // },
   {
     name: "companyID",
     label: "Company ID",
