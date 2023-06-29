@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { FormControl, Grid, InputLabel, Select } from "@material-ui/core";
+import { FormControl, Grid, InputLabel, Select, TextField } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/styles";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
@@ -41,6 +42,8 @@ const LastCheckDateFilter = ({
   esFilters,
   setESFilters,
   filterToggle,
+  propertyNumbers,
+  checkNumbers,
   setFilterToggle,
   extraFitlers = [],
   stateESKey = "",
@@ -53,6 +56,8 @@ const LastCheckDateFilter = ({
   const [lastCheckMinDate, setLastCheckMinDate] = useState("");
   const [status, setStatus] = useState("ALL");
   const [propertyFilter, setPropertyFilter] = useState([]);
+  const [checkNumberFilter, setCheckNumberFilter] = useState();
+  const [propertyNumberFilter, setPropertyNumberFilter] = useState();
 
   const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
 
@@ -76,11 +81,24 @@ const LastCheckDateFilter = ({
 
   useEffect(() => {
     updateFilters();
-  }, [toDate, fromDate, status, propertyFilter]);
+  }, [toDate, fromDate, status, propertyFilter, checkNumberFilter, propertyNumberFilter]);
 
   const updateFilters = () => {
     let filters = copy(esFilters) ?? [];
-    filters = filters.filter((filter) => filter.type !== "range" && filter.field !== `${stateESKey}state.keyword`);
+    filters = filters.filter(
+      (filter) =>
+        filter.type !== "range" &&
+        filter.field !== `${stateESKey}state.keyword` &&
+        filter.field !== "check.checkNumber.keyword" &&
+        filter.field !== "property.number.keyword"
+    );
+    if (checkNumberFilter) {
+      filters.push({ field: "check.checkNumber.keyword", value: checkNumberFilter });
+    }
+
+    if (propertyNumberFilter) {
+      filters.push({ field: "property.number.keyword", value: propertyNumberFilter });
+    }
     if (fromDate && toDate)
       filters.unshift({
         field,
@@ -117,23 +135,23 @@ const LastCheckDateFilter = ({
           onChange={setSelectedFilter}
           datesInputWidth={2}
         />
-        <Grid item xs md={2}>
-          {extraFitlers.includes("propertyGroup") && (
+        {extraFitlers.includes("propertyGroup") && (
+        <Grid item xs md={2}> 
             <ReportGroupHeader
               type="Properties"
               esFilters={propertiesReportGroup || []}
               setESFilters={(value) => setPropertyFilter(value)}
-              setFilterToggle={() => {}}
+              setFilterToggle={() => { }}
               isBackground={false}
               noUpdate={true}
               strechedWidth
               isShrink
               noPadding
             />
-          )}
         </Grid>
+        )}
+        {extraFitlers.includes("status") && (
         <Grid item xs md={2}>
-          {extraFitlers.includes("status") && (
             <MuiThemeProvider>
               <FormControl variant="outlined" className={classes.formControl}>
                 <InputLabel id="status-outlined-label">Status</InputLabel>
@@ -152,6 +170,54 @@ const LastCheckDateFilter = ({
                 </Select>
               </FormControl>
             </MuiThemeProvider>
+        </Grid>
+        )}
+        <Grid item xs md={2}>
+          {extraFitlers.includes("checkNumber") && (
+            <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "285px" }}>
+              <Autocomplete
+                size="small"
+                onChange={(event, newValue) => {
+                  setCheckNumberFilter(newValue)
+                }}
+                options={checkNumbers}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Check Number"
+                    variant="outlined"
+                    placeholder=""
+                    style={{ backgroundColor: "white" }}
+                  />
+                )}
+                disableListWrap
+                id="custom-date-dropdown"
+              />
+            </Grid>
+          )}
+        </Grid>
+        <Grid item xs md={2}>
+          {extraFitlers.includes("propertyNumber") && (
+            <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "285px" }}>
+              <Autocomplete
+                size="small"
+                onChange={(event, newValue) => {
+                  setPropertyNumberFilter(newValue)
+                }}
+                options={propertyNumbers}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Property Number"
+                    variant="outlined"
+                    placeholder=""
+                    style={{ backgroundColor: "white" }}
+                  />
+                )}
+                disableListWrap
+                id="custom-date-dropdown"
+              />
+            </Grid>
           )}
         </Grid>
       </Grid>

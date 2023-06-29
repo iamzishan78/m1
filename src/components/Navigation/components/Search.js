@@ -63,10 +63,10 @@ import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-
 import { SHAPE_TYPE } from "components/Navigation/components/Utils/consts";
 
 const landGridIndexName = "landgrid-index";
-const leaseIndexName = "lease-index-v2";
-const operatorIndexName = "operator-index";
-const wellCogIndexName = "wellheader-index";
-const ownerCogIndexName = "globalowner-index";
+const leaseIndexName = "lease-index-m1corev3";
+const operatorIndexName = "operator-index-m1corev3";
+const wellCogIndexName = "wellheader-index-m1corev3";
+const ownerCogIndexName = "globalowner-index-m1corev3";
 const contactIndexName = "contacts-index";
 
 const maxMinScore = (options) => {
@@ -338,7 +338,7 @@ function Search() {
         searchFields: SHAPE_TYPE['tax owners'].SEARCH_FIELDS,
         formatOptions: (data) => {
           return {
-            ...data, Source: 'globalowner-index', Primary: data.OwnerName, Secondary: `${data.StreetAddress}\n${data.City}\n${data.State}\n${data.Zip}`,
+            ...data, Source: 'globalowner-index-m1corev3', Primary: data.OwnerName, Secondary: `${data.StreetAddress}\n${data.City}\n${data.State}\n${data.Zip}`,
           }
         }
       },
