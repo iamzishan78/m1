@@ -15,6 +15,11 @@ export const COMMENTSBYOBJECTIDQUERY = gql`
         email
       }
       commentedOn
+      likedBy {
+        _id
+        name
+        displayName
+      }
     }
   }
 `;

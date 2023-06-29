@@ -66,20 +66,24 @@ export default function Drawer(props) {
 
   const onClick = (key) => {
     if (key === "Grid")
-      setStateApp((stateApp) => ({ ...stateApp, transactBarShowGrid: !stateApp.transactBarShowGrid }))
-    else
-      setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }))
-  }
+      setStateApp((stateApp) => ({
+        ...stateApp,
+        transactBarShowGrid: !stateApp.transactBarShowGrid,
+      }));
+    else setStateApp((stateApp) => ({ ...stateApp, transactBarView: key }));
+  };
 
   const getClass = (classes, key) => {
     if (key === "Grid" && stateApp.transactBarShowGrid) {
       return classes.activeIcon;
     }
 
-    return stateApp.transactBarView === key ? classes.activeIcon : classes.inactiveIcon;
-  }
+    return stateApp.transactBarView === key
+      ? classes.activeIcon
+      : classes.inactiveIcon;
+  };
 
-  console.log(stateApp)
+  // console.log(stateApp)
 
   const drawerIcons = {
     // Comments: (props) => <MessageIcon {...props} />,
@@ -101,7 +105,10 @@ export default function Drawer(props) {
           horizontal: "right",
         }}
         color="primary"
-        badgeContent={stateApp?.filesDescriptors?.filter((d) => d.fileState === "active")?.length}
+        badgeContent={
+          stateApp?.filesDescriptors?.filter((d) => d.fileState === "active")
+            ?.length
+        }
       >
         <DescriptionIcon {...props} />
       </Badge>
@@ -141,7 +148,10 @@ export default function Drawer(props) {
         }}
         color="primary"
         badgeContent={
-          (props?.mapSettings == null && stateApp?.activeDeal?.mapSettings == null) ? null : 1
+          props?.mapSettings == null &&
+          stateApp?.activeDeal?.mapSettings == null
+            ? null
+            : 1
           // (
           //   <RoomIcon
           //     className={classes.customMapBadgeIcon}
@@ -163,8 +173,8 @@ export default function Drawer(props) {
         >
           <GridOnIcon {...props} />
         </Badge>
-      )
-    }
+      );
+    },
     // reserve this for automations potentially
     // Progress: (props) => (
     //   <Badge
@@ -194,7 +204,7 @@ export default function Drawer(props) {
               {drawerIcons[key]({
                 ...props,
                 opacity: "1",
-                height: "30"
+                height: "30",
               })}
             </div>
           </Tooltip>
