@@ -129,6 +129,8 @@ export default function RevenueAnalytics(props) {
   const [misMatchedInterestsCount, setMisMatchedInterestsCount] = useState(0);
   const [potentialGainLossSum, setPotentialGainLossSum] = useState(0);
   const [totalChecks, setTotalChecks] = useState(0);
+  const [propertyNumbers, setPropertyNumbers] = useState([]);
+  const [checkNumbers, setCheckNumbers] = useState([]);
   const [comparisonReport, setComparisonReport] = useState("Check Detail Comparison");
   const loadMore = { type: "infiniteScroll", height: "calc(100vh - 166px)" };
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
@@ -243,6 +245,8 @@ export default function RevenueAnalytics(props) {
     setChecksCount(checksCount);
     setMisMatchedInterestsCount(misMatchedInterestsCount);
     setPotentialGainLossSum(potentialGainLossSum);
+    setPropertyNumbers(analyticsList.propertyNumbers);
+    setCheckNumbers(analyticsList.checkNumbers);
   };
 
   const setESFilters = (newFilter) => {
@@ -342,7 +346,9 @@ export default function RevenueAnalytics(props) {
             setESFilters={setESFilters}
             setFilterToggle={setFilterToggle}
             filterToggle={filterToggle}
-            extraFitlers={["propertyGroup"]}
+            propertyNumbers={propertyNumbers}
+            checkNumbers={checkNumbers}
+            extraFitlers={["propertyGroup", "checkNumber", "propertyNumber"]}
             stateESKey="property."
           />
           {comparisonReport === "Sales Volume vs Reported Production" ? (
