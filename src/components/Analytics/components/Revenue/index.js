@@ -20,6 +20,7 @@ import AnalyticsCards from "./Analytics";
 import LastCheckDateFilter from "components/Revenue/components/Common/LastCheckDateFilter";
 
 import SalesVolumeComparisonSection from "./SalesVolumeComparisonSection";
+import { GET_CHECK_DETAILS_DATA } from "graphQL/useQueryCheckDetailsData";
 
 const useStyles = makeStyles((theme) => ({
   mainTabContainer: {
@@ -148,35 +149,23 @@ export default function RevenueAnalytics(props) {
     fetchPolicy: "no-cache",
   });
 
-  const [getESSimpleSearch, { data: elasticData }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
+  const [getCheckDetailData, { data: checkDetailData}]= useLazyQuery(GET_CHECK_DETAILS_DATA, {
     fetchPolicy: "no-cache",
   });
 
   useEffect(() => {
-    const dateFilter = esFilters.find((filter) => filter.type === "range");
-    const formattedDateFilters = [];
-    if (dateFilter) formattedDateFilters.push({ field: "date", type: "range", value: dateFilter?.value });
-    getESSimpleSearch({
+    getCheckDetailData({
       variables: {
         index: "checkdetailsinterestscomparison_flat",
-        pagination: {
-          first: totalChecks,
-          after: null,
-        },
-        search: {
-          query: "",
-          fields: [],
-        },
-        filters: formattedDateFilters,
-      },
-    });
+      }
+    })
   }, [totalChecks]);
 
   useEffect(() => {
-    if (elasticData?.getESSimpleSearch?.hits?.length > 0) {
+    if (checkDetailData?.getCheckDetailsData?.checkDetails?.length > 0) {
       let data = [];
-      for (let i = 0; i < elasticData?.getESSimpleSearch?.hits?.length; i++) {
-        const check = elasticData?.getESSimpleSearch?.hits[i];
+      for (let i = 0; i < checkDetailData?.getCheckDetailsData?.checkDetails?.length; i++) {
+        const check = checkDetailData?.getCheckDetailsData?.checkDetails[i]._source;
         data.push({
           wells: check.wells,
           date: check.date,
@@ -192,7 +181,7 @@ export default function RevenueAnalytics(props) {
       data = sortBy(data, ["ReportDate"]);
       setCheckDetailsData(data);
     }
-  }, [elasticData]);
+  }, [checkDetailData]);
 
   useEffect(() => {
     getESMinValue({
