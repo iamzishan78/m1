@@ -210,12 +210,13 @@ export default function RevenueAnalytics(props) {
   }, []);
 
   useEffect(() => {
-    getPortfolioSummary({
-      variables: {
-        filters: propertiesReportGroup || [],
-        filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) },
-      },
-    });
+    if (toDate && fromDate)
+      getPortfolioSummary({
+        variables: {
+          filters: propertiesReportGroup || [],
+          filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) },
+        },
+      });
   }, [propertiesReportGroup, toDate, fromDate]);
 
   const onChangeDates = (fromDate, toDate) => {
@@ -309,7 +310,7 @@ export default function RevenueAnalytics(props) {
                     type="Properties"
                     esFilters={propertiesReportGroup || []}
                     setESFilters={(value) => setPropertyFilter(value)}
-                    setFilterToggle={() => {}}
+                    setFilterToggle={() => { }}
                     isBackground={false}
                     noUpdate={true}
                     strechedWidth
