@@ -159,7 +159,7 @@ export default function RevenueAnalytics(props) {
         index: "checkdetailsinterestscomparison_flat",
       }
     })
-  }, [totalChecks]);
+  }, []);
 
   useEffect(() => {
     if (checkDetailData?.getCheckDetailsData?.checkDetails?.length > 0) {
@@ -339,6 +339,7 @@ export default function RevenueAnalytics(props) {
             checkNumbers={checkNumbers}
             extraFitlers={["propertyGroup", "checkNumber", "propertyNumber"]}
             stateESKey="property."
+            isComparisonReport={comparisonReport === "Check Detail Comparison"}
           />
           {comparisonReport === "Sales Volume vs Reported Production" ? (
             <SalesVolumeComparisonSection checkDetailsData={checkDetailsData} esFilters={esFilters} loadMore={loadMore} />

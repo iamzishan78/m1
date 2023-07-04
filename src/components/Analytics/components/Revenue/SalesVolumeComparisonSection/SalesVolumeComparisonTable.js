@@ -23,8 +23,13 @@ function SalesVolumeComparisonTable(props) {
   }, [props.options.count]);
 
   useEffect(() => {
+    let requiredEsFilters = props.esFilters.filter(
+      (esFilter) =>
+        esFilter.field === "property.state.keyword" ||
+        esFilter.type === "range"
+    );
     props.setTableMeta({
-      filters: props.esFilters,
+      filters: requiredEsFilters,
       TableHeader: copy(TableHeader),
       esIndex: "checkdetailsinterestscomparison_flat",
       startPaginationAt: 50,
