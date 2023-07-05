@@ -71,6 +71,7 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
     esKey: "number.keyword",
     options: {
       ...GlobalStickyStyles({ isReportingGroup }),
+      filter: true,
 
       // setCellProps: () => ({
       //   style: {
