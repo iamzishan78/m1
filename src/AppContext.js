@@ -5,6 +5,7 @@ import { MSALB2CObj, B2CTenantCredentials } from "./components/Login/AADB2CAuthC
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
 import { heatLayers, baseMapLayers } from "./LayerConfig";
+import { useHookStateApp } from "hookstate";
 
 const AppContext = createContext([{}, () => { }]);
 
@@ -200,6 +201,8 @@ const AppProvider = (props) => {
     },
   });
 
+  const { universalLoader } = useHookStateApp()
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -262,7 +265,7 @@ const AppProvider = (props) => {
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>
       {props.children}
-      {stateApp.universalCircularLoaderAct && (
+      {(stateApp.universalCircularLoaderAct || universalLoader.get()) && (
         <div
           style={{
             position: "fixed",

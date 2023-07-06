@@ -40,11 +40,14 @@ function RevenueStatementTable(props) {
       hits = hits.map((hit) => {
         hit.checkDate = hit.checkDate ? moment(new Date(hit.checkDate)).format("MM/DD/YYYY") : null;
         hit.depositDate = hit.depositDate ? moment(new Date(hit.depositDate)).format("MM/DD/YYYY") : null;
+        hit.ownerName = hit.payee?.name || ''
+        hit.ownerNumber = hit.payee?.number || ''
         hit = setGenricData(hit, hit._id, genericDataActions, genericDataActions);
         hit.tags =
           hit?.tags?.length > 0
             ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
             : [[], 0];
+        hit.commentsCounter = hit.comments ? hit.comments.length : 0;
         return hit;
       });
       return hits;
@@ -53,13 +56,13 @@ function RevenueStatementTable(props) {
   );
 
   const formatedFilter = esFilters ? copy(esFilters) : [];
-  const fixedFilters = [];
+  const fixedFilters = formatedFilter;
 
-  if (formatedFilter[0] && formatedFilter[0].value.range) {
-    formatedFilter[0].type = "range";
-    formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field];
-    fixedFilters.push(formatedFilter[0]);
-  }
+  // if (formatedFilter[0] && formatedFilter[0].value.range) {
+  //   formatedFilter[0].type = "range";
+  //   formatedFilter[0].value = formatedFilter[0].value.range[formatedFilter[0].field];
+  //   fixedFilters.push(formatedFilter[0]);
+  // }
 
   useEffect(() => {
     setTableMeta({
@@ -77,9 +80,7 @@ function RevenueStatementTable(props) {
   }, [setTableMeta, formatHits, revenueSearchQuery, filterToggle]);
 
   useEffect(() => {
-    if (fixedFilters.length > 0) {
-      getCounts();
-    }
+    getCounts();
   }, [props.rows]);
 
   useEffect(() => {
@@ -145,7 +146,7 @@ function RevenueStatementTable(props) {
             header={`Delete Revenue Statement(s)`}
             onClose={() => props.setOpenDialog(null)}
             deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
+            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
             {`Do you want to delete the selected revenue statement${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""

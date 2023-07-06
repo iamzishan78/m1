@@ -56,7 +56,9 @@ const CampaignManagement = () => {
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
       if (data?.getESMinValue) {
-        setLastCampaignMinDate(data?.getESMinValue);
+        const date = new Date(data?.getESMinValue)
+        if (date?.toString() !== "Invalid Date")
+          setLastCampaignMinDate(data?.getESMinValue);
       }
     },
   });

@@ -15,6 +15,7 @@ function PropertyRevenueDetailsTable(props) {
             hit.number = hit?.property?.number;
             hit.name = hit?.property?.name;
             hit.checkNumber = hit?.check?.checkNumber;
+            hit.checkDate = hit?.check?.checkDate;
             hit.checkId = hit?.check?._id;
             hit.purchaser = hit?.check?.payor?.name;
             return hit;

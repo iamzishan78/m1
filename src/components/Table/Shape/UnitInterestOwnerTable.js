@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import EditIcon from "@material-ui/icons/Edit";
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 import {
   Container,
   Button,
@@ -34,6 +35,7 @@ import { deepEqualObjects, copy } from "components/Shared/functions";
 import { addTrailingZeros } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 import { forEach } from "lodash";
+import RecalculateSlideout from "./RecalculateSlideout";
 
 const genericDataActions = ["comments", "tracks", "ifAreContacts"];
 const interestKeys = [
@@ -66,7 +68,7 @@ function UnitInterestOwnerTable(props) {
         setSelectedRows([]);
       },
 
-      onError: (err) => {},
+      onError: (err) => { },
       refetchQueries: [
         "getESPaginatedList",
         "getESSimpleSearch",
@@ -152,10 +154,11 @@ function UnitInterestOwnerTable(props) {
   const getRows = () => {
     const selectedRows = [];
     for (let i = 0; i < props.selectedRows.length; i++) {
-      selectedRows.push({
-        ...props.rows[props.selectedRows[i].index],
-        _id: props.rows[props.selectedRows[i].index].contactId,
-      });
+      if (props.rows[props.selectedRows[i].index])
+        selectedRows.push({
+          ...props.rows[props.selectedRows[i].index],
+          _id: props.rows[props.selectedRows[i].index].contactId,
+        });
     }
     return selectedRows;
   };
@@ -177,7 +180,7 @@ function UnitInterestOwnerTable(props) {
 
   const onExport = () => {
     let rowsData = props.selectedRowsValues || []
-    if(rowsData?.length === 0){
+    if (rowsData?.length === 0) {
       let rows = props.rows
       props.selectedRows.forEach((data) => {
         rowsData.push(rows[data.dataIndex]);
@@ -249,6 +252,29 @@ function UnitInterestOwnerTable(props) {
             )}
             {props.selectedRows && props.selectedRows?.length !== 0 && (
               <>
+                <Button
+                  color="secondary"
+                  startIcon={<AutorenewIcon color="white" />}
+                  className={classes.multiSelectionTopBarButtons}
+                  disabled={
+                    !props.selectedRows || props.selectedRows?.length === 0
+                  }
+                  onClick={() => {
+                    let owners = [];
+
+                    const rows = props.selectedRowsValues || props.rows;
+                    for (let i in props.selectedRows) {
+                      owners.push({
+                        ...rows[props.selectedRows[i].dataIndex],
+                        _id: rows[props.selectedRows[i].dataIndex].contact._id,
+                      });
+                    }
+                    setSelectedRows(owners);
+                    setOpenCustomDialog("recalculate");
+                  }}
+                >
+                  Recalculate
+                </Button>
                 <Button
                   color="secondary"
                   startIcon={<EditIcon color="white" />}
@@ -375,6 +401,13 @@ function UnitInterestOwnerTable(props) {
           setRows={setSelectedRows}
         />
       )}
+      {openCustomDialog === "recalculate" && (
+        <RecalculateSlideout
+          onClose={() => setOpenCustomDialog("")}
+          rows={selectedRows}
+          setRows={setSelectedRows}
+        />
+      )}
       {openCustomDialog === "deleteOwner" && (
         <DeleteConfirmationDialogContent
           header="Delete Unit Owner(s)"
@@ -385,13 +418,12 @@ function UnitInterestOwnerTable(props) {
           )}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
-          {`Do you want to permanently delete the unit owner${
-            props.selectedRows &&
+          {`Do you want to permanently delete the unit owner${props.selectedRows &&
             props.selectedRows.length > 1 &&
             props.selectedRows.length > 1
-              ? "s"
-              : ""
-          }?`}
+            ? "s"
+            : ""
+            }?`}
         </DeleteConfirmationDialogContent>
       )}
       <Table

@@ -4,12 +4,15 @@ import { makeStyles } from "@material-ui/styles";
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
 import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTable";
 import { setStateIfDeepEqual } from "components/Shared/functions";
-// actions
-import LastCheckDateFilter from "../Common/LastCheckDateFilter";
+
+import LastCheckDateFilter from "components/Revenue/components/Common/LastCheckDateFilter";
 import { useLazyQuery } from "@apollo/client";
 import { GET_UNMAPPED_PROPERTY_COUNT } from "graphQL/useQueryGetProperty";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    margin: "75px 0 10px",
+  },
   propertyTableContainer: {
     paddingTop: theme.spacing(1),
     // paddingLeft: "38px",
@@ -81,7 +84,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Properties() {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
-  const [isFiltered, setFiltered] = useState(null);
   // redux
   const [filterToggle, setFilterToggle] = React.useState(false);
 
@@ -129,22 +131,26 @@ export default function Properties() {
     {
       heading: "In Pay",
       points: 0,
+      key: "inpay",
+      filterable: true,
     },
     {
       heading: "Not In Pay",
       points: 0,
+      key: "notinpay",
+      filterable: true,
     },
     {
       heading: "Unmapped",
       key: "unmapped",
       points: 0,
       type: "warning",
-      filterable:true,
+      filterable: true,
     },
   ]
 
   return (
-    <>
+    <div className={classes.root}>
       <LastCheckDateFilter
         field={"lastCheck.checkDate"}
         esIndex={esIndex}
@@ -162,8 +168,6 @@ export default function Properties() {
         cardsDefault={cardsDefault}
         totalCount={propertiesCount}
         landSearchQuery={stateApp.revenueSearchQuery}
-        isFiltered={isFiltered}
-        setFiltered={setFiltered}
         setESFilters={setESFilters}
         filterToggle={filterToggle}
         setFilterToggle={setFilterToggle}
@@ -189,6 +193,6 @@ export default function Properties() {
           loadMore={loadMore}
         />
       </div>
-    </>
+    </div>
   );
 }

@@ -72,6 +72,7 @@ export default function CustomDatesActivities({
   setAppliedFilters,
 }) {
   const classes = useStyles();
+
   useEffect(() => {
     if (minDate) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
     // eslint-disable-next-line react-hooks/exhaustive-deps

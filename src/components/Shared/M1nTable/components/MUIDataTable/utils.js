@@ -176,6 +176,25 @@ function removeEmptyArrayKeys(obj) {
     return copyObj;
 }
 
+const fuzzySearch = (items, query, queryKey = 'name') => {
+    if (!query || query === '') return items
+
+    const search = query.split(' ');
+    const ret = items.reduce((found, i) => {
+        let matches = 0;
+        search.forEach(s => {
+            if (i[queryKey].toLowerCase().indexOf(s.toLowerCase()) > -1) {
+                matches++;
+            }
+        })
+        if (matches === search.length) {
+            found.push(i);
+        }
+        return found;
+    }, [])
+    return ret;
+}
+
 export {
     buildMap,
     getPageValue,
@@ -188,5 +207,6 @@ export {
     warnInfo,
     escapeDangerousCSVCharacters,
     convertToTitleCase,
-    removeEmptyArrayKeys
+    removeEmptyArrayKeys,
+    fuzzySearch
 };

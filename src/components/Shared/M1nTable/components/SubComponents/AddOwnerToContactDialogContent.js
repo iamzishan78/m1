@@ -40,7 +40,7 @@ export default function AddOwnerToContactDialogContent(props) {
     () =>
       debounce((request, top, callback) => {
         const endpoint =
-          "https://m1search.search.windows.net/indexes/lod2019-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName%2CAddress1&top=" +
+          "https://m1search.search.windows.net/indexes/lodsearch-index-m1corev3/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName%2CAddress1&top=" +
           top +
           "&search=" +
           encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
@@ -150,7 +150,7 @@ export default function AddOwnerToContactDialogContent(props) {
       filterOptions={(x) => x}
       options={optionsWithLoader}
       groupBy={(option) => {
-        if (option.Source === "lod2019-index") return "Owners";
+        if (option.Source === "lodsearch-index-m1corev3") return "Owners";
         if (option.Source === "loader") return "loader";
         return "textField text";
       }}
@@ -209,7 +209,7 @@ export default function AddOwnerToContactDialogContent(props) {
           return null;
         }
 
-        if (option.Source === "lod2019-index") {
+        if (option.Source === "lodsearch-index-m1corev3") {
           const parts = parse(option.Primary, Array());
           return (
             <Grid container spacing={0}>

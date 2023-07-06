@@ -1,3 +1,5 @@
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import vf_number from './vf_number';
 
 // this function is intended to convert a numeric string to currency
 
@@ -27,4 +29,14 @@ export function vf_currency_to_fixed(value, toFixed) {
   };
 
   return valueFormatter(value)
+}
+
+export function vf_currency_dollar(value, toFixed) {
+  return (
+    <div style={{ display: "flex", alignItems: "center" }}>
+      {value < 0 && "-"}
+      {<AttachMoneyIcon style={{ fontSize: "2.5rem", margin: "0  -0.6rem" }} />}
+      {value ? vf_number(Math.abs(value?.toFixed(toFixed))) : "0.00"}
+    </div>
+  );
 }

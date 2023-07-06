@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { FormControl, Grid, InputLabel, Select } from "@material-ui/core";
+import { FormControl, Grid, InputLabel, Select, TextField } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/styles";
 import CustomDates from "components/Revenue/components/Common/CustomDates";
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import { useLazyQuery } from "@apollo/client";
-import moment from "moment";
 import { useSelector } from "react-redux";
 import ReportGroupHeader from "components/Shared/ReportGroupHeader";
 import { MenuItem } from "material-ui";
 import { MuiThemeProvider } from "material-ui/styles";
+import { dateFilterToDate } from "utils/helper";
+import { copy } from "components/Shared/functions";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
     backgroundColor: "#f7f7f7",
     width: "100%",
     minHeight: "65px",
-    marginTop: "80px",
   },
   actionsGrid: {
     marginTop: "6px",
@@ -31,73 +32,84 @@ const useStyles = makeStyles((theme) => ({
   },
 
   formControl: {
-    width: '100%'
-  }
+    width: "100%",
+  },
 }));
 
-
-const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFilterToggle, extraFitlers = [] }) => {
+const LastCheckDateFilter = ({
+  field,
+  esIndex,
+  esFilters,
+  setESFilters,
+  filterToggle,
+  propertyNumbers,
+  checkNumbers,
+  setFilterToggle,
+  extraFitlers = [],
+  stateESKey = "",
+}) => {
   const classes = useStyles();
 
-  const [selectedFilter, setSelectedFilter] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState("");
   const [fromDate, setFromDate] = React.useState(null);
   const [toDate, setToDate] = React.useState(null);
-  const [lastCheckMinDate, setLastCheckMinDate] = useState('');
-  const [status, setStatus] = useState('ALL');
+  const [lastCheckMinDate, setLastCheckMinDate] = useState("");
+  const [status, setStatus] = useState("ALL");
   const [propertyFilter, setPropertyFilter] = useState([]);
+  const [checkNumberFilter, setCheckNumberFilter] = useState();
+  const [propertyNumberFilter, setPropertyNumberFilter] = useState();
 
-  const propertiesReportGroup = useSelector(
-    ({ Revenue }) => Revenue.propertiesReportGroup
-  );
+  const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
 
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
       if (data?.getESMinValue) {
         setLastCheckMinDate(data?.getESMinValue);
-        // setFromDate(`${moment(data.getESMinValue).startOf('month').format("yyyy-MM-DD")}`);
-        // setToDate(`${moment().subtract(1, 'months').endOf('month').format('yyyy-MM-DD')}`);
       }
     },
   });
-  useEffect(() => {
-    setFromDate(moment().startOf('year').format('yyyy-MM-DD'));
-    setToDate(moment().subtract(0, 'months').endOf('month').format('yyyy-MM-DD'));
-  }, []);
   useEffect(() => {
     getESMinValue({
       variables: {
         esIndex,
         field,
-        value_as_string: true
-      }
-    })
-  }, [getESMinValue])
-
+        value_as_string: true,
+      },
+    });
+  }, [getESMinValue]);
 
   useEffect(() => {
     updateFilters();
-  }, [toDate, fromDate, status, propertyFilter]);
+  }, [toDate, fromDate, status, propertyFilter, checkNumberFilter, propertyNumberFilter]);
 
   const updateFilters = () => {
-    const filters = [];
-
-    filters.push({
-      field,
-      value: {
-        range: {
-          [field]: {
-            gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
-            lte: toDate ? `${toDate}T00:00:00.000Z` : null,
-          },
-        },
-      },
-      // includeEmpty: selectedFilter === "All Dates" ? true : undefined,
-    });
-
-    if (propertyFilter[0]) {
-      filters.push(propertyFilter[0]);
+    let filters = copy(esFilters) ?? [];
+    filters = filters.filter(
+      (filter) =>
+        filter.type !== "range" &&
+        filter.field !== `${stateESKey}state.keyword` &&
+        filter.field !== "check.checkNumber.keyword" &&
+        filter.field !== "property.number.keyword"
+    );
+    if (checkNumberFilter) {
+      filters.push({ field: "check.checkNumber.keyword", value: checkNumberFilter });
     }
+
+    if (propertyNumberFilter) {
+      filters.push({ field: "property.number.keyword", value: propertyNumberFilter });
+    }
+    if (fromDate && toDate)
+      filters.unshift({
+        field,
+        value: {
+          gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
+          lte: toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
+        },
+        type: "range",
+      });
+
+    if (propertyFilter[0]) filters.push({ ...propertyFilter[0], field: stateESKey + propertyFilter[0].field });
 
     if (status !== "ALL") {
       filters.push({
@@ -112,26 +124,19 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
 
   return (
     <div className={classes.actionBar}>
-      <Grid
-        container
-        alignItems="center"
-        // justifyContent="space-between"
-        spacing={2}
-        style={{ padding: "0px 36px 0px 45px", width: "100%" }}
-      >
+      <Grid container alignItems="center" spacing={2} style={{ padding: "0px 36px 0px 45px", width: "100%" }}>
         <CustomDates
           fromDate={fromDate}
           setFromDate={setFromDate}
           toDate={toDate}
           setToDate={setToDate}
-          //label="Last Check"
           isProperties
           lastCheckMinDate={lastCheckMinDate}
           onChange={setSelectedFilter}
           datesInputWidth={2}
         />
-        <Grid item xs md={2}>
-          {extraFitlers.includes("propertyGroup") && (
+        {extraFitlers.includes("propertyGroup") && (
+          <Grid item xs md={2}>
             <ReportGroupHeader
               type="Properties"
               esFilters={propertiesReportGroup || []}
@@ -143,10 +148,10 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
               isShrink
               noPadding
             />
-          )}
-        </Grid>
-        <Grid item xs md={2}>
-          {extraFitlers.includes("status") && (
+          </Grid>
+        )}
+        {extraFitlers.includes("status") && (
+          <Grid item xs md={2}>
             <MuiThemeProvider>
               <FormControl variant="outlined" className={classes.formControl}>
                 <InputLabel id="status-outlined-label">Status</InputLabel>
@@ -165,12 +170,55 @@ const LastCheckDateFilter = ({ field, esIndex, setESFilters, filterToggle, setFi
                 </Select>
               </FormControl>
             </MuiThemeProvider>
-          )}
-        </Grid>
-
+          </Grid>
+        )}
+        {extraFitlers.includes("checkNumber") && (
+          <Grid item xs style={{ minwidth: "15%" }}>
+            <Autocomplete
+              size="small"
+              onChange={(event, newValue) => {
+                setCheckNumberFilter(newValue)
+              }}
+              options={checkNumbers}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Check Number"
+                  variant="outlined"
+                  placeholder=""
+                  style={{ backgroundColor: "white" }}
+                />
+              )}
+              disableListWrap
+              id="custom-date-dropdown"
+            />
+          </Grid>
+        )}
+        {extraFitlers.includes("propertyNumber") && (
+          <Grid item xs style={{ minWidth: "15%" }}>
+            <Autocomplete
+              size="small"
+              onChange={(event, newValue) => {
+                setPropertyNumberFilter(newValue)
+              }}
+              options={propertyNumbers}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Property Number"
+                  variant="outlined"
+                  placeholder=""
+                  style={{ backgroundColor: "white" }}
+                />
+              )}
+              disableListWrap
+              id="custom-date-dropdown"
+            />
+          </Grid>
+        )}
       </Grid>
     </div>
   );
-}
+};
 
-export default LastCheckDateFilter
+export default LastCheckDateFilter;

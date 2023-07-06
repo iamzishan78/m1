@@ -273,9 +273,11 @@ function UnitOwnersTable(props) {
                 onClick={() => {
                   let contacts = [];
                   for (let i in selectedRows) {
-                    props.rows[selectedRows[i].dataIndex]._id =
-                      props.rows[selectedRows[i].dataIndex].contactId;
-                    contacts.push(props.rows[selectedRows[i].dataIndex]);
+                    if (props.rows[selectedRows[i].dataIndex]) {
+                      props.rows[selectedRows[i].dataIndex]._id =
+                        props.rows[selectedRows[i].dataIndex].contactId;
+                      contacts.push(props.rows[selectedRows[i].dataIndex]);
+                    }
                   }
                   selectRow(contacts);
                   handleExpandClick(contacts, "buyContactsInfoData");
@@ -370,7 +372,7 @@ function UnitOwnersTable(props) {
             header="Delete Interest Owner(s)"
             onClose={() => setOpenDialog(null)}
             deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={selectedRows.map((sR => props.rows[sR.dataIndex]._id))}
+            m1nSelectedRowsIds={selectedRows.map((sR => props.rows[sR.dataIndex]?._id))}
             setM1nSelectedRowsIndexes={setSelectedRows}
           >
             {`Do you want to permanently delete the Interest Owner${selectedRows &&

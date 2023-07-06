@@ -26,7 +26,7 @@ import { analyticsManagementRoutes } from "utils/data";
 const Components = {
   Land: LandAnalytics,
   Revenue: RevenueAnalytics,
-  ActivitiesDashboard: ActivitiesDashboard,
+  ActivitiesDashboard,
   RigsCard: RigsCard,
   PermitsCard: PermitsCard,
   ProdCard: ProdCard,
