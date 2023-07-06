@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { usetableStyles } from "../Styles";
-import { Tooltip, Grid, IconButton, Button, Container, TextField } from "@material-ui/core";
+import { Tooltip, Grid, IconButton, Button, Dialog, Container, TextField } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TableESHOC from "components/Table/TableESHOC";
@@ -12,6 +12,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { UPSERT_CHECK_PROPERTY } from "graphQL/useMutationCheckPropertyUpdate";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 // value formatters
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 
@@ -19,6 +20,8 @@ function CheckDetailsTable(props) {
     const classes = usetableStyles();
     const { checkId, setTableMeta } = props;
     const [propertiesNumbers, setPropertiesNumbers] = useState([]);
+    const [resetSelectedRow, setResetSelectedRow] = useState(false);
+    const [openDialog, setOpenDialog] = useState(null);
     const [totalProperties, setTotalProperties] = useState(0);
     const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: "no-cache" });
     const [getESSimpleSearch] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
@@ -26,6 +29,11 @@ function CheckDetailsTable(props) {
     });
 
     const [upsertCheckProperties] = useMutation(UPSERT_CHECK_PROPERTY, {
+        onCompleted: () => {
+            props.setLoading(false);
+            props.setSelectedRows([]);
+            setResetSelectedRow(!resetSelectedRow)
+        },
         refetchQueries: ["getESSimpleSearch"],
     });
     useEffect(() => {
@@ -113,12 +121,13 @@ function CheckDetailsTable(props) {
 
     const handleChecksUpdate = async (propertyNumber) => {
         if (propertyNumber) {
-            const selectedChecks = props.selectedRows.map((sR) => props.rows[sR.dataIndex]?.date);
+            props.setLoading(true);
+            const checksIds = props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id);
             await new Promise((resolve, reject) => {
                 upsertCheckProperties({
                     variables: {
                         propertyNumber,
-                        selectedChecks,
+                        checksIds,
                     },
                     onCompleted: (res) => resolve(res?.upsertCheckProperty),
                     onError: (error) => reject(error),
@@ -126,6 +135,10 @@ function CheckDetailsTable(props) {
             });
         }
     }
+
+    const deleteFunc = (ids) => {
+    console.log(ids)    
+    };
 
     props.options.customToolbarSelect = () => {
         return (
@@ -156,9 +169,7 @@ function CheckDetailsTable(props) {
                                 size="medium"
                                 style={{ margin: "0 5px" }}
                                 aria-label="delete"
-                                onClick={(e) => {
-                                    props.setOpenDialog("delete");
-                                }}
+                                onClick={(e) => setOpenDialog("delete")}
                             >
                                 <DeleteIcon />
                             </IconButton>
@@ -187,6 +198,20 @@ function CheckDetailsTable(props) {
             className={classes.container}
             id={props.id ? props.id : props.parent}
         >
+            <Dialog open={openDialog ? true : false} onClose={() => setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
+                {openDialog === "delete" && (
+                    <DeleteConfirmationDialogContent
+                        header="Delete Check(s)"
+                        onClose={() => setOpenDialog(null)}
+                        deleteFunc={deleteFunc}
+                        m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
+                        setM1nSelectedRowsIndexes={props.setSelectedRows}
+                    >
+                        {`Do you want to permanently delete the checks${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+                            }?`}
+                    </DeleteConfirmationDialogContent>
+                )}
+            </Dialog>
             <Table
                 style={{ backgroundColor: "#fff" }}
                 header={props.header}
@@ -196,6 +221,7 @@ function CheckDetailsTable(props) {
                 loading={props.loading}
                 targetLabel={props.targetLabel}
                 uploadIcon={null}
+                resetSelectedRow={resetSelectedRow}
                 dense={props.dense ? props.dense : undefined}
                 orderByTracks={false}
                 startPaginationAt={null}
