@@ -1,7 +1,7 @@
 import { GlobalStickyStyles } from "GlobalSettings";
 import WellIcon from '../../../components/Shared/svgIcons/well.js';
 import { ErrorOutline } from "@material-ui/icons";
-import React from 'react';
+import React from "react";
 import { useHistory } from "react-router-dom";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink.js";
 

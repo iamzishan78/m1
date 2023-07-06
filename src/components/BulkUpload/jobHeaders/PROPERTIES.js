@@ -186,4 +186,10 @@ export default [
         required: false,
         actual_key: "property.purchaser.name",
     },
+    {
+        label: "M1 System ID",
+        mapped_key: "",
+        required: false,
+        actual_key: "property._id",
+    },
 ];
