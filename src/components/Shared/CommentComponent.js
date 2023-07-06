@@ -1,12 +1,23 @@
-import React, { useState, useEffect, useContext, Fragment, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  Fragment,
+  useRef,
+  useCallback,
+} from "react";
 import { get } from "lodash";
 import Avatar from "react-avatar";
 import Grid from "@material-ui/core/Grid";
-import { CircularProgress, Menu, MenuItem } from "@material-ui/core";
+import { CircularProgress, Menu, MenuItem, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import { useMutation, useLazyQuery } from "@apollo/client";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import {
+  ThumbUp as ThumbUpIcon,
+  ThumbUpAltOutlined as ThumbUpAltOutlinedIcon,
+  ExpandMore as ExpandMoreIcon,
+} from "@material-ui/icons";
 import { useSelector, useDispatch } from "react-redux";
 import { updatePinComments } from "store/actions/commonActions";
 import { AppContext } from "AppContext";
@@ -17,7 +28,6 @@ import { UPSERTCOMMENT } from "graphQL/useMutationUpsertComment";
 import { REMOVECOMMENT } from "graphQL/useMutationRemoveComment";
 import { COMMENTSBYOBJECTIDQUERY } from "graphQL/useQueryCommentsByObjectId";
 import CommentField from "components/Shared/components/Fields/CommentField";
-import { SizeMe } from "react-sizeme";
 
 import ReactTimeAgo from "react-time-ago";
 import TimeAgo from "javascript-time-ago";
@@ -25,7 +35,7 @@ import en from "javascript-time-ago/locale/en";
 import ru from "javascript-time-ago/locale/ru";
 import moment from "moment";
 import DOMPurify from "dompurify";
-import { object } from "prop-types";
+import { TOGGLECOMMENTREACTION } from "graphQL/userMutationToggleCommentReaction";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -38,21 +48,21 @@ const useStyles = makeStyles((theme) => ({
     },
     height: isFileDetail ? "calc(100vh - 395px)" : "100%",
     minHeight: "200px",
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-end'
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-end",
   }),
   comment: ({ commentsHeight }) => ({
     position: "relative",
     overflow: "auto",
-    '& *': {
-      overflowAnchor: 'none'
+    "& *": {
+      overflowAnchor: "none",
     },
 
-    '& #checkIf': {
-      overflowAnchor: 'auto',
-      height: '1px'
-    }
+    "& #checkIf": {
+      overflowAnchor: "auto",
+      height: "1px",
+    },
   }),
   hideMenuIcon: {
     visibility: "hidden",
@@ -88,18 +98,18 @@ const useStyles = makeStyles((theme) => ({
     margin: "5px 0px",
   },
   pinnedGrid: {
-    flexWrap: 'nowrap',
-    backgroundColor: "#FFF6EE"
+    flexWrap: "nowrap",
+    backgroundColor: "#FFF6EE",
   },
   pinnedCommentBar: {
     display: "flex",
     minHeight: "10px",
     minWidth: "5px",
-    backgroundColor: "#EFC480"
+    backgroundColor: "#EFC480",
   },
   gridStyle: {
     padding: "12px 0px",
-    flexWrap: 'nowrap'
+    flexWrap: "nowrap",
   },
   bold: {
     fontWeight: "bold",
@@ -118,11 +128,11 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-flex",
   },
   commentContent: {
-    flex: '1 1 auto',
+    flex: "1 1 auto",
     maxWidth: "calc(100% - 55px)",
-    overflowWrap: 'break-word',
-    wordWrap: 'break-word',
-    wordBreak: 'break-word',
+    overflowWrap: "break-word",
+    wordWrap: "break-word",
+    wordBreak: "break-word",
   },
   commentTypeSection: {
     fontWeight: "bold",
@@ -132,11 +142,11 @@ const useStyles = makeStyles((theme) => ({
   },
   commentWords: {
     // display: 'inline-block',
-    overflowWrap: 'break-word',
-    wordWrap: 'break-word',
-    wordBreak: 'break-word',
-    hyphens: 'auto'
-  }
+    overflowWrap: "break-word",
+    wordWrap: "break-word",
+    wordBreak: "break-word",
+    hyphens: "auto",
+  },
 }));
 
 function urlify(text) {
@@ -147,15 +157,39 @@ function urlify(text) {
   });
 }
 
+export function getLikedPeoplesName(comment, myUserId) {
+  const { likedBy } = comment;
+  const names = (likedBy || []).map((user) => {
+    if (user._id === myUserId) return <li>You</li>;
+    else return <li>{user.name || user.displayName}</li>;
+  });
+
+  if(names.length < 1)
+    return "";
+
+  return <ul style={{listStyle: 'none', paddingLeft: 0}}>{names}</ul>;
+}
 export const CommonCommentText = ({ eachComment, users, isPinned }) => {
   const classes = useStyles();
   let formatComment = (eachComment?.comment || "").split(" ");
 
   return (
     <div id={eachComment._id} className={`${classes.whiteSpace}`}>
-      {get(eachComment, "commentType") && !isPinned && get(eachComment, "commentType.commentType", get(eachComment, "commentType")) !== "General" && (
-        <span className={classes.commentTypeSection}>{get(eachComment, "commentType.commentType", get(eachComment, "commentType"))}</span>
-      )}
+      {get(eachComment, "commentType") &&
+        !isPinned &&
+        get(
+          eachComment,
+          "commentType.commentType",
+          get(eachComment, "commentType")
+        ) !== "General" && (
+          <span className={classes.commentTypeSection}>
+            {get(
+              eachComment,
+              "commentType.commentType",
+              get(eachComment, "commentType")
+            )}
+          </span>
+        )}
       {formatComment.map((word, index) => {
         if (word.includes("{{") && word.includes("}}")) {
           const splittedWord = word.split(/\r?\n/);
@@ -174,7 +208,8 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
                       <>
                         {" "}
                         <span className={`${classes.commentWords} blue`}>
-                          {firstPart}@{users.find((user) => user._id === id)?.name}
+                          {firstPart}@
+                          {users.find((user) => user._id === id)?.name}
                           {secondPart}{" "}
                         </span>
                         {splittedWord.length > 1 && <br />}{" "}
@@ -197,7 +232,12 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
           const sanitizedData = () => ({
             __html: DOMPurify.sanitize(urlify(_word)),
           });
-          return <span className={classes.commentWords} dangerouslySetInnerHTML={sanitizedData()}></span>;
+          return (
+            <span
+              className={classes.commentWords}
+              dangerouslySetInnerHTML={sanitizedData()}
+            ></span>
+          );
         }
       })}
     </div>
@@ -206,10 +246,13 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
 
 export default function CommentComponent(props) {
   const { targetSourceId, commentsHeight } = props;
-  const classes = useStyles({ commentsHeight, isFileDetail: props.targetLabel === 'file' || false });
+  const classes = useStyles({
+    commentsHeight,
+    isFileDetail: props.targetLabel === "file" || false,
+  });
   const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
-  const { pinComment } = useSelector(state => state.pin);
+  const { pinComment } = useSelector((state) => state.pin);
 
   const [users, setUsers] = useState([]);
   const [comment, setComment] = useState("");
@@ -228,7 +271,12 @@ export default function CommentComponent(props) {
   const commentContainerRef = useRef(null);
 
   const [removeComment] = useMutation(REMOVECOMMENT);
-  const [upsertComment, { data: newlyAddedComment }] = useMutation(UPSERTCOMMENT);
+  const [upsertComment, { data: newlyAddedComment }] =
+    useMutation(UPSERTCOMMENT);
+  const [toggleCommentReaction, { data: resultToggleCommentReaction }] =
+    useMutation(TOGGLECOMMENTREACTION, {
+      refetchQueries: ["getCommentsByObjectId", "getCommentsByObjectsIds"],
+    });
   const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
     fetchPolicy: "cache-and-network",
   });
@@ -236,7 +284,10 @@ export default function CommentComponent(props) {
   const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
     fetchPolicy: "cache-first",
   });
-  const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(COMMENTSBYOBJECTIDQUERY, { fetchPolicy: "no-cache" });
+  const [getCommentsByObjectId, { data: dataComments }] = useLazyQuery(
+    COMMENTSBYOBJECTIDQUERY,
+    { fetchPolicy: "no-cache", nextFetchPolicy: "cache-and-network" }
+  );
   useEffect(() => {
     getAllMongoUsers();
   }, [getAllMongoUsers]);
@@ -264,7 +315,6 @@ export default function CommentComponent(props) {
       getCommentsByObjectId({
         variables: {
           objectId: targetSourceId,
-
         },
       });
     }
@@ -281,7 +331,9 @@ export default function CommentComponent(props) {
             activityData: element,
             comment: element.notes,
             outcome: element.outcome,
-            ts: new Date(element._ts.includes("GMT") ? element._ts : Number(element._ts)).getTime(),
+            ts: new Date(
+              element._ts.includes("GMT") ? element._ts : Number(element._ts)
+            ).getTime(),
             isActivity: true,
             isEdited: false,
             public: true,
@@ -289,9 +341,8 @@ export default function CommentComponent(props) {
           });
         });
         allComments = dataComments.commentsByObjectId.concat(activityData);
-
       } else {
-        allComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId])
+        allComments = sortArrayBasedOnTs([...dataComments.commentsByObjectId]);
       }
       allComments = sortArrayBasedOnTs(allComments);
       setCommentsArray(allComments);
@@ -308,7 +359,8 @@ export default function CommentComponent(props) {
         user: { name: stateApp.user.name, email: stateApp.user.email },
         isNew: true,
       });
-      if (props.setNewCommentId) props.setNewCommentId(newlyAddedComment.upsertComment.comment._id);
+      if (props.setNewCommentId)
+        props.setNewCommentId(newlyAddedComment.upsertComment.comment._id);
       setCommentsArray(sortArrayBasedOnTs([...comments]));
     }
   }, [newlyAddedComment]);
@@ -329,7 +381,12 @@ export default function CommentComponent(props) {
   }, [stateApp.user]);
 
   useEffect(() => {
-    if (profiledata && profiledata.data && profiledata.data.profileByEmail && profiledata.data.profileByEmail.profile) {
+    if (
+      profiledata &&
+      profiledata.data &&
+      profiledata.data.profileByEmail &&
+      profiledata.data.profileByEmail.profile
+    ) {
       const {
         data: {
           profileByEmail: {
@@ -342,7 +399,9 @@ export default function CommentComponent(props) {
   }, [profiledata]);
 
   const pinnedComments = React.useMemo(() => {
-    const pinnedComments = commentsArray.filter((comment) => comment.pin === true);
+    const pinnedComments = commentsArray.filter(
+      (comment) => comment.pin === true
+    );
     return pinnedComments;
   }, [commentsArray]);
 
@@ -360,21 +419,21 @@ export default function CommentComponent(props) {
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value
-        .split("\n")
-        .map((line) => {
-          if (line.trim() !== ".") {
-            return line.trim();
-          }
-        })
-        .join("\n")
+          .split("\n")
+          .map((line) => {
+            if (line.trim() !== ".") {
+              return line.trim();
+            }
+          })
+          .join("\n")
       : `${value
-        .split("\n")
-        .map((line) => {
-          if (line.trim() !== ".") {
-            return line.trim();
-          }
-        })
-        .join("\n")}`;
+          .split("\n")
+          .map((line) => {
+            if (line.trim() !== ".") {
+              return line.trim();
+            }
+          })
+          .join("\n")}`;
 
   const updateComment = (value) => {
     setLoadingComments(true);
@@ -382,8 +441,14 @@ export default function CommentComponent(props) {
     upsertComment({
       variables: {
         comment: {
-          comment: typeof value === "object" ? newCommentCleaner(value.comment) : newCommentCleaner(value),
-          commentType: typeof value === "object" ? value.commentType || "General" : "General",
+          comment:
+            typeof value === "object"
+              ? newCommentCleaner(value.comment)
+              : newCommentCleaner(value),
+          commentType:
+            typeof value === "object"
+              ? value.commentType || "General"
+              : "General",
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           _id: editCommentId,
@@ -391,7 +456,11 @@ export default function CommentComponent(props) {
           isEdited: true,
         },
       },
-      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
       awaitRefetchQueries: true,
     });
     setShowActions(false);
@@ -406,7 +475,11 @@ export default function CommentComponent(props) {
       variables: {
         commentId: id,
       },
-      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
       awaitRefetchQueries: true,
     });
     setShowActions(false);
@@ -417,14 +490,13 @@ export default function CommentComponent(props) {
   const pinToTop = (eachComment) => {
     const x = Object.values(pinComments);
 
-    const newCommentList = commentsArray.map(c => {
-
+    const newCommentList = commentsArray.map((c) => {
       if (c._id === eachComment) {
-        console.log("ddaat", c)
+        console.log("ddaat", c);
         return {
           ...c,
           isPinned: true,
-          _id: eachComment
+          _id: eachComment,
         };
       }
       return {
@@ -440,13 +512,17 @@ export default function CommentComponent(props) {
           pin: true,
         },
       },
-      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
       awaitRefetchQueries: true,
     });
-    setShowCommentActionId(null)
+    setShowCommentActionId(null);
     //  commentsArray
     // let temp = commentsArray
-  }
+  };
   const unpinFromTop = (eachComment) => {
     // const commentsArray1 = Object.values(pinComments);
     const newCommentList = commentsArray.map((c) => {
@@ -466,12 +542,15 @@ export default function CommentComponent(props) {
           pin: false,
         },
       },
-      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
       awaitRefetchQueries: true,
     });
-    setShowCommentActionId(null)
-  }
-
+    setShowCommentActionId(null);
+  };
 
   useEffect(() => {
     if (commentsArray?.length > 0 && scrollIntoView) {
@@ -491,7 +570,11 @@ export default function CommentComponent(props) {
         isEdited: false,
         public: true,
         ts: Date.now(),
-        user: { name: userDetails.name, email: userDetails.email, __typename: "User" },
+        user: {
+          name: userDetails.name,
+          email: userDetails.email,
+          __typename: "User",
+        },
         __typename: "Comment",
         _id: "62e78820b4f930ae6002a7f2",
       };
@@ -507,16 +590,26 @@ export default function CommentComponent(props) {
     upsertComment({
       variables: {
         comment: {
-          comment: typeof value === "object" ? newCommentCleaner(value.comment) : newCommentCleaner(value),
-          commentType: typeof value === "object" ? value.commentType || "General" : "General",
+          comment:
+            typeof value === "object"
+              ? newCommentCleaner(value.comment)
+              : newCommentCleaner(value),
+          commentType:
+            typeof value === "object"
+              ? value.commentType || "General"
+              : "General",
           public: true,
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           objectType: props.targetLabel,
-          pin: false
+          pin: false,
         },
       },
-      refetchQueries: ["getCommentsByObjectId", "getCommentsCounter", "getCommentsByObjectsIds"],
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+      ],
       awaitRefetchQueries: true,
     }).then((result) => {
       setScrollIntoView(false);
@@ -530,47 +623,125 @@ export default function CommentComponent(props) {
     return indexToShow;
   };
 
-  const pinnedCommentsJsx = React.useMemo(() => (
-    <>
-      {pinnedComments?.map((pinnedComment, key) => (
-        <Fragment key={key}>
-          <Grid
-            id="commentsArea"
-            container
-            className={classes.pinnedGrid}
-            onMouseOver={() => setShowCommentActionId(pinnedComment?._id)}
-            onMouseLeave={() => setShowCommentActionId(null)}
-            pinned
-          >
-            <div className={classes.pinnedCommentBar}></div>
-            <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
-              <IconButton>
-                {profilesInfo[pinnedComment?.user?.email]?.profileImage || pinnedComment.isNew ? (
-                  <Avatar
-                    src={pinnedComment.isNew ? profileImage : profilesInfo[pinnedComment?.user?.email].profileImage}
-                    size="38"
-                    round
-                  />
-                ) : (
-                  <Avatar name={pinnedComment?.user?.name} size="38" round />
-                )}
-              </IconButton>
+  const didILikedThisComment = useCallback(
+    (comment) => {
+      if (!stateApp?.user?._id) return false;
+
+      const likedBy = comment?.likedBy || [];
+      const find = likedBy.find((user) => user._id === stateApp.user._id);
+
+      return !!find;
+    },
+    [stateApp.user]
+  );
+
+  const callToggleCommentReactionMutation = useCallback((comment) => {
+    toggleCommentReaction({
+      variables: {
+        commentId: comment._id,
+      },
+    });
+  }, []);
+
+  const pinnedCommentsJsx = React.useMemo(
+    () => (
+      <>
+        {pinnedComments?.map((pinnedComment, key) => (
+          <Fragment key={key}>
+            <Grid
+              id="commentsArea"
+              container
+              className={classes.pinnedGrid}
+              onMouseOver={() => setShowCommentActionId(pinnedComment?._id)}
+              onMouseLeave={() => setShowCommentActionId(null)}
+              pinned
+            >
+              <div className={classes.pinnedCommentBar}></div>
+              <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
+                <IconButton>
+                  {profilesInfo[pinnedComment?.user?.email]?.profileImage ||
+                  pinnedComment.isNew ? (
+                    <Avatar
+                      src={
+                        pinnedComment.isNew
+                          ? profileImage
+                          : profilesInfo[pinnedComment?.user?.email]
+                              .profileImage
+                      }
+                      size="38"
+                      round
+                    />
+                  ) : (
+                    <Avatar name={pinnedComment?.user?.name} size="38" round />
+                  )}
+                </IconButton>
+              </Grid>
+              <Grid
+                item
+                className={`${classes.paddingLeft10} ${classes.commentContent}`}
+                style={{ marginTop: "5px" }}
+              >
+                <div>
+                  <span className={classes.bold}>
+                    {pinnedComment?.user?.name}
+                  </span>
+                  {!isNaN(pinnedComment.ts) && (
+                    <ReactTimeAgo
+                      className={classes.commentTime}
+                      date={new Date(Number(pinnedComment.ts))}
+                      locale="en-US"
+                    />
+                  )}
+                  {pinnedComment.isEdited && (
+                    <span className={classes.commentTime}>(Edited)</span>
+                  )}
+                </div>
+                <CommonCommentText
+                  users={users}
+                  eachComment={pinnedComment}
+                  isPinned
+                />
+              </Grid>
+              <Grid item style={{ maxWidth: "75px", padding: "0px" }}>
+                <IconButton
+                  onClick={() =>
+                    callToggleCommentReactionMutation(pinnedComment)
+                  }
+                >
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 5 }}
+                  >
+                    {pinnedComment.likedBy?.length > 0 && (
+                      <span style={{ fontSize: "12px" }}>
+                        {pinnedComment.likedBy?.length}
+                      </span>
+                    )}
+                    <Tooltip
+                      title={
+                        <>
+                          {getLikedPeoplesName(
+                            pinnedComment,
+                            stateApp.user._id
+                          )}
+                        </>
+                      }
+                    >
+                      {didILikedThisComment(pinnedComment) ? (
+                        <ThumbUpIcon />
+                      ) : (
+                        <ThumbUpAltOutlinedIcon />
+                      )}
+                    </Tooltip>
+                  </div>
+                </IconButton>
+              </Grid>
             </Grid>
-            <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`} style={{ marginTop: "5px" }}>
-              <div>
-                <span className={classes.bold}>{pinnedComment?.user?.name}</span>
-                {!isNaN(pinnedComment.ts) && (
-                  <ReactTimeAgo className={classes.commentTime} date={new Date(Number(pinnedComment.ts))} locale="en-US" />
-                )}
-                {pinnedComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
-              </div>
-              <CommonCommentText users={users} eachComment={pinnedComment} isPinned />
-            </Grid>
-          </Grid>
-        </Fragment>
-      ))}
-    </>
-  ), [pinnedComments, profileImage, profilesInfo, users]);
+          </Fragment>
+        ))}
+      </>
+    ),
+    [pinnedComments, profileImage, profilesInfo, users]
+  );
 
   return (
     <>
@@ -578,14 +749,16 @@ export default function CommentComponent(props) {
         <div className={classes.comment} id="commentsContainer">
           {!loadingComments ? (
             <>
-
               {
                 // This will return a new grid for pinned comments
                 pinnedCommentsJsx
               }
 
               {!showAllComments && commentsArray.length > 7 && (
-                <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
+                <div
+                  className={classes.moreComment}
+                  style={{ marginTop: 10, marginBottom: 10 }}
+                >
                   <span
                     onClick={() => {
                       setShowAllComments(true);
@@ -596,13 +769,19 @@ export default function CommentComponent(props) {
                 </div>
               )}
               {showAllComments && commentsArray.length > 7 && (
-                <div className={classes.moreComment} style={{ marginTop: 10, marginBottom: 10 }}>
-                  <span onClick={() => setShowAllComments(false)}>Hide Earlier Comments</span>
+                <div
+                  className={classes.moreComment}
+                  style={{ marginTop: 10, marginBottom: 10 }}
+                >
+                  <span onClick={() => setShowAllComments(false)}>
+                    Hide Earlier Comments
+                  </span>
                 </div>
               )}
 
               {commentsArray.map((eachComment, index) => {
-                let indexToShow = commentsArray.length > 7 ? commentsArray.length - 7 : 0;
+                let indexToShow =
+                  commentsArray.length > 7 ? commentsArray.length - 7 : 0;
                 return (
                   <Fragment key={index}>
                     {(showAllComments || index >= indexToShow) && (
@@ -610,40 +789,71 @@ export default function CommentComponent(props) {
                         id="commentsArea"
                         container
                         className={classes.gridStyle}
-                        onMouseOver={() => setShowCommentActionId(eachComment?._id)}
+                        onMouseOver={() =>
+                          setShowCommentActionId(eachComment?._id)
+                        }
                         onMouseLeave={() => setShowCommentActionId(null)}
                       >
-                        {eachComment.pin && <div className={classes.pinnedCommentBar}></div>}
+                        {eachComment.pin && (
+                          <div className={classes.pinnedCommentBar}></div>
+                        )}
                         <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
                           <IconButton>
-                            {profilesInfo[eachComment?.user?.email]?.profileImage || eachComment.isNew ? (
+                            {profilesInfo[eachComment?.user?.email]
+                              ?.profileImage || eachComment.isNew ? (
                               <Avatar
-                                src={eachComment.isNew ? profileImage : profilesInfo[eachComment?.user?.email].profileImage}
+                                src={
+                                  eachComment.isNew
+                                    ? profileImage
+                                    : profilesInfo[eachComment?.user?.email]
+                                        .profileImage
+                                }
                                 size="38"
                                 round
                               />
                             ) : (
-                              <Avatar name={eachComment?.user?.name} size="38" round />
+                              <Avatar
+                                name={eachComment?.user?.name}
+                                size="38"
+                                round
+                              />
                             )}
                           </IconButton>
                         </Grid>
-                        <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
+                        <Grid
+                          item
+                          className={`${classes.paddingLeft10} ${classes.commentContent}`}
+                        >
                           <div>
-                            <span className={classes.bold}>{eachComment?.user?.name}</span>
+                            <span className={classes.bold}>
+                              {eachComment?.user?.name}
+                            </span>
                             {!isNaN(eachComment.ts) && (
-                              <ReactTimeAgo className={classes.commentTime} date={new Date(Number(eachComment.ts))} locale="en-US" />
+                              <ReactTimeAgo
+                                className={classes.commentTime}
+                                date={new Date(Number(eachComment.ts))}
+                                locale="en-US"
+                              />
                             )}
-                            {eachComment.isEdited && <span className={classes.commentTime}>(Edited)</span>}
+                            {eachComment.isEdited && (
+                              <span className={classes.commentTime}>
+                                (Edited)
+                              </span>
+                            )}
                             {eachComment?.user?.email === stateApp.user.email &&
                               showCommentActionId === eachComment._id &&
                               editCommentId !== eachComment._id && (
                                 <div
-                                  className={`${classes.floatRight} ${classes.cursorPointer} ${classes.inlineFlex} ${!(
-                                    eachComment?.user?.email === stateApp.user.email &&
-                                    showCommentActionId === eachComment._id &&
-                                    editCommentId !== eachComment._id
-                                  ) && classes.hideMenuIcon
-                                    }`}
+                                  className={`${classes.floatRight} ${
+                                    classes.cursorPointer
+                                  } ${classes.inlineFlex} ${
+                                    !(
+                                      eachComment?.user?.email ===
+                                        stateApp.user.email &&
+                                      showCommentActionId === eachComment._id &&
+                                      editCommentId !== eachComment._id
+                                    ) && classes.hideMenuIcon
+                                  }`}
                                 >
                                   <ActionMenu
                                     eachComment={eachComment}
@@ -661,21 +871,35 @@ export default function CommentComponent(props) {
                           {eachComment.isActivity === true && (
                             <>
                               <div className={`${classes.whiteSpace}`}>
-                                {eachComment.activityData.type.replace(/_/g, " ").toUpperCase()} - {eachComment.activityData.name}
+                                {eachComment.activityData.type
+                                  .replace(/_/g, " ")
+                                  .toUpperCase()}{" "}
+                                - {eachComment.activityData.name}
                               </div>
                               <div className={`${classes.whiteSpace}`}>
-                                START DATE: {moment(eachComment.activityData.dateTime).format("MM/DD/YYYY hh:mm A")}
+                                START DATE:{" "}
+                                {moment(
+                                  eachComment.activityData.dateTime
+                                ).format("MM/DD/YYYY hh:mm A")}
                               </div>
                               <div className={`${classes.whiteSpace}`}>
-                                END DATE: {moment(eachComment.activityData.endDateTime).format("MM/DD/YYYY hh:mm A")}
+                                END DATE:{" "}
+                                {moment(
+                                  eachComment.activityData.endDateTime
+                                ).format("MM/DD/YYYY hh:mm A")}
                               </div>
                               {eachComment.activityData.outcome && (
-                                <div className={`${classes.whiteSpace}`}>OUTCOME: {eachComment.activityData.outcome}</div>
+                                <div className={`${classes.whiteSpace}`}>
+                                  OUTCOME: {eachComment.activityData.outcome}
+                                </div>
                               )}
                             </>
                           )}
                           {editCommentId !== eachComment._id ? (
-                            <CommonCommentText users={users} eachComment={eachComment} />
+                            <CommonCommentText
+                              users={users}
+                              eachComment={eachComment}
+                            />
                           ) : (
                             <div className={classes.border}>
                               <CommentField
@@ -692,6 +916,44 @@ export default function CommentComponent(props) {
                               />
                             </div>
                           )}
+                        </Grid>
+                        <Grid item style={{ maxWidth: "75px", padding: "0px" }}>
+                          <IconButton
+                            onClick={() =>
+                              callToggleCommentReactionMutation(eachComment)
+                            }
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 5,
+                              }}
+                            >
+                              {eachComment?.likedBy?.length > 0 && (
+                                <span style={{ fontSize: "12px" }}>
+                                  {eachComment?.likedBy?.length}
+                                </span>
+                              )}
+
+                              <Tooltip
+                                title={
+                                  <>
+                                    {getLikedPeoplesName(
+                                      eachComment,
+                                      stateApp.user._id
+                                    )}
+                                  </>
+                                }
+                              >
+                                {didILikedThisComment(eachComment) ? (
+                                  <ThumbUpIcon />
+                                ) : (
+                                  <ThumbUpAltOutlinedIcon />
+                                )}
+                              </Tooltip>
+                            </div>
+                          </IconButton>
                         </Grid>
                       </Grid>
                     )}
@@ -717,12 +979,19 @@ export default function CommentComponent(props) {
               <Grid item style={{ maxWidth: "55px" }}>
                 <IconButton
                   className={classes.commentView}
-                // style={{ top: "3px" }}
+                  // style={{ top: "3px" }}
                 >
-                  {profileImage ? <Avatar src={profileImage} size="38" round /> : <Avatar name={stateApp.user.name} size="38" round />}
+                  {profileImage ? (
+                    <Avatar src={profileImage} size="38" round />
+                  ) : (
+                    <Avatar name={stateApp.user.name} size="38" round />
+                  )}
                 </IconButton>
               </Grid>
-              <Grid item className={`${classes.paddingLeft10} ${classes.commentContent}`}>
+              <Grid
+                item
+                className={`${classes.paddingLeft10} ${classes.commentContent}`}
+              >
                 <>
                   <div
                     className={classes.border}
@@ -780,7 +1049,8 @@ export const CommentText = ({ eachComment, users }) => {
                     id = id.split("}}")[0];
                     return (
                       <p className={`${classes.commentWords} blue`}>
-                        {firstPart}@{users.find((user) => user._id === id)?.name}
+                        {firstPart}@
+                        {users.find((user) => user._id === id)?.name}
                         {secondPart}{" "}
                       </p>
                     );
@@ -805,12 +1075,19 @@ export const CommentText = ({ eachComment, users }) => {
   );
 };
 
-
-
-const ActionMenu = ({ pinToTop, unpinFromTop, showActions, eachComment, setEditCommentId, setEditComment, deleteComment, setShowActions, setIsEdit }) => {
+const ActionMenu = ({
+  pinToTop,
+  unpinFromTop,
+  showActions,
+  eachComment,
+  setEditCommentId,
+  setEditComment,
+  deleteComment,
+  setShowActions,
+  setIsEdit,
+}) => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const { pinComment } = useSelector(state => state.pin);
-
+  const { pinComment } = useSelector((state) => state.pin);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -824,8 +1101,13 @@ const ActionMenu = ({ pinToTop, unpinFromTop, showActions, eachComment, setEditC
 
   return (
     <>
-
-      <ExpandMoreIcon id="expandCommentActionIcon" aria-controls={eachComment._id} aria-haspopup="true" onClick={handleClick} showActions={showActions} />
+      <ExpandMoreIcon
+        id="expandCommentActionIcon"
+        aria-controls={eachComment._id}
+        aria-haspopup="true"
+        onClick={handleClick}
+        showActions={showActions}
+      />
 
       <Menu
         style={{ zIndex: "1305" }}
@@ -837,7 +1119,6 @@ const ActionMenu = ({ pinToTop, unpinFromTop, showActions, eachComment, setEditC
         getContentAnchorEl={null}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "center" }}
-
       >
         <MenuItem
           id="editComment"
@@ -845,24 +1126,36 @@ const ActionMenu = ({ pinToTop, unpinFromTop, showActions, eachComment, setEditC
             setEditCommentId(eachComment._id);
             setEditComment(eachComment.comment);
             setShowActions(true);
-            setIsEdit(true)
+            setIsEdit(true);
             handleClose();
           }}
         >
           Edit Comment
         </MenuItem>
-        <MenuItem textcolor="red" onClick={() => deleteComment(eachComment._id)} id="deleteComment">
+        <MenuItem
+          textcolor="red"
+          onClick={() => deleteComment(eachComment._id)}
+          id="deleteComment"
+        >
           Delete Comment
         </MenuItem>
-        {pinnedComment ?
-          <MenuItem textcolor="red" onClick={() => unpinFromTop(eachComment._id)} id="unpin">
+        {pinnedComment ? (
+          <MenuItem
+            textcolor="red"
+            onClick={() => unpinFromTop(eachComment._id)}
+            id="unpin"
+          >
             Unpin
           </MenuItem>
-          :
-          <MenuItem textcolor="red" onClick={() => pinToTop(eachComment._id)} id="pintotop">
+        ) : (
+          <MenuItem
+            textcolor="red"
+            onClick={() => pinToTop(eachComment._id)}
+            id="pintotop"
+          >
             Pin To Top
           </MenuItem>
-        }
+        )}
       </Menu>
     </>
   );

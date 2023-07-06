@@ -3,6 +3,7 @@ import WellIcon from '../../../components/Shared/svgIcons/well.js';
 import { ErrorOutline } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
+import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink.js";
 
 const styles = {
   width: "fit-content",
@@ -22,19 +23,16 @@ const ComponentPropertyName = ({ value, tableMeta }) => {
       }}
     // style={{borderRight: 'solid red'}}
     >
-      <p
+      <ColumnWithLink
         onClick={(e) => {
           e.stopPropagation();
-          history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
+          history.push(`/revenue/property/details/${tableMeta.rowData[0]}`)
         }}
-        style={styles}
-      >
-        {/* {splitNumber?.[0]} */}
-        {value?.split("_")?.[0]
+        value={value?.split("_")?.[0]
           ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[2]}`
           : tableMeta?.rowData[2]}
-
-      </p>
+        link={`/revenue/property/details/${tableMeta.rowData[0]}`}
+      />
       {/* <Button/> */}
       {
         !(tableMeta?.rowData[5] && tableMeta?.rowData[6]) &&
@@ -73,6 +71,7 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
     esKey: "number.keyword",
     options: {
       ...GlobalStickyStyles({ isReportingGroup }),
+      filter: true,
 
       // setCellProps: () => ({
       //   style: {

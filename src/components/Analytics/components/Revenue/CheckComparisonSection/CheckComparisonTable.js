@@ -47,6 +47,12 @@ function CheckComparisonSection(props) {
   const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
     fetchPolicy: "no-cache",
   });
+  const [getPropertyNumbers] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+    fetchPolicy: "no-cache",
+  });
+  const [getCheckNumbers] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+    fetchPolicy: "no-cache",
+  });
   const [getRevenueAnalyticsCount] = useLazyQuery(GET_REVENUE_ANALYTICS_COUNT, {
     fetchPolicy: "no-cache",
   });
@@ -54,12 +60,16 @@ function CheckComparisonSection(props) {
   useEffect(() => {
     (async () => {
       props.setTotalChecks(props.total);
-      const { propertiesCount, revenueComparisonAnalytics } = await getRevenueComparisonAnalytics("property.IsDeleted", false, "term");
+      const { propertiesCount, revenueComparisonAnalytics, propertyNumbersHits, checkNumbersHits } = await getRevenueComparisonAnalytics();
+      const propertyNumbers = propertyNumbersHits ? propertyNumbersHits.map((hit) => hit.key) : [];
+      const checkNumbers = checkNumbersHits ? checkNumbersHits.map((hit) => hit.key) : [];
       props.onGettingAnalytics({
         propertiesCount: propertiesCount,
         checksCount: revenueComparisonAnalytics?.distinctChecksCount,
         misMatchedInterestsCount: revenueComparisonAnalytics?.misMatchedCount,
         potentialGainLossSum: revenueComparisonAnalytics?.potentialGainLossSum[0]?.totalSum,
+        propertyNumbers: propertyNumbers,
+        checkNumbers: checkNumbers,
       });
     })();
   }, [props.rows]);
@@ -70,12 +80,28 @@ function CheckComparisonSection(props) {
   }, [props.initialFilters]);
 
   useEffect(() => {
+    let requiredEsFilters = props.esFilters.filter(
+      (esFilter) =>
+        esFilter.field === "property.state.keyword" ||
+        esFilter.type === "range" ||
+        esFilter.field === "isMisMatchedInterest"
+    );
+    if (!props.initialFilters.find((initialFilter) => initialFilter.field === "check.checkNumber.keyword")) {
+      const checkNumberFilter = props.esFilters.find((esFilter) => esFilter.field === "check.checkNumber.keyword");
+      if (checkNumberFilter) requiredEsFilters.push(checkNumberFilter);
+    }
+
+    if (!props.initialFilters.find((initialFilter) => initialFilter.field === "property.number.keyword")) {
+      const propertyNumberFilter = props.esFilters.find((esFilter) => esFilter.field === "property.number.keyword");
+      if (propertyNumberFilter) requiredEsFilters.push(propertyNumberFilter);
+    }
+
     setTableMeta({
-      filters: props.esFilters,
+      filters: requiredEsFilters,
       TableHeader: copy(TableHeader),
       esIndex: "checkdetailsinterestscomparison_flat",
       startPaginationAt: 50,
-      //defaultSort: { field: "flatSyncAt", order: "desc" },
+      defaultSort: { field: "flatSyncAt", order: "desc" },
       formatHits,
       downloadAll: { exportPx: "176px" },
     });
@@ -134,6 +160,30 @@ function CheckComparisonSection(props) {
         onError: (error) => reject(error),
       });
     });
+    const propertyNumbersPromise = new Promise((resolve, reject) => {
+      getPropertyNumbers({
+        variables: {
+          index: "checkdetailsinterestscomparison_flat",
+          filters: [...props.esFilters, { field: "property.IsDeleted", value: false, type: "term" }],
+          filterKey: "property.number.keyword",
+          filterAggs: { query: "", field: "property.number.keyword", size: props.total || 0 },
+        },
+        onCompleted: (res) => resolve(res?.getESSimpleFilter?.hits),
+        onError: (error) => reject(error),
+      });
+    });
+    const checkNumbersPromise = new Promise((resolve, reject) => {
+      getCheckNumbers({
+        variables: {
+          index: "checkdetailsinterestscomparison_flat",
+          filters: [...props.esFilters],
+          filterKey: "check.checkNumber.keyword",
+          filterAggs: { query: "", field: "check.checkNumber.keyword", size: props.total || 0 },
+        },
+        onCompleted: (res) => resolve(res?.getESSimpleFilter?.hits),
+        onError: (error) => reject(error),
+      });
+    });
     const otherSummaryPromise = new Promise((resolve, reject) => {
       getRevenueAnalyticsCount({
         variables: {
@@ -146,8 +196,8 @@ function CheckComparisonSection(props) {
         onError: (error) => reject(error),
       });
     });
-    const [propertiesCount, revenueComparisonAnalytics] = await Promise.all([propertiesPromise, otherSummaryPromise]);
-    return { propertiesCount, revenueComparisonAnalytics };
+    const [propertiesCount, revenueComparisonAnalytics, propertyNumbersHits, checkNumbersHits] = await Promise.all([propertiesPromise, otherSummaryPromise, propertyNumbersPromise, checkNumbersPromise]);
+    return { propertiesCount, revenueComparisonAnalytics, propertyNumbersHits, checkNumbersHits };
   };
 
   return (

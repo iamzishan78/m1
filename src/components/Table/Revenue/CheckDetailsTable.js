@@ -1,18 +1,19 @@
 import React, { useEffect } from "react";
 import { usetableStyles } from "../Styles";
-import { Button, Container } from "@material-ui/core";
+import { Button, Container, Tooltip, IconButton } from "@material-ui/core";
 import TableESHOC from "components/Table/TableESHOC";
 import Table from "components/Shared/M1nTable/components/Table";
 import { deepEqualObjects, copy } from "components/Shared/functions";
 import TableHeader from 'components/Table/constants/check-details-header-schema';
 import { history } from "store";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 // value formatters
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 
 function CheckDetailsTable(props) {
     const classes = usetableStyles();
-    const { checkId, setTableMeta } = props;
+    const { checkId, setTableMeta, onDownload, isExporting } = props;
 
     const formatHits = (hits) => {
         return hits.map((hit) => {
@@ -52,7 +53,21 @@ function CheckDetailsTable(props) {
     }
 
     props.options.customToolbar = () => {
-        return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
+        return <>
+
+            <div style={{
+                display: "inline",
+                position: "absolute",
+                right: '121px',
+            }}>
+                <IconButton onClick={onDownload} disabled={isExporting}>
+                    <Tooltip title="Download to CSV" aria-label="add">
+                        <CloudDownloadIcon />
+                    </Tooltip>
+                </IconButton>
+            </div>
+
+        <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
             <Button
                 id="inputModeButton"
                 color="secondary"
@@ -62,6 +77,7 @@ function CheckDetailsTable(props) {
                 INPUT MODE
             </Button>
         </div>
+        </>
     }
     return (
         <Container
