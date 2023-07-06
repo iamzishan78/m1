@@ -5616,16 +5616,15 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       stateApp.fitBounds.minLong
     ) {
       let bounds = fitOverBounds();
-      bounds = [
-        [bounds.minLong, bounds.minLat],
-        [bounds.maxLong, bounds.maxLat],
-      ]
-      if (typeof bounds?.minLong !== "undefined")
-        try {
-          map?.fitBounds(bounds, {
+      try {
+        if (typeof bounds?.minLong !== "undefined")
+          map.fitBounds([
+            [bounds.minLong, bounds.minLat],
+            [bounds.maxLong, bounds.maxLat],
+          ], {
             easing: () => 1,
-          })
-        } catch (e) { }
+          });
+      } catch (e) { }
     }
   }, [map, stateApp.fitBounds]);
 
