@@ -36,7 +36,7 @@ export function vf_currency_dollar(value, toFixed) {
     <div style={{ display: "flex", alignItems: "center" }}>
       {value < 0 && "-"}
       {<AttachMoneyIcon style={{ fontSize: "2.5rem", margin: "0  -0.6rem" }} />}
-      {vf_number(Math.abs(value?.toFixed(toFixed))) || 0}
+      {value ? vf_number(Math.abs(value?.toFixed(toFixed))) : "0.00"}
     </div>
   );
 }
