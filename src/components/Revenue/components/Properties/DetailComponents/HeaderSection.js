@@ -149,6 +149,10 @@ export default function HeaderSection(props) {
   const { data: prospectOptions } = useQuery(SHAPE_AUTOCOMPLETE_LIST, {
     variables: { key: "prospectID" },
   });
+  const { data: ownerOptions } = useQuery(GET_AUTOCOMPLETE_PROPERTY_LIST, {
+    variables: { key: "ownerNumber" },
+  });
+
   const [updateProperty] = useMutation(UPDATE_PROPERTY);
 
   useEffect(() => {
@@ -515,26 +519,100 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Owner #</div>
+                <div className={classes.label}>Purchaser Owner #</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
                   control={control}
-                  name="owner.number"
+                  name="ownerNumber"
                   render={(params) => (
-                    <TextField
-                      {...params}
-                      className={classes.textField}
-                      variant="outlined"
-                      margin="dense"
-                      placeholder=""
-                      fullWidth
-                      onChange={(e) => {
-                        params.onChange(e.target.value);
-                      }}
-                      onBlur={(e) =>
-                        handleUpdate("ownerNumber", e.target.value)
+                    <Autocomplete
+                      className={classes.field}
+                      value={
+                        params.value
+                          ? { _id: params.value, name: params.value }
+                          : null
                       }
+                      disableListWrap
+                      onBlur={(e) =>
+                        updatePropertyData("ownerNumber", e.target.value)
+                      }
+                      options={getMappedOptions(
+                        ownerOptions?.getAutoCompletePropertyList
+                      )}
+                      getOptionLabel={(option) => {
+                        // Value selected with enter, right from the input
+                        if (typeof option === "string") {
+                          return option;
+                        }
+                        // Add "xxx" option created dynamically
+                        if (option.inputValue) {
+                          return option.name;
+                        }
+
+                        if (option?.name) return option.name;
+                        else return "";
+                      }}
+                      getOptionSelected={(option, value) => {
+                        return option?._id === value?._id;
+                      }}
+                      renderOption={(option) => {
+                        if (option.isNew)
+                          return (
+                            <Typography style={{ color: "midnightblue" }}>
+                              Add '{option.name}'
+                            </Typography>
+                          );
+
+                        return (
+                          <Grid container spacing={0}>
+                            <Grid container item xs={12} alignItems="center">
+                              <Grid item xs>
+                                <span style={{ fontWeight: 400 }}>
+                                  {option.name}
+                                </span>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        );
+                      }}
+                      filterOptions={(options, params) => {
+                        const inputValue = params.inputValue;
+                        const filtered = createFilterOptions()(options, {
+                          ...params,
+                          inputValue,
+                        });
+                        const isExist = loadashFilter(filtered, (filter) => {
+                          return filter._id === inputValue;
+                        });
+                        // Suggest the creation of a new value
+                        if (
+                          inputValue !== "" &&
+                          (!isExist || isExist.length === 0)
+                        ) {
+                          filtered.unshift({
+                            value: inputValue,
+                            name: inputValue,
+                            isNew: true,
+                          });
+                        }
+                        return filtered;
+                      }}
+                      onChange={(event, newValue) => {
+                        setValue("ownerNumber", newValue?.value || "");
+                      }}
+                      renderInput={(props) => (
+                        <TextField
+                          variant={"outlined"}
+                          margin="dense"
+                          {...props}
+                          InputProps={{
+                            ...props.InputProps,
+                          }}
+                          fullWidth
+                          size="small"
+                        />
+                      )}
                     />
                   )}
                 />
@@ -545,7 +623,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Owner Name</div>
+                <div className={classes.label}>Purchaser Owner Name</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
