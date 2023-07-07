@@ -25,7 +25,7 @@ export default function FilterCountyName() {
   const [stateNav, setStateNav] = useContext(NavigationContext);
 
   const [countyList, setCountyList] = useState([]);
-  const [getCounties, { loading, data }] = useLazyQuery(COUNTIES);
+  const [getCounties, { loading, data }] = useLazyQuery(COUNTIES, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
     if (stateNav.stateName) {
