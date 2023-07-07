@@ -67,7 +67,7 @@ const CampaignsHeadCells = [
   },
   {
     name: "totalNra",
-    label: "Total NRA",
+    label: "Total Unit NRA",
     esKey: "totalNra",
     options: {
       display: true,

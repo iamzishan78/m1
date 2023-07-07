@@ -1119,6 +1119,35 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
+          <Grid item xs={12}>
+          <Grid
+            container
+            className={`${classes.gridStyle} ${classes.textArea}`}
+          >
+            <Grid item style={{ flexBasis: "10.3%" }}>
+              <div className={classes.label}>M1 System ID</div>
+            </Grid>
+            <Grid item style={{ flexBasis: "84.8%" }}>
+              <Controller
+                control={control}
+                name="systemId"
+                render={(params) => (
+                  <TextField
+                    {...params}
+                    className={classes.textField}
+                    variant="outlined"
+                    margin="dense"
+                    type="text"
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    value={propertyDetails?._id}
+                  />
+                )}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
 
           <Grid item xs={12}>
             <Grid

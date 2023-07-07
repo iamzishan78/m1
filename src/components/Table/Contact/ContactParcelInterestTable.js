@@ -63,7 +63,7 @@ function ContactParcelInterestTable(props) {
       filters: [{ field: 'contact._id', value: props.contactId }]
     }
 
-    if(typeof props.contactId === "object" && Array.isArray(props.contactId)){
+    if (typeof props.contactId === "object" && Array.isArray(props.contactId)) {
       payload.contactIds = props.contactId
     } else {
       payload.contactId = props.contactId

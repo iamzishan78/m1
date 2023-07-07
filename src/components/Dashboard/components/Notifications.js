@@ -256,7 +256,7 @@ const Notifications = () => {
         <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
       ) : (
         <List style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
-          {notifications.map(({ _id, state, source, parent, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
+            {notifications.map(({ _id, state, source, parent, senderId, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
             const user = users.find((user) => source.user === user._id);
             return (
               <Paper key={i} className={classes.paper}>
@@ -294,6 +294,8 @@ const Notifications = () => {
                       );
                     } else if (parentType === "AGREEMENT") {
                       history.push(`/map/${parent.layer}s/${parent._id}`);
+                    } else if (parentType === "ACTIVITY") {
+                      history.push(`/calendar/activities/${parent._id}`);
                     } else if (parentType === "CHECK") {
                       history.push(`/revenue/statement/details/${parent._id}`);
                     } else if (parentType === "PROPERTY") {
@@ -349,7 +351,36 @@ const Notifications = () => {
                         {parent.name}
                       </span>
                     )}
-
+                    
+                    {(notificationType === "TASK_COMPLETED" || notificationType === "TASK_ASSIGNMENT") &&
+                      <Grid container className={classes.gridStyle}>
+                        <Grid item xs={1}>
+                          <IconButton
+                            style={{ marginTop: "0px", marginLeft: "14px" }}
+                          >
+                            {profilesInfo[senderId?.email]?.profileImage ? (
+                              <Avatar
+                                src={profilesInfo[senderId?.email].profileImage}
+                                size="38"
+                                round
+                              />
+                            ) : (
+                              <Avatar name={senderId?.name} size="38" round />
+                            )}
+                          </IconButton>
+                        </Grid>
+                        <Grid item xs={11} className={classes.paddingLeft10}>
+                          <div>
+                            <span className={classes.bold}>{senderId?.name}</span>
+                            {
+                              notificationType === "TASK_COMPLETED" ? "  has completed the Task" : "  has assigned you a Task"
+                            }
+                          </div>
+                          <div>{parent.name}</div>
+                        </Grid>
+                      </Grid>
+                    }
+                      
                     {notificationType === "SYSTEM" && (
                       <Grid container className={classes.gridStyle}>
                         <Grid item xs={1}>

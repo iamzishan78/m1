@@ -45,7 +45,7 @@ function ESTableComponent(props) {
     });
   };
 
-  const layerType  = useMemo(() => {
+  const layerType = useMemo(() => {
     let layerType = _.upperFirst(props.customLayer.layer)
     layerType = layerType === 'Surface' ? 'Surface/ROW' : layerType
     return layerType
@@ -76,7 +76,7 @@ function ESTableComponent(props) {
         shapeType: props.shapeType,
         addableName: "Tract",
         extendSearchQuery: `shape._id:${props.customLayer._id}`,
-        TableHeader: copy(getTableHeader({layerType, interestMapping})),
+        TableHeader: copy(getTableHeader({ layerType, interestMapping })),
         esIndex: 'shapeowners_flat',
         startPaginationAt: 25,
         formatHits,
@@ -134,7 +134,7 @@ function ESTableComponent(props) {
             header={`Delete Tract(s)`}
             onClose={() => props.setOpenDialog(null)}
             deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={props.selectedRows.map((sR => props.rows[sR.dataIndex]._id))}
+            m1nSelectedRowsIds={props.selectedRows.map((sR => props.rows[sR.dataIndex]?._id))}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
             {`Do you want to delete the selected tract${props.selectedRows &&

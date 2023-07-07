@@ -57,6 +57,7 @@ const FileTree = ({ layerMap, panelItems }) => {
             }
             checkforUpdate(updateFn, item, index, 'name')
             checkforUpdate(updateFn, item, index, 'fileName')
+            checkforUpdate(updateFn, item, index, 'fileUrl')
             if (item.layerSettings) {
               updateFn[index] = {
                 ...updateFn[index],

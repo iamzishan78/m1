@@ -20,7 +20,7 @@ import useStyles from "../style";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
 import { callOwnerSearch, callWellSearch } from "./searchApi";
 
-const ownerCogIndexName = "globalowner-index";
+const ownerCogIndexName = "globalowner-index-m1corev3";
 const defaultSize = 7;
 
 const maxMinScore = (options) => {
@@ -281,8 +281,8 @@ function Search({ fetchSelectedWells }) {
                     />
                   </Grid>
                   <Grid item>
-                    {option.Source === "globalowner-index" && <PersonIcon className={classes.icon} />}
-                    {option.Source === "wellheader-index" && <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />}
+                    {option.Source === "globalowner-index-m1corev3" && <PersonIcon className={classes.icon} />}
+                    {option.Source === "wellheader-index-m1corev3" && <WellIcon className={classes.icon} color={"#757575"} opacity="1.0" small />}
                   </Grid>
                   <Grid item xs>
                     {parse(option.Primary, Array()).map((part, index) => (

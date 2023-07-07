@@ -2,7 +2,7 @@ import debounce from "lodash/debounce";
 
 export const callWellSearch = debounce((request, callback) => {
     const endpoint =
-        "https://m1search.search.windows.net/indexes/wellheader-index/docs?api-version=2020-06-30&queryType=full&count=true&%24filter=Latitude%20ne%20null%20and%20Longitude%20ne%20null&searchFields=WellName%2CApiNumber&$top=" +
+        "https://m1search.search.windows.net/indexes/wellheader-index-m1corev3/docs?api-version=2020-06-30&queryType=full&count=true&%24filter=Latitude%20ne%20null%20and%20Longitude%20ne%20null&searchFields=WellName%2CApiNumber&$top=" +
         request.top +
         "&search=" +
         encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));
@@ -29,7 +29,7 @@ export const callWellSearch = debounce((request, callback) => {
 
 export const callOwnerSearch = debounce((request, callback) => {
     const endpoint =
-        "https://m1search.search.windows.net/indexes/globalowner-index/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName&$top=" +
+        "https://m1search.search.windows.net/indexes/globalowner-index-m1corev3/docs?api-version=2020-06-30&queryType=full&count=true&searchFields=OwnerName&$top=" +
         request.top +
         "&search=" +
         encodeURIComponent(request.input.replace(/\b(?<=\w)(?=\s+)|$(?<=\w)/g, "~"));

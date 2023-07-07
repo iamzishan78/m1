@@ -67,11 +67,8 @@ export default function Portfolio({
 }) {
   const classes = useStyles();
   useEffect(() => {
-    if (isProperties) {
-      handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
-    } else {
-      handleDateTypeChange(CUSTOM_DATES.THIS_YEAR_TO_DATE);
-    }
+    handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+
     delete CUSTOM_DATES.THIS_WEEK;
     delete CUSTOM_DATES.LAST_WEEK;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -93,9 +90,15 @@ export default function Portfolio({
   //   return new Date(new Date().getFullYear(), new Date().getMonth(), 0);
   // }
 
+  useEffect(() => {
+    if (lastCheckMinDate) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastCheckMinDate]);
+
   const handleDateTypeChange = (date) => {
-    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate);
+    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate, true);
   };
+
   return (
     <>
       {label && (
@@ -126,7 +129,7 @@ export default function Portfolio({
               style={{ backgroundColor: "white" }}
             />
           )}
-          defaultValue={defaultRange ? defaultRange : CUSTOM_DATES.THIS_YEAR_TO_DATE}
+          defaultValue={defaultRange ? defaultRange : CUSTOM_DATES.ALL_DATES}
           disableListWrap
           id="custom-date-dropdown"
         />
@@ -152,14 +155,18 @@ export default function Portfolio({
             },
           }}
           onChange={(event) => {
-            if (event.target.value == "") {
+            if (event.target.value === "") {
               setFromDate(
                 `${Math.round(new Date().getFullYear())}-${getFlaggedMoment(
                   Math.ceil(new Date().getMonth()) + 1
                 )}`
               );
             } else {
-              setFromDate(event.target.value);
+              const values = event.target.value.split('-')
+
+              values[0] = +values[0] > 3000 ? values[0].substring(0, 4) : values[0]
+
+              setFromDate(values.join('-'));
             }
           }}
         />
@@ -178,14 +185,18 @@ export default function Portfolio({
           value={moment(toDate).format("yyyy-MM")}
           className={classes.inputFieldDate}
           onChange={(event) => {
-            if (event.target.value == "") {
+            if (event.target.value === "") {
               setToDate(
                 `${Math.round(new Date().getFullYear())}-${getFlaggedMoment(
                   Math.ceil(new Date().getMonth()) + 1
                 )}`
               );
             } else {
-              setToDate(event.target.value);
+              const values = event.target.value.split('-')
+
+              values[0] = +values[0] > 3000 ? values[0].substring(0, 4) : values[0]
+
+              setToDate(values.join('-'));
             }
           }}
           InputLabelProps={{

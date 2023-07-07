@@ -428,6 +428,12 @@ const checkDetailsKeys = [
         required: false,
         actual_key: "netOwnerValue",
     },
+    {
+        label: "M1 Property ID",
+        mapped_key: "",
+        required: false,
+        actual_key: "property._id",
+    },
 ];
 
 export default checkDetailsKeys;

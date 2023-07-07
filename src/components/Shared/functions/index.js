@@ -114,10 +114,18 @@ export function customStartCaseString(str, isDate) {
 
 export function workspaceTenantName() {
   const workspaceName = window.sessionStorage.getItem("tenantName");
-  return workspaceName === "localhost" ? "EnerX" : workspaceName;
+  return workspaceName === "localhost" ? "m1dev" : workspaceName;
 }
 
-export function getDateWithoutTime(dateTime = "") {
+export function getDateWithoutTime(dateTime) {
+  if (!dateTime || (typeof dateTime !== 'string' && typeof dateTime !== 'number')){
+    dateTime = "";
+  } 
+
+  if (typeof dateTime === 'number') {
+    dateTime = dateTime.toString();
+  }
+  
   if (dateTime?.includes && dateTime.includes('/')) {
     const splittedDate = dateTime.split("/")
     const newDate = new Date()

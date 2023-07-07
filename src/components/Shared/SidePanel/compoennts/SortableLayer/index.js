@@ -128,11 +128,6 @@ const SortableLayer = ({ mongoId, search }) => {
         })
       }
 
-      // console.log(layerAndGroups)
-      console.log('showable', layerAndGroups.filter(l => l?.layerSettings?.showable))
-      console.log('visiable', layerAndGroups.filter(l => l?.layerSettings?.visiable))
-      console.log('both', layerAndGroups.filter(l => l?.layerSettings?.showable && l?.layerSettings?.visiable))
-      console.log('both hookState.layers', hookState.layers.get({ noproxy: true }).filter(l => l?.layerSettings?.showable && l?.layerSettings?.visiable))
       setPanelItems(layerAndGroups)
     }
   }, [hookState.layers, layerGroupData?.getLayerGroups])

@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
     margin: 0,
     backgroundColor: "#fff",
   },
-  card: { 
+  card: {
     borderRadius: "8px",
 
     "&.active": {
@@ -32,11 +32,11 @@ const useStyles = makeStyles(() => ({
     "&:hover .filterButton, & .filterButton.active": {
       display: "inline-block",
     },
- },
+  },
   cardHeaderTypography: {
-    display:'flex',
-    alignItems:'center',
-    gap:'10px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
     fontWeight: "bolder",
     marginBottom: "25px",
   },
@@ -44,11 +44,11 @@ const useStyles = makeStyles(() => ({
     fontWeight: 900,
     fontSize: "xx-large",
   },
-  filterIcon:{
-    color:'grey',
-    cursor:'pointer',
-    height:'100%',
-    width:'100%',
+  filterIcon: {
+    color: 'grey',
+    cursor: 'pointer',
+    height: '100%',
+    width: '100%',
   },
   cardContent: {
     display: "flex",
@@ -98,45 +98,46 @@ export default function AnalyticsCards({
   cardsDefault,
   landSearchQuery,
   unmappedPropertyCount = 0,
-  isFiltered,
-  setFiltered,
   setESFilters,
   setFilterToggle,
   filterToggle
 }) {
   const classes = useStyles();
+  const [isFiltered, setFiltered] = useState([]);
   const [cards, setCards] = useState(cardsDefault);
 
-  const updateFilters = () => {
-    let filters = copy(esFilters);
-
-    const findIndex = esFilters.findIndex(f => f.field === "wells" && !f.value)
-
-    if(isFiltered){
-
-      if(findIndex === -1){
-
-        filters.push({
-          field: "wells",
-          value: null
-        })
-      } else {
-        return
+  useEffect(() => {
+    const filterInfo = {
+      unmapped: {
+        field: "wells._id",
+        value: null
+      },
+      inpay: {
+        field: "status.keyword",
+        value: "In Pay"
+      },
+      notinpay: {
+        field: "status.keyword",
+        value: "NotInPay"
       }
-    } else {
-      if(findIndex > -1){
-        filters = filters.filter((_,index) => index !== findIndex)
+    };
+
+    const filters = [];
+
+    isFiltered.forEach(filterKey => {
+      const filter = filterInfo[filterKey];
+      if (filter && !filters.some(f => f.field === filter.field && f.value === filter.value)) {
+        filters.push(filter);
       }
-    }
+    });
 
     setESFilters(filters);
     setFilterToggle(!filterToggle);
-  };
+  }, [isFiltered]);
 
 
-  useEffect(()=>{
-    updateFilters();
-  },[isFiltered, esFilters]);
+
+
 
   const setCardPoint = (count, index) => {
     const newCards = JSON.parse(JSON.stringify(cards));
@@ -187,7 +188,7 @@ export default function AnalyticsCards({
       : 0;
   }
 
-  const [getESAggsApprovedCount, { loading: approvedCountLoading}] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsApprovedCount, { loading: approvedCountLoading }] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
@@ -256,24 +257,68 @@ export default function AnalyticsCards({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalCount]);
 
+  const handleFilterClick = (key) => {
+    if (key === "inpay" || key === "notinpay") {
+      let filteredArray = [...isFiltered];
+
+      // Check if the clicked key already exists in the array
+      const keyIndex = filteredArray.indexOf(key);
+
+      if (keyIndex !== -1) {
+        // If the clicked key already exists, remove it from the array
+        filteredArray.splice(keyIndex, 1);
+      } else {
+        // Remove "inpay" or "notinpay" from the array if they exist
+        filteredArray = filteredArray.filter(item => item !== "inpay" && item !== "notinpay");
+        // Add the clicked key to the array
+        filteredArray.push(key);
+      }
+
+      setFiltered(filteredArray);
+    } else if (key === "unmapped") {
+      if (isFiltered.includes("unmapped")) {
+        // Remove "unmapped" from the array if it already exists
+        const filteredArray = isFiltered.filter(item => item !== "unmapped");
+        setFiltered(filteredArray);
+      } else {
+        // Add "unmapped" to the array
+        setFiltered([...isFiltered, "unmapped"]);
+      }
+    } else {
+      // Clear the array
+      setFiltered([]);
+    }
+  };
+
   return (
     <Grid container direction="row" display="flex" align="center" spacing={4} textAlign="left" className={classes.root}>
       {cards && cards.map((card, index) => (
         <Grid item md={3}>
-           <Card
-              variant="outlined"
-              className={[classes.card, card.key === isFiltered && "active" || ""]}
+          <Card
+            variant="outlined"
+            className={[
+              classes.card,
+              isFiltered.includes(card.key) ? "active" : ""
+            ]}
           >
+
             <CardContent className={classes.cardContent}>
               <Typography variant="h6" component="div" className={classes.cardHeaderTypography}>
                 {card.heading}
                 {card.filterable && (
+
                   <IconButton
-                    className={[classes.filterButton, "filterButton", card.key === isFiltered && "active" || ""]}
-                    onClick={()=>{ setFiltered(card.key === isFiltered ? "" : card.key)}}
-                    >
-                     <FilterIcon className={"filter-alt"} />
-                     <FilterIcon variant="outlined" className="filter-outlined"  />
+                    className={[
+                      classes.filterButton,
+                      "filterButton",
+                      isFiltered.includes(card.key) ? "active" : ""
+                    ]}
+                    key={card.key}
+                    onClick={() => handleFilterClick(card.key)}
+                  >
+
+                    <FilterIcon className={"filter-alt"} />
+                    <FilterIcon variant="outlined" className="filter-outlined" />
                   </IconButton>
                 )}
               </Typography>
@@ -296,7 +341,7 @@ export default function AnalyticsCards({
                 </div>
               )}
               {
-                (activeCountLoading || approvedCountLoading) ? 
+                (activeCountLoading || approvedCountLoading) ?
                   <CircularProgress size={40} color="secondary" />
                   :
                   <Typography

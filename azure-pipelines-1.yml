@@ -4,48 +4,48 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- M1R-55.0-STAGE
+  - M1R-55.0-STAGE
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: "ubuntu-latest"
 
 variables:
   NODE_OPTIONS: --max_old_space_size=32768
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '14.x'
-  displayName: 'Install Node.js'
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "16.15.0"
+    displayName: "Install Node.js"
 
-- task: Npm@1
-  inputs:
-    command: 'install'
-  displayName: 'Npm Install'
-  
-- script: |
-    echo $NODE_OPTIONS
-    npm run build
-  failOnStderr: true
-  displayName: 'Prepare binaries'
+  - task: Npm@1
+    inputs:
+      command: "install"
+    displayName: "Npm Install"
 
-## Copy the client to the staging directory
-- task: CopyFiles@2
-  inputs:
-    sourceFolder: 'build' 
-    contents: '**/*' 
-    targetFolder: '$(Build.ArtifactStagingDirectory)'
-    cleanTargetFolder: true
+  - script: |
+      echo $NODE_OPTIONS
+      npm run build
+    failOnStderr: true
+    displayName: "Prepare binaries"
 
-## Archive the files into a zip file for publishing
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: $(Build.ArtifactStagingDirectory)
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    includeRootFolder: false
+  ## Copy the client to the staging directory
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: "build"
+      contents: "**/*"
+      targetFolder: "$(Build.ArtifactStagingDirectory)"
+      cleanTargetFolder: true
 
-## Publish the zip file
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+  ## Archive the files into a zip file for publishing
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: $(Build.ArtifactStagingDirectory)
+      archiveType: "zip"
+      archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+      includeRootFolder: false
+
+  ## Publish the zip file
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"

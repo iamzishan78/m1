@@ -96,7 +96,7 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
           <Card variant="outlined" className={classes.card}>
             <CardContent className={classes.cardContent}>
               <Typography variant="h6" component="div" className={classes.cardHeaderTypography}>
-                Total NRA
+                Total Unit NRA
               </Typography>
               <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
                 {Math.round(get(campaign, "totalNra", 0))}
