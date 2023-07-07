@@ -784,7 +784,7 @@ function ExpandableCard(props) {
                     ) : (
                       <>
                         {" "}
-                        {(targetLabel == "parcel" || targetLabel == "unit" || targetLabel == "agreement") && (
+                        {(targetLabel == "parcel" || targetLabel == "unit" || targetLabel == "agreement" || targetLabel == "activity") && (
                           <>
                             {" "}
                             <IconButton size="small" component="span" onClick={handleMenuClick}>
