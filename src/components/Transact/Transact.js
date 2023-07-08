@@ -584,12 +584,10 @@ const Transact = () => {
                 </>
               )
             }
+             <br />
+            {metadata.closedPrice && <span>Closed Price  <span style={{ fontWeight: "normal" }}>{vf_currency(metadata.closedPrice)}</span></span>}
           </div>
-          {metadata.closedPrice && <span>Closed Price  <span style={{ fontWeight: "normal" }}>{vf_currency(metadata.closedPrice)}</span></span>}
         </header>
-        {
-          
-        }
         {
           showDescription &&
           <div className={CardClasses.cardDescStyle}>{desc}</div>
