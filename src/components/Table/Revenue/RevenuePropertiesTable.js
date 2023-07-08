@@ -47,6 +47,11 @@ function RevenuePropertiesTable(props) {
       hit.type = hit?.lastCheck?.interestType[0];
       hit.lastChecked = hit?.lastCheck?.checkDate ? new Date(hit?.lastCheck?.checkDate).toLocaleDateString() : "";
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
+      hit.tags =
+      hit?.tags?.length > 0
+        ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
+        : [[], 0];
+      hit.system_id = hit._id;
       return hit;
     });
     return hits;
