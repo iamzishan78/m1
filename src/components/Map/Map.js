@@ -322,42 +322,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
   /////end/////////temporary
 
-  // const functions
-  const findBounds = (shapes) => {
-    let bound = null;
-    // if (
-    //   fitBounds &&
-    //   fitBounds.maxLat &&
-    //   fitBounds.minLat &&
-    //   fitBounds.maxLong &&
-    //   fitBounds.minLong
-    // ) {
-    //   bound = fitBounds;
-    // }
-    if (shapes && shapes.length > 0) {
-      shapes.forEach((shape) => {
-        if (gjv.valid(shape)) {
-          const bbox = turf.bbox(shape);
-
-          if (bound) {
-            bound.minLong = bound.minLong > bbox[0] ? bbox[0] : bound.minLong;
-            bound.minLat = bound.minLat > bbox[1] ? bbox[1] : bound.minLat;
-            bound.maxLong = bound.maxLong < bbox[2] ? bbox[2] : bound.maxLong;
-            bound.maxLat = bound.maxLat < bbox[3] ? bbox[3] : bound.maxLat;
-          } else {
-            bound = {
-              minLong: bbox[0],
-              minLat: bbox[1],
-              maxLong: bbox[2],
-              maxLat: bbox[3],
-            };
-          }
-        }
-      });
-    }
-    return { ...bound };
-  };
-
   const fitOverBounds = () => {
     let { maxLat, minLat, maxLong, minLong } = stateApp.fitBounds || {};
 
@@ -5616,16 +5580,15 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       stateApp.fitBounds.minLong
     ) {
       let bounds = fitOverBounds();
-      bounds = [
-        [bounds.minLong, bounds.minLat],
-        [bounds.maxLong, bounds.maxLat],
-      ]
-      if (typeof bounds?.minLong !== "undefined")
-        try {
-          map?.fitBounds(bounds, {
+      try {
+        if (typeof bounds?.minLong !== "undefined")
+          map.fitBounds([
+            [bounds.minLong, bounds.minLat],
+            [bounds.maxLong, bounds.maxLat],
+          ], {
             easing: () => 1,
-          })
-        } catch (e) { }
+          });
+      } catch (e) { }
     }
   }, [map, stateApp.fitBounds]);
 
