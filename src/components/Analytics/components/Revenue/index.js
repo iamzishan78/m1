@@ -149,7 +149,7 @@ export default function RevenueAnalytics(props) {
     fetchPolicy: "no-cache",
   });
 
-  const [getCheckDetailData, { data: checkDetailData}]= useLazyQuery(GET_CHECK_DETAILS_DATA, {
+  const [getCheckDetailData, { data: checkDetailData }] = useLazyQuery(GET_CHECK_DETAILS_DATA, {
     fetchPolicy: "no-cache",
   });
 
