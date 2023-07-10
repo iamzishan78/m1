@@ -91,7 +91,7 @@ const SortableLayer = ({ mongoId, search }) => {
                 ...item,
                 visiable: item.layerSettings.visiable,
                 showable,
-                layerSettings:{...item.layerSettings, showable},
+                layerSettings: { ...item.layerSettings, showable },
                 name: item.layerName === "Parcels" ? "Tracts" : item.layerName,
                 depth: 0,
                 type: "layer",
@@ -134,7 +134,6 @@ const SortableLayer = ({ mongoId, search }) => {
   }, [hookState.layers, layerGroupData?.getLayerGroups])
 
   useEffect(() => {
-    console.log(panelItems)
     if (search)
       setLayerMap(panelItems.filter((i) => (i.layerName ?? i.name).toLowerCase().includes(search.toLowerCase())))
     else {
