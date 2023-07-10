@@ -1,3 +1,4 @@
+import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import { history } from "store";
 
 const CampaignsHeadCells = [
@@ -23,19 +24,13 @@ const CampaignsHeadCells = [
       filter: true,
       customRender: (value, tableMeta) => {
         return value ? (
-          <p
+          <ColumnWithLink
+            value={value}
+            link={`/contacts/campaign/details/${tableMeta.rowData[0]}`}
             onClick={(e) => {
               e.stopPropagation();
-
-              history.push({
-                pathname: `/contacts/campaign/details/${tableMeta.rowData[0]}`,
-                state: { campaignName: value },
-              });
             }}
-            style={{ fontWeight: 600, color: "#17aadd", cursor: "pointer" }}
-          >
-            {value}
-          </p>
+          />
         ) : (
           <p style={{ color: "#898989b0" }}>N/A</p>
         );
