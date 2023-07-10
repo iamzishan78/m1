@@ -24,7 +24,7 @@ export default function FilterFromGeo() {
   const classes = useStyles();
   const [, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [getWellsMinMaxLatLong, { data }] = useLazyQuery(WELLSMINMAXLATLONG);
+  const [getWellsMinMaxLatLong, { data }] = useLazyQuery(WELLSMINMAXLATLONG, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
     //// Geo Filter Builder ////
