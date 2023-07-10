@@ -123,7 +123,7 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
   },
   {
     name: "number",
-    label: "Property #",
+    label: "Operator Prop #",
     esKey: "number.keyword"
   },
   {
