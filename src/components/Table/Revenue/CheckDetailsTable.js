@@ -13,6 +13,7 @@ import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { UPSERT_CHECK_PROPERTY } from "graphQL/useMutationCheckPropertyUpdate";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import Loader from "components/Loaders";
 // value formatters
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 
@@ -30,7 +31,7 @@ function CheckDetailsTable(props) {
 
     const [upsertCheckProperties] = useMutation(UPSERT_CHECK_PROPERTY, {
         onCompleted: () => {
-            props.setLoading(false);
+            Loader.successToast('checks-updation', "Checks updated successfully");
             props.setSelectedRows([]);
             setResetSelectedRow(!resetSelectedRow)
         },
@@ -121,7 +122,7 @@ function CheckDetailsTable(props) {
 
     const handleChecksUpdate = async (propertyNumber) => {
         if (propertyNumber) {
-            props.setLoading(true);
+            Loader.createToast('checks-updation', 'Checks Bulk Update in progress')
             const checksIds = props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id);
             await new Promise((resolve, reject) => {
                 upsertCheckProperties({
