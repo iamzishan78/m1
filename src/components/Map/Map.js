@@ -4588,7 +4588,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           --recurseLimit;
           fetch(new Request(link + token, reqOptions), { signal: signal })
             .then((results) => {
-              link = parseLinkHeader(results.headers.get("Link")).next.url;
+              link = parseLinkHeader(results.headers.get("Link"))?.next?.url;
               return results.json();
             })
             .then(async (data) => {

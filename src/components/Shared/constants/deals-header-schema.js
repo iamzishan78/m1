@@ -30,7 +30,11 @@ const DealsHeadCells = [
     },
     {
       name: "closeDate",
-      label: "Expected Close Date",
+      label: "Close Date",
+    },
+    {
+      name: "closedPrice",
+      label: "Closed Price",
     },
     {
       name: "pipelineName",
