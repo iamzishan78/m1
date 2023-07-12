@@ -172,6 +172,7 @@ const CARD_FIELD_MAPPER = {
   bidDate: { label: "Bid Date", format: (value) => formatDate(value) },
   closeDate: { label: "Close Date", format: (value) => formatDate(value) },
   offerPrice: { label: "Offer Price", format: (value) => vf_currency(value) },
+  closedPrice: { label: "Closed Price", format: (value) => vf_currency(value) },
 };
 
 const Transact = () => {
@@ -584,8 +585,7 @@ const Transact = () => {
                 </>
               )
             }
-             <br />
-            {metadata.closedPrice && <span>Closed Price  <span style={{ fontWeight: "normal" }}>{vf_currency(metadata.closedPrice)}</span></span>}
+           
           </div>
         </header>
         {
