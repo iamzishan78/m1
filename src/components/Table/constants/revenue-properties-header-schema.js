@@ -112,6 +112,26 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
     // }
   },
   {
+    name: "system_id",
+    label: "M1 system ID",
+    options: { filter: true, sort: true,
+      setCellProps: () => ({ style: { 
+        padding: "0px 16px"
+      } }),
+    },
+    esKey: "_id.keyword",
+  },
+  {
+    name: "number",
+    label: "Property #",
+    esKey: "number.keyword"
+  },
+  {
+    name: "description",
+    label: "Property description",
+    esKey: "description.keyword"
+  },
+  {
     name: "state",
     label: "State",
     esKey: "state.keyword",
