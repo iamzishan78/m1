@@ -69,24 +69,22 @@ export default function Admin() {
     }
     setAllowablePaths(allAllowedPaths);
   }, [stateApp?.user]);
+
   return (
-    <>
-      <FeatureFlag feature={FEATURES.CONTACTSUBMENU}>
-        {/* <FeatureFlag feature={FEATURES.ANALYTICSSUBMENU}> */}
-        <QuickActionPanel
-          title="Admin Settings"
-          handlePanelStateChange={handlePanelStateChange}
-          quickActionsPanelState={quickActionsPanelState}
-          activeModule={activeModule}
-          actions={sidePanelOptions}
-        >
-          {Object.keys(allowedPaths).map((option) => (
-            <Switch>
-              <Route exact path={allowedPaths[option].link} component={Components[allowedPaths[option].component]} />
-            </Switch>
-          ))}
-        </QuickActionPanel>
-      </FeatureFlag>
-    </>
+    <FeatureFlag feature={FEATURES.CONTACTSUBMENU}>
+      <QuickActionPanel
+        title="Admin Settings"
+        handlePanelStateChange={handlePanelStateChange}
+        quickActionsPanelState={quickActionsPanelState}
+        activeModule={activeModule}
+        actions={sidePanelOptions}
+      >
+        {Object.values(allowedPaths).map((option) => (
+          <Switch>
+            <Route exact path={option.link} component={Components[option.component]} />
+          </Switch>
+        ))}
+      </QuickActionPanel>
+    </FeatureFlag>
   );
 }
