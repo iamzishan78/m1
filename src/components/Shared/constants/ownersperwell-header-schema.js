@@ -122,18 +122,18 @@ const OwnersPerWellHeadCells = [
   //     filterType: "dropdown",
   //   },
   // },
-  {
-    name: "actionMenu",
-    label: " ",
-    options: {
-      filter: false,
-      searchable: false,
-      sort: true,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
-  },
+  // {
+  //   name: "actionMenu",
+  //   label: " ",
+  //   options: {
+  //     filter: false,
+  //     searchable: false,
+  //     sort: true,
+  //     download: false,
+  //     print: false,
+  //     viewColumns: false,
+  //   },
+  // },
 ];
 
 export default OwnersPerWellHeadCells;
