@@ -502,7 +502,7 @@ export const AdminManagementRoutes = {
     isDefault: true,
   },
   LAND: {
-    featureFlag: "CONTACTSUBMENU",
+    featureFlag: "LANDMODULE",
     title: "Land",
     link: "/admin/land",
     component: "AdminSettings",
@@ -511,7 +511,7 @@ export const AdminManagementRoutes = {
     isDefault: true,
   },
   REVENUE: {
-    featureFlag: "CONTACTSUBMENU",
+    featureFlag: "REVENUEMODULE",
     title: "Revenue",
     link: "/admin/revenue",
     component: "AdminSettings",
