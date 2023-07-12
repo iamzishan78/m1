@@ -7,7 +7,7 @@ import { SortableContainer, SortableElement } from "react-sortable-hoc";
 import { DashboardContext } from "../DashboardContext";
 import ProdCard from "./ProdCard"
 import CardWrapper from "./CardTemplate";
-import TwitterCard from "./TwitterCard";
+//import TwitterCard from "./TwitterCard";
 import StockCard from "./StockCard";
 import RigsCard from "./RigsCard"
 import RSSFeed from "./RssFeed"
@@ -94,8 +94,8 @@ const CardGrid = () => {
     // { el: <PermitsCard title={6} />, size: "2x", key: 3 },
     // { el: <ProdCard title={1} />, size: "2x", key: 4 }, 
     { el: <StockCard title={3} />, size: "2x", key: 5 },
-    { el: <TwitterCard title={2} />, size: "x", key: 6 },
-    { el: <RSSFeed title={4} />, size: "x", key: 7 },
+    // { el: <TwitterCard title={2} />, size: "x", key: 6 },
+    { el: <RSSFeed title={4} />, size: "2x", key: 7 },
 
     
     
