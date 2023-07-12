@@ -19,6 +19,7 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     component: "RevenueStatements",
   },
   REVENUE_ANALYTICS: {
+    isExcluded: true,
     title: "Revenue Analytics",
     link: "/revenue/analytics",
     component: "RevenueAnalytics"
