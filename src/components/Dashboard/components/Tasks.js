@@ -51,12 +51,12 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiIconButton-root": {
       padding: "10px !important",
     },
-    "& .MuiPaper-elevation1": {
-      boxShadow: "none !important",
-    },
+    // "& .MuiPaper-elevation1": {
+    //   boxShadow: "none !important",
+    // },
   },
   title: {
-    fontSize: "15px",
+    fontSize: "16px",
     marginLeft: "10px",
     fontWeight: "bold",
     textDecoration: "none",
