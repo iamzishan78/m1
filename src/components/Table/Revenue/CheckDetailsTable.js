@@ -14,12 +14,14 @@ import { UPSERT_CHECK_PROPERTY } from "graphQL/useMutationCheckPropertyUpdate";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import Loader from "components/Loaders";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+
 // value formatters
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 
 function CheckDetailsTable(props) {
     const classes = usetableStyles();
-    const { checkId, setTableMeta } = props;
+    const { checkId, setTableMeta, onDownload, isExporting } = props;
     const [propertiesNumbers, setPropertiesNumbers] = useState([]);
     const [resetSelectedRow, setResetSelectedRow] = useState(false);
     const [openDialog, setOpenDialog] = useState(null);
@@ -182,7 +184,21 @@ function CheckDetailsTable(props) {
     };
 
     props.options.customToolbar = () => {
-        return <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
+        return <>
+
+            <div style={{
+                display: "inline",
+                position: "absolute",
+                right: '121px',
+            }}>
+                <IconButton onClick={onDownload} disabled={isExporting}>
+                    <Tooltip title="Download to CSV" aria-label="add">
+                        <CloudDownloadIcon />
+                    </Tooltip>
+                </IconButton>
+            </div>
+
+        <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
             <Button
                 id="inputModeButton"
                 color="secondary"
@@ -192,6 +208,7 @@ function CheckDetailsTable(props) {
                 INPUT MODE
             </Button>
         </div>
+        </>
     }
     return (
         <Container

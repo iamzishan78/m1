@@ -1,7 +1,7 @@
 import { GlobalStickyStyles } from "GlobalSettings";
 import WellIcon from '../../../components/Shared/svgIcons/well.js';
 import { ErrorOutline } from "@material-ui/icons";
-import React from 'react';
+import React from "react";
 import { useHistory } from "react-router-dom";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink.js";
 
@@ -71,6 +71,7 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
     esKey: "number.keyword",
     options: {
       ...GlobalStickyStyles({ isReportingGroup }),
+      filter: true,
 
       // setCellProps: () => ({
       //   style: {
@@ -109,6 +110,26 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
     //   ...GlobalSettings.muiGridStandardOptions,
     //   display: false,
     // }
+  },
+  {
+    name: "system_id",
+    label: "M1 system ID",
+    options: { filter: true, sort: true,
+      setCellProps: () => ({ style: { 
+        padding: "0px 16px"
+      } }),
+    },
+    esKey: "_id.keyword",
+  },
+  {
+    name: "number",
+    label: "Property #",
+    esKey: "number.keyword"
+  },
+  {
+    name: "description",
+    label: "Property description",
+    esKey: "description.keyword"
   },
   {
     name: "state",

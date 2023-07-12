@@ -47,6 +47,7 @@ const LastCheckDateFilter = ({
   setFilterToggle,
   extraFitlers = [],
   stateESKey = "",
+  isComparisonReport = false
 }) => {
   const classes = useStyles();
 
@@ -136,7 +137,7 @@ const LastCheckDateFilter = ({
           datesInputWidth={2}
         />
         {extraFitlers.includes("propertyGroup") && (
-        <Grid item xs md={2}> 
+          <Grid item xs md={2}>
             <ReportGroupHeader
               type="Properties"
               esFilters={propertiesReportGroup || []}
@@ -148,10 +149,10 @@ const LastCheckDateFilter = ({
               isShrink
               noPadding
             />
-        </Grid>
+          </Grid>
         )}
         {extraFitlers.includes("status") && (
-        <Grid item xs md={2}>
+          <Grid item xs md={2}>
             <MuiThemeProvider>
               <FormControl variant="outlined" className={classes.formControl}>
                 <InputLabel id="status-outlined-label">Status</InputLabel>
@@ -170,56 +171,56 @@ const LastCheckDateFilter = ({
                 </Select>
               </FormControl>
             </MuiThemeProvider>
-        </Grid>
+          </Grid>
         )}
-        <Grid item xs md={2}>
-          {extraFitlers.includes("checkNumber") && (
-            <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "285px" }}>
-              <Autocomplete
-                size="small"
-                onChange={(event, newValue) => {
-                  setCheckNumberFilter(newValue)
-                }}
-                options={checkNumbers}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Check Number"
-                    variant="outlined"
-                    placeholder=""
-                    style={{ backgroundColor: "white" }}
-                  />
-                )}
-                disableListWrap
-                id="custom-date-dropdown"
-              />
-            </Grid>
-          )}
-        </Grid>
-        <Grid item xs md={2}>
-          {extraFitlers.includes("propertyNumber") && (
-            <Grid item xs md={2} style={{ marginTop: "2px", minWidth: "285px" }}>
-              <Autocomplete
-                size="small"
-                onChange={(event, newValue) => {
-                  setPropertyNumberFilter(newValue)
-                }}
-                options={propertyNumbers}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Property Number"
-                    variant="outlined"
-                    placeholder=""
-                    style={{ backgroundColor: "white" }}
-                  />
-                )}
-                disableListWrap
-                id="custom-date-dropdown"
-              />
-            </Grid>
-          )}
-        </Grid>
+        {isComparisonReport && (
+          <>
+            {extraFitlers.includes("checkNumber") && (
+              <Grid item xs style={{ minwidth: "15%" }}>
+                <Autocomplete
+                  size="small"
+                  onChange={(event, newValue) => {
+                    setCheckNumberFilter(newValue)
+                  }}
+                  options={checkNumbers}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Check Number"
+                      variant="outlined"
+                      placeholder=""
+                      style={{ backgroundColor: "white" }}
+                    />
+                  )}
+                  disableListWrap
+                  id="custom-date-dropdown"
+                />
+              </Grid>
+            )}
+            {extraFitlers.includes("propertyNumber") && (
+              <Grid item xs style={{ minWidth: "15%" }}>
+                <Autocomplete
+                  size="small"
+                  onChange={(event, newValue) => {
+                    setPropertyNumberFilter(newValue)
+                  }}
+                  options={propertyNumbers}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Property Number"
+                      variant="outlined"
+                      placeholder=""
+                      style={{ backgroundColor: "white" }}
+                    />
+                  )}
+                  disableListWrap
+                  id="custom-date-dropdown"
+                />
+              </Grid>
+            )}
+          </>
+        )}
       </Grid>
     </div>
   );

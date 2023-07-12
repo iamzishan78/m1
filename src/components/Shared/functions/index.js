@@ -118,7 +118,14 @@ export function workspaceTenantName() {
 }
 
 export function getDateWithoutTime(dateTime) {
-  if (!dateTime) dateTime = "";
+  if (!dateTime || (typeof dateTime !== 'string' && typeof dateTime !== 'number')){
+    dateTime = "";
+  } 
+
+  if (typeof dateTime === 'number') {
+    dateTime = dateTime.toString();
+  }
+  
   if (dateTime?.includes && dateTime.includes('/')) {
     const splittedDate = dateTime.split("/")
     const newDate = new Date()

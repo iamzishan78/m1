@@ -47,6 +47,12 @@ function CheckComparisonSection(props) {
   const [getESSimpleFilter] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
     fetchPolicy: "no-cache",
   });
+  const [getPropertyNumbers] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+    fetchPolicy: "no-cache",
+  });
+  const [getCheckNumbers] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+    fetchPolicy: "no-cache",
+  });
   const [getRevenueAnalyticsCount] = useLazyQuery(GET_REVENUE_ANALYTICS_COUNT, {
     fetchPolicy: "no-cache",
   });
@@ -54,13 +60,7 @@ function CheckComparisonSection(props) {
   useEffect(() => {
     (async () => {
       props.setTotalChecks(props.total);
-      const { propertiesCount, revenueComparisonAnalytics } = await getRevenueComparisonAnalytics(
-        "property.IsDeleted",
-        false,
-        "term"
-      );
-      const { propertyNumbersHits } = await getPropertyNumbers();
-      const { checkNumbersHits } = await getCheckNumbers();
+      const { propertiesCount, revenueComparisonAnalytics, propertyNumbersHits, checkNumbersHits } = await getRevenueComparisonAnalytics();
       const propertyNumbers = propertyNumbersHits ? propertyNumbersHits.map((hit) => hit.key) : [];
       const checkNumbers = checkNumbersHits ? checkNumbersHits.map((hit) => hit.key) : [];
       props.onGettingAnalytics({
@@ -147,40 +147,6 @@ function CheckComparisonSection(props) {
     });
   };
 
-  const getPropertyNumbers = async () => {
-    const propertyNumberPromise = new Promise((resolve, reject) => {
-      getESSimpleFilter({
-        variables: {
-          index: "checkdetailsinterestscomparison_flat",
-          filters: [...props.esFilters, { field: "property.IsDeleted", value: false, type: "term" }],
-          filterKey: "property.number.keyword",
-          filterAggs: { query: "", field: "property.number.keyword", size: props.total || 0 },
-        },
-        onCompleted: (res) => resolve(res?.getESSimpleFilter?.hits),
-        onError: (error) => reject(error),
-      });
-    });
-    const [propertyNumbersHits] = await Promise.all([propertyNumberPromise]);
-    return { propertyNumbersHits };
-  }
-
-  const getCheckNumbers = async () => {
-    const checkNumbersPromise = new Promise((resolve, reject) => {
-      getESSimpleFilter({
-        variables: {
-          index: "checkdetailsinterestscomparison_flat",
-          filters: [...props.esFilters, { field: "property.IsDeleted", value: false, type: "term" }],
-          filterKey: "check.checkNumber.keyword",
-          filterAggs: { query: "", field: "check.checkNumber.keyword", size: props.total || 0 },
-        },
-        onCompleted: (res) => resolve(res?.getESSimpleFilter?.hits),
-        onError: (error) => reject(error),
-      });
-    });
-    const [checkNumbersHits] = await Promise.all([checkNumbersPromise]);
-    return { checkNumbersHits };
-  }
-
   const getRevenueComparisonAnalytics = async () => {
     const propertiesPromise = new Promise((resolve, reject) => {
       getESSimpleFilter({
@@ -191,6 +157,30 @@ function CheckComparisonSection(props) {
           filterAggs: { query: "", field: "property._id.keyword", size: props.total || 0 },
         },
         onCompleted: (res) => resolve(res?.getESSimpleFilter?.hits?.length),
+        onError: (error) => reject(error),
+      });
+    });
+    const propertyNumbersPromise = new Promise((resolve, reject) => {
+      getPropertyNumbers({
+        variables: {
+          index: "checkdetailsinterestscomparison_flat",
+          filters: [...props.esFilters, { field: "property.IsDeleted", value: false, type: "term" }],
+          filterKey: "property.number.keyword",
+          filterAggs: { query: "", field: "property.number.keyword", size: props.total || 0 },
+        },
+        onCompleted: (res) => resolve(res?.getESSimpleFilter?.hits),
+        onError: (error) => reject(error),
+      });
+    });
+    const checkNumbersPromise = new Promise((resolve, reject) => {
+      getCheckNumbers({
+        variables: {
+          index: "checkdetailsinterestscomparison_flat",
+          filters: [...props.esFilters],
+          filterKey: "check.checkNumber.keyword",
+          filterAggs: { query: "", field: "check.checkNumber.keyword", size: props.total || 0 },
+        },
+        onCompleted: (res) => resolve(res?.getESSimpleFilter?.hits),
         onError: (error) => reject(error),
       });
     });
@@ -206,8 +196,8 @@ function CheckComparisonSection(props) {
         onError: (error) => reject(error),
       });
     });
-    const [propertiesCount, revenueComparisonAnalytics] = await Promise.all([propertiesPromise, otherSummaryPromise]);
-    return { propertiesCount, revenueComparisonAnalytics };
+    const [propertiesCount, revenueComparisonAnalytics, propertyNumbersHits, checkNumbersHits] = await Promise.all([propertiesPromise, otherSummaryPromise, propertyNumbersPromise, checkNumbersPromise]);
+    return { propertiesCount, revenueComparisonAnalytics, propertyNumbersHits, checkNumbersHits };
   };
 
   return (

@@ -282,7 +282,7 @@ export default function SidePanel() {
     }
   }, [panelType]);
 
-  return panelItems || panelTitle === "Layers" ? (
+  return panelItems || panelTitle ? (
     <Panel
       type={panelType}
       headerButton={panelButton}
