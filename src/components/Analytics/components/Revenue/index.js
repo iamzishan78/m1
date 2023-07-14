@@ -7,7 +7,7 @@ import { Grid, Divider, Tab, Tabs, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import sortBy from "lodash/sortBy";
 
-import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 import { GET_PORTFOLIO_GROSS_REVENUE_SUMMARY } from "graphQL/useQueryGetPortfolioGrossRevenueSummary";
 import { setStateIfDeepEqual } from "components/Shared/functions";
@@ -116,6 +116,9 @@ export default function RevenueAnalytics(props) {
   const classes = useStyles();
   const esIndex = "checkdetailsinterestscomparison_flat";
   const [esFilters, ESFilters] = useState([]);
+  const [propertyOptions, setPropertyOptions] = useState([]);
+  const [propertyKeys, setPropertyKeys] = useState([]);
+  const [propertyNumberFilter, setPropertyNumberFilter] = useState(null);
   const [filterToggle, setFilterToggle] = React.useState(false);
   const propertiesReportGroup = useSelector(({ Revenue }) => Revenue.propertiesReportGroup);
   const [tab, setTab] = useState(0);
@@ -153,13 +156,32 @@ export default function RevenueAnalytics(props) {
     fetchPolicy: "no-cache",
   });
 
+  const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, {
+    fetchPolicy: "no-cache",
+  });
+
   useEffect(() => {
     getCheckDetailData({
       variables: {
         index: "checkdetailsinterestscomparison_flat",
       }
     })
+    getFiltersAction();
   }, []);
+
+  useEffect(() => {
+    if (filtersData) {
+      const keys = Object.keys(filtersData);
+      if (keys && filtersData[keys[0]] && filtersData[keys[0]]?.hits)
+        setPropertyOptions(filtersData[keys[0]].hits.map((hit) => hit.key_as_string));
+      setPropertyKeys(
+        filtersData[keys[0]].hits.map((hit) => ({
+          key: typeof hit.key === "string" ? [hit.key] : hit.key,
+          key_as_string: hit.key_as_string,
+        }))
+      );
+    }
+  }, [filtersData]);
 
   useEffect(() => {
     if (checkDetailData?.getCheckDetailsData?.checkDetails?.length > 0) {
@@ -199,14 +221,18 @@ export default function RevenueAnalytics(props) {
   }, []);
 
   useEffect(() => {
-    if (toDate && fromDate)
-      getPortfolioSummary({
-        variables: {
-          filters: propertiesReportGroup || [],
-          filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) },
-        },
-      });
-  }, [propertiesReportGroup, toDate, fromDate]);
+    let filterDate = {};
+    let filters = [];
+    if (toDate && fromDate) filterDate = { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) };
+    if (propertiesReportGroup) filters.push(propertiesReportGroup);
+    if (propertyNumberFilter) filters.push(propertyNumberFilter);
+    getPortfolioSummary({
+      variables: {
+        filters,
+        filterDate,
+      },
+    });
+  }, [propertiesReportGroup, toDate, fromDate, propertyNumberFilter]);
 
   const onChangeDates = (fromDate, toDate) => {
     const months = [];
@@ -242,6 +268,30 @@ export default function RevenueAnalytics(props) {
   const setESFilters = (newFilter) => {
     setStateIfDeepEqual(ESFilters, newFilter);
   };
+
+  const handlePropertyNumberChange = (search) => {
+    getFiltersAction(search);
+  };
+
+  const handlePropertyFilterChange = (option) => {
+    const propertyNumber = propertyKeys.find((property) => property.key_as_string === option);
+    propertyNumber
+      ? setPropertyNumberFilter({ field: "number.keyword", value: propertyNumber.key[0] })
+      : setPropertyNumberFilter(null);
+  };
+
+  const getFiltersAction = (search) => {
+    if (search) search = search.includes("-") ? `"*${search}*"` : `*${search}*`;
+    getFilters({
+      variables: {
+        esIndex,
+        filterKeys: ["property.number.keyword", "property.name.keyword"],
+        search,
+        size: 50,
+      },
+    });
+  };
+
   return (
     <>
       <div className={classes.mainTabContainer}>
@@ -306,6 +356,31 @@ export default function RevenueAnalytics(props) {
                     isShrink
                     noPadding
                   />
+                </Grid>
+              </Grid>
+              <Grid item xs={4} md={2} style={{ display: "flex", alignItems: "center" }}>
+
+                <Grid item xs style={{ minWidth: "15%" }}>
+                  <Autocomplete
+                    size="small"
+                    onChange={(event, newValue) => {
+                      handlePropertyFilterChange(newValue)
+                    }}
+                    options={propertyOptions}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Property"
+                        variant="outlined"
+                        placeholder=""
+                        style={{ backgroundColor: "white" }}
+                        onChange={(e) => handlePropertyNumberChange(e.target.value)}
+                      />
+                    )}
+                    disableListWrap
+                    id="custom-date-dropdown"
+                  />
+
                 </Grid>
               </Grid>
             </Grid>
