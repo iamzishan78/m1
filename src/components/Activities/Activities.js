@@ -166,8 +166,8 @@ const Activities = () => {
     if (activitiesData) {
       setEvents(
         activitiesData?.activities?.map((act) => {
-          const start = new Date(Number(act.dateTime));
-          const end = act.endDateTime ? new Date(Number(act.endDateTime)) : start;
+          const start = new Date(act.dateTime);
+          const end = act.endDateTime ? new Date(act.endDateTime) : start;
           return {
             id: uniqueId(),
             ...act,
