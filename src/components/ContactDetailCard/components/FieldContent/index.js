@@ -23,7 +23,7 @@ import { get } from "lodash";
 import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import EntityType from "./EntityType";
 import CampaignNameField from "./CampaignNameField";
-// import ContactStatus from "components/ContactDetailCard/components/ContactStatus";
+import ContactStatus from "components/ContactDetailCard/components/AutoCompleteWithAddNew";
 import AutoCompleteAddNewField from "./AutoCompleteAddNewField";
 
 const filter = createFilterOptions();
@@ -333,6 +333,7 @@ export default function FieldContent({
                 }));
                 handleUpdating(val);
               }}
+              fieldKey='contactStatus'
               value={editContent[fieldName] === null ? "" : editContent[fieldName]}
               onKeyDown={(event) => keyDownHandler(event, [fieldName])}
               onBlur={() => onBlurHandler([fieldName])}

@@ -45,7 +45,7 @@ const StockCard = ({ title }) => {
         "colorTheme": "light",
         "locale": "en",
         "largeChartUrl": "",
-        "isTransparent": false,
+        "isTransparent": true,
         "width": "100%",
         "height": "700",
         "plotLineColorGrowing": "rgba(33, 150, 243, 1)",
@@ -74,10 +74,6 @@ const StockCard = ({ title }) => {
               {
                 "s": "CURRENCYCOM:UK100",
                 "d": "FTSE 100"
-              },
-              {
-                "s": "CURRENCYCOM:DE30",
-                "d": "DAX 30"
               },
               {
                 "s": "INDEX:NKY",
@@ -132,20 +128,12 @@ const StockCard = ({ title }) => {
                 "d": "PIONEER NATURAL RESOURCES"
               },
               {
-                "s": "NYSE:PE",
-                "d": "PARSLEY ENERGY"
-              },
-              {
                 "s": "NASDAQ:FANG",
                 "d": "DIAMONDBACK ENERGY"
               },
               {
                 "s": "NYSE:DVN",
                 "d": "DEVON ENERGY"
-              },
-              {
-                "s": "NYSE:CLR",
-                "d": "CONTINENTAL RESOURCES"
               },
               {
                 "s": "NYSE:EQT",
@@ -156,16 +144,12 @@ const StockCard = ({ title }) => {
                 "d": "OVINTIV"
               },
               {
-                "s": "NYSE:MNRL",
-                "d": "BRIGHAM MINERALS"
+                "s": "NYSE:STR",
+                "d": "SITIO ROYALTIES"
               },
               {
                 "s": "NYSE:BSM",
                 "d": "BLACK STONE MINERALS"
-              },
-              {
-                "s": "NASDAQ:FLMN",
-                "d": "FALCON MINERALS"
               },
               {
                 "s": "NASDAQ:VNOM",
@@ -197,6 +181,7 @@ const StockCard = ({ title }) => {
     <div>
     <CardHeader
       //action={<DragHandle />}
+      style={{ margin: "8px" }}
       title={`Market Pulse`}
       className={classes.header}
     />

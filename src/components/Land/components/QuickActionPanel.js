@@ -55,23 +55,22 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
           </Typography>
           <StyledMenu id="quickActionPanel">
             {Object.keys(actions)
-              .filter((key) => !actions[key].isExcluded)
+              .filter((key) => !actions[key].isExcluded && actions[key].featureFlag)
               .map(
-                (key, index) =>
-                  actions[key].featureFlag && (
-                    <FeatureFlag feature={FEATURES[actions[key].featureFlag]} noCheck={actions[key].noCheck}>
-                      <StyledMenuItem
-                        onClick={() => handleMenuItemClick(actions[key].link)}
-                        key={index}
-                        isSelected
-                        style={{
-                          backgroundColor: activeModule.title === actions[key].title ? "#4B618F" : "",
-                        }}
-                      >
-                        <ListItemText id={`${actions[key].title} 101`}>{actions[key].title}</ListItemText>
-                      </StyledMenuItem>
-                    </FeatureFlag>
-                  )
+                (key, index) => (
+                  <FeatureFlag feature={FEATURES[actions[key].featureFlag]} noCheck={actions[key].noCheck}>
+                    <StyledMenuItem
+                      onClick={() => handleMenuItemClick(actions[key].link)}
+                      key={index}
+                      isSelected
+                      style={{
+                        backgroundColor: activeModule.title === actions[key].title ? "#4B618F" : "",
+                      }}
+                    >
+                      <ListItemText id={`${actions[key].title} 101`}>{actions[key].title}</ListItemText>
+                    </StyledMenuItem>
+                  </FeatureFlag>
+                )
               )}
           </StyledMenu>
         </div>

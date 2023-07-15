@@ -44,7 +44,7 @@ export default function BasinFilterJ() {
     let filter;
 
     const currentLayers = [...stateApp.layers];
-    const index = currentLayers.findIndex((l) => l.identifier == "Basins");
+    const index = currentLayers.findIndex((l) => l.identifier === "Basins");
 
     if (value && value.length) {
       getBasinShapes({

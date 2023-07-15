@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
   },
   header: {
     paddingTop: "25px",
-    paddingBottom: "75px",
+    paddingBottom: "40px",
     paddingLeft: "20px",
   },
 }));
