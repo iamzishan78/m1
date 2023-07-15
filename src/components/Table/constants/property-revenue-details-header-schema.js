@@ -1,4 +1,4 @@
-import { history } from "store";
+import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 
 const RevenueStatementHeadCells = [
   {
@@ -21,20 +21,14 @@ const RevenueStatementHeadCells = [
       ),
       customRender: (value, tableMeta) => {
         return (
-          <p
-            style={{
-              fontWeight: 600,
-              color: "#17aadd",
-              cursor: "pointer",
-              minWidth: "100px",
-            }}
+          <ColumnWithLink
+            value={value}
+            link={`/revenue/statement/details/${tableMeta.rowData[1]}`}
             onClick={(e) => {
               e.stopPropagation();
-              history.push(`/revenue/statement/details/${tableMeta.rowData[1]}`);
             }}
-          >
-            {value}
-          </p>
+          />
+
         );
       },
       sort: true,
