@@ -4,25 +4,27 @@ import { GlobalStickyStyles } from "GlobalSettings";
 
 const RevenueStatementHeadCells = [
     {
-        name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
+        name: "_id",
+        esKey: "check._id.keyword",
+        options: { filter: false, display: false, sort: false, viewColumns: false },
     },
 
     {
         /// this is the control column for properties 
         name: "number",
         label: "Check Number",
-        esKey: 'property.number.keyword',
+        esKey: 'check.checkNumber.keyword',
         options: {
             ...GlobalStickyStyles({
                 setCellProps: {
-                    left: "77px",
-                    maxWidth: "300px"
+                    left: "124px",
+                    maxWidth: "300px",
                 },
                 setCellHeaderProps: {
-                    left: "77px",
+                    left: "124px",
                     maxWidth: "300px",
-                    paddingLeft: '0px',
-                }
+                    paddingLeft: "0px",
+                },
             }),
             sort: true, filter: false, viewColumns: false,
 
@@ -30,9 +32,9 @@ const RevenueStatementHeadCells = [
 
                 return <ColumnWithLink
                     value={value?.split("_")?.[0]
-                        ? tableMeta?.rowData[2] ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[2]}` : value
-                        : tableMeta?.rowData[2]}
-                    link={`/revenue/property/details/${tableMeta.rowData[29]}`}
+                        ? tableMeta?.rowData[3] ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[3]}` : value
+                        : tableMeta?.rowData[3]}
+                    link={`/revenue/statement/details/${tableMeta.rowData[0]}`}
                     onClick={(e) => {
                         e.stopPropagation();
                     }}
@@ -44,7 +46,7 @@ const RevenueStatementHeadCells = [
         name: "number", label: "Property #", esKey: 'property.number.keyword', options: { display: false, sort: false, filter: true, style: { minWidth: 250 }, }
     },
     {
-        name: "purchaser", label: "Purchaser", esKey: 'property.purchaser.name.keyword', options: { sort: true, filter: true }
+        name: "purchaser", label: "Purchaser", esKey: 'check.payor.name.keyword', options: { sort: true, filter: true }
     },
     {
         name: "checkDate", label: "Check Date", esKey: 'check.checkDate', custom: { key_as_string: true, isDate: true }, options: { sort: true, filter: true }

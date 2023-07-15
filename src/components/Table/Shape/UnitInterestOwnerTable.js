@@ -414,7 +414,7 @@ function UnitInterestOwnerTable(props) {
           onClose={() => setOpenCustomDialog("")}
           deleteFunc={deleteFunc}
           m1nSelectedRowsIds={props.selectedRows.map(
-            (sR) => props.rows[sR.dataIndex]._id
+            (sR) => props.rows[sR.dataIndex]?._id
           )}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >

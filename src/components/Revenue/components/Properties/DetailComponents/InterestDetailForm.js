@@ -100,7 +100,7 @@ const InterestDetailForm = (props) => {
   });
 
   const handleSave = () => {
-    const id = history.location.pathname.split("/")[history.location.pathname.split("/").length - 1];
+    const id = history.location.pathname.split("/")[4];
     const values = getValues();
 
     values.effectiveDate = getDateWithoutTime(values.effectiveDate);
