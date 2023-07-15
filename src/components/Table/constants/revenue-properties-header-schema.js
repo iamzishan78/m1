@@ -113,8 +113,9 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
   },
   {
     name: "system_id",
-    label: "M1 system ID",
+    label: "M1neral System ID",
     options: { filter: true, sort: true,
+      display: false,
       setCellProps: () => ({ style: { 
         padding: "0px 16px"
       } }),
@@ -123,7 +124,7 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
   },
   {
     name: "number",
-    label: "Property #",
+    label: "Operator Prop #",
     esKey: "number.keyword"
   },
   {

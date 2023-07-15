@@ -1255,6 +1255,7 @@ function SubTable(props) {
     if (column.name === "taxValue") return vf_currency(v);
 
     if (column.name === "offerPrice" && !!v && !isNaN(v)) return vf_currency(v);
+    if (column.name === "closedPrice" && !!v && !isNaN(v)) return vf_currency(v);
     if (
       (column.name === "seller_asking_price" ||
         column.name === "competitor_offer_price" ||
