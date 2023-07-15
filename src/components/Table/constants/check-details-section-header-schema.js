@@ -17,14 +17,14 @@ const RevenueStatementHeadCells = [
         options: {
             ...GlobalStickyStyles({
                 setCellProps: {
-                    left: "77px",
-                    maxWidth: "300px"
+                    left: "124px",
+                    maxWidth: "300px",
                 },
                 setCellHeaderProps: {
-                    left: "77px",
+                    left: "124px",
                     maxWidth: "300px",
-                    paddingLeft: '0px',
-                }
+                    paddingLeft: "0px",
+                },
             }),
             sort: true, filter: false, viewColumns: false,
 

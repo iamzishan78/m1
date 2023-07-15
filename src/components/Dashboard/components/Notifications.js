@@ -51,7 +51,8 @@ const useStyles = makeStyles((theme) => ({
       margin: "0px !important",
     },
     "& .MuiIconButton-root": {
-      padding: "10px !important",
+      paddingLeft: "10px !important",
+      paddingRight: "10px !important",
     },
   },
   thumb: {
@@ -64,7 +65,8 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     fontSize: "16px",
-    marginLeft: "10px",
+    marginLeft: "22px",
+    marginBottom: "-6px",
     fontWeight: "bold",
     textDecoration: "none",
     color: "black",
@@ -80,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     fontSize: "12px",
-    marginBottom: "2px",
+    marginBottom: "0px",
   },
   date: {
     fontSize: "10px",
@@ -88,24 +90,25 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     margin: "12px 8px",
     cursor: "pointer",
+    boxShadow: "none !important",
   },
   image: {
     maxHeight: "72px",
     maxWidth: "65px !important",
-    borderRadius: "4px",
+    borderRadius: "0px",
   },
   gridStyle: {
     padding: "8px 0px",
   },
   paddingLeft10: {
-    paddingLeft: "20px !important",
+    paddingLeft: "10px !important",
     paddingTop: "3px !important",
   },
   bold: {
     fontWeight: "bold",
   },
   commentTime: {
-    marginLeft: "10px",
+    marginLeft: "8px",
     fontSize: "12px",
   },
   sysNotification: {

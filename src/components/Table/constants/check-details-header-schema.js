@@ -16,7 +16,7 @@ const RevenueStatementHeadCells = [
         /// this is the control column for properties 
         name: "number",
         label: "Property",
-        esKey: 'property.number.keyword',
+        // esKey: 'property.number.keyword',
         options: {
             ...GlobalStickyStyles({
                 setCellProps: {
