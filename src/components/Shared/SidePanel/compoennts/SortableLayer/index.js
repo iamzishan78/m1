@@ -86,11 +86,12 @@ const SortableLayer = ({ mongoId, search }) => {
               });
             }
             if (!item.groupId) {
-              const showable = item.layerSettings.showable && item.identifier !== "Tracked Owners" && item.identifier !== "Land Grid" && item.identifier !== "Agreement";
+              const showable = item.layerSettings.showable && item.identifier !== "Tracked Owners" && item.identifier !== "Agreement";
               layerAndGroups.push({
                 ...item,
                 visiable: item.layerSettings.visiable,
                 showable,
+                layerSettings: { ...item.layerSettings, showable },
                 name: item.layerName === "Parcels" ? "Tracts" : item.layerName,
                 depth: 0,
                 type: "layer",

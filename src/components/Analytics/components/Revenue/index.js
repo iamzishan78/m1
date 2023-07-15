@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
 
 const StyledTabs = withStyles({
   root: {
-    borderBottom: "1px solid #e8e8e8",
+    borderBottom: "0px solid #e8e8e8",
     textTransform: "capitaliToze",
     padding: "0px 26px",
   },

@@ -74,7 +74,11 @@ const TransactDealsHeadCells = (flowLineType = 'deal') => {
       },
       {
         name: "closeDate",
-        label: "Expected Close Date",
+        label: "Close Date",
+      },
+      {
+        name: "closedPrice",
+        label: "Closed Price",
       },
     ];
     TableHeads.splice(2, 0, ...dealFLowLineCols);

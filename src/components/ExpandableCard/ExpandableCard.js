@@ -784,11 +784,11 @@ function ExpandableCard(props) {
                     ) : (
                       <>
                         {" "}
-                        {(targetLabel == "parcel" || targetLabel == "unit" || targetLabel == "agreement") && (
+                        {(targetLabel == "parcel" || targetLabel == "unit" || targetLabel == "agreement" || targetLabel == "activity") && (
                           <>
                             {" "}
                             <IconButton size="small" component="span" onClick={handleMenuClick}>
-                              <MoreVertIcon id="expandCardVertIcon" size="medium" />
+                              <MoreVertIcon id="expandCardVertIcon" color="secondary" size="medium" />
                             </IconButton>
                             <Menu
                               id="dealMenu"
