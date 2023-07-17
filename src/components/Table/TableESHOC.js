@@ -830,7 +830,8 @@ export const TableESHOC = (Component) => {
                     } : { sort: tableMeta.defaultSort },
 
                     filters: selectedFilters.current ? [...selectedFilters.current] : [],
-                    customFilters: []
+                    customFilters: [],
+                    parent: tableMeta.parent
                 },
             }
 
