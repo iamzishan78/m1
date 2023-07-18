@@ -104,6 +104,7 @@ function CheckComparisonSection(props) {
       defaultSort: { field: "flatSyncAt", order: "desc" },
       formatHits,
       downloadAll: { exportPx: "176px" },
+      datasets: {exportGrid: true}
     });
   }, [setTableMeta, props.esFilters]);
 
