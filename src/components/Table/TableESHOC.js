@@ -32,6 +32,7 @@ import { DrawerContext } from "components/Land/components/Agreements/detailCompo
 import moment from "moment";
 
 import GlobalSettings from "GlobalSettings.js";
+import { execCommonAsyncExportJobAction } from "store/actions/commonActions";
 
 export const TableESHOC = (Component) => {
     const HocWithDefaultProps = function HOC(props) {
@@ -799,76 +800,118 @@ export const TableESHOC = (Component) => {
 
         const onDownload = async () => {
             setIsExporting(true)
-            let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
+						let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
             if (props.useWildeCard)
                 searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
 
-            const total = tableStateRef.current.count
-            let allRows = []
-            const pageESVariables = {
-                variables: {
-                    index: tableMeta.esIndex,
-                    search: {
-                        query: searchQuery,
-                        fields: tableMeta.searchFields,
-                        advanceSearch: tableMeta.advanceSearch,
-                    },
-                    pagination: {
-                        first: tableStateRef.current.count > 10000 ? 10000 : tableStateRef.current.count,
-                        after: null,
-                    },
-                    ...(!isEmpty(tableStateRef.current.sortOrder) && tableStateRef.current.sortOrder.direction !== 'none') ? {
-                        sort: (() => {
-                            let field = columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.esKey ||
-                                columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.name;
-                            return {
-                                field: Array.isArray(field) ? field[0] : field,
-                                order: tableStateRef.current.sortOrder?.direction
-                            }
+            let search = { query: searchQuery,
+                          fields: tableMeta.searchFields,
+                          advanceSearch: tableMeta.advanceSearch,
+                        }
+						let filters = selectedFilters.current ? [...selectedFilters.current] : []
+						let filteredColumns = columns.filter(c => c?.options?.display !== false && c?.options?.display !== "false" && c?.label !== " ")
+						filteredColumns = filteredColumns.map(({ name, label, esKey }) => {
+							if (Array.isArray(esKey)) {
+								esKey = esKey.map(key => key.endsWith('.keyword') ? key.slice(0, -8) : key);
+							} else if (typeof esKey === 'string' && esKey.endsWith('.keyword')) {
+								esKey = esKey.slice(0, -8);
+							}
+							return { name, label, esKey };
+						});
 
-                        })()
-                    } : { sort: tableMeta.defaultSort },
-
-                    filters: selectedFilters.current ? [...selectedFilters.current] : [],
-                    customFilters: []
-                },
-            }
-
-            let selectedData = []
-            let max = 10000
-            let iter = 0
-
-            do {
-                const remainingTotal = total - max * iter
-                const first = remainingTotal > max ? max : remainingTotal
-                iter += 1
-
-                pageESVariables.variables.pagination = {
-                    first,
-                    after: selectedData[selectedData.length - 1]?.sort,
+            dispatch(execCommonAsyncExportJobAction.STARTED({
+                jobType: 'EXPORTCSV',
+								client,
+								setStateApp,
+                userId: stateApp?.user?.mongoId,
+                requestPayload: {
+                  total: tableStateRef?.current?.count,
+                  search,
+                  filters,
+                  esIndex: tableMeta?.esIndex,
+									columns: filteredColumns,
+									sortOrder: tableStateRef?.current?.sortOrder,
+									defaultSort: tableMeta?.defaultSort,
+                  datasets: {
+                    exportGrids: true,
+                  },
+                  counts: {
+                    exportGrids: tableStateRef?.current?.count,
+                  },
                 }
+              }));
 
-                const allSelectedRows = await client.query({
-                    ...pageESVariables,
-                    query: GET_ES_SIMPLE_SEARCH,
-                });
-                const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
-                selectedData = [...selectedData, ...hits]
-            } while (iter * max < total);
+						// let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
+            // if (props.useWildeCard)
+            //     searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
 
-            allRows = selectedData
+            // const total = tableStateRef.current.count
+            // let allRows = []
+            // const pageESVariables = {
+            //     variables: {
+            //         index: tableMeta.esIndex,
+            //         search: {
+            //             query: searchQuery,
+            //             fields: tableMeta.searchFields,
+            //             advanceSearch: tableMeta.advanceSearch,
+            //         },
+            //         pagination: {
+            //             first: tableStateRef.current.count > 10000 ? 10000 : tableStateRef.current.count,
+            //             after: null,
+            //         },
+            //         ...(!isEmpty(tabltableMeta?.TableHeadereStateRef.current.sortOrder) && tableStateRef.current.sortOrder.direction !== 'none') ? {
+            //             sort: (() => {
+            //                 let field = columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.esKey ||
+            //                     columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.name;
+            //                 return {
+            //                     field: Array.isArray(field) ? field[0] : field,
+            //                     order: tableStateRef.current.sortOrder?.direction
+            //                 }
 
-            const hits = tableMeta.formatHits(copy(allRows))
-            const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => c.display !== false && c.display !== "false" && c.label !== " "))
+            //             })()
+            //         } : { sort: tableMeta.defaultSort },
 
-            var blob = new Blob([csvData]);
-            var url = URL.createObjectURL(blob);
+            //         filters: selectedFilters.current ? [...selectedFilters.current] : [],
+            //         customFilters: []
+            //     },
+            // }
 
-            // Create a link to download it
-            var pom = document.createElement('a');
-            pom.href = url;
-            pom.setAttribute('download', 'tableData.csv');
-            pom.click();
+            // let selectedData = []
+            // let max = 10000
+            // let iter = 0
+
+            // do {
+            //     const remainingTotal = total - max * iter
+            //     const first = remainingTotal > max ? max : remainingTotal
+            //     iter += 1
+
+            //     pageESVariables.variables.pagination = {
+            //         first,
+            //         after: selectedData[selectedData.length - 1]?.sort,
+            //     }
+
+            //     const allSelectedRows = await client.query({
+            //         ...pageESVariables,
+            //         query: GET_ES_SIMPLE_SEARCH,
+            //     });
+            //     const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
+            //     selectedData = [...selectedData, ...hits]
+            // } while (iter * max < total);
+
+            // allRows = selectedData
+
+            // const hits = tableMeta.formatHits(copy(allRows))
+						// debugger
+            // const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => c.display !== false && c.display !== "false" && c.label !== " "))
+
+            // var blob = new Blob([csvData]);
+            // var url = URL.createObjectURL(blob);
+
+            // // Create a link to download it
+            // var pom = document.createElement('a');
+            // pom.href = url;
+            // pom.setAttribute('download', 'tableData.csv');
+            // pom.click();
             setIsExporting(false)
         }
 
