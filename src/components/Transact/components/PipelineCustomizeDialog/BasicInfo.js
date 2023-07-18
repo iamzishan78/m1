@@ -171,8 +171,6 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
     setSelectedField(newCardDataOptions);
   }
 
-  console.log(" fieldsOnCardToShow ", fieldsOnCardToShow);
-
   return (
     <div className={classes.basicInfoRoot}>
       <Grid container display="flex" alignItems="center" spacing={2}>
