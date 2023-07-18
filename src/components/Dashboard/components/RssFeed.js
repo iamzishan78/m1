@@ -36,6 +36,17 @@ const useStyles = makeStyles((theme) => ({
   container: {},
   listitem: {
     padding: "10px",
+    backgroundColor: "#F6F8F9",
+    "&:hover": {
+      backgroundColor: "#DDDFE0",
+    },
+    "& .MuiFormControl-marginDense": {
+      margin: "0px !important",
+    },
+    "& .MuiIconButton-root": {
+      paddingLeft: "10px !important",
+      paddingRight: "10px !important",
+    },
   },
   thumb: {
     height: "16px",
@@ -46,7 +57,8 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "0px",
   },
   title: {
-    fontSize: "14px",
+    fontSize: "16px",
+    fontWeight: "bold",
     margin: "2px 0",
     fontWeight: "bold",
     textDecoration: "none",
@@ -60,7 +72,8 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "10px",
   },
   paper: {
-    margin: "8px 4px",
+    margin: "12px 8px",
+    boxShadow: "none !important",
   },
   image: {
     maxHeight: "72px",
@@ -170,6 +183,7 @@ const RssFeed = () => {
     <Fragment>
       <CardHeader
        // action={<DragHandle />}
+       style={{ margin: "8px" }}
         title={`In The News`}
         className={classes.header}
       />

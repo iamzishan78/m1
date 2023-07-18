@@ -1255,6 +1255,7 @@ function SubTable(props) {
     if (column.name === "taxValue") return vf_currency(v);
 
     if (column.name === "offerPrice" && !!v && !isNaN(v)) return vf_currency(v);
+    if (column.name === "closedPrice" && !!v && !isNaN(v)) return vf_currency(v);
     if (
       (column.name === "seller_asking_price" ||
         column.name === "competitor_offer_price" ||
@@ -1416,7 +1417,29 @@ function SubTable(props) {
                           size="35"
                           round
                         />
-                        <Link
+                        <p
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            minWidth: "300px",
+                            marginLeft: "10px"
+                          }}
+                        >
+                          <ColumnWithLink
+                            value={tableMeta.rowData[nameIndex]}
+                            link={`/contact/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          />
+                          {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
+                            <FeatureFlag feature={FEATURES.IDICORE}>
+                              <MonetizationOnIcon className={classes.monetizationIcon} />
+                            </FeatureFlag>
+                          )}
+                        </p>
+                        {/* <Link
                           to={`/contact/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
                           className={classes.clickableCell}
                         >
@@ -1436,7 +1459,7 @@ function SubTable(props) {
                               </FeatureFlag>
                             )}
                           </p>
-                        </Link>
+                        </Link> */}
                       </div>
                     );
                   } else {

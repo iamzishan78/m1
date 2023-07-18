@@ -48,9 +48,10 @@ function CheckDetailsSection(props) {
 
   const formatHits = (hits) => {
     return hits.map((hit) => {
-      hit.number = hit?.property?.number;
+      hit._id = hit.check?._id;
+      hit.number = hit.check?.checkNumber;
       hit.name = hit?.property?.name;
-      hit.purchaser = hit?.property?.purchaser?.name;
+      hit.purchaser = hit?.check?.payor?.name;
       hit.state = hit.property?.state;
       hit.county = hit.property?.county;
       hit.ownerNumber = hit.property?.ownerNumber;

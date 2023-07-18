@@ -82,6 +82,7 @@ const dealFlowLine = [
   { name: "Bid Date", isSelected: false, key: "bidDate" },
   { name: "Close Date", isSelected: false, key: "closeDate" },
   { name: "Offer Price", isSelected: false, key: "offerPrice" },
+  { name: "Closed Price", isSelected: false, key: "closedPrice" },
 ];
 const generalFlowLine = [{ name: "Due Date", isSelected: false, key: "dueDate" }];
 
@@ -169,8 +170,6 @@ const BasicInfo = ({ control, reset, setValue, watch, flowErrors, setFlowErrors 
     setCardOptions(newCardDataOptions);
     setSelectedField(newCardDataOptions);
   }
-
-  console.log(" fieldsOnCardToShow ", fieldsOnCardToShow);
 
   return (
     <div className={classes.basicInfoRoot}>
