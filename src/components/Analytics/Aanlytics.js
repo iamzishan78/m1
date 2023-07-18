@@ -1,10 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Switch, Route, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { withStyles } from "@material-ui/core/styles";
-import MenuItem from "@material-ui/core/MenuItem";
 
-// import { toggleQuickActionsPanel, setActiveModule } from "store/actions/contactActions";
 import { setActiveModule, toggleQuickActionsPanel } from "store/actions/commonActions";
 import { AppContext } from "AppContext";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
@@ -17,10 +14,6 @@ import PermitsCard from "components/Dashboard/components/PermitsCard";
 import ProdCard from "components/Dashboard/components/ProdCard";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import QuickActionPanel from "components/Land/components/QuickActionPanel";
-import Grid from "@material-ui/core/Grid";
-import { Tab, Tabs } from "@material-ui/core";
-import FilterIcon from "components/Shared/svgIcons/filter";
-import ViewColumnIcon from "components/Shared/svgIcons/view_column";
 import { analyticsManagementRoutes } from "utils/data";
 
 const Components = {
@@ -86,7 +79,6 @@ export default function Analytics() {
           quickActionsPanelState={quickActionsPanelState}
           activeModule={activeModule}
           actions={sidePanelOptions}
-        // PanelAction={PanelAction}
         >
           {Object.keys(allowedPaths).map((option) => (
             <Switch>
@@ -98,70 +90,3 @@ export default function Analytics() {
     </>
   );
 }
-
-const PanelAction = () => {
-  const [tab, setTab] = useState(0);
-  const a11yProps = (index) => ({
-    id: `full-width-tab-${index}`,
-    "aria-controls": `full-width-tabpanel-${index}`,
-  });
-  const layerIcons = React.useMemo(() => {
-    return [
-      {
-        action: "layer",
-        icon: <FilterIcon fill="#fff" fontSize="medium" />,
-      },
-      {
-        action: "heatMaps",
-        icon: <ViewColumnIcon fill="#fff" fontSize="medium" />,
-      },
-    ];
-  }, []);
-
-  return (
-    <StyledMenuHActionHeader>
-      <Grid container direction="row" justify="space-between" alignItems="center">
-        <Grid item>
-          <Tabs value={tab} aria-label="find-map-tabs" indicatorColor="primary" textColor="primary" variant="fullWidth">
-            {layerIcons.map((action, index) => (
-              <Tab icon={action.icon} {...a11yProps(index)} onClick={() => setTab(index)} />
-            ))}
-          </Tabs>
-        </Grid>
-      </Grid>
-    </StyledMenuHActionHeader>
-  );
-};
-
-const StyledMenuHActionHeader = withStyles((theme) => ({
-  root: {
-    display: "flex",
-    justifyContent: "flex-start",
-    backgroundColor: "#0e111a !important",
-    minHeight: "53px !important",
-    "&>.MuiTouchRipple-root": {
-      borderBottom: "5px solid #263451",
-      marginBottom: "6px",
-    },
-    "& .MuiTabs-root": {
-      "& .MuiTabs-scroller": {
-        "& .MuiTabs-flexContainer": {
-          width: "150px",
-          "& .MuiButtonBase-root": {
-            minWidth: "0px !important",
-          },
-          "& .MuiTab-textColorPrimary": {
-            color: "white",
-          },
-        },
-      },
-      "& .MuiTabs-indicator": {
-        // marginLeft: "6px",
-        height: "5px",
-        // width: "25px !important",
-        backgroundColor: "#1CB6DA",
-        zIndex: 1,
-      },
-    },
-  },
-}))(MenuItem);
