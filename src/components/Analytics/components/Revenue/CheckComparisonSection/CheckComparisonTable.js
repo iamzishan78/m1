@@ -220,6 +220,8 @@ function CheckComparisonSection(props) {
         addAble={{ type: "revenueStatementDetails" }}
         parent={props.parent}
         setColumnsBase={[]}
+        selectedRowsValues = {props.selectedRowsValues}
+        selectedRows = {props.selectedRows}
         {...props.esHocProps}
       />
     </Container>

@@ -800,6 +800,14 @@ export const TableESHOC = (Component) => {
 
         const onDownload = async () => {
           if(tableMeta?.datasets){
+						let isSelectAll = true;
+						const selectedIds = selectedRowsValues && selectedRowsValues.length > 0
+						? selectedRowsValues.map(item => item._id)
+						: null;
+	
+						if(selectedIds && selectedIds.length < tableStateRef?.current?.count){
+							isSelectAll = false
+						}
 						let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
             if (props.useWildeCard)
                 searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
@@ -830,11 +838,15 @@ export const TableESHOC = (Component) => {
 								sortOrder: tableStateRef?.current?.sortOrder,
 								defaultSort: tableMeta?.defaultSort,
 								datasets: tableMeta?.datasets,
+								isSelectAll,
+								selectedIds,
 								counts: {
 									exportGrid: tableStateRef?.current?.count,
 								},
 							}
 							}));
+							setSelectedRowsValues(null)
+							setSelectedRows([])
 						}else {
 							setIsExporting(true)
 							let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
@@ -952,8 +964,7 @@ export const TableESHOC = (Component) => {
                     break;
                 case "rowSelectionChange":
                     let allRows = []
-                    if (tableMeta.isSelectedAllAllowed)
-                        if (tableState.selectedRows.data.length === tableState.data.length || tableState.selectedRows.data.length > tableState.data.length) {
+                        if (tableMeta.isSelectedAllAllowed && tableState.selectedRows.data.length === tableState.data.length || tableState.selectedRows.data.length > tableState.data.length) {
                             const isSelectAll = tableState.selectedRows.data.length === tableState.data.length
                             const rowsSelected = []
                             const total = isSelectAll ? tableState.count : tableState.selectedRows.data.length
@@ -1131,6 +1142,18 @@ export const TableESHOC = (Component) => {
                                     </IconButton>
                                 </Tooltip>
                             </div>
+														{tableMeta?.datasets &&
+															<div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
+															<Button
+																color="secondary"
+																startIcon={<CloudDownloadIcon color="white" />}
+																className={classes.multiSelectionTopBarButtons}
+																onClick={onDownload}
+                        			>
+                          			Export
+                        			</Button>
+                            </div>
+														}
                         </div>
                     )
             },

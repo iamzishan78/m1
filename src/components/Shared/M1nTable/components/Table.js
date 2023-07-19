@@ -666,6 +666,12 @@ function SubTable(props) {
   };
 
   useEffect(() => {
+    if (props.selectedRowsValues === null && Array.isArray(props.selectedRows) && props.selectedRows.length === 0) {
+      M1nSelectedRowsIndexes([]);
+    }
+  }, [props.selectedRowsValues, props.selectedRows]);
+
+  useEffect(() => {
     if (viewFileResult?.viewFile?.uri) {
       let a = document.createElement("a");
       a.href = viewFileResult.viewFile.uri;
