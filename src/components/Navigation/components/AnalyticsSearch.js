@@ -105,7 +105,7 @@ const AnalyticsSearch = () => {
             <Grid container direction="row" display="flex" justify="flex-start" alignItems="center">
               <Grid item md={2.5}>
                 <Typography variant="h5" style={{ color: "black", fontWeight: "bold", marginRight: "20px" }}>
-                  {activeModule.title} Analytics
+                  {activeModule?.customTitle || activeModule?.title + "Analytics"}
                 </Typography>
               </Grid>
               {!activeModule.hideSearch && (

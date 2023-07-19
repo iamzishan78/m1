@@ -490,7 +490,7 @@ export default function Navigation(props) {
                 Object.values(contactManagementRoutes).find((item) => item.link === location.pathname && item.search)) && <ContactSearch />}
               {location.pathname.includes("/contact/details") && <ContactBreadcrumbs />}
 
-              {["/analytics/revenues", "/analytics/land"].includes(
+              {["/analytics/revenues", "/analytics", "/analytics/land"].includes(
                 location.pathname
               ) && (
                   <AnalyticsSearch classes={classes} user={stateApp.user} />
