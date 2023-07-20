@@ -2781,31 +2781,6 @@ function SubTable(props) {
               },
             };
             break;
-          case "approvalStatus":
-            column.options = {
-              ...column.options,
-              customBodyRender: (value, tableMeta) => {
-                return (
-                  <>
-                    {props.parent === "RevenuePropertiesTable" && (
-                      <>
-                        {value?.toLowerCase() === 'approved' && (
-                          <div className="flex justifyCenter alignCenter success w-100">
-                            <CheckCircle size={20} />
-                          </div>
-                        )}
-                        {value?.toLowerCase() === 'unapproved' && (
-                          <div className={`flex justifyCenter alignCenter w-100 ${classes.customWarning}`}>
-                            <WarningIcon size={20} />
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </>
-                );
-              },
-            };
-            break;
           case "tractName":
             column.options = {
               ...column.options,
