@@ -174,12 +174,13 @@ export const analyticsManagementRoutes = {
   ACTIVITY: {
     featureFlag: "CONTACTSUBMENU",
     title: "CRM",
+    customTitle: "Activity Dashboard",
     link: "/analytics",
     component: "ActivitiesDashboard",
     value: "CRM",
     search: true,
     isDefault: true,
-    hideSearch: true,
+    hideSearch: false,
   },
   LEADS: {
     featureFlag: "CONTACTSUBMENU",
