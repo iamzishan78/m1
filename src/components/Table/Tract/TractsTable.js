@@ -107,7 +107,8 @@ function TractsTable(props) {
         startPaginationAt={null}
         onTableChange={props.onTableChange}
         options={{
-          ...props.options
+          ...props.options,
+          ...props.customOptions,
         }}
         parent={props.parent}
         setColumnsBase={[]}
