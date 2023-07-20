@@ -263,7 +263,6 @@ export default function TransferDataManager(props) {
                       return (
                         <StyledListItem key={index} ContainerComponent="li">
                           <Checkbox
-                            disabled={row?.label !== 'Agreements'}
                             checked={selectedPlatformCategory?.label === row.label}
                             color="dark gray"
                             onClick={(e) => e.stopPropagation()}
