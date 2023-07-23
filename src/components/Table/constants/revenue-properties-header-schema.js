@@ -1,16 +1,9 @@
-import { GlobalStickyStyles } from "GlobalSettings";
-import WellIcon from '../../../components/Shared/svgIcons/well.js';
+import GlobalSettings, { GlobalStickyStyles } from "GlobalSettings";
+import WellIcon from "../../../components/Shared/svgIcons/well.js";
 import { ErrorOutline } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink.js";
-
-const styles = {
-  width: "fit-content",
-  fontWeight: 600,
-  color: "#17aadd",
-  cursor: "pointer",
-};
 
 const ComponentPropertyName = ({ value, tableMeta }) => {
   const history = useHistory();
@@ -18,40 +11,41 @@ const ComponentPropertyName = ({ value, tableMeta }) => {
   return (
     <div
       style={{
-        display: 'flex',
-        alignItems: 'center',
+        display: "flex",
+        alignItems: "center",
       }}
-    // style={{borderRight: 'solid red'}}
+      // style={{borderRight: 'solid red'}}
     >
       <ColumnWithLink
         onClick={(e) => {
           e.stopPropagation();
-          history.push(`/revenue/property/details/${tableMeta.rowData[0]}`)
+          history.push(`/revenue/property/details/${tableMeta.rowData[0]}`);
         }}
-        value={value?.split("_")?.[0]
-          ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[2]}`
-          : tableMeta?.rowData[2]}
+        value={value?.split("_")?.[0] ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]}
         link={`/revenue/property/details/${tableMeta.rowData[0]}`}
       />
       {/* <Button/> */}
-      {
-        !(tableMeta?.rowData[5] && tableMeta?.rowData[6]) &&
-        <div style={{ marginLeft: "15px", cursor: 'pointer' }} onClick={(e) => {
-          e.stopPropagation();
-          history.push(`/revenue/property/details/${tableMeta.rowData[0]}`, { focusOnWellSearch: true });
-        }}>
-          <WellIcon size={"18"} opacity={"1"} color="gray" />
-          <ErrorOutline style={{
-            width: "17px",
-            height: "17px",
-            color: "gray"
+      {!(tableMeta?.rowData[5] && tableMeta?.rowData[6]) && (
+        <div
+          style={{ marginLeft: "15px", cursor: "pointer" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            history.push(`/revenue/property/details/${tableMeta.rowData[0]}`, { focusOnWellSearch: true });
           }}
+        >
+          <WellIcon size={"18"} opacity={"1"} color="gray" />
+          <ErrorOutline
+            style={{
+              width: "17px",
+              height: "17px",
+              color: "gray",
+            }}
           />
         </div>
-      }
+      )}
     </div>
   );
-}
+};
 
 // sort: true,
 // filter: true,
@@ -65,7 +59,7 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
     options: { filter: false, display: false, sort: false, viewColumns: false },
   },
   {
-    /// this is the control column for properties 
+    /// this is the control column for properties
     name: "number",
     label: "Property",
     esKey: "number.keyword",
@@ -94,7 +88,6 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
       //   }
       // }),
 
-
       customRender: (value, tableMeta) => <ComponentPropertyName value={value} tableMeta={tableMeta} />,
     },
   },
@@ -103,8 +96,9 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
     label: "Property Name",
     esKey: "name.keyword",
     options: {
-      sort: true, filter: true,
-      display: false
+      sort: true,
+      filter: true,
+      display: false,
     },
     // options: {
     //   ...GlobalSettings.muiGridStandardOptions,
@@ -114,23 +108,27 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
   {
     name: "system_id",
     label: "M1neral System ID",
-    options: { filter: true, sort: true,
+    options: {
+      filter: true,
+      sort: true,
       display: false,
-      setCellProps: () => ({ style: { 
-        padding: "0px 16px"
-      } }),
+      setCellProps: () => ({
+        style: {
+          padding: "0px 16px",
+        },
+      }),
     },
     esKey: "_id.keyword",
   },
   {
     name: "number",
     label: "Operator Prop #",
-    esKey: "number.keyword"
+    esKey: "number.keyword",
   },
   {
     name: "description",
     label: "Property description",
-    esKey: "description.keyword"
+    esKey: "description.keyword",
   },
   {
     name: "state",
@@ -138,7 +136,7 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
     esKey: "state.keyword",
     options: {
       sort: true,
-      filter: true
+      filter: true,
     },
     // options: {
     //   ...GlobalSettings.muiGridStandardOptions,
@@ -219,12 +217,17 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
     esKey: "source.keyword",
   },
   {
+    name: "approvalStatus",
+    label: "Status",
+    esKey: "approvalStatus.keyword",
+  },
+  {
     name: "tags",
     label: "Tags",
     esKey: "tags.tag.keyword",
     options: {
       ignoreGlobal: true,
-    }
+    },
   },
   {
     name: "commentsCounter",
@@ -238,21 +241,6 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
       download: false,
       print: false,
       viewColumns: false,
-    },
-  },
-  {
-    name: "approvalStatus",
-    label: "Status",
-    esKey: "approvalStatus.keyword",
-    options: {
-      ignoreGlobal: true,
-      customHeadLabelRender: () => (
-        <>
-          <div> </div>
-        </>
-      ),
-      sort: true,
-      filter: true,
     },
   },
 ];

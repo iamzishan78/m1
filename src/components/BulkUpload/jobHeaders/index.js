@@ -6,6 +6,8 @@ const PROPERTIES = require("./PROPERTIES").default;
 const CHECKDETAILS = require("./CHECKDETAILS").default;
 const PARCELINTERESTS = require("./PARCELINTERESTS").default;
 const AGREEMENT_SHAPE = require("./AGREEMENT_SHAPE").default;
+const UNIT_SHAPE = require("./UNIT_SHAPE").default;
+const TRACT_SHAPE = require("./TRACT_SHAPE").default;
 const AGREEMENT_HEADER = require("./AGREEMENT_HEADER").default;
 const AGREEMENT_COMMENTS = require("./AGREEMENT_COMMENTS").default;
 const TRACT_COMMENTS = require("./TRACT_COMMENTS").default;
@@ -23,7 +25,9 @@ const eportData = {
     CHECKDETAILS, 
     PROPERTIES, 
     CONTACTS_WELL_INTEREST, 
-    AGREEMENT_SHAPE, 
+    AGREEMENT_SHAPE,
+    UNIT_SHAPE, 
+    TRACT_SHAPE,
     AGREEMENT_HEADER, 
     AGREEMENT_PROVISIONS,
     AGREEMENT_COMMENTS, 

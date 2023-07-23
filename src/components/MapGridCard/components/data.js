@@ -32,6 +32,5 @@ export const userDefinedInitialData = [
 ];
 
 export const snapGridSideBarData = [
-  ...[platformDataInitialData[0], platformDataInitialData[1], platformDataInitialData[2]],
   ...userDefinedInitialData
 ];

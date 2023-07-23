@@ -1,0 +1,117 @@
+const Unit = [
+  {
+    label: "Unit Id",
+    mapped_key: "",
+    required: true,
+    actual_key: "_id",
+  },
+  {
+    label: "Unit Name",    
+    mapped_key: "",
+    required: true,
+    actual_key: "name",
+  },
+  {
+    label: "Unit Number",
+    mapped_key: "",
+    required: true,
+    actual_key: "uNumber",
+  },
+  {
+    label: "Unit Type",
+    mapped_key: "",
+    required: true,
+    actual_key: "uType",
+  },
+  {
+    label: "Unit Status",
+    mapped_key: "",
+    required: true,
+    actual_key: "uStatus",
+  },
+  {
+    label: "Unit Acres",
+    mapped_key: "",
+    required: true,
+    actual_key: "uAcres",
+  },
+  {
+    label: "Calculated Acres",
+    mapped_key: "",
+    required: true,
+    actual_key: "shapeArea",
+  },
+  {
+    label: "Current Operator",
+    mapped_key: "",
+    required: true,
+    actual_key: "uPrimaryOperator",
+  },
+  {
+    label: "Description",
+    mapped_key: "",
+    required: true,
+    actual_key: "description",
+  },
+  {
+    label: "Field Name",
+    mapped_key: "",
+    required: true,
+    actual_key: "uFieldName",
+  },
+  {
+    label: "Unit Depth",
+    mapped_key: "",
+    required: true,
+    actual_key: "uDepth",
+  },
+  {
+    label: "Primary Bench",
+    mapped_key: "",
+    required: true,
+    actual_key: "uPrimaryBench",
+  },
+  {
+    label: "Net Royalty Acres (NRA)",
+    mapped_key: "",
+    required: true,
+    actual_key: "netRoyalityAcres",
+  },
+  {
+    label: "Unit Pricing (per NRA)",
+    mapped_key: "",
+    required: true,
+    actual_key: "uUnitPricing",
+  },
+  {
+    label: "Qualifier",
+    mapped_key: "",
+    required: true,
+    actual_key: "qualifier",
+  },
+  {
+    label: "Reviewer",
+    mapped_key: "",
+    required: true,
+    actual_key: "reviewer",
+  },
+  {
+    label: "Campaign Name",
+    mapped_key: "",
+    required: true,
+    actual_key: "campaignName",
+  },
+  {
+    label: "Acquisition Name",
+    mapped_key: "",
+    required: true,
+    actual_key: "custom_data.acquisition_name",
+  },
+  {
+    label: "Attempted to Reach Out",
+    mapped_key: "",
+    required: true,
+    actual_key: "custom_data.attempted_to_reach_out",
+  },
+];
+export default Unit;

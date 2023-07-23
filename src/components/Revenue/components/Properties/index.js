@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(1),
     // paddingLeft: "38px",
     // paddingRight: "38px",
-    marginLeft: '-8px',
+    marginLeft: "-8px",
     "& div": {
       "&>.MuiPaper-root": {
         "&>:nth-child(3)": {
@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(1),
     // paddingLeft: "38px",
     // paddingRight: "38px",
-    marginLeft: '-8px',
+    marginLeft: "-8px",
   },
   label: {
     fontSize: 16,
@@ -87,7 +87,6 @@ export default function Properties() {
   // redux
   const [filterToggle, setFilterToggle] = React.useState(false);
 
-
   // props to pass in table
   const esIndex = "properties_flat";
   const startPaginationAt = 50;
@@ -96,7 +95,7 @@ export default function Properties() {
   const [propertiesCount, setPropertiesCount] = useState(0);
 
   // waypointKey should any key of Table Header which do not have customRender in schema file
-  const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 347px)' }
+  const loadMore = { type: "infiniteScroll", height: "calc(100vh - 347px)" };
 
   const setESFilters = (newFilter) => {
     setStateIfDeepEqual(ESFilters, newFilter);
@@ -112,15 +111,15 @@ export default function Properties() {
 
   useEffect(() => {
     getUnmappedPropertyCount();
-  }, [])
+  }, []);
 
   useEffect(() => {
     return () => {
       setStateApp((state, props) => {
-        return { ...state, revenueSearchQuery: '' };
+        return { ...state, revenueSearchQuery: "" };
       });
-    }
-  }, [])
+    };
+  }, []);
 
   // cards default
   const cardsDefault = [
@@ -147,7 +146,7 @@ export default function Properties() {
       type: "warning",
       filterable: true,
     },
-  ]
+  ];
 
   return (
     <div className={classes.root}>
@@ -189,7 +188,7 @@ export default function Properties() {
           onPropertiesCount={onPropertiesCount}
           startPaginationAt={startPaginationAt}
           revenueSearchQuery={stateApp.revenueSearchQuery}
-          actionColumns={[" ", "Tags", "Comments", "Status"]}
+          actionColumns={[" ", "Tags", "Comments"]}
           loadMore={loadMore}
         />
       </div>
