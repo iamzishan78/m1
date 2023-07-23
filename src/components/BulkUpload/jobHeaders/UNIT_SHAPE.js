@@ -48,6 +48,12 @@ const Unit = [
     actual_key: "uPrimaryOperator",
   },
   {
+    label: "Description",
+    mapped_key: "",
+    required: true,
+    actual_key: "description",
+  },
+  {
     label: "Field Name",
     mapped_key: "",
     required: true,

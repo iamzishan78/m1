@@ -102,7 +102,7 @@ const filterColumnsHeader = [
 export default function ExhibitATabPanel() {
   const classes = useStyles();
   const [stateApp] = useContext(AppContext);
-  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 166px)" }
+  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 239px)" }
   const initialFilterList = [["All"], ["All"], ["All"], ["All"], ["All"], ["All"]];
   const [, setFilters] = useState([]);
 
@@ -111,9 +111,9 @@ export default function ExhibitATabPanel() {
 
   useEffect(() => {
     const filter = JSON.parse(JSON.stringify(esFilters))
-    for(let i=0; i<filter.length; i++) {
+    for (let i = 0; i < filter.length; i++) {
       const column = filterColumnsHeader.find(h => h.filterKey === filter[i].field)
-      if(column && column?.custom?.formatedFilterOptions){
+      if (column && column?.custom?.formatedFilterOptions) {
         const filterData = column?.custom?.formatedFilterOptions;
         const data = filterData.find(f => f.label === filter[i].value)
         if (data) {
@@ -132,7 +132,7 @@ export default function ExhibitATabPanel() {
     //   column.filterList[0] = value
     // }
     // setTableFilters(esFilters)
-  },[esFilters])
+  }, [esFilters])
   const onChange = (filter, index, column, esKey) => {
     const newFilters = JSON.parse(JSON.stringify(esFilters));
 
