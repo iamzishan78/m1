@@ -1,5 +1,5 @@
 import { GlobalStickyStyles } from "GlobalSettings";
-import vf_currency from "components/Shared/valueformatters/vf_currency";
+import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 
 const RevenueStatementHeadCells = [
@@ -47,7 +47,7 @@ const RevenueStatementHeadCells = [
       sort: true,
       filter: true,
       customRender: (value) => {
-        return value ? <p>{value ? `${vf_currency(value?.toFixed(2))}` : ""}</p> : <p style={{ color: "#898989b0" }}>N/A</p>;
+        return value ? <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p> : <p style={{ color: "#898989b0" }}>N/A</p>;
       },
     },
   },
