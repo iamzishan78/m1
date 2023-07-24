@@ -686,7 +686,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         props.onChange(val);
                       }}
                       value={props.value ? props.value : ""}
-                      fieldKey='status'
+                      fieldKey='contactStatus'
                     />
                   )}
                 />
