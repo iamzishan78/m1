@@ -369,7 +369,7 @@ export default function M1neralHeaders() {
 
               {stateApp.jobType !== 'UNITS' && (
                 <div style={{ ...text_grey }}>
-                  *Note: Existing agreements will be matched on M1neral ID or Agreement Number
+                  *Note: Existing {stateApp?.transferData?.selectedPlatformCategory?.label} will be matched on M1neral ID{stateApp?.transferData?.selectedPlatformCategory?.label === "Agreements" && ' or Agreement Number'}
                 </div>
               )}
 
