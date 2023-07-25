@@ -14,7 +14,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 
 import { AppContext } from "AppContext";
-import { useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { ADD_OWNER_TOA_SHAPE } from "graphQL/useMutationAddOwnerToAShape";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import { makeStyles } from "@material-ui/core/styles";
@@ -32,6 +32,8 @@ import CampaignNameField from "components/ContactDetailCard/components/FieldCont
 import AssociatedDealField from "components/ContactDetailCard/components/FieldContent/AssociatedDealField";
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
+import { Status } from "components/ContactDetailCard/components/FieldContent";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -76,13 +78,25 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const { control, reset, setValue, getValues, watch } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
   const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false)
-
+  const [statusOptions, setStatusOptions] = useState([]);
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [ownerTypeOfConctact, setOwnerTypeOfConctact] = useState();
   const [anchorEl, setAnchorEl] = useState();
   const [loading, setLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const watchedNra = watch('nra')
+
+  const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+
+  useEffect(() => {
+    getFilters({
+      variables: {
+        esIndex: "contacts_flat",
+        filterKey: "status.keyword",
+        size: 50,
+      },
+    });
+  }, [])
 
   useEffect(() => {
     if (selectedRow) {
@@ -130,6 +144,25 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       reset(owner);
     }
   }, [selectedRow]);
+
+  useEffect(() => {
+    if (filtersData?.getESFilterList?.hits) {
+      const allFiltersData = filtersData.getESFilterList.hits.map((hit) => hit.key);
+      let filterData = filtersData.getESFilterList.hits.map((hit) => hit.key);
+      for (let i = 0; i < contactStatusOptions.length; i++) {
+        filterData = filterData.filter((d) => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label);
+      }
+      for (let i = 0; i < contactStatusOptions.length; i++) {
+        if (
+          (contactStatusOptions[i].notInclude && allFiltersData.find((d) => d === contactStatusOptions[i].value)) ||
+          !contactStatusOptions[i].notInclude
+        ) {
+          filterData.push(contactStatusOptions[i].label);
+        }
+      }
+      setStatusOptions(filterData);
+    }
+  }, [filtersData]);
 
   // CONTACT
 
@@ -690,6 +723,30 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       }}
                       value={props.value ? props.value : ""}
                     />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Stage</h3>
+
+                <Controller
+                  control={control}
+                  defaultValue={''}
+                  name="contactStatus"
+                  render={(props) => (
+                    <Status
+                        className={classes.maxWidth}
+                        options={statusOptions}
+                        setDocumentType={(value) => {
+                          let val = value.name;
+                          const data = contactStatusOptions.find((s) => s.label === val);
+                          if (data) {
+                            val = data.value;
+                          }
+                          props.onChange(val)
+                        }}
+                        {...props}
+                      />
                   )}
                 />
               </Grid>

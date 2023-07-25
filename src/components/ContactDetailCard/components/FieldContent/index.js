@@ -525,7 +525,7 @@ export default function FieldContent({
   );
 }
 
-const Status = ({ setDocumentType, value, options, ...other }) => {
+export const Status = ({ setDocumentType, value, options, ...other }) => {
   const useStyles = makeStyles({
     inputRoot: {
       backgroundColor: "#ffffff",
