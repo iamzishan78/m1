@@ -311,6 +311,8 @@ function ActivitiesTable(props) {
                 style={{
                   display: "inline",
                   float: "left",
+                  position: "relative",
+                  left: '110px'
                 }}
               >
                 {props.addable && props.addAble?.type === "contactActivity" && (

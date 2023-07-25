@@ -92,7 +92,7 @@ function UnitInterestsTable(props) {
     rowsPerPage: 10,
     count: count,
     serverSide: true,
-    search: false,
+    search: true,
     rowsSelected: selectedRows.map((sR) => sR.dataIndex),
     filter: true,
     searchText: esSearch,
