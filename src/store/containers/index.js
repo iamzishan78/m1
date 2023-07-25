@@ -21,6 +21,30 @@ import {
 import { showSuccessMessage } from "actions";
 
 import { getShapeOwnersSelectors } from "store/selectors/index";
+import UpdateBulkTractOwnership from "components/Shared/M1nTable/components/SubComponents/UpdateBulkTractOwnership";
+
+const UpdateBulkTractOwnershipProps = (state) => {
+  const { campaignList } = state.contact;
+  return {
+    campaignList,
+  };
+};
+
+const UpdateBulkTractOwnershipDispatch = (dispatch) => {
+  return bindActionCreators(
+    {
+      showSuccessMessage,
+      getContactCampaignAction: getContactCampaignAction.STARTED,
+      convertMultipleOwnerToContactAction: convertMultipleOwnerToContactAction.STARTED,
+    },
+    dispatch
+  );
+};
+
+export const UpdateBulkTractOwnershipContainer = connect(
+  UpdateBulkTractOwnershipProps,
+  UpdateBulkTractOwnershipDispatch
+)(UpdateBulkTractOwnership);
 
 const AssignOwnerToContactDrawerProps = (state) => {
   const { campaignList } = state.contact;

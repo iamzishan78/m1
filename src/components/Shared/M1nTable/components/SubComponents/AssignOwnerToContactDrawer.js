@@ -115,7 +115,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     { title: "Tags", value: "contactStatus" },
     { title: "Territory", value: "territory" },
     { title: "Time Zone", value: "timeZone" },
-
   ];
 
   useEffect(() => {
@@ -134,8 +133,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     // eslint-disable-next-line
   }, [fieldKey]);
 
-
-
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT);
   const [updateBulkContact] = useMutation(UPDATEBULKCONTACT);
   const [updateBulkTags] = useMutation(BULKUPSERTTAG);
@@ -151,6 +148,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   }
 
   const onAssign = () => {
+    debugger
     let contactIds = rows.map((row) => row._id);
 
     const errorMsg = 'Failed to assign to contact owner'
@@ -480,7 +478,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           style={!fieldKey ? {} : { backgroundColor: "#00abed", color: "white" }}
           onClick={onAssign}
         >
-          Update
+          Updatesss
         </Button>
       </DialogActions>
 
