@@ -185,6 +185,7 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
     const onFieldToUpdateChange = (field) => {
         setField(field);
         setFieldKey('');
+        setNameAutValue({ name: "", _id: null })
     }
 
     const onAssign = () => {
@@ -193,7 +194,10 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
         const errorMsg = 'Failed to Update in Bulk'
         Loader.createToast('Bulk-Updating', 'Parcel Bulk Update in progress')
 
-        const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
+        let fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
+
+        if (nameAutValue._id !== null)
+            fieldToUpdate = { name: nameAutValue.name, ownerEntity: nameAutValue._id }
 
         if (field === "Tags") {
             let contactIds = rows.map((row) => row._id);
@@ -258,7 +262,7 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
         onClose();
         setLoading(false);
     };
-
+    console.log("nameAutValue : ", nameAutValue)
     function SelectedField() {
         let contactIds = rows.map((row) => row._id);
         let filterKey = ''
@@ -456,8 +460,12 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
                 <Button
                     variant="contained"
                     component="span"
-                    disabled={!fieldKey}
-                    style={!fieldKey ? {} : { backgroundColor: "#00abed", color: "white" }}
+                    disabled={nameAutValue._id === null && !fieldKey}
+                    style={
+                        nameAutValue._id === null && !fieldKey
+                            ? {}
+                            : { backgroundColor: "#00abed", color: "white" }
+                    }
                     onClick={onAssign}
                 >
                     Update
