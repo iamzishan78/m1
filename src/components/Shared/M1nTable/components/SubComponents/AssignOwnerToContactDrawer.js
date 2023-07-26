@@ -148,7 +148,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   }
 
   const onAssign = () => {
-    debugger
     let contactIds = rows.map((row) => row._id);
 
     const errorMsg = 'Failed to assign to contact owner'
@@ -184,6 +183,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           tags: fieldKey,
           user: stateApp.user.mongoId,
           contactIds,
+          objectType: "contact"
         },
         refetchQueries: ["getESContacts", "getESSimpleSearch"],
         awaitRefetchQueries: true,
@@ -478,7 +478,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           style={!fieldKey ? {} : { backgroundColor: "#00abed", color: "white" }}
           onClick={onAssign}
         >
-          Updatesss
+          Update
         </Button>
       </DialogActions>
 

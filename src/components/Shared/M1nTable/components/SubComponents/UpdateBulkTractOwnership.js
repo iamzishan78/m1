@@ -10,23 +10,17 @@ import DialogActions from "@material-ui/core/DialogActions";
 import { Modals } from "styles/Modal";
 import _ from "lodash";
 
-import CloseSharp from "@material-ui/icons/CloseSharp";
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import Typography from "@material-ui/core/Typography";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { AppContext } from "AppContext";
-import { ASSIGN_OWNER_TO_CONTACT } from "graphQL/useMutationAssignOwnerToContact";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import FieldBulkAutoComplete from "components/Shared/FieldBulkAutoComplete";
 import Loader from "components/Loaders";
 import TextField from "@material-ui/core/TextField";
-import { UPDATEBULKCONTACT } from "graphQL/useMutationUpdateBulkContact";
-import { timeZoneOptions } from "components/ContactDetailCard/components/FieldContent/timeZoneList";
 import { PUBLICTAGSQUERY } from "graphQL/useQueryPublicTags";
 import { BULKUPSERTTAG } from "graphQL/useMutationBulkUpsertTagOnContacts";
-import { UPSERT_CAMPAIGN_DESCRIPTORS } from "graphQL/useMutationCampaign";
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
-import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import AutocompEntityNamesVirtualizeList from "./AutocompEntityNamesVirtualizeList";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
@@ -102,7 +96,6 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
     const [fieldKey, setFieldKey] = useState();
     const [loading, setLoading] = useState(false);
     const [inputFocused, _setFocused] = useState(false);
-    const [campaigns, setCampaigns] = useState([]);
 
 
     const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
@@ -142,6 +135,7 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
         { title: "Company Net Acres", value: "company_net_acres" },
         { title: "Net Royalty Acres (NRA)", value: "nra" },
         { title: "Associated Deals", value: "deals" },
+        { title: "Tags", value: "contactStatus" }
     ];
 
     useEffect(() => {
@@ -185,14 +179,8 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
         // eslint-disable-next-line
     }, [fieldKey]);
 
-    const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT);
     const [updateBulkParcel] = useMutation(UPDATEBULKPARCEL);
     const [updateBulkTags] = useMutation(BULKUPSERTTAG);
-    const [upsertCampaignDescriptors] = useMutation(UPSERT_CAMPAIGN_DESCRIPTORS);
-
-    const onDelete = (row) => {
-        setRows(rows.filter((r) => r._id !== row._id));
-    };
 
     const onFieldToUpdateChange = (field) => {
         setField(field);
@@ -202,32 +190,70 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
     const onAssign = () => {
         let contactIds = rows.map((row) => row._id);
 
-        const errorMsg = 'Failed to assign to contact owner'
-        Loader.createToast('contact-creation', 'Contact Bulk Update in progress')
+        const errorMsg = 'Failed to Update in Bulk'
+        Loader.createToast('Bulk-Updating', 'Parcel Bulk Update in progress')
 
         const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
 
-        updateBulkParcel({
-            variables: {
-                contactIds: contactIds,
-                keysToUpdate: fieldToUpdate,
-            },
-            refetchQueries: ["getESSimpleSearch"],
-            awaitRefetchQueries: true,
-        }).then(res => {
-            if (res.data && res.data.updateBulkContact) {
-                const success = res.data.updateBulkContact.some(res => res.success)
-                if (success) {
-                    Loader.successToast('contact-creation', "updated")
-                    showSuccessMessage(`${field} Bulk Updated Successfully`)
-                } else {
-                    Loader.errorToast('contact-creation', "updated")
+        if (field === "Tags") {
+            let contactIds = rows.map((row) => row._id);
+
+            updateBulkTags({
+                variables: {
+                    tags: fieldKey,
+                    user: stateApp.user.mongoId,
+                    contactIds,
+                    objectType: "Parcel Ownership"
+                },
+                refetchQueries: ["getESContacts", "getESSimpleSearch"],
+                awaitRefetchQueries: true,
+            }).then(
+                (res) => {
+                    if (res.data && res.data.bulkUpsertTagOnContacts) {
+                        const { success, message } = res.data.bulkUpsertTagOnContacts;
+
+                        if (success) {
+                            Loader.successToast("Bulk-Updating-Tags", message);
+                            showSuccessMessage("Contacts Updated Successfuly");
+                        } else {
+                            Loader.errorToast("Bulk-Updating-Tags", message);
+                        }
+                    } else {
+                        Loader.errorToast("Bulk-Updating-Tags", errorMsg);
+                    }
+                },
+                (err) => {
+                    console.log(err);
+                    Loader.errorToast("Bulk-Updating-Tags", errorMsg);
                 }
-            } else {
-                Loader.errorToast('contact-creation', "failed")
-            }
-        },
-            err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });
+            );
+        }
+        else {
+            updateBulkParcel({
+                variables: {
+                    contactIds: contactIds,
+                    keysToUpdate: fieldToUpdate,
+                },
+                refetchQueries: ["getESSimpleSearch"],
+                awaitRefetchQueries: true,
+            }).then(res => {
+                if (res.data && res.data.updateBulkParcel) {
+
+                    const success = res.data.updateBulkParcel.some(res => res.success)
+                    if (success) {
+                        Loader.successToast('Bulk-Updating', "updated")
+                        showSuccessMessage(`${field} Bulk Updated Successfully`)
+                    } else {
+                        Loader.errorToast('Bulk-Updating', "updated")
+                    }
+                } else {
+                    Loader.errorToast('Bulk-Updating', "failed")
+                }
+            },
+                err => { console.log(err); Loader.errorToast('v', errorMsg) });
+        }
+
+
 
         onClose();
         setLoading(false);
@@ -327,7 +353,28 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
                         targetLabel="Contact"
                         simpleChips
                     />
-                )
+                );
+            case "Tags":
+                return (
+                    <Autocomplete
+                        multiple
+                        className={classes.chip}
+                        id="update-contacts-tags"
+                        options={publicTags?.publicTags || []}
+                        getOptionLabel={(option) => {
+                            return option;
+                        }}
+                        value={fieldKey || []}
+                        onChange={(e, newTagsArr) => setFieldKey(newTagsArr)}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                variant="outlined"
+                                className={classes.input}
+                            />
+                        )}
+                    />
+                );
 
             default:
         }
@@ -356,41 +403,6 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
                 </IconButton>
             </MuiDialogTitle>
             <DialogContent>
-                <Box p={0} pt={2} pb={2}>
-                    {rows.map((row) => (
-                        <Grid
-                            container
-                            direction="row"
-                            spacing={2}
-                            alignItems="center"
-                            key={row.id}
-                        >
-                            <Grid item md={11}>
-                                <Typography style={{ backgroundColor: "#edfbff" }}>
-                                    <Grid
-                                        container
-                                        alignItems="center"
-                                        style={{ paddingLeft: 10 }}
-                                    >
-                                        <Grid item md={4}>
-                                            {row.name}
-                                        </Grid>
-                                        <Grid item md={8}>
-                                            {row.address1} {row.address2} {row.city}, {row.state}{" "}
-                                            {row.zip}
-                                        </Grid>
-                                    </Grid>
-                                </Typography>
-                            </Grid>
-                            <Grid item md={1}>
-                                <IconButton aria-label="delete" onClick={() => onDelete(row)}>
-                                    <CloseSharp />
-                                </IconButton>
-                            </Grid>
-                        </Grid>
-                    ))}
-                </Box>
-
                 <Box p={0} pt={2} pb={2}>
                     <Grid container direction="column">
                         <Grid item>
