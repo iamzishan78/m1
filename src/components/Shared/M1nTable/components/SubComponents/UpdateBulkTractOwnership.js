@@ -262,139 +262,6 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
         onClose();
         setLoading(false);
     };
-    console.log("nameAutValue : ", nameAutValue)
-    function SelectedField() {
-        let contactIds = rows.map((row) => row._id);
-        let filterKey = ''
-        switch (field) {
-            case "Contact Owner":
-                return (
-                    <ContactAutoComplete
-                        value={contactOwner}
-                        onChange={(e, user) => {
-                            const value = user && user.value ? user.value : '';
-                            setFieldKey(value);
-                            setContactOwner(value);
-                        }}
-                    />
-                );
-            case "Name":
-                // filterKey = 'campaignName.keyword'
-                return (
-                    <AutocompEntityNamesVirtualizeList
-                        mongoEntitiesArray={mongoEntitiesArray}
-                        setMongoEntitiesArray={setMongoEntitiesArray}
-                        nameAutValue={nameAutValue}
-                        setNameAutValue={setNameAutValue}
-                        nameAutInputValue={nameAutInputValue}
-                        setNameAutInputValue={setNameAutInputValue}
-                        hasNextPage={hasNextPage}
-                        isNextPageLoading={isNextPageLoading}
-                        loadNextPage={loadNextPage}
-                        addNew={true}
-                        addNewOnClick={(value) => {
-                            const contact = { name: value };
-                            addContact({
-                                variables: {
-                                    contact: {
-                                        ...contact,
-                                        createBy: stateApp.user.mongoId,
-                                        lastUpdateBy: stateApp.user.mongoId,
-                                    },
-                                },
-                                refetchQueries: ["getPaginatedContacts", "getContact"],
-                                awaitRefetchQueries: true,
-                            });
-                        }}
-                    />
-                );
-            case "Entity Type":
-                filterKey = "ownerType.keyword";
-                return (
-                    <EntityType
-                        setDocumentType={(value) => {
-                            setFieldKey(value._id)
-                        }}
-                        value={fieldKey}
-                    />
-                );
-            case "Surface Interest":
-            case "Mineral Interest":
-            case "Royalty Interest":
-            case "Overriding Royalty Interest (ORRI)":
-            case "Record Title":
-            case "Working Interest":
-            case "Net Revenue Interest (NRI)":
-            case "Net Acres":
-            case "Company Net Acres":
-            case "Net Royalty Acres (NRA)":
-                return (
-                    <TextField
-                        placeholder={"Enter a value"}
-                        type="number"
-                        value={fieldKey}
-                        onChange={({ target }) => {
-                            setFieldKey(target.value)
-                        }}
-                        autoFocus={inputFocused}
-                        onFocus={() => _setFocused(true)}
-                        onBlur={() => _setFocused}
-                        className={classes.fullWidth}
-                    />
-
-
-                );
-
-            case "Associated Deals":
-                return (
-                    <AssociatedDealField
-                        className={classes.maxWidth}
-                        onChange={(values, id) => {
-                            setFieldKey({ deals: values || [] })
-                        }}
-                        value={fieldKey.deals}
-                        fullWidth
-                        targetLabel="Contact"
-                        simpleChips
-                    />
-                );
-            case "Tags":
-                return (
-                    <Autocomplete
-                        multiple
-                        className={classes.chip}
-                        id="update-contacts-tags"
-                        options={publicTags?.publicTags || []}
-                        getOptionLabel={(option) => {
-                            return option;
-                        }}
-                        value={fieldKey || []}
-                        onChange={(e, newTagsArr) => setFieldKey(newTagsArr)}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                variant="outlined"
-                                className={classes.input}
-                            />
-                        )}
-                    />
-                );
-
-            default:
-        }
-
-        if (filterKey) {
-            return <FieldBulkAutoComplete
-                value={fieldKey || []}
-                placeholder={`Select ${field}`}
-                filterKey={filterKey}
-                onChange={(e, fieldKey) => {
-                    setFieldKey(fieldKey.value);
-                }}
-            />
-        }
-        else return ''
-    }
 
     return (
         <RightDialog open={true} width={"700px"}>
@@ -449,7 +316,27 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
                             </Typography>
                         </Grid>
                         <Grid item>
-                            <SelectedField />
+                            <SelectedFieldTest
+                                field={field}
+                                setField={setField}
+                                fieldKey={fieldKey}
+                                setFieldKey={setFieldKey}
+                                contactOwner={contactOwner}
+                                setContactOwner={setContactOwner}
+                                inputFocused={inputFocused}
+                                _setFocused={_setFocused}
+                                publicTags={publicTags}
+                                mongoEntitiesArray={mongoEntitiesArray}
+                                setMongoEntitiesArray={setMongoEntitiesArray}
+                                nameAutValue={nameAutValue}
+                                setNameAutValue={setNameAutValue}
+                                nameAutInputValue={nameAutInputValue}
+                                setNameAutInputValue={setNameAutInputValue}
+                                hasNextPage={hasNextPage}
+                                isNextPageLoading={isNextPageLoading}
+                                loadNextPage={loadNextPage}
+                                classes={classes}
+                            />
                         </Grid>
                     </Grid>
                 </Box>
@@ -480,3 +367,136 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
         </RightDialog>
     );
 }
+
+const SelectedFieldTest = React.memo(({ field, fieldKey, contactOwner, setFieldKey, setContactOwner, inputFocused, publicTags, _setFocused, classes, ...rest }) => {
+    // let contactIds = rows.map((row) => row._id);
+    let filterKey = ''
+    switch (field) {
+        case "Contact Owner":
+            return (
+                <ContactAutoComplete
+                    value={contactOwner}
+                    onChange={(e, user) => {
+                        const value = user && user.value ? user.value : '';
+                        setFieldKey(value);
+                        setContactOwner(value);
+                    }}
+                />
+            );
+        case "Name":
+            // filterKey = 'campaignName.keyword'
+            return (
+                <AutocompEntityNamesVirtualizeList
+                    mongoEntitiesArray={rest.mongoEntitiesArray}
+                    setMongoEntitiesArray={rest.setMongoEntitiesArray}
+                    nameAutValue={rest.nameAutValue}
+                    setNameAutValue={rest.setNameAutValue}
+                    nameAutInputValue={rest.nameAutInputValue}
+                    setNameAutInputValue={rest.setNameAutInputValue}
+                    hasNextPage={rest.hasNextPage}
+                    isNextPageLoading={rest.isNextPageLoading}
+                    loadNextPage={rest.loadNextPage}
+                    addNew={true}
+                    addNewOnClick={(value) => {
+                        const contact = { name: value };
+                        // addContact({
+                        //     variables: {
+                        //         contact: {
+                        //             ...contact,
+                        //             createBy: stateApp.user.mongoId,
+                        //             lastUpdateBy: stateApp.user.mongoId,
+                        //         },
+                        //     },
+                        //     refetchQueries: ["getPaginatedContacts", "getContact"],
+                        //     awaitRefetchQueries: true,
+                        // });
+                    }}
+                />
+            );
+        case "Entity Type":
+            filterKey = "ownerType.keyword";
+            return (
+                <EntityType
+                    setDocumentType={(value) => {
+                        setFieldKey(value._id)
+                    }}
+                    value={fieldKey}
+                />
+            );
+        case "Surface Interest":
+        case "Mineral Interest":
+        case "Royalty Interest":
+        case "Overriding Royalty Interest (ORRI)":
+        case "Record Title":
+        case "Working Interest":
+        case "Net Revenue Interest (NRI)":
+        case "Net Acres":
+        case "Company Net Acres":
+        case "Net Royalty Acres (NRA)":
+            return (
+                <TextField
+                    placeholder={"Enter a value"}
+                    type="number"
+                    value={fieldKey}
+                    onChange={({ target }) => {
+                        setFieldKey(target.value)
+                    }}
+                    autoFocus={inputFocused}
+                    onFocus={() => _setFocused(true)}
+                    onBlur={() => _setFocused}
+                    className={classes.fullWidth}
+                />
+
+
+            );
+
+        case "Associated Deals":
+            return (
+                <AssociatedDealField
+                    className={classes.maxWidth}
+                    onChange={(values, id) => {
+                        setFieldKey({ deals: values || [] })
+                    }}
+                    value={fieldKey.deals}
+                    fullWidth
+                    targetLabel="Contact"
+                    simpleChips
+                />
+            );
+        case "Tags":
+            return (
+                <Autocomplete
+                    multiple
+                    className={classes.chip}
+                    id="update-contacts-tags"
+                    options={publicTags?.publicTags || []}
+                    getOptionLabel={(option) => {
+                        return option;
+                    }}
+                    value={fieldKey || []}
+                    onChange={(e, newTagsArr) => setFieldKey(newTagsArr)}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            variant="outlined"
+                            className={classes.input}
+                        />
+                    )}
+                />
+            );
+
+        default:
+    }
+
+    if (filterKey) {
+        return <FieldBulkAutoComplete
+            value={fieldKey || []}
+            placeholder={`Select ${field}`}
+            filterKey={filterKey}
+            onChange={(e, fieldKey) => {
+                setFieldKey(fieldKey.value);
+            }}
+        />
+    }
+    else return ''
+});
