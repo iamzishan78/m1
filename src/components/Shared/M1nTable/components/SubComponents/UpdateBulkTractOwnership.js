@@ -187,7 +187,7 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
         setFieldKey('');
         setNameAutValue({ name: "", _id: null })
     }
-
+    console.log(nameAutValue)
     const onAssign = () => {
         let contactIds = rows.map((row) => row._id);
 
@@ -347,9 +347,9 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
                 <Button
                     variant="contained"
                     component="span"
-                    disabled={nameAutValue._id === null && !fieldKey}
+                    disabled={(nameAutValue && nameAutValue._id === null) && !fieldKey}
                     style={
-                        nameAutValue._id === null && !fieldKey
+                        (nameAutValue && nameAutValue._id === null) && !fieldKey
                             ? {}
                             : { backgroundColor: "#00abed", color: "white" }
                     }
