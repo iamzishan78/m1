@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Box, Button, Grid, Menu, MenuItem, Typography } from "@material-ui/core";
 import CardHeader from "@material-ui/core/CardHeader";
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
@@ -24,7 +24,8 @@ import ContactIcon from "@material-ui/icons/Group";
 import FlowIcon from "@material-ui/icons/Repeat";
 import { LocalAtm } from "@material-ui/icons";
 import { DescriptionOutlined } from "@material-ui/icons";
-
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
 import { UPDATE_NOTIFICATION_STATUS } from "graphQL/useMutationUpdateNotificationStatus";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
@@ -34,6 +35,7 @@ import { AppContext } from "AppContext";
 import ReactTimeAgo from "react-time-ago";
 import { dateIsValid } from "utils/helper";
 import { CommonCommentText } from "components/Shared/CommentComponent";
+import { ARCHIVE_ALL_MUTATIONS } from "graphQL/useMutationArchiverAllMentions";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -124,6 +126,23 @@ const useStyles = makeStyles((theme) => ({
       color: "#18AADD",
     },
   },
+  menuBtn: ({isArchiving}) => ({
+    position: 'relative',
+
+    '& button:last-child': {
+      display: isArchiving ? 'block' : 'none',
+      position: 'absolute',
+      bottom: '-25px'
+    },
+
+    '&:hover button:last-child': {
+      display: 'block',
+    },
+
+    '&:hover #menu-icon': {
+      transform: 'rotateX(180deg)'
+    }
+  })
 }));
 
 const DragHandle = sortableHandle(() => (
@@ -133,7 +152,6 @@ const DragHandle = sortableHandle(() => (
 ));
 
 const Notifications = () => {
-  const classes = useStyles();
   let history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [notifications, setNotifications] = useState([]);
@@ -141,6 +159,7 @@ const Notifications = () => {
   const [users, setUsers] = useState([]);
   const [tab, setTab] = useState(0);
 
+  const [archiveAllMentions, { loading: isArchiving }] = useMutation(ARCHIVE_ALL_MUTATIONS);
   const [updateNotificationStatus] = useMutation(UPDATE_NOTIFICATION_STATUS);
 
   const [getNotifications, { data: notificationsData, loading }] =
@@ -197,11 +216,31 @@ const Notifications = () => {
     }
   }, [profilesData]);
 
+  const archiveAllAndClose = async () => {
+    await archiveAllMentions({ 
+      refetchQueries: ["getNotifications"],
+       awaitRefetchQueries: false,
+    })
+  };
+  const classes = useStyles({isArchiving});
+
   const Title = () => {
     return (
       <Grid container className={classes.gridStyle}>
-        <Grid item xs={6}>
-          <div>Notifications</div>
+        <Grid item xs={6} className={classes.menuBtn}>
+          <Button aria-controls="simple-menu" aria-haspopup="true">
+            <Box display={"flex"} gridGap={2} alignItems={'center'}>
+              <Typography variant="h5" style={{fontWeight: '700'}}>Notifications</Typography>
+              <ExpandMoreIcon id="menu-icon" />
+            </Box>
+          </Button>
+
+          <Button onClick={archiveAllAndClose} disabled={isArchiving}>
+            <Box display={"flex"} gridGap={3} alignItems={'center'}>
+              {isArchiving && <CircularProgress size={15} />}
+              <Typography>Archive all</Typography>
+            </Box>
+          </Button>
         </Grid>
         <Grid item xs={6}>
           <div className={classes.customTabs}>
@@ -469,23 +508,26 @@ const Notifications = () => {
                         <MarkUnreadIcon />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Archive notification">
-                      <IconButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          updateNotificationStatus({
-                            variables: {
-                              id: _id,
-                              state: "ARCHIVED",
-                            },
-                            refetchQueries: ["getNotifications"],
-                            awaitRefetchQueries: false,
-                          });
-                        }}
-                      >
-                        <ArchiveIcon />
-                      </IconButton>
-                    </Tooltip>
+                    {
+                      state !== "ARCHIVED" &&
+                      <Tooltip title="Archive notification">
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateNotificationStatus({
+                              variables: {
+                                id: _id,
+                                state: "ARCHIVED",
+                              },
+                              refetchQueries: ["getNotifications"],
+                              awaitRefetchQueries: false,
+                            });
+                          }}
+                        >
+                          <ArchiveIcon />
+                        </IconButton>
+                      </Tooltip>
+                    }
                   </Grid>
                 </Grid>
               </Paper>
