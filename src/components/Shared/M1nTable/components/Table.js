@@ -1423,7 +1423,29 @@ function SubTable(props) {
                           size="35"
                           round
                         />
-                        <Link
+                        <p
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            minWidth: "300px",
+                            marginLeft: "10px"
+                          }}
+                        >
+                          <ColumnWithLink
+                            value={tableMeta.rowData[nameIndex]}
+                            link={`/contact/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          />
+                          {!!(tableMeta.rowData[props.columns.findIndex((val) => val.name === "isPurchased")]) && (
+                            <FeatureFlag feature={FEATURES.IDICORE}>
+                              <MonetizationOnIcon className={classes.monetizationIcon} />
+                            </FeatureFlag>
+                          )}
+                        </p>
+                        {/* <Link
                           to={`/contact/details/${tableMeta.rowData[0]}/?tenant=${window.sessionStorage.getItem("tenantName")}`}
                           className={classes.clickableCell}
                         >
@@ -1443,7 +1465,7 @@ function SubTable(props) {
                               </FeatureFlag>
                             )}
                           </p>
-                        </Link>
+                        </Link> */}
                       </div>
                     );
                   } else {
@@ -2759,31 +2781,6 @@ function SubTable(props) {
                         )}
                         {value}
                       </div>
-                    )}
-                  </>
-                );
-              },
-            };
-            break;
-          case "approvalStatus":
-            column.options = {
-              ...column.options,
-              customBodyRender: (value, tableMeta) => {
-                return (
-                  <>
-                    {props.parent === "RevenuePropertiesTable" && (
-                      <>
-                        {value?.toLowerCase() === 'approved' && (
-                          <div className="flex justifyCenter alignCenter success w-100">
-                            <CheckCircle size={20} />
-                          </div>
-                        )}
-                        {value?.toLowerCase() === 'unapproved' && (
-                          <div className={`flex justifyCenter alignCenter w-100 ${classes.customWarning}`}>
-                            <WarningIcon size={20} />
-                          </div>
-                        )}
-                      </>
                     )}
                   </>
                 );

@@ -34,6 +34,7 @@ import { UPDATEPIPELINES, UPDATE_PIPELINE } from "graphQL/useMutationUpdatePipel
 import { ADD_PIPELINE } from "graphQL/useMutationAddPipeline";
 import { ADDSTAGES } from "graphQL/useMutationAddStages";
 import { UPDATESTAGES } from "graphQL/useMutationUpdateStages";
+import { useHistory } from "react-router-dom";
 
 const DIALOG_WIDTHS = {
   BASIC: "450px",
@@ -107,6 +108,7 @@ const a11yProps = (index) => ({
 });
 
 const PipelineCustomDialog = (props) => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const [tab, setTab] = useState(0);
   const [width, setDialogWidth] = useState(DIALOG_WIDTHS.BASIC);
@@ -127,7 +129,7 @@ const PipelineCustomDialog = (props) => {
   });
   const [updatePipeline] = useMutation(UPDATE_PIPELINE);
   const [updatePipelines] = useMutation(UPDATEPIPELINES);
-  const [addPipeline] = useMutation(ADD_PIPELINE);
+  const [addPipeline, { data, loading, called, client }] = useMutation(ADD_PIPELINE);
   const [addStages] = useMutation(ADDSTAGES);
   const [updateStages] = useMutation(UPDATESTAGES);
 
@@ -157,6 +159,20 @@ const PipelineCustomDialog = (props) => {
       setDialogWidth(DIALOG_WIDTHS.LANES);
     }
   }, [selectedStageForDetail]);
+
+  useEffect(() => {
+    if(data?.addPipeline?.success && !loading && called){
+      // When new Pipeline is added then select that pipline and mark popup window to not newPipe
+      history.push(`/flow/${data.addPipeline.pipeline._id}`)
+      setFlowState({
+        selectedPipe: data.addPipeline.pipeline
+      });
+      client.reFetchObservableQueries(["getPipelines", "getPipeline"]);
+
+      if(openPipeDialog === "newPipe")
+        dispatch(setFlowState({ openPipeDialog: true }))
+    }
+  }, [data, loading, called])
 
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
@@ -210,7 +226,8 @@ const PipelineCustomDialog = (props) => {
 
   const handleCloseDeleteDialog = () => setDeleteDialogOpen(false);
 
-  const handleSaveOrUpdate = () => {
+  const handleSaveOrUpdate = (config = {}) => {
+    const { isClosing } = config;
     const formStates = getValues();
     formStates.IsDefault = formStates.IsDefault === undefined ? false : formStates.IsDefault;
     if (!formStates.name) {
@@ -233,6 +250,7 @@ const PipelineCustomDialog = (props) => {
 
     if (openPipeDialog === "newPipe") {
       // New flowline
+      debugger
       addPipeline({
         variables: {
           pipeline: {
@@ -241,8 +259,8 @@ const PipelineCustomDialog = (props) => {
             userId: stateApp.user.mongoId,
           },
         },
-        refetchQueries: ["getPipelines", "getPipeline"],
-        awaitRefetchQueries: true,
+        refetchQueries: isClosing ? ["getPipelines", "getPipeline"] : [],
+        awaitRefetchQueries:  !!isClosing,
       });
     } else if (selectedPipe) {
       ////update
@@ -391,7 +409,7 @@ const PipelineCustomDialog = (props) => {
           open={openPipeDialog === "newPipe" || openPipeDialog}
           width={width}
           handleClickDialogClose={() => {
-            handleSaveOrUpdate();
+            handleSaveOrUpdate({isClosing: true });
             handleClose();
           }}
         >
@@ -436,7 +454,7 @@ const PipelineCustomDialog = (props) => {
                     }}
                     onClick={() => {
                       handleClose();
-                      handleSaveOrUpdate();
+                      handleSaveOrUpdate({ isClosing: true });
                     }}
                   >
                     <KeyboardTabBlackIcon />

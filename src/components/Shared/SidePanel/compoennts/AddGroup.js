@@ -141,7 +141,7 @@ export default function AddGroup({ userId, above }) {
 
   const [getLayerGroups, { data: layerGroupData }] = useLazyQuery(GET_LAYER_GROUPS);
   const layerGroups = layerGroupData?.getLayerGroups || []
-  
+
   const [addLayerGroup, { loading }] = useMutation(ADD_LAYER_GROUP, {
     refetchQueries: ["getLayerGroups"],
     awaitRefetchQueries: true,

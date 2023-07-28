@@ -209,7 +209,7 @@ export default function TransferDataManager(props) {
           Transfer source category from:
         </Typography>
         <Typography varient="h6" style={{ textAlign: "start", marginBottom: "10px" }} onClick={(e) => e.stopPropagation()}>
-          <span style={{ textDecoration: "underline" }}>Please select 1 category</span> The category type needs to align to create a match (ex. polygon to polygon)
+          <span style={{ textDecoration: "underline" }}>Please select only one category</span> The category type needs to align to create a match (ex. polygon to polygon)
         </Typography>
         <div onClick={(e) => e.stopPropagation()}>
 
@@ -246,7 +246,7 @@ export default function TransferDataManager(props) {
             To the Following Platform Source Category:
           </Typography>
           <Typography varient="h6" style={{ textAlign: "start", marginBottom: "10px" }} onClick={(e) => e.stopPropagation()}>
-            <span style={{ textDecoration: "underline" }}>Please select 1 category</span> The category type needs to align to create a match (ex. polygon to polygon)
+            <span style={{ textDecoration: "underline" }}>Please select only one category</span> The category type needs to align to create a match (ex. polygon to polygon)
           </Typography>
 
           <Fragment key={dataset.sourceName}>
@@ -263,7 +263,6 @@ export default function TransferDataManager(props) {
                       return (
                         <StyledListItem key={index} ContainerComponent="li">
                           <Checkbox
-                            disabled={row?.label !== 'Agreements'}
                             checked={selectedPlatformCategory?.label === row.label}
                             color="dark gray"
                             onClick={(e) => e.stopPropagation()}
