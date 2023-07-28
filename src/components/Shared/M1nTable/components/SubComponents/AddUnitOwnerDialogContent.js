@@ -349,6 +349,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     
   };
   const classes = useStyles();
+
   return (
     <div className={classes.move}>
       {deleteDialogOpen && (
@@ -732,11 +733,12 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 <Controller
                   control={control}
                   defaultValue={''}
-                  name="contactStatus"
+                  name="status"
                   render={(props) => (
                     <Status
                         className={classes.maxWidth}
                         options={statusOptions}
+                        value={props.value}
                         setDocumentType={(value) => {
                           let val = value.name;
                           const data = contactStatusOptions.find((s) => s.label === val);
@@ -745,7 +747,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                           }
                           props.onChange(val)
                         }}
-                        {...props}
                       />
                   )}
                 />
