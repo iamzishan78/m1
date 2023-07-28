@@ -100,6 +100,7 @@ function CheckComparisonSection(props) {
       filters: requiredEsFilters,
       TableHeader: copy(TableHeader),
       esIndex: "checkdetailsinterestscomparison_flat",
+      parent: 'checkDetailsComparison',
       startPaginationAt: 50,
       defaultSort: { field: "flatSyncAt", order: "desc" },
       formatHits,
