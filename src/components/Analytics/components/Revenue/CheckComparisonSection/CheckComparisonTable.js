@@ -105,6 +105,7 @@ function CheckComparisonSection(props) {
       defaultSort: { field: "flatSyncAt", order: "desc" },
       formatHits,
       downloadAll: { exportPx: "176px" },
+      datasets: {exportGrid: true}
     });
   }, [setTableMeta, props.esFilters]);
 
@@ -220,6 +221,8 @@ function CheckComparisonSection(props) {
         addAble={{ type: "revenueStatementDetails" }}
         parent={props.parent}
         setColumnsBase={[]}
+        selectedRowsValues = {props.selectedRowsValues}
+        selectedRows = {props.selectedRows}
         {...props.esHocProps}
       />
     </Container>

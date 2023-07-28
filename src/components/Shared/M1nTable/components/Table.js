@@ -666,6 +666,12 @@ function SubTable(props) {
   };
 
   useEffect(() => {
+    if (props.selectedRowsValues === null && Array.isArray(props.selectedRows) && props.selectedRows.length === 0) {
+      M1nSelectedRowsIndexes([]);
+    }
+  }, [props.selectedRowsValues, props.selectedRows]);
+
+  useEffect(() => {
     if (viewFileResult?.viewFile?.uri) {
       let a = document.createElement("a");
       a.href = viewFileResult.viewFile.uri;
@@ -2775,31 +2781,6 @@ function SubTable(props) {
                         )}
                         {value}
                       </div>
-                    )}
-                  </>
-                );
-              },
-            };
-            break;
-          case "approvalStatus":
-            column.options = {
-              ...column.options,
-              customBodyRender: (value, tableMeta) => {
-                return (
-                  <>
-                    {props.parent === "RevenuePropertiesTable" && (
-                      <>
-                        {value?.toLowerCase() === 'approved' && (
-                          <div className="flex justifyCenter alignCenter success w-100">
-                            <CheckCircle size={20} />
-                          </div>
-                        )}
-                        {value?.toLowerCase() === 'unapproved' && (
-                          <div className={`flex justifyCenter alignCenter w-100 ${classes.customWarning}`}>
-                            <WarningIcon size={20} />
-                          </div>
-                        )}
-                      </>
                     )}
                   </>
                 );
