@@ -543,6 +543,10 @@ export const Status = ({ setDocumentType, value, options, ...other }) => {
 
   const [search, setSearch] = useState(value);
 
+  useEffect(() => {
+    setSearch(value);
+  }, [value])
+
   const onInputChange = (event, value) => {
     setSearch(value);
   };
