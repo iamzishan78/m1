@@ -560,7 +560,7 @@ function MapGridCard(props) {
                           isCheckboxSticky={true}
                           dense
                           esIndex={'shapes_flat'}
-                          parent="AgreementsTable"
+                          parent="search"
                           customOptions={options}
                           targetLabel={searchTapValue.value}
                           header={<SearchPanel {...commonProps} />}

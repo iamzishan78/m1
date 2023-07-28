@@ -72,6 +72,12 @@ const Tract = [
     actual_key: "department",
   },
   {
+    label: "Description",
+    mapped_key: "",
+    required: true,
+    actual_key: "legalDescription",
+  },
+  {
     label: "Map Status",
     mapped_key: "",
     required: true,

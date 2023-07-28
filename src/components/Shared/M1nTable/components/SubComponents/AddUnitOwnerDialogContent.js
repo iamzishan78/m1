@@ -7,8 +7,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
-import { CircularProgress,Grid, Dialog, OutlinedInput, InputAdornment, Typography, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
-import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
+import { CircularProgress, Grid, Dialog, InputAdornment, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
@@ -290,8 +289,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
   };
 
-  
-
   const openConfirmationDialog = () => {
     setDeleteDialogOpen(true);
     handleMenuClose();
@@ -301,20 +298,20 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   };
   const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
-  
+
   const deleteFunc = () => {
     setLoading(true);
-      updateShapeOwners({
-        variables: {
-          shapeType: props.shapeType,
-          shapeOwners: { _id:selectedRow?._id, isDeleted: true },
-        },
-        refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
-        awaitRefetchQueries: true,
-      }).finally(()=>{
-        setLoading(false);
-      });
-    
+    updateShapeOwners({
+      variables: {
+        shapeType: props.shapeType,
+        shapeOwners: { _id: selectedRow?._id, isDeleted: true },
+      },
+      refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
+      awaitRefetchQueries: true,
+    }).finally(() => {
+      setLoading(false);
+    });
+
   };
   const classes = useStyles();
   return (
@@ -361,7 +358,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               </IconButton>
             </Grid> */}
             <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
-            <div style={{ "float": "right",display:'flex',marginRight:'10px' }}>
+              <div style={{ "float": "right", display: 'flex', marginRight: '10px' }}>
                 <>
                   <IconButton
                     disabled={loading}
@@ -385,7 +382,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
                     transformOrigin={{ vertical: "top", horizontal: "center" }}
                   >
-                    <MenuItem 
+                    <MenuItem
                       onClick={openConfirmationDialog}
                     >
                       <ListItemIcon>
@@ -396,19 +393,19 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   </Menu>
                 </>
                 <IconButton
-                size="small"
-                component="span"
-                style={{
-                  background: "transparent",
-                  align: "center",
-                  float: "right",
-                }}
-                onClick={props.onClose}
-              >
-                <KeyboardTabBlackIcon />
-              </IconButton>
-            </div>
-          </Grid>
+                  size="small"
+                  component="span"
+                  style={{
+                    background: "transparent",
+                    align: "center",
+                    float: "right",
+                  }}
+                  onClick={props.onClose}
+                >
+                  <KeyboardTabBlackIcon />
+                </IconButton>
+              </div>
+            </Grid>
           </Grid>
           <DialogContent className={classes.dialogContent}>
             <Grid container spacing={2}>
@@ -690,6 +687,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         props.onChange(val);
                       }}
                       value={props.value ? props.value : ""}
+                      fieldKey='contactStatus'
                     />
                   )}
                 />

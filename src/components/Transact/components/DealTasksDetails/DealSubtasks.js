@@ -17,15 +17,12 @@ import { UPDATE_DEAL_SUBTASK } from "graphQL/useMutationDealSubtask";
 const useStyles = makeStyles((theme) => ({
   subTaskRoot: (props) => ({
     width: "100%",
-    height: "40px",
+    minHeight: "40px",
     zIndex: props.muted ? 1 : 0,
+    display: 'flex'
   }),
   subTaskLeftGrid: {
-    // alignItems: "left",
-    // display: "flex",
-    // width: "80%",
-    // justifyContent: "flex-start",
-    // alignItems: "left",
+    flex: '1 1 auto',
     "& .MuiFormControlLabel-root": {
       marginRight: 0,
     },
@@ -117,99 +114,88 @@ export const SubtaskItem = ({ task, handleUpdateSubtask, users, handleDragEnd, c
         <Grid
           container
           direction="row"
-          justify="space-between"
-          // justify="flex-start"
+          justifyContent="space-between"
           alignItems="center"
+          wrap="nowrap"
           onMouseEnter={() => setEdit({ ...isEdit, index: task.index, showIcon: true })}
           onMouseLeave={() => setEdit({ ...isEdit, index: -1, showIcon: false })}
         >
-          <Grid  item justify="flex-start"
-          // container direction = "row" xs={6} 
-          // justify={"flex-start"} 
-          className={classes.subTaskLeftGrid}
+          <Grid  item justifyContent="flex-start"
+            className={classes.subTaskLeftGrid}
           >
 
-          <Grid container direction="row" justify="flex-start" alignItems="center">
-
-          <Grid item>
-          {canDrag && (
-            <ListItemIcon ref={drag} style={{ display: 'flex', alignItems: "center", minWidth: 0 }}>
-              <DragIndicator style={{ cursor: "move" }} />
-            </ListItemIcon>
-          )}
-          </Grid>
-
-
-          <Grid item>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="subtaskCheckbox"
-                  value={task.name}
-                  onChange={(e) =>
-                    handleUpdateSubtask({
-                      ...task,
-                      isCompleted: e.target.checked,
-                      completionDate: e.target.checked ? new Date().toString() : null,
-                    })
-                  }
-                  checked={task.isCompleted}
-                />
-              }
-            />
+            <Grid container direction="row" justify="flex-start" alignItems="center" wrap="nowrap">
+            <Grid item>
+              {canDrag && (
+                <ListItemIcon ref={drag} style={{ display: 'flex', alignItems: "center", minWidth: 0 }}>
+                  <DragIndicator style={{ cursor: "move" }} />
+                </ListItemIcon>
+              )}
             </Grid>
-
-
-            {!isEdit.isEditing ? (
-              <>
-                <Tooltip title={task.name} placement="top">
-                  <p style={{ fontSize: "medium" }}>{task.name}</p>
-                </Tooltip>
-                {isEdit.index === task.index && isEdit.showIcon && (
-                  <EditIcon
-                    fontSize="small"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setEdit({ ...isEdit, isEditing: true });
-                    }}
-                    className={classes.pencilIcon}
+            <Grid item>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="subtaskCheckbox"
+                    value={task.name}
+                    onChange={(e) =>
+                      handleUpdateSubtask({
+                        ...task,
+                        isCompleted: e.target.checked,
+                        completionDate: e.target.checked ? new Date().toString() : null,
+                      })
+                    }
+                    checked={task.isCompleted}
                   />
-                )}
-              </>
-            ) : (
-              <Grid item>
-              <TextField
-                size="small"
-                variant="outlined"
-                label="Press Enter To Save"
-                autoFocus
-                style={{ width: "90%" }}
-                defaultValue={task.name}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleUpdateSubtask({
-                      ...task,
-                      name: e.target.value,
-                    });
-                    setEdit({ ...isEdit, isEditing: false, index: -1 });
-                  }
-                }}
-                onClick={(event) => event.stopPropagation()}
-                onBlur={() => setEdit({ isEditing: false, index: -1 })}
+                }
               />
               </Grid>
-            )}
-          </Grid>
+
+              {!isEdit.isEditing ? (
+                <>
+                  <Tooltip title={task.name} placement="top">
+                    <p style={{ fontSize: "medium" }}>{task.name}</p>
+                  </Tooltip>
+                  {isEdit.index === task.index && isEdit.showIcon && (
+                    <EditIcon
+                      fontSize="small"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setEdit({ ...isEdit, isEditing: true });
+                      }}
+                      className={classes.pencilIcon}
+                    />
+                  )}
+                </>
+              ) : (
+                <Grid item style={{ maxWidth: '100%'}}>
+                <TextField
+                  size="small"
+                  variant="outlined"
+                  label="Press Enter To Save"
+                  autoFocus
+                  style={{ width: "100%" }}
+                  defaultValue={task.name}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleUpdateSubtask({
+                        ...task,
+                        name: e.target.value,
+                      });
+                      setEdit({ ...isEdit, isEditing: false, index: -1 });
+                    }
+                  }}
+                  onClick={(event) => event.stopPropagation()}
+                  onBlur={() => setEdit({ isEditing: false, index: -1 })}
+                />
+                </Grid>
+              )}
+            </Grid>
           </Grid>
 
-          <Grid item 
-          // container xs={6} 
-          // justify={"flex-end"}
-          className={classes.subTaskRightGrid}
-          
-          >
-            <Grid container direction="row" justify="flex-end" alignItems="center">
+          <Grid item className={classes.subTaskRightGrid}>
+            <Grid container direction="row" justify="flex-end" alignItems="center" wrap="nowrap">
               <Grid item>
                 {isTemplate ? (
                   <PopupState variant="TaskTemplateDatePopover" popupId="TaskTemplateDatePopover">

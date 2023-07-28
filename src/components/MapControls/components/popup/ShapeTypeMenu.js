@@ -121,7 +121,7 @@ const ShapeTypeMenu = ({ shapeAnchorEl, setShapeAnchorEl, saveAndOpenShapeDetail
           selectedType === "new" && <>
             <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
               <InputLabel id={`${type}-outlined-label`}>
-              {OPTIONS[type].label} Type
+                {OPTIONS[type].label} Type
               </InputLabel>
               <Select
                 labelId={`${type}-outlined-label`}
@@ -132,7 +132,7 @@ const ShapeTypeMenu = ({ shapeAnchorEl, setShapeAnchorEl, saveAndOpenShapeDetail
                 onChange={(e) => { setSelectedShapeType(e.target.value) }}
                 label={`${OPTIONS[type].label} Type`}
               >
-                {OPTIONS[type].types.map(({value, label}) => (
+                {OPTIONS[type].types.map(({ value, label }) => (
                   <MenuItem value={value}>{label}</MenuItem>
                 ))}
               </Select>
@@ -140,15 +140,15 @@ const ShapeTypeMenu = ({ shapeAnchorEl, setShapeAnchorEl, saveAndOpenShapeDetail
           </>
         }
         {
-          selectedType === 'existing' && <div 
-              onKeyDown={e => {
-                if(e.key === 'n')
-                  e.stopPropagation()
-              }}>
-                <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
-                  <AutoCompleteESShapeLayer label={`${OPTIONS[type].label} Search`} filters={[{ "field": OPTIONS[type].layerKey, "value": OPTIONS[type].layerType }]} setSelectedShapeLayer={setSelectedShape} searchFields={OPTIONS[type].searchFields} />
-                </FormControl>
-            </div>
+          selectedType === 'existing' && <div
+            onKeyDown={e => {
+              if (e.key === 'n' || e.key === 'N')
+                e.stopPropagation()
+            }}>
+            <FormControl variant="outlined" fullWidth className={shapeActionClasses.inputField} size="small">
+              <AutoCompleteESShapeLayer label={`${OPTIONS[type].label} Search`} filters={[{ "field": OPTIONS[type].layerKey, "value": OPTIONS[type].layerType }]} setSelectedShapeLayer={setSelectedShape} searchFields={OPTIONS[type].searchFields} />
+            </FormControl>
+          </div>
         }
 
         <div className={shapeActionClasses.dialogFooter}>
