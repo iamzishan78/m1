@@ -161,7 +161,9 @@ export default function CSVFileReader(props) {
     };
   }, []);
 
-  const speareValuesWithComas = (data) => {
+  // this function splits an upload array of comma seperated values 
+  // it should be used for tag seperation on upload
+  const separateValuesWithComas = (data) => {
     if(!Array.isArray(data)){
       throw new Error('Passed argument is not an Array');
     }
@@ -185,7 +187,7 @@ export default function CSVFileReader(props) {
     if (!unmounted.current) {
       if (data && data.length <= 10001) {
 
-        data = speareValuesWithComas(data);
+        data = separateValuesWithComas(data);
         stateNav.bulkUploadFromMap &&
           stateNav.bulkUploadParcel &&
           data.forEach((data) => {
