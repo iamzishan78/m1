@@ -115,7 +115,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     { title: "Tags", value: "contactStatus" },
     { title: "Territory", value: "territory" },
     { title: "Time Zone", value: "timeZone" },
-
   ];
 
   useEffect(() => {
@@ -133,8 +132,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       });
     // eslint-disable-next-line
   }, [fieldKey]);
-
-
 
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT);
   const [updateBulkContact] = useMutation(UPDATEBULKCONTACT);
@@ -186,6 +183,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           tags: fieldKey,
           user: stateApp.user.mongoId,
           contactIds,
+          objectType: "contact"
         },
         refetchQueries: ["getESContacts", "getESSimpleSearch"],
         awaitRefetchQueries: true,
