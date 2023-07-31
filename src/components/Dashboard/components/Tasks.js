@@ -126,7 +126,7 @@ const Tasks = () => {
   const classes = useStyles();
   const [tab, setTab] = useState(0);
   const [data, setData] = useState([]);
-
+  console.log("data : ", data)
   useEffect(() => {
     if (orginalData && Array.isArray(orginalData.activities)) {
       const sortCallBack = (a, b) => Number(a.dateTime) - Number(b.dateTime)
@@ -259,7 +259,7 @@ const Tasks = () => {
                           Date:{" "}
                           {activity.dateTime
                             ? moment
-                              .parseZone(new Date(+activity.dateTime))
+                              .parseZone(new Date(activity.dateTime))
                               .format("MM/DD/YYYY hh:mm:ssa")
                             : "N/A"}
                         </span>
