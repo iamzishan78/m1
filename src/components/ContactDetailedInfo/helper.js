@@ -666,7 +666,7 @@ export const SUMMARY_FIELDS = (contactData) => {
     {
       label: "Total Unit NRA",
       key: nraSumKey,
-      type: "text",
+      type: "currency",
       position: "right",
     },
     {
