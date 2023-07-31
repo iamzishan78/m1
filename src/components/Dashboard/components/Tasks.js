@@ -147,7 +147,7 @@ const Tasks = () => {
               !activity.isClosed &&
               stateApp.user._id === activity.ownerId &&
               moment
-                .parseZone(new Date(+activity.dateTime))
+                .parseZone(new Date(activity.dateTime))
                 .isBetween(moment(), filterDate)
           ).sort(sortCallBack)
         );
@@ -157,7 +157,7 @@ const Tasks = () => {
             (activity) =>
               !activity.isClosed &&
               stateApp.user._id === activity.ownerId &&
-              moment.parseZone(new Date(+activity.dateTime)).isBefore(moment())
+              moment.parseZone(new Date(activity.dateTime)).isBefore(moment())
           ).sort(sortCallBack)
         );
       }
