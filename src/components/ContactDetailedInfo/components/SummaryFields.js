@@ -179,9 +179,7 @@ export default function SummaryFields({ contactData }) {
                               updateFieldData(field.key, currValue)
                           }}
                           onChange={({ target }) => {
-                            if (field.key.includes('nraSum')) {
-                              params.onChange(getCommaValue(target.value));
-                            } else if (field.key.includes('offerPriceSum')) {
+                            if (field.key.includes('offerPriceSum') || field.key.includes('nraSum')) {
                               params.onChange(parseFloat(target.value).toFixed(2));
                             }
                             else {
