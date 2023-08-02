@@ -126,7 +126,7 @@ const Tasks = () => {
   const classes = useStyles();
   const [tab, setTab] = useState(0);
   const [data, setData] = useState([]);
-
+  console.log("data : ", data)
   useEffect(() => {
     if (orginalData && Array.isArray(orginalData.activities)) {
       const sortCallBack = (a, b) => Number(a.dateTime) - Number(b.dateTime)
@@ -147,7 +147,7 @@ const Tasks = () => {
               !activity.isClosed &&
               stateApp.user._id === activity.ownerId &&
               moment
-                .parseZone(new Date(+activity.dateTime))
+                .parseZone(new Date(activity.dateTime))
                 .isBetween(moment(), filterDate)
           ).sort(sortCallBack)
         );
@@ -157,7 +157,7 @@ const Tasks = () => {
             (activity) =>
               !activity.isClosed &&
               stateApp.user._id === activity.ownerId &&
-              moment.parseZone(new Date(+activity.dateTime)).isBefore(moment())
+              moment.parseZone(new Date(activity.dateTime)).isBefore(moment())
           ).sort(sortCallBack)
         );
       }
@@ -259,7 +259,7 @@ const Tasks = () => {
                           Date:{" "}
                           {activity.dateTime
                             ? moment
-                              .parseZone(new Date(+activity.dateTime))
+                              .parseZone(new Date(activity.dateTime))
                               .format("MM/DD/YYYY hh:mm:ssa")
                             : "N/A"}
                         </span>
