@@ -87,7 +87,7 @@ const styles = () => ({
 
 const useStyles = makeStyles(styles);
 
-export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, showSuccessMessage, getContactCampaignAction, campaignList }) {
+export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, showSuccessMessage, setSelectedRows, getContactCampaignAction, campaignList }) {
   const [stateApp] = React.useContext(AppContext);
   const classes = useStyles();
   const modalClass = Modals();
@@ -244,8 +244,10 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           if (success) {
             Loader.successToast('contact-creation', "updated")
             showSuccessMessage(`${field} Bulk Updated Successfully`)
+            setSelectedRows()
           } else {
             Loader.errorToast('contact-creation', "updated")
+            setSelectedRows()
           }
         } else {
           Loader.errorToast('contact-creation', "failed")
