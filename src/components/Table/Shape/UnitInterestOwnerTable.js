@@ -190,7 +190,7 @@ function UnitInterestOwnerTable(props) {
     setOpenCustomDialog("exportOwnersAndContact");
   };
   
-  const onBulkUpdate = () => {
+  const onBulkUpdateComplete = () => {
     setSelectedRows([]);
     setResetSelectedRow(!resetSelectedRow);
   };
@@ -404,7 +404,7 @@ function UnitInterestOwnerTable(props) {
           onClose={() => setOpenCustomDialog("")}
           rows={selectedRows}
           setRows={setSelectedRows}
-          setSelectedRows={onBulkUpdate}
+          setSelectedRows={onBulkUpdateComplete}
         />
       )}
       {openCustomDialog === "recalculate" && (
