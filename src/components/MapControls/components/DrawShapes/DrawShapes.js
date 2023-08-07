@@ -319,6 +319,7 @@ export default function DrawShapes() {
           else if (state.currentFeature && !state.reDrawShape) {
             const newFeature = union(feature, state.currentFeature);
             state.currentFeature.geometry = newFeature.geometry
+            state.enableEdit = true
           }
           currentFeature = state?.currentFeature ? state.currentFeature : feature;
           return { ...state, editDraw: false, showShapeActionsPopup: true, currentFeature, reDrawShape: false }
