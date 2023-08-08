@@ -140,7 +140,8 @@ const Tasks = () => {
           ).sort(sortCallBack)
         )
       } else if (tab === 1) {
-        const filterDate = moment().add(7, "days");
+        const tomorrow = moment().add(1, 'days').startOf('day'); // Start of the next day
+        const futureDate = moment().add(7, 'days').endOf('day'); // Include the end of the 7th day
         setData(
           orginalData.activities.filter(
             (activity) =>
@@ -148,7 +149,7 @@ const Tasks = () => {
               stateApp.user._id === activity.ownerId &&
               moment
                 .parseZone(new Date(activity.dateTime))
-                .isBetween(moment(), filterDate)
+                .isBetween(tomorrow, futureDate)
           ).sort(sortCallBack)
         );
       } else {
