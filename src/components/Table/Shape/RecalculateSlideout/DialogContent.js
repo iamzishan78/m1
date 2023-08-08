@@ -13,7 +13,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    height: '90%'
+    height: '90%',
+    overflow: 'auto'
   },
   content: {
     padding: '15px 30px',

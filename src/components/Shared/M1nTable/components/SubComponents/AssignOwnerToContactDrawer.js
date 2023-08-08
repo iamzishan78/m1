@@ -87,7 +87,7 @@ const styles = () => ({
 
 const useStyles = makeStyles(styles);
 
-export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, showSuccessMessage, getContactCampaignAction, campaignList }) {
+export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, showSuccessMessage, setSelectedRows, getContactCampaignAction, campaignList }) {
   const [stateApp] = React.useContext(AppContext);
   const classes = useStyles();
   const modalClass = Modals();
@@ -115,7 +115,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     { title: "Tags", value: "contactStatus" },
     { title: "Territory", value: "territory" },
     { title: "Time Zone", value: "timeZone" },
-
   ];
 
   useEffect(() => {
@@ -133,8 +132,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
       });
     // eslint-disable-next-line
   }, [fieldKey]);
-
-
 
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT);
   const [updateBulkContact] = useMutation(UPDATEBULKCONTACT);
@@ -186,6 +183,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           tags: fieldKey,
           user: stateApp.user.mongoId,
           contactIds,
+          objectType: "contact"
         },
         refetchQueries: ["getESContacts", "getESSimpleSearch"],
         awaitRefetchQueries: true,
@@ -246,8 +244,10 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           if (success) {
             Loader.successToast('contact-creation', "updated")
             showSuccessMessage(`${field} Bulk Updated Successfully`)
+            setSelectedRows()
           } else {
             Loader.errorToast('contact-creation', "updated")
+            setSelectedRows()
           }
         } else {
           Loader.errorToast('contact-creation', "failed")
