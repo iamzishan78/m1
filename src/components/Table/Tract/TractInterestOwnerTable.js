@@ -181,6 +181,12 @@ function TractInterestOwnerTable(props) {
     }
     setResetSelectedRow(!resetSelectedRow)
   };
+
+  const onBulkUpdateComplete = () => {
+    setSelectedRows([]);
+    setResetSelectedRow(!resetSelectedRow);
+  };
+
   return (
     <Container
       maxWidth={false}
@@ -192,6 +198,7 @@ function TractInterestOwnerTable(props) {
           onClose={() => setOpenCustomDialog("")}
           rows={selectedRows}
           setRows={setSelectedRows}
+          setSelectedRows={onBulkUpdateComplete}
         />
       )}
       {openCustomDialog === "exportOwnersAndContact" && (
