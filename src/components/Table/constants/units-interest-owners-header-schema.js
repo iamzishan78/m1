@@ -77,6 +77,12 @@ const UnitInterestsPageHeadCells = [
         options: { sort: true, filter: true },
     },
     {
+        name: 'nri',
+        label: 'NRI',
+        esKey: 'nri',
+        options: { sort: true, filter: true },
+    },
+    {
         name: 'nra',
         label: 'NRA',
         esKey: 'nra',

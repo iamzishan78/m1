@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import { Container, Button, Tooltip, IconButton } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
+import EditIcon from "@material-ui/icons/Edit";
 import { useMutation } from "@apollo/client";
 
 import { AppContext } from "AppContext";
@@ -26,6 +27,7 @@ import vf_currency from "components/Shared/valueformatters/vf_currency";
 import { deepEqualObjects, copy } from "components/Shared/functions";
 import { addTrailingZeros } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
+import { UpdateBulkTractOwnershipContainer } from "store/containers";
 
 const genericDataActions = ["comments", "tracks", "ifAreContacts"];
 const interestKeys = [
@@ -185,6 +187,13 @@ function TractInterestOwnerTable(props) {
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
+      {openCustomDialog === "bulkUpdate" && (
+        <UpdateBulkTractOwnershipContainer
+          onClose={() => setOpenCustomDialog("")}
+          rows={selectedRows}
+          setRows={setSelectedRows}
+        />
+      )}
       {openCustomDialog === "exportOwnersAndContact" && (
         <ExportOwnersAndContacts
           onClose={() => setOpenCustomDialog("")}
@@ -306,6 +315,27 @@ function TractInterestOwnerTable(props) {
                     display: "flex",
                   }}
                 >
+                  <Button
+                    color="secondary"
+                    startIcon={<EditIcon color="white" />}
+                    className={classes.multiSelectionTopBarButtons}
+                    disabled={
+                      !props.selectedRows || props.selectedRows?.length === 0
+                    }
+                    onClick={() => {
+                      let owners = [];
+                      for (let i in props.selectedRows) {
+                        owners.push(
+                          props.rows[props.selectedRows[i]?.dataIndex]
+                        );
+                      }
+                      setSelectedRows(owners);
+                      setOpenCustomDialog("bulkUpdate");
+                    }}
+                  >
+                    Bulk Update
+                  </Button>
+
                   <Button
                     color="secondary"
                     startIcon={<CloudDownloadIcon color="white" />}

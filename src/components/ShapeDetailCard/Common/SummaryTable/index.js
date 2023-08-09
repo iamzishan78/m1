@@ -15,7 +15,7 @@ import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoComple
 import { summaryTableStyles } from "components/ShapeDetailCard/style";
 import UserList from "components/Shared/UserList";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
-import vf_currency from "components/Shared/valueformatters/vf_currency";
+import vf_currency, { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 import vf_number from "components/Shared/valueformatters/vf_number";
 import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
 import { getRoundedNra } from "utils/helper";
@@ -96,7 +96,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
   );
 }
 
-export default function SummartyTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [], id, updating }) {
+export default function SummaryTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [], id, updating }) {
   const classes = summaryTableStyles();
   const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
@@ -596,7 +596,7 @@ export default function SummartyTableInfo({ tableData, properties, updatePropert
                           {data.type === "comma-number" && (vf_number(data.value) || vf_number(properties[data.key]) || "-")}
                           {data.type === 'calculation' && (<>
                             <Typography className={isNraMatched() ? classes.nraText : classes.nraHighLight}>
-                              {getRoundedNra(properties?.netRoyalityAcres?.unitNra)}
+                              {vf_currency_to_fixed(properties?.netRoyalityAcres?.unitNra || 0, 2)}
                             </Typography>
 
                           </> || 0)}
