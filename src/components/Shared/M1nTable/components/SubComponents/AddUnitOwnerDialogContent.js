@@ -540,7 +540,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 /> */}
               </Grid>
               <Grid item xs={12}>
-                <h3>Net Royalty Acrasdes (NRA)</h3>
+                <h3>Net Royalty Acres (NRA)</h3>
                 <Controller
                   control={control}
                   name="nra"
