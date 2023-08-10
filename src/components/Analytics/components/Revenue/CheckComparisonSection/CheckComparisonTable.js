@@ -100,10 +100,12 @@ function CheckComparisonSection(props) {
       filters: requiredEsFilters,
       TableHeader: copy(TableHeader),
       esIndex: "checkdetailsinterestscomparison_flat",
+      parent: 'checkDetailsComparison',
       startPaginationAt: 50,
       defaultSort: { field: "flatSyncAt", order: "desc" },
       formatHits,
       downloadAll: { exportPx: "176px" },
+      datasets: {exportGrid: true}
     });
   }, [setTableMeta, props.esFilters]);
 
@@ -219,6 +221,8 @@ function CheckComparisonSection(props) {
         addAble={{ type: "revenueStatementDetails" }}
         parent={props.parent}
         setColumnsBase={[]}
+        selectedRowsValues = {props.selectedRowsValues}
+        selectedRows = {props.selectedRows}
         {...props.esHocProps}
       />
     </Container>

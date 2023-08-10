@@ -126,29 +126,30 @@ const Tasks = () => {
   const classes = useStyles();
   const [tab, setTab] = useState(0);
   const [data, setData] = useState([]);
-
+  console.log("data : ", data)
   useEffect(() => {
     if (orginalData && Array.isArray(orginalData.activities)) {
       const sortCallBack = (a, b) => Number(a.dateTime) - Number(b.dateTime)
-      
-      if(tab === 0){
+
+      if (tab === 0) {
         setData(
-          orginalData.activities.filter(activity => 
+          orginalData.activities.filter(activity =>
             !activity.isClosed &&
             stateApp.user._id === activity.ownerId &&
-            moment.parseZone(new Date(+activity.dateTime))?.isSame(new Date(), "day")
+            moment.parseZone(new Date(activity.dateTime))?.isSame(new Date(), "day")
           ).sort(sortCallBack)
         )
       } else if (tab === 1) {
-        const filterDate = moment().add(7, "days");
+        const tomorrow = moment().add(1, 'days').startOf('day'); // Start of the next day
+        const futureDate = moment().add(7, 'days').endOf('day'); // Include the end of the 7th day
         setData(
           orginalData.activities.filter(
             (activity) =>
               !activity.isClosed &&
               stateApp.user._id === activity.ownerId &&
               moment
-                .parseZone(new Date(+activity.dateTime))
-                .isBetween(moment(), filterDate)
+                .parseZone(new Date(activity.dateTime))
+                .isBetween(tomorrow, futureDate)
           ).sort(sortCallBack)
         );
       } else {
@@ -157,7 +158,7 @@ const Tasks = () => {
             (activity) =>
               !activity.isClosed &&
               stateApp.user._id === activity.ownerId &&
-              moment.parseZone(new Date(+activity.dateTime)).isBefore(moment())
+              moment.parseZone(new Date(activity.dateTime)).isBefore(moment())
           ).sort(sortCallBack)
         );
       }
@@ -191,7 +192,7 @@ const Tasks = () => {
         <Grid item xs={6} >
           <Grid container alignItems="center">
             <div>My Tasks</div>
-            <IconButton title="Add new task" onClick={() => setStateApp({...stateApp, activityDialog: true })}>
+            <IconButton title="Add new task" onClick={() => setStateApp({ ...stateApp, activityDialog: true })}>
               <AddIcon />
             </IconButton>
           </Grid>
@@ -259,8 +260,8 @@ const Tasks = () => {
                           Date:{" "}
                           {activity.dateTime
                             ? moment
-                                .parseZone(new Date(+activity.dateTime))
-                                .format("MM/DD/YYYY hh:mm:ssa")
+                              .parseZone(new Date(activity.dateTime))
+                              .format("MM/DD/YYYY hh:mm:ssa")
                             : "N/A"}
                         </span>
                       </Grid>
@@ -295,7 +296,7 @@ const Tasks = () => {
         </List>
       )}
 
-        <ActivitiesModal setSelectedActivityId={() => {}} events={[]} />
+      <ActivitiesModal setSelectedActivityId={() => { }} events={[]} />
     </Fragment>
   );
 };

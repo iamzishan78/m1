@@ -134,7 +134,8 @@ function AssociatedFlowDetails(props) {
   useEffect(() => {
     dealAssociatedSummary({
       variables: {
-        contactIds: props.contacts
+        contactIds: props.contacts,
+        dealId: props.deal,
       }
     })
   }, [props.contacts])
@@ -210,7 +211,7 @@ function AssociatedFlowDetails(props) {
                         header={"Unit Interests"}
                         targetLabel="contactUnits"
                         id="unitInterestTable"
-                        esFilters={[{ field: "contact._id", value: props.contacts, }]}
+                        esFilters={[{ field: "contact._id", value: props.contacts, }, { field: "deals._id", value: props.deal }]}
                         esIndex="shapeowners_flat"
                         setESFilters={() => { }}
                         onTractCount={() => { }}
@@ -223,6 +224,7 @@ function AssociatedFlowDetails(props) {
                         id="tractInterestTable"
                         targetLabel="parcel"
                         contactId={props.contacts}
+                        dealId={props.deal}
                         showTracks
                       />
                     )}
