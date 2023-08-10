@@ -533,6 +533,13 @@ const ShapeActionsPopup = (props) => {
 
     upsertCustomLayer({
       variables: { customLayer: customLayerData },
+    }).then(result => {
+
+      const layerId = result.data.upsertCustomLayer.customLayer._id;
+      if (layerId) {
+        let newPath = `/map/units/${layerId}`
+        history.location.pathname !== newPath && history.replace(newPath)
+      }
     });
 
     let layers = [...stateApp.customLayers];
