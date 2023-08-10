@@ -435,7 +435,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 />
               </Grid>
               <Grid item xs={12}>
-                <h3>Working Interest</h3>
+                <h3>Working Intereast</h3>
 
                 <Controller
                   control={control}
@@ -449,6 +449,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
+                        if (!isNraOverridden) setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri, e.target.value, getValues().nri));
                       }}
                       fullWidth
                       defaultValue=""
