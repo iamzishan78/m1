@@ -435,7 +435,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 />
               </Grid>
               <Grid item xs={12}>
-                <h3>Working Intereast</h3>
+                <h3>Working Interest</h3>
 
                 <Controller
                   control={control}
