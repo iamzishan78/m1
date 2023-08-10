@@ -241,7 +241,8 @@ function MapGridCard(props) {
                         ]}
                         filterToggle={() => { }}
                         targetLabel={"activitiesDashboard"}
-                        header="Activities"
+                        header="Activitiess"
+                        parent="assocTaxRollInterests"
                         addAble={{ type: "contactActivity" }}
                         onAddActivity={props.onAddActivity}
                         dialogType="activitySideDialog"
@@ -293,17 +294,17 @@ function MapGridCard(props) {
                     {searchTapValue.value === "deals" && <ContactDealsProvider />}
                     {searchTapValue.value === "documents" && <ContactDocumentsProvider contactId={props.contactData._id} />}
                     {
-                      searchTapValue.value === "relatedContacts" && 
-                        <RelatedContactsTable contactId={props.contactData._id} />
+                      searchTapValue.value === "relatedContacts" &&
+                      <RelatedContactsTable contactId={props.contactData._id} />
                     }
-                    {searchTapValue.value === "relatedAgreements" && 
-                      <ContactRelatedAgreementTable 
+                    {searchTapValue.value === "relatedAgreements" &&
+                      <ContactRelatedAgreementTable
                         dense
                         moduleId={props.contactData._id}
                         setDrawer={props.setDrawer}
-                        setCounter={() => {}}
+                        setCounter={() => { }}
                         esFilters={[{ field: "contact._id", value: props.contactData._id }]}
-                        targetLabel="Shape" 
+                        targetLabel="Shape"
                         setESFilters={() => { }}
                         onTractCount={() => { }}
                       />}
