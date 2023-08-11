@@ -68,7 +68,7 @@ function ContactParcelInterestTable(props) {
     } else {
       payload.contactId = props.contactId
     }
-
+    payload.dealId = props.dealId;
     getContactParcelInterests({
       variables: payload,
     });
