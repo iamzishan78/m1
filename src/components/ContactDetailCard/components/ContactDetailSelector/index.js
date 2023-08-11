@@ -241,7 +241,7 @@ function MapGridCard(props) {
                         ]}
                         filterToggle={() => { }}
                         targetLabel={"activitiesDashboard"}
-                        header="Activitiess"
+                        header="Activities"
                         parent="assocTaxRollInterests"
                         addAble={{ type: "contactActivity" }}
                         onAddActivity={props.onAddActivity}
