@@ -10,6 +10,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 import { Modals } from "styles/Modal";
 import _ from "lodash";
 
+import CloseSharp from "@material-ui/icons/CloseSharp";
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import Typography from "@material-ui/core/Typography";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
@@ -182,6 +183,10 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
     const [updateBulkParcel] = useMutation(UPDATEBULKPARCEL);
     const [updateBulkTags] = useMutation(BULKUPSERTTAG);
 
+    const onDelete = (row) => {
+        setRows(rows.filter((r) => r._id !== row._id));
+    };
+
     const onFieldToUpdateChange = (field) => {
         setField(field);
         setFieldKey('');
@@ -274,6 +279,40 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
                 </IconButton>
             </MuiDialogTitle>
             <DialogContent>
+                <Box p={0} pt={2} pb={2}>
+                    {rows.map((row) => (
+                        <Grid
+                            container
+                            direction="row"
+                            spacing={2}
+                            alignItems="center"
+                            key={row.id}
+                        >
+                            <Grid item md={11}>
+                                <Typography style={{ backgroundColor: "#edfbff" }}>
+                                    <Grid
+                                        container
+                                        alignItems="center"
+                                        style={{ paddingLeft: 10 }}
+                                    >
+                                        <Grid item md={4}>
+                                            {row.name}
+                                        </Grid>
+                                        <Grid item md={8}>
+                                            {row.address1} {row.address2} {row.city}, {row.state}{" "}
+                                            {row.zip}
+                                        </Grid>
+                                    </Grid>
+                                </Typography>
+                            </Grid>
+                            <Grid item md={1}>
+                                <IconButton aria-label="delete" onClick={() => onDelete(row)}>
+                                    <CloseSharp />
+                                </IconButton>
+                            </Grid>
+                        </Grid>
+                    ))}
+                </Box>
                 <Box p={0} pt={2} pb={2}>
                     <Grid container direction="column">
                         <Grid item>
