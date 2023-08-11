@@ -87,7 +87,7 @@ const styles = () => ({
 
 const useStyles = makeStyles(styles);
 
-export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, showSuccessMessage, getContactCampaignAction, campaignList }) {
+export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, showSuccessMessage, getContactCampaignAction, campaignList, ...rest }) {
   const [stateApp] = React.useContext(AppContext);
   const classes = useStyles();
   const modalClass = Modals();
@@ -104,6 +104,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     }
   );
 
+  console.log("rows here : ", rows)
   const fieldsToUpdate = [
     { title: "Campaign Name", value: "campaignName" },
     { title: "Contact Owner", value: "contactOwner" },
@@ -148,7 +149,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   }
 
   const onAssign = () => {
-    let contactIds = rows.map((row) => row._id);
+    let contactIds = rows.map((row) => row.contactId);
 
     const errorMsg = 'Failed to assign to contact owner'
     Loader.createToast('contact-creation', 'Contact Bulk Update in progress')
@@ -165,6 +166,8 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             if (success) {
               Loader.successToast('contact-creation', message)
               showSuccessMessage("Contacts Updated Successfuly")
+              if (rest.onBulkUpdateComplete)
+                rest.onBulkUpdateComplete()
             } else {
               Loader.errorToast('contact-creation', message)
             }
@@ -244,6 +247,8 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           if (success) {
             Loader.successToast('contact-creation', "updated")
             showSuccessMessage(`${field} Bulk Updated Successfully`)
+            if (rest.onBulkUpdateComplete)
+              rest.onBulkUpdateComplete()
           } else {
             Loader.errorToast('contact-creation', "updated")
           }
