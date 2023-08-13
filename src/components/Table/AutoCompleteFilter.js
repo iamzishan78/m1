@@ -166,6 +166,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
       open={open}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
+      disabled={others.disabled || false}
       disableListWrap
       ListboxComponent={ListboxComponent}
       value={multiple && !value ? [] : value}
