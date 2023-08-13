@@ -50,11 +50,13 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
   const [open, setOpen] = useState(false);
   const [, setStateApp] = useContext(AppContext);
   const [options, setOptions] = useState([]);
+  const SetOptions = ops => setOptions(ops.filter(op => op.key));
   const [value, setValue] = useState(filterValue);
   const [search, setSearch] = useState(filterList[index][0]);
   const { label, filterKey, type } = column;
   const [getFilters, { data: filtersData, loading }] = useLazyQuery(query, { fetchPolicy: "no-cache" });
   const getFiltersType = query?.definitions?.[0]?.name?.value;
+
   useEffect(() => {
     setSearch(filterList[index][0]);
     if (!filterList[index][0]) {
@@ -66,7 +68,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
     if (!custom?.filterOptions) {
       getFiltersAction("");
     } else {
-      setOptions(custom?.filterOptions);
+      SetOptions(custom?.filterOptions);
     }
   }, [filters]);
 
@@ -84,7 +86,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
             })
           });
           hits = uniqBy(hits, "key")
-          setOptions(hits);
+          SetOptions(hits);
         } else if (custom?.isDate) {
           filtersData[keys[0]].hits = filtersData[keys[0]]?.hits.filter((hit) => hit.key);
           const hits = filtersData[keys[0]].hits.map((hit) => ({
@@ -92,7 +94,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
             key: moment(new Date(hit.key)).format("MM/DD/YYYY"),
             key_as_string: hit.key_as_string || hit.key,
           }));
-          setOptions(hits);
+          SetOptions(hits);
           setStateApp((state, props) => {
             return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
           });
@@ -103,14 +105,14 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
             key: moment(new Date(hit.key)).format("MM/DD/YYYY HH:mm:ss.SSS"),
             key_as_string: hit.key_as_string || hit.key,
           }));
-          setOptions(hits);
+          SetOptions(hits);
           setStateApp((state, props) => {
             return { ...state, filtersData: { ...state.filtersData, [column.name]: hits } };
           });
         } else if (custom?.toFixed) {
           filtersData[keys[0]].hits = filtersData[keys[0]]?.hits.filter((hit) => hit.key);
           const hits = filtersData[keys[0]].hits.map((hit) => ({ ...hit, key: parseFloat(hit.key.toFixed(custom?.toFixed)) }));
-          setOptions(hits);
+          SetOptions(hits);
         } else if (custom?.formatedFilterOptions) {
           const hits = filtersData[keys[0]].hits;
           for (let i = 0; i < custom.formatedFilterOptions.length; i++) {
@@ -121,18 +123,14 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
               hits[index].key = custom.formatedFilterOptions[i].label;
             }
           }
-          setOptions(hits);
+          SetOptions(hits);
           setSearch(getDefaultSearchValue());
         } else {
-          setOptions(filtersData[keys[0]].hits);
+          SetOptions(filtersData[keys[0]].hits);
         }
       }
     }
   }, [filtersData]);
-
-  const handleChange = (search) => {
-    setSearch(search);
-  };
 
   const getFiltersAction = (search) => {
     const rawSearch = search;
@@ -161,106 +159,13 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
     });
   };
 
-  // Adapter for react-window
-  const ListboxComponent = React.forwardRef(function ListboxComponent(props, ref) {
-    const { children, ...other } = props;
-    const itemData = [];
-    children.forEach((item) => {
-      itemData.push(item);
-      itemData.push(...(item.children || []));
-    });
-
-    const itemCount = itemData.length;
-    const itemSize = 48;
-
-    const getChildSize = (child) => {
-      if (child.hasOwnProperty('group')) {
-        return 48;
-      }
-
-      return itemSize;
-    };
-
-    const getHeight = () => {
-      if (itemCount > 8) {
-        return 8 * itemSize;
-      }
-      return itemData.map(getChildSize).reduce((a, b) => a + b, 0);
-    };
-
-    const gridRef = useResetCache(itemCount);
-
-    return (
-      <div ref={ref}>
-        <OuterElementContext.Provider value={other}>
-          <VariableSizeList
-            itemData={itemData}
-            height={getHeight() + 2 * LISTBOX_PADDING}
-            width="100%"
-            ref={gridRef}
-            outerElementType={OuterElementType}
-            innerElementType="ul"
-            itemSize={(index) => getChildSize(itemData[index])}
-            overscanCount={5}
-            itemCount={itemCount}
-          >
-            {renderRow}
-          </VariableSizeList>
-        </OuterElementContext.Provider>
-      </div>
-    );
-  });
-
-  ListboxComponent.propTypes = {
-    children: PropTypes.node,
-  };
-
-  const LISTBOX_PADDING = 8; // px
-
-  function renderRow(props) {
-    const { data, index, style } = props;
-
-    if (!data[index]) {
-      return null;
-    }
-
-    return React.cloneElement(data[index], {
-      style: {
-        ...style,
-        top: style.top + LISTBOX_PADDING,
-      },
-    });
-  }
-
-
-  const OuterElementContext = React.createContext({});
-
-  const OuterElementType = React.forwardRef((props, ref) => {
-    const outerProps = React.useContext(OuterElementContext);
-    return <div ref={ref} {...props} {...outerProps} />;
-  });
-
-  function useResetCache(data) {
-    const ref = React.useRef(null);
-    React.useEffect(() => {
-      if (ref.current != null) {
-        ref.current.resetAfterIndex(0, true);
-      }
-    }, [data]);
-    return ref;
-  }
-
   return (
     <Autocomplete
       multiple={multiple}
       id={`filter-autocomplete-${custom?.filterLabel || label}`}
       open={open}
-      onOpen={() => {
-        setOpen(true);
-      }}
-      onClose={() => {
-        setOpen(false);
-      }}
+      onOpen={() => setOpen(true)}
+      onClose={() => setOpen(false)}
       disableListWrap
       ListboxComponent={ListboxComponent}
       value={multiple && !value ? [] : value}
@@ -307,9 +212,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
           variant={others?.variant ? others?.variant : "standard"}
           style={{ background: "white" }}
           label={custom?.filterLabel || label}
-          onChange={(e) => {
-            handleChange(e.target.value);
-          }}
+          onChange={(e) => setSearch(e.target.value)}
           InputProps={{
             ...params.InputProps,
           }}
@@ -319,3 +222,93 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
     />
   );
 });
+
+// Adapter for react-window
+const ListboxComponent = React.forwardRef(function ListboxComponent(props, ref) {
+  const { children, ...other } = props;
+  const itemData = [];
+  children.forEach((item) => {
+    itemData.push(item);
+    itemData.push(...(item.children || []));
+  });
+
+  const itemCount = itemData.length;
+  const itemSize = 40;
+  const LISTBOX_PADDING = 5; // px
+
+  // const getChildSize = (child) => {
+  //   // if (child.hasOwnProperty('group')) {
+  //   //   return 48;
+  //   // }
+  //   return itemSize;
+  // };
+
+  const getHeight = () => {
+    // adding 10px as padding
+    if (itemCount > 8) {
+      return (8 * itemSize) + LISTBOX_PADDING;
+    }
+    // const items = itemData.map(getChildSize).reduce((a, b) => a + b, 0);
+    // const height = items * LISTBOX_PADDING
+    // return height;
+    return (itemData.length * itemSize) + LISTBOX_PADDING;
+  };
+
+  function renderRow(props) {
+    const { data, index, style } = props;
+
+    if (!data[index]) {
+      return null;
+    }
+
+    return React.cloneElement(data[index], {
+      style: {
+        ...style,
+        top: style.top + LISTBOX_PADDING,
+      },
+    });
+  }
+
+  const OuterElementContext = React.createContext({});
+
+  const OuterElementType = React.forwardRef((props, ref) => {
+    const outerProps = React.useContext(OuterElementContext);
+    return <div ref={ref} {...props} {...outerProps} />;
+  });
+
+  const useResetCache = (data) => {
+    const ref = React.useRef(null);
+    React.useEffect(() => {
+      if (ref.current != null) {
+        ref.current.resetAfterIndex(0, true);
+      }
+    }, [data]);
+    return ref;
+  }
+
+  const gridRef = useResetCache(itemCount);
+
+  return (
+    <div ref={ref}>
+      <OuterElementContext.Provider value={other}>
+        <VariableSizeList
+          itemData={itemData}
+          height={getHeight()}
+          width="100%"
+          ref={gridRef}
+          outerElementType={OuterElementType}
+          innerElementType="ul"
+          itemSize={() => itemSize}
+          overscanCount={5}
+          itemCount={itemCount}
+        >
+          {renderRow}
+        </VariableSizeList>
+      </OuterElementContext.Provider>
+    </div>
+  );
+});
+
+ListboxComponent.propTypes = {
+  children: PropTypes.node,
+};
