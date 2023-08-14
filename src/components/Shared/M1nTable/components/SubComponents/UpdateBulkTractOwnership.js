@@ -87,7 +87,7 @@ const styles = () => ({
 
 const useStyles = makeStyles(styles);
 
-export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showSuccessMessage, getContactCampaignAction, campaignList }) {
+export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showSuccessMessage, getContactCampaignAction, campaignList, setSelectedRows }) {
     const [stateApp] = React.useContext(AppContext);
     const classes = useStyles();
     const modalClass = Modals();
@@ -205,12 +205,12 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
             updateBulkTags({
                 variables: {
                     tags: fieldKey,
-                    user: stateApp.user.mongoId,
+                    user: stateApp.user.mongoId, 
                     contactIds,
                     objectType: "Parcel Ownership"
                 },
                 refetchQueries: ["getESContacts", "getESSimpleSearch"],
-                awaitRefetchQueries: true,
+                awaitRefetchQueries: true, 
             }).then(
                 (res) => {
                     if (res.data && res.data.bulkUpsertTagOnContacts) {
@@ -253,6 +253,7 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
                 } else {
                     Loader.errorToast('Bulk-Updating', "failed")
                 }
+                setSelectedRows();
             },
                 err => { console.log(err); Loader.errorToast('v', errorMsg) });
         }

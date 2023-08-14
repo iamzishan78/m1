@@ -208,6 +208,17 @@ const ShapeActionsPopup = (props) => {
   }, [stateApp?.editParcelAndShape]);
 
   useEffect(() => {
+    if (stateApp?.enableEdit) {
+      actionEdit();
+      setStateApp((state) => ({
+        ...state,
+        enableEdit: false,
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateApp?.enableEdit]);
+
+  useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.email) {
       getUserByEmail({
         variables: {
@@ -533,6 +544,13 @@ const ShapeActionsPopup = (props) => {
 
     upsertCustomLayer({
       variables: { customLayer: customLayerData },
+    }).then(result => {
+
+      const layerId = result.data.upsertCustomLayer.customLayer._id;
+      if (layerId) {
+        let newPath = `/map/units/${layerId}`
+        history.location.pathname !== newPath && history.replace(newPath)
+      }
     });
 
     let layers = [...stateApp.customLayers];
