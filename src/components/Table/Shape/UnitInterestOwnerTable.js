@@ -189,7 +189,7 @@ function UnitInterestOwnerTable(props) {
     setSelectedRows(rowsData);
     setOpenCustomDialog("exportOwnersAndContact");
   };
-  
+
   const onBulkUpdateComplete = () => {
     setSelectedRows([]);
     setResetSelectedRow(!resetSelectedRow);
@@ -267,7 +267,7 @@ function UnitInterestOwnerTable(props) {
                   onClick={() => {
                     let owners = [];
 
-                    const rows = props.selectedRowsValues || props.rows;
+                    const rows = props.rows || props.selectedRowsValues;
                     for (let i in props.selectedRows) {
                       owners.push({
                         ...rows[props.selectedRows[i].dataIndex],
