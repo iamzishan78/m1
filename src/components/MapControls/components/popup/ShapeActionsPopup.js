@@ -208,6 +208,17 @@ const ShapeActionsPopup = (props) => {
   }, [stateApp?.editParcelAndShape]);
 
   useEffect(() => {
+    if (stateApp?.enableEdit) {
+      actionEdit();
+      setStateApp((state) => ({
+        ...state,
+        enableEdit: false,
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateApp?.enableEdit]);
+
+  useEffect(() => {
     if (stateApp && stateApp.user && stateApp.user.email) {
       getUserByEmail({
         variables: {
