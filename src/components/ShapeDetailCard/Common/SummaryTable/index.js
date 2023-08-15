@@ -596,7 +596,7 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
                           {data.type === "comma-number" && (vf_number(data.value) || vf_number(properties[data.key]) || "-")}
                           {data.type === 'calculation' && (<>
                             <Typography className={isNraMatched() ? classes.nraText : classes.nraHighLight}>
-                              {vf_currency_to_fixed(properties?.netRoyalityAcres?.unitNra || 0, 2)}
+                              {getRoundedNra(properties?.netRoyalityAcres?.unitNra || 0, 2)}
                             </Typography>
 
                           </> || 0)}
