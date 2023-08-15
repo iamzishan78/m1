@@ -70,7 +70,10 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
       dbName: "shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
       sort: true,
       filter: true
-    }
+    },
+    custom: {
+      oRFilter: true,
+    },
   },
   {
     name: "BlockTownship", label: "Block/ Township", esKey: [
@@ -81,7 +84,10 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
       dbName: "shapeJson.properties.originalProperties.0?.Block?.Township?",
       sort: true,
       filter: true
-    }
+    },
+    custom: {
+      oRFilter: true,
+    },
   },
   {
     name: "SectionRange", label: "Section/ Range", esKey: [
@@ -92,7 +98,10 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
       dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
       sort: true,
       filter: true
-    }
+    },
+    custom: {
+      oRFilter: true,
+    },
   },
   {
     name: "AbstractSection", label: "Abstract/ Section", esKey: [
@@ -103,7 +112,10 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
       dbName: "shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
       sort: true,
       filter: true
-    }
+    },
+    custom: {
+      oRFilter: true,
+    },
   },
   {
     name: "shapeArea",
