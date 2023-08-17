@@ -11,14 +11,12 @@ import { GETALLACTIVITIES } from "../../graphQL/useQueryGetAllActivities";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import ActivitiesToolbar from "./components/ActivitiesToolbar";
 import ActivitiesEvent from "./components/ActivitiesEvent";
-import M1nTable from "../Shared/M1nTable/M1nTable";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./index.css";
 import ActivitiesAppBar from "./components/ActivitiesAppbar";
 import ActivitiesModal from "./components/ActivitiesModal";
 import { AppContext } from "../../AppContext";
 import ActivitiesTable from "../../components/Table/Activities/ActivitiesTable";
-import { ActivitiesContext } from './ActivitiesContext';
 
 
 const localizer = momentLocalizer(moment);
@@ -273,6 +271,9 @@ const Activities = () => {
 
               <div className={classes.table}>
                 <ActivitiesTable
+                  activityFilterByType={activityFilterByType}
+                  activityFilterByTime={activityFilterByTime}
+                  activityFilterByOwner={activityFilterByOwner}
                   esIndex={esIndex}
                   searchFields={searchFields}
                   filtersChange={filtersChange}

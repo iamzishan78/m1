@@ -417,7 +417,7 @@ function MapGridCard(props) {
 
                   <List component="nav" aria-label="main mailbox folders">
 
-                    {snapGridSideBarData.map((row) => {
+                    {[platformDataInitialData[0], ...snapGridSideBarData].map((row) => {
                       const Icon = row.Icon
                       return (
                         <FeatureFlag feature={FEATURES[row.featureFlag]} noCheck={!FEATURES[row.featureFlag]}>
