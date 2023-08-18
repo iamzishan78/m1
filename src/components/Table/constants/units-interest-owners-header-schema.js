@@ -137,7 +137,7 @@ const UnitInterestsPageHeadCells = [
         esKey: 'campaignName.keyword',
         options: {
             display: true,
-            filter: false,
+            filter: true,
             searchable: false,
             sort: true,
         },
