@@ -281,6 +281,7 @@ const Activities = () => {
                   filterToggle={filterToggle}
                   targetLabel={"activitiesDashboard"}
                   header="Activities"
+                  parent="Activities"
                 />
               </div>
 
