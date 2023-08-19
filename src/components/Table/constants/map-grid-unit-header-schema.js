@@ -118,9 +118,9 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     },
   },
   {
-    name: "shapeArea",
+    name: "uAcres",
     label: "Unit Acres",
-    esKey: "shapeJson.properties.shapeArea.keyword",
+    esKey: "shapeJson.properties.uAcres.keyword",
     options: {
       sort: true,
       filter: true,
