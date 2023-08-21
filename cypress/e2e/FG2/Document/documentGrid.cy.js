@@ -48,11 +48,8 @@ describe('Document Grid Spec', () => {
             cy.scrollGridTo('right', '#Documents')
             cy.wrap($state).get("#State").click()
             cy.scrollGridTo('right', '#Documents')
-
-            cy.get('.react-select__menu-list').children().eq(2).trigger("click", { force: true })
-            cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: shorTimeout })
-
-            cy.get('.react-select__menu-list').children().eq(3).trigger("click", { force: true })
+            cy.wait(10000);
+            cy.get('#waypoint-1 input[type="checkbox"]').click();
             cy.scrollGridTo('right', '#Documents')
             cy.wrap($state).click()
             cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: shorTimeout })

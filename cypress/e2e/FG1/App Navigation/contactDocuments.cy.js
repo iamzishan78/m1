@@ -14,7 +14,7 @@ describe('Sort Filter ViewColumn Grid Spec', () => {
 
         cy.location('pathname', { timeout: longTimeout }).should('include', '/contacts');
         cy.get('#addButton', { timeout: longTimeout }).should('be.visible');
-        cy.getTableCell("Name", 3).click();
+        cy.getTableCell("Name", 1).click();
 
         cy.log('==== STEP: CLICK ON VIEW ALL DOCUMENTS ====');
         cy.get('#viewAllDocuments', { timeout: longTimeout }).should('be.visible').click();
