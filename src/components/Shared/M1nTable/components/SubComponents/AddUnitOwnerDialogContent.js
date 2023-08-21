@@ -100,6 +100,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         contactStatus,
         ownerType,
         contact,
+        campaignName,
         deals
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
@@ -115,7 +116,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         contactStatus: contactStatus || contact.contactStatus,
         ownerType,
         customLayer,
-        campaignName: contact.campaignName,
+        campaignName,
         deals
       }
       let calculatedNRA = calculateNRA(royalty_interest, orri, working_interest, nri);
