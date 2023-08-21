@@ -196,6 +196,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       ownerToAdd.nra = addTrailingZeros(parseFloat(ownerToAdd.nra).toFixed(8));
     }
 
+    Object.entries(ownerToAdd).forEach(([key, value]) => {
+      value === '' && delete ownerToAdd[key]
+    })
+
     if (selectedRow) {
       ownerToAdd._id = selectedRow._id;
       updateShapeOwners({
