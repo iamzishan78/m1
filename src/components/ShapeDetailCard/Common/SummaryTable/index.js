@@ -59,7 +59,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
             e.stopPropagation();
 
             if (data.key === 'uName' && e.target.value === '')
-              dispatch(showInfoMessage("You cannot enter empty name for the unit"));
+              dispatch(showInfoMessage("Unit name field cannot be empty"));
             else
               onKeyDown(e, data, type);
           }
