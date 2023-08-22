@@ -65,7 +65,7 @@ function ExpandableCard(props) {
   const [openBugModal, setOpenBugModal] = useState(false);
   const [toggleExpand, setToggleExpand] = useState(false);
   const [isExpanded, setExpanded] = useState([]);
-  const {subTitle} = props;
+  const { subTitle } = props;
   const [title, setTitle] = useState(props.title);
   const [parent] = useState(props.parent);
   const [cardWidth] = useState(props.cardWidth);
@@ -384,6 +384,12 @@ function ExpandableCard(props) {
         dispatch(showInfoMessage("Agreement Number is required"));
         return;
       }
+
+      else if (stateApp?.selectedShape?.type === "unit" && !stateApp?.selectedShape?.feature?.properties?.uName) {
+        dispatch(showInfoMessage("Unit Name is required"));
+        return;
+      }
+
       if ($("#tempPopupHolder").length) {
         let popUps = document.getElementsByClassName("mapboxgl-popup");
         if (popUps[0]) popUps[0].remove();
@@ -435,7 +441,7 @@ function ExpandableCard(props) {
             <Grid item>
               <Avatar color="#1a2341">
                 <FolderIcon fontColor="#1a2341" />
-              </Avatar> 
+              </Avatar>
             </Grid>
             <Grid item>
               <Box className="name">{title.length > 70 ? `${title.substr(0, 75).toUpperCase()}...` : title.toUpperCase()}</Box>
@@ -452,7 +458,7 @@ function ExpandableCard(props) {
             {targetLabel !== "contact" && targetLabel !== "parcel" && <div>{title.length > 70 ? `${title.substr(0, 75)}...` : title}</div>}
             {targetLabel === "parcel" && props.expanded === true && (
               <Grid container spacing={2} alignItems="center" className={classes.unitTitle}>
-                
+
                 <Grid item>
                   <Avatar color="#1a2341">
                     <FolderIcon fontColor="#1a2341" />
