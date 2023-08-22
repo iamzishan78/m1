@@ -384,9 +384,12 @@ function ExpandableCard(props) {
         dispatch(showInfoMessage("Agreement Number is required"));
         return;
       }
-
       else if (stateApp?.selectedShape?.type === "unit" && !stateApp?.selectedShape?.feature?.properties?.uName) {
         dispatch(showInfoMessage("Unit Name is required"));
+        return;
+      }
+      else if (stateApp?.selectedParcel && !stateApp?.selectedParcel?.feature?.properties?.shapeLabel) {
+        dispatch(showInfoMessage("Tract Name is required"));
         return;
       }
 

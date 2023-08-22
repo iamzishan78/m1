@@ -57,9 +57,8 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
         onKeyDown={(e) => {
           if (e.keyCode === 13) {
             e.stopPropagation();
-
-            if (data.key === 'uName' && e.target.value === '')
-              dispatch(showInfoMessage("Unit name field cannot be empty"));
+            if (['uName', 'shapeLabel'].includes(data.key) && !e.target.value)
+              dispatch(showInfoMessage("Name field cannot be empty"));
             else
               onKeyDown(e, data, type);
           }
