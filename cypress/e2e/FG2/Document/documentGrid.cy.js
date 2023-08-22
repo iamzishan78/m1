@@ -36,6 +36,7 @@ describe('Document Grid Spec', () => {
         cy.interceptApi('updateDocument')
         cy.getTableCell('Internal Company', 1).then(($internalCompany) => {
             cy.scrollGridTo('right', '#Documents')
+            cy.wait(10000);
             cy.wrap($internalCompany).get("[id='Internal Company']").eq(1).click()
             cy.scrollGridTo('right', '#Documents')
             cy.wrap($internalCompany).get("#searchForValue").type('924{enter}{esc}{esc}')
