@@ -48,9 +48,9 @@ const UnitInterestsPageHeadCells = [
         },
     },
     {
-        name: 'shapeArea',
+        name: 'uAcres',
         label: 'Unit Acres',
-        esKey: 'shape.shapeJson.properties.shapeArea.keyword',
+        esKey: 'shape.shapeJson.properties.uAcres.keyword',
         options: {
             sort: true,
             filter: true,
