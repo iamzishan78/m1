@@ -9,7 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
 import TableRow from "@material-ui/core/TableRow";
 import Tooltip from "@material-ui/core/Tooltip";
-import { showErrorMessage } from "actions";
+import { showErrorMessage, showInfoMessage } from "actions";
 import CreateTwoToneIcon from "@material-ui/icons/CreateTwoTone";
 import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoCompleteType";
 import { summaryTableStyles } from "components/ShapeDetailCard/style";
@@ -31,6 +31,7 @@ import filterConsts from "components/Table/TableAddDialog/Common/filterConsts";
 
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps, loading }) {
+  const dispatch = useDispatch();
   const classes = summaryTableStyles();
   // match unit nra value with system generated nra
   const getNraClass = () => {
@@ -56,7 +57,10 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
         onKeyDown={(e) => {
           if (e.keyCode === 13) {
             e.stopPropagation();
-            onKeyDown(e, data, type);
+            if (['uName', 'shapeLabel'].includes(data.key) && !e.target.value)
+              dispatch(showInfoMessage("Name field cannot be empty"));
+            else
+              onKeyDown(e, data, type);
           }
         }}
         onWheel={onWheel ? onWheel : () => { }}
@@ -71,8 +75,8 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
               <span>Return</span> to save
             </p>
           ),
-          endAdornment: 
-            loading ? 
+          endAdornment:
+            loading ?
               <CircularProgress color="secondary" size={40} />
               : null
         }}
