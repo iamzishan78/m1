@@ -45,6 +45,7 @@ function UnitInterestOwnersTable(props) {
       hit.uUnitPricing = hit?.shape?.shapeJson?.properties?.uUnitPricing;
       hit.uNumber = hit?.shape?.shapeJson?.properties?.uNumber
       hit.shapeArea = hit?.shape?.shapeJson?.properties?.shapeArea
+      hit.uAcres = hit?.shape?.shapeJson?.properties?.uAcres
 
       hit.contactStatus = hit?.contact?.contactStatus
       hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
