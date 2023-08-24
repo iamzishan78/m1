@@ -31,6 +31,7 @@ import CampaignNameField from "components/ContactDetailCard/components/FieldCont
 import AssociatedDealField from "components/ContactDetailCard/components/FieldContent/AssociatedDealField";
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
+import { calculateNRAForUnitOwnerDialog } from "utils/calculatedNraHelper"
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -118,7 +119,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         campaignName: contact.campaignName,
         deals
       }
-      let calculatedNRA = calculateNRA(royalty_interest, orri, nri);
+      let calculatedNRA = calculateNRAForUnitOwnerDialog(royalty_interest, orri, nri, uAcres, workspaceSettings);
       let calculatedOfferPrice = calculateOfferPrice(nra)
       if (!isNaN(parseFloat(calculatedNRA)))
         setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)))
@@ -271,19 +272,19 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     }
   };
 
-  const calculateNRA = (interest1, interest2, interest3, unitAcres = uAcres) => {
-    if (!interest3 && (!interest1 && !interest2)) return null;
+  // const calculateNRA = (interest1, interest2, interest3, unitAcres = uAcres) => {
+  //   if (!interest3 && (!interest1 && !interest2)) return null;
 
-    let nra = parseFloat(unitAcres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0));
+  //   let nra = parseFloat(unitAcres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0));
 
-    if (interest3) nra = parseFloat(interest3 || 0) * parseFloat(unitAcres || 0)
+  //   if (interest3) nra = parseFloat(interest3 || 0) * parseFloat(unitAcres || 0)
 
-    if (workspaceSettings.settings?.map?.unitNra?.type === "custom" && workspaceSettings.settings?.map?.unitNra?.value)
-      nra = nra / Number(workspaceSettings.settings?.map?.unitNra?.value);
+  //   if (workspaceSettings.settings?.map?.unitNra?.type === "custom" && workspaceSettings.settings?.map?.unitNra?.value)
+  //     nra = nra / Number(workspaceSettings.settings?.map?.unitNra?.value);
 
-    nra = addTrailingZeros(nra.toFixed(8));
-    return nra;
-  };
+  //   nra = addTrailingZeros(nra.toFixed(8));
+  //   return nra;
+  // };
 
   const calculateOfferPrice = (nra) => {
     return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
@@ -470,7 +471,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) setValue("nra", calculateNRA(e.target.value, getValues().orri, getValues().nri));
+                        if (!isNraOverridden) setValue("nra", calculateNRAForUnitOwnerDialog(e.target.value, getValues().orri, getValues().nri, uAcres, workspaceSettings));
                       }}
                       fullWidth
                       defaultValue=""
@@ -492,7 +493,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) { setValue("nra", calculateNRA(getValues().royalty_interest, e.target.value, getValues().nri)); }
+                        if (!isNraOverridden) { setValue("nra", calculateNRAForUnitOwnerDialog(getValues().royalty_interest, e.target.value, getValues().nri, uAcres, workspaceSettings)); }
                       }}
                       fullWidth
                       defaultValue=""
@@ -515,7 +516,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) { setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri, e.target.value)); }
+                        if (!isNraOverridden) { setValue("nra", calculateNRAForUnitOwnerDialog(getValues().royalty_interest, getValues().orri, e.target.value, uAcres, workspaceSettings)); }
                       }}
                       fullWidth
                       defaultValue=""
@@ -552,7 +553,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         const value = addTrailingZeros(e.target.value);
-                        const nra = calculateNRA(getValues().royalty_interest, getValues().orri, getValues().nri)
+                        const nra = calculateNRAForUnitOwnerDialog(getValues().royalty_interest, getValues().orri, getValues().nri, uAcres, workspaceSettings)
                         setIsNRAOverridden(parseFloat(value) !== parseFloat(nra))
                         params.onChange(e.target.value);
                       }}
@@ -565,7 +566,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                                 aria-label="toggle royality-acres"
                                 onClick={() => {
                                   setIsNRAOverridden(false)
-                                  setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri, getValues().nri));
+                                  setValue("nra", calculateNRAForUnitOwnerDialog(getValues().royalty_interest, getValues().orri, getValues().nri, uAcres, workspaceSettings));
                                 }}
                               >
                                 <AutorenewIcon />
