@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button, Grid, Box, CircularProgress, InputAdornment, IconButton } from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -8,7 +8,6 @@ import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import { Modals } from "styles/Modal";
-import _ from "lodash";
 
 import CloseSharp from "@material-ui/icons/CloseSharp";
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
@@ -97,7 +96,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const [loading, setLoading] = useState(false);
   const [inputFocused, _setFocused] = useState(false);
   const [campaigns, setCampaigns] = useState([]);
-  const { laoding, error, data: publicTags } = useQuery(
+  const { data: publicTags } = useQuery(
     PUBLICTAGSQUERY,
     {
       fetchPolicy: "cache-and-network",
@@ -149,7 +148,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   }
 
   const onAssign = () => {
-    let contactIds = rows.map((row) => row.contactId);
+    let contactIds = rows.map((row) => row.contactId || row._id);
 
     const errorMsg = 'Failed to assign to contact owner'
     Loader.createToast('contact-creation', 'Contact Bulk Update in progress')
@@ -264,7 +263,6 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   };
 
   function SelectedField() {
-    let contactIds = rows.map((row) => row._id);
     let filterKey = ''
     switch (field) {
       case "Contact Owner":
