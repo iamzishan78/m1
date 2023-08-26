@@ -118,7 +118,7 @@ const OwnersPerUnitHeadCells = [
     },
   },
   {
-    name: "stage",
+    name: "status",
     esKey: "contact.status.keyword",
     label: "Stage",
     options: {

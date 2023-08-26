@@ -88,7 +88,7 @@ function UnitInterestOwnerTable(props) {
     return hits.map((hit) => {
       hit.isPurchased = hit?.contact?.isPurchased;
       hit.contactStatus = hit?.contact?.contactStatus;
-      hit.stage = hit?.contact?.status;
+      hit.status = hit?.contact?.status;
       Object.keys(hit).forEach((key) => {
         if (interestKeys.includes(key)) {
           if (typeof hit[key] === "number")
