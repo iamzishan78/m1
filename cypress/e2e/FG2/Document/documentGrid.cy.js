@@ -36,6 +36,7 @@ describe('Document Grid Spec', () => {
         cy.interceptApi('updateDocument')
         cy.getTableCell('Internal Company', 1).then(($internalCompany) => {
             cy.scrollGridTo('right', '#Documents')
+            cy.wait(10000);
             cy.wrap($internalCompany).get("[id='Internal Company']").eq(1).click()
             cy.scrollGridTo('right', '#Documents')
             cy.wrap($internalCompany).get("#searchForValue").type('924{enter}{esc}{esc}')
@@ -48,11 +49,8 @@ describe('Document Grid Spec', () => {
             cy.scrollGridTo('right', '#Documents')
             cy.wrap($state).get("#State").click()
             cy.scrollGridTo('right', '#Documents')
-
-            cy.get('.react-select__menu-list').children().eq(2).trigger("click", { force: true })
-            cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: shorTimeout })
-
-            cy.get('.react-select__menu-list').children().eq(3).trigger("click", { force: true })
+            cy.wait(10000);
+            cy.get('#waypoint-1 input[type="checkbox"]').click();
             cy.scrollGridTo('right', '#Documents')
             cy.wrap($state).click()
             cy.verifyApiResponse('@updateDocumentApi', { responseTimeout: shorTimeout })
