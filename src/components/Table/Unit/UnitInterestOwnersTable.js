@@ -9,7 +9,7 @@ import TableESHOC from 'components/Table/TableESHOC';
 import { deepEqualObjects, copy, esExtentedSearch } from 'components/Shared/functions';
 import { usetableStyles } from '../Styles';
 
-const genericDataActions = ['tags', 'comments', 'tracks'];
+const genericDataActions = ['comments', 'tracks'];
 function UnitInterestOwnersTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
@@ -34,10 +34,6 @@ function UnitInterestOwnersTable(props) {
 
   const formatHits = hits => {
     hits = hits.map(hit => {
-      hit.tags =
-        hit?.tags?.length > 0
-          ? [[hit.tags.map(tag => tag.tag)], hit.tags.length]
-          : [[], 0];
       hit._id = hit?.contact?._id
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       hit.qualifier = hit?.shape?.shapeJson?.properties?.qualifier?.name;
@@ -45,11 +41,24 @@ function UnitInterestOwnersTable(props) {
       hit.uUnitPricing = hit?.shape?.shapeJson?.properties?.uUnitPricing;
       hit.uNumber = hit?.shape?.shapeJson?.properties?.uNumber
       hit.shapeArea = hit?.shape?.shapeJson?.properties?.shapeArea
+      hit.uAcres = hit?.shape?.shapeJson?.properties?.uAcres
 
       hit.contactStatus = hit?.contact?.contactStatus
+
+      if (hit?.tags?.length > 0) {
+        const tags = hit.tags.map((tag) => tag.tag);
+        if (tags[0]) {
+          hit.tags = [[tags], hit.tags.length];
+        }
+      } else {
+        hit.tags = [[], 0];
+      }
+
       hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
+
       return hit;
     });
+
     return hits;
   };
 
