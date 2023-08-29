@@ -118,12 +118,12 @@ const OwnersPerUnitHeadCells = [
     },
   },
   {
-    name: "campaignName",
+    name: "contact",
     label: "Campaign Name",
-    esKey: "campaignName.keyword",
+    esKey: "contact.campaignName.keyword",
     options: {
       customRender: (value) => {
-        return <CampaignNameField value={value} fullWidth disabled />;
+        return <CampaignNameField value={value.campaignName} fullWidth disabled />;
         // if (typeof value.campaignName === "string") {
         //   return value.campaignName;
         // } else {
