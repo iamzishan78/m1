@@ -77,7 +77,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false)
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
-  const [ownerTypeOfConctact, setOwnerTypeOfConctact] = useState();
+  const [contact, setContact] = useState();
   const [anchorEl, setAnchorEl] = useState();
   const [loading, setLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -415,7 +415,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <h3>Name</h3>
-                <AutocompEntityNamesList userId={stateApp.user.mongoId} setOwnerTypeOfConctact={setOwnerTypeOfConctact} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
+                <AutocompEntityNamesList userId={stateApp.user.mongoId} setContact={setContact} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
               </Grid>
               <Grid item xs={12}>
                 <h3>Entity Type</h3>
@@ -433,7 +433,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         }
                         setValue('ownerType', val);
                       }}
-                      value={ownerTypeOfConctact ?? ""}
+                      value={contact?.ownerType ?? ""}
                     />
                   )}
                 />
@@ -702,7 +702,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
                 <Controller
                   control={control}
-                  defaultValue={''}
                   name="campaignName"
                   render={(params) => (
                     <CampaignNameField
@@ -714,6 +713,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       fullWidth
                       targetLabel="Contact"
                       simpleChips
+                      value={contact?.campaignName?.[0] ?? ""}
                     />
                   )}
                 />
