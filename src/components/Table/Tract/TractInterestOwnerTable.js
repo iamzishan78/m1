@@ -27,7 +27,7 @@ import vf_currency from "components/Shared/valueformatters/vf_currency";
 import { deepEqualObjects, copy } from "components/Shared/functions";
 import { addTrailingZeros } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
-import { UpdateBulkTractOwnershipContainer } from "store/containers";
+import { AssignOwnerToContactDrawerContainer } from "store/containers";
 
 const genericDataActions = ["comments", "tracks", "ifAreContacts"];
 const interestKeys = [
@@ -169,6 +169,11 @@ function TractInterestOwnerTable(props) {
     return selectedRows;
   };
 
+  const onBulkUpdateComplete = () => {
+    setSelectedRows([]);
+    setResetSelectedRow(!resetSelectedRow);
+  };
+
   const deleteFunc = (idsToDelete) => {
     for (let i = 0; i < idsToDelete.length; i++) {
       updateParcelOwner({
@@ -181,6 +186,7 @@ function TractInterestOwnerTable(props) {
     }
     setResetSelectedRow(!resetSelectedRow)
   };
+
   return (
     <Container
       maxWidth={false}
@@ -188,10 +194,11 @@ function TractInterestOwnerTable(props) {
       id={props.id ? props.id : props.parent}
     >
       {openCustomDialog === "bulkUpdate" && (
-        <UpdateBulkTractOwnershipContainer
+        <AssignOwnerToContactDrawerContainer
           onClose={() => setOpenCustomDialog("")}
           rows={selectedRows}
           setRows={setSelectedRows}
+          onBulkUpdateComplete={onBulkUpdateComplete}
         />
       )}
       {openCustomDialog === "exportOwnersAndContact" && (

@@ -52,7 +52,7 @@ export default function AgreementDetailCard(props) {
 
   useEffect(() => {
     return history.listen((location) => {
-      if (!properties?.agreementNumber && !location.includes(uniObj._id)) {
+	if (!properties?.agreementNumber && location && (typeof location === 'string' || Array.isArray(location)) && !location.includes(uniObj?._id)) {
         setStateApp((state) => ({
           ...state,
           selectedShape: null,

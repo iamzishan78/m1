@@ -1,3 +1,4 @@
+import ListChips from 'components/Common/ListChips';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import { GlobalStickyStyles } from 'GlobalSettings';
 
@@ -48,9 +49,9 @@ const UnitInterestsPageHeadCells = [
         },
     },
     {
-        name: 'shapeArea',
+        name: 'uAcres',
         label: 'Unit Acres',
-        esKey: 'shape.shapeJson.properties.shapeArea.keyword',
+        esKey: 'shape.shapeJson.properties.uAcres.keyword',
         options: {
             sort: true,
             filter: true,
@@ -150,7 +151,7 @@ const UnitInterestsPageHeadCells = [
         esKey: 'campaignName.keyword',
         options: {
             display: true,
-            filter: false,
+            filter: true,
             searchable: false,
             sort: true,
         },
@@ -175,6 +176,42 @@ const UnitInterestsPageHeadCells = [
             filter: true,
             searchable: false,
             sort: true,
+        },
+    },
+    {
+        name: "deals",
+        label: "Associated Deals",
+        esKey: "deals.name.keyword",
+        options: {
+            customRender: (value) => {
+                return value && <ListChips list={value} />
+            },
+            setCellProps: () => ({ style: { minWidth: "200px" } }),
+            sort: true,
+            filter: true,
+        },
+    },
+    {
+        name: "tags",
+        label: "Tags",
+        esKey: "tags.tag.keyword",
+        options: {
+            filter: true,
+            sort: false,
+            download: false,
+            print: false,
+            filterOptions: {
+                names: [],
+                logic(rowVal, pickedTags) {
+                    let containIts = true;
+                    pickedTags.map((pickedTag) => {
+                        if (rowVal[0].indexOf(pickedTag) === -1) {
+                            containIts = false;
+                        }
+                    });
+                    return !containIts;
+                },
+            },
         },
     },
 ];

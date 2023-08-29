@@ -7,7 +7,10 @@ import { addTrailingZeros } from "components/Shared/functions";
 
 const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
 const isDev = process.env.REACT_APP_NODE_ENV === "development";
-
+const decimalForamtter = new Intl.NumberFormat('en-US', { style: 'decimal',
+useGrouping: true,
+minimumFractionDigits: 2,
+maximumFractionDigits: 2,}) 
 export const copy = (data) => {
   return data ? JSON.parse(JSON.stringify(data)) : null;
 };
@@ -198,7 +201,7 @@ export const getRangeFilters = (filters, format) => {
 
 export const getRoundedNra = (unitNra) => {
   let nra = parseFloat(unitNra || 0);
-  return addTrailingZeros(nra.toFixed(8));
+  return decimalForamtter.format(nra)
 }
 
 export const getShapeFilter = (polygon) => {
