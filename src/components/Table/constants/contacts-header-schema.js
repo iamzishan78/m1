@@ -40,7 +40,7 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
- 
+
   {
     name: "country",
     label: "Country",
@@ -608,7 +608,7 @@ const ContactsHeadCells = [
   },
   {
     name: "unitNraSum",
-    label: "Unit NRA",
+    label: "Unit NRA ads",
     esKey: 'interestSummary.unitNraSum',
     // editable: false,
     noFilter: true,
@@ -619,6 +619,9 @@ const ContactsHeadCells = [
       filterOptions: {
         names: [],
       },
+      customRender: (value) => {
+        return <p>{value ?? 0}</p>
+      }
     },
   },
   {
