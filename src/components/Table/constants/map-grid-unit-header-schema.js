@@ -40,6 +40,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
       // setCellProps: () => ({ style: { minWidth: "125px" } }),
     },
   },
@@ -50,6 +51,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -59,6 +61,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -69,7 +72,8 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
       sort: true,
-      filter: true
+      filter: true,
+      isMultiFilter: true,
     },
     custom: {
       oRFilter: true,
@@ -83,7 +87,8 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Block?.Township?",
       sort: true,
-      filter: true
+      filter: true,
+      isMultiFilter: true,
     },
     custom: {
       oRFilter: true,
@@ -97,7 +102,8 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
       sort: true,
-      filter: true
+      filter: true,
+      isMultiFilter: true,
     },
     custom: {
       oRFilter: true,
@@ -111,7 +117,8 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
       sort: true,
-      filter: true
+      filter: true,
+      isMultiFilter: true,
     },
     custom: {
       oRFilter: true,
@@ -124,6 +131,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -133,6 +141,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -142,6 +151,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -151,6 +161,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -160,6 +171,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -180,6 +192,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
       setCellProps: () => ({ style: { minWidth: "125px" } }),
     },
   },
@@ -190,6 +203,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
       setCellProps: () => ({ style: { minWidth: "125px" } }),
     },
   },
@@ -209,6 +223,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
     custom: {
       key_as_string: true,
@@ -226,6 +241,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
       ignoreGlobal: true,
       print: false,
       filter: true,
+      isMultiFilter: true,
       filterOptions: {
         names: [],
       },
