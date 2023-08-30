@@ -15,6 +15,7 @@ const UnitInterestsPageHeadCells = [
             ...GlobalStickyStyles({}),
             sort: true,
             filter: true,
+            isMultiFilter: true,
         },
     },
     {
@@ -24,6 +25,7 @@ const UnitInterestsPageHeadCells = [
         options: {
             sort: true,
             filter: true,
+            isMultiFilter: true,
             setCellProps: () => ({
                 style: {
                     maxWidth: "450px",
@@ -45,6 +47,7 @@ const UnitInterestsPageHeadCells = [
         options: {
             sort: true,
             filter: true,
+            isMultiFilter: true,
             // setCellProps: () => ({ style: { minWidth: "125px" } }),
         },
     },
@@ -55,6 +58,7 @@ const UnitInterestsPageHeadCells = [
         options: {
             sort: true,
             filter: true,
+            isMultiFilter: true,
         },
     },
     {
@@ -62,26 +66,38 @@ const UnitInterestsPageHeadCells = [
         esKey: 'working_interest',
         type: 'number',
         label: 'WI',
-        options: { filter: true },
+        options: {
+            filter: true,
+            isMultiFilter: true
+        },
     },
     {
         name: 'royalty_interest',
         esKey: 'royalty_interest',
         type: 'number',
         label: 'RI',
-        options: { filter: true },
+        options: {
+            filter: true,
+            isMultiFilter: true
+        },
     },
     {
         name: 'orri',
         label: 'ORRI',
         esKey: 'orri',
-        options: { sort: true, filter: true },
+        options: {
+            sort: true, filter: true,
+            isMultiFilter: true
+        },
     },
     {
         name: 'nri',
         label: 'NRI',
         esKey: 'nri',
-        options: { sort: true, filter: true },
+        options: {
+            sort: true, filter: true,
+            isMultiFilter: true
+        },
     },
     {
         name: 'nra',
@@ -93,6 +109,7 @@ const UnitInterestsPageHeadCells = [
             display: true,
             sort: true,
             filter: true,
+            isMultiFilter: true,
         },
     },
     {
@@ -105,6 +122,7 @@ const UnitInterestsPageHeadCells = [
             display: true,
             sort: true,
             filter: true,
+            isMultiFilter: true,
             customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>
         },
     },
@@ -118,6 +136,7 @@ const UnitInterestsPageHeadCells = [
             display: true,
             sort: true,
             filter: true,
+            isMultiFilter: true,
             customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>
         },
     },
@@ -131,6 +150,7 @@ const UnitInterestsPageHeadCells = [
             display: true,
             sort: true,
             filter: true,
+            isMultiFilter: true,
             customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>
         },
     },
@@ -141,6 +161,7 @@ const UnitInterestsPageHeadCells = [
         options: {
             display: true,
             filter: true,
+            isMultiFilter: true,
             searchable: true,
             sort: true,
         },
@@ -152,6 +173,7 @@ const UnitInterestsPageHeadCells = [
         options: {
             display: true,
             filter: true,
+            isMultiFilter: true,
             searchable: false,
             sort: true,
         },
@@ -163,6 +185,7 @@ const UnitInterestsPageHeadCells = [
         options: {
             display: true,
             filter: true,
+            isMultiFilter: true,
             searchable: false,
             sort: true,
         },
@@ -174,6 +197,7 @@ const UnitInterestsPageHeadCells = [
         options: {
             display: true,
             filter: true,
+            isMultiFilter: true,
             searchable: false,
             sort: true,
         },
@@ -189,6 +213,7 @@ const UnitInterestsPageHeadCells = [
             setCellProps: () => ({ style: { minWidth: "200px" } }),
             sort: true,
             filter: true,
+            isMultiFilter: true,
         },
     },
     {
@@ -197,6 +222,7 @@ const UnitInterestsPageHeadCells = [
         esKey: "tags.tag.keyword",
         options: {
             filter: true,
+            isMultiFilter: true,
             sort: false,
             download: false,
             print: false,
