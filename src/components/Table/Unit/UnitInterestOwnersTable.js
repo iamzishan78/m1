@@ -96,6 +96,10 @@ function UnitInterestOwnersTable(props) {
           field: 'shape.layer.keyword',
           value: 'unit',
         },
+        ...(props.campaignName ? [{
+          field: 'campaignName.keyword',
+          value: props.campaignName
+        }] : [])
       ],
 
       defaultSort: { field: '_ts', order: 'desc' },
@@ -108,7 +112,7 @@ function UnitInterestOwnersTable(props) {
       downloadAll: { exportPx: '121px' }
     });
     // eslint-disable-next-line
-  }, [searchInput, props.landSearchQuery, userGridViewSettings]);
+  }, [searchInput, props.landSearchQuery, userGridViewSettings, props.campaignName]);
 
   return (
     <Container
