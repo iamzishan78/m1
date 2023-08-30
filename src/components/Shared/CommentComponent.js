@@ -836,12 +836,13 @@ export default function CommentComponent(props) {
                             </span>
                             {eachComment?.commentType?.commentType ===
                               "unitCreation" && (
-                              <span>{" " + eachComment.comment}</span>
+                              <span style={{ display: 'inline-block', marginLeft: "8px" }}>{eachComment.comment}</span>
                             )}
 
                             {!isNaN(eachComment.ts) && (
                               <ReactTimeAgo
                                 className={classes.commentTime}
+                                style={{whiteSpace: "nowrap"}}
                                 date={new Date(Number(eachComment.ts))}
                                 locale="en-US"
                               />
