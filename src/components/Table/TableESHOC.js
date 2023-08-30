@@ -414,6 +414,7 @@ export const TableESHOC = (Component) => {
                                         filters={appliedFilters}
                                         extendSearchQuery={extendSearchQuery}
                                         custom={custom}
+                                        multiple={column.isMultiFilter || false}
                                     />
                                 );
                             },
@@ -799,129 +800,129 @@ export const TableESHOC = (Component) => {
         }
 
         const onDownload = async () => {
-          if(tableMeta?.datasets){
-						let isSelectAll = true;
-						const selectedIds = selectedRowsValues && selectedRowsValues.length > 0
-						? selectedRowsValues.map(item => item._id)
-						: null;
-	
-						if(selectedIds && selectedIds.length < tableStateRef?.current?.count){
-							isSelectAll = false
-						}
-						let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
-            if (props.useWildeCard)
-                searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+            if (tableMeta?.datasets) {
+                let isSelectAll = true;
+                const selectedIds = selectedRowsValues && selectedRowsValues.length > 0
+                    ? selectedRowsValues.map(item => item._id)
+                    : null;
 
-            const search = { query: searchQuery, fields: tableMeta.searchFields, advanceSearch: tableMeta.advanceSearch }
-						const filters = selectedFilters.current ? [...selectedFilters.current] : []
-						let filteredColumns = columns.filter(c => c?.options?.display !== false && c?.options?.display !== "false" && c?.label !== " ")
-						filteredColumns = filteredColumns.map(({ name, label, esKey }) => {
-							if (Array.isArray(esKey)) {
-									esKey = esKey.map(key => key.replace(/\.keyword$/, ''));
-							} else if (typeof esKey === 'string') {
-									esKey = esKey.replace(/\.keyword$/, '');
-							}
-							return { name, label, esKey };
-					});
+                if (selectedIds && selectedIds.length < tableStateRef?.current?.count) {
+                    isSelectAll = false
+                }
+                let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
+                if (props.useWildeCard)
+                    searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
 
-            dispatch(execCommonAsyncExportJobAction.STARTED({
-							jobType: 'EXPORTCSV',
-							client,
-							setStateApp,
-							userId: stateApp?.user?.mongoId,
-							requestPayload: {
-								total: tableStateRef?.current?.count,
-								search,
-								filters,
-								esIndex: tableMeta?.esIndex,
-								columns: filteredColumns,
-								sortOrder: tableStateRef?.current?.sortOrder,
-								defaultSort: tableMeta?.defaultSort,
-								datasets: tableMeta?.datasets,
-								isSelectAll,
-								selectedIds,
-								counts: {
-									exportGrid: tableStateRef?.current?.count,
-								},
-							}
-							}));
-							setSelectedRowsValues(null)
-							setSelectedRows([])
-						}else {
-							setIsExporting(true)
-							let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
-							if (props.useWildeCard)
-									searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
-	
-							const total = tableStateRef.current.count
-							let allRows = []
-							const pageESVariables = {
-									variables: {
-											index: tableMeta.esIndex,
-											search: {
-													query: searchQuery,
-													fields: tableMeta.searchFields,
-													advanceSearch: tableMeta.advanceSearch,
-											},
-											pagination: {
-													first: tableStateRef.current.count > 10000 ? 10000 : tableStateRef.current.count,
-													after: null,
-											},
-											...(!isEmpty(tableStateRef.current.sortOrder) && tableStateRef.current.sortOrder.direction !== 'none') ? {
-													sort: (() => {
-															let field = columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.esKey ||
-																	columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.name;
-															return {
-																	field: Array.isArray(field) ? field[0] : field,
-																	order: tableStateRef.current.sortOrder?.direction
-															}
-	
-													})()
-											} : { sort: tableMeta.defaultSort },
-	
-											filters: selectedFilters.current ? [...selectedFilters.current] : [],
-											customFilters: []
-									},
-							}
-	
-							let selectedData = []
-							let max = 10000
-							let iter = 0
-	
-							do {
-									const remainingTotal = total - max * iter
-									const first = remainingTotal > max ? max : remainingTotal
-									iter += 1
-	
-									pageESVariables.variables.pagination = {
-											first,
-											after: selectedData[selectedData.length - 1]?.sort,
-									}
-	
-									const allSelectedRows = await client.query({
-											...pageESVariables,
-											query: GET_ES_SIMPLE_SEARCH,
-									});
-									const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
-									selectedData = [...selectedData, ...hits]
-							} while (iter * max < total);
-	
-							allRows = selectedData
-	
-							const hits = tableMeta.formatHits(copy(allRows))
-							const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => c.display !== false && c.display !== "false" && c.label !== " "))
-	
-							var blob = new Blob([csvData]);
-							var url = URL.createObjectURL(blob);
-	
-							// Create a link to download it
-							var pom = document.createElement('a');
-							pom.href = url;
-							pom.setAttribute('download', 'tableData.csv');
-							pom.click();
-							setIsExporting(false)
-					}
-				}
+                const search = { query: searchQuery, fields: tableMeta.searchFields, advanceSearch: tableMeta.advanceSearch }
+                const filters = selectedFilters.current ? [...selectedFilters.current] : []
+                let filteredColumns = columns.filter(c => c?.options?.display !== false && c?.options?.display !== "false" && c?.label !== " ")
+                filteredColumns = filteredColumns.map(({ name, label, esKey }) => {
+                    if (Array.isArray(esKey)) {
+                        esKey = esKey.map(key => key.replace(/\.keyword$/, ''));
+                    } else if (typeof esKey === 'string') {
+                        esKey = esKey.replace(/\.keyword$/, '');
+                    }
+                    return { name, label, esKey };
+                });
+
+                dispatch(execCommonAsyncExportJobAction.STARTED({
+                    jobType: 'EXPORTCSV',
+                    client,
+                    setStateApp,
+                    userId: stateApp?.user?.mongoId,
+                    requestPayload: {
+                        total: tableStateRef?.current?.count,
+                        search,
+                        filters,
+                        esIndex: tableMeta?.esIndex,
+                        columns: filteredColumns,
+                        sortOrder: tableStateRef?.current?.sortOrder,
+                        defaultSort: tableMeta?.defaultSort,
+                        datasets: tableMeta?.datasets,
+                        isSelectAll,
+                        selectedIds,
+                        counts: {
+                            exportGrid: tableStateRef?.current?.count,
+                        },
+                    }
+                }));
+                setSelectedRowsValues(null)
+                setSelectedRows([])
+            } else {
+                setIsExporting(true)
+                let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
+                if (props.useWildeCard)
+                    searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+
+                const total = tableStateRef.current.count
+                let allRows = []
+                const pageESVariables = {
+                    variables: {
+                        index: tableMeta.esIndex,
+                        search: {
+                            query: searchQuery,
+                            fields: tableMeta.searchFields,
+                            advanceSearch: tableMeta.advanceSearch,
+                        },
+                        pagination: {
+                            first: tableStateRef.current.count > 10000 ? 10000 : tableStateRef.current.count,
+                            after: null,
+                        },
+                        ...(!isEmpty(tableStateRef.current.sortOrder) && tableStateRef.current.sortOrder.direction !== 'none') ? {
+                            sort: (() => {
+                                let field = columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.esKey ||
+                                    columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.name;
+                                return {
+                                    field: Array.isArray(field) ? field[0] : field,
+                                    order: tableStateRef.current.sortOrder?.direction
+                                }
+
+                            })()
+                        } : { sort: tableMeta.defaultSort },
+
+                        filters: selectedFilters.current ? [...selectedFilters.current] : [],
+                        customFilters: []
+                    },
+                }
+
+                let selectedData = []
+                let max = 10000
+                let iter = 0
+
+                do {
+                    const remainingTotal = total - max * iter
+                    const first = remainingTotal > max ? max : remainingTotal
+                    iter += 1
+
+                    pageESVariables.variables.pagination = {
+                        first,
+                        after: selectedData[selectedData.length - 1]?.sort,
+                    }
+
+                    const allSelectedRows = await client.query({
+                        ...pageESVariables,
+                        query: GET_ES_SIMPLE_SEARCH,
+                    });
+                    const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
+                    selectedData = [...selectedData, ...hits]
+                } while (iter * max < total);
+
+                allRows = selectedData
+
+                const hits = tableMeta.formatHits(copy(allRows))
+                const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => c.display !== false && c.display !== "false" && c.label !== " "))
+
+                var blob = new Blob([csvData]);
+                var url = URL.createObjectURL(blob);
+
+                // Create a link to download it
+                var pom = document.createElement('a');
+                pom.href = url;
+                pom.setAttribute('download', 'tableData.csv');
+                pom.click();
+                setIsExporting(false)
+            }
+        }
 
         const onTableChange = async (action, tableState, rows, meta) => {
             tableState.esIndex = tableMeta.esIndex;
@@ -964,75 +965,75 @@ export const TableESHOC = (Component) => {
                     break;
                 case "rowSelectionChange":
                     let allRows = []
-                        if (tableMeta.isSelectedAllAllowed && tableState.selectedRows.data.length === tableState.data.length || tableState.selectedRows.data.length > tableState.data.length) {
-                            const isSelectAll = tableState.selectedRows.data.length === tableState.data.length
-                            const rowsSelected = []
-                            const total = isSelectAll ? tableState.count : tableState.selectedRows.data.length
+                    if (tableMeta.isSelectedAllAllowed && tableState.selectedRows.data.length === tableState.data.length || tableState.selectedRows.data.length > tableState.data.length) {
+                        const isSelectAll = tableState.selectedRows.data.length === tableState.data.length
+                        const rowsSelected = []
+                        const total = isSelectAll ? tableState.count : tableState.selectedRows.data.length
 
-                            for (let i = 0; i < total; i++) { rowsSelected.push(isSelectAll ? i : tableState.selectedRows.data[i].index) }
+                        for (let i = 0; i < total; i++) { rowsSelected.push(isSelectAll ? i : tableState.selectedRows.data[i].index) }
 
-                            let selectAll = true
-                            if (!allRowsSelected || allRowsSelected?.length === 0 || total !== tableState.count)
-                                setAllRowsSelected(rowsSelected)
-                            else {
-                                selectAll = false
-                                tableState.selectedRows.data = []
-                                setAllRowsSelected([])
-                            }
-                            const pageESVariables = copy(tableActions.pageESVariables)
-
-                            pageESVariables.variables.filters = handleMultiFieldFilter([
-                                ...(initialFilters ? initialFilters : []),
-                                ...(tableMeta.filters ? tableMeta.filters : []),
-                                ...(selectedGridView?.filters ? selectedGridView?.filters : []),
-                                ...(tableMeta.polygon) ? [tableMeta.polygon] : []
-                            ])
-
-                            let searchQuery = pageESVariables?.search?.query
-                            if (props.useWildeCard)
-                                searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
-                            if (pageESVariables?.search?.query) pageESVariables.search.query = searchQuery
-
-                            if (selectAll) {
-                                tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
-
-                                let selectedData = []
-                                let max = 10000
-                                let iter = 0
-
-                                do {
-                                    const remainingTotal = total - max * iter
-                                    const first = remainingTotal > max ? max : remainingTotal
-                                    iter += 1
-
-                                    pageESVariables.variables.pagination = {
-                                        first,
-                                        after: selectedData[selectedData.length - 1]?.sort,
-                                    }
-
-                                    const allSelectedRows = await client.query({
-                                        ...pageESVariables,
-                                        query: GET_ES_SIMPLE_SEARCH,
-                                    });
-                                    const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
-                                    selectedData = [...selectedData, ...hits]
-                                } while (iter * max < total);
-
-                                meta.setSelectedRows(selectedData)
-                                allRows = selectedData
-                            }
-                        } else {
-                            if (meta?._selectedRows?.length > 0) {
-                                meta.setSelectedRows([])
-                                setSelectedRowsValues(null)
-                            }
-                            if (tableState.selectedRows.data.length > 0) {
-                                for (let i = 0; i < tableState.selectedRows.data.length; i++) {
-                                    allRows.push(rows[tableState.selectedRows.data[i].index])
-                                }
-                            }
-                            setAllRowsSelected(undefined)
+                        let selectAll = true
+                        if (!allRowsSelected || allRowsSelected?.length === 0 || total !== tableState.count)
+                            setAllRowsSelected(rowsSelected)
+                        else {
+                            selectAll = false
+                            tableState.selectedRows.data = []
+                            setAllRowsSelected([])
                         }
+                        const pageESVariables = copy(tableActions.pageESVariables)
+
+                        pageESVariables.variables.filters = handleMultiFieldFilter([
+                            ...(initialFilters ? initialFilters : []),
+                            ...(tableMeta.filters ? tableMeta.filters : []),
+                            ...(selectedGridView?.filters ? selectedGridView?.filters : []),
+                            ...(tableMeta.polygon) ? [tableMeta.polygon] : []
+                        ])
+
+                        let searchQuery = pageESVariables?.search?.query
+                        if (props.useWildeCard)
+                            searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+                        if (pageESVariables?.search?.query) pageESVariables.search.query = searchQuery
+
+                        if (selectAll) {
+                            tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
+
+                            let selectedData = []
+                            let max = 10000
+                            let iter = 0
+
+                            do {
+                                const remainingTotal = total - max * iter
+                                const first = remainingTotal > max ? max : remainingTotal
+                                iter += 1
+
+                                pageESVariables.variables.pagination = {
+                                    first,
+                                    after: selectedData[selectedData.length - 1]?.sort,
+                                }
+
+                                const allSelectedRows = await client.query({
+                                    ...pageESVariables,
+                                    query: GET_ES_SIMPLE_SEARCH,
+                                });
+                                const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
+                                selectedData = [...selectedData, ...hits]
+                            } while (iter * max < total);
+
+                            meta.setSelectedRows(selectedData)
+                            allRows = selectedData
+                        }
+                    } else {
+                        if (meta?._selectedRows?.length > 0) {
+                            meta.setSelectedRows([])
+                            setSelectedRowsValues(null)
+                        }
+                        if (tableState.selectedRows.data.length > 0) {
+                            for (let i = 0; i < tableState.selectedRows.data.length; i++) {
+                                allRows.push(rows[tableState.selectedRows.data[i].index])
+                            }
+                        }
+                        setAllRowsSelected(undefined)
+                    }
                     setSelectedRows(tableState.selectedRows.data)
                     setSelectedRowsValues(allRows)
                     break;
@@ -1142,18 +1143,18 @@ export const TableESHOC = (Component) => {
                                     </IconButton>
                                 </Tooltip>
                             </div>
-														{tableMeta?.datasets &&
-															<div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
-															<Button
-																color="secondary"
-																startIcon={<CloudDownloadIcon color="white" />}
-																className={classes.multiSelectionTopBarButtons}
-																onClick={onDownload}
-                        			>
-                          			Export
-                        			</Button>
-                            </div>
-														}
+                            {tableMeta?.datasets &&
+                                <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
+                                    <Button
+                                        color="secondary"
+                                        startIcon={<CloudDownloadIcon color="white" />}
+                                        className={classes.multiSelectionTopBarButtons}
+                                        onClick={onDownload}
+                                    >
+                                        Export
+                                    </Button>
+                                </div>
+                            }
                         </div>
                     )
             },
