@@ -179,6 +179,128 @@ const UnitInterestsPageHeadCells = [
         },
     },
     {
+        name: 'state',
+        label: 'State',
+        esKey: 'shape.shapeJson.properties.state.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: 'city',
+        label: 'City',
+        esKey: 'shape.shapeJson.properties.city.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: 'county',
+        label: 'County',
+        esKey: 'shape.shapeJson.properties.county.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: 'section',
+        label: 'Section',
+        esKey: 'shape.shapeJson.properties.section.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+
+    {
+        name: 'legalDescription',
+        label: 'LegalDescription',
+        esKey: 'shape.shapeJson.properties.legalDescription.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: 'owner',
+        label: 'Owner',
+        esKey: 'shape.shapeJson.properties.owner.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: 'adress1',
+        label: 'Address1',
+        esKey: 'contact.entityDetail.address1.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: 'adress2',
+        label: 'Address2',
+        esKey: 'contact.entityDetail.address2.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+
+    {
+        name: 'zipCode',
+        label: 'Zip Code',
+        esKey: 'contact.entityDetail.zip.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: 'sdGrossAcres',
+        label: 'Tract Gross',
+        esKey: 'tract.sdGrossAcres.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: 'nra',
+        label: 'Tract Nra',
+        esKey: 'nra',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: 'owner',
+        label: 'Owner Type',
+        esKey: 'contact.ownerType.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
         name: "deals",
         label: "Associated Deals",
         esKey: "deals.name.keyword",

@@ -814,7 +814,7 @@ export const TableESHOC = (Component) => {
 
             const search = { query: searchQuery, fields: tableMeta.searchFields, advanceSearch: tableMeta.advanceSearch }
 						const filters = selectedFilters.current ? [...selectedFilters.current] : []
-						let filteredColumns = columns.filter(c => c?.options?.display !== false && c?.options?.display !== "false" && c?.label !== " ")
+						let filteredColumns = columns.filter(c => ((c?.options?.display !== false && c?.options?.display !== "false") || c?.options?.download)  && c?.label !== " ")
 						filteredColumns = filteredColumns.map(({ name, label, esKey }) => {
 							if (Array.isArray(esKey)) {
 									esKey = esKey.map(key => key.replace(/\.keyword$/, ''));
@@ -909,7 +909,8 @@ export const TableESHOC = (Component) => {
 							allRows = selectedData
 	
 							const hits = tableMeta.formatHits(copy(allRows))
-							const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => c.display !== false && c.display !== "false" && c.label !== " "))
+                            console.log(hits)
+							const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => (c?.display !== false && c?.display !== "false" && c.label !== " ") || c?.download ))
 	
 							var blob = new Blob([csvData]);
 							var url = URL.createObjectURL(blob);
