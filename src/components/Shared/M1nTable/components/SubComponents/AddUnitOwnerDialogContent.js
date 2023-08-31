@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { get } from "lodash";
+import { get, isEqual, sortBy } from "lodash";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -77,7 +77,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false)
 
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
-  const [ownerTypeOfConctact, setOwnerTypeOfConctact] = useState();
+  const [contact, setContact] = useState();
   const [anchorEl, setAnchorEl] = useState();
   const [loading, setLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -256,9 +256,13 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerToAdd.name = nameAutValue.name;
       }
 
+      const campaignName = [...new Set([...(ownerToAdd.campaignName || []), ...(contact?.campaignName?.[0] || [])])]
+
+      const isCampaignNameUpdated = !isEqual(sortBy(contact?.campaignName?.[0]), sortBy(campaignName.sort()))
+
       if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
         (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
-        (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
+        (isCampaignNameUpdated)
       ) {
         updateContact({
           variables: {
@@ -267,11 +271,14 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               contactStatus: ownerToAdd.contactStatus,
               lastUpdateBy: stateApp.user.mongoId,
               ownerType: ownerToAdd.ownerType,
-              campaignName: ownerToAdd.campaignName
+              campaignName
             }
           }
         })
       }
+
+      if (!ownerToAdd.campaignName || ownerToAdd.campaignName === '') ownerToAdd.campaignName = []
+
       handleAddUpdate(ownerToAdd);
     }
   };
@@ -416,7 +423,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <h3>Name</h3>
-                <AutocompEntityNamesList userId={stateApp.user.mongoId} setOwnerTypeOfConctact={setOwnerTypeOfConctact} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
+                <AutocompEntityNamesList userId={stateApp.user.mongoId} setContact={setContact} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
               </Grid>
               <Grid item xs={12}>
                 <h3>Entity Type</h3>
@@ -434,7 +441,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         }
                         setValue('ownerType', val);
                       }}
-                      value={ownerTypeOfConctact ?? ""}
+                      value={contact?.ownerType ?? ""}
                     />
                   )}
                 />
