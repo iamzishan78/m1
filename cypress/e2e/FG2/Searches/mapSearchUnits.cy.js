@@ -6,7 +6,7 @@ describe('Map Search Agreements Spec', () => {
     it('passes', () => {
         const { longTimeout } = basic_timeouts
 
-        const searchStrings = "AARON JETER DEEP GAS UNIT"
+        const searchStrings = "T&P RR CO A-579"
 
         cy.viewport(1400, 900)
         cy.visit('http://localhost:3000')

@@ -160,18 +160,18 @@ function ActivitiesTable(props) {
           },
           type: "range"
         });
-        filters.push({ field: "isClosed", value: false });
+        filters.push({ field: "isClosed", value: 'false' });
         break;
       case "open":
         filters.push({
           field: "isClosed",
-          value: false
+          value: 'false'
         });
         break;
       case "closed":
         filters.push({
           field: "isClosed",
-          value: true
+          value: 'true'
         });
         break;
 
@@ -311,6 +311,8 @@ function ActivitiesTable(props) {
                 style={{
                   display: "inline",
                   float: "left",
+                  position: "relative",
+                  left: '110px'
                 }}
               >
                 {props.addable && props.addAble?.type === "contactActivity" && (

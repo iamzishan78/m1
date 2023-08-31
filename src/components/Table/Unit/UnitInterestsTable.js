@@ -92,10 +92,10 @@ function UnitInterestsTable(props) {
     rowsPerPage: 10,
     count: count,
     serverSide: true,
-    search: false,
+    searchable: true,
     rowsSelected: selectedRows.map((sR) => sR.dataIndex),
     filter: true,
-    searchText: esSearch,
+    ...(props.targetLabel !== "contactUnits" && { searchText: esSearch }),
   };
 
   useEffect(() => {
@@ -143,6 +143,7 @@ function UnitInterestsTable(props) {
           hit = props.setGenricData(hit, hit.shape?._id, [
             'comments', 'tags'
           ]);
+          hit.uMaxUnitPricing = hit?.shape?.shapeJson?.properties?.uMaxUnitPricing;
           return hit;
         });
 
