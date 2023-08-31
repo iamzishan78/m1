@@ -13,7 +13,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 
 import { AppContext } from "AppContext";
-import { useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { ADD_OWNER_TOA_SHAPE } from "graphQL/useMutationAddOwnerToAShape";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import { makeStyles } from "@material-ui/core/styles";
@@ -31,6 +31,8 @@ import CampaignNameField from "components/ContactDetailCard/components/FieldCont
 import AssociatedDealField from "components/ContactDetailCard/components/FieldContent/AssociatedDealField";
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -83,6 +85,19 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const watchedNra = watch('nra')
 
+  const [getCampaignPriorityList, { data: priorityList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+
+  useEffect(() => {
+    getCampaignPriorityList({
+      variables: {
+        esIndex: 'contacts_flat',
+        filterKey: 'campaignPriority.keyword',
+        size: 50,
+      },
+    })
+  }, [getCampaignPriorityList])
+
+
   useEffect(() => {
     if (selectedRow) {
       const {
@@ -99,6 +114,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerEntity,
         contactStatus,
         ownerType,
+        campaignPriority,
         contact,
         campaignName,
         deals
@@ -115,6 +131,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         offer_price: parseFloat(parseFloat(offer_price).toFixed(2)) || null,
         contactStatus: contactStatus || contact.contactStatus,
         ownerType,
+        campaignPriority,
         customLayer,
         campaignName,
         deals
@@ -258,6 +275,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
       if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
         (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
+        (ownerToAdd.campaignPriority && selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
         (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
       ) {
         updateContact({
@@ -267,6 +285,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               contactStatus: ownerToAdd.contactStatus,
               lastUpdateBy: stateApp.user.mongoId,
               ownerType: ownerToAdd.ownerType,
+              campaignPriority: ownerToAdd.campaignPriority,
               campaignName: ownerToAdd.campaignName
             }
           }
@@ -715,6 +734,36 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       fullWidth
                       targetLabel="Contact"
                       simpleChips
+                    />
+                  )}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <h3>Campaign Priority</h3>
+                <Controller
+                  control={control}
+                  name="campaignPriority"
+                  render={(params) => (
+                    <AutoCompleteWithAddNew
+                      {...params}
+                      value={get(params, "value", "")}
+                      // variant="outlined"
+                      setValue={(value) => {
+                        if (value?._id)
+                          params.onChange({ _id: value._id, name: value.name });
+                        else params.onChange({});
+                        if (value?._id === "newEntity") delete value._id;
+                        setValue('campaignPriority', value?.name);
+                      }}
+                      options={get(
+                        priorityList,
+                        "getESFilterList.hits",
+                        []
+                      )?.map((payor) => ({
+                        _id: get(payor, `original.hits.hits.${0}._id`),
+                        name: payor.key,
+                      }))}
                     />
                   )}
                 />
