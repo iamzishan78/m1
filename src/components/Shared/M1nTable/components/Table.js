@@ -1424,6 +1424,7 @@ function SubTable(props) {
                           round
                         />
                         <p
+                          className="contactDetailsLink"
                           style={{
                             display: "flex",
                             flexDirection: "row",
