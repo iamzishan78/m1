@@ -703,6 +703,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
                 <Controller
                   control={control}
+                  defaultValue={''}
                   name="campaignName"
                   render={(params) => (
                     <CampaignNameField
@@ -714,7 +715,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       fullWidth
                       targetLabel="Contact"
                       simpleChips
-                      value={contact?.campaignName?.[0] ?? ""}
                     />
                   )}
                 />
