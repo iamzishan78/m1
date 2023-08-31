@@ -90,7 +90,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   useEffect(() => {
     getCampaignPriorityList({
       variables: {
-        esIndex: 'contacts_flat',
+        esIndex: 'shapeowners_flat',
         filterKey: 'campaignPriority.keyword',
         size: 50,
       },
