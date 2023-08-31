@@ -288,9 +288,9 @@ const OwnersPerUnitHeadCells = [
     },
   },
   {
-    name: "county",
-    label: "County",
-    esKey: "shape.shapeJson.properties.county.keyword",
+    name: 'county',
+    label: 'County',
+    esKey: 'tract.county.keyword',
     options: {
       display: false,
       download: true,
@@ -298,20 +298,19 @@ const OwnersPerUnitHeadCells = [
     },
   },
   {
-    name: "section",
-    label: "Section",
-    esKey: "shape.shapeJson.properties.section.keyword",
+    name: 'section',
+    label: 'Section',
+    esKey: 'tract.section.keyword',
     options: {
       display: false,
       download: true,
       viewColumns: false,
     },
   },
-
   {
-    name: "legalDescription",
-    label: "LegalDescription",
-    esKey: "shape.shapeJson.properties.legalDescription.keyword",
+    name: 'legalDescription',
+    label: 'LegalDescription',
+    esKey: 'tract.legalDescription.keyword',
     options: {
       display: false,
       download: true,

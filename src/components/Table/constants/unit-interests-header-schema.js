@@ -383,9 +383,9 @@ const UnitInterestsHeadCells = [
         },
     },
     {
-        name: "section",
-        label: "Section",
-        esKey: "shape.shapeJson.properties.section.keyword",
+        name: 'section',
+        label: 'Section',
+        esKey: 'tract.section.keyword',
         options: {
             display: false,
             download: true,
@@ -393,9 +393,9 @@ const UnitInterestsHeadCells = [
         },
     },
     {
-        name: "legalDescription",
-        label: "LegalDescription",
-        esKey: "shape.shapeJson.properties.legalDescription.keyword",
+        name: 'legalDescription',
+        label: 'LegalDescription',
+        esKey: 'tract.legalDescription.keyword',
         options: {
             display: false,
             download: true,
