@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CampaignUnitsTable from "components/Table//Unit/CampaignUnitsTable";
 import CampaignContactsTable from "components/Table/Contact/CampaignContactsTable";
+import UnitInterestOwnersTable from "components/Table/Unit/UnitInterestOwnersTable";
 
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
 import { campaignInitialData } from "./data";
@@ -89,6 +90,11 @@ const CamapignRelatedGrids = ({ campaign }) => {
               <div style={{ position: "relative" }} classes={classes.gridTables}>
                 {searchTapValue.value === "contacts" && <CampaignContactsTable campaign={campaign} />}
                 {searchTapValue.value === "units" && <CampaignUnitsTable campaign={campaign} header="Units" />}
+                {searchTapValue.value === "unitInterests" &&
+                  <UnitInterestOwnersTable
+                    esIndex={'shapeowners_flat'}
+                    campaignName={campaign?.name}
+                  />}
               </div>
             </Grid>
           </Grid>

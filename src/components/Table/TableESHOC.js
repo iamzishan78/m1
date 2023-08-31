@@ -414,6 +414,7 @@ export const TableESHOC = (Component) => {
                                         filters={appliedFilters}
                                         extendSearchQuery={extendSearchQuery}
                                         custom={custom}
+                                        multiple={column.isMultiFilter || false}
                                     />
                                 );
                             },
@@ -799,18 +800,18 @@ export const TableESHOC = (Component) => {
         }
 
         const onDownload = async () => {
-          if(tableMeta?.datasets){
-						let isSelectAll = true;
-						const selectedIds = selectedRowsValues && selectedRowsValues.length > 0
-						? selectedRowsValues.map(item => item._id)
-						: null;
-	
-						if(selectedIds && selectedIds.length < tableStateRef?.current?.count){
-							isSelectAll = false
-						}
-						let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
-            if (props.useWildeCard)
-                searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+            if (tableMeta?.datasets) {
+                let isSelectAll = true;
+                const selectedIds = selectedRowsValues && selectedRowsValues.length > 0
+                    ? selectedRowsValues.map(item => item._id)
+                    : null;
+
+                if (selectedIds && selectedIds.length < tableStateRef?.current?.count) {
+                    isSelectAll = false
+                }
+                let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
+                if (props.useWildeCard)
+                    searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
 
             const search = { query: searchQuery, fields: tableMeta.searchFields, advanceSearch: tableMeta.advanceSearch }
 						const filters = selectedFilters.current ? [...selectedFilters.current] : []
@@ -965,75 +966,75 @@ export const TableESHOC = (Component) => {
                     break;
                 case "rowSelectionChange":
                     let allRows = []
-                        if (tableMeta.isSelectedAllAllowed && tableState.selectedRows.data.length === tableState.data.length || tableState.selectedRows.data.length > tableState.data.length) {
-                            const isSelectAll = tableState.selectedRows.data.length === tableState.data.length
-                            const rowsSelected = []
-                            const total = isSelectAll ? tableState.count : tableState.selectedRows.data.length
+                    if (tableMeta.isSelectedAllAllowed && tableState.selectedRows.data.length === tableState.data.length || tableState.selectedRows.data.length > tableState.data.length) {
+                        const isSelectAll = tableState.selectedRows.data.length === tableState.data.length
+                        const rowsSelected = []
+                        const total = isSelectAll ? tableState.count : tableState.selectedRows.data.length
 
-                            for (let i = 0; i < total; i++) { rowsSelected.push(isSelectAll ? i : tableState.selectedRows.data[i].index) }
+                        for (let i = 0; i < total; i++) { rowsSelected.push(isSelectAll ? i : tableState.selectedRows.data[i].index) }
 
-                            let selectAll = true
-                            if (!allRowsSelected || allRowsSelected?.length === 0 || total !== tableState.count)
-                                setAllRowsSelected(rowsSelected)
-                            else {
-                                selectAll = false
-                                tableState.selectedRows.data = []
-                                setAllRowsSelected([])
-                            }
-                            const pageESVariables = copy(tableActions.pageESVariables)
-
-                            pageESVariables.variables.filters = handleMultiFieldFilter([
-                                ...(initialFilters ? initialFilters : []),
-                                ...(tableMeta.filters ? tableMeta.filters : []),
-                                ...(selectedGridView?.filters ? selectedGridView?.filters : []),
-                                ...(tableMeta.polygon) ? [tableMeta.polygon] : []
-                            ])
-
-                            let searchQuery = pageESVariables?.search?.query
-                            if (props.useWildeCard)
-                                searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
-                            if (pageESVariables?.search?.query) pageESVariables.search.query = searchQuery
-
-                            if (selectAll) {
-                                tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
-
-                                let selectedData = []
-                                let max = 10000
-                                let iter = 0
-
-                                do {
-                                    const remainingTotal = total - max * iter
-                                    const first = remainingTotal > max ? max : remainingTotal
-                                    iter += 1
-
-                                    pageESVariables.variables.pagination = {
-                                        first,
-                                        after: selectedData[selectedData.length - 1]?.sort,
-                                    }
-
-                                    const allSelectedRows = await client.query({
-                                        ...pageESVariables,
-                                        query: GET_ES_SIMPLE_SEARCH,
-                                    });
-                                    const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
-                                    selectedData = [...selectedData, ...hits]
-                                } while (iter * max < total);
-
-                                meta.setSelectedRows(selectedData)
-                                allRows = selectedData
-                            }
-                        } else {
-                            if (meta?._selectedRows?.length > 0) {
-                                meta.setSelectedRows([])
-                                setSelectedRowsValues(null)
-                            }
-                            if (tableState.selectedRows.data.length > 0) {
-                                for (let i = 0; i < tableState.selectedRows.data.length; i++) {
-                                    allRows.push(rows[tableState.selectedRows.data[i].index])
-                                }
-                            }
-                            setAllRowsSelected(undefined)
+                        let selectAll = true
+                        if (!allRowsSelected || allRowsSelected?.length === 0 || total !== tableState.count)
+                            setAllRowsSelected(rowsSelected)
+                        else {
+                            selectAll = false
+                            tableState.selectedRows.data = []
+                            setAllRowsSelected([])
                         }
+                        const pageESVariables = copy(tableActions.pageESVariables)
+
+                        pageESVariables.variables.filters = handleMultiFieldFilter([
+                            ...(initialFilters ? initialFilters : []),
+                            ...(tableMeta.filters ? tableMeta.filters : []),
+                            ...(selectedGridView?.filters ? selectedGridView?.filters : []),
+                            ...(tableMeta.polygon) ? [tableMeta.polygon] : []
+                        ])
+
+                        let searchQuery = pageESVariables?.search?.query
+                        if (props.useWildeCard)
+                            searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+                        if (pageESVariables?.search?.query) pageESVariables.search.query = searchQuery
+
+                        if (selectAll) {
+                            tableState.selectedRows.data = rowsSelected.map((index) => ({ index, dataIndex: index }))
+
+                            let selectedData = []
+                            let max = 10000
+                            let iter = 0
+
+                            do {
+                                const remainingTotal = total - max * iter
+                                const first = remainingTotal > max ? max : remainingTotal
+                                iter += 1
+
+                                pageESVariables.variables.pagination = {
+                                    first,
+                                    after: selectedData[selectedData.length - 1]?.sort,
+                                }
+
+                                const allSelectedRows = await client.query({
+                                    ...pageESVariables,
+                                    query: GET_ES_SIMPLE_SEARCH,
+                                });
+                                const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
+                                selectedData = [...selectedData, ...hits]
+                            } while (iter * max < total);
+
+                            meta.setSelectedRows(selectedData)
+                            allRows = selectedData
+                        }
+                    } else {
+                        if (meta?._selectedRows?.length > 0) {
+                            meta.setSelectedRows([])
+                            setSelectedRowsValues(null)
+                        }
+                        if (tableState.selectedRows.data.length > 0) {
+                            for (let i = 0; i < tableState.selectedRows.data.length; i++) {
+                                allRows.push(rows[tableState.selectedRows.data[i].index])
+                            }
+                        }
+                        setAllRowsSelected(undefined)
+                    }
                     setSelectedRows(tableState.selectedRows.data)
                     setSelectedRowsValues(allRows)
                     break;
@@ -1143,18 +1144,18 @@ export const TableESHOC = (Component) => {
                                     </IconButton>
                                 </Tooltip>
                             </div>
-														{tableMeta?.datasets &&
-															<div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
-															<Button
-																color="secondary"
-																startIcon={<CloudDownloadIcon color="white" />}
-																className={classes.multiSelectionTopBarButtons}
-																onClick={onDownload}
-                        			>
-                          			Export
-                        			</Button>
-                            </div>
-														}
+                            {tableMeta?.datasets &&
+                                <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
+                                    <Button
+                                        color="secondary"
+                                        startIcon={<CloudDownloadIcon color="white" />}
+                                        className={classes.multiSelectionTopBarButtons}
+                                        onClick={onDownload}
+                                    >
+                                        Export
+                                    </Button>
+                                </div>
+                            }
                         </div>
                     )
             },

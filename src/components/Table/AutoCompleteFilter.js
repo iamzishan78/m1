@@ -9,6 +9,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { VariableSizeList } from 'react-window';
 import PropTypes from 'prop-types';
 import { capitalizeFirstLetter, customStartCaseString } from "components/Shared/functions";
+import { isArray } from "lodash";
 
 export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
   filterList,
@@ -58,8 +59,9 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
   const getFiltersType = query?.definitions?.[0]?.name?.value;
 
   useEffect(() => {
-    setSearch(filterList[index][0]);
-    if (!filterList[index][0]) {
+    const filterVal = filterList[index][0];
+    setSearch(isArray(filterVal) ? filterVal[filterVal.length - 1] : filterVal);
+    if (!filterVal) {
       setValue(filterValue);
     }
   }, [filterList[index][0]]);
@@ -133,6 +135,8 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
   }, [filtersData]);
 
   const getFiltersAction = (search) => {
+    if (filtersData && multiple && filterList[index].length !== 0) return;
+
     const rawSearch = search;
     if (search) search = type === "number" ? search : `*${search}*`;
     getFilters({
@@ -186,7 +190,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
               const val = typeof v.key === "string" ? v.key.replace(/^\,|\,$/gm, "") : v.key;
               filterList[index].push(val);
             });
-            setSearch(value2[value2.length - 1]?.key);
+            // setSearch(value2[value2.length - 1]?.key);
           } else {
             filterList[index][0] = typeof value2.key === "string" ? value2.key.replace(/^\,|\,$/gm, "") : value2.key;
             if (custom?.initialCapitalization) {
@@ -202,7 +206,10 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
         if (setFilters) setFilters(filterList);
 
         column.filterList = filterList[index];
-        onChange(filterList[index], index, column, value2?.esKey || "");
+
+        const filterVal = filterList[index].length > 1 ? [filterList[index]] : filterList[index];
+
+        onChange(filterVal, index, column, value2?.esKey || "");
       }}
       options={options}
       loading={loading}
