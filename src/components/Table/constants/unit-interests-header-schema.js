@@ -373,6 +373,97 @@ const UnitInterestsHeadCells = [
         }
     },
     {
+        name: "city",
+        label: "City",
+        esKey: "shape.shapeJson.properties.city.keyword",
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: "section",
+        label: "Section",
+        esKey: "shape.shapeJson.properties.section.keyword",
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: "legalDescription",
+        label: "LegalDescription",
+        esKey: "shape.shapeJson.properties.legalDescription.keyword",
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: "owner",
+        label: "Owner",
+        esKey: "shape.shapeJson.properties.owner.keyword",
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: "address1",
+        label: "Address1",
+        esKey: "contact.entityDetail.address1.keyword",
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: "address2",
+        label: "Address2",
+        esKey: "contact.entityDetail.address2.keyword",
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+
+    {
+        name: "zip",
+        label: "Zip Code",
+        esKey: "contact.entityDetail.zip.keyword",
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: "sdGrossAcres",
+        label: "Tract Gross",
+        esKey: "tract.sdGrossAcres.keyword",
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: "ownerType",
+        label: "Owner Type",
+        esKey: "contact.ownerType.keyword",
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
         name: "deals",
         label: "Associated Deals",
         esKey: "deals.keyword",

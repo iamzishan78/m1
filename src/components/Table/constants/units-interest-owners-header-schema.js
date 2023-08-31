@@ -240,7 +240,7 @@ const UnitInterestsPageHeadCells = [
         },
     },
     {
-        name: 'adress1',
+        name: 'address1',
         label: 'Address1',
         esKey: 'contact.entityDetail.address1.keyword',
         options: {
@@ -250,7 +250,7 @@ const UnitInterestsPageHeadCells = [
         },
     },
     {
-        name: 'adress2',
+        name: 'address2',
         label: 'Address2',
         esKey: 'contact.entityDetail.address2.keyword',
         options: {
@@ -261,7 +261,7 @@ const UnitInterestsPageHeadCells = [
     },
 
     {
-        name: 'zipCode',
+        name: 'zip',
         label: 'Zip Code',
         esKey: 'contact.entityDetail.zip.keyword',
         options: {
@@ -291,7 +291,7 @@ const UnitInterestsPageHeadCells = [
         },
     },
     {
-        name: 'owner',
+        name: 'ownerType',
         label: 'Owner Type',
         esKey: 'contact.ownerType.keyword',
         options: {
