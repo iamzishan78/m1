@@ -910,7 +910,6 @@ export const TableESHOC = (Component) => {
 							allRows = selectedData
 	
 							const hits = tableMeta.formatHits(copy(allRows))
-                            console.log(hits)
 							const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => (c?.display !== false && c?.display !== "false" && c.label !== " ") || c?.download ))
 	
 							var blob = new Blob([csvData]);
