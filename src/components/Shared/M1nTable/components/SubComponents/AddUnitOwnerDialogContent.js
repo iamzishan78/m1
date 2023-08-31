@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { get } from "lodash";
+import { get, isEqual, sortBy } from "lodash";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -256,9 +256,13 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerToAdd.name = nameAutValue.name;
       }
 
+      const campaignName = [...new Set([...(ownerToAdd.campaignName || []), ...(contact?.campaignName?.[0] || [])])]
+
+      const isCampaignNameUpdated = !isEqual(sortBy(contact?.campaignName?.[0]), sortBy(campaignName.sort()))
+
       if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
         (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
-        (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
+        (isCampaignNameUpdated)
       ) {
         updateContact({
           variables: {
@@ -267,11 +271,14 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               contactStatus: ownerToAdd.contactStatus,
               lastUpdateBy: stateApp.user.mongoId,
               ownerType: ownerToAdd.ownerType,
-              campaignName: ownerToAdd.campaignName
+              campaignName
             }
           }
         })
       }
+
+      if (!ownerToAdd.campaignName || ownerToAdd.campaignName === '') ownerToAdd.campaignName = []
+
       handleAddUpdate(ownerToAdd);
     }
   };
