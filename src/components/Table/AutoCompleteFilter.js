@@ -60,7 +60,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
 
   useEffect(() => {
     const filterVal = filterList[index][0];
-    setSearch(isArray(filterVal) ? filterVal[filterVal.length - 1] : filterVal);
+    setSearch(isArray(filterVal) || multiple ? '' : filterVal);
     if (!filterVal) {
       setValue(filterValue);
     }
