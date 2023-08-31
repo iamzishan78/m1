@@ -879,12 +879,12 @@ export const TableESHOC = (Component) => {
 	
 													})()
 											} : { sort: tableMeta.defaultSort },
-	
-											filters: selectedFilters.current ? [...selectedFilters.current] : [],
+
+											filters: selectedFilters.current.length !==0 ? [...selectedFilters.current] : tableMeta.filters,
 											customFilters: []
 									},
 							}
-	
+
 							let selectedData = []
 							let max = 10000
 							let iter = 0
