@@ -108,22 +108,23 @@ const UnitInterestsPageHeadCells = [
             customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>
         },
     },
-    {
-        name: 'uMaxUnitPricing',
-        label: 'Max Offer Price',
-        esKey: 'shape.shapeJson.properties.uMaxUnitPricing.keyword',
-        // editable: false,
-        noFilter: true,
-        options: {
-            display: true,
-            sort: true,
-            filter: true,
-            customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>
-        },
-    },
+    // remove until max offer price logic is fixed
+    // {
+    //     name: 'uMaxUnitPricing',
+    //     label: 'Max Offer Price',
+    //     esKey: 'shape.shapeJson.properties.uMaxUnitPricing.keyword',
+    //     // editable: false,
+    //     noFilter: true,
+    //     options: {
+    //         display: true,
+    //         sort: true,
+    //         filter: true,
+    //         customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>
+    //     },
+    // },
     {
         name: 'offer_price',
-        label: 'Target Offer Price',
+        label: 'Offer Price',
         esKey: 'offer_price',
         // editable: false,
         noFilter: true,
