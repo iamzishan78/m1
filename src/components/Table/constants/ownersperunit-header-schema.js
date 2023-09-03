@@ -126,6 +126,14 @@ const OwnersPerUnitHeadCells = [
     },
   },
   {
+    name: "status",
+    esKey: "contact.status.keyword",
+    label: "Stage",
+    options: {
+      filter: true,
+    },
+  },
+  {
     name: "campaignName",
     label: "Campaign Name",
     esKey: "campaignName.keyword",
