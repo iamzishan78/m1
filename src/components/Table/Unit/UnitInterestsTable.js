@@ -143,7 +143,8 @@ function UnitInterestsTable(props) {
           hit = props.setGenricData(hit, hit.shape?._id, [
             'comments', 'tags'
           ]);
-          hit.uMaxUnitPricing = hit?.shape?.shapeJson?.properties?.uMaxUnitPricing;
+          //remove until max offer price logic is fixed
+          //hit.uMaxUnitPricing = hit?.shape?.shapeJson?.properties?.uMaxUnitPricing;
           return hit;
         });
 
