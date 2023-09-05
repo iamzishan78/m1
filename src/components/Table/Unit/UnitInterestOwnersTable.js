@@ -47,7 +47,7 @@ function UnitInterestOwnersTable(props) {
 
       hit.contactStatus = hit?.contact?.contactStatus;
       hit.status = hit?.contact?.status;
-      hit.contactOwners = (hit?.contactOwners && hit?.contactOwners.length > 0) ? hit?.contactOwners[0] : null;
+      hit.contactOwners = (hit?.contactOwners && hit?.contactOwners.length > 0) ? Array.isArray(hit?.contactOwners) ? hit?.contactOwners[0] : hit?.contactOwners : null;
 
       if (hit?.tags?.length > 0) {
         const tags = hit.tags.map((tag) => tag.tag);
