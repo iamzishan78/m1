@@ -6,7 +6,7 @@ describe('Map Search Agreements Spec', () => {
     it('passes', () => {
         const { longTimeout } = basic_timeouts
 
-        const searchStrings = "BLK 39T2N SEC 22"
+        const searchStrings = "BLK C26 SEC 03"
 
         cy.viewport(1400, 900)
         cy.visit('http://localhost:3000')

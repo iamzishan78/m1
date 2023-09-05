@@ -55,7 +55,9 @@ describe('Unit Map Fly To Spec', () => {
             cy.verifyApiResponse('@getTenantWellApi', { responseTimeout: longTimeout })
             cy.verifyApiResponse('@getWellSummaryDetailApi', { responseTimeout: longTimeout })
 
-            cy.log(`==== STEP:VERIFY URL AND CARD ====`)
+            cy.wait(10000);
+
+            cy.log(`==== STEP:VERIFY URL AND CARD ====`);
             cy.url().should('eq', `http://localhost:3000/map/wells/${golbalWellId}`)
 
             cy.get("#expandableCard", { timeout: longTimeout }).should('be.visible')

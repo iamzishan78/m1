@@ -88,6 +88,9 @@ function UnitInterestOwnerTable(props) {
     return hits.map((hit) => {
       hit.isPurchased = hit?.contact?.isPurchased;
       hit.contactStatus = hit?.contact?.contactStatus;
+      hit.status = hit?.contact?.status;
+      //remove until max offer price logic is fixed
+      //hit.max_offer_price = hit?.nra * props.customLayer?.shapeJson?.properties?.uMaxUnitPricing;
       Object.keys(hit).forEach((key) => {
         if (interestKeys.includes(key)) {
           if (typeof hit[key] === "number")
@@ -189,7 +192,7 @@ function UnitInterestOwnerTable(props) {
     setSelectedRows(rowsData);
     setOpenCustomDialog("exportOwnersAndContact");
   };
-  
+
   const onBulkUpdateComplete = () => {
     setSelectedRows([]);
     setResetSelectedRow(!resetSelectedRow);
@@ -267,7 +270,7 @@ function UnitInterestOwnerTable(props) {
                   onClick={() => {
                     let owners = [];
 
-                    const rows = props.selectedRowsValues || props.rows;
+                    const rows = props.rows || props.selectedRowsValues;
                     for (let i in props.selectedRows) {
                       owners.push({
                         ...rows[props.selectedRows[i].dataIndex],
