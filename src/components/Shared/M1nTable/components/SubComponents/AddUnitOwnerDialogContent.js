@@ -31,6 +31,7 @@ import CampaignNameField from "components/ContactDetailCard/components/FieldCont
 import AssociatedDealField from "components/ContactDetailCard/components/FieldContent/AssociatedDealField";
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 import { Status } from "components/ContactDetailCard/components/FieldContent";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
@@ -85,6 +86,18 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const watchedNra = watch('nra')
 
+  const [getCampaignPriorityList, { data: priorityList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+
+  useEffect(() => {
+    getCampaignPriorityList({
+      variables: {
+        esIndex: 'shapeowners_flat',
+        filterKey: 'campaignPriority.keyword',
+        size: 50,
+      },
+    })
+  }, [getCampaignPriorityList])
+
   const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
 
   useEffect(() => {
@@ -114,6 +127,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         contactStatus,
         status,
         ownerType,
+        campaignPriority,
         contact,
         campaignName,
         deals
@@ -131,6 +145,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         contactStatus: contactStatus || contact.contactStatus,
         status: status || contact.status,
         ownerType,
+        campaignPriority,
         customLayer,
         campaignName,
         deals
@@ -297,6 +312,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
       if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
         (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
+        (ownerToAdd.campaignPriority && selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
+        (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
         (isCampaignNameUpdated)
       ) {
         updateContact({
@@ -307,7 +324,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               status: ownerToAdd.status,
               lastUpdateBy: stateApp.user.mongoId,
               ownerType: ownerToAdd.ownerType,
-              campaignName
+              campaignPriority: ownerToAdd.campaignPriority,
+              campaignName: ownerToAdd.campaignName
             }
           }
         })
@@ -783,6 +801,36 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       fullWidth
                       targetLabel="Contact"
                       simpleChips
+                    />
+                  )}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <h3>Campaign Priority</h3>
+                <Controller
+                  control={control}
+                  name="campaignPriority"
+                  render={(params) => (
+                    <AutoCompleteWithAddNew
+                      {...params}
+                      value={get(params, "value", "")}
+                      // variant="outlined"
+                      setValue={(value) => {
+                        if (value?._id)
+                          params.onChange({ _id: value._id, name: value.name });
+                        else params.onChange({});
+                        if (value?._id === "newEntity") delete value._id;
+                        setValue('campaignPriority', value?.name);
+                      }}
+                      options={get(
+                        priorityList,
+                        "getESFilterList.hits",
+                        []
+                      )?.map((payor) => ({
+                        _id: get(payor, `original.hits.hits.${0}._id`),
+                        name: payor.key,
+                      }))}
                     />
                   )}
                 />

@@ -163,6 +163,12 @@ const OwnersPerUnitHeadCells = [
     },
   },
   {
+    name: "campaignPriority",
+    esKey: "campaignPriority.keyword",
+    label: "Campaign Priority",
+    options: { filter: true },
+  },
+  {
     name: "deals",
     label: "Associated Deals",
     esKey: "deals.name.keyword",
