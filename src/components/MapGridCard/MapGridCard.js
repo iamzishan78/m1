@@ -1,11 +1,9 @@
-import React, { Fragment, useState, useContext, useMemo } from "react";
+import React, { Fragment, useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../AppContext";
 import Card from "@material-ui/core/Card";
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
-import InboxIcon from '@material-ui/icons/Inbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
 import M1nTable from "../Shared/M1nTable/M1nTable";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 import Button from "@material-ui/core/Button";
@@ -13,9 +11,6 @@ import { setMapGridCardState } from "../../actions";
 import OwnersSummaryCard from "../OwnersSummaryCard/OwnersSummaryCard";
 import TabPanels, { TabPanel } from "components/Shared/TabPanels";
 
-import ContactsHeadCells from "../Shared/constants/contacts-header-schema.js";
-import wellsColumnHeaders from "../Shared/constants/well-interests-header-grid-schema.js";
-import { leasesColumnHeaders, locationsColumnHeaders, operatorsColumnHeaders, ownersColumnHeaders } from "./MapGridCardHeaders";
 import DockMenu from "./DockMenu";
 import ShapeGridWellsTable from "components/Table/Wells/ShapeGridWellsTable";
 import ShapeGridTaxOwnersTable from "components/Table/TaxOwners/ShapeGridTaxOwnersTable";
@@ -28,7 +23,7 @@ import AgreementsTable from "components/Table/Agreement/AgreementsTable";
 import TractsTable from "components/Table/Tract/TractsTable";
 
 import SearchPanel from "./components/SearchPanel";
-import { platformDataInitialData, snapGridSideBarData } from "./components/data";
+import { platformDataInitialData, platformDataWellsInitialData, snapGridSideBarData } from "./components/data";
 import MapGridLayersTable from "components/Table/Layer/MapGridLayersTable";
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
@@ -301,44 +296,44 @@ function MapGridCard(props) {
     );
   };
 
-  const getTaps = useMemo(
-    () => [
-      {
-        label: "well",
-        privateColumns: wellsColumnHeaders,
-        showTags: true,
-        showComments: true,
-        showTracks: true,
-      },
-      {
-        label: "owner",
-        privateColumns: ownersColumnHeaders,
-        showTags: true,
-        showComments: true,
-        showTracks: true,
-      },
-      {
-        label: "operator",
-        privateColumns: operatorsColumnHeaders,
-      },
-      {
-        label: "layer",
-      },
-      {
-        label: "lease",
-        privateColumns: leasesColumnHeaders,
-      },
-      {
-        label: "contacts",
-        privateColumns: ContactsHeadCells,
-      },
-      {
-        label: "location",
-        privateColumns: locationsColumnHeaders,
-      },
-    ],
-    []
-  );
+  // const getTaps = useMemo(
+  //   () => [
+  //     {
+  //       label: "well",
+  //       privateColumns: wellsColumnHeaders,
+  //       showTags: true,
+  //       showComments: true,
+  //       showTracks: true,
+  //     },
+  //     {
+  //       label: "owner",
+  //       privateColumns: ownersColumnHeaders,
+  //       showTags: true,
+  //       showComments: true,
+  //       showTracks: true,
+  //     },
+  //     {
+  //       label: "operator",
+  //       privateColumns: operatorsColumnHeaders,
+  //     },
+  //     {
+  //       label: "layer",
+  //     },
+  //     {
+  //       label: "lease",
+  //       privateColumns: leasesColumnHeaders,
+  //     },
+  //     {
+  //       label: "contacts",
+  //       privateColumns: ContactsHeadCells,
+  //     },
+  //     {
+  //       label: "location",
+  //       privateColumns: locationsColumnHeaders,
+  //     },
+  //   ],
+  //   []
+  // );
 
   const handleSearchPanelChange = (value) => {
     setSearchTapValue(value);
@@ -417,7 +412,7 @@ function MapGridCard(props) {
 
                   <List component="nav" aria-label="main mailbox folders">
 
-                    {[platformDataInitialData[0], ...snapGridSideBarData].map((row) => {
+                    {[...platformDataWellsInitialData, ...snapGridSideBarData].map((row) => {
                       const Icon = row.Icon
                       return (
                         <FeatureFlag feature={FEATURES[row.featureFlag]} noCheck={!FEATURES[row.featureFlag]}>
