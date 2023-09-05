@@ -41,11 +41,12 @@ function UnitInterestOwnersTable(props) {
       hit.uUnitPricing = hit?.shape?.shapeJson?.properties?.uUnitPricing;
       //remove until max offer price logic is fixed
       //hit.uMaxUnitPricing = hit?.shape?.shapeJson?.properties?.uMaxUnitPricing;
-      hit.uNumber = hit?.shape?.shapeJson?.properties?.uNumber
-      hit.shapeArea = hit?.shape?.shapeJson?.properties?.shapeArea
-      hit.uAcres = hit?.shape?.shapeJson?.properties?.uAcres
+      hit.uNumber = hit?.shape?.shapeJson?.properties?.uNumber;
+      hit.shapeArea = hit?.shape?.shapeJson?.properties?.shapeArea;
+      hit.uAcres = hit?.shape?.shapeJson?.properties?.uAcres;
 
-      hit.contactStatus = hit?.contact?.contactStatus
+      hit.contactStatus = hit?.contact?.contactStatus;
+      hit.status = hit?.contact?.status;
 
       if (hit?.tags?.length > 0) {
         const tags = hit.tags.map((tag) => tag.tag);

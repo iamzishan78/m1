@@ -147,6 +147,25 @@ const UnitInterestsPageHeadCells = [
         },
     },
     {
+        name: 'contactOwners',
+        label: 'Contact Owner',
+        esKey: 'contactOwners.keyword',
+        options: {
+            display: true,
+            filter: true,
+            searchable: false,
+            sort: true,
+        },
+    },
+    {
+        name: "status",
+        esKey: "contact.status.keyword",
+        label: "Stage",
+        options: {
+            filter: true,
+        },
+    },
+    {
         name: 'campaignName',
         label: 'Campaign Name',
         esKey: 'campaignName.keyword',
