@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Menu, MenuItem, Typography } from "@material-ui/core";
+import { Box, Button, ClickAwayListener, Grid, Menu, MenuItem, Typography } from "@material-ui/core";
 import CardHeader from "@material-ui/core/CardHeader";
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
@@ -126,21 +126,33 @@ const useStyles = makeStyles((theme) => ({
       color: "#18AADD",
     },
   },
-  menuBtn: ({isArchiving}) => ({
+  menuIcon: {
+    display: 'none'
+  },
+  archiveBtn: {
+    display: 'block',
+    position: 'absolute',
+    bottom: '-25px',
+    boxShadow: 'rgba(170, 180, 190, 0.6) 0px 4px 20px',
+    zIndex: 1,
+    backgroundColor: 'white',
+  },
+  menuBtn: ({ isArchiving, showArchiveOption }) => ({
     position: 'relative',
+    width: '218px',
 
-    '& button:last-child': {
-      display: isArchiving ? 'block' : 'none',
-      position: 'absolute',
-      bottom: '-25px'
-    },
-
-    '&:hover button:last-child': {
-      display: 'block',
+    '& button': {
+      width: 'inherit',
+      justifyContent: 'flex-start'
     },
 
     '&:hover #menu-icon': {
+      display: 'block',
       transform: 'rotateX(180deg)'
+    },
+
+    '& #menu-icon': {
+      display: showArchiveOption && 'block'
     }
   })
 }));
@@ -158,6 +170,7 @@ const Notifications = () => {
   const [profilesInfo, setProfilesInfo] = useState({});
   const [users, setUsers] = useState([]);
   const [tab, setTab] = useState(0);
+  const [showArchiveOption, setShowArchiveOption] = useState(false)
 
   const [archiveAllMentions, { loading: isArchiving }] = useMutation(ARCHIVE_ALL_MUTATIONS);
   const [updateNotificationStatus] = useMutation(UPDATE_NOTIFICATION_STATUS);
@@ -217,31 +230,36 @@ const Notifications = () => {
   }, [profilesData]);
 
   const archiveAllAndClose = async () => {
-    await archiveAllMentions({ 
+    await archiveAllMentions({
       refetchQueries: ["getNotifications"],
-       awaitRefetchQueries: false,
+      awaitRefetchQueries: false,
     })
   };
-  const classes = useStyles({isArchiving});
+  const classes = useStyles({ isArchiving, showArchiveOption });
 
+  const archiveAllOption = () => {
+    setShowArchiveOption(!showArchiveOption);
+  }
   const Title = () => {
     return (
-      <Grid container className={classes.gridStyle}>
-        <Grid item xs={6} className={classes.menuBtn}>
-          <Button aria-controls="simple-menu" aria-haspopup="true">
-            <Box display={"flex"} gridGap={2} alignItems={'center'}>
-              <Typography variant="h5" style={{fontWeight: '700'}}>Notifications</Typography>
-              <ExpandMoreIcon id="menu-icon" />
-            </Box>
-          </Button>
 
-          <Button onClick={archiveAllAndClose} disabled={isArchiving}>
-            <Box display={"flex"} gridGap={3} alignItems={'center'}>
-              {isArchiving && <CircularProgress size={15} />}
-              <Typography>Archive all</Typography>
-            </Box>
-          </Button>
-        </Grid>
+      <Grid container className={classes.gridStyle}>
+        <ClickAwayListener onClickAway={()=>{setShowArchiveOption(false)}}>
+          <Grid item xs={6} className={classes.menuBtn}>
+            <Button aria-controls="simple-menu" aria-haspopup="true" onClick={archiveAllOption}>
+              <Box display={"flex"} gridGap={2} alignItems={'center'}>
+                <Typography variant="h5" style={{ fontWeight: '700' }}>Notifications</Typography>
+                <ExpandMoreIcon id="menu-icon" className={classes.menuIcon} style={{ transform: showArchiveOption && 'rotate(0deg)' }} />
+              </Box>
+            </Button>
+            {showArchiveOption && (<Button className={classes.archiveBtn} onClick={archiveAllAndClose} disabled={isArchiving}>
+              <Box display={"flex"} gridGap={3} alignItems={'center'}>
+                {isArchiving && <CircularProgress size={15} />}
+                <Typography>Archive all</Typography>
+              </Box>
+            </Button>)}
+          </Grid>
+        </ClickAwayListener>
         <Grid item xs={6}>
           <div className={classes.customTabs}>
             <Tabs
@@ -280,7 +298,7 @@ const Notifications = () => {
       case "CHECK":
         return <LocalAtm />;
       case "PROPERTY":
-        case "FILE":
+      case "FILE":
         return <DescriptionOutlined />;
       default:
         return;
@@ -298,7 +316,7 @@ const Notifications = () => {
         <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
       ) : (
         <List style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
-            {notifications.map(({ _id, state, source, parent, senderId, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
+          {notifications.map(({ _id, state, source, parent, senderId, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
             const user = users.find((user) => source.user === user._id);
             return (
               <Paper key={i} className={classes.paper}>
@@ -344,18 +362,18 @@ const Notifications = () => {
                       history.push(`/revenue/property/details/${parent._id}`);
                     } else if (parentType === "CONTACT") {
                       history.push(`/contact/details/${parent._id}`);
-                    }else if(parentType === "FILE"){
+                    } else if (parentType === "FILE") {
                       history.push(`/documents`);
                       setStateApp((state) => ({
                         ...state,
                         pdfView: null,
                         selectedDocument: {
-                          fileId:parent._id,
-                          documentName:parent.name,
-                          fileType:parent.name.split('.')[parent.name.split('.').length-1].toUpperCase(),
-                          fileCreatedAt:parent.fileCreatedAt,
-                          uploadedBy:parent.user.name,
-                          fileSize:Math.round(parent.size/1024)+" KB",
+                          fileId: parent._id,
+                          documentName: parent.name,
+                          fileType: parent.name.split('.')[parent.name.split('.').length - 1].toUpperCase(),
+                          fileCreatedAt: parent.fileCreatedAt,
+                          uploadedBy: parent.user.name,
+                          fileSize: Math.round(parent.size / 1024) + " KB",
                           ...parent
                         },
                       }));
@@ -393,7 +411,7 @@ const Notifications = () => {
                         {parent.name}
                       </span>
                     )}
-                    
+
                     {(notificationType === "TASK_COMPLETED" || notificationType === "TASK_ASSIGNMENT") &&
                       <Grid container className={classes.gridStyle}>
                         <Grid item xs={1}>
@@ -422,7 +440,7 @@ const Notifications = () => {
                         </Grid>
                       </Grid>
                     }
-                      
+
                     {notificationType === "SYSTEM" && (
                       <Grid container className={classes.gridStyle}>
                         <Grid item xs={1}>
