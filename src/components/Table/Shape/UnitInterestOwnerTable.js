@@ -298,7 +298,7 @@ function UnitInterestOwnerTable(props) {
                     for (let i in props.selectedRows) {
                       owners.push({
                         ...rows[i],
-                        _id: rows[i].contact._id,
+                        // _id: rows[i].contact._id,
                       });
                     }
                     setSelectedRows(owners);

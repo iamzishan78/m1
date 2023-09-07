@@ -309,11 +309,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       const campaignName = [...new Set([...(ownerToAdd.campaignName || []), ...(contact?.campaignName?.[0] || [])])]
 
       const isCampaignNameUpdated = !isEqual(sortBy(contact?.campaignName?.[0]), sortBy(campaignName.sort()))
-
       if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
         (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
         (ownerToAdd.campaignPriority && selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
-        (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
+        (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName) ||
         (isCampaignNameUpdated)
       ) {
         updateContact({
@@ -325,7 +324,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               lastUpdateBy: stateApp.user.mongoId,
               ownerType: ownerToAdd.ownerType,
               campaignPriority: ownerToAdd.campaignPriority,
-              campaignName: ownerToAdd.campaignName
+              campaignName
             }
           }
         })
@@ -769,18 +768,18 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   name="status"
                   render={(props) => (
                     <Status
-                        className={classes.maxWidth}
-                        options={statusOptions}
-                        value={props.value}
-                        setDocumentType={(value) => {
-                          let val = value.name;
-                          const data = contactStatusOptions.find((s) => s.label === val);
-                          if (data) {
-                            val = data.value;
-                          }
-                          props.onChange(val)
-                        }}
-                      />
+                      className={classes.maxWidth}
+                      options={statusOptions}
+                      value={props.value}
+                      setDocumentType={(value) => {
+                        let val = value.name;
+                        const data = contactStatusOptions.find((s) => s.label === val);
+                        if (data) {
+                          val = data.value;
+                        }
+                        props.onChange(val)
+                      }}
+                    />
                   )}
                 />
               </Grid>
