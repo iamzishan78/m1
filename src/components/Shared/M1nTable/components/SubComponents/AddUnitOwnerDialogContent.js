@@ -306,14 +306,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerToAdd.name = nameAutValue.name;
       }
 
-      const campaignName = [...new Set([...(ownerToAdd.campaignName || []), ...(contact?.campaignName?.[0] || [])])]
-
-      const isCampaignNameUpdated = !isEqual(sortBy(contact?.campaignName?.[0]), sortBy(campaignName.sort()))
       if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
         (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
         (ownerToAdd.campaignPriority && selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
-        (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName) ||
-        (isCampaignNameUpdated)
+        (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
       ) {
         updateContact({
           variables: {
@@ -324,7 +320,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               lastUpdateBy: stateApp.user.mongoId,
               ownerType: ownerToAdd.ownerType,
               campaignPriority: ownerToAdd.campaignPriority,
-              campaignName
             }
           }
         })

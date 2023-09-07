@@ -231,40 +231,52 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           },
           refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
           awaitRefetchQueries: true,
-        });
-
-
-        const contactCampaignsToUpdate = rows.map(row => ([...new Set([...(campaigns || []), ...(row.contact.campaignName || [])])]));
+        }).then(res => {
+          if (res.data && res.data.updateShapeOwners) {
+            const success = res.data.updateShapeOwners.success
+            if (success) {
+              Loader.successToast('contact-creation', "Updated")
+              showSuccessMessage(`${field} Bulk Updated Successfully`)
+              if (rest.onBulkUpdateComplete)
+                rest.onBulkUpdateComplete()
+            } else {
+              Loader.errorToast('contact-creation', "Updated")
+            }
+          } else {
+            Loader.errorToast('contact-creation', "Failed")
+          }
+        },
+          err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });;
 
         delete fieldToUpdate.campaignName
-
-        fieldToUpdate.multipleCampaignNames = contactCampaignsToUpdate
+      } else {
+        if (Object.entries(fieldToUpdate).length > 0)
+          updateBulkContact({
+            variables: {
+              contactIds: contactIds,
+              keysToUpdate: fieldToUpdate,
+              lastUpdateBy: stateApp.user.mongoId,
+              ignoreResponse: false,
+            },
+            refetchQueries: ["getESContacts", "getESSimpleSearch"],
+            awaitRefetchQueries: true,
+          }).then(res => {
+            if (res.data && res.data.updateBulkContact) {
+              const success = res.data.updateBulkContact.some(res => res.success)
+              if (success) {
+                Loader.successToast('contact-creation', "Updated")
+                showSuccessMessage(`${field} Bulk Updated Successfully`)
+                if (rest.onBulkUpdateComplete)
+                  rest.onBulkUpdateComplete()
+              } else {
+                Loader.errorToast('contact-creation', "Updated")
+              }
+            } else {
+              Loader.errorToast('contact-creation', "Failed")
+            }
+          },
+            err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });
       }
-      updateBulkContact({
-        variables: {
-          contactIds: contactIds,
-          keysToUpdate: fieldToUpdate,
-          lastUpdateBy: stateApp.user.mongoId,
-          ignoreResponse: false,
-        },
-        refetchQueries: ["getESContacts", "getESSimpleSearch"],
-        awaitRefetchQueries: true,
-      }).then(res => {
-        if (res.data && res.data.updateBulkContact) {
-          const success = res.data.updateBulkContact.some(res => res.success)
-          if (success) {
-            Loader.successToast('contact-creation', "Updated")
-            showSuccessMessage(`${field} Bulk Updated Successfully`)
-            if (rest.onBulkUpdateComplete)
-              rest.onBulkUpdateComplete()
-          } else {
-            Loader.errorToast('contact-creation', "Updated")
-          }
-        } else {
-          Loader.errorToast('contact-creation', "Failed")
-        }
-      },
-        err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });
     }
 
     onClose();
