@@ -98,7 +98,7 @@ function UnitInterestOwnersTable(props) {
           'offer_price',
         ] : [])
       ],
-      TableHeader: copy(TableHeader),
+      TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: 'shapeowners_flat',
       selectedGridView: GridViewModule || defaultView,
       typeKeyword: { gridViewCategory: 'UnitInterest' },

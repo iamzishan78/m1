@@ -94,6 +94,8 @@ const CamapignRelatedGrids = ({ campaign }) => {
                   <UnitInterestOwnersTable
                     esIndex={'shapeowners_flat'}
                     campaignName={campaign?.name}
+                    targetLabel="unit"
+                    isSnapGrid
                   />}
               </div>
             </Grid>

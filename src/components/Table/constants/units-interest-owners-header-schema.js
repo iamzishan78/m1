@@ -2,7 +2,7 @@ import ListChips from 'components/Common/ListChips';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import { GlobalStickyStyles } from 'GlobalSettings';
 
-const UnitInterestsPageHeadCells = [
+const UnitInterestsPageHeadCells = (isSnapGrid = false) => [
     {
         name: '_id',
         options: { filter: false, display: false, sort: false, viewColumns: false },
@@ -12,7 +12,7 @@ const UnitInterestsPageHeadCells = [
         label: 'Contact Name',
         esKey: 'contact.entityDetail.name.keyword',
         options: {
-            ...GlobalStickyStyles({}),
+            ...GlobalStickyStyles({ isSnapGrid }),
             sort: true,
             filter: true,
             isMultiFilter: true,
