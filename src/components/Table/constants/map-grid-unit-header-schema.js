@@ -1,3 +1,4 @@
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import { GlobalStickyStyles } from "GlobalSettings";
 
 const unitsColumnHeaders = (isSnapGrid = false) => [
@@ -166,13 +167,16 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     name: "campaignName",
     label: "Campaign Name",
     esKey: "shapeJson.properties.campaignName.keyword",
-    // options: {
-    //   customRender: (value) => value?.map((v, index) => `${v}${index < value?.length - 1 ? ',' : ''}`),
-    //   setCellProps: () => ({ style: { minWidth: "200px" } }),
-    //   sort: true,
-    //   filter: true,
-    // },
+    options: {
+      customRender: (value) => {
+        return <CampaignNameField value={value} fullWidth disabled />;
+      },
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      sort: true,
+      filter: true,
+    },
   },
+
   {
     name: "qualifier",
     label: "Qualifier",

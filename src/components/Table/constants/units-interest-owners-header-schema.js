@@ -1,4 +1,5 @@
 import ListChips from 'components/Common/ListChips';
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import { GlobalStickyStyles } from 'GlobalSettings';
 
@@ -166,14 +167,16 @@ const UnitInterestsPageHeadCells = [
         },
     },
     {
-        name: 'campaignName',
-        label: 'Campaign Name',
-        esKey: 'campaignName.keyword',
+        name: "campaignName",
+        label: "Campaign Name",
+        esKey: "campaignName.keyword",
         options: {
-            display: true,
-            filter: true,
-            searchable: false,
+            customRender: (value) => {
+                return <CampaignNameField value={value} fullWidth disabled />;
+            },
+            setCellProps: () => ({ style: { minWidth: "200px" } }),
             sort: true,
+            filter: true,
         },
     },
     {
