@@ -608,7 +608,7 @@ const ContactsHeadCells = [
   },
   {
     name: "unitNraSum",
-    label: "Unit NRA ads",
+    label: "Unit NRA",
     esKey: 'interestSummary.unitNraSum',
     // editable: false,
     noFilter: true,
@@ -620,7 +620,7 @@ const ContactsHeadCells = [
         names: [],
       },
       customRender: (value) => {
-        return <p>{value ?? 0}</p>
+        return <p>{value}</p>
       }
     },
   },
