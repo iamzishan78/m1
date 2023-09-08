@@ -9,7 +9,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { VariableSizeList } from 'react-window';
 import PropTypes from 'prop-types';
 import { capitalizeFirstLetter, customStartCaseString } from "components/Shared/functions";
-import { isArray } from "lodash";
+import { isArray, isEqual } from "lodash";
 
 export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
   filterList,
@@ -135,7 +135,14 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
   }, [filtersData]);
 
   const getFiltersAction = (search) => {
-    if (filtersData && multiple && filterList[index].length !== 0) return;
+    let addedFilters = filters
+
+    if (multiple) {
+      if (filtersData) return
+
+      if (!filtersData && filterList[index].length > 0)
+        addedFilters = addedFilters.filter(filter => !isEqual(filter.field, filterKey))
+    }
 
     const rawSearch = search;
     if (search) search = type === "number" ? search : `*${search}*`;
@@ -143,7 +150,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
       variables: {
         esIndex,
         index: esIndex,
-        filters,
+        filters: addedFilters,
         filterKeys: typeof filterKey !== "string" ? filterKey : undefined,
         filterKey: typeof filterKey === "string" ? filterKey : undefined,
         search,
