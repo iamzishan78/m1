@@ -187,7 +187,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
       onChange={(e, value2, reason) => {
 
         if (reason === "clear" || (multiple && value2.length === 0) || (!multiple && !value2?.key)) {
-          filterList[index].pop();
+          filterList[index] = [];
           setSearch("");
           setValue(multiple ? [] : {});
         } else {
