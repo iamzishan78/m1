@@ -96,11 +96,11 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
   },
   {
     name: "SectionRange", label: "Section/ Range", esKey: [
+      'shapeJson.properties.originalProperties.Range.keyword',
       'shapeJson.properties.originalProperties.Section.keyword',
-      'shapeJson.properties.originalProperties.Range.keyword'
     ],
     options: {
-      dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
+      dbName: "shapeJson.properties.originalProperties.0?.Range?.Section?",
       sort: true,
       filter: true,
       isMultiFilter: true,

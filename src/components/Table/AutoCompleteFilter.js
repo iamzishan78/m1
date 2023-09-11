@@ -138,10 +138,15 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
     let addedFilters = filters
 
     if (multiple) {
-      if (filtersData) return
+      if (filtersData && filterList[index].length > 0) return
 
       if (!filtersData && filterList[index].length > 0)
-        addedFilters = addedFilters.filter(filter => !isEqual(filter.field, filterKey))
+        addedFilters = addedFilters.filter(filter => {
+          if (typeof filterKey !== "string")
+            return !isEqual(filter.field, JSON.stringify(filterKey))
+
+          return !isEqual(filter.field, filterKey)
+        })
     }
 
     const rawSearch = search;
