@@ -823,14 +823,26 @@ export default function CommentComponent(props) {
                         <Grid
                           item
                           className={`${classes.paddingLeft10} ${classes.commentContent}`}
+                          style={
+                            eachComment?.commentType?.commentType ===
+                            "unitCreation"
+                              ? { marginTop: "1rem" }
+                              : null
+                          }
                         >
                           <div>
                             <span className={classes.bold}>
                               {eachComment?.user?.name}
                             </span>
+                            {eachComment?.commentType?.commentType ===
+                              "unitCreation" && (
+                              <span style={{ display: 'inline-block', marginLeft: "8px" }}>{eachComment.comment}</span>
+                            )}
+
                             {!isNaN(eachComment.ts) && (
                               <ReactTimeAgo
                                 className={classes.commentTime}
+                                style={{whiteSpace: "nowrap"}}
                                 date={new Date(Number(eachComment.ts))}
                                 locale="en-US"
                               />
@@ -842,7 +854,9 @@ export default function CommentComponent(props) {
                             )}
                             {eachComment?.user?.email === stateApp.user.email &&
                               showCommentActionId === eachComment._id &&
-                              editCommentId !== eachComment._id && (
+                              editCommentId !== eachComment._id &&
+                              eachComment?.commentType?.commentType !==
+                                "unitCreation" && (
                                 <div
                                   className={`${classes.floatRight} ${
                                     classes.cursorPointer
@@ -895,66 +909,74 @@ export default function CommentComponent(props) {
                               )}
                             </>
                           )}
-                          {editCommentId !== eachComment._id ? (
-                            <CommonCommentText
-                              users={users}
-                              eachComment={eachComment}
-                            />
-                          ) : (
-                            <div className={classes.border}>
-                              <CommentField
-                                isEdit={isEdit}
-                                profilesInfo={profilesInfo}
+                          {eachComment?.commentType?.commentType !==
+                            "unitCreation" &&
+                            (editCommentId !== eachComment._id ? (
+                              <CommonCommentText
                                 users={users}
-                                comment={editComment}
-                                showActions={showActions}
-                                setEditCommentId={setEditCommentId}
-                                setComment={setEditComment}
-                                upsertComment={updateComment}
-                                setIsEdit={setIsEdit}
-                                setShowActions={setShowActions}
+                                eachComment={eachComment}
                               />
-                            </div>
-                          )}
+                            ) : (
+                              <div className={classes.border}>
+                                <CommentField
+                                  isEdit={isEdit}
+                                  profilesInfo={profilesInfo}
+                                  users={users}
+                                  comment={editComment}
+                                  showActions={showActions}
+                                  setEditCommentId={setEditCommentId}
+                                  setComment={setEditComment}
+                                  upsertComment={updateComment}
+                                  setIsEdit={setIsEdit}
+                                  setShowActions={setShowActions}
+                                />
+                              </div>
+                            ))}
                         </Grid>
-                        <Grid item style={{ maxWidth: "75px", padding: "0px" }}>
-                          <IconButton
-                            onClick={() =>
-                              callToggleCommentReactionMutation(eachComment)
-                            }
+                        {eachComment?.commentType?.commentType !==
+                          "unitCreation" && (
+                          <Grid
+                            item
+                            style={{ maxWidth: "75px", padding: "0px" }}
                           >
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 5,
-                              }}
+                            <IconButton
+                              onClick={() =>
+                                callToggleCommentReactionMutation(eachComment)
+                              }
                             >
-                              {eachComment?.likedBy?.length > 0 && (
-                                <span style={{ fontSize: "12px" }}>
-                                  {eachComment?.likedBy?.length}
-                                </span>
-                              )}
-
-                              <Tooltip
-                                title={
-                                  <>
-                                    {getLikedPeoplesName(
-                                      eachComment,
-                                      stateApp.user._id
-                                    )}
-                                  </>
-                                }
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 5,
+                                }}
                               >
-                                {didILikedThisComment(eachComment) ? (
-                                  <ThumbUpIcon />
-                                ) : (
-                                  <ThumbUpAltOutlinedIcon />
+                                {eachComment?.likedBy?.length > 0 && (
+                                  <span style={{ fontSize: "12px" }}>
+                                    {eachComment?.likedBy?.length}
+                                  </span>
                                 )}
-                              </Tooltip>
-                            </div>
-                          </IconButton>
-                        </Grid>
+
+                                <Tooltip
+                                  title={
+                                    <>
+                                      {getLikedPeoplesName(
+                                        eachComment,
+                                        stateApp.user._id
+                                      )}
+                                    </>
+                                  }
+                                >
+                                  {didILikedThisComment(eachComment) ? (
+                                    <ThumbUpIcon />
+                                  ) : (
+                                    <ThumbUpAltOutlinedIcon />
+                                  )}
+                                </Tooltip>
+                              </div>
+                            </IconButton>
+                          </Grid>
+                        )}
                       </Grid>
                     )}
                   </Fragment>

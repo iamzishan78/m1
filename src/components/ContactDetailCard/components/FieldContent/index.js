@@ -525,7 +525,7 @@ export default function FieldContent({
   );
 }
 
-const Status = ({ setDocumentType, value, options, ...other }) => {
+export const Status = ({ setDocumentType, value, options, ...other }) => {
   const useStyles = makeStyles({
     inputRoot: {
       backgroundColor: "#ffffff",
@@ -542,6 +542,10 @@ const Status = ({ setDocumentType, value, options, ...other }) => {
   const classes = useStyles();
 
   const [search, setSearch] = useState(value);
+
+  useEffect(() => {
+    setSearch(value);
+  }, [value])
 
   const onInputChange = (event, value) => {
     setSearch(value);
