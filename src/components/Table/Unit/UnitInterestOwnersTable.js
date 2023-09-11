@@ -39,12 +39,15 @@ function UnitInterestOwnersTable(props) {
       hit.qualifier = hit?.shape?.shapeJson?.properties?.qualifier?.name;
       hit.reviewer = hit?.shape?.shapeJson?.properties?.reviewer?.name;
       hit.uUnitPricing = hit?.shape?.shapeJson?.properties?.uUnitPricing;
-      hit.uMaxUnitPricing = hit?.shape?.shapeJson?.properties?.uMaxUnitPricing;
-      hit.uNumber = hit?.shape?.shapeJson?.properties?.uNumber
-      hit.shapeArea = hit?.shape?.shapeJson?.properties?.shapeArea
-      hit.uAcres = hit?.shape?.shapeJson?.properties?.uAcres
+      //remove until max offer price logic is fixed
+      //hit.uMaxUnitPricing = hit?.shape?.shapeJson?.properties?.uMaxUnitPricing;
+      hit.uNumber = hit?.shape?.shapeJson?.properties?.uNumber;
+      hit.shapeArea = hit?.shape?.shapeJson?.properties?.shapeArea;
+      hit.uAcres = hit?.shape?.shapeJson?.properties?.uAcres;
 
-      hit.contactStatus = hit?.contact?.contactStatus
+      hit.contactStatus = hit?.contact?.contactStatus;
+      hit.status = hit?.contact?.status;
+      hit.contactOwners = (hit?.contactOwners && hit?.contactOwners.length > 0) ? Array.isArray(hit?.contactOwners) ? hit?.contactOwners[0] : hit?.contactOwners : null;
 
       if (hit?.tags?.length > 0) {
         const tags = hit.tags.map((tag) => tag.tag);
@@ -59,7 +62,6 @@ function UnitInterestOwnersTable(props) {
 
       return hit;
     });
-
     return hits;
   };
 
