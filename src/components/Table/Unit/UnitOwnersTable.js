@@ -201,7 +201,11 @@ function UnitOwnersTable(props) {
       updateShapeOwners({
         variables: {
           shapeType: props.shapeType,
-          shapeOwners: ids.map((_id) => ({ _id, isDeleted: true })),
+          shapeOwners: ids.map((_id) => ({
+            _id,
+            shapeId: props.rows.find(row => row._id === _id)?.customLayerId,
+            isDeleted: true,
+          })),
         }
       });
     }
