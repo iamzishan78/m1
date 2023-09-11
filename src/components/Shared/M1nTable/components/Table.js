@@ -1424,6 +1424,7 @@ function SubTable(props) {
                           round
                         />
                         <p
+                          className="contactDetailsLink"
                           style={{
                             display: "flex",
                             flexDirection: "row",
@@ -4652,7 +4653,7 @@ function SubTable(props) {
                 // ||
                 props.header === 'Deals'
                 || props.parent === 'WellsTable'
-                || props.header === 'Activities'
+                || (props.parent === 'Activities' && props.header === 'Activities')
                 || props.header === 'Monthly Production'
                 // || props.parent === 'ownersPerParcel'               /// will need to build a backend for this search
                 || props.parent === 'potentialOwnersPerParcel'       /// will need to build a backend for this search

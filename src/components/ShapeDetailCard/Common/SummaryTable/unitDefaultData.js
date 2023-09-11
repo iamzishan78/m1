@@ -61,6 +61,12 @@ const tableData = [
     type: "currency",
     key: "uUnitPricing",
   },
+  //remove until max unit pricing logic is fixed
+  // {
+  //   label: "Max Unit Pricing (per NRA)",
+  //   type: "currency",
+  //   key: "uMaxUnitPricing",
+  // },
   {
     label: "Qualifier",
     type: "custom",
