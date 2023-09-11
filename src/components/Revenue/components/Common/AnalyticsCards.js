@@ -114,7 +114,7 @@ export default function AnalyticsCards({
       },
       inpay: {
         field: "status.keyword",
-        value: "In Pay"
+        value: "InPay"
       },
       notinpay: {
         field: "status.keyword",
