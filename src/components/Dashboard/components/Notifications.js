@@ -249,7 +249,7 @@ const Notifications = () => {
             <Button aria-controls="simple-menu" aria-haspopup="true" onClick={archiveAllOption}>
               <Box display={"flex"} gridGap={2} alignItems={'center'}>
                 <Typography variant="h5" style={{ fontWeight: '700' }}>Notifications</Typography>
-                <ExpandMoreIcon id="menu-icon" className={classes.menuIcon} style={{ transform: showArchiveOption && 'rotate(0deg)' }} />
+                <ExpandLessIcon id="menu-icon" className={classes.menuIcon} style={{ transform: showArchiveOption && 'rotate(180deg)' }} />
               </Box>
             </Button>
             {showArchiveOption && (<Button className={classes.archiveBtn} onClick={archiveAllAndClose} disabled={isArchiving}>
