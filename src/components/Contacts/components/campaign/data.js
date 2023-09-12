@@ -1,6 +1,6 @@
 import UnitIcon from "components/Shared/svgIcons/unit";
 import ContactInformationIcon from "components/Shared/svgIcons/ContactPhone";
-import UnitInterestsIcon from "components/Shared/svgIcons/envelope";
+import UnitInterestsIcon from "@material-ui/icons/ListAlt";
 
 export const campaignInitialData = [
   { index: 0, value: "contacts", Icon: ContactInformationIcon, label: "Contacts" },
