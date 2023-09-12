@@ -124,7 +124,7 @@ const UnitInterestsPageHeadCells = [
     {
         name: 'uMaxUnitPricing',
         label: 'Max Offer Price',
-        esKey: 'shape.shapeJson.properties.uMaxUnitPricing.keyword',
+        esKey: 'max_offer_price',
         // editable: false,
         noFilter: true,
         options: {

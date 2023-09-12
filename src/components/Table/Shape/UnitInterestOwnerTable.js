@@ -90,8 +90,7 @@ function UnitInterestOwnerTable(props) {
       hit.contactStatus = hit?.contact?.contactStatus;
       hit.status = hit?.contact?.status;
       hit.contactOwners = (hit?.contactOwners && hit?.contactOwners.length > 0) ? Array.isArray(hit?.contactOwners) ? hit?.contactOwners[0] : hit?.contactOwners : null;
-      //remove until max offer price logic is fixed
-      //hit.max_offer_price = hit?.nra * props.customLayer?.shapeJson?.properties?.uMaxUnitPricing;
+
       Object.keys(hit).forEach((key) => {
         if (interestKeys.includes(key)) {
           if (typeof hit[key] === "number")
