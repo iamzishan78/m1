@@ -89,6 +89,7 @@ function UnitInterestOwnerTable(props) {
       hit.isPurchased = hit?.contact?.isPurchased;
       hit.contactStatus = hit?.contact?.contactStatus;
       hit.status = hit?.contact?.status;
+      hit.contactOwners = (hit?.contactOwners && hit?.contactOwners.length > 0) ? Array.isArray(hit?.contactOwners) ? hit?.contactOwners[0] : hit?.contactOwners : null;
       //remove until max offer price logic is fixed
       //hit.max_offer_price = hit?.nra * props.customLayer?.shapeJson?.properties?.uMaxUnitPricing;
       Object.keys(hit).forEach((key) => {
@@ -297,7 +298,7 @@ function UnitInterestOwnerTable(props) {
                     for (let i in props.selectedRows) {
                       owners.push({
                         ...rows[i],
-                        _id: rows[i].contact._id,
+                        // _id: rows[i].contact._id,
                       });
                     }
                     setSelectedRows(owners);

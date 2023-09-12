@@ -126,6 +126,17 @@ const OwnersPerUnitHeadCells = [
     },
   },
   {
+    name: 'contactOwners',
+    label: 'Contact Owner',
+    esKey: 'contactOwners.keyword',
+    options: {
+      display: true,
+      filter: true,
+      searchable: false,
+      sort: true,
+    },
+  },
+  {
     name: "status",
     esKey: "contact.status.keyword",
     label: "Stage",
@@ -150,6 +161,12 @@ const OwnersPerUnitHeadCells = [
       sort: true,
       filter: true,
     },
+  },
+  {
+    name: "campaignPriority",
+    esKey: "campaignPriority.keyword",
+    label: "Campaign Priority",
+    options: { filter: true },
   },
   {
     name: "deals",
