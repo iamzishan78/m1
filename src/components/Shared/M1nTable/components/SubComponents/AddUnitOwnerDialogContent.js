@@ -355,6 +355,11 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
   };
 
+
+  const calculateMaxOfferPrice = (nra) => {
+    return parseFloat((parseFloat(nra || 0) * parseFloat(selectedRow.customLayer?.shapeJson?.properties?.uMaxUnitPricing || 0)).toFixed(2));
+  };
+
   const openConfirmationDialog = () => {
     setDeleteDialogOpen(true);
     handleMenuClose();
