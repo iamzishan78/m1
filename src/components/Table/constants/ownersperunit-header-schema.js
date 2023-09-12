@@ -105,7 +105,7 @@ const OwnersPerUnitHeadCells = [
   {
     name: "offer_price",
     esKey: "offer_price",
-    label: "Offer Price",
+    label: "Target Offer Price",
     type: "number",
     options: { filter: true, customRender: (value) => vf_currency(value) },
   },
