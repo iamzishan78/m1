@@ -167,7 +167,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         setIsOfferPriceOverridden(calculatedOfferPrice !== owner.offer_price && !isNaN(parseFloat(offer_price)))
 
       if (!isNaN(parseFloat(calculatedOfferPrice)))
-        setIsOfferPriceOverridden(calculatedMaxOfferPrice !== owner.max_offer_price && !isNaN(parseFloat(max_offer_price)))
+        setIsMaxOfferPriceOverridden(calculatedMaxOfferPrice !== owner.max_offer_price && !isNaN(parseFloat(max_offer_price)))
 
       reset(owner);
     }
