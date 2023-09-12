@@ -121,6 +121,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         seller_asking_price,
         competitor_offer_price,
         offer_price,
+        max_offer_price,
+        actual_offer_price,
         customLayer,
         name,
         ownerEntity,
@@ -142,6 +144,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         seller_asking_price: seller_asking_price || null,
         competitor_offer_price: competitor_offer_price || null,
         offer_price: parseFloat(parseFloat(offer_price).toFixed(2)) || null,
+        max_offer_price: max_offer_price || null,
+        actual_offer_price: actual_offer_price || null,
         contactStatus: contactStatus || contact.contactStatus,
         status: status || contact.status,
         ownerType,
@@ -734,6 +738,54 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   )}
                 />
               </Grid>
+
+              <Grid item xs={12}>
+                <h3>Max Offer Price</h3>
+                <Controller
+                  control={control}
+                  name="max_offer_price"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => {
+                        props.onChange(e.target.value);
+                      }}
+                      InputProps={{
+                        inputComponent: CurrencyFormatCustom,
+                      }}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Actual Offer Price</h3>
+                <Controller
+                  control={control}
+                  name="actual_offer_price"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => {
+                        props.onChange(e.target.value);
+                      }}
+                      InputProps={{
+                        inputComponent: CurrencyFormatCustom,
+                      }}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
+              </Grid>
+
               <Grid item xs={12}>
                 <h3>Status</h3>
 
