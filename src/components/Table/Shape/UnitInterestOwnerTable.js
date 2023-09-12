@@ -394,6 +394,7 @@ function UnitInterestOwnerTable(props) {
           shapeId={props.customLayer._id}
           uAcres={props.customLayer?.shapeJson?.properties?.uAcres}
           uUnitPricing={props.customLayer?.shapeJson?.properties?.uUnitPricing}
+          uMaxUnitPricing={props.customLayer?.shapeJson?.properties?.uMaxUnitPricing}
           shapeType={props.shapeType}
           selectedRow={selectedOwner}
           onClose={() => {

@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, ...props }) {
+export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, uMaxUnitPricing, ...props }) {
   const dispatch = useDispatch();
   const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -157,12 +157,17 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         deals
       }
       let calculatedNRA = calculateNRA(royalty_interest, orri, working_interest, nri);
-      let calculatedOfferPrice = calculateOfferPrice(nra)
+      let calculatedOfferPrice = calculateOfferPrice(nra);
+      let calculatedMaxOfferPrice = calculateMaxOfferPrice(nra);
+
       if (!isNaN(parseFloat(calculatedNRA)))
         setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)))
 
       if (!isNaN(parseFloat(calculatedOfferPrice)))
         setIsOfferPriceOverridden(calculatedOfferPrice !== owner.offer_price && !isNaN(parseFloat(offer_price)))
+
+      if (!isNaN(parseFloat(calculatedOfferPrice)))
+        setIsOfferPriceOverridden(calculatedMaxOfferPrice !== owner.max_offer_price && !isNaN(parseFloat(max_offer_price)))
 
       reset(owner);
     }
@@ -234,7 +239,14 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   }, [nameAutValue])
 
   useEffect(() => {
-    if (!isOfferPriceOverridden && getValues().nra) setValue("offer_price", calculateOfferPrice(getValues().nra));
+    const currentNraValue = getValues().nra;
+    if (getValues().nra) {
+      if (!isOfferPriceOverridden)
+        setValue("offer_price", calculateOfferPrice(currentNraValue))
+
+      if (!isMaxOfferPriceOverridden)
+        setValue("max_offer_price", calculateMaxOfferPrice(currentNraValue));
+    };
   }, [watchedNra])
 
   const emptyStates = () => {
@@ -357,7 +369,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
 
   const calculateMaxOfferPrice = (nra) => {
-    return parseFloat((parseFloat(nra || 0) * parseFloat(selectedRow.customLayer?.shapeJson?.properties?.uMaxUnitPricing || 0)).toFixed(2));
+    return parseFloat((parseFloat(nra || 0) * parseFloat(uMaxUnitPricing || 0)).toFixed(2));
   };
 
   const openConfirmationDialog = () => {
@@ -625,8 +637,12 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         const value = addTrailingZeros(e.target.value);
-                        const nra = calculateNRA(getValues().royalty_interest, getValues().orri, getValues().working_interest, getValues().nri)
-                        setIsNRAOverridden(parseFloat(value) !== parseFloat(nra))
+
+                        if (!isNraOverridden) {
+                          const nra = calculateNRA(getValues().royalty_interest, getValues().orri, getValues().working_interest, getValues().nri)
+                          setIsNRAOverridden(parseFloat(value) !== parseFloat(nra))
+                        }
+
                         params.onChange(e.target.value);
                       }}
                       className={isNraOverridden ? classes.baseValueChanged : classes.maxWidth}
@@ -716,8 +732,12 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         const value = parseFloat(e.target.value).toFixed(2)
-                        const calculatedOfferPrice = calculateOfferPrice(getValues().nra)
-                        setIsOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice))
+
+                        if (!isOfferPriceOverridden) {
+                          const calculatedOfferPrice = calculateOfferPrice(getValues().nra)
+                          setIsOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice))
+                        }
+
                         props.onChange(value);
                       }}
                       className={isOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
@@ -759,8 +779,12 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         const value = parseFloat(e.target.value).toFixed(2)
-                        const calculatedMaxOfferPrice = calculateMaxOfferPrice(getValues().nra)
-                        setIsMaxOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedMaxOfferPrice))
+
+                        if (!isMaxOfferPriceOverridden) {
+                          const calculatedMaxOfferPrice = calculateMaxOfferPrice(getValues().nra)
+                          setIsMaxOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedMaxOfferPrice))
+                        }
+
                         props.onChange(value);
                       }}
                       className={isMaxOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
