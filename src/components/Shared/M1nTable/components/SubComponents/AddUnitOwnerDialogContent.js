@@ -77,7 +77,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const [stateApp, setStateApp] = useContext(AppContext);
   const { control, reset, setValue, getValues, watch } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
-  const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false)
+  const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false);
+  const [isMaxOfferPriceOverridden, setIsMaxOfferPriceOverridden] = useState(false);
+
   const [statusOptions, setStatusOptions] = useState([]);
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
   const [contact, setContact] = useState();
@@ -751,10 +753,29 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       inputRef={props.ref}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
-                        props.onChange(e.target.value);
+                        const value = parseFloat(e.target.value).toFixed(2)
+                        const calculatedMaxOfferPrice = calculateMaxOfferPrice(getValues().nra)
+                        setIsMaxOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedMaxOfferPrice))
+                        props.onChange(value);
                       }}
+                      className={isMaxOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
                       InputProps={{
                         inputComponent: CurrencyFormatCustom,
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            {isMaxOfferPriceOverridden && (
+                              <IconButton
+                                aria-label="toggle max_offer_price"
+                                onClick={() => {
+                                  setIsMaxOfferPriceOverridden(false)
+                                  setValue("max_offer_price", calculateMaxOfferPrice(getValues().nra));
+                                }}
+                              >
+                                <AutorenewIcon />
+                              </IconButton>
+                            )}
+                          </InputAdornment>
+                        ),
                       }}
                       fullWidth
                       defaultValue=""
