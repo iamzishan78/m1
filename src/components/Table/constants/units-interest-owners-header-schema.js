@@ -175,6 +175,7 @@ const UnitInterestsPageHeadCells = (isSnapGrid = false) => [
             display: true,
             filter: true,
             searchable: false,
+            isMultiFilter: true,
             sort: true,
         },
     },
@@ -184,6 +185,7 @@ const UnitInterestsPageHeadCells = (isSnapGrid = false) => [
         label: "Stage",
         options: {
             filter: true,
+            isMultiFilter: true
         },
     },
     {
@@ -196,6 +198,7 @@ const UnitInterestsPageHeadCells = (isSnapGrid = false) => [
             },
             setCellProps: () => ({ style: { minWidth: "200px" } }),
             sort: true,
+            isMultiFilter: true,
             filter: true,
         },
     },
