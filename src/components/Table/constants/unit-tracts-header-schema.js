@@ -31,10 +31,13 @@ const UnitTractHeadCells = [
     name: "legalDescription", label: "Full Legal Description", esKey: 'legalDescription.keyword', options: { sort: true, filter: true }
   },
   {
-    name: "shapeArea", label: "Calc. Acres", esKey: 'shapeArea', options: { sort: true, filter: true }
+    name: "shapeArea", label: "Tract Calc. Acres", esKey: 'shapeArea', options: { sort: true, filter: true }
   },
   {
-    name: "uAcres", label: "Unit. Acres", esKey: 'uAcres', options: { sort: true, filter: true }
+    name: "sdGrossAcres", label: "Tract Gross Acres", esKey: 'sdGrossAcres', options: { sort: true, filter: true }
+  },
+  {
+    name: "uAcres", label: "Unit Acres", esKey: 'uAcres', options: { sort: true, filter: true }
   },
 ];
 

@@ -76,7 +76,7 @@ function AddUnitTractDialog(props) {
       setSelectedShapeLayer(props.seletedTract);
       setTractValue({ _id: props.seletedTract.parcelId, name: props.seletedTract.name })
 
-      reset(pick(props.seletedTract, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'shapeArea', 'uAcres', 'legalDescription']))
+      reset(pick(props.seletedTract, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'shapeArea','sdGrossAcres', 'uAcres', 'legalDescription']))
     }
   }, [props.seletedTract]);
 
@@ -85,10 +85,11 @@ function AddUnitTractDialog(props) {
     if (selectedShapeLayer?.shapeJson) {
       const originalProperties = getParcelOriginalProperties(selectedShapeLayer?.shapeJson?.properties)
       const shapeArea = selectedShapeLayer?.shapeJson?.properties?.shapeArea;
+      const sdGrossAcres = selectedShapeLayer?.shapeJson?.properties?.sdGrossAcres;
       const legalDescription = selectedShapeLayer?.shapeJson?.properties?.legalDescription;
       selectedShapeLayer.parcelId = selectedShapeLayer._id
       setTractValue({ _id: selectedShapeLayer._id, name: selectedShapeLayer.name })
-      reset({ ...getValues(), shapeArea, legalDescription, ...originalProperties, name: selectedShapeLayer.name })
+      reset({ ...getValues(), shapeArea,sdGrossAcres, legalDescription, ...originalProperties, name: selectedShapeLayer.name })
     } else {
       if (selectedShapeLayer?.clear) {
         setTractValue({ name: "", _id: null })
@@ -235,10 +236,13 @@ function AddUnitTractDialog(props) {
             <TractForm tract={tract} tractValue={tractValue} setSelectedShapeLayer={setSelectedShapeLayer} register={register} control={control} />
 
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='shapeArea' label={"Calc. Acres"}
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='shapeArea' label={"Tract Calc. Acres"}
               InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.shapeArea || ''} />
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='uAcres' label={"Unit. Acres"}
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='sdGrossAcres' label={"Tract Gross Acres"}
+              InputLabelProps={{ shrink: true }} fullWidth  defaultValue={tract?.sdGrossAcres || ''} />
+
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='uAcres' label={"Unit Acres"}
               InputLabelProps={{ shrink: true }} type='number' fullWidth onWheel={(e) => e.target.blur()} />
 
           </div>
