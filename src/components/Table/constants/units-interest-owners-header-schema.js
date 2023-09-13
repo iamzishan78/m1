@@ -122,7 +122,7 @@ const UnitInterestsPageHeadCells = [
         },
     },
     {
-        name: 'uMaxUnitPricing',
+        name: 'max_offer_price',
         label: 'Max Offer Price',
         esKey: 'max_offer_price',
         // editable: false,
