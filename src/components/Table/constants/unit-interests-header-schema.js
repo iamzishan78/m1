@@ -3,6 +3,7 @@ import ListChips from "components/Common/ListChips";
 import vf_currency, { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 import { GlobalStickyStyles } from "GlobalSettings";
 import { history } from "store";
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 
 const UnitInterestsHeadCells = [
     {
@@ -233,18 +234,18 @@ const UnitInterestsHeadCells = [
             filter: true
         }
     },
-
+    //remove until max offer price logic has been fixed
+    // {
+    //     name: "uMaxUnitPricing", label: "Max Offer Price", esKey: 'shape.shapeJson.properties.uMaxUnitPricing.keyword',
+    //     options: {
+    //         dbName: "uMaxUnitPricing",
+    //         sort: true,
+    //         filter: true,
+    //         customRender: (value) => vf_currency_to_fixed(value, 2)
+    //     }
+    // },
     {
-        name: "uMaxUnitPricing", label: "Max Offer Price", esKey: 'shape.shapeJson.properties.uMaxUnitPricing.keyword',
-        options: {
-            dbName: "uMaxUnitPricing",
-            sort: true,
-            filter: true,
-            customRender: (value) => vf_currency_to_fixed(value, 2)
-        }
-    },
-    {
-        name: "offer_price", label: "Target Offer Price", esKey: 'offer_price',
+        name: "offer_price", label: "Offer Price", esKey: 'offer_price',
         options: {
             dbName: "offer_price",
             sort: true,
@@ -365,9 +366,21 @@ const UnitInterestsHeadCells = [
     //     }
     // },
     {
-        name: "unitCampaign", label: "Campaign", esKey: 'shape.shapeJson.properties.campaignName.keyword',
+        name: "campaignName", label: "Campaign", esKey: 'campaignName.keyword',
         options: {
-            dbName: "shape.shapeJson.properties.campaignName.keyword",
+            dbName: "campaignName.keyword",
+            customRender: (value) => {
+                return <CampaignNameField value={value} fullWidth disabled />;
+            },
+            setCellProps: () => ({ style: { minWidth: "200px" } }),
+            sort: true,
+            filter: true
+        }
+    },
+    {
+        name: "campaignPriority", label: "Campaign Priority", esKey: 'campaignPriority.keyword',
+        options: {
+            dbName: "campaignPriority.keyword",
             sort: true,
             filter: true
         }

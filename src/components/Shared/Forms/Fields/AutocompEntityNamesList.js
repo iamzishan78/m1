@@ -62,10 +62,8 @@ export default function AutocompEntityNamesList({ nameAutValue, setNameAutValue,
     useEffect(() => {
         //set ownerType according to to contact
         const contactId = nameAutValue?._id
-        if (rest?.setOwnerTypeOfConctact && contactId) {
-            const ownerType = mongoEntitiesArray.find(entity => entity._id === contactId)?.ownerType
-            if (ownerType)
-                rest.setOwnerTypeOfConctact(ownerType);
+        if (rest?.setContact && contactId) {
+            rest.setContact(mongoEntitiesArray.find(entity => entity._id === contactId) || {});
         }
 
     }, [nameAutValue, mongoEntitiesArray]);

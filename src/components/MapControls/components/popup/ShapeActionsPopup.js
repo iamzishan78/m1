@@ -543,7 +543,7 @@ const ShapeActionsPopup = (props) => {
     };
 
     upsertCustomLayer({
-      variables: { customLayer: customLayerData },
+      variables: { customLayer: customLayerData, userId: stateApp.user.mongoId },
     }).then(result => {
 
       const layerId = result.data.upsertCustomLayer.customLayer._id;

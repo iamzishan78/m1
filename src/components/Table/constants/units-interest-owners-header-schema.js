@@ -1,4 +1,5 @@
 import ListChips from 'components/Common/ListChips';
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import { GlobalStickyStyles } from 'GlobalSettings';
 
@@ -126,23 +127,23 @@ const UnitInterestsPageHeadCells = [
             customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>
         },
     },
-    {
-        name: 'uMaxUnitPricing',
-        label: 'Max Offer Price',
-        esKey: 'shape.shapeJson.properties.uMaxUnitPricing.keyword',
-        // editable: false,
-        noFilter: true,
-        options: {
-            display: true,
-            sort: true,
-            filter: true,
-            isMultiFilter: true,
-            customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>
-        },
-    },
+    // remove until max offer price logic is fixed
+    // {
+    //     name: 'uMaxUnitPricing',
+    //     label: 'Max Offer Price',
+    //     esKey: 'shape.shapeJson.properties.uMaxUnitPricing.keyword',
+    //     // editable: false,
+    //     noFilter: true,
+    //     options: {
+    //         display: true,
+    //         sort: true,
+    //         filter: true,
+    //         customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>
+    //     },
+    // },
     {
         name: 'offer_price',
-        label: 'Target Offer Price',
+        label: 'Offer Price',
         esKey: 'offer_price',
         // editable: false,
         noFilter: true,
@@ -167,9 +168,41 @@ const UnitInterestsPageHeadCells = [
         },
     },
     {
-        name: 'campaignName',
-        label: 'Campaign Name',
-        esKey: 'campaignName.keyword',
+        name: 'contactOwners',
+        label: 'Contact Owner',
+        esKey: 'contactOwners.keyword',
+        options: {
+            display: true,
+            filter: true,
+            searchable: false,
+            sort: true,
+        },
+    },
+    {
+        name: "status",
+        esKey: "contact.status.keyword",
+        label: "Stage",
+        options: {
+            filter: true,
+        },
+    },
+    {
+        name: "campaignName",
+        label: "Campaign Name",
+        esKey: "campaignName.keyword",
+        options: {
+            customRender: (value) => {
+                return <CampaignNameField value={value} fullWidth disabled />;
+            },
+            setCellProps: () => ({ style: { minWidth: "200px" } }),
+            sort: true,
+            filter: true,
+        },
+    },
+    {
+        name: 'campaignPriority',
+        label: 'Campaign Priority',
+        esKey: 'campaignPriority.keyword',
         options: {
             display: true,
             filter: true,

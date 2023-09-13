@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { get } from "lodash";
+import { get, isEqual, sortBy } from "lodash";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -13,7 +13,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 
 import { AppContext } from "AppContext";
-import { useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { ADD_OWNER_TOA_SHAPE } from "graphQL/useMutationAddOwnerToAShape";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import { makeStyles } from "@material-ui/core/styles";
@@ -31,6 +31,9 @@ import CampaignNameField from "components/ContactDetailCard/components/FieldCont
 import AssociatedDealField from "components/ContactDetailCard/components/FieldContent/AssociatedDealField";
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+import { Status } from "components/ContactDetailCard/components/FieldContent";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -75,13 +78,37 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const { control, reset, setValue, getValues, watch } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
   const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false)
-
+  const [statusOptions, setStatusOptions] = useState([]);
   const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
-  const [ownerTypeOfConctact, setOwnerTypeOfConctact] = useState();
+  const [contact, setContact] = useState();
   const [anchorEl, setAnchorEl] = useState();
   const [loading, setLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const watchedNra = watch('nra')
+
+  const [getCampaignPriorityList, { data: priorityList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+
+  useEffect(() => {
+    getCampaignPriorityList({
+      variables: {
+        esIndex: 'shapeowners_flat',
+        filterKey: 'campaignPriority.keyword',
+        size: 50,
+      },
+    })
+  }, [getCampaignPriorityList])
+
+  const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+
+  useEffect(() => {
+    getFilters({
+      variables: {
+        esIndex: "contacts_flat",
+        filterKey: "status.keyword",
+        size: 50,
+      },
+    });
+  }, [])
 
   useEffect(() => {
     if (selectedRow) {
@@ -98,7 +125,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         name,
         ownerEntity,
         contactStatus,
+        status,
         ownerType,
+        campaignPriority,
         contact,
         campaignName,
         deals
@@ -114,7 +143,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         competitor_offer_price: competitor_offer_price || null,
         offer_price: parseFloat(parseFloat(offer_price).toFixed(2)) || null,
         contactStatus: contactStatus || contact.contactStatus,
+        status: status || contact.status,
         ownerType,
+        campaignPriority,
         customLayer,
         campaignName,
         deals
@@ -130,6 +161,25 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       reset(owner);
     }
   }, [selectedRow]);
+
+  useEffect(() => {
+    if (filtersData?.getESFilterList?.hits) {
+      const allFiltersData = filtersData.getESFilterList.hits.map((hit) => hit.key);
+      let filterData = filtersData.getESFilterList.hits.map((hit) => hit.key);
+      for (let i = 0; i < contactStatusOptions.length; i++) {
+        filterData = filterData.filter((d) => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label);
+      }
+      for (let i = 0; i < contactStatusOptions.length; i++) {
+        if (
+          (contactStatusOptions[i].notInclude && allFiltersData.find((d) => d === contactStatusOptions[i].value)) ||
+          !contactStatusOptions[i].notInclude
+        ) {
+          filterData.push(contactStatusOptions[i].label);
+        }
+      }
+      setStatusOptions(filterData);
+    }
+  }, [filtersData]);
 
   // CONTACT
 
@@ -258,6 +308,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
       if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
         (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
+        (ownerToAdd.campaignPriority && selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
         (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
       ) {
         updateContact({
@@ -265,13 +316,17 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             contact: {
               _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
               contactStatus: ownerToAdd.contactStatus,
+              status: ownerToAdd.status,
               lastUpdateBy: stateApp.user.mongoId,
               ownerType: ownerToAdd.ownerType,
-              campaignName: ownerToAdd.campaignName
+              campaignPriority: ownerToAdd.campaignPriority,
             }
           }
         })
       }
+
+      if (!ownerToAdd.campaignName || ownerToAdd.campaignName === '') ownerToAdd.campaignName = []
+
       handleAddUpdate(ownerToAdd);
     }
   };
@@ -319,6 +374,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   };
   const classes = useStyles();
+
   return (
     <div className={classes.move}>
       {deleteDialogOpen && (
@@ -416,7 +472,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <h3>Name</h3>
-                <AutocompEntityNamesList userId={stateApp.user.mongoId} setOwnerTypeOfConctact={setOwnerTypeOfConctact} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
+                <AutocompEntityNamesList userId={stateApp.user.mongoId} setContact={setContact} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
               </Grid>
               <Grid item xs={12}>
                 <h3>Entity Type</h3>
@@ -434,7 +490,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         }
                         setValue('ownerType', val);
                       }}
-                      value={ownerTypeOfConctact ?? ""}
+                      value={contact?.ownerType ?? ""}
                     />
                   )}
                 />
@@ -636,7 +692,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               </Grid>
 
               <Grid item xs={12}>
-                <h3>Offer Price</h3>
+                <h3>Target Offer Price</h3>
 
                 <Controller
                   control={control}
@@ -699,6 +755,30 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 />
               </Grid>
               <Grid item xs={12}>
+                <h3>Stage</h3>
+
+                <Controller
+                  control={control}
+                  defaultValue={''}
+                  name="status"
+                  render={(props) => (
+                    <Status
+                      className={classes.maxWidth}
+                      options={statusOptions}
+                      value={props.value}
+                      setDocumentType={(value) => {
+                        let val = value.name;
+                        const data = contactStatusOptions.find((s) => s.label === val);
+                        if (data) {
+                          val = data.value;
+                        }
+                        props.onChange(val)
+                      }}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
                 <h3>Campaign Names</h3>
 
                 <Controller
@@ -715,6 +795,36 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       fullWidth
                       targetLabel="Contact"
                       simpleChips
+                    />
+                  )}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <h3>Campaign Priority</h3>
+                <Controller
+                  control={control}
+                  name="campaignPriority"
+                  render={(params) => (
+                    <AutoCompleteWithAddNew
+                      {...params}
+                      value={get(params, "value", "")}
+                      // variant="outlined"
+                      setValue={(value) => {
+                        if (value?._id)
+                          params.onChange({ _id: value._id, name: value.name });
+                        else params.onChange({});
+                        if (value?._id === "newEntity") delete value._id;
+                        setValue('campaignPriority', value?.name);
+                      }}
+                      options={get(
+                        priorityList,
+                        "getESFilterList.hits",
+                        []
+                      )?.map((payor) => ({
+                        _id: get(payor, `original.hits.hits.${0}._id`),
+                        name: payor.key,
+                      }))}
                     />
                   )}
                 />

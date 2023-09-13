@@ -57,15 +57,16 @@ const tableData = [
     key: "netRoyalityAcres",
   },
   {
-    label: "Target Unit Pricing (per NRA)",
+    label: "Unit Pricing (per NRA)",
     type: "currency",
     key: "uUnitPricing",
   },
-  {
-    label: "Max Unit Pricing (per NRA)",
-    type: "currency",
-    key: "uMaxUnitPricing",
-  },
+  //remove until max unit pricing logic is fixed
+  // {
+  //   label: "Max Unit Pricing (per NRA)",
+  //   type: "currency",
+  //   key: "uMaxUnitPricing",
+  // },
   {
     label: "Qualifier",
     type: "custom",
