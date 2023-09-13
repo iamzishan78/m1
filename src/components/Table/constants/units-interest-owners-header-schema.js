@@ -180,6 +180,17 @@ const UnitInterestsPageHeadCells = [
         },
     },
     {
+        name: 'campaignPriority',
+        label: 'Campaign Priority',
+        esKey: 'campaignPriority.keyword',
+        options: {
+            display: true,
+            filter: true,
+            searchable: false,
+            sort: true,
+        },
+    },
+    {
         name: 'reviewer',
         label: 'Reviewer',
         esKey: 'shape.shapeJson.properties.reviewer.name.keyword',
