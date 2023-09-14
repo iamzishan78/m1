@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CampaignUnitsTable from "components/Table//Unit/CampaignUnitsTable";
 import CampaignContactsTable from "components/Table/Contact/CampaignContactsTable";
+import UnitInterestOwnersTable from "components/Table/Unit/UnitInterestOwnersTable";
 
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
 import { campaignInitialData } from "./data";
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
   },
   mainPanelsDiv: {
     height: "100%",
-    maxHeight: "calc(100vh - 493px)",
+    maxHeight: "calc(100vh - 343px)",
     position: "relative",
     "&::-webkit-scrollbar": {
       width: "0.75em",
@@ -89,6 +90,13 @@ const CamapignRelatedGrids = ({ campaign }) => {
               <div style={{ position: "relative" }} classes={classes.gridTables}>
                 {searchTapValue.value === "contacts" && <CampaignContactsTable campaign={campaign} />}
                 {searchTapValue.value === "units" && <CampaignUnitsTable campaign={campaign} header="Units" />}
+                {searchTapValue.value === "unitInterests" &&
+                  <UnitInterestOwnersTable
+                    esIndex={'shapeowners_flat'}
+                    campaignName={campaign?.name}
+                    targetLabel="unit"
+                    isSnapGrid
+                  />}
               </div>
             </Grid>
           </Grid>
