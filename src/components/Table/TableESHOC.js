@@ -788,6 +788,9 @@ export const TableESHOC = (Component) => {
                             const tags = updatedData[0].map(d => d).toString().replace(/,/g, ' ')
                             updatedData = tags
                         }
+                    } else if (sampleCsv[j].name === 'deals' && Array.isArray(updatedData)) {
+                        const concatenatedNames = updatedData.map(item => item.name).join(',');
+                        updatedData = concatenatedNames;
                     } else if (Array.isArray(updatedData)) {
                         const data = updatedData.map(d => d).toString().replace(/,/g, ' ')
                         updatedData = data

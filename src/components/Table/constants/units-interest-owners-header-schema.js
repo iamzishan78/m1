@@ -236,13 +236,101 @@ const UnitInterestsPageHeadCells = [
         },
     },
     {
-        name: 'state',
-        label: 'State',
-        esKey: 'shape.shapeJson.properties.state.keyword',
+        name: 'offer_price',
+        label: 'Target Offer Price',
+        esKey: 'offer_price',
+        options: {
+          display: false,
+          download: true,
+          viewColumns: false,
+        },
+    },
+    {
+        name: 'description',
+        label: 'Unit description',
+        esKey: 'shape.shapeJson.properties.description.keyword',
         options: {
             display: false,
             download: true,
             viewColumns: false,
+        },
+    },
+    {
+        name: 'State',
+        label: 'State',
+        esKey: 'shape.shapeJson.properties.originalProperties.State.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: "SurveyMeridian", label: "Survey", esKey: [
+            'shape.shapeJson.properties.originalProperties.Survey.keyword',
+            'shape.shapeJson.properties.originalProperties.PrincipalMeridian.keyword'
+        ],
+        options: {
+            dbName: "shape.shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
+            display: false,
+            download: true,
+            viewColumns: false,
+            isMultiFilter: true,
+        },
+        custom: {
+            oRFilter: true,
+        },
+    },
+    {
+        name: 'block',
+        label: 'Block',
+        esKey: 'shape.shapeJson.properties.originalProperties.Block.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: 'township',
+        label: 'Township',
+        esKey: 'shape.shapeJson.properties.originalProperties.Township.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: "SectionRange", label: "Section/ Range", esKey: [
+            'shape.shapeJson.properties.originalProperties.Section.keyword',
+            'shape.shapeJson.properties.originalProperties.Range.keyword'
+        ],
+        options: {
+            dbName: "shape.shapeJson.properties.originalProperties.0?.Section?.Range?",
+            display: false,
+            download: true,
+            viewColumns: false,
+            isMultiFilter: true,
+        },
+        custom: {
+            oRFilter: true,
+        },
+    },
+    {
+        name: "AbstractSection", label: "Abstract", esKey: [
+            'shape.shapeJson.properties.originalProperties.AbstractName.keyword',
+            'shape.shapeJson.properties.originalProperties.ShortName.keyword'
+        ],
+        options: {
+            dbName: "shape.shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
+            display: false,
+            download: true,
+            viewColumns: false,
+            isMultiFilter: true,
+        },
+        custom: {
+            oRFilter: true,
         },
     },
     {
@@ -256,19 +344,9 @@ const UnitInterestsPageHeadCells = [
         },
     },
     {
-        name: 'county',
+        name: 'County',
         label: 'County',
-        esKey: 'tract.county.keyword',
-        options: {
-            display: false,
-            download: true,
-            viewColumns: false,
-        },
-    },
-    {
-        name: 'section',
-        label: 'Section',
-        esKey: 'tract.section.keyword',
+        esKey: 'shape.shapeJson.properties.originalProperties.County.keyword',
         options: {
             display: false,
             download: true,
@@ -278,17 +356,7 @@ const UnitInterestsPageHeadCells = [
     {
         name: 'legalDescription',
         label: 'LegalDescription',
-        esKey: 'tract.legalDescription.keyword',
-        options: {
-            display: false,
-            download: true,
-            viewColumns: false,
-        },
-    },
-    {
-        name: 'owner',
-        label: 'Owner',
-        esKey: 'shape.shapeJson.properties.owner.keyword',
+        esKey: 'shape.shapeJson.properties.legalDescription.keyword',
         options: {
             display: false,
             download: true,
@@ -320,16 +388,6 @@ const UnitInterestsPageHeadCells = [
         name: 'zip',
         label: 'Zip Code',
         esKey: 'contact.entityDetail.zip.keyword',
-        options: {
-            display: false,
-            download: true,
-            viewColumns: false,
-        },
-    },
-    {
-        name: 'sdGrossAcres',
-        label: 'Tract Gross',
-        esKey: 'tract.sdGrossAcres.keyword',
         options: {
             display: false,
             download: true,
