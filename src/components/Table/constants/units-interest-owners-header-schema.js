@@ -354,16 +354,6 @@ const UnitInterestsPageHeadCells = [
         },
     },
     {
-        name: 'legalDescription',
-        label: 'LegalDescription',
-        esKey: 'shape.shapeJson.properties.legalDescription.keyword',
-        options: {
-            display: false,
-            download: true,
-            viewColumns: false,
-        },
-    },
-    {
         name: 'address1',
         label: 'Address1',
         esKey: 'contact.entityDetail.address1.keyword',
@@ -388,16 +378,6 @@ const UnitInterestsPageHeadCells = [
         name: 'zip',
         label: 'Zip Code',
         esKey: 'contact.entityDetail.zip.keyword',
-        options: {
-            display: false,
-            download: true,
-            viewColumns: false,
-        },
-    },
-    {
-        name: 'nra',
-        label: 'Tract Nra',
-        esKey: 'nra',
         options: {
             display: false,
             download: true,
