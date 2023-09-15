@@ -67,6 +67,18 @@ function UnitInterestOwnersTable(props) {
 
   useEffect(() => {
     const search = esExtentedSearch(props.landSearchQuery, searchInput)
+
+    props.setInitialFilters([
+      {
+        field: 'shape.layer.keyword',
+        value: 'unit',
+      },
+      ...(props.campaignName ? [{
+        field: 'campaignName.keyword',
+        value: props.campaignName
+      }] : [])
+    ]);
+
     setTableMeta({
       extendSearchQuery: isNaN(parseFloat(search.replaceAll('*', ''))) ? search : search.replaceAll('*', ''),
       searchFields: [
@@ -88,18 +100,11 @@ function UnitInterestOwnersTable(props) {
           'offer_price',
         ] : [])
       ],
-      TableHeader: copy(TableHeader),
+      TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: 'shapeowners_flat',
       selectedGridView: GridViewModule || defaultView,
       typeKeyword: { gridViewCategory: 'UnitInterest' },
       startPaginationAt: 50,
-      filters: [
-        {
-          field: 'shape.layer.keyword',
-          value: 'unit',
-        },
-      ],
-
       defaultSort: { field: '_ts', order: 'desc' },
       polygon: stateApp?.currentFeature?.geometry && {
         type: 'geo_intersects',
@@ -110,7 +115,7 @@ function UnitInterestOwnersTable(props) {
       downloadAll: { exportPx: '121px' }
     });
     // eslint-disable-next-line
-  }, [searchInput, props.landSearchQuery, userGridViewSettings]);
+  }, [searchInput, props.landSearchQuery, userGridViewSettings, props.campaignName]);
 
   return (
     <Container
