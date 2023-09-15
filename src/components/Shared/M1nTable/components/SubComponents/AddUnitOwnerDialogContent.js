@@ -32,6 +32,9 @@ import AssociatedDealField from "components/ContactDetailCard/components/FieldCo
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { calculateNRAForUnitOwnerDialog } from "utils/calculatedNraHelper"
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import { Status } from "components/ContactDetailCard/components/FieldContent";
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -532,7 +535,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri, e.target.value, getValues().nri));
+                        if (!isNraOverridden) setValue("nra", calculateNRAForUnitOwnerDialog(getValues().royalty_interest, getValues().orri, e.target.value, getValues().nri));
                       }}
                       fullWidth
                       defaultValue=""
