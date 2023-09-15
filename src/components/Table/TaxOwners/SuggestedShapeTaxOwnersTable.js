@@ -114,13 +114,6 @@ function SuggestedShapeTaxOwnersTable(props) {
     }
   );
 
-  useEffect(() => {
-    console.log('dataShapeOwners', dataShapeOwners)
-  }, [dataShapeOwners])
-  useEffect(() => {
-    console.log('variablesShapeOwners', variablesShapeOwners)
-  }, [variablesShapeOwners])
-
   const [addOwnerToAShape, { data: shapeOwnerData }] = useMutation(ADD_OWNER_TOA_SHAPE);
 
   const [convertMultitpleOwnerToContact] = useMutation(
@@ -143,7 +136,6 @@ function SuggestedShapeTaxOwnersTable(props) {
     const queryPoly = getPolygonString(props.customLayer?.shape)
 
     props.setLoading(true)
-    console.log('gg')
 
     getPaginatedShapeWellOwners({
       variables: {
