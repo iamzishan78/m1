@@ -1,3 +1,4 @@
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import { GlobalStickyStyles } from "GlobalSettings";
 
 const unitsColumnHeaders = (isSnapGrid = false) => [
@@ -31,6 +32,8 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     esKey: "name.keyword",
     options: {
       ...GlobalStickyStyles({ setCellProps: { maxWidth: "500px" }, isSnapGrid }),
+      filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -40,6 +43,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
       // setCellProps: () => ({ style: { minWidth: "125px" } }),
     },
   },
@@ -50,6 +54,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -59,6 +64,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -69,7 +75,8 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
       sort: true,
-      filter: true
+      filter: true,
+      isMultiFilter: true,
     },
     custom: {
       oRFilter: true,
@@ -83,7 +90,8 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.Block?.Township?",
       sort: true,
-      filter: true
+      filter: true,
+      isMultiFilter: true,
     },
     custom: {
       oRFilter: true,
@@ -91,13 +99,14 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
   },
   {
     name: "SectionRange", label: "Section/ Range", esKey: [
+      'shapeJson.properties.originalProperties.Range.keyword',
       'shapeJson.properties.originalProperties.Section.keyword',
-      'shapeJson.properties.originalProperties.Range.keyword'
     ],
     options: {
-      dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
+      dbName: "shapeJson.properties.originalProperties.0?.Range?.Section?",
       sort: true,
-      filter: true
+      filter: true,
+      isMultiFilter: true,
     },
     custom: {
       oRFilter: true,
@@ -111,7 +120,8 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
       sort: true,
-      filter: true
+      filter: true,
+      isMultiFilter: true,
     },
     custom: {
       oRFilter: true,
@@ -124,6 +134,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -133,6 +144,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -142,6 +154,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -151,6 +164,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -160,19 +174,24 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
   {
     name: "campaignName",
     label: "Campaign Name",
     esKey: "shapeJson.properties.campaignName.keyword",
-    // options: {
-    //   customRender: (value) => value?.map((v, index) => `${v}${index < value?.length - 1 ? ',' : ''}`),
-    //   setCellProps: () => ({ style: { minWidth: "200px" } }),
-    //   sort: true,
-    //   filter: true,
-    // },
+    options: {
+      customRender: (value) => {
+        return <CampaignNameField value={value} fullWidth disabled />;
+      },
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      sort: true,
+      filter: true,
+      isMultiFilter: true,
+    },
   },
+
   {
     name: "qualifier",
     label: "Qualifier",
@@ -180,6 +199,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
       setCellProps: () => ({ style: { minWidth: "125px" } }),
     },
   },
@@ -190,6 +210,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
       setCellProps: () => ({ style: { minWidth: "125px" } }),
     },
   },
@@ -209,6 +230,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     options: {
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
     custom: {
       key_as_string: true,
@@ -226,6 +248,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
       ignoreGlobal: true,
       print: false,
       filter: true,
+      isMultiFilter: true,
       filterOptions: {
         names: [],
       },

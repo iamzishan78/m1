@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Box, Button, ClickAwayListener, Grid, Menu, MenuItem, Typography } from "@material-ui/core";
 import CardHeader from "@material-ui/core/CardHeader";
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
@@ -24,7 +24,8 @@ import ContactIcon from "@material-ui/icons/Group";
 import FlowIcon from "@material-ui/icons/Repeat";
 import { LocalAtm } from "@material-ui/icons";
 import { DescriptionOutlined } from "@material-ui/icons";
-
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
 import { UPDATE_NOTIFICATION_STATUS } from "graphQL/useMutationUpdateNotificationStatus";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
@@ -34,6 +35,7 @@ import { AppContext } from "AppContext";
 import ReactTimeAgo from "react-time-ago";
 import { dateIsValid } from "utils/helper";
 import { CommonCommentText } from "components/Shared/CommentComponent";
+import { ARCHIVE_ALL_MUTATIONS } from "graphQL/useMutationArchiverAllMentions";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -124,6 +126,35 @@ const useStyles = makeStyles((theme) => ({
       color: "#18AADD",
     },
   },
+  menuIcon: {
+    display: 'none'
+  },
+  archiveBtn: {
+    display: 'block',
+    position: 'absolute',
+    bottom: '-25px',
+    boxShadow: 'rgba(170, 180, 190, 0.6) 0px 4px 20px',
+    zIndex: 1,
+    backgroundColor: 'white',
+  },
+  menuBtn: ({ isArchiving, showArchiveOption }) => ({
+    position: 'relative',
+    width: '218px',
+
+    '& button': {
+      width: 'inherit',
+      justifyContent: 'flex-start'
+    },
+
+    '&:hover #menu-icon': {
+      display: 'block',
+      transform: 'rotateX(180deg)'
+    },
+
+    '& #menu-icon': {
+      display: showArchiveOption && 'block'
+    }
+  })
 }));
 
 const DragHandle = sortableHandle(() => (
@@ -133,14 +164,15 @@ const DragHandle = sortableHandle(() => (
 ));
 
 const Notifications = () => {
-  const classes = useStyles();
   let history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [notifications, setNotifications] = useState([]);
   const [profilesInfo, setProfilesInfo] = useState({});
   const [users, setUsers] = useState([]);
   const [tab, setTab] = useState(0);
+  const [showArchiveOption, setShowArchiveOption] = useState(false)
 
+  const [archiveAllMentions, { loading: isArchiving }] = useMutation(ARCHIVE_ALL_MUTATIONS);
   const [updateNotificationStatus] = useMutation(UPDATE_NOTIFICATION_STATUS);
 
   const [getNotifications, { data: notificationsData, loading }] =
@@ -197,12 +229,37 @@ const Notifications = () => {
     }
   }, [profilesData]);
 
+  const archiveAllAndClose = async () => {
+    await archiveAllMentions({
+      refetchQueries: ["getNotifications"],
+      awaitRefetchQueries: false,
+    })
+  };
+  const classes = useStyles({ isArchiving, showArchiveOption });
+
+  const archiveAllOption = () => {
+    setShowArchiveOption(!showArchiveOption);
+  }
   const Title = () => {
     return (
+
       <Grid container className={classes.gridStyle}>
-        <Grid item xs={6}>
-          <div>Notifications</div>
-        </Grid>
+        <ClickAwayListener onClickAway={()=>{setShowArchiveOption(false)}}>
+          <Grid item xs={6} className={classes.menuBtn}>
+            <Button aria-controls="simple-menu" aria-haspopup="true" onClick={archiveAllOption}>
+              <Box display={"flex"} gridGap={2} alignItems={'center'}>
+                <Typography variant="h5" style={{ fontWeight: '700' }}>Notifications</Typography>
+                <ExpandLessIcon id="menu-icon" className={classes.menuIcon} style={{ transform: showArchiveOption && 'rotate(180deg)' }} />
+              </Box>
+            </Button>
+            {showArchiveOption && (<Button className={classes.archiveBtn} onClick={archiveAllAndClose} disabled={isArchiving}>
+              <Box display={"flex"} gridGap={3} alignItems={'center'}>
+                {isArchiving && <CircularProgress size={15} />}
+                <Typography>Archive all</Typography>
+              </Box>
+            </Button>)}
+          </Grid>
+        </ClickAwayListener>
         <Grid item xs={6}>
           <div className={classes.customTabs}>
             <Tabs
@@ -241,7 +298,7 @@ const Notifications = () => {
       case "CHECK":
         return <LocalAtm />;
       case "PROPERTY":
-        case "FILE":
+      case "FILE":
         return <DescriptionOutlined />;
       default:
         return;
@@ -259,7 +316,7 @@ const Notifications = () => {
         <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
       ) : (
         <List style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
-            {notifications.map(({ _id, state, source, parent, senderId, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
+          {notifications.map(({ _id, state, source, parent, senderId, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
             const user = users.find((user) => source.user === user._id);
             return (
               <Paper key={i} className={classes.paper}>
@@ -305,18 +362,18 @@ const Notifications = () => {
                       history.push(`/revenue/property/details/${parent._id}`);
                     } else if (parentType === "CONTACT") {
                       history.push(`/contact/details/${parent._id}`);
-                    }else if(parentType === "FILE"){
+                    } else if (parentType === "FILE") {
                       history.push(`/documents`);
                       setStateApp((state) => ({
                         ...state,
                         pdfView: null,
                         selectedDocument: {
-                          fileId:parent._id,
-                          documentName:parent.name,
-                          fileType:parent.name.split('.')[parent.name.split('.').length-1].toUpperCase(),
-                          fileCreatedAt:parent.fileCreatedAt,
-                          uploadedBy:parent.user.name,
-                          fileSize:Math.round(parent.size/1024)+" KB",
+                          fileId: parent._id,
+                          documentName: parent.name,
+                          fileType: parent.name.split('.')[parent.name.split('.').length - 1].toUpperCase(),
+                          fileCreatedAt: parent.fileCreatedAt,
+                          uploadedBy: parent.user.name,
+                          fileSize: Math.round(parent.size / 1024) + " KB",
                           ...parent
                         },
                       }));
@@ -354,7 +411,7 @@ const Notifications = () => {
                         {parent.name}
                       </span>
                     )}
-                    
+
                     {(notificationType === "TASK_COMPLETED" || notificationType === "TASK_ASSIGNMENT") &&
                       <Grid container className={classes.gridStyle}>
                         <Grid item xs={1}>
@@ -383,7 +440,7 @@ const Notifications = () => {
                         </Grid>
                       </Grid>
                     }
-                      
+
                     {notificationType === "SYSTEM" && (
                       <Grid container className={classes.gridStyle}>
                         <Grid item xs={1}>
@@ -469,23 +526,26 @@ const Notifications = () => {
                         <MarkUnreadIcon />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Archive notification">
-                      <IconButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          updateNotificationStatus({
-                            variables: {
-                              id: _id,
-                              state: "ARCHIVED",
-                            },
-                            refetchQueries: ["getNotifications"],
-                            awaitRefetchQueries: false,
-                          });
-                        }}
-                      >
-                        <ArchiveIcon />
-                      </IconButton>
-                    </Tooltip>
+                    {
+                      state !== "ARCHIVED" &&
+                      <Tooltip title="Archive notification">
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateNotificationStatus({
+                              variables: {
+                                id: _id,
+                                state: "ARCHIVED",
+                              },
+                              refetchQueries: ["getNotifications"],
+                              awaitRefetchQueries: false,
+                            });
+                          }}
+                        >
+                          <ArchiveIcon />
+                        </IconButton>
+                      </Tooltip>
+                    }
                   </Grid>
                 </Grid>
               </Paper>
