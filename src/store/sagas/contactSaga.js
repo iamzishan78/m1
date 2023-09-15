@@ -71,7 +71,7 @@ function* convertMultipleOwnerToContact(action) {
   const bulkUpload = yield select((state) => state.common.bulkUpload);
   yield put(setReduxKey("contactsAdded", false));
   try {
-    const { rows, entitiesIds, existingContactId, actionType, userId, jobType, jobName } = action.payload;
+    const { rows, entitiesIds, existingContactId, autoCalculateOfferPrice, actionType, userId, jobType, jobName } = action.payload;
     let _id, _res;
     if (entitiesIds?.length > 0) {
       const id = yield call(Api.mutate, INITIALIZE_EXPORT_JOB, {
@@ -95,6 +95,7 @@ function* convertMultipleOwnerToContact(action) {
           requestPayload: {
             existingContactId,
             actionType,
+            autoCalculateOfferPrice
           },
         },
         {

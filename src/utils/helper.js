@@ -7,10 +7,12 @@ import { addTrailingZeros } from "components/Shared/functions";
 
 const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
 const isDev = process.env.REACT_APP_NODE_ENV === "development";
-const decimalForamtter = new Intl.NumberFormat('en-US', { style: 'decimal',
-useGrouping: true,
-minimumFractionDigits: 2,
-maximumFractionDigits: 2,}) 
+const decimalForamtter = new Intl.NumberFormat('en-US', {
+  style: 'decimal',
+  useGrouping: true,
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
 export const copy = (data) => {
   return data ? JSON.parse(JSON.stringify(data)) : null;
 };
@@ -124,6 +126,8 @@ export const formatTaxOwners = (owners, formData) => {
         "shape.royalty_interest": owners[i].shape.royalty_interest,
         "shape.orri": owners[i].shape.orri,
         "shape.nra": owners[i].shape.nra,
+        "shape.uUnitPricing": owners[i].shape.uUnitPricing,
+        "shape.uMaxUnitPricing": owners[i].shape.uMaxUnitPricing,
         "shape.globalOwnerId": owners[i].shape.globalOwnerId,
         "shape.isSuggested": owners[i].shape.isSuggested
       },
