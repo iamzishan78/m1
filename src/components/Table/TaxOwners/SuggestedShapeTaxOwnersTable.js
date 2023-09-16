@@ -34,6 +34,7 @@ import { getPolygonString } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
+import { calculateNRAForShapeTaxOwnersTable } from "utils/calculatedNraHelper"
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -393,7 +394,7 @@ function SuggestedShapeTaxOwnersTable(props) {
         working_interest: rec.interestType === 'WORKING INTEREST' ? ownershipPercentage : "",
         royalty_interest: rec.interestType === 'ROYALTY INTEREST' ? ownershipPercentage : "",
         orri: rec.interestType === 'OVERRIDING ROYALTY' ? ownershipPercentage : "",
-        nra: calculateNRA(uAcres, ownershipPercentage),
+        nra: calculateNRAForShapeTaxOwnersTable(uAcres, ownershipPercentage, workspaceSettings),
         globalOwnerId: rec.globalOwnerId,
         isSuggested: true
       }

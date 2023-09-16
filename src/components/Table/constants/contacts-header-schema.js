@@ -40,7 +40,7 @@ const ContactsHeadCells = [
       viewColumns: false,
     },
   },
- 
+
   {
     name: "country",
     label: "Country",
@@ -619,6 +619,9 @@ const ContactsHeadCells = [
       filterOptions: {
         names: [],
       },
+      customRender: (value) => {
+        return <p>{value}</p>
+      }
     },
   },
   {

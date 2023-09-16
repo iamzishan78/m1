@@ -240,7 +240,7 @@ function AddUnitTractDialog(props) {
               InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.shapeArea || ''} />
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='sdGrossAcres' label={"Tract Gross Acres"}
-              InputLabelProps={{ shrink: true }} fullWidth  defaultValue={tract?.sdGrossAcres || ''} />
+              InputLabelProps={{ shrink: true }} fullWidth disabled  defaultValue={tract?.sdGrossAcres || ''} />
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='uAcres' label={"Unit Acres"}
               InputLabelProps={{ shrink: true }} type='number' fullWidth onWheel={(e) => e.target.blur()} />

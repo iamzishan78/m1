@@ -32,6 +32,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     esKey: "name.keyword",
     options: {
       ...GlobalStickyStyles({ setCellProps: { maxWidth: "500px" }, isSnapGrid }),
+      filter: true,
       isMultiFilter: true,
     },
   },
