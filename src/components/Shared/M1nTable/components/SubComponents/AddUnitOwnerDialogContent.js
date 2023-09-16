@@ -32,6 +32,9 @@ import AssociatedDealField from "components/ContactDetailCard/components/FieldCo
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { calculateNRAForUnitOwnerDialog } from "utils/calculatedNraHelper"
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+import { Status } from "components/ContactDetailCard/components/FieldContent";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
