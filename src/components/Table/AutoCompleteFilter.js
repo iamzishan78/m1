@@ -9,7 +9,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { VariableSizeList } from 'react-window';
 import PropTypes from 'prop-types';
 import { capitalizeFirstLetter, customStartCaseString } from "components/Shared/functions";
-import { isArray } from "lodash";
+import { isArray, isEqual } from "lodash";
 
 export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
   filterList,
@@ -60,7 +60,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
 
   useEffect(() => {
     const filterVal = filterList[index][0];
-    setSearch(isArray(filterVal) ? filterVal[filterVal.length - 1] : filterVal);
+    setSearch(isArray(filterVal) || multiple ? '' : filterVal);
     if (!filterVal) {
       setValue(filterValue);
     }
@@ -135,7 +135,19 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
   }, [filtersData]);
 
   const getFiltersAction = (search) => {
-    if (filtersData && multiple && filterList[index].length !== 0) return;
+    let addedFilters = filters
+
+    if (multiple) {
+      if (filtersData && filterList[index].length > 0) return
+
+      if (!filtersData && filterList[index].length > 0)
+        addedFilters = addedFilters.filter(filter => {
+          if (typeof filterKey !== "string")
+            return !isEqual(filter.field, JSON.stringify(filterKey))
+
+          return !isEqual(filter.field, filterKey)
+        })
+    }
 
     const rawSearch = search;
     if (search) search = type === "number" ? search : `*${search}*`;
@@ -143,7 +155,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
       variables: {
         esIndex,
         index: esIndex,
-        filters,
+        filters: addedFilters,
         filterKeys: typeof filterKey !== "string" ? filterKey : undefined,
         filterKey: typeof filterKey === "string" ? filterKey : undefined,
         search,
@@ -180,7 +192,7 @@ export const AutoCompleteFilter = React.memo(function AutoCompleteFilter({
       onChange={(e, value2, reason) => {
 
         if (reason === "clear" || (multiple && value2.length === 0) || (!multiple && !value2?.key)) {
-          filterList[index].pop();
+          filterList[index] = [];
           setSearch("");
           setValue(multiple ? [] : {});
         } else {

@@ -32,6 +32,8 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     esKey: "name.keyword",
     options: {
       ...GlobalStickyStyles({ setCellProps: { maxWidth: "500px" }, isSnapGrid }),
+      filter: true,
+      isMultiFilter: true,
     },
   },
   {
@@ -97,11 +99,11 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
   },
   {
     name: "SectionRange", label: "Section/ Range", esKey: [
+      'shapeJson.properties.originalProperties.Range.keyword',
       'shapeJson.properties.originalProperties.Section.keyword',
-      'shapeJson.properties.originalProperties.Range.keyword'
     ],
     options: {
-      dbName: "shapeJson.properties.originalProperties.0?.Section?.Range?",
+      dbName: "shapeJson.properties.originalProperties.0?.Range?.Section?",
       sort: true,
       filter: true,
       isMultiFilter: true,
@@ -186,6 +188,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
       setCellProps: () => ({ style: { minWidth: "200px" } }),
       sort: true,
       filter: true,
+      isMultiFilter: true,
     },
   },
 

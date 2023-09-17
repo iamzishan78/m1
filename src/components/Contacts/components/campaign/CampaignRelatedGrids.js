@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
   },
   mainPanelsDiv: {
     height: "100%",
-    maxHeight: "calc(100vh - 493px)",
+    maxHeight: "calc(100vh - 343px)",
     position: "relative",
     "&::-webkit-scrollbar": {
       width: "0.75em",
@@ -94,6 +94,8 @@ const CamapignRelatedGrids = ({ campaign }) => {
                   <UnitInterestOwnersTable
                     esIndex={'shapeowners_flat'}
                     campaignName={campaign?.name}
+                    targetLabel="unit"
+                    isSnapGrid
                   />}
               </div>
             </Grid>

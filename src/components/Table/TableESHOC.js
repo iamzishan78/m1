@@ -588,6 +588,29 @@ export const TableESHOC = (Component) => {
         }, []);
 
         const handleMultiFieldFilter = (esFilter) => {
+            if (activeFiltersRef.current && activeFiltersRef.current.length > 0) {
+                esFilter = esFilter.filter(Boolean).map(filter => {
+                    const refFilter = activeFiltersRef.current.filter(Boolean).find(refFilter => {
+                        if (Array.isArray(filter.field))
+                            return refFilter.field === JSON.stringify(filter.field)
+
+                        return refFilter.field === filter.field
+                    })
+
+                    if (!refFilter)
+                        return filter
+
+                    let value = filter.value
+
+                    if (Array.isArray(refFilter.value) && !Array.isArray(value)) {
+                        if (value === refFilter.value[0])
+                            value = refFilter.value
+                    }
+
+                    return { ...filter, value }
+                })
+            }
+
             const filters = []
             // const filterHistory = {}
             if (esFilter) {
