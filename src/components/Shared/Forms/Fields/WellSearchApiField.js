@@ -58,6 +58,31 @@ function WellSearchApiField(props) {
         []
     );
 
+    useEffect(()=> {
+        callWellSearch2({ input: "" }, (results) => {
+            if (results) {
+                const indexSource = results["@odata.context"].substring(
+                    results["@odata.context"].indexOf("('") + 2,
+                    results["@odata.context"].indexOf("')")
+                );
+
+                let newOptions = [
+                    ...results.value.map((result) => {
+                        result.Score = result["@search.score"];
+                        delete result["@search.score"];
+                        return {
+                            ...result,
+                            Source: indexSource,
+                            Primary: result.WellName,
+                            Secondary: result.ApiNumber,
+                        };
+                    })
+                ];
+
+                setFoundWells(newOptions)
+            }
+        });
+    }, [])
 
     useEffect(() => {
         if (!dataTenantWell?.tenantWell) return;

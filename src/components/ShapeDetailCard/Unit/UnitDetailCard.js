@@ -27,6 +27,7 @@ import { AppContext } from "AppContext";
 
 import { copy } from "components/Shared/functions";
 import { detailCardStyles } from "../style";
+import { DrawerContextProvider } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 
 export default function UnitDetailCard(props) {
   const dispatch = useDispatch();
@@ -205,7 +206,9 @@ export default function UnitDetailCard(props) {
     />
   );
 
-  return uniObj ? (
+  return(
+      (
+        uniObj ? (
     <Grid item sm={12} container className={classes.gridWidthScroll}>
       <Grid item xs={12} style={{ padding: "10px 15px 0px 15px" }} className={classes.border}>
         <div className={classes.tags}>
@@ -285,6 +288,7 @@ export default function UnitDetailCard(props) {
               value={selectedWellTab}
               panels={[
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
+                  <DrawerContextProvider>
                   <ShapeWellInterestTable
                     customLayer={uniObj}
                     shapeType="Unit"
@@ -294,6 +298,7 @@ export default function UnitDetailCard(props) {
                     showTracks
                     dense
                   />
+                  </DrawerContextProvider>
                 </div>,
                 <div className={showSummary ? classes.subContent : classes.subContent2}>
                   <AssociatedWellsShapeTable
@@ -350,5 +355,6 @@ export default function UnitDetailCard(props) {
     <div style={{ padding: "20px", position: "absolute", height: "100%", width: "100%" }}>
       <CircularProgress size={80} disableShrink color="secondary" />
     </div>
-  );
+  )
+  ))
 }

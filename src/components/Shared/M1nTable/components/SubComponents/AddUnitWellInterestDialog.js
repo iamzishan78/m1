@@ -12,7 +12,7 @@ import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 
 import DeleteIcon from "@material-ui/icons/Delete";
 import Grid from "@material-ui/core/Grid";
-import { CircularProgress, Dialog, ListItemIcon, ListItemText, Menu,MenuItem } from "@material-ui/core";
+import { CircularProgress, Dialog, ListItemIcon, ListItemText, Menu, MenuItem } from "@material-ui/core";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import { WELL_INTEREST_SELECT_OPTIONS } from "graphQL/useQueryWellInterestSelectOptions";
 import { ADD_SHAPE_WELL_INTEREST } from "graphQL/useMutationAddShapeWellInterest";
@@ -243,82 +243,81 @@ function AddUnitInterestDialog(props) {
         </div>
       </Grid> */}
 
-<Grid item xs={12} style={{ minHeight: "35px" }}>
-      <h4
-        style={{
-          margin: "0 0 15px 0",
-          float: "left",
-          fontSize: "1.1rem",
-        }}
-      >
-        {/* {props.seletedTract ? `Update ${props.shapeType} Tract` : `Associate Tract to ${props.shapeType}`} */}
-        {props.wellInterest
+      <Grid item xs={12} style={{ minHeight: "35px" }}>
+        <h4
+          style={{
+            margin: "0 0 15px 0",
+            float: "left",
+            fontSize: "1.1rem",
+          }}
+        >
+          {/* {props.seletedTract ? `Update ${props.shapeType} Tract` : `Associate Tract to ${props.shapeType}`} */}
+          {props.wellInterest
             ? `Update ${props.shapeType} Well`
             : `Add ${props.shapeType} Well`}
-      </h4>
-      <div style={{ float: "right" }}>
-        {props.wellInterest && (
-          <>
-            <IconButton
-              size="small"
-              component="span"
-              style={{
-                background: "transparent",
-                paddingLeft: "10px",
-                align: "center",
-              }}
-              onClick={handleMenuClick}
-            >
-              <MoreHorizIcon id="tractMoreHorizIcon" size="medium" />
-            </IconButton>
-          </>
-        )}
-        <IconButton onClick={!loading ? handleClose : undefined} size="small">
-          <CloseIcon2 fontSize="small" />
-        </IconButton>
-        <Menu
-          id="dealMenu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-          className={classes.menu}
-          getContentAnchorEl={null}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-          transformOrigin={{ vertical: "top", horizontal: "center" }}
-        >
-          <MenuItem
-            onClick={() => {
-              openConfirmationDialog();
-            }}
+        </h4>
+        <div style={{ float: "right" }}>
+          {props.wellInterest && (
+            <>
+              <IconButton
+                size="small"
+                component="span"
+                style={{
+                  background: "transparent",
+                  paddingLeft: "10px",
+                  align: "center",
+                }}
+                onClick={handleMenuClick}
+              >
+                <MoreHorizIcon id="tractMoreHorizIcon" size="medium" />
+              </IconButton>
+            </>
+          )}
+          <IconButton onClick={!loading ? handleClose : undefined} size="small">
+            <CloseIcon2 fontSize="small" />
+          </IconButton>
+          <Menu
+            id="dealMenu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+            className={classes.menu}
+            getContentAnchorEl={null}
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            transformOrigin={{ vertical: "top", horizontal: "center" }}
           >
-            <ListItemIcon style={{ minWidth: '30px' }}>
-              <DeleteIcon size="medium" />
-            </ListItemIcon>
-            <ListItemText id="deleteTract">Delete</ListItemText>
-          </MenuItem>
-        </Menu>
-      </div>
-    </Grid>
+            <MenuItem
+              onClick={() => {
+                openConfirmationDialog();
+              }}
+            >
+              <ListItemIcon style={{ minWidth: '30px' }}>
+                <DeleteIcon size="medium" />
+              </ListItemIcon>
+              <ListItemText id="deleteTract">Delete</ListItemText>
+            </MenuItem>
+          </Menu>
+        </div>
+        <h4
+          style={
+            {
+              margin: "0 0 15px 0",
+              float: "left",
+              fontSize: "1.1rem",
+            }
+          }
+        >
+          Select a system well to associate to unit
+        </h4>
+      </Grid>
       <div>
         <WellSearchApiField
           setTenantWell={setTenantWell}
           setSelectedWell={setSelectedWell}
         />
 
-        <h4
-          style={
-            {
-              //margin: "0 0 15px 0",
-              //float: "left",
-              //fontSize: "1.1rem",
-            }
-          }
-        >
-          Selected well and lease information
-        </h4>
-
-        <Controller
+        {/* <Controller
           as={TextField}
           control={control}
           variant="outlined"
@@ -342,16 +341,7 @@ function AddUnitInterestDialog(props) {
           fullWidth
           disabled
           defaultValue=""
-        />
-
-        <Controller
-          control={control}
-          name="operator"
-          label="Operator"
-          defaultValue={""}
-          options={getOptions("Operator") || []}
-          as={<AutoCompleteFieldComponent />}
-        />
+        /> */}
 
         <Controller
           as={TextField}
@@ -359,6 +349,7 @@ function AddUnitInterestDialog(props) {
           variant="outlined"
           margin="dense"
           name="leaseId"
+          disabled
           label={"Lease Number"}
           fullWidth
           defaultValue=""
@@ -369,9 +360,20 @@ function AddUnitInterestDialog(props) {
           variant="outlined"
           margin="dense"
           name="lease"
+          disabled
           label={"Lease Name"}
           fullWidth
           defaultValue=""
+        />
+
+        <Controller
+          control={control}
+          name="operator"
+          label="Operator"
+          defaultValue={""}
+          disabled
+          options={getOptions("Operator") || []}
+          as={<AutoCompleteFieldComponent />}
         />
 
         {/* <Controller
@@ -404,6 +406,7 @@ function AddUnitInterestDialog(props) {
             name="wellType"
             label="Well Type"
             defaultValue={""}
+            disabled
             options={getOptions("WellType") || []}
             as={<AutoCompleteFieldComponent />}
           />
@@ -413,6 +416,7 @@ function AddUnitInterestDialog(props) {
             name="wellBoreProfile"
             label="Wellbore Profile"
             defaultValue={""}
+            disabled
             options={getOptions("WellBoreProfile") || []}
             as={<AutoCompleteFieldComponent />}
           />
@@ -422,6 +426,7 @@ function AddUnitInterestDialog(props) {
             name="wellStatus"
             label="Well Status"
             defaultValue={""}
+            disabled
             options={getOptions("WellStatus") || []}
             as={<AutoCompleteFieldComponent />}
           />
