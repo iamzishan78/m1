@@ -139,6 +139,13 @@ const useStyles = makeStyles((theme) => ({
       color: "#fff",
     },
   },
+  newDealActionDisabled: {
+    margin: "0px 15px",
+    fontWeight: "600",
+    border: "1px solid #B3B3B3",
+    paddingLeft: 10,
+    paddingRight: 20,
+  },
   settingsButton: {
     display: "flex",
     flexDirection: "row",
@@ -229,7 +236,7 @@ const TransactAppBar = ({ dealFilter, setDealFilter, setStateApp }) => {
           {openPipeDialog && <PipelineCustomDialog />}
           <div className={classes.left}>
             <div>
-              <Button onClick={handleClickAddDeal} color="secondary" className={classes.newDealAction} startIcon={<Add />}>
+              <Button disableRipple={!pipeToShow} onClick={pipeToShow? handleClickAddDeal : null} className={pipeToShow ? classes.newDealAction : classes.newDealActionDisabled} startIcon={<Add />}>
                 { selectedPipe?.flowLineType === "general" ? "New Task" : "Add Deal"}
               </Button>
             </div>

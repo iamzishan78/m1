@@ -130,6 +130,9 @@ function UnitOwnersTable(props) {
           if (['working_interest', 'royalty_interest', 'orri', 'nri', 'nra'].includes(key))
             hit[key] = addTrailingZeros(hit[key])
         })
+        hit.block = hit?.shape?.shapeJson?.properties?.originalProperties?.Block;
+        hit.township = hit?.shape?.shapeJson?.properties?.originalProperties?.Township;
+        hit.description = hit?.shape?.shapeJson?.properties?.description;
         hit.contactStatus = hit?.contact?.contactStatus;
         hit.isPurchased = hit?.contact?.isPurchased;
         hit = props.setGenricData(hit, hit.ownerEntity, ['comments', 'tracks', 'tags', 'ifAreContacts']);
