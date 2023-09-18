@@ -254,7 +254,7 @@ function AddUnitInterestDialog(props) {
           {/* {props.seletedTract ? `Update ${props.shapeType} Tract` : `Associate Tract to ${props.shapeType}`} */}
           {props.wellInterest
             ? `Update ${props.shapeType} Well`
-            : `Add ${props.shapeType} Well`}
+            : `Add Well to ${props.shapeType}`}
         </h4>
         <div style={{ float: "right" }}>
           {props.wellInterest && (
