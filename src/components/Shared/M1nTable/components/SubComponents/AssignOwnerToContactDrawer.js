@@ -23,7 +23,7 @@ import { UPDATEBULKCONTACT } from "graphQL/useMutationUpdateBulkContact";
 import { timeZoneOptions } from "components/ContactDetailCard/components/FieldContent/timeZoneList";
 import { PUBLICTAGSQUERY } from "graphQL/useQueryPublicTags";
 import { BULKUPSERTTAG } from "graphQL/useMutationBulkUpsertTagOnContacts";
-import { UPSERT_CAMPAIGN_DESCRIPTORS } from "graphQL/useMutationCampaign";
+import { UPSERT_CONTACT_CAMPAIGNS } from "graphQL/useMutationCampaign";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
@@ -137,7 +137,7 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT);
   const [updateBulkContact] = useMutation(UPDATEBULKCONTACT);
   const [updateBulkTags] = useMutation(BULKUPSERTTAG);
-  const [upsertCampaignDescriptors] = useMutation(UPSERT_CAMPAIGN_DESCRIPTORS);
+  const [upsertContactCampaigns] = useMutation(UPSERT_CONTACT_CAMPAIGNS);
 
   const onDelete = (row) => {
     setRows(rows.filter((r) => r._id !== row._id));
@@ -214,39 +214,67 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     else {
       const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
       if (field === "Campaign Name") {
-        const shapeOwnersToUpdate = rows.map(row => ({
-          _id: row._id,
-          shapeId: row.customLayerId,
-          campaignName: campaigns,
-          relatedObject: row.ownerEntity,
-          createBy: stateApp.user.mongoId,
-          lastUpdateBy: stateApp.user.mongoId,
-        }));
 
-        updateShapeOwners({
-          variables: {
-            shapeType: 'Unit',
-            shapeOwners: shapeOwnersToUpdate,
-            userId: stateApp.user.mongoId,
-          },
-          refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
-          awaitRefetchQueries: true,
-        }).then(res => {
-          if (res.data && res.data.updateShapeOwners) {
-            const success = res.data.updateShapeOwners.success
-            if (success) {
-              Loader.successToast('contact-creation', "Updated")
-              showSuccessMessage(`${field} Bulk Updated Successfully`)
-              if (rest.onBulkUpdateComplete)
-                rest.onBulkUpdateComplete()
-            } else {
-              Loader.errorToast('contact-creation', "Updated")
-            }
-          } else {
-            Loader.errorToast('contact-creation', "Failed")
+        if (rest.header === 'Contacts') {
+          const variables = {
+            campaigns,
+            contactIds: rows.map(row => row._id)
           }
-        },
-          err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });;
+
+          upsertContactCampaigns({
+            variables,
+            refetchQueries: ["getESContacts", "getESSimpleSearch"],
+          }).then(res => {
+            if (res.data && res.data.upsertContactCampaigns) {
+              const success = res.data.upsertContactCampaigns.success
+              if (success) {
+                Loader.successToast('contact-creation', "Updated")
+                showSuccessMessage(`${field} Bulk Updated Successfully`)
+                if (rest.onBulkUpdateComplete)
+                  rest.onBulkUpdateComplete()
+              } else {
+                Loader.errorToast('contact-creation', "Updated")
+              }
+            } else {
+              Loader.errorToast('contact-creation', "Failed")
+            }
+          },
+            err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });;
+        } else {
+          const shapeOwnersToUpdate = rows.map(row => ({
+            _id: row._id,
+            shapeId: row.customLayerId,
+            campaignName: campaigns.map(campaign => campaign.campaignName),
+            relatedObject: row.ownerEntity,
+            createBy: stateApp.user.mongoId,
+            lastUpdateBy: stateApp.user.mongoId,
+          }));
+
+          updateShapeOwners({
+            variables: {
+              shapeType: 'Unit',
+              shapeOwners: shapeOwnersToUpdate,
+              userId: stateApp.user.mongoId,
+            },
+            refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
+            awaitRefetchQueries: true,
+          }).then(res => {
+            if (res.data && res.data.updateShapeOwners) {
+              const success = res.data.updateShapeOwners.success
+              if (success) {
+                Loader.successToast('contact-creation', "Updated")
+                showSuccessMessage(`${field} Bulk Updated Successfully`)
+                if (rest.onBulkUpdateComplete)
+                  rest.onBulkUpdateComplete()
+              } else {
+                Loader.errorToast('contact-creation', "Updated")
+              }
+            } else {
+              Loader.errorToast('contact-creation', "Failed")
+            }
+          },
+            err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });
+        }
 
         delete fieldToUpdate.campaignName
       } else {
@@ -305,7 +333,8 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
             className={classes.maxWidth}
             onChange={(values, id) => {
               setFieldKey(values);
-              setCampaigns(values)
+              // setCampaigns(values)
+              setCampaigns([...campaigns, { _id: id, campaignName: values[values.length - 1] }])
             }}
             fullWidth
             targetLabel="Contact"
