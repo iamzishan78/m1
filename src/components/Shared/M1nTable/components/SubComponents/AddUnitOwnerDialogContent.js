@@ -32,6 +32,9 @@ import AssociatedDealField from "components/ContactDetailCard/components/FieldCo
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { calculateNRAForUnitOwnerDialog } from "utils/calculatedNraHelper"
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+import { Status } from "components/ContactDetailCard/components/FieldContent";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -268,6 +271,11 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         awaitRefetchQueries: true,
       });
     } else {
+      ownerToAdd.working_interest = ownerToAdd.working_interest || 0
+      ownerToAdd.royalty_interest = ownerToAdd.royalty_interest || 0
+      ownerToAdd.orri = ownerToAdd.orri || 0
+      ownerToAdd.nri = ownerToAdd.nri || 0
+
       addOwnerToAShape({
         variables: {
           shapeType: props.shapeType,
@@ -362,7 +370,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     updateShapeOwners({
       variables: {
         shapeType: props.shapeType,
-        shapeOwners: { _id: selectedRow?._id, isDeleted: true },
+        shapeOwners: { _id: selectedRow?._id, shapeId: selectedRow?.customLayerId, isDeleted: true },
       },
       refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
       awaitRefetchQueries: true,
