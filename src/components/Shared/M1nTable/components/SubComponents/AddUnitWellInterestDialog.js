@@ -459,7 +459,7 @@ function AddUnitInterestDialog(props) {
             handleValidate() && handleSave();
           }}
           className={classes.footerButton}
-          disabled={loading || !valid}
+          disabled={loading || !valid || !selectedWell}
         >
           {loading ? <CircularProgress size={14} /> : "Save"}
         </Button>
