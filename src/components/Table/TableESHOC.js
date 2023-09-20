@@ -33,6 +33,7 @@ import moment from "moment";
 
 import GlobalSettings from "GlobalSettings.js";
 import { execCommonAsyncExportJobAction } from "store/actions/commonActions";
+import { useResetESTableToggle } from "hookstate";
 
 export const TableESHOC = (Component) => {
     const HocWithDefaultProps = function HOC(props) {
@@ -243,6 +244,8 @@ export const TableESHOC = (Component) => {
             SetDependencyUpdate(!dependencyUpdate);
         }, [dataCommentsCounter, dataTagSamples, checkIfOwnersAreContactsData, constDataTracks])
 
+        const resetESTableToggle = useResetESTableToggle()
+
         useEffect(() => {
             // New code added to only search on table related fields to avoid api crash
             if ((!tableMeta.searchFields && tableMeta.TableHeader) || metaDataRef.current) {
@@ -286,7 +289,7 @@ export const TableESHOC = (Component) => {
                     handleSelectedGridChange(tableMeta.TableHeader, { ...selectedGridView, filters: (selectedGridView.filters || []).concat(tableMeta.filters || []) }, columns, true)
             }
             // eslint-disable-next-line
-        }, [tableMeta, search, metaDataRef.current]);
+        }, [tableMeta, search, metaDataRef.current, resetESTableToggle]);
 
 
         useEffect(() => {

@@ -27,6 +27,7 @@ import { UPSERT_CONTACT_CAMPAIGNS } from "graphQL/useMutationCampaign";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
+import { resetESTableToggle } from "hookstate";
 
 const styles = () => ({
   topHeading: { fontWeight: "bold" },
@@ -157,10 +158,11 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
     if (field === 'Contact Owner') {
       assignOwnerToContact({
         variables: { contactIds, contactOwner, userId: stateApp.user.mongoId },
-        refetchQueries: ["getESContacts", "getESSimpleSearch"],
+        refetchQueries: ["getESContacts"],
         awaitRefetchQueries: true
       }).then(
         res => {
+          resetESTableToggle.set(!resetESTableToggle.get())
           if (res.data && res.data.assignOwnerToContact) {
             const { success, message } = res.data.assignOwnerToContact
             if (success) {
@@ -188,10 +190,11 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
           contactIds,
           objectType: "contact"
         },
-        refetchQueries: ["getESContacts", "getESSimpleSearch"],
+        refetchQueries: ["getESContacts"],
         awaitRefetchQueries: true,
       }).then(
         (res) => {
+          resetESTableToggle.set(!resetESTableToggle.get())
           if (res.data && res.data.bulkUpsertTagOnContacts) {
             const { success, message } = res.data.bulkUpsertTagOnContacts;
 
@@ -223,9 +226,10 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
 
           upsertContactCampaigns({
             variables,
-            refetchQueries: ["getESContacts", "getESSimpleSearch"],
+            refetchQueries: ["getESContacts"],
           }).then(res => {
             if (res.data && res.data.upsertContactCampaigns) {
+              resetESTableToggle.set(!resetESTableToggle.get())
               const success = res.data.upsertContactCampaigns.success
               if (success) {
                 Loader.successToast('contact-creation', "Updated")
@@ -256,9 +260,10 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
               shapeOwners: shapeOwnersToUpdate,
               userId: stateApp.user.mongoId,
             },
-            refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
+            refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"],
             awaitRefetchQueries: true,
           }).then(res => {
+            resetESTableToggle.set(!resetESTableToggle.get())
             if (res.data && res.data.updateShapeOwners) {
               const success = res.data.updateShapeOwners.success
               if (success) {
@@ -286,9 +291,10 @@ export default function MultipleOwnerToContactDrawer({ onClose, rows, setRows, s
               lastUpdateBy: stateApp.user.mongoId,
               ignoreResponse: false,
             },
-            refetchQueries: ["getESContacts", "getESSimpleSearch"],
+            refetchQueries: ["getESContacts"],
             awaitRefetchQueries: true,
           }).then(res => {
+            resetESTableToggle.set(!resetESTableToggle.get())
             if (res.data && res.data.updateBulkContact) {
               const success = res.data.updateBulkContact.some(res => res.success)
               if (success) {
