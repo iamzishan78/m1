@@ -1,18 +1,22 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { useSelector } from "react-redux";
 import debounce from "lodash/debounce";
-import { Container } from "@material-ui/core";
+import { Container, Dialog } from "@material-ui/core";
 import { AppContext } from "AppContext";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHeader from "components/Table/constants/tract-interests-header-schema";
 import TableESHOC from "components/Table/TableESHOC";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { deepEqualObjects, copy, esExtentedSearch } from "components/Shared/functions";
+import { REMOVE_TRACT_INTERESTS } from "graphQL/useMutationRemoveTractInterests";
+import { useMutation } from "@apollo/client";
 import { usetableStyles } from "../Styles";
 
 const genericDataActions = ['tags', 'comments', 'tracks']
 function TractInterestTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
   const GridViewModule = userGridViewSettings?.TractInterest
@@ -20,6 +24,11 @@ function TractInterestTable(props) {
     name: `All Tracts Interest`,
     type: "Default",
   };
+
+  const [removeTractInterests] = useMutation(REMOVE_TRACT_INTERESTS, {
+    refetchQueries: ["getESSimpleSearch"],
+    awaitRefetchQueries: true,
+  });
 
   const searchInput = useSelector(
     (state) => state.MapGridCard.searchInputValue
@@ -45,6 +54,20 @@ function TractInterestTable(props) {
     });
     return hits
   }
+
+  const deleteFunc = (ids) => {
+    if (ids.length > 0) {
+      props.setLoading(true);
+      removeTractInterests({
+        variables: {
+          descriptorIds: ids,
+        },
+      }).then(() => {
+        props.setLoading(false);
+        setResetSelectedRow(!resetSelectedRow);
+      });
+    }
+  };
 
   useEffect(() => {
     props.setSelectedGridView(GridViewModule || defaultView);
@@ -109,6 +132,20 @@ function TractInterestTable(props) {
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
+        <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
+        {props.openDialog === "delete" && (
+          <DeleteConfirmationDialogContent
+            header={`Delete Tract(s)`}
+            onClose={() => props.setOpenDialog(null)}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
+            setM1nSelectedRowsIndexes={props.setSelectedRows}
+          >
+            {`Do you want to delete the selected Tract Interest${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+              }?`}
+          </DeleteConfirmationDialogContent>
+        )}
+      </Dialog>
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
@@ -123,6 +160,7 @@ function TractInterestTable(props) {
         orderByTracks={false}
         startPaginationAt={null}
         onTableChange={props.onTableChange}
+        resetSelectedRow={resetSelectedRow}
         options={{
           ...props.options,
           ...props.customOptions,
