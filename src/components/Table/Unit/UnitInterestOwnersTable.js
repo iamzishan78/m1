@@ -80,6 +80,10 @@ function UnitInterestOwnersTable(props) {
         field: 'contact.IsDeleted',
         value: 'false',
       },
+      {
+        field: 'shape.IsDeleted',
+        value: 'false',
+      },
       ...(props.campaignName ? [{
         field: 'campaignName.keyword',
         value: props.campaignName
