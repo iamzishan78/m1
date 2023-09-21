@@ -32,6 +32,12 @@ const tableData = [
     nonEditable: true,
   },
   {
+    label: "Total Unit Interest",
+    type: "comma-number",
+    key: "totalUnitInterest",
+    nonEditable: true,
+  },
+  {
     label: "Current Operator",
     type: "text",
     key: "uPrimaryOperator",

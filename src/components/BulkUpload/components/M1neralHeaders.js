@@ -198,7 +198,7 @@ export default function M1neralHeaders() {
           continue;
         }
       }
-      if (['CONTACTS', 'PARCELINTERESTS', 'SHAPEOWNER'].includes(stateApp.jobType)) {
+      if (['CONTACTS', 'PARCELINTERESTS'].includes(stateApp.jobType)) {
         if (
           return_obj === {} ||
           !(

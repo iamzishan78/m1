@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { get, isEqual, sortBy } from "lodash";
+import { get } from "lodash";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -32,6 +32,9 @@ import AssociatedDealField from "components/ContactDetailCard/components/FieldCo
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import { calculateNRAForUnitOwnerDialog } from "utils/calculatedNraHelper"
+import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
+import { Status } from "components/ContactDetailCard/components/FieldContent";
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -268,6 +271,11 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         awaitRefetchQueries: true,
       });
     } else {
+      ownerToAdd.working_interest = ownerToAdd.working_interest || 0
+      ownerToAdd.royalty_interest = ownerToAdd.royalty_interest || 0
+      ownerToAdd.orri = ownerToAdd.orri || 0
+      ownerToAdd.nri = ownerToAdd.nri || 0
+
       addOwnerToAShape({
         variables: {
           shapeType: props.shapeType,
@@ -329,20 +337,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     }
   };
 
-  // const calculateNRA = (interest1, interest2, interest3, unitAcres = uAcres) => {
-  //   if (!interest3 && (!interest1 && !interest2)) return null;
-
-  //   let nra = parseFloat(unitAcres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0));
-
-  //   if (interest3) nra = parseFloat(interest3 || 0) * parseFloat(unitAcres || 0)
-
-  //   if (workspaceSettings.settings?.map?.unitNra?.type === "custom" && workspaceSettings.settings?.map?.unitNra?.value)
-  //     nra = nra / Number(workspaceSettings.settings?.map?.unitNra?.value);
-
-  //   nra = addTrailingZeros(nra.toFixed(8));
-  //   return nra;
-  // };
-
   const calculateOfferPrice = (nra) => {
     return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
   };
@@ -362,7 +356,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     updateShapeOwners({
       variables: {
         shapeType: props.shapeType,
-        shapeOwners: { _id: selectedRow?._id, isDeleted: true },
+        shapeOwners: { _id: selectedRow?._id, shapeId: selectedRow?.customLayerId, isDeleted: true },
       },
       refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
       awaitRefetchQueries: true,
@@ -402,20 +396,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 {selectedRow ? "Update" : "Add"} Unit Ownership
               </DialogTitle>
             </Grid>
-            {/* <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
-              <IconButton
-                size="small"
-                component="span"
-                style={{
-                  background: "transparent",
-                  align: "center",
-                  float: "right",
-                }}
-                onClick={props.onClose}
-              >
-                <KeyboardTabBlackIcon />
-              </IconButton>
-            </Grid> */}
+
             <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
               <div style={{ "float": "right", display: 'flex', marginRight: '10px' }}>
                 <>
@@ -508,7 +489,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) setValue("nra", calculateNRA(getValues().royalty_interest, getValues().orri, e.target.value, getValues().nri));
+                        if (!isNraOverridden) setValue("nra", calculateNRAForUnitOwnerDialog(getValues().royalty_interest, getValues().orri, e.target.value, getValues().nri));
                       }}
                       fullWidth
                       defaultValue=""
@@ -807,7 +788,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     <AutoCompleteWithAddNew
                       {...params}
                       value={get(params, "value", "")}
-                      // variant="outlined"
                       setValue={(value) => {
                         if (value?._id)
                           params.onChange({ _id: value._id, name: value.name });
