@@ -620,7 +620,7 @@ const ContactsHeadCells = [
         names: [],
       },
       customRender: (value) => {
-        return <p>{value}</p>
+        return <p>{value ? value.toFixed(8) : value}</p>
       }
     },
   },
