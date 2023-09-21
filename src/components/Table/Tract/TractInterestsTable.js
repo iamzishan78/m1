@@ -135,7 +135,7 @@ function TractInterestTable(props) {
         <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
         {props.openDialog === "delete" && (
           <DeleteConfirmationDialogContent
-            header={`Delete Tract(s)`}
+            header={`Delete Tract Interest(s)`}
             onClose={() => props.setOpenDialog(null)}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
