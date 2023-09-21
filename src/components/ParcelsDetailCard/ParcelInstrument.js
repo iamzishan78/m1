@@ -270,6 +270,11 @@ export default function ParcelInstrument(props) {
 
   const handleDeleteAccept = () => {
     // Delete Document Logic goes here
+
+    if (!stateApp?.selectedAgreement?.fileId) {
+      setFileData(null)
+      return
+    }
     setLoader(true);
     deleteFile({
       variables: {
@@ -279,11 +284,15 @@ export default function ParcelInstrument(props) {
       refetchQueries: ["getParcelAgreement"],
       awaitRefetchQueries: true,
     }).then(() => {
-      props.setShowSlider(false);
+      setFileData(null)
       setStateApp({
         ...stateApp,
         DocumentDrawer: false,
         selectedDocument: {},
+      });
+      setNewInstrument({
+        ...newInstrument,
+        fileId: null,
       });
       setOpenDeleteConfirmDialog(false);
       setLoader(false);
