@@ -811,6 +811,9 @@ export const TableESHOC = (Component) => {
                             const tags = updatedData[0].map(d => d).toString().replace(/,/g, ' ')
                             updatedData = tags
                         }
+                    } else if (sampleCsv[j].name === 'deals' && Array.isArray(updatedData)) {
+                        const concatenatedNames = updatedData.map(item => item.name).join(',');
+                        updatedData = concatenatedNames;
                     } else if (Array.isArray(updatedData)) {
                         const data = updatedData.map(d => d).toString().replace(/,/g, ' ')
                         updatedData = data
@@ -836,116 +839,116 @@ export const TableESHOC = (Component) => {
                 if (props.useWildeCard)
                     searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
 
-                const search = { query: searchQuery, fields: tableMeta.searchFields, advanceSearch: tableMeta.advanceSearch }
-                const filters = selectedFilters.current ? [...selectedFilters.current] : []
-                let filteredColumns = columns.filter(c => c?.options?.display !== false && c?.options?.display !== "false" && c?.label !== " ")
-                filteredColumns = filteredColumns.map(({ name, label, esKey }) => {
-                    if (Array.isArray(esKey)) {
-                        esKey = esKey.map(key => key.replace(/\.keyword$/, ''));
-                    } else if (typeof esKey === 'string') {
-                        esKey = esKey.replace(/\.keyword$/, '');
-                    }
-                    return { name, label, esKey };
-                });
+            const search = { query: searchQuery, fields: tableMeta.searchFields, advanceSearch: tableMeta.advanceSearch }
+						const filters = selectedFilters.current ? [...selectedFilters.current] : []
+						let filteredColumns = columns.filter(c => ((c?.options?.display !== false && c?.options?.display !== "false") || c?.options?.download)  && c?.label !== " ")
+						filteredColumns = filteredColumns.map(({ name, label, esKey }) => {
+							if (Array.isArray(esKey)) {
+									esKey = esKey.map(key => key.replace(/\.keyword$/, ''));
+							} else if (typeof esKey === 'string') {
+									esKey = esKey.replace(/\.keyword$/, '');
+							}
+							return { name, label, esKey };
+					});
 
-                dispatch(execCommonAsyncExportJobAction.STARTED({
-                    jobType: 'EXPORTCSV',
-                    client,
-                    setStateApp,
-                    userId: stateApp?.user?.mongoId,
-                    requestPayload: {
-                        total: tableStateRef?.current?.count,
-                        search,
-                        filters,
-                        esIndex: tableMeta?.esIndex,
-                        columns: filteredColumns,
-                        sortOrder: tableStateRef?.current?.sortOrder,
-                        defaultSort: tableMeta?.defaultSort,
-                        datasets: tableMeta?.datasets,
-                        isSelectAll,
-                        selectedIds,
-                        counts: {
-                            exportGrid: tableStateRef?.current?.count,
-                        },
-                    }
-                }));
-                setSelectedRowsValues(null)
-                setSelectedRows([])
-            } else {
-                setIsExporting(true)
-                let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
-                if (props.useWildeCard)
-                    searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+            dispatch(execCommonAsyncExportJobAction.STARTED({
+							jobType: 'EXPORTCSV',
+							client,
+							setStateApp,
+							userId: stateApp?.user?.mongoId,
+							requestPayload: {
+								total: tableStateRef?.current?.count,
+								search,
+								filters,
+								esIndex: tableMeta?.esIndex,
+								columns: filteredColumns,
+								sortOrder: tableStateRef?.current?.sortOrder,
+								defaultSort: tableMeta?.defaultSort,
+								datasets: tableMeta?.datasets,
+								isSelectAll,
+								selectedIds,
+								counts: {
+									exportGrid: tableStateRef?.current?.count,
+								},
+							}
+							}));
+							setSelectedRowsValues(null)
+							setSelectedRows([])
+						}else {
+							setIsExporting(true)
+							let searchQuery = typeof tableMeta.extendSearchQuery !== 'undefined' ? tableMeta.extendSearchQuery : tableStateRef.current.searchText;
+							if (props.useWildeCard)
+									searchQuery = searchQuery?.length > 0 ? `*${searchQuery}*` : searchQuery;
+	
+							const total = tableStateRef.current.count
+							let allRows = []
+							const pageESVariables = {
+									variables: {
+											index: tableMeta.esIndex,
+											search: {
+													query: searchQuery,
+													fields: tableMeta.searchFields,
+													advanceSearch: tableMeta.advanceSearch,
+											},
+											pagination: {
+													first: tableStateRef.current.count > 10000 ? 10000 : tableStateRef.current.count,
+													after: null,
+											},
+											...(!isEmpty(tableStateRef.current.sortOrder) && tableStateRef.current.sortOrder.direction !== 'none') ? {
+													sort: (() => {
+															let field = columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.esKey ||
+																	columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.name;
+															return {
+																	field: Array.isArray(field) ? field[0] : field,
+																	order: tableStateRef.current.sortOrder?.direction
+															}
+	
+													})()
+											} : { sort: tableMeta.defaultSort },
 
-                const total = tableStateRef.current.count
-                let allRows = []
-                const pageESVariables = {
-                    variables: {
-                        index: tableMeta.esIndex,
-                        search: {
-                            query: searchQuery,
-                            fields: tableMeta.searchFields,
-                            advanceSearch: tableMeta.advanceSearch,
-                        },
-                        pagination: {
-                            first: tableStateRef.current.count > 10000 ? 10000 : tableStateRef.current.count,
-                            after: null,
-                        },
-                        ...(!isEmpty(tableStateRef.current.sortOrder) && tableStateRef.current.sortOrder.direction !== 'none') ? {
-                            sort: (() => {
-                                let field = columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.esKey ||
-                                    columns.find(el => el.name === tableStateRef.current.sortOrder?.name)?.name;
-                                return {
-                                    field: Array.isArray(field) ? field[0] : field,
-                                    order: tableStateRef.current.sortOrder?.direction
-                                }
+											filters: selectedFilters.current.length !==0 ? [...selectedFilters.current] : tableMeta.filters,
+											customFilters: []
+									},
+							}
 
-                            })()
-                        } : { sort: tableMeta.defaultSort },
-
-                        filters: selectedFilters.current ? [...selectedFilters.current] : [],
-                        customFilters: []
-                    },
-                }
-
-                let selectedData = []
-                let max = 10000
-                let iter = 0
-
-                do {
-                    const remainingTotal = total - max * iter
-                    const first = remainingTotal > max ? max : remainingTotal
-                    iter += 1
-
-                    pageESVariables.variables.pagination = {
-                        first,
-                        after: selectedData[selectedData.length - 1]?.sort,
-                    }
-
-                    const allSelectedRows = await client.query({
-                        ...pageESVariables,
-                        query: GET_ES_SIMPLE_SEARCH,
-                    });
-                    const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
-                    selectedData = [...selectedData, ...hits]
-                } while (iter * max < total);
-
-                allRows = selectedData
-
-                const hits = tableMeta.formatHits(copy(allRows))
-                const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => c.display !== false && c.display !== "false" && c.label !== " "))
-
-                var blob = new Blob([csvData]);
-                var url = URL.createObjectURL(blob);
-
-                // Create a link to download it
-                var pom = document.createElement('a');
-                pom.href = url;
-                pom.setAttribute('download', 'tableData.csv');
-                pom.click();
-                setIsExporting(false)
-            }
-        }
+							let selectedData = []
+							let max = 10000
+							let iter = 0
+	
+							do {
+									const remainingTotal = total - max * iter
+									const first = remainingTotal > max ? max : remainingTotal
+									iter += 1
+	
+									pageESVariables.variables.pagination = {
+											first,
+											after: selectedData[selectedData.length - 1]?.sort,
+									}
+	
+									const allSelectedRows = await client.query({
+											...pageESVariables,
+											query: GET_ES_SIMPLE_SEARCH,
+									});
+									const hits = allSelectedRows?.data?.getESSimpleSearch?.hits || []
+									selectedData = [...selectedData, ...hits]
+							} while (iter * max < total);
+	
+							allRows = selectedData
+	
+							const hits = tableMeta.formatHits(copy(allRows))
+							const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => (c?.display !== false && c?.display !== "false" && c.label !== " ") || c?.download ))
+	
+							var blob = new Blob([csvData]);
+							var url = URL.createObjectURL(blob);
+	
+							// Create a link to download it
+							var pom = document.createElement('a');
+							pom.href = url;
+							pom.setAttribute('download', 'tableData.csv');
+							pom.click();
+							setIsExporting(false)
+					}
+				}
 
         const onTableChange = async (action, tableState, rows, meta) => {
             tableState.esIndex = tableMeta.esIndex;
@@ -1156,7 +1159,6 @@ export const TableESHOC = (Component) => {
                     && props.targetLabel !== "unit"
                     && props.targetLabel !== "operator"
                     && props.targetLabel !== "owner"
-                    && props.targetLabel !== "parcel"
                     && (
                         <div style={{ height: "48px", display: "flex" }}>
                             <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>

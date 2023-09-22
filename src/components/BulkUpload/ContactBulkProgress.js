@@ -125,14 +125,22 @@ const ContactBulkProgress = () => {
         } else if (type === 'PROPERTIES') {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Import successfully completed" : "Import Failed";
         }
-        else if (asyncOperations.includes(type)) {
-          message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Async Operation Successfully Completed" : "Async Operation Failed";
-        }
         else {
-          message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Export successfully completed" : "Export Failed";
-          if (type === 'SHAPEOWNER' && status === "Completed")
-            refetchHelper(['getCustomLayer'])
+          if (status === 'Created') {
+            message = 'Waiting for job to start';
+          } else if (status === 'Completed') {
+            message = `${asyncOperations.includes(type) ? 'Async Operation' : 'Export'} successfully completed`;
+          } else if (status === 'Completed with errors') {
+            message = `${asyncOperations.includes(type) ? 'Async Operation' : 'Export'} completed with errors`;
+          } else {
+            message = `${asyncOperations.includes(type) ? 'Async Operation' : 'Export'} Failed`;
+          }
 
+          if (
+            type === 'SHAPEOWNER' &&
+            (status === 'Completed' || status.includes('Completed'))
+          )
+            refetchHelper(['getCustomLayer']);
         }
         if (status === 'Completed with errors') message = status
       }

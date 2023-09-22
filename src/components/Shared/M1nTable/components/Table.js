@@ -1255,7 +1255,7 @@ function SubTable(props) {
       (column.name === "type" && props.targetLabel === "activity")
     )
       return capitalizeFirstLetter(v);
-
+    if (column.name === "deals") return v.map(item => item.name).join(',');
     if (column.name === "appraisedValue") return vf_currency(v);
 
     if (column.name === "taxValue") return vf_currency(v);

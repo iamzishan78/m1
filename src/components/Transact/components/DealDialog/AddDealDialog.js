@@ -1638,9 +1638,7 @@ function AddDealDialog(props) {
                               </Grid>
                             </Grid>
                           </FormControl>
-                        </>
-                      )}
-                      <FormControl variant="outlined" fullWidth size="small">
+                          <FormControl variant="outlined" fullWidth size="small">
                         <Grid container className={classes.gridStyle}>
                           <Grid item xs={3}>
                             <div>Closed Price</div>
@@ -1673,6 +1671,9 @@ function AddDealDialog(props) {
                           </Grid>
                         </Grid>
                       </FormControl>
+                        </>
+                      )}
+                    
                       <FormControl variant="outlined" fullWidth size="small">
                         <Grid container className={classes.gridStyle}>
                           <Grid item xs={3}>

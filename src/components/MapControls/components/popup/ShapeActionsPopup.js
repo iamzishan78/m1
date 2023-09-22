@@ -898,7 +898,6 @@ const ShapeActionsPopup = (props) => {
 
           <Tooltip title="Edit Active Shape" className={props.onlyAddShape || selectedAction === "edit-aoi" ? classes.disableAction : ""}>
             <IconButton size="small" aria-label="Edit Active Shape" disabled={props.onlyAddShape} onClick={() => {
-              console.log('gg')
               if (!isShapeResizeMode) {
                 actionEdit();
               }

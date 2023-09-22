@@ -89,6 +89,9 @@ function UnitInterestOwnerTable(props) {
       hit.isPurchased = hit?.contact?.isPurchased;
       hit.contactStatus = hit?.contact?.contactStatus;
       hit.status = hit?.contact?.status;
+      hit.block = hit?.shape?.shapeJson?.properties?.originalProperties?.Block;
+      hit.township = hit?.shape?.shapeJson?.properties?.originalProperties?.Township;
+      hit.description = hit?.shape?.shapeJson?.properties?.description;
       hit.contactOwners = (hit?.contactOwners && hit?.contactOwners.length > 0) ? Array.isArray(hit?.contactOwners) ? hit?.contactOwners[0] : hit?.contactOwners : null;
 
       Object.keys(hit).forEach((key) => {
@@ -133,6 +136,7 @@ function UnitInterestOwnerTable(props) {
         actions: genericDataActions,
       },
       isSelectedAllAllowed: true,
+      downloadAll: { exportPx: "176px" },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.activitySearchQuery, props.filterToggle]);
@@ -172,7 +176,11 @@ function UnitInterestOwnerTable(props) {
       updateShapeOwners({
         variables: {
           shapeType: props.shapeType,
-          shapeOwners: ids.map((_id) => ({ _id, isDeleted: true })),
+          shapeOwners: ids.map((_id) => ({
+            _id,
+            shapeId: props.rows.find(row => row._id === _id)?.customLayerId,
+            isDeleted: true,
+          })),
         },
         refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
         awaitRefetchQueries: true,
@@ -224,16 +232,29 @@ function UnitInterestOwnerTable(props) {
         },
       ];
       return (
-        <div
-          style={{
+        <>
+          <div style={{
             display: "inline",
-            float: "left",
-            marginTop: "5px",
-            marginRight: "5px",
-          }}
-        >
-          <ButtonDropDown options={options} />
-        </div>
+            position: "absolute",
+            right: '121px',
+          }}>
+            <IconButton onClick={props.onDownload} disabled={props.isExporting}>
+              <Tooltip title="Download to CSV" aria-label="add">
+                <CloudDownloadIcon />
+              </Tooltip>
+            </IconButton>
+          </div>
+          <div
+            style={{
+              display: "inline",
+              float: "left",
+              marginTop: "5px",
+              marginRight: "5px",
+            }}
+          >
+            <ButtonDropDown options={options} />
+          </div>
+        </>
       );
     },
     customToolbarSelect: () => {
