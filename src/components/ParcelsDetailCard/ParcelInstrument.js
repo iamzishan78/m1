@@ -5,10 +5,8 @@ import Drawer from "@material-ui/core/Drawer";
 import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import { AppContext } from "AppContext";
-import CloseIcon from "@material-ui/icons/Close";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
 
@@ -18,10 +16,12 @@ import { KeyboardDatePicker } from "@material-ui/pickers";
 import UploadZone from "components/Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
 import GetAppIcon from "@material-ui/icons/GetApp";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import DeleteIcon from "@material-ui/icons/Delete";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { useLazyQuery, useMutation } from "@apollo/client";
+import { DELETEDESCRIPTORRELATEDFILE } from "graphQL/useMutationDeleteDescriptorFile";
 import { ADD_PARCEL_AGREEMENT } from "graphQL/useMutationAddParcelAgreement";
 import { UPDATE_PARCEL_AGREEMENT } from "graphQL/useMutationUpdateParcelAgreement";
 import { INSTRUMENT_TYPE } from "graphQL/useQueryInstrumentType";
@@ -171,7 +171,7 @@ export default function ParcelInstrument(props) {
   let [loader, setLoader] = useState(false);
   const [fileData, setFileData] = useState(null);
   const [newInstrument, setNewInstrument] = useState(instrumentInitial);
-  const [fileIdToDelete, setFileIdToDelete] = useState(null);
+  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
   const [state, setState] = useState({
     right: false,
   });
@@ -184,6 +184,7 @@ export default function ParcelInstrument(props) {
   const [getRecordTypes, { data: recordTypes }] = useLazyQuery(RECORD_TYPE, {
     fetchPolicy: "no-cache",
   });
+  const [deleteFile] = useMutation(DELETEDESCRIPTORRELATEDFILE);
   const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT, { refetchQueries: ["getParcelAgreement"], awaitRefetchQueries: true });
   const [updateParcelAgreement] = useMutation(UPDATE_PARCEL_AGREEMENT, {
     refetchQueries: ["getParcelAgreement"],
@@ -265,6 +266,41 @@ export default function ParcelInstrument(props) {
 
   const handleViewFile = async (id) => {
     viewFile({ variables: { fileId: id } });
+  };
+
+  const handleDeleteAccept = () => {
+    // Delete Document Logic goes here
+
+    if (!stateApp?.selectedAgreement?.fileId) {
+      setFileData(null)
+      return
+    }
+    setLoader(true);
+    deleteFile({
+      variables: {
+        descriptorObjectId: stateApp.selectedAgreement.fileId,
+        relatedObjectId: stateApp.selectedAgreement._id
+      },
+      refetchQueries: ["getParcelAgreement"],
+      awaitRefetchQueries: true,
+    }).then(() => {
+      setFileData(null)
+      setStateApp({
+        ...stateApp,
+        DocumentDrawer: false,
+        selectedDocument: {},
+      });
+      setNewInstrument({
+        ...newInstrument,
+        fileId: null,
+      });
+      setOpenDeleteConfirmDialog(false);
+      setLoader(false);
+    });
+  };
+
+  const handleDeleteCancel = () => {
+    setOpenDeleteConfirmDialog(false);
   };
 
   const handleClose = () => {
@@ -383,6 +419,17 @@ export default function ParcelInstrument(props) {
   return (
     <div>
       <Drawer anchor={"right"} open={true} ModalProps={{ onBackdropClick: handleClose }}>
+        <Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
+          <DeleteConfirmationDialogContent
+            header="Delete Document"
+            onClose={handleDeleteCancel}
+            deleteFunc={handleDeleteAccept}
+            m1nSelectedRowsIds={[document._id]}
+            setM1nSelectedRowsIndexes={() => { }}
+          >
+            Do you want to delete the selected documents?
+          </DeleteConfirmationDialogContent>
+        </Dialog>
         <Dialog open={loader} style={{ zIndex: 99999999999 }}>
           <DialogTitle id="alert-dialog-title">
             <CircularProgress />
@@ -669,8 +716,7 @@ export default function ParcelInstrument(props) {
                               <IconButton
                                 size="small"
                                 onClick={() => {
-                                  //   setOpenDeleteConfirmDialog(true);
-                                  setFileIdToDelete(stateApp.selectedAgreement.fileId);
+                                  setOpenDeleteConfirmDialog(true);
                                 }}
                               >
                                 <DeleteIcon />

@@ -154,11 +154,11 @@ const TractsHeadCells = (isSnapGrid = false) => [
       viewColumns: false,
     },
   },
-  {
-    name: "name-elasticsearch",
-    esKey: "name.keyword",
-    options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
-  },
+  // {
+  //   name: "name-elasticsearch",
+  //   esKey: "name.keyword",
+  //   options: { filter: false, display: false, sort: false, viewColumns: false, forSearch: true },
+  // },
   {
     name: "shapeLabel-elasticsearch",
     esKey: "shapeLabel.keyword",
