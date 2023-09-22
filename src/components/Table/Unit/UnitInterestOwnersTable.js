@@ -71,16 +71,26 @@ function UnitInterestOwnersTable(props) {
   useEffect(() => {
     const search = esExtentedSearch(props.landSearchQuery, searchInput)
 
-    props.setInitialFilters([
+    const defaultFilters = [
       {
         field: 'shape.layer.keyword',
         value: 'unit',
+      },
+      {
+        field: 'contact.IsDeleted',
+        value: 'false',
+      },
+      {
+        field: 'shape.IsDeleted',
+        value: 'false',
       },
       ...(props.campaignName ? [{
         field: 'campaignName.keyword',
         value: props.campaignName
       }] : [])
-    ]);
+    ]
+
+    props.setInitialFilters(defaultFilters);
 
     setTableMeta({
       extendSearchQuery: isNaN(parseFloat(search.replaceAll('*', ''))) ? search : search.replaceAll('*', ''),
@@ -108,6 +118,7 @@ function UnitInterestOwnersTable(props) {
       selectedGridView: GridViewModule || defaultView,
       typeKeyword: { gridViewCategory: 'UnitInterest' },
       startPaginationAt: 50,
+      filters: defaultFilters,
       defaultSort: { field: '_ts', order: 'desc' },
       polygon: stateApp?.currentFeature?.geometry && {
         type: 'geo_intersects',
