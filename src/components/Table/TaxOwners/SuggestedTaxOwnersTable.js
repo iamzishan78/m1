@@ -237,7 +237,7 @@ function SuggestedOwnerTable(props) {
 
   const options = {
     rowsPerPageOptions:
-      count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
+      count > 25 ? [10, 25, 50, 100, 250] : count > 10 ? [10, 25] : [],
     count: suggestedOwnersCount || count || 0,
     serverSide: false,
     searchable: true,
