@@ -3,14 +3,15 @@ import moment from "moment";
 import { getSession } from "utils/user";
 import { wellsKeys } from "utils/data";
 import { tenantsCredentials } from "components/Login/AADAuthConfig";
-import { addTrailingZeros } from "components/Shared/functions";
 
 const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
 const isDev = process.env.REACT_APP_NODE_ENV === "development";
-const decimalForamtter = new Intl.NumberFormat('en-US', { style: 'decimal',
-useGrouping: true,
-minimumFractionDigits: 2,
-maximumFractionDigits: 2,}) 
+const decimalForamtter = new Intl.NumberFormat('en-US', {
+  style: 'decimal',
+  useGrouping: true,
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
 export const copy = (data) => {
   return data ? JSON.parse(JSON.stringify(data)) : null;
 };
@@ -143,6 +144,15 @@ export const formatTaxOwners = (owners, formData) => {
     });
   }
   return updateOwners;
+};
+
+export const downloadPdfsFile = (viewFile) => {
+  if (viewFile?.viewToken) {
+    let a = document.createElement("a");
+    a.href = viewFile.viewToken;
+    a.download = viewFile.documentName;
+    a.click();
+  }
 };
 
 export const getSearchQuery = (extendSearchQuery, filters) => {

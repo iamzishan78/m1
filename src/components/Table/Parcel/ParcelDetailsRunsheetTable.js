@@ -8,6 +8,7 @@ import { Container } from "@material-ui/core";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
+import GetAppIcon from "@material-ui/icons/GetApp";
 import CloseIcon from "@material-ui/icons/Close";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
@@ -26,6 +27,7 @@ import { handleTagColumn } from "../helpers";
 
 import { AppContext } from "AppContext";
 import PdfWithZoom from "components/Shared/components/common/PdfWithZoom";
+import { downloadPdfsFile } from "utils/helper";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -111,6 +113,7 @@ function ParcelDetailsRunsheetTable(props) {
     serverSide: true
   }
   ////////////-----Add your code section here-----///////////////////////
+
   const getWellOwnersByYear = (selectedYear) => {
     setSelectedYear(selectedYear)
   }
@@ -250,6 +253,11 @@ function ParcelDetailsRunsheetTable(props) {
             </Grid>
 
             <Grid item>
+              {stateApp.pdfView && (
+                <IconButton onClick={() => downloadPdfsFile(stateApp.pdfView)}>
+                  <GetAppIcon />
+                </IconButton>
+              )}
               <IconButton
                 className="float-right"
                 color="inherit"
@@ -257,6 +265,7 @@ function ParcelDetailsRunsheetTable(props) {
                   setStateApp((state) => ({
                     ...state,
                     pdfView: null,
+                    viewDoc: null,
                   }));
                 }}
                 aria-label="close"

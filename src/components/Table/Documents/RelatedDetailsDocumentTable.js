@@ -9,11 +9,8 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { Document, Page } from "react-pdf";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
-import ZoomInIcon from "@material-ui/icons/ZoomIn";
-import ZoomOutIcon from "@material-ui/icons/ZoomOut";
 import GetAppIcon from "@material-ui/icons/GetApp";
 
 // QUERIES
@@ -35,6 +32,7 @@ import { AppContext } from "AppContext";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { usetableStyles } from "../Styles";
 import PdfWithZoom from "components/Shared/components/common/PdfWithZoom";
+import { downloadPdfsFile } from "utils/helper";
 
 function RelatedDetailsDocumentTable(props) {
   const classes = usetableStyles();
@@ -219,15 +217,6 @@ function RelatedDetailsDocumentTable(props) {
     }
   };
 
-  const downloadFile = (viewFile) => {
-    if (viewFile?.viewToken) {
-      let a = document.createElement("a");
-      a.href = viewFile.viewToken;
-      a.download = viewFile.documentName;
-      a.click();
-    }
-  };
-
   const onClickAdd = () => {
     setShowDocumentSlider(true);
   };
@@ -301,7 +290,7 @@ function RelatedDetailsDocumentTable(props) {
 
             <Grid item>
               {stateApp.pdfView && (
-                <IconButton onClick={() => downloadFile(stateApp.pdfView)}>
+                <IconButton onClick={() => downloadPdfsFile(stateApp.pdfView)}>
                   <GetAppIcon />
                 </IconButton>
               )}
