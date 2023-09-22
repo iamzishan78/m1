@@ -34,6 +34,7 @@ import { setColumnsData } from "components/Table/helpers";
 import { AppContext } from "AppContext";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { usetableStyles } from "../Styles";
+import PdfWithZoom from "components/Shared/components/common/PdfWithZoom";
 
 function RelatedDetailsDocumentTable(props) {
   const classes = usetableStyles();
@@ -322,33 +323,8 @@ function RelatedDetailsDocumentTable(props) {
           </Grid>
         </Toolbar>
 
-        <div className={classes.docViewSection}>
-          <Document file={stateApp.pdfView?.viewToken} options={{ workerSrc: "/pdf.worker.js" }} onLoadSuccess={onDocumentLoadSuccess}>
-            {Array.from(new Array(numPages), (el, index) => (
-              <Page key={`page_${index + 1}`} scale={zoom} pageNumber={index + 1} />
-            ))}
-          </Document>
+        <PdfWithZoom numPages={numPages} viewToken={stateApp.pdfView?.viewToken} onDocumentLoadSuccess={onDocumentLoadSuccess} />
 
-          {numPages && (
-            <div className={classes.ZoomIcons}>
-              {" "}
-              <IconButton
-                onClick={() => {
-                  setzoom(zoom + 0.25);
-                }}
-              >
-                <ZoomInIcon fontSize={"large"} />
-              </IconButton>
-              <IconButton
-                onClick={() => {
-                  setzoom(zoom - 0.25);
-                }}
-              >
-                <ZoomOutIcon fontSize={"large"} />
-              </IconButton>
-            </div>
-          )}
-        </div>
       </Dialog>
     </Container>
   );

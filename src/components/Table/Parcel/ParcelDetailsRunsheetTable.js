@@ -9,7 +9,6 @@ import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
-import { Document, Page } from "react-pdf";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
 
@@ -26,6 +25,7 @@ import TableHeader from 'components/Table/constants/parcel-runsheet-header-schem
 import { handleTagColumn } from "../helpers";
 
 import { AppContext } from "AppContext";
+import PdfWithZoom from "components/Shared/components/common/PdfWithZoom";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -46,6 +46,7 @@ function ParcelDetailsRunsheetTable(props) {
   const [showSlider, setShowSlider] = useState(false)
   const [selectedYear, setSelectedYear] = useState(2022)  // production selected year state 
   const [numPages, setNumPages] = useState(null);
+  let [zoom, setzoom] = useState(2.0);
 
   // queries 
   const [getParcelAgreement, { data: dataParcelAgreement, loading }] = useLazyQuery(GET_PARCELS_AGREEMENT);
@@ -265,16 +266,8 @@ function ParcelDetailsRunsheetTable(props) {
             </Grid>
           </Grid>
         </Toolbar>
+        <PdfWithZoom numPages={numPages} viewToken={stateApp.pdfView?.viewToken} onDocumentLoadSuccess={onDocumentLoadSuccess} />
 
-        <Document
-          file={stateApp.pdfView?.viewToken}
-          options={{ workerSrc: "/pdf.worker.js" }}
-          onLoadSuccess={onDocumentLoadSuccess}
-        >
-          {Array.from(new Array(numPages), (el, index) => (
-            <Page key={`page_${index + 1}`} pageNumber={index + 1} />
-          ))}
-        </Document>
       </Dialog>
     </Container>
   );
