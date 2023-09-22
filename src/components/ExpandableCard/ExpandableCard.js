@@ -543,6 +543,7 @@ function ExpandableCard(props) {
       selectedUserDefinedLayer: state.selectedParcel?.feature || state.selectedShape?.feature,
       currentFeature: state.selectedParcel?.feature || state.selectedShape?.feature,
       featureToEdit: state.selectedParcel?.feature || state.selectedShape?.feature,
+      shapeToExtend: state.selectedParcel?.feature || state.selectedShape?.feature,
       openDrawShapesControl: true,
       editParcelAndShape: true,
       editDraw: true,
