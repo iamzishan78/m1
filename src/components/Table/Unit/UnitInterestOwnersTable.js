@@ -84,6 +84,25 @@ function UnitInterestOwnersTable(props) {
 
     setTableMeta({
       extendSearchQuery: isNaN(parseFloat(search.replaceAll('*', ''))) ? search : search.replaceAll('*', ''),
+      searchFields: [
+        'contact.entityDetail.name',
+        'shape.shapeJson.properties.uName',
+        'shape.shapeJson.properties.uNumber',
+        'shape.shapeJson.properties.shapeArea',
+        'shape.shapeJson.properties.uUnitPricing',
+        'shape.shapeJson.properties.uAcres',
+        'contact.contactStatus',
+        'campaignName',
+        'shape.shapeJson.properties.reviewer.name',
+        'shape.shapeJson.properties.qualifier.name',
+        ...(!search.includes(' ') ? [
+          'working_interest',
+          'royalty_interest',
+          'orri',
+          'nra',
+          'offer_price',
+        ] : [])
+      ],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: 'shapeowners_flat',
       selectedGridView: GridViewModule || defaultView,
