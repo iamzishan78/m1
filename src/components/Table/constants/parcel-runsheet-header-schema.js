@@ -139,6 +139,17 @@ const DocumentsHeadCells = [
       viewColumns: false,
     },
   },
+  {
+    name: "viewToken",
+    label: "View Token",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      viewColumns: false,
+    }
+  },
 ];
 
 
