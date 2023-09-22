@@ -9,11 +9,8 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { Document, Page } from "react-pdf";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableHOC from "components/Table/TableHOC";
-import ZoomInIcon from "@material-ui/icons/ZoomIn";
-import ZoomOutIcon from "@material-ui/icons/ZoomOut";
 import GetAppIcon from "@material-ui/icons/GetApp";
 
 // QUERIES
@@ -34,6 +31,8 @@ import { setColumnsData } from "components/Table/helpers";
 import { AppContext } from "AppContext";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { usetableStyles } from "../Styles";
+import PdfWithZoom from "components/Shared/components/common/PdfWithZoom";
+import { downloadPdfsFile } from "utils/helper";
 
 function RelatedDetailsDocumentTable(props) {
   const classes = usetableStyles();
@@ -218,15 +217,6 @@ function RelatedDetailsDocumentTable(props) {
     }
   };
 
-  const downloadFile = (viewFile) => {
-    if (viewFile?.viewToken) {
-      let a = document.createElement("a");
-      a.href = viewFile.viewToken;
-      a.download = viewFile.documentName;
-      a.click();
-    }
-  };
-
   const onClickAdd = () => {
     setShowDocumentSlider(true);
   };
@@ -300,7 +290,7 @@ function RelatedDetailsDocumentTable(props) {
 
             <Grid item>
               {stateApp.pdfView && (
-                <IconButton onClick={() => downloadFile(stateApp.pdfView)}>
+                <IconButton onClick={() => downloadPdfsFile(stateApp.pdfView)}>
                   <GetAppIcon />
                 </IconButton>
               )}
@@ -322,33 +312,8 @@ function RelatedDetailsDocumentTable(props) {
           </Grid>
         </Toolbar>
 
-        <div className={classes.docViewSection}>
-          <Document file={stateApp.pdfView?.viewToken} options={{ workerSrc: "/pdf.worker.js" }} onLoadSuccess={onDocumentLoadSuccess}>
-            {Array.from(new Array(numPages), (el, index) => (
-              <Page key={`page_${index + 1}`} scale={zoom} pageNumber={index + 1} />
-            ))}
-          </Document>
+        <PdfWithZoom numPages={numPages} viewToken={stateApp.pdfView?.viewToken} onDocumentLoadSuccess={onDocumentLoadSuccess} />
 
-          {numPages && (
-            <div className={classes.ZoomIcons}>
-              {" "}
-              <IconButton
-                onClick={() => {
-                  setzoom(zoom + 0.25);
-                }}
-              >
-                <ZoomInIcon fontSize={"large"} />
-              </IconButton>
-              <IconButton
-                onClick={() => {
-                  setzoom(zoom - 0.25);
-                }}
-              >
-                <ZoomOutIcon fontSize={"large"} />
-              </IconButton>
-            </div>
-          )}
-        </div>
       </Dialog>
     </Container>
   );

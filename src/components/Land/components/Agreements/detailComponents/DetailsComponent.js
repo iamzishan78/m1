@@ -297,7 +297,7 @@ export function DetailComponents(props) {
 
       shape.id = dataCustomLayer.customLayer._id;
       shape.properties.id = dataCustomLayer.customLayer._id;
-      shape.layer = { id: "unit" };
+      shape.layer = { id: dataCustomLayer.customLayer.layer };
       setStateApp((state) => ({
         ...state,
         selectedShape: { ...shape.properties, shape },
