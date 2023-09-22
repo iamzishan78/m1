@@ -129,11 +129,11 @@ const ContactBulkProgress = () => {
           if (status === 'Created') {
             message = 'Waiting for job to start';
           } else if (status === 'Completed') {
-            message = `${asyncOperations.includes(type) ? 'Async Operation' : 'Export'} successfully completed`;
+            message = `${asyncOperations.includes(type) ? 'Async operation' : 'Export'} successfully completed`;
           } else if (status === 'Completed with errors') {
-            message = `${asyncOperations.includes(type) ? 'Async Operation' : 'Export'} completed with errors`;
+            message = `${asyncOperations.includes(type) ? 'Async operation' : 'Export'} completed with errors`;
           } else {
-            message = `${asyncOperations.includes(type) ? 'Async Operation' : 'Export'} Failed`;
+            message = `${asyncOperations.includes(type) ? 'Async operation' : 'Export'} Failed`;
           }
 
           if (
