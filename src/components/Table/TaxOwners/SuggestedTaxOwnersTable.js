@@ -239,7 +239,8 @@ function SuggestedOwnerTable(props) {
     rowsPerPageOptions:
       count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
     count: suggestedOwnersCount || count || 0,
-    serverSide: true,
+    serverSide: false,
+    searchable: true,
     filter: false,
     customToolbar: () => {
 
