@@ -125,6 +125,8 @@ export const formatTaxOwners = (owners, formData) => {
         "shape.royalty_interest": owners[i].shape.royalty_interest,
         "shape.orri": owners[i].shape.orri,
         "shape.nra": owners[i].shape.nra,
+        "shape.uUnitPricing": owners[i].shape.uUnitPricing,
+        "shape.uMaxUnitPricing": owners[i].shape.uMaxUnitPricing,
         "shape.globalOwnerId": owners[i].shape.globalOwnerId,
         "shape.isSuggested": owners[i].shape.isSuggested
       },

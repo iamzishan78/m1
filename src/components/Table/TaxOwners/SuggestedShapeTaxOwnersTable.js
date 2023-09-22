@@ -384,7 +384,8 @@ function SuggestedShapeTaxOwnersTable(props) {
   };
 
   const formatInterestForImport = () => {
-    const uAcres = props.customLayer?.shapeJson?.properties?.uAcres || 0
+    const uAcres = props.customLayer?.shapeJson?.properties?.uAcres || 0;
+
     return selectedRows.map((sR => {
       const rec = props.rows?.[sR.dataIndex];
       const ownershipPercentage = addTrailingZeros(rec.ownershipPercentage.toFixed(8))
@@ -395,6 +396,8 @@ function SuggestedShapeTaxOwnersTable(props) {
         royalty_interest: rec.interestType === 'ROYALTY INTEREST' ? ownershipPercentage : "",
         orri: rec.interestType === 'OVERRIDING ROYALTY' ? ownershipPercentage : "",
         nra: calculateNRAForShapeTaxOwnersTable(uAcres, ownershipPercentage, workspaceSettings),
+        uUnitPricing: props.customLayer?.shapeJson?.properties?.uUnitPricing || 0,
+        uMaxUnitPricing: props.customLayer?.shapeJson?.properties?.uMaxUnitPricing || 0,
         globalOwnerId: rec.globalOwnerId,
         isSuggested: true
       }

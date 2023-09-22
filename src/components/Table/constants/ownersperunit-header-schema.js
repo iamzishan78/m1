@@ -105,18 +105,24 @@ const OwnersPerUnitHeadCells = [
   {
     name: "offer_price",
     esKey: "offer_price",
-    label: "Offer Price",
+    label: "Target Offer Price",
     type: "number",
     options: { filter: true, customRender: (value) => vf_currency(value) },
   },
-  //remove until max offer price logic is fixed
-  // {
-  //   name: "max_offer_price",
-  //   esKey: "",
-  //   label: "Max Offer Price",
-  //   type: "number",
-  //   options: { customRender: (value) => vf_currency(value) },
-  // },
+  {
+    name: "max_offer_price",
+    esKey: "",
+    label: "Max Offer Price",
+    type: "number",
+    options: { customRender: (value) => vf_currency(value) },
+  },
+  {
+    name: "actual_offer_price",
+    esKey: "actual_offer_price",
+    label: "Actual Offer Price",
+    type: "number",
+    options: { customRender: (value) => vf_currency(value) },
+  },
   {
     name: "contactStatus",
     esKey: "contact.contactStatus.keyword",
