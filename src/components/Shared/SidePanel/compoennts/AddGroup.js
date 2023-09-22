@@ -228,7 +228,7 @@ export default function AddGroup({ userId, above }) {
             onChange={handleTabChange}
             aria-label="disabled tabs example"
           >
-            <Tab label="Create New" />
+            <Tab label="&#8288;Create New" />
             <Tab label="Edit Existing" />
           </Tabs>
           <div role="tabPanel" hidden={tabValue !== 0}>

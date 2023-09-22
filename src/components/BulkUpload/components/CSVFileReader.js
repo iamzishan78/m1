@@ -326,14 +326,14 @@ export default function CSVFileReader(props) {
       <div style={sample_table_area}>
         <div style={{ ...big_text, ...padding_div_top }}>Preferred File Setup</div>
         <div style={mainContent}>
-          <div style={big_grey_text}>A CSV with these columns will yield good results</div>
+          <div style={big_grey_text}>You can use any CSV file but leveraging our template will save time mapping column headers</div>
           <CSVDownloader datas={csvColumns} filename={`Sample_${stateApp.jobType}_Upload`} type="link" className={classes.linkStyle}>
             Click this link to download sample CSV template
           </CSVDownloader>
         </div>
 
         <div style={{ ...padding_div_top, ...padding_div_bottom }}>
-          <TableContainer component={Paper} style={style_papaer}>
+          {/* <TableContainer component={Paper} style={style_papaer}>
             <Table className={classes.table} aria-label="simple table">
               {props.importType === "" ? (
                 <>
@@ -389,8 +389,9 @@ export default function CSVFileReader(props) {
                 </>
               )}
             </Table>
-          </TableContainer>
+          </TableContainer> */}
         </div>
+        
       </div>
     </div>
   );
