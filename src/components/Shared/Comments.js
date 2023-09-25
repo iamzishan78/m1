@@ -507,7 +507,7 @@ export default function Comments(props) {
     });
     setShowActions(false);
     // setComment("");
-    setEditComment("");
+    setComment("");
     // setEditCommentId("");
   };
 
