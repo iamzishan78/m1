@@ -1,14 +1,16 @@
-import React, { useContext } from "react";
-import { useSelector } from "react-redux";
-import ContactsTable from "components/Table/Contact/ContactsTable";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useContext } from 'react';
+import { useSelector } from 'react-redux';
+import { makeStyles } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
+import ContactsTable from 'components/Table/Contact/ContactsTable';
 
-import { AppContext } from "AppContext";
+import { AppContext } from 'AppContext';
+import MRTTable from 'components/MRTTable';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     // padding: "0px 30px 30px",
-    marginTop: "65px",
+    marginTop: '65px',
     // marginLeft: '-10px',
   },
 }));
@@ -19,13 +21,13 @@ const ContactManagement = () => {
   const { activeModule } = useSelector(({ common }) => common);
 
   // waypointKey should any key of Table Header which do not have customRender in schema file
-  const loadMore = { type: 'infiniteScroll', height: "calc(100vh - 66px)" }
+  const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 66px)' };
 
   const getCustomAppliedFilters = () => {
     if (activeModule?.filterValue) {
       return [
         {
-          field: "status.keyword",
+          field: 'status.keyword',
           value: activeModule.filterValue,
         },
       ];
@@ -34,15 +36,24 @@ const ContactManagement = () => {
 
   return (
     <div className={classes.root}>
-      <ContactsTable
-        parent="Contacts"
-        headerLabel="Contact Management"
-        contactSearchQuery={stateApp.contactSearchQuery}
-        userId={stateApp.user.mongoId}
-        customAppliedFilters={getCustomAppliedFilters()}
-        loadMore={loadMore}
-        useWildeCard
-      />
+      {activeModule?.filterValue === 'Lead' ?
+        (
+          < ContactsTable
+            parent="Contacts"
+            headerLabel="Contact Management"
+            contactSearchQuery={stateApp.contactSearchQuery}
+            userId={stateApp.user.mongoId}
+            customAppliedFilters={getCustomAppliedFilters()}
+            loadMore={loadMore}
+            useWildeCard
+          />
+        ) :
+        (
+          <Box sx={{ padding: '1em', marginLeft: '1em' }}>
+            <MRTTable name="ContactTable" />
+          </Box>
+        )
+      }
     </div>
   );
 };
