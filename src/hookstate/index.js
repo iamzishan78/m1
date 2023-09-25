@@ -3,6 +3,10 @@ import { hookstate, useHookstate } from '@hookstate/core';
 export const layerRefs = hookstate({});
 export const useLayerRefs = () => useHookstate(layerRefs);
 
+export const hookStateApp = hookstate({ layers: [], universalLoader: false });
+
+export const useHookStateApp = () => useHookstate(hookStateApp)
+
 const statesHelper = (keys, keysVal, stateValuesKey = 'stateValues') => {
 	const retObj = { [stateValuesKey]: {} };
 	Object.keys(keysVal).forEach((k, index) => {
