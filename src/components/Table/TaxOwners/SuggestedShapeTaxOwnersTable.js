@@ -269,6 +269,7 @@ function SuggestedShapeTaxOwnersTable(props) {
         // getPaginatedShapeWellOwners(pageVariables);
         break;
       case "changePage":
+        setSelectedRows([])
         break;
       case "search":
         // props.setLoading(true);

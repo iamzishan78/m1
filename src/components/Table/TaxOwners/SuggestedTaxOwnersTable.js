@@ -188,6 +188,7 @@ function SuggestedOwnerTable(props) {
         // getPaginatedShapeOwners(pageVariables);
         break;
       case "changePage":
+        setSelectedRows([])
         // props.setLoading(true);
         // if (tableState.page > meta.pageInd) {
         //   setCount((state, props) => {
