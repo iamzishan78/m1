@@ -30,11 +30,7 @@ function ESAutoCompleteFilter({
 
 		if (search) search = type === 'number' ? search : `*${search}*`;
 
-		const filtersArray = [...filters, ...defaultFilters]
-
-		// .filter(
-		// 	filter => filter.field !== field.replace('.keyword', '')
-		// );
+		const filtersArray = [...filters, ...defaultFilters];
 		if (advanceFilter?.oRFilter) field = JSON.parse(advanceFilter.field);
 		if (!_.isEqual(filtersArray, filtersRef.current)) {
 			filtersRef.current = filtersArray;
@@ -42,7 +38,9 @@ function ESAutoCompleteFilter({
 				variables: {
 					esIndex,
 					index: esIndex,
-					filters: filtersArray,
+					filters: typeof field === 'string'? filtersArray.filter(
+						filter => filter?.field !== field?.replace('.keyword', '')
+					): filtersArray,
 					filterKeys: typeof field !== 'string' ? field : undefined,
 					filterKey: typeof field === 'string' ? field : undefined,
 					search: { query: extendSearchQuery, fields: searchFields },
