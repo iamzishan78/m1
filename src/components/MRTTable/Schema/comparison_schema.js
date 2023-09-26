@@ -189,7 +189,7 @@ const ComparisonMeta = {
 			size: 250,
 			isPinned: false,
 			filter: true,
-			type: 'string',
+			type: 'date',
 			Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue, false)}</>,
 		},
 
@@ -245,7 +245,7 @@ const ComparisonMeta = {
 			size: 250,
 			isPinned: false,
 			filter: true,
-			type: 'string',
+			type: 'date',
 			Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue, false)}</>,
 		},
 
