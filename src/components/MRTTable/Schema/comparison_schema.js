@@ -38,7 +38,7 @@ const ComparisonMeta = {
 			filter: true,
 			type: 'string',
 			isExternalFilter: true,
-			enableColumnActions: false,
+			enableColumnActions: true,
 			enableColumnOrdering: false,
 			Cell: ({ row, cell }) => {
 				const interestAmount = row.getValue('property.interest.interestAmount');
