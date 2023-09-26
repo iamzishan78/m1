@@ -212,6 +212,7 @@ const UnitMeta = {
 			name: 'interestSummary.unitInterestCount',
 			accessorKey: 'interestSummary.unitInterestCount',
 			header: 'Owner Count',
+			isSearchField: false,
 		},
 
 		{
@@ -245,6 +246,7 @@ const UnitMeta = {
 			accessorKey: '_ts',
 			header: 'Last Updated',
 			type: 'date',
+			isSearchField: false,
 			Cell: ({ row }) => <div>{formatDate(row.getValue('_ts'), false)}</div>,
 		},
 
