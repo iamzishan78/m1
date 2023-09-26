@@ -93,6 +93,7 @@ const UnitInterestMeta = {
 			name: 'working_interest',
 			accessorKey: 'working_interest',
 			header: 'WI',
+			isSearchField: false,
 		},
 
 		{
@@ -100,6 +101,7 @@ const UnitInterestMeta = {
 			name: 'royalty_interest',
 			accessorKey: 'royalty_interest',
 			header: 'RI',
+			isSearchField: false,
 		},
 
 		{
@@ -107,6 +109,7 @@ const UnitInterestMeta = {
 			name: 'orri',
 			accessorKey: 'orri',
 			header: 'ORRI',
+			isSearchField: false,
 		},
 
 		{
@@ -114,6 +117,7 @@ const UnitInterestMeta = {
 			name: 'nri',
 			accessorKey: 'nri',
 			header: 'NRI',
+			isSearchField: false,
 		},
 
 		{
@@ -121,6 +125,7 @@ const UnitInterestMeta = {
 			name: 'nra',
 			accessorKey: 'nra',
 			header: 'NRA',
+			isSearchField: false,
 		},
 
 		{
@@ -135,6 +140,7 @@ const UnitInterestMeta = {
 			name: 'offer_price',
 			accessorKey: 'offer_price',
 			header: 'Offer Price',
+			isSearchField: false,
 			Cell: ({ renderedCellValue }) => <p>{vf_currency_to_fixed(renderedCellValue, 2)}</p>,
 		},
 
