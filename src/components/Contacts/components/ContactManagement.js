@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box } from '@material-ui/core';
@@ -6,6 +6,7 @@ import ContactsTable from 'components/Table/Contact/ContactsTable';
 
 import { AppContext } from 'AppContext';
 import MRTTable from 'components/MRTTable';
+import { tableController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -33,6 +34,10 @@ const ContactManagement = () => {
       ];
     }
   };
+
+  useEffect(() => {
+    tableController("ContactTable").setGlobalFilter(stateApp.contactSearchQuery)
+  }, [stateApp.contactSearchQuery])
 
   return (
     <div className={classes.root}>

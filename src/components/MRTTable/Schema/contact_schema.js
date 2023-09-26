@@ -479,6 +479,7 @@ const ContactMeta = {
 			id: 'interestSummary.wellInterestCount',
 			header: 'Well Interest Count',
 			hidden: true,
+			isSearchField: false,
 		},
 
 		{
@@ -488,6 +489,7 @@ const ContactMeta = {
 			id: 'interestSummary.unitInterestCount',
 			header: 'Unit Interest Count',
 			hidden: true,
+			isSearchField: false,
 		},
 
 		{
@@ -497,6 +499,7 @@ const ContactMeta = {
 			id: 'interestSummary.unitNraSum',
 			header: 'Unit NRA',
 			hidden: true,
+			isSearchField: false,
 		},
 
 		{
@@ -506,6 +509,7 @@ const ContactMeta = {
 			id: 'interestSummary.tractInterestCount',
 			header: 'Tract Interest Count',
 			hidden: true,
+			isSearchField: false,
 		},
 
 		{
@@ -523,6 +527,7 @@ const ContactMeta = {
 			name: 'isPurchased',
 			accessorKey: 'isPurchased',
 			header: 'Is Purchased Data',
+			isSearchField: false,
 			filterSelectOptions: [
 				{ label: 'Yes', value: 'true' },
 				{ label: 'No', value: 'false' },
