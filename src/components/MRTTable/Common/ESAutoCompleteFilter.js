@@ -38,9 +38,9 @@ function ESAutoCompleteFilter({
 				variables: {
 					esIndex,
 					index: esIndex,
-					filters: typeof field === 'string'? filtersArray.filter(
+					filters: typeof field === 'string' ? filtersArray.filter(
 						filter => filter?.field !== field?.replace('.keyword', '')
-					): filtersArray,
+					) : filtersArray,
 					filterKeys: typeof field !== 'string' ? field : undefined,
 					filterKey: typeof field === 'string' ? field : undefined,
 					search: { query: extendSearchQuery, fields: searchFields },
@@ -88,12 +88,15 @@ function ESAutoCompleteFilter({
 	}
 
 	// Handle Filter Value is changed from Single Select to Multi Select and vice versa
-	if (multiple && typeof filterValue === 'string') {
+	if (multiple && (typeof filterValue === 'string')) {
 		filterValue = [];
 		if (advanceFilter) tableController(tableKey).clearFilter(advanceFilter.field);
 	} else if (!multiple && Array.isArray(filterValue)) {
 		filterValue = '';
 		if (advanceFilter) tableController(tableKey).clearFilter(advanceFilter.field);
+	} else if (multiple && !Array.isArray(filterValue)) {
+		filterValue = []
+		tableController(tableKey).clearFilter(field.replace('.keyword', ''))
 	}
 
 	return (

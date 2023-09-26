@@ -240,7 +240,7 @@ export default function RevenueAnalytics(props) {
     if (newFilter.length === 0) {
       tableController(TableKey).clearFilters();
     } else {
-      tableController(TableKey).clearFilters();
+      // tableController(TableKey).clearFilters();
       newFilter.forEach(filter => {
         const { field, value, type } = filter;
         let filterToAdd;
