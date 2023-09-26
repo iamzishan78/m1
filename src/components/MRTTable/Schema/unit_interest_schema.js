@@ -141,7 +141,9 @@ const UnitInterestMeta = {
 			accessorKey: 'offer_price',
 			header: 'Offer Price',
 			isSearchField: false,
-			Cell: ({ renderedCellValue }) => <p>{vf_currency_to_fixed(renderedCellValue, 2)}</p>,
+			Cell: ({ row }) => {
+				return <p>{vf_currency_to_fixed(row?.original?.offer_price, 2)}</p>
+			},
 		},
 
 		{

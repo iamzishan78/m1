@@ -51,7 +51,7 @@ function Units() {
       <TabPanels
         value={selectedUnitTab}
         panels={[
-          <div>
+          <div style={{ padding: '0rem 1.5rem 0rem 1.5rem' }}>
             {/* <LandUnitsTable
 							parent="UnitsTable"
 							targetLabel="unit"
@@ -64,7 +64,7 @@ function Units() {
             </div>
             <MRTTable name="UnitTable" />
           </div>,
-          <div>
+          <div style={{ padding: '0rem 1.5rem 0rem 1.5rem' }}>
             {/* <UnitInterestOwnersTable
 							esIndex={esIndex[selectedUnitTab]}
 							header={<UnitHeader selectedUnitTab={selectedUnitTab} setUnitSelectedTab={setUnitSelectedTab} />}
