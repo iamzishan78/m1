@@ -149,7 +149,7 @@ const ComparisonMeta = {
 
 		{
 			name: 'property.interest.interestType.keyword',
-			accessorFn: row => row?.property.interest?.interestType,
+			accessorFn: row => row?.property?.interest?.interestType,
 			id: 'property.interest.interestType',
 			header: 'Interest Type',
 			size: 250,
