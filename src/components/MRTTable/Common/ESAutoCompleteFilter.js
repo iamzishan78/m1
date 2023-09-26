@@ -29,9 +29,12 @@ function ESAutoCompleteFilter({
 		if (filtersData && multiple && filterValue?.length !== 0) return;
 
 		if (search) search = type === 'number' ? search : `*${search}*`;
-		const filtersArray = [...filters, ...defaultFilters].filter(
-			filter => filter.field !== field.replace('.keyword', '')
-		);
+
+		const filtersArray = [...filters, ...defaultFilters]
+
+		// .filter(
+		// 	filter => filter.field !== field.replace('.keyword', '')
+		// );
 		if (advanceFilter?.oRFilter) field = JSON.parse(advanceFilter.field);
 		if (!_.isEqual(filtersArray, filtersRef.current)) {
 			filtersRef.current = filtersArray;
@@ -65,7 +68,7 @@ function ESAutoCompleteFilter({
 
 		let options = hits.map(({ key }) => ({
 			label: Array.isArray(key) ? key.join('') : key,
-			value: Array.isArray(key) ? key.join('') : key,
+			value: key,
 		}));
 
 		if (type === 'date') {

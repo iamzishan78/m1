@@ -126,10 +126,10 @@ const useTableESSimple = tableKey => {
 					const column = tableStateValues.TableSchema.find(
 						column => column.id === item.id || column.accessorKey === item.id
 					);
-					item.id = column?.advanceFilter ? column.advanceFilter?.field : item?.id;
-					const idArray = [item?.id];
+					item.id = column?.advanceFilter ? [column.advanceFilter?.field] : item?.id.split(',');
+					const idArray = item?.id;
 					idArray.forEach(idValue => {
-						const isOrFilter = idValue.split(',').length;
+						const isOrFilter = column?.advanceFilter && idValue.split(',').length;
 						const newItem = {
 							id: idValue,
 							value: item.value,
@@ -161,10 +161,10 @@ const useTableESSimple = tableKey => {
 						oRFilter,
 						...(mode &&
 							!['multiselect', 'singleselect'].includes(mode) && {
-								type: 'advanced',
-								searchType: mode,
-								isKeyword,
-							}),
+							type: 'advanced',
+							searchType: mode,
+							isKeyword,
+						}),
 					});
 				});
 			},
@@ -208,9 +208,9 @@ const useTableESSimple = tableKey => {
 			enableRowNumbers: true,
 			muiToolbarAlertBannerProps: tableStateValues?.isError
 				? {
-						color: 'error',
-						children: 'Error loading data',
-				  }
+					color: 'error',
+					children: 'Error loading data',
+				}
 				: undefined,
 			muiTableContainerProps: {
 				ref: tableContainerRef, // get access to the table container element

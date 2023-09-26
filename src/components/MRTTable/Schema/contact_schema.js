@@ -182,7 +182,7 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'address1',
+			name: 'address1.keyword',
 			accessorKey: 'address1',
 			header: 'Primary Address 1',
 			hidden: true,
@@ -190,7 +190,7 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'address2',
+			name: 'address2.keyword',
 			accessorKey: 'address2',
 			header: 'Primary Address 2',
 			hidden: true,
@@ -198,7 +198,7 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'city',
+			name: 'city.keyword',
 			accessorKey: 'city',
 			header: 'City',
 			hidden: true,
@@ -206,7 +206,7 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'state',
+			name: 'state.keyword',
 			accessorKey: 'state',
 			header: 'State',
 			hidden: true,
@@ -214,7 +214,7 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'zip',
+			name: 'zip.keyword',
 			accessorKey: 'zip',
 			header: 'Zip',
 			hidden: true,
