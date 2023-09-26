@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const options = ["NRA Calculation"];
+const options = ["Unit NRA Calculation"];
 
 const LastCheckDateFilter = ({ }) => {
   const classes = useStyles();

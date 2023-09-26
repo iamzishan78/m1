@@ -118,13 +118,13 @@ export default function RevenueStatements() {
       <Filters />
 
       <div className={classes.contenContainer}>
-        <span>Select the method by which Net Royalty Acres (NRA) should be calculated for owners:</span>
+        <span>Select the method by which Net Royalty Acres (NRA) should be calculated for unit owners:</span>
 
         <div className={classes.options}>
           <RadioGroup column value={settings?.map?.unitNra?.type ?? "standard"} onChange={(event) => onChangeType(event.target.value)}>
-            <FormControlLabel value="standard" control={<Radio />} label="Standard Calculation = (Acres * Decimal Interest)" />
+            <FormControlLabel value="standard" control={<Radio />} label="Standard Calculation = Unit Acres * (Sum of Decimal Interests)" />
             <div>
-              <FormControlLabel value="custom" control={<Radio />} label="Custom Calculation = (Acres * Decimal Interest) / " />
+              <FormControlLabel value="custom" control={<Radio />} label="Custom Calculation = Unit Acres * (Sum of Decimal Interests) / " />
               <TextField
                 variant="outlined"
                 margin="dense"
