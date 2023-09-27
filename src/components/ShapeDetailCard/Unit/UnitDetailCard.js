@@ -255,6 +255,7 @@ export default function UnitDetailCard(props) {
                   style={{
                     position: 'relative',
                     height: '100%',
+                    padding: '0rem 0.75rem 0rem 0.75rem'
                   }}
                 >
                   {/* <UnitInterestOwnerTable

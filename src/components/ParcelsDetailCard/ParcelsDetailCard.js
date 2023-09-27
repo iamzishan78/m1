@@ -587,6 +587,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                   style={{
                     position: 'relative',
                     height: '100%',
+                    padding: '0rem 0.75rem 0rem 0.75rem'
                   }}>
                   {/* <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense header={<Header />} /> */}
                   {/* <TractInterestOwnerTable
