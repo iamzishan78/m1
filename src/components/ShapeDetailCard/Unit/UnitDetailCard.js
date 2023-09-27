@@ -279,7 +279,7 @@ export default function UnitDetailCard(props) {
 										dense
 									/> */}
 
-                  <div className={classes.toogleButtons}>
+                  <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
                     <OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
                   </div>
                   <MRTTable name="OwnersPerUnitTable" overrideMeta={overrideMeta} />

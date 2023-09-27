@@ -148,7 +148,7 @@ function ExpandableCard(props) {
         borderBottom: "1px solid rgba(224, 224, 224, 1)",
         // padding: "25px 16px !important",
       },
-      zIndex: 1222, // https://material-ui.com/customization/z-index/
+      zIndex: 99999,
     },
     title: {
       fontFamily: "Poppins",
