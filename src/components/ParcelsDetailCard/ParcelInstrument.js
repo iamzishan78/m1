@@ -185,7 +185,7 @@ export default function ParcelInstrument(props) {
     fetchPolicy: "no-cache",
   });
   const [deleteFile] = useMutation(DELETEDESCRIPTORRELATEDFILE);
-  const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT, { refetchQueries: ["getParcelAgreement"], awaitRefetchQueries: true });
+  const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT, { refetchQueries: ["getParcelAgreement", "getESSimpleSearch"], awaitRefetchQueries: true });
   const [updateParcelAgreement] = useMutation(UPDATE_PARCEL_AGREEMENT, {
     refetchQueries: ["getParcelAgreement"],
     awaitRefetchQueries: true,

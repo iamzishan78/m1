@@ -45,6 +45,7 @@ import ParcelSummary from "./ParcelSummary";
 import { findBoundsMap } from "components/MapControls/commonHelper";
 import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 import { copy } from 'utils/helper';
+import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
 
 const ENTER_KEY = 13;
 
@@ -624,13 +625,23 @@ export default function ParcelsDetailCard(props) {
               ]}
             />,
             <div className={showSummary ? classes.subContent : classes.subContent2}>
-              <ParcelDetailsRunsheetTable
+              <ParcelAgreementTable
+                esIndex='parcelagreement_flats'
+                parent="ownersPerParcel"
+                targetLabel="Parcel Ownership"
+                customLayer={copy(parcelObj)}
+                dense
+                header={<RunsheetHeader />}
+                isSnapGrid
+                isCheckboxSticky={true}
+              />
+              {/* <ParcelDetailsRunsheetTable
                 customLayer={copy(parcelObj)}
                 parent="associatedRunsheetPerParcel"
                 targetLabel="parcelRunsheet"
                 header={<RunsheetHeader />}
                 dense
-              />
+              /> */}
             </div>,
             <div className={showSummary ? classes.subContent : classes.subContent2}>
               <AssociatedWellsParcelTable
