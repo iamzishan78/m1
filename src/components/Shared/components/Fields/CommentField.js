@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ClickAwayListener, Grid, TextField,  } from "@material-ui/core";
+import { ClickAwayListener, Grid, TextField, } from "@material-ui/core";
 import $ from "jquery";
 
 import Avatar from "react-avatar";
@@ -184,7 +184,7 @@ export default function DealComment({
   const [nameAutValue, setNameAutValue] = useState({});
   const [showCommentTypeDialog, setShowCommentTypeDialog] = useState(false);
   const [selectedCommentType, setSelectedCommentType] = useState("General");
-  const [commentTypeDialogBox,setCommentTypeDialogBox] = useState(false);
+  const [commentTypeDialogBox, setCommentTypeDialogBox] = useState(false);
   const classes = useStyles({ fieldWidth, commentTypeDialogBox, collapsed: isCollapsed && !isEdit });
   (function () {
     var target = $("#colorText");
@@ -283,105 +283,106 @@ export default function DealComment({
   }
   return (
     <ClickAwayListener onClickAway={(e) => {
-      if(!commentTypeDialogBox)
+      if (!commentTypeDialogBox)
         setIsCollapsed(true)
     }}>
-    <div
-      onClick={(e)=>openDialogBox(e)}
-    >
-      <Autocomplete
-        id="txtArea"
-        className={classes.search}
-        style={{
-          margin: 0,
-        }}
-        disableClearable
-        open={showOptions}
-        defaultValue={nameAutValue}
-        value={nameAutValue}
-        disableListWrap
-        options={users}
-        onFocus={() => setIsCollapsed(false)}
-        getOptionLabel={(option) => option.name}
-        getOptionSelected={(option, value) => {
-          return option === value;
-        }}
-        filterOptions={(options, params) => {
-          let inputValue = JSON.parse(JSON.stringify(filterValue));
-          const filtered = filter(options, { ...params, inputValue });
-          return filtered;
-        }}
-        renderOption={(option) => {
-          return (
-            <Grid className={classes.myClass} container spacing={0}>
-              <Grid container item xs={1} alignItems="center">
-                <IconButton style={{ padding: "0px" }}>
-                  {profilesInfo[option.email]?.profileImage ? (
-                    <Avatar src={profilesInfo[option.email].profileImage} size="25" round />
-                  ) : (
-                    <Avatar name={option.name} size="25" round />
-                  )}
-                </IconButton>
-              </Grid>
-              <Grid container item xs={11} alignItems="center">
-                <Grid item xs>
-                  <span style={{ fontWeight: 400, paddingLeft: 20 }}>{option.name}</span>
-                  {option.type}
+      <div
+        onClick={(e) => openDialogBox(e)}
+      >
+        <Autocomplete
+          id="txtArea"
+          className={classes.search}
+          style={{
+            margin: 0,
+          }}
+          disableClearable
+          open={showOptions}
+          defaultValue={nameAutValue}
+          value={nameAutValue}
+          disableListWrap
+          options={users}
+          onFocus={() => setIsCollapsed(false)}
+          getOptionLabel={(option) => option.name}
+          getOptionSelected={(option, value) => {
+            return option === value;
+          }}
+          filterOptions={(options, params) => {
+            let inputValue = JSON.parse(JSON.stringify(filterValue));
+            const filtered = filter(options, { ...params, inputValue });
+            return filtered;
+          }}
+          renderOption={(option) => {
+            return (
+              <Grid className={classes.myClass} container spacing={0}>
+                <Grid container item xs={1} alignItems="center">
+                  <IconButton style={{ padding: "0px" }}>
+                    {profilesInfo[option.email]?.profileImage ? (
+                      <Avatar src={profilesInfo[option.email].profileImage} size="25" round />
+                    ) : (
+                      <Avatar name={option.name} size="25" round />
+                    )}
+                  </IconButton>
+                </Grid>
+                <Grid container item xs={11} alignItems="center">
+                  <Grid item xs>
+                    <span style={{ fontWeight: 400, paddingLeft: 20 }}>{option.name}</span>
+                    {option.type}
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-          );
-        }}
-        onInputChange={onInputChange}
-        onChange={onChange}
-        renderInput={(params) => (
+            );
+          }}
+          onInputChange={onInputChange}
+          onChange={onChange}
+          renderInput={(params) => (
+            <>
+              <TextField
+                classes={{ root: classes.customTextField }}
+                margin="dense"
+                {...params}
+                style={{
+                  margin: 0,
+                }}
+                id="commentBox"
+                fullWidth
+                rows={isEdit || showActions ? 2 : 1}
+                maxRows={1}
+                multiline
+                className={classes.activitySearchField}
+                placeholder="Add a question or post an update"
+                variant="outlined"
+                size="small"
+              />
+              <div
+                id="colorText"
+                className={`${comment || showActions ? classes.commentInputFocusIn : classes.commentInputFocusOut} ${classes.textDiv
+                  } hideScroll`}
+              ></div>
+            </>
+          )}
+        />
+        {!isCollapsed &&
           <>
-            <TextField
-              classes={{ root: classes.customTextField }}
-              margin="dense"
-              {...params}
-              style={{
-                margin: 0,
-              }}
-              id="commentBox"
-              fullWidth
-              rows={isEdit || showActions ? 2 : 1}
-              maxRows={1}
-              multiline
-              className={classes.activitySearchField}
-              placeholder="Add a question or post an update"
-              variant="outlined"
-              size="small"
-            />
-            <div
-              id="colorText"
-              className={`${comment || showActions ? classes.commentInputFocusIn : classes.commentInputFocusOut} ${classes.textDiv
-                } hideScroll`}
-            ></div>
-          </>
-        )}
-      />
-      { !isCollapsed && 
-        <>
-          {!isEdit ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <CommentType
+            {!isEdit ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <CommentType
                   showCommentType={props.showCommentType}
                   setSelectedCommentType={setSelectedCommentType}
                   setCommentTypeDialogBox={setCommentTypeDialogBox}
                   commentTypeDialogBox={commentTypeDialogBox}
-              />
-              <Button
+                />
+                <Button
                   className={classes.commentBtn}
                   variant="contained"
                   color="primary"
                   id="commentButton"
+                  disabled={!comment || comment === ''}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (!showCommentTypeDialog) {
@@ -390,45 +391,45 @@ export default function DealComment({
                       setIsCollapsed(true);
                     }
                   }}
-              >
-                Comment
-              </Button>
-            </div>
-          ) : (
-            <>
-              <Button
-                className={classes.commentBtn}
-                style={{ marginBottom: "10px" }}
-                variant="contained"
-                color="primary"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  upsertComment({ comment, commentType: selectedCommentType });
-                  setIsCollapsed(true);
-                }}
-              >
-                Save Changes
-              </Button>
-              <Button
-                className={classes.commentBtn}
-                style={{ marginRight: "10px", marginBottom: "10px" }}
-                variant="contained"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setComment("");
-                  setEditCommentId("");
-                  setIsEdit(false);
-                  setShowActions(false);
-                  setIsCollapsed(true);
-                }}
-              >
-                Cancel
-              </Button>
-            </>
-          )}
-        </>
-      }
-    </div>
+                >
+                  Comment
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Button
+                  className={classes.commentBtn}
+                  style={{ marginBottom: "10px" }}
+                  variant="contained"
+                  color="primary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    upsertComment({ comment, commentType: selectedCommentType });
+                    setIsCollapsed(true);
+                  }}
+                >
+                  Save Changes
+                </Button>
+                <Button
+                  className={classes.commentBtn}
+                  style={{ marginRight: "10px", marginBottom: "10px" }}
+                  variant="contained"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setComment("");
+                    setEditCommentId("");
+                    setIsEdit(false);
+                    setShowActions(false);
+                    setIsCollapsed(true);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </>
+            )}
+          </>
+        }
+      </div>
     </ClickAwayListener>
   );
 }

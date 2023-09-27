@@ -1,5 +1,6 @@
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import { GlobalStickyStyles } from "GlobalSettings";
+import vf_number from "components/Shared/valueformatters/vf_number";
 
 const unitsColumnHeaders = (isSnapGrid = false) => [
   {
@@ -138,6 +139,19 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
     },
   },
   {
+    name: "netRoyalityAcres",
+    label: "Total Unit NRA",
+    esKey: "shapeJson.properties.netRoyalityAcres.unitNra",
+    options: {
+      sort: true,
+      filter: true,
+      isMultiFilter: true,
+      customRender: (value) => {
+        return vf_number(value?.unitNra);
+      },
+    },
+  },
+  {
     name: "uStatus",
     label: "Unit Status",
     esKey: "shapeJson.properties.uStatus.keyword",
@@ -159,12 +173,28 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
   },
   {
     name: "uUnitPricing",
-    label: "Price/Acre",
+    label: "Target Price/Acre",
     esKey: "shapeJson.properties.uUnitPricing.keyword",
     options: {
       sort: true,
       filter: true,
       isMultiFilter: true,
+      customRender: value => (
+        <p>{value ? `$${vf_number(value)}` : ""}</p>
+      )
+    },
+  },
+  {
+    name: "uMaxUnitPricing",
+    label: "Max Price/Acre",
+    esKey: "shapeJson.properties.uMaxUnitPricing.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      isMultiFilter: true,
+      customRender: value => (
+        <p>{value ? `$${vf_number(value)}` : ""}</p>
+      )
     },
   },
   {

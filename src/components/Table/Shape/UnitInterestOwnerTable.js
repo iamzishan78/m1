@@ -93,8 +93,7 @@ function UnitInterestOwnerTable(props) {
       hit.township = hit?.shape?.shapeJson?.properties?.originalProperties?.Township;
       hit.description = hit?.shape?.shapeJson?.properties?.description;
       hit.contactOwners = (hit?.contactOwners && hit?.contactOwners.length > 0) ? Array.isArray(hit?.contactOwners) ? hit?.contactOwners[0] : hit?.contactOwners : null;
-      //remove until max offer price logic is fixed
-      //hit.max_offer_price = hit?.nra * props.customLayer?.shapeJson?.properties?.uMaxUnitPricing;
+
       Object.keys(hit).forEach((key) => {
         if (interestKeys.includes(key)) {
           if (typeof hit[key] === "number")
@@ -416,6 +415,7 @@ function UnitInterestOwnerTable(props) {
           shapeId={props.customLayer._id}
           uAcres={props.customLayer?.shapeJson?.properties?.uAcres}
           uUnitPricing={props.customLayer?.shapeJson?.properties?.uUnitPricing}
+          uMaxUnitPricing={props.customLayer?.shapeJson?.properties?.uMaxUnitPricing}
           shapeType={props.shapeType}
           selectedRow={selectedOwner}
           onClose={() => {

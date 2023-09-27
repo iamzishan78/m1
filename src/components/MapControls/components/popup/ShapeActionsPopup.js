@@ -348,18 +348,21 @@ const ShapeActionsPopup = (props) => {
     const { selectedFeature } = props;
     const shapeEdit = _shapeEdit ?? stateApp.shapeEdit;
     // If shape doesn't exist! AOI case
-    if (!stateApp.draw.get(stateApp.currentFeature.id)) {
+    if (!stateApp.draw.get(stateApp.currentFeature.id) && stateApp.currentFeature?.geometry?.type) {
       stateApp.draw.add(stateApp.currentFeature);
     }
 
     // If filter is applied, then remove it
     clearFilter();
 
-    if (!shapeEdit) {
+    let changeDrawShapeType = stateApp.changeDrawShapeType
+
+    if (!shapeEdit && stateApp.currentFeature?.geometry?.type) {
       stateApp.draw.changeMode("direct_select", {
         featureId: selectedFeature.id,
       });
     } else {
+      changeDrawShapeType = true
       stateApp.draw.changeMode("static");
     }
 
@@ -369,7 +372,7 @@ const ShapeActionsPopup = (props) => {
     }));
     setFeatureProperty(stateApp.draw, selectedFeature.id, "shapeEdit", !shapeEdit);
     drawShapeLayerToggle(stateApp, !shapeEdit ? "visible" : "none");
-    setStateApp((state) => ({ ...state, currentFeature: selectedFeature, shapeEdit: !shapeEdit }));
+    setStateApp((state) => ({ ...state, currentFeature: selectedFeature, shapeEdit: !shapeEdit, changeDrawShapeType }));
     if (stateApp.selectedAoi) setSelectedAction("edit-aoi");
     else if (enableEditOnly) setSelectedAction("edit-shape");
   };
@@ -547,8 +550,11 @@ const ShapeActionsPopup = (props) => {
     }).then(result => {
 
       const layerId = result.data.upsertCustomLayer.customLayer._id;
-      if (layerId) {
-        let newPath = `/map/units/${layerId}`
+      const type =
+        result.data.upsertCustomLayer.customLayer?.shapeJson?.properties?.agreementType ||
+        result.data.upsertCustomLayer.customLayer?.shapeJson?.properties?.type;
+      if (layerId && type) {
+        let newPath = `/map/${type}s/${layerId}`
         history.location.pathname !== newPath && history.replace(newPath)
       }
     });
@@ -717,7 +723,7 @@ const ShapeActionsPopup = (props) => {
     const customLayerData = {
       shapeJson,
       shape: JSON.stringify(shapeJson),
-      layer: featureToEdit.layer.id,
+      // layer: featureToEdit.layer.id,
       user: stateApp.user.mongoId,
     };
     addCustomShapeProperties(currentFeature, stateApp.draw);
@@ -731,10 +737,13 @@ const ShapeActionsPopup = (props) => {
     }).then(result => {
       if (isShapeResizeMode) {
         let newPath = '';
-        if (stateApp.featureToEdit?.layer?.id === "parcel")
-          newPath = `/map/parcels/${stateApp.currentFeature?.id}`;
-        else newPath = `/map/units/${stateApp.currentFeature?.id}`;
-        history.location.pathname !== newPath && history.replace(newPath)
+
+        const type = stateApp.featureToEdit?.properties?.agreementType || stateApp.featureToEdit?.properties?.type
+
+        if (type) {
+          newPath = `/map/${type}s/${stateApp.featureToEdit?.id}`;
+          history.location.pathname !== newPath && history.replace(newPath)
+        }
       }
     });
     setTimeout(() => popupCloseAction({ rotateableFeature: drawFeature }), 0);
@@ -924,7 +933,7 @@ const ShapeActionsPopup = (props) => {
           )}
 
           {(selectedAction === "edit-aoi" ||
-            selectedAction === "edit-shape" || stateApp.shapeEditMode === 'redraw') && (
+            selectedAction === "edit-shape" || stateApp.shapeEditMode === 'redraw' || (stateApp.shapeEditMode === 'fullEdit' && (stateApp.shapeToExtend?.geometry?.type || stateApp.featureToEdit?.geometry?.type))) && (
               <span className={classes.multiSelectCheck}>
                 <Tooltip title="Confirm Editing">
                   <IconButton
@@ -933,7 +942,7 @@ const ShapeActionsPopup = (props) => {
                     disabled={props.onlyAddShape}
                     onClick={() => {
                       if (selectedAction === "edit-aoi") confirmEditing();
-                      else if (selectedAction === "edit-shape" || (stateApp.shapeEditMode === 'redraw')) confirmShapeEditing();
+                      else if (selectedAction === "edit-shape" || (stateApp.shapeEditMode === 'redraw' || stateApp.shapeEditMode === 'fullEdit')) confirmShapeEditing();
                     }}
                   >
                     <CheckCircle />
