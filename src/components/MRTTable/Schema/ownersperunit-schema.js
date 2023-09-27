@@ -304,9 +304,9 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
-			name: 'contact',
-			accessorFn: row => row?.contact?.campaignName,
-			id: 'contact.campaignName',
+			name: 'campaignName.keyword',
+			accessorFn: row => row?.campaignName,
+			id: 'campaignName',
 			header: 'Campaign Name',
 			size: 230,
 			isPinned: false,
@@ -316,7 +316,7 @@ const OwnersPerUnitMeta = {
 			isSearchField: true,
 			enableSorting: true,
 			enableColumnOrdering: true,
-			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue?.campaignName} fullWidth disabled />,
+			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
 		},
 
 		{

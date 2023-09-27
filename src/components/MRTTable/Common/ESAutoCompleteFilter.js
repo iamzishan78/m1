@@ -84,8 +84,10 @@ function ESAutoCompleteFilter({
 	}, [filtersData]);
 
 	// If we have advanceFilter like orFilter then filterValue is null due to id mismatch
+
 	if (!filterValue || filterValue?.length === 0) {
 		const filter = filters.find(filter => filter?.field.includes(field));
+		console.log(filter, field)
 		if (filter) filterValue = filter?.value;
 	}
 
