@@ -27,9 +27,9 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		const sort = tableStateValues.sorting[0]
 			? {
-					field: TableSchema.find(val => (val.accessorKey || val.id) === tableStateValues.sorting[0].id)?.name,
-					order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
-			  }
+				field: TableSchema.find(val => (val.accessorKey || val.id) === tableStateValues.sorting[0].id)?.name,
+				order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
+			}
 			: tableState?.defaultSort?.get({ noproxy: true });
 
 		const variables = {
@@ -61,7 +61,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 				const defaultValue =
 					!columnsType.current[accessorKey] || columnsType.current[accessorKey] === 'number' ? undefined : '';
 				let value = get(row, accessorKey);
-				if (value !== undefined && value !== null) value = defaultValue === '' ? `${value}` : value;
+				if (value !== undefined && value !== null && !Array.isArray(value) && typeof value !== 'object') value = defaultValue === '' ? `${value}` : value;
 				set(row, accessorKey, value || defaultValue, defaultValue);
 			});
 		});
