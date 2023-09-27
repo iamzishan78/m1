@@ -144,6 +144,7 @@ function TractInterestOwnerTable(props) {
         key: "contact._id",
         actions: genericDataActions,
       },
+      isSelectedAllAllowed: true
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.activitySearchQuery, props.filterToggle]);
@@ -331,10 +332,12 @@ function TractInterestOwnerTable(props) {
                     }
                     onClick={() => {
                       let owners = [];
+
+                      const rows = props.selectedRowsValues || props.rows;
                       for (let i in props.selectedRows) {
-                        owners.push(
-                          props.rows[props.selectedRows[i]?.dataIndex]
-                        );
+                        owners.push({
+                          ...rows[i],
+                        });
                       }
                       setSelectedRows(owners);
                       setOpenCustomDialog("bulkUpdate");
@@ -347,12 +350,17 @@ function TractInterestOwnerTable(props) {
                     color="secondary"
                     startIcon={<CloudDownloadIcon color="white" />}
                     className={classes.multiSelectionTopBarButtons}
+                    disabled={
+                      !props.selectedRows || props.selectedRows?.length === 0
+                    }
                     onClick={() => {
                       let owners = [];
+
+                      const rows = props.selectedRowsValues || props.rows;
                       for (let i in props.selectedRows) {
-                        owners.push(
-                          props.rows[props.selectedRows[i]?.dataIndex]
-                        );
+                        owners.push({
+                          ...rows[i],
+                        });
                       }
                       setSelectedRows(owners);
                       setOpenCustomDialog("exportOwnersAndContact");
@@ -376,6 +384,9 @@ function TractInterestOwnerTable(props) {
                     <IconButton
                       size="medium"
                       style={{ margin: "0 5px" }}
+                      disabled={
+                        !props.selectedRows || props.selectedRows?.length === 0
+                      }
                       onClick={(e) => {
                         setOpenCustomDialog("deleteOwner");
                       }}
