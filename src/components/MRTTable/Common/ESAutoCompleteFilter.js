@@ -10,7 +10,7 @@ import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 function ESAutoCompleteFilter({
 	tableKey,
 	esIndex,
-	column: { field, label, type, custom, setFilterValue, filterValue, advanceFilter, filterSelectOptions },
+	column: { field, label, type, custom, setFilterValue, filterValue, advanceFilter, filterSelectOptions, isComposite },
 	extendSearchQuery,
 	multiple,
 }) {
@@ -65,8 +65,8 @@ function ESAutoCompleteFilter({
 		if (!hits) return;
 
 		let options = hits.map(({ key }) => ({
-			label: Array.isArray(key) ? key.join('') : key,
-			value: key,
+			label: Array.isArray(key) ? key.join(' ') : key,
+			value: key
 		}));
 
 		if (type === 'date') {
@@ -81,13 +81,19 @@ function ESAutoCompleteFilter({
 		options = options.filter(op => op.value);
 
 		setStateIfDeepEqual(setOptions, filterSelectOptions || options);
-	}, [filtersData]);
+	}, [filtersData, filterValue]);
 
 	// If we have advanceFilter like orFilter then filterValue is null due to id mismatch
+	if (isComposite) {
+		const key = field[0].replace('.keyword', '')
+		const _field = filters.find((f) => f?.field === key)
+		if (Array.isArray(_field?.value)) {
+			filterValue = _field.value.join(' ')
+		}
+	}
 
 	if (!filterValue || filterValue?.length === 0) {
 		const filter = filters.find(filter => filter?.field.includes(field));
-		console.log(filter, field)
 		if (filter) filterValue = filter?.value;
 	}
 
@@ -102,11 +108,11 @@ function ESAutoCompleteFilter({
 		filterValue = []
 		tableController(tableKey).clearFilter(field.replace('.keyword', ''))
 	}
-
+	const id = Array.isArray(field) ? field.join(' ') : field
 	return (
 		<Autocomplete
 			multiple={multiple}
-			id={`${field}-filter-autocomplete`}
+			id={`${id}-filter-autocomplete`}
 			options={multiple ? options?.filter(item => !filterValue.includes(item.value)) : options}
 			loading={loading}
 			value={filterValue}
