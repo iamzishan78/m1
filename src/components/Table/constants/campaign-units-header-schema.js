@@ -145,8 +145,20 @@ const unitsColumnHeaders = [
   },
   {
     name: "uUnitPricing",
-    label: "Price/Acre",
+    label: "Target Price/Acre",
     esKey: "shapeJson.properties.uUnitPricing.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      customRender: value => (
+        <p>{value ? `$${vf_number(value)}` : ""}</p>
+      )
+    },
+  },
+  {
+    name: "uMaxUnitPricing",
+    label: "Max Price/Acre",
+    esKey: "shapeJson.properties.uMaxUnitPricing.keyword",
     options: {
       sort: true,
       filter: true,

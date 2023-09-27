@@ -234,20 +234,30 @@ const UnitInterestsHeadCells = [
             filter: true
         }
     },
-    //remove until max offer price logic has been fixed
-    // {
-    //     name: "uMaxUnitPricing", label: "Max Offer Price", esKey: 'shape.shapeJson.properties.uMaxUnitPricing.keyword',
-    //     options: {
-    //         dbName: "uMaxUnitPricing",
-    //         sort: true,
-    //         filter: true,
-    //         customRender: (value) => vf_currency_to_fixed(value, 2)
-    //     }
-    // },
+
     {
-        name: "offer_price", label: "Offer Price", esKey: 'offer_price',
+        name: "offer_price", label: "Target Offer Price", esKey: 'offer_price',
         options: {
             dbName: "offer_price",
+            sort: true,
+            filter: true,
+            customRender: (value) => vf_currency_to_fixed(value, 2)
+        }
+    },
+
+    {
+        name: "max_offer_price", label: "Max Offer Price", esKey: 'max_offer_price',
+        options: {
+            dbName: "max_offer_price",
+            sort: true,
+            filter: true,
+            customRender: (value) => vf_currency_to_fixed(value, 2)
+        }
+    },
+    {
+        name: "actual_offer_price", label: "Actual Offer Price", esKey: 'actual_offer_price',
+        options: {
+            dbName: "actual_offer_price",
             sort: true,
             filter: true,
             customRender: (value) => vf_currency_to_fixed(value, 2)
@@ -386,9 +396,148 @@ const UnitInterestsHeadCells = [
         }
     },
     {
+        name: 'offer_price',
+        label: 'Target Offer Price',
+        esKey: 'offer_price',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: 'description',
+        label: 'Unit description',
+        esKey: 'shape.shapeJson.properties.description.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: "SurveyMeridian", label: "Survey", esKey: [
+            'shape.shapeJson.properties.originalProperties.Survey.keyword',
+            'shape.shapeJson.properties.originalProperties.PrincipalMeridian.keyword'
+        ],
+        options: {
+            dbName: "shape.shapeJson.properties.originalProperties.0?.Survey?.PrincipalMeridian?",
+            display: false,
+            download: true,
+            viewColumns: false,
+            isMultiFilter: true,
+        },
+        custom: {
+            oRFilter: true,
+        },
+    },
+    {
+        name: 'block',
+        label: 'Block',
+        esKey: 'shape.shapeJson.properties.originalProperties.Block.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: 'township',
+        label: 'Township',
+        esKey: 'shape.shapeJson.properties.originalProperties.Township.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: "SectionRange", label: "Section/ Range", esKey: [
+            'shape.shapeJson.properties.originalProperties.Section.keyword',
+            'shape.shapeJson.properties.originalProperties.Range.keyword'
+        ],
+        options: {
+            dbName: "shape.shapeJson.properties.originalProperties.0?.Section?.Range?",
+            display: false,
+            download: true,
+            viewColumns: false,
+            isMultiFilter: true,
+        },
+        custom: {
+            oRFilter: true,
+        },
+    },
+    {
+        name: "AbstractSection", label: "Abstract", esKey: [
+            'shape.shapeJson.properties.originalProperties.AbstractName.keyword',
+            'shape.shapeJson.properties.originalProperties.ShortName.keyword'
+        ],
+        options: {
+            dbName: "shape.shapeJson.properties.originalProperties.0?.AbstractName?.ShortName?",
+            display: false,
+            download: true,
+            viewColumns: false,
+            isMultiFilter: true,
+        },
+        custom: {
+            oRFilter: true,
+        },
+    },
+    {
+        name: 'city',
+        label: 'City',
+        esKey: 'shape.shapeJson.properties.city.keyword',
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: "address1",
+        label: "Address1",
+        esKey: "contact.entityDetail.address1.keyword",
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: "address2",
+        label: "Address2",
+        esKey: "contact.entityDetail.address2.keyword",
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+
+    {
+        name: "zip",
+        label: "Zip Code",
+        esKey: "contact.entityDetail.zip.keyword",
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
+        name: "ownerType",
+        label: "Owner Type",
+        esKey: "contact.ownerType.keyword",
+        options: {
+            display: false,
+            download: true,
+            viewColumns: false,
+        },
+    },
+    {
         name: "deals",
         label: "Associated Deals",
-        esKey: "deals.keyword",
+        esKey: "deals.name.keyword",
         options: {
             customRender: (value) => {
                 return value && <ListChips list={value} />

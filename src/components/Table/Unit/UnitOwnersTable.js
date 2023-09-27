@@ -98,6 +98,9 @@ function UnitOwnersTable(props) {
           if (['working_interest', 'royalty_interest', 'orri', 'nri', 'nra'].includes(key))
             hit[key] = addTrailingZeros(hit[key])
         })
+        hit.block = hit?.shape?.shapeJson?.properties?.originalProperties?.Block;
+        hit.township = hit?.shape?.shapeJson?.properties?.originalProperties?.Township;
+        hit.description = hit?.shape?.shapeJson?.properties?.description;
         hit = props.setGenricData(hit, hit._id, ['comments', 'tracks', 'tags', 'ifAreContacts']);
         return hit;
       });
@@ -201,7 +204,11 @@ function UnitOwnersTable(props) {
       updateShapeOwners({
         variables: {
           shapeType: props.shapeType,
-          shapeOwners: ids.map((_id) => ({ _id, isDeleted: true })),
+          shapeOwners: ids.map((_id) => ({
+            _id,
+            shapeId: props.rows.find(row => row._id === _id)?.customLayerId,
+            isDeleted: true,
+          })),
         }
       });
     }

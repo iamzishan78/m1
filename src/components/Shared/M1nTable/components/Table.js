@@ -1255,7 +1255,7 @@ function SubTable(props) {
       (column.name === "type" && props.targetLabel === "activity")
     )
       return capitalizeFirstLetter(v);
-
+    if (column.name === "deals") return v.map(item => item.name).join(',');
     if (column.name === "appraisedValue") return vf_currency(v);
 
     if (column.name === "taxValue") return vf_currency(v);
@@ -1367,7 +1367,7 @@ function SubTable(props) {
                 customRender: (value, tableMeta) => {
                   if (props.targetLabel === "unit") {
                     const targetSourceId = tableMeta.rowData[0];
-                    const commentValue = tableMeta.rowData[20];
+                    const commentValue = tableMeta.rowData[22];
 
                     const path = `/${column.label === 'Contact Name' ? 'contact/details' : 'map/units'}/${tableMeta.rowData[0]}`
 
@@ -2375,6 +2375,7 @@ function SubTable(props) {
                   const docInfo = row_line;
                   const splittedStrings = row_line?.fileName?.split(".");
                   let docExtention = splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
+
                   return (
                     <div
                       style={{
@@ -2399,7 +2400,12 @@ function SubTable(props) {
                           );
                         }}
                       >
-                        <GetAppIcon />
+                        {props.addAble?.type === "parcelRunsheet" ? (
+                          docExtention === "pdf" && <GetAppIcon />
+                        ) : (
+                          <GetAppIcon />
+                        )}
+
                       </IconButton>
 
                       {docExtention === "pdf" && (

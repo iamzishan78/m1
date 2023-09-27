@@ -105,6 +105,8 @@ const ContactBulkProgress = () => {
   };
 
   const createOrUpdateToast = (state) => {
+    const asyncOperations = ["commentsCreation"];
+
     for (let i = 0; i < dataJobs.getJobsStatus.jobs.length; i++) {
       let progress = 0;
       if (dataJobs.getJobsStatus.jobs[i].progress && dataJobs.getJobsStatus.jobs[i].totalProgress) {
@@ -122,11 +124,23 @@ const ContactBulkProgress = () => {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Contacts creation completed" : "Contacts creation failed";
         } else if (type === 'PROPERTIES') {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Import successfully completed" : "Import Failed";
-        } else {
-          message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Export successfully completed" : "Export Failed";
-          if (type === 'SHAPEOWNER' && status === "Completed")
-            refetchHelper(['getCustomLayer'])
+        }
+        else {
+          if (status === 'Created') {
+            message = 'Waiting for job to start';
+          } else if (status === 'Completed') {
+            message = `${asyncOperations.includes(type) ? 'Async operation' : 'Export'} successfully completed`;
+          } else if (status === 'Completed with errors') {
+            message = `${asyncOperations.includes(type) ? 'Async operation' : 'Export'} completed with errors`;
+          } else {
+            message = `${asyncOperations.includes(type) ? 'Async operation' : 'Export'} Failed`;
+          }
 
+          if (
+            type === 'SHAPEOWNER' &&
+            (status === 'Completed' || status.includes('Completed'))
+          )
+            refetchHelper(['getCustomLayer']);
         }
         if (status === 'Completed with errors') message = status
       }

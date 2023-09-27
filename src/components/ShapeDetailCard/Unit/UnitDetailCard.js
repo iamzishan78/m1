@@ -134,6 +134,8 @@ export default function UnitDetailCard(props) {
         customLayer,
         userId: stateApp.user.mongoId
       },
+    }).then(() => {
+      setStateApp((state) => ({ ...state, bulkUpload: !state.bulkUpload, }));
     });
   };
 
