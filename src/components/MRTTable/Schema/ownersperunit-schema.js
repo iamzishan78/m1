@@ -332,7 +332,24 @@ const OwnersPerUnitMeta = {
 			isSearchField: true,
 			enableSorting: true,
 			enableColumnOrdering: true,
-			Cell: ({ renderedCellValue }) => (renderedCellValue ? <ListChips list={renderedCellValue} /> : <div />),
+			Cell: ({ row }) => {
+				return (
+					<div>
+						{(row?.original?.deals && Array.isArray(row?.original?.deals)) ? (
+							<div
+								style={{
+									display: 'flex',
+									flexWrap: 'wrap',
+								}}
+							>
+								<ListChips list={row?.original?.deals} />
+							</div>
+						) : (
+							<div />
+						)}
+					</div>
+				);
+			},
 		},
 
 		{

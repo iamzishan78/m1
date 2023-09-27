@@ -200,19 +200,24 @@ const UnitInterestMeta = {
 			name: 'deals.name.keyword',
 			accessorKey: 'deals.name',
 			header: 'Associated Deals',
-			Cell: ({ row }) =>
-				row?.original?.deals ? (
-					<div
-						style={{
-							display: 'flex',
-							flexWrap: 'wrap',
-						}}
-					>
-						<ListChips list={row?.original?.deals} />
+			Cell: ({ row }) => {
+				return (
+					<div>
+						{(row?.original?.deals && Array.isArray(row?.original?.deals)) ? (
+							<div
+								style={{
+									display: 'flex',
+									flexWrap: 'wrap',
+								}}
+							>
+								<ListChips list={row?.original?.deals} />
+							</div>
+						) : (
+							<div />
+						)}
 					</div>
-				) : (
-					<div />
-				),
+				);
+			},
 		},
 
 		CommonSchema.TAGS,

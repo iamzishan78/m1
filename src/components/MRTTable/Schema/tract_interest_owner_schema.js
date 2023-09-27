@@ -382,19 +382,24 @@ const TractPerUnitMeta = {
 			enableSorting: true,
 			isExternalFilter: false,
 			isSearchField: true,
-			Cell: ({ renderedCellValue }) =>
-				renderedCellValue ? (
-					<div
-						style={{
-							display: 'flex',
-							flexWrap: 'wrap',
-						}}
-					>
-						<ListChips list={renderedCellValue} />
+			Cell: ({ row }) => {
+				return (
+					<div>
+						{(row?.original?.deals && Array.isArray(row?.original?.deals)) ? (
+							<div
+								style={{
+									display: 'flex',
+									flexWrap: 'wrap',
+								}}
+							>
+								<ListChips list={row?.original?.deals} />
+							</div>
+						) : (
+							<div />
+						)}
 					</div>
-				) : (
-					<div />
-				),
+				);
+			},
 		},
 
 		{
