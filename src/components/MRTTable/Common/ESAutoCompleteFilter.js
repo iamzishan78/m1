@@ -78,6 +78,8 @@ function ESAutoCompleteFilter({
 			options = _.uniqWith(options, (a, b) => a.label === b.label);
 		}
 
+		options = options.filter(op => op.value);
+
 		setStateIfDeepEqual(setOptions, filterSelectOptions || options);
 	}, [filtersData]);
 
