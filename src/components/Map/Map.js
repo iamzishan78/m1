@@ -963,9 +963,19 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         if (prop.filter) layerConfig.filter = prop.filter;
 
         // Incase of group we have one datasource but we filter by layerShapeName ( i.e file name)
-        if (config.layerShapeName && config.groupId)
-          layerConfig.filter = ['all', ["==", "layerShapeName", config.layerShapeName], ["==", "layerGeometry", config.layerGeometry]];
-        else if (config.layerGeometry && config.groupId) layerConfig.filter = ["==", "layerGeometry", config.layerGeometry];
+        if (config.layerShapeName && config.groupId) {
+          if (config.layerGeometry === 'Polygon') {
+            layerConfig.filter = ['all', ["==", "layerShapeName", config.layerShapeName], ["in", "layerGeometry", "Polygon", "MultiPolygon"]];
+          } else {
+            layerConfig.filter = ['all', ["==", "layerShapeName", config.layerShapeName], ["==", "layerGeometry", config.layerGeometry]];
+          }
+        } else if (config.layerGeometry && config.groupId) {
+          if (config.layerGeometry === 'Polygon') {
+            layerConfig.filter = ["in", "layerGeometry", "Polygon", "MultiPolygon"];
+          } else {
+            layerConfig.filter = ["==", "layerGeometry", config.layerGeometry];
+          }
+        }
 
         if (prop.minZoom) {
           layerConfig.minzoom = prop.minZoom;
