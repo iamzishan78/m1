@@ -62,7 +62,8 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
                 const dealsArray = shapeOwner.deals.find((deal) => deal._id === dealId) ? shapeOwner.deals : [...shapeOwner.deals, { _id: dealId, name: dealName }];
                 return {
                     ...shapeOwner,
-                    deals: dealsArray
+                    deals: dealsArray,
+                    ownerEntity: shapeOwner.relatedObject
                 }
             });
 
