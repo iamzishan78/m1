@@ -150,7 +150,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
                 <Grid item container xs={12}  >
                     <Grid item xs={11} style={{ minHeight: "35px" }}>
                         <Typography variant="h4" className={classes.heading}>
-                            {stateApp?.addType? "Select a deal to associate selected interests" : "Add Contact to Deal"} 
+                        Add {stateApp?.addType ? stateApp.addType : "Contact"} to Deal
                         </Typography>
 
                     </Grid>
@@ -171,7 +171,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 
                 <Grid className={classes.searchDeal}>
                     <InputLabel className={classes.label}>
-                        Search for existing deal to associate to {stateApp?.addType? stateApp.addType : "contact"}
+                        {stateApp?.addType? "Select a deal to associate selected interests" : "Search for existing deal to associate to contact"}
                     </InputLabel>
 
                     <Autocomplete
