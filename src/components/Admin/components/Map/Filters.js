@@ -10,12 +10,12 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "65px",
     marginTop: "25px",
     "& .MuiAutocomplete-root": {
-      minWidth: "250px",
+      minWidth: "350px",
     },
   },
 }));
 
-const options = ["Unit NRA Calculation"];
+const options = ["Unit Interest NRA Calculation"];
 
 const LastCheckDateFilter = ({ }) => {
   const classes = useStyles();
