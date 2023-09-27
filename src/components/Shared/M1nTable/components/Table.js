@@ -3205,6 +3205,22 @@ function SubTable(props) {
     setSearchedRows(rows);
   }, [rows]);
 
+  useEffect(() => {
+    if (!props.selectedRowsValues || !m1nSelectedRowsIds) return
+    if (props.selectedRowsValues.length < m1nSelectedRowsIds.length) return
+
+    let selectedRowsIds = props.selectedRowsValues.map((row) => {
+      if (props.parent === "OwnersPerWell") return row.globalOwnerId;
+      if (props.parent === "owner_WellInterests") return row.wellId;
+      if (props.parent === "TractsTable") return row.contact._id;
+      if (row.id) return row.id;
+      if (row.Id) return row.Id;
+      if (row._id) return row._id;
+    });
+
+    setM1nSelectedRowsIds(selectedRowsIds);
+  }, [props.selectedRowsValues]);
+
   const searchData = (tableState) => {
     let rows = [];
     if (tableState.searchText) {
