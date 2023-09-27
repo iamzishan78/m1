@@ -150,7 +150,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
                 <Grid item container xs={12}  >
                     <Grid item xs={11} style={{ minHeight: "35px" }}>
                         <Typography variant="h4" className={classes.heading}>
-                            Add {stateApp?.addType ? stateApp.addType : "Contact"} to Deal
+                            {stateApp?.addType? "Select a deal to associate selected interests" : "Add Contact to Deal"} 
                         </Typography>
 
                     </Grid>
