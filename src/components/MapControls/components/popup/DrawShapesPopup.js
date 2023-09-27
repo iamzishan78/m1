@@ -128,7 +128,7 @@ const DrawShapesPopup = (props) => {
     newFeature.properties.id = featureId;
 
     if (shapeToExtend) {
-      if (stateApp.shapeEditMode !== 'redraw')
+      if (stateApp.shapeEditMode !== 'redraw' && shapeToExtend.geometry?.type)
         newFeature = union(newFeature, shapeToExtend);
       shapeToExtend.geometry = newFeature.geometry
       newFeature = shapeToExtend

@@ -2375,6 +2375,7 @@ function SubTable(props) {
                   const docInfo = row_line;
                   const splittedStrings = row_line?.fileName?.split(".");
                   let docExtention = splittedStrings?.[splittedStrings.length - 1]?.toLowerCase();
+
                   return (
                     <div
                       style={{
@@ -2399,7 +2400,12 @@ function SubTable(props) {
                           );
                         }}
                       >
-                        <GetAppIcon />
+                        {props.addAble?.type === "parcelRunsheet" ? (
+                          docExtention === "pdf" && <GetAppIcon />
+                        ) : (
+                          <GetAppIcon />
+                        )}
+
                       </IconButton>
 
                       {docExtention === "pdf" && (

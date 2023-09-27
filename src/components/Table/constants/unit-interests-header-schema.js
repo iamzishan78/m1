@@ -234,20 +234,30 @@ const UnitInterestsHeadCells = [
             filter: true
         }
     },
-    //remove until max offer price logic has been fixed
-    // {
-    //     name: "uMaxUnitPricing", label: "Max Offer Price", esKey: 'shape.shapeJson.properties.uMaxUnitPricing.keyword',
-    //     options: {
-    //         dbName: "uMaxUnitPricing",
-    //         sort: true,
-    //         filter: true,
-    //         customRender: (value) => vf_currency_to_fixed(value, 2)
-    //     }
-    // },
+
     {
-        name: "offer_price", label: "Offer Price", esKey: 'offer_price',
+        name: "offer_price", label: "Target Offer Price", esKey: 'offer_price',
         options: {
             dbName: "offer_price",
+            sort: true,
+            filter: true,
+            customRender: (value) => vf_currency_to_fixed(value, 2)
+        }
+    },
+
+    {
+        name: "max_offer_price", label: "Max Offer Price", esKey: 'max_offer_price',
+        options: {
+            dbName: "max_offer_price",
+            sort: true,
+            filter: true,
+            customRender: (value) => vf_currency_to_fixed(value, 2)
+        }
+    },
+    {
+        name: "actual_offer_price", label: "Actual Offer Price", esKey: 'actual_offer_price',
+        options: {
+            dbName: "actual_offer_price",
             sort: true,
             filter: true,
             customRender: (value) => vf_currency_to_fixed(value, 2)

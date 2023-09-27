@@ -39,8 +39,6 @@ function UnitInterestOwnersTable(props) {
       hit.qualifier = hit?.shape?.shapeJson?.properties?.qualifier?.name;
       hit.reviewer = hit?.shape?.shapeJson?.properties?.reviewer?.name;
       hit.uUnitPricing = hit?.shape?.shapeJson?.properties?.uUnitPricing;
-      //remove until max offer price logic is fixed
-      //hit.uMaxUnitPricing = hit?.shape?.shapeJson?.properties?.uMaxUnitPricing;
       hit.uNumber = hit?.shape?.shapeJson?.properties?.uNumber;
       hit.shapeArea = hit?.shape?.shapeJson?.properties?.shapeArea;
       hit.uAcres = hit?.shape?.shapeJson?.properties?.uAcres;
@@ -71,24 +69,54 @@ function UnitInterestOwnersTable(props) {
   useEffect(() => {
     const search = esExtentedSearch(props.landSearchQuery, searchInput)
 
-    props.setInitialFilters([
+    const defaultFilters = [
       {
         field: 'shape.layer.keyword',
         value: 'unit',
+      },
+      {
+        field: 'contact.IsDeleted',
+        value: 'false',
+      },
+      {
+        field: 'shape.IsDeleted',
+        value: 'false',
       },
       ...(props.campaignName ? [{
         field: 'campaignName.keyword',
         value: props.campaignName
       }] : [])
-    ]);
+    ]
+
+    props.setInitialFilters(defaultFilters);
 
     setTableMeta({
       extendSearchQuery: isNaN(parseFloat(search.replaceAll('*', ''))) ? search : search.replaceAll('*', ''),
+      searchFields: [
+        'contact.entityDetail.name',
+        'shape.shapeJson.properties.uName',
+        'shape.shapeJson.properties.uNumber',
+        'shape.shapeJson.properties.shapeArea',
+        'shape.shapeJson.properties.uUnitPricing',
+        'shape.shapeJson.properties.uAcres',
+        'contact.contactStatus',
+        'campaignName',
+        'shape.shapeJson.properties.reviewer.name',
+        'shape.shapeJson.properties.qualifier.name',
+        ...(!search.includes(' ') ? [
+          'working_interest',
+          'royalty_interest',
+          'orri',
+          'nra',
+          'offer_price',
+        ] : [])
+      ],
       TableHeader: copy(TableHeader(!!props.isSnapGrid)),
       esIndex: 'shapeowners_flat',
       selectedGridView: GridViewModule || defaultView,
       typeKeyword: { gridViewCategory: 'UnitInterest' },
       startPaginationAt: 50,
+      filters: defaultFilters,
       defaultSort: { field: '_ts', order: 'desc' },
       polygon: stateApp?.currentFeature?.geometry && {
         type: 'geo_intersects',
