@@ -510,10 +510,13 @@ function SourceManager(props) {
       if (!feature.properties) {
         feature.properties = {};
       }
-      const layerShapeName = `${geo.fileName || name} - ${feature.geometry.type === 'MultiPolygon' ? 'Polygon' : feature.geometry.type}`
-      feature.properties = { ...feature.properties, layerGeometry: feature.geometry.type, layerShapeName };
-      if (!layerTypes.includes(feature.geometry.type) && feature.geometry.type !== 'MultiPolygon') {
-        layerTypes.push(feature.geometry.type);
+
+      const layerType = feature.geometry.type === 'MultiPolygon' ? 'Polygon' : feature.geometry.type;
+
+      const layerShapeName = `${geo.fileName || name} - ${layerType}`
+      feature.properties = { ...feature.properties, layerGeometry: layerType, layerShapeName };
+      if (!layerTypes.includes(layerType)) {
+        layerTypes.push(layerType);
       }
     });
     layerTypes.forEach((layerType) => {
