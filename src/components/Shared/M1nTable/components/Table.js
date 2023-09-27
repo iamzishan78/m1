@@ -3444,7 +3444,7 @@ function SubTable(props) {
               </div>
             );
           }
-          if (props.addAble?.type === "TractInterests" && props.parent === "assocTaxRollInterests") {
+          if (props.addAble?.type === "TractInterests" && (props.parent === "assocTaxRollInterests" || props.parent === "contactAssocTaxRollInterests")) {
             return (
               <div
                 style={{
@@ -3470,7 +3470,7 @@ function SubTable(props) {
                         ...stateApp,
                         dealDialog: true,
                         addExistingDeal: true,
-                        addType: "Interests",
+                        addType: props.parent === "contactAssocTaxRollInterests"? "tractInterests" : "interests",
                         interestsIds: m1nSelectedRowsIds,
                         activeDeal: { cardId: null, laneId: null },
                       }));

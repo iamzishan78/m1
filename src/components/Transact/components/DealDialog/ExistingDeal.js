@@ -12,6 +12,9 @@ import { DEAL_DESCRIPTOR } from "graphQL/useMutationAddDeal";
 import { AppContext } from "AppContext";
 import { GET_SHAPE_OWNERS_DATA } from "graphQL/useQueryGetShapeOwnersData";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
+import { GET_PARCEL_OWNERS_DATA } from "graphQL/useQueryGetParcelOwnersData";
+import { UPDATEPARCELOWNER } from "graphQL/useMutationUpdateParcelOwner";
+
 
 export default function ExistingDeal({ contactId, handleClickDialogClose }) {
     const [stateApp] = useContext(AppContext);
@@ -23,6 +26,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 
     const [dealDescriptor] = useMutation(DEAL_DESCRIPTOR);
     const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS);
+    const [updateParcelOwner] = useMutation(UPDATEPARCELOWNER);
     const [getOpenDeals, { loading: tloading, data: dealsData }] = useLazyQuery(
         OPENDEALS,
         {
@@ -31,6 +35,10 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
     );
     const [getShapeOwnerData, { data: owners }] = useLazyQuery(
         GET_SHAPE_OWNERS_DATA,
+        { fetchPolicy: "no-cache" }
+    );
+    const [getParcelOwnersData, { data: parcelOwners }] = useLazyQuery(
+        GET_PARCEL_OWNERS_DATA,
         { fetchPolicy: "no-cache" }
     );
 
@@ -52,11 +60,16 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
                 ids: stateApp.interestsIds
             },
         });
+        getParcelOwnersData({
+            variables: {
+                ids: stateApp.interestsIds
+            },
+        });
     }, [stateApp.interestsIds]);
 
     const handleAddDeal = async () => {
         setIsLoading(true);
-        if (stateApp?.addType) {
+        if (stateApp?.addType === "interests") {
             const dealName = dealsData?.openDeals?.deals.find((deal) => deal._id === dealId).name;
             const shapeOwnersData = (owners.getShapeOwnersData).map((shapeOwner) => {
                 const dealsArray = shapeOwner.deals.find((deal) => deal._id === dealId) ? shapeOwner.deals : [...shapeOwner.deals, { _id: dealId, name: dealName }];
@@ -76,7 +89,28 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
                 refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
                 awaitRefetchQueries: true,
             });
-        } else {
+        }else if(stateApp?.addType === "tractInterests"){
+            const dealName = dealsData?.openDeals?.deals.find((deal) => deal._id === dealId).name;
+            const parcelOwnersData = (parcelOwners.getParcelOwnersData).map((parcelOwner) => {
+                parcelOwner.deals = parcelOwner.deals ? parcelOwner.deals : [];
+                const dealsArray = parcelOwner.deals.find((deal) => deal._id === dealId) ? parcelOwner.deals : [...parcelOwner.deals, { _id: dealId, name: dealName }];
+                return {
+                    ...parcelOwner,
+                    deals: dealsArray,
+                    ownerEntity: parcelOwner.relatedObject
+                }
+            });
+            const parcelOwnerPromises = parcelOwnersData.map((parcelOwner) => {
+                return updateParcelOwner({
+                    variables: {
+                        parcelOwner
+                    },
+                    refetchQueries: ["getparcelOwners", "getContactParcelInterests", "getContactParcelInterest", "getESSimpleSearch"],
+                    awaitRefetchQueries: true,
+                });
+            });
+            await Promise.all(parcelOwnerPromises);
+        }else {
             await dealDescriptor({
                 variables: {
                     deal: {
