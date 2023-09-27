@@ -1283,7 +1283,7 @@ function AddDealDialog(props) {
 
   const handleClickDialogClose = () => {
     setStateApp((state) => {
-      const newState = { ...state, transactBarShowGrid: false };
+      const newState = { ...state, transactBarShowGrid: false, addType: null, interestsIds: null };
       if (state.transactBarView === "Map")
         newState.transactBarView = "Deal";
 

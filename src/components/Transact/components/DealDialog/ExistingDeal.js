@@ -4,11 +4,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { OPENDEALS } from "graphQL/useQueryOpenDeals";
 import { Button, Grid, IconButton, InputAdornment, InputLabel, TextField, Typography } from "@material-ui/core";
+import CircularProgress from '@mui/material/CircularProgress';
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import SearchIcon from "@material-ui/icons/Search";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { DEAL_DESCRIPTOR } from "graphQL/useMutationAddDeal";
 import { AppContext } from "AppContext";
+import { GET_SHAPE_OWNERS_DATA } from "graphQL/useQueryGetShapeOwnersData";
+import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 
 export default function ExistingDeal({ contactId, handleClickDialogClose }) {
     const [stateApp] = useContext(AppContext);
@@ -16,13 +19,19 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 
     const [openDeals, setOpenDeals] = useState([]);
     const [dealId, setDealId] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [dealDescriptor] = useMutation(DEAL_DESCRIPTOR);
+    const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS);
     const [getOpenDeals, { loading: tloading, data: dealsData }] = useLazyQuery(
         OPENDEALS,
         {
             fetchPolicy: "network-only",
         }
+    );
+    const [getShapeOwnerData, { data: owners }] = useLazyQuery(
+        GET_SHAPE_OWNERS_DATA,
+        { fetchPolicy: "no-cache" }
     );
 
     useEffect(() => {
@@ -37,20 +46,51 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
         }
     }, [dealsData]);
 
-    const handleAddDeal = () => {
-        dealDescriptor({
+    useEffect(() => {
+        getShapeOwnerData({
             variables: {
-                deal: {
-                    descriptorObject: dealId,
-                    relatedObjectId: contactId,
-                    relatedObjectType: "Contact",
-                    userId: userId
-
-                },
+                ids: stateApp.interestsIds
             },
-            refetchQueries: ["getContactDeals"],
-            awaitRefetchQueries: true,
         });
+    }, [stateApp.interestsIds]);
+
+    const handleAddDeal = async () => {
+        setIsLoading(true);
+        if (stateApp?.addType) {
+            const dealName = dealsData?.openDeals?.deals.find((deal) => deal._id === dealId).name;
+            const shapeOwnersData = (owners.getShapeOwnersData).map((shapeOwner) => {
+                const dealsArray = shapeOwner.deals.find((deal) => deal._id === dealId) ? shapeOwner.deals : [...shapeOwner.deals, { _id: dealId, name: dealName }];
+                return {
+                    ...shapeOwner,
+                    deals: dealsArray
+                }
+            });
+
+            await updateShapeOwners({
+                variables: {
+                    shapeType: "Unit",
+                    shapeOwners: shapeOwnersData,
+                    userId: stateApp.user.mongoId,
+                },
+                refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
+                awaitRefetchQueries: true,
+            });
+        } else {
+            await dealDescriptor({
+                variables: {
+                    deal: {
+                        descriptorObject: dealId,
+                        relatedObjectId: contactId,
+                        relatedObjectType: "Contact",
+                        userId: userId
+
+                    },
+                },
+                refetchQueries: ["getContactDeals"],
+                awaitRefetchQueries: true,
+            });
+        }
+        setIsLoading(false);
         handleClickDialogClose();
     }
 
@@ -110,7 +150,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
                 <Grid item container xs={12}  >
                     <Grid item xs={11} style={{ minHeight: "35px" }}>
                         <Typography variant="h4" className={classes.heading}>
-                            Add Contact to Deal
+                            Add {stateApp?.addType ? stateApp.addType : "Contact"} to Deal
                         </Typography>
 
                     </Grid>
@@ -131,7 +171,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 
                 <Grid className={classes.searchDeal}>
                     <InputLabel className={classes.label}>
-                        Search for existing deal to associate to contact
+                        Search for existing deal to associate to {stateApp?.addType? stateApp.addType : "contact"}
                     </InputLabel>
 
                     <Autocomplete
@@ -202,11 +242,11 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
                     color="secondary"
                     size="medium"
                     disableElevation
-                    disabled={!dealId && true}
+                    disabled={(!dealId || isLoading) && true}
                     onClick={() => handleAddDeal()}
                     className={classes.footerButton}
                 >
-                    Add
+                    {isLoading ? <CircularProgress size={24} /> : 'Add'}
                 </Button>
             </Grid>
         </Grid>
