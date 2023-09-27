@@ -110,7 +110,7 @@ export default function RevenueStatements() {
       <div className={classes.actionsContainer}>
         <div className={classes.tabsHeader}>
           <StyledTabs value={tab} onChange={(event, tab) => setTab(tab)} aria-label="ant example">
-            <StyledTab id="settings" label="Settings" />
+            <StyledTab id="settings" label="Calculations" />
             {/* <StyledTab id="validations" label="Validations" disabled /> */}
           </StyledTabs>
         </div>
