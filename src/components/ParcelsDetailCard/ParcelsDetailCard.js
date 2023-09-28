@@ -626,9 +626,9 @@ export default function ParcelsDetailCard(props) {
             />,
             <div className={showSummary ? classes.subContent : classes.subContent2}>
               <ParcelAgreementTable
-                esIndex='parcelagreement_flats'
+                esIndex='runsheetinstrument_flat'
                 parent="ownersPerParcel"
-                targetLabel="Parcel Ownership"
+                targetLabel="parcelRunsheet"
                 customLayer={copy(parcelObj)}
                 dense
                 header={<RunsheetHeader />}

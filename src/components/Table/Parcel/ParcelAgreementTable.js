@@ -2,35 +2,34 @@ import React, { useContext, useEffect, useState } from "react";
 // context
 import { useHistory } from "react-router-dom";
 import { Container, Button, Tooltip, IconButton } from "@material-ui/core";
+import Typography from "@material-ui/core/Typography";
+import Grid from "@material-ui/core/Grid";
+import Toolbar from "@material-ui/core/Toolbar";
 import DeleteIcon from "@material-ui/icons/Delete";
-import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
-import EditIcon from "@material-ui/icons/Edit";
+import CloseIcon from "@material-ui/icons/Close";
+import GetAppIcon from "@material-ui/icons/GetApp";
+import Dialog from "@material-ui/core/Dialog";
+
 import { useMutation } from "@apollo/client";
 
 import { AppContext } from "AppContext";
 import TableESHOC from "components/Table/TableESHOC";
 import Table from "components/Shared/M1nTable/components/Table";
-import { FEATURES } from "components/Shared/FeatureFlag/common";
-import RequestPageIcon from "components/Shared/svgIcons/request_page";
+
 import ButtonDropDown from "components/Shared/M1nTable/components/ButtonGroup";
 
 import { NavigationContext } from "components/Navigation/NavigationContext";
-import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
-import RightDialog from "components/ContactDetailCard/components/RightDialog";
-import ExportOwnersAndContacts from "components/Shared/ExportOwnerAndContacts";
-import AddParcelOwnerDialogContent from "components/Shared/M1nTable/components/SubComponents/AddParcelOwnerDialogContent";
-import BuyContactsInfoDialogContent from "components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent";
+
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
 import TableHeader from "components/Table/constants/parcel-agreement-header-schema";
-import { UPDATEPARCELOWNER } from "graphQL/useMutationUpdateParcelOwner";
-import vf_currency from "components/Shared/valueformatters/vf_currency";
+
 import { deepEqualObjects, copy } from "components/Shared/functions";
-import { addTrailingZeros } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
-import { AssignOwnerToContactDrawerContainer } from "store/containers";
 import { DELETE_PARCEL_RUNSHEET } from "graphQL/useMutationDeleteParcelAgreement";
 import ParcelInstrument from "components/ParcelsDetailCard/ParcelInstrument";
+import PdfWithZoom from "components/Shared/components/common/PdfWithZoom";
+import { downloadPdfsFile } from "utils/helper";
 
 const genericDataActions = ["comments", "tracks", "ifAreContacts"];
 const interestKeys = [
@@ -51,24 +50,21 @@ const startPaginationAt = 25;
 function ParcelAgreementTable(props) {
     let history = useHistory();
     const classes = usetableStyles();
-    const [selectedRows, setSelectedRows] = useState([]);
     const [resetSelectedRow, setResetSelectedRow] = useState(false);
     const [isSelectAll, setIsSelectAll] = useState(false);
     const [stateApp, setStateApp] = useContext(AppContext);
     const [stateNav, setStateNav] = useContext(NavigationContext);
     const { customLayer, esIndex, searchFields, clickedRow } = props;
 
-    const addAble = { type: "parcelRunsheet" }
     const [showSlider, setShowSlider] = useState(false)
     const [openCustomDialog, setOpenCustomDialog] = useState("");
-    const [selectedOwner, setSelectedOwner] = useState(null);
+    const [selectedInstrument, setSelectedInstrument] = useState(null);
+    const [numPages, setNumPages] = useState(null);
 
     const [deleteParcelRunsheet] = useMutation(DELETE_PARCEL_RUNSHEET, { refetchQueries: ["getParcelAgreement"], awaitRefetchQueries: true });
 
-
     const appliedFilters = [
-        { field: "descriptorObject", value: customLayer._id },
-        { field: "isDeleted", value: true }
+        { field: "customLayerId", value: customLayer._id }
     ];
 
     const formatHits = (hits) => {
@@ -93,30 +89,16 @@ function ParcelAgreementTable(props) {
 
     useEffect(() => {
         if (clickedRow) {
-            setSelectedOwner({
+            setSelectedInstrument({
                 ...clickedRow,
             });
             setShowSlider(true)
         }
     }, [clickedRow]);
 
-    const getRows = () => {
-        const selectedRows = [];
-        for (let i = 0; i < props.selectedRows.length; i++) {
-            if (props.rows[props.selectedRows[i].index])
-                selectedRows.push({
-                    ...props.rows[props.selectedRows[i].index],
-                    _id: props.rows[props.selectedRows[i].index].contactId,
-                });
-        }
-        return selectedRows;
-    };
-
-    const onBulkUpdateComplete = () => {
-        setSelectedRows([]);
-        setResetSelectedRow(!resetSelectedRow);
-    };
-
+    function onDocumentLoadSuccess({ numPages }) {
+        setNumPages(numPages);
+    }
     const deleteFunc = (ids) => {
         for (let i = 0; i < ids.length; i++) {
             const record = props.rows.find(row => row._id === ids[i])
@@ -146,7 +128,7 @@ function ParcelAgreementTable(props) {
             id={props.id ? props.id : props.parent}
         >
             {showSlider && (
-                <ParcelInstrument parcelId={props.customLayer._id} setShowSlider={setShowSlider} />
+                <ParcelInstrument parcelId={props.customLayer._id} setShowSlider={setShowSlider} selectedInstrument={selectedInstrument} setSelectedInstrument={setSelectedInstrument} />
             )}
             {openCustomDialog === "deleteInstruments" && (
                 <DeleteConfirmationDialogContent
@@ -238,9 +220,7 @@ function ParcelAgreementTable(props) {
                     }
                 }}
                 onRowSelectionChange={(
-                    currentRowsSelected,
                     allRowsSelected,
-                    rowsSelected
                 ) => {
                     if (
                         allRowsSelected.length === startPaginationAt ||
@@ -255,6 +235,56 @@ function ParcelAgreementTable(props) {
                 setColumnsBase={[]}
                 {...props.esHocProps}
             />
+            <Dialog
+                className={classes.dialogExpCard}
+                fullWidth
+                maxWidth="xl"
+                open={stateApp.pdfView ? true : false}
+                onClose={() => {
+                    setStateApp((state) => ({
+                        ...state,
+                        pdfView: null,
+                    }));
+                }}
+            >
+                <Toolbar>
+                    <Grid
+                        justify="space-between" // Add it here :)
+                        container
+                        spacing={24}
+                    >
+                        <Grid item>
+                            <Typography className={classes.fileTitle} type="title" color="inherit">
+                                {stateApp.pdfView?.fileName}
+                            </Typography>
+                        </Grid>
+
+                        <Grid item>
+                            {stateApp.pdfView && (
+                                <IconButton onClick={() => downloadPdfsFile(stateApp.pdfView)}>
+                                    <GetAppIcon />
+                                </IconButton>
+                            )}
+                            <IconButton
+                                className="float-right"
+                                color="inherit"
+                                onClick={() => {
+                                    setStateApp((state) => ({
+                                        ...state,
+                                        pdfView: null,
+                                        viewDoc: null,
+                                    }));
+                                }}
+                                aria-label="close"
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </Grid>
+                    </Grid>
+                </Toolbar>
+                <PdfWithZoom numPages={numPages} viewToken={stateApp.pdfView?.viewToken} onDocumentLoadSuccess={onDocumentLoadSuccess} />
+
+            </Dialog>
         </Container>
     );
 }
