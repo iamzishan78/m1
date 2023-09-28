@@ -1873,7 +1873,7 @@ function AddDealDialog(props) {
       {
         stateApp.transactBarShowGrid &&
         createPortal(<AssociatedFlowDealDetails
-          contacts={stateApp.activeDeal?.contacts.map(contact => contact._id)}
+          contacts={stateApp.activeDeal?.contacts?.map(contact => contact._id)}
           deal={stateApp?.activeDeal?.cardId}
         />, document.body)
       }
