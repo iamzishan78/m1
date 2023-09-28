@@ -115,7 +115,7 @@ const UnitInterestsPageHeadCells = (isSnapGrid = false) => [
     },
     {
         name: 'uUnitPricing',
-        label: 'Price/NRA',
+        label: 'Target Price/NRA',
         esKey: 'shape.shapeJson.properties.uUnitPricing.keyword',
         // editable: false,
         noFilter: true,
@@ -131,6 +131,20 @@ const UnitInterestsPageHeadCells = (isSnapGrid = false) => [
         name: 'offer_price',
         label: 'Target Offer Price',
         esKey: 'offer_price',
+        // editable: false,
+        noFilter: true,
+        options: {
+            display: true,
+            sort: true,
+            filter: true,
+            isMultiFilter: true,
+            customRender: (value) => <p>{vf_currency_to_fixed(value, 2)}</p>
+        },
+    },
+    {
+        name: 'uMaxUnitPricing',
+        label: 'Max Price/NRA',
+        esKey: 'shapeJson.properties.uMaxUnitPricing.keyword',
         // editable: false,
         noFilter: true,
         options: {
