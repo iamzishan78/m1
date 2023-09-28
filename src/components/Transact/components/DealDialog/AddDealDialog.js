@@ -1154,7 +1154,7 @@ function AddDealDialog(props) {
         ...stateApp,
         activeDeal: {
           ...stateApp.activeDeal,
-          contacts: [...getDealResult.deal.deal.contacts.map((c) => c)],
+          contacts: [...getDealResult?.deal?.deal?.contacts?.map((c) => c)],
           activity: getDealResult.deal.deal.activity
         },
       }));
@@ -1283,7 +1283,7 @@ function AddDealDialog(props) {
 
   const handleClickDialogClose = () => {
     setStateApp((state) => {
-      const newState = { ...state, transactBarShowGrid: false };
+      const newState = { ...state, transactBarShowGrid: false, addType: null, interestsIds: null };
       if (state.transactBarView === "Map")
         newState.transactBarView = "Deal";
 
@@ -1873,7 +1873,7 @@ function AddDealDialog(props) {
       {
         stateApp.transactBarShowGrid &&
         createPortal(<AssociatedFlowDealDetails
-          contacts={stateApp.activeDeal?.contacts.map(contact => contact._id)}
+          contacts={stateApp.activeDeal?.contacts?.map(contact => contact._id)}
           deal={stateApp?.activeDeal?.cardId}
         />, document.body)
       }
