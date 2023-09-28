@@ -106,6 +106,7 @@ export default function RevenueStatements() {
   const onChangeType = (key, type, value = settings?.map?.[calculationOption?.dbKey]?.value) => {
     const updatedSettings = {
       map: {
+        ...settings?.map,
         [key]: { type, value }
       }
     };
@@ -153,7 +154,7 @@ export default function RevenueStatements() {
                     variant="outlined"
                     margin="dense"
                     disabled={settings?.map?.[calculationOption?.dbKey]?.type !== "custom"}
-                    onBlur={(event) => onChangeType(calculationOption.dbKey, event.target.value)}
+                    onBlur={(event) => onChangeType(calculationOption.dbKey, "custom", event.target.value)}
                     value={settings?.map?.[calculationOption?.dbKey]?.value}
                     onChange={(event) => {
                       const _settings = {
