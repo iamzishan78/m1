@@ -67,8 +67,18 @@ function ParcelAgreementTable(props) {
     const appliedFilters = [
         { field: "customLayerId", value: customLayer._id }
     ];
-
     const formatHits = (hits) => {
+        hits = hits.map((hit) => {
+            if (hit?.tags?.length > 0) {
+                const tags = hit.tags.map((tag) => tag.tag)
+                if (tags[0])
+                    hit.tags = [[tags], hit.tags.length]
+            } else
+                hit.tags = [[], 0];
+
+
+            return hit;
+        });
         return hits;
     };
 

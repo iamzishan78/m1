@@ -16,6 +16,18 @@ const ParcelAgreementHeadCells = [
         },
     },
     {
+        name: "descriptorObject",
+        options: {
+            display: false,
+            filter: false,
+            searchable: false,
+            sort: false,
+            download: false,
+            print: false,
+            viewColumns: false,
+        },
+    },
+    {
         name: "instrumentType",
         label: "Instrument Type",
         esKey: "instrumentType.keyword",
@@ -125,6 +137,28 @@ const ParcelAgreementHeadCells = [
             download: false,
             print: false,
             viewColumns: false,
+        },
+    },
+    {
+        name: "tags",
+        label: "Tags ",
+        esKey: "tags.tag.keyword",
+        options: {
+            sort: false,
+            download: false,
+            print: false,
+            filterOptions: {
+                names: [],
+                logic(rowVal, pickedTags) {
+                    let containIts = true;
+                    pickedTags.map((pickedTag) => {
+                        if (rowVal[0].indexOf(pickedTag) === -1) {
+                            containIts = false;
+                        }
+                    });
+                    return !containIts;
+                },
+            },
         },
     },
 

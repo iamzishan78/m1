@@ -2333,9 +2333,8 @@ function SubTable(props) {
                 ...column.options,
 
                 customBodyRender: (value, tableMeta, updateValue) => {
-
                   let id = props.targetLabel + tableMeta.columnIndex;
-                  if (value[0]?.tag) {
+                  if (value && value[0]?.tag) {
                     const length = value.length
                     value[0] = value.map((tag) => tag.tag)
                     value[1] = length
@@ -2361,6 +2360,7 @@ function SubTable(props) {
                   if (props.parent === "ownersPerUnit" && props.targetLabel === "Unit Ownership") {
                     targetSourceId = tableMeta.rowData[1];
                   }
+                  console.log("targetSourceId : ", targetSourceId)
                   return (
                     <div style={{ marginRight: "10px" }}>
                       <Tooltip title={value && value[1] === 0 ? "Add Tags" : "Tags"} placement="top">
