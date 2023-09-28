@@ -2,6 +2,7 @@ import React from "react";
 import { Grid, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { makeStyles } from "@material-ui/styles";
+import _ from "lodash";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -13,11 +14,12 @@ const useStyles = makeStyles((theme) => ({
       minWidth: "250px",
     },
   },
+  fieldWidth: {
+    minWidth: '360px !important',
+  },
 }));
 
-const options = ["NRA Calculation"];
-
-const LastCheckDateFilter = ({ }) => {
+const LastCheckDateFilter = ({ calculationOption, setCalculationOption, options }) => {
   const classes = useStyles();
 
   return (
@@ -31,18 +33,17 @@ const LastCheckDateFilter = ({ }) => {
       >
         <Autocomplete
           size="small"
+          className={classes.fieldWidth}
           onChange={(event, newValue) => {
-            if (newValue === null) {
-              //   handleDateTypeChange("This Month");
-            } else {
-              //   handleDateTypeChange(newValue);
-            }
+            const selectedOption = _.find(options, { value: newValue });
+            setCalculationOption(selectedOption)
           }}
-          options={options}
+          value={calculationOption?.value}
+          options={options.map(o => o.value)}
           renderInput={(params) => (
             <TextField {...params} label="" variant="outlined" placeholder="" style={{ backgroundColor: "white" }} />
           )}
-          defaultValue={options[0]}
+          // defaultValue={options[0]}
           disableListWrap
           id="custom-date-dropdown"
         />
