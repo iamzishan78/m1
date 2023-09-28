@@ -135,8 +135,8 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "40px",
     "& .MuiPopover-paper": {
-      height:'450px !important',
-      marginTop:'60px !important'
+      height: '450px !important',
+      marginTop: '60px !important'
     },
   },
   formLabel: {
@@ -227,7 +227,7 @@ export default function CommentType(props) {
       variables: {
         commentType: {
           commentType: commentTypeData.commentType,
-          category: commentTypeData.category, 
+          category: commentTypeData.category,
         },
       },
       refetchQueries: ["getAllCommentsType"],
@@ -247,7 +247,7 @@ export default function CommentType(props) {
 
   const openDialogBox = (e) => {
     e.stopPropagation();
-    props.setCommentTypeDialogBox(true);
+    props.setCommentTypeDialogBox?.(true);
   }
 
   return (
@@ -291,29 +291,27 @@ export default function CommentType(props) {
           }}
         >
           <Grid item className={classes.headerActions}>
-              <span
-                className={`${classes.tab} ${
-                  selectedTab === "Existing" ? classes.selectedTab : ""
+            <span
+              className={`${classes.tab} ${selectedTab === "Existing" ? classes.selectedTab : ""
                 }`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedTab("Existing");
-                }}
-              >
-                Existing
-              </span>
-              <span
-                id="newCommentTypeTab"
-                className={`${classes.tab} ${
-                  selectedTab === "New Comment Type" ? classes.selectedTab : ""
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedTab("Existing");
+              }}
+            >
+              Existing
+            </span>
+            <span
+              id="newCommentTypeTab"
+              className={`${classes.tab} ${selectedTab === "New Comment Type" ? classes.selectedTab : ""
                 }`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedTab("New Comment Type");
-                }}
-              >
-                New Comment Type
-              </span>
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedTab("New Comment Type");
+              }}
+            >
+              New Comment Type
+            </span>
           </Grid>
           <Grid style={{ marginTop: "25px" }}>
             {selectedTab === "Existing" && (

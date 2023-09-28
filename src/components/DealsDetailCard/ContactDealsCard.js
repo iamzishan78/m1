@@ -31,7 +31,7 @@ export default function ContactDocumentsCard(props) {
   const [activeDeals, setActiveDeals] = useState([]);
   const [contactData, setContactData] = useState(null);
 
-  const contactId = history.location.pathname.split("/")[history.location.pathname.split("/").length - 2];
+  const contactId = history.location.pathname.split("/")[3];
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
   const [getContactDeals, { data: deals, loading }] = useLazyQuery(CONTACTDEALS, { fetchPolicy: "cache-and-network" });

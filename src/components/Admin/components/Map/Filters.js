@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "65px",
     marginTop: "25px",
     "& .MuiAutocomplete-root": {
-      minWidth: "250px",
+      minWidth: "350px",
     },
   },
   fieldWidth: {

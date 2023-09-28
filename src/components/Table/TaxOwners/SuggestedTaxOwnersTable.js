@@ -98,6 +98,10 @@ function SuggestedOwnerTable(props) {
       variables: {
         polygon: queryPoly,
         userId: stateApp.user.mongoId,
+        pagination: {
+          first: 10000/*tableState.rowsPerPage*/,
+          after: null,
+        },
       },
     });
     getShapeOwnersCount({
@@ -164,45 +168,56 @@ function SuggestedOwnerTable(props) {
         filters: {},
       },
     };
-
+    if (action === 'filterChange') {
+      let isFiltered = false
+      for (let i = 0; i < tableState.filterList.length; i++) {
+        if (tableState.filterList[i].length !== 0) {
+          isFiltered = true
+          break;
+        }
+      }
+      props.setIsFiltered(isFiltered)
+    }
+    setCount(tableState.count = tableState?.displayData.length)
     switch (action) {
       case "changeRowsPerPage":
-        props.setLoading(true);
-        tableState.page = 0;
+        // props.setLoading(true);
+        // tableState.page = 0;
         meta.setPageInd(tableState.page);
         meta.setRowsPerPage(tableState.rowsPerPage);
-        getPaginatedShapeOwners(pageVariables);
+        // getPaginatedShapeOwners(pageVariables);
         break;
       case "changePage":
-        props.setLoading(true);
-        if (tableState.page > meta.pageInd) {
-          setCount((state, props) => {
-            return (tableState.page + 1) * tableState.rowsPerPage
-          })
-        }
-        getPaginatedShapeOwners({
-          ...pageVariables,
-          variables: {
-            ...pageVariables.variables,
-            pagination: {
-              ...pageVariables.variables.pagination,
-              before:
-                props.rows && tableState.page < meta.pageInd
-                  ? props.rows[0]?.cursor
-                  : null,
-              after:
-                props.rows && tableState.page > meta.pageInd
-                  ? props.rows[props.rows.length - 1]?.cursor
-                  : null,
-            },
-          },
-        });
+        setSelectedRows([])
+        // props.setLoading(true);
+        // if (tableState.page > meta.pageInd) {
+        //   setCount((state, props) => {
+        //     return (tableState.page + 1) * tableState.rowsPerPage
+        //   })
+        // }
+        // getPaginatedShapeOwners({
+        //   ...pageVariables,
+        //   variables: {
+        //     ...pageVariables.variables,
+        //     pagination: {
+        //       ...pageVariables.variables.pagination,
+        //       before:
+        //         props.rows && tableState.page < meta.pageInd
+        //           ? props.rows[0]?.cursor
+        //           : null,
+        //       after:
+        //         props.rows && tableState.page > meta.pageInd
+        //           ? props.rows[props.rows.length - 1]?.cursor
+        //           : null,
+        //     },
+        //   },
+        // });
         break;
       case "sort":
-        props.setLoading(true);
-        tableState.page = 0;
-        meta.setPageInd(tableState.page);
-        getPaginatedShapeOwners(pageVariables);
+        // props.setLoading(true);
+        // tableState.page = 0;
+        // meta.setPageInd(tableState.page);
+        // getPaginatedShapeOwners(pageVariables);
         break;
       case "search":
         break;
@@ -223,9 +238,10 @@ function SuggestedOwnerTable(props) {
 
   const options = {
     rowsPerPageOptions:
-      count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
+      count > 25 ? [10, 25, 50, 100, 250] : count > 10 ? [10, 25] : [],
     count: suggestedOwnersCount || count || 0,
-    serverSide: true,
+    serverSide: false,
+    searchable: true,
     filter: false,
     customToolbar: () => {
 
