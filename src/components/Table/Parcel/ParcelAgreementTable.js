@@ -56,6 +56,7 @@ function ParcelAgreementTable(props) {
     const [stateNav, setStateNav] = useContext(NavigationContext);
     const { customLayer, esIndex, searchFields, clickedRow } = props;
 
+    const addAble = { type: "parcelRunsheet" }
     const [showSlider, setShowSlider] = useState(false)
     const [openCustomDialog, setOpenCustomDialog] = useState("");
     const [selectedInstrument, setSelectedInstrument] = useState(null);
@@ -158,6 +159,7 @@ function ParcelAgreementTable(props) {
                 targetLabel={props.targetLabel}
                 uploadIcon={null}
                 deleteFunc={deleteFunc}
+                addAble={addAble}
                 dense
                 orderByTracks={false}
                 startPaginationAt={null}

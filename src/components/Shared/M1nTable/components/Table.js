@@ -134,6 +134,7 @@ import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOffe
 import { Link } from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
+import { GET_VIEW_TOKEN_URI } from "graphQL/useQueryGetViewTokenUri";
 
 
 // suppress debug console logs
@@ -650,6 +651,9 @@ function SubTable(props) {
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContact, { data: contactData }] = useLazyQuery(CONTACT);
+  const [getViewTokenUri, { data: viewTokenUri }] = useLazyQuery(GET_VIEW_TOKEN_URI, {
+    fetchPolicy: "no-cache",
+  });
   const [autoCalculateOfferPrice, { data: autoCalculateOfferPriceData, }] = useMutation(
     AUTO_CALCULATE_OFFER_PRICE,
     {
@@ -1127,6 +1131,36 @@ function SubTable(props) {
     setExpandedObject(idOrValues);
     setOpenDialog(type);
   };
+
+  const openPdf = (type, docInfo) => {
+    const addAbleTypesToGetViewToken = ["parcelRunsheet"];
+    if (addAbleTypesToGetViewToken.includes(type) && docInfo.fileId) {
+      getViewTokenUri({
+        variables: { fileId: docInfo?.fileId }
+      }).then((result) => {
+        docInfo.viewToken = result.data.getViewTokenUri
+
+        setStateApp((state) => ({
+          ...state,
+          pdfView: docInfo,
+          viewDoc: {
+            uri: result.data.getViewTokenUri,
+            name: docInfo.fileName,
+          },
+        }));
+      })
+    }
+    else {
+      setStateApp((state) => ({
+        ...state,
+        pdfView: docInfo,
+        viewDoc: {
+          uri: docInfo.viewToken,
+          name: docInfo.fileName,
+        },
+      }));
+    }
+  }
 
   // handleActivity if type is 'deleteContact' open delete confirmation dialog otherwise open activiy modal for other types
   const handleActivity = async (contactId, activityType, type) => {
@@ -2415,14 +2449,7 @@ function SubTable(props) {
                             if (props.addAble?.type === "document") {
                               window.history.pushState("", "", `/documents/${row_line._id}/view`);
                             }
-                            setStateApp((state) => ({
-                              ...state,
-                              pdfView: docInfo,
-                              viewDoc: {
-                                uri: docInfo.viewToken,
-                                name: docInfo.fileName,
-                              },
-                            }));
+                            openPdf(props.addAble?.type, docInfo)
                           }}
                         >
                           {/* // this is the search icon in the grid on documents */}

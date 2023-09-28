@@ -205,16 +205,10 @@ export default function ParcelInstrument(props) {
     let ID = [];
     if (selectedInstrument?._id) {
       if (selectedInstrument?.fileId) {
-        const file = {
-          fileUrl: selectedInstrument.fileUrl,
-          containerName: selectedInstrument.fileContainerName,
-          tenant: selectedInstrument.fileTenant,
-          fileName: selectedInstrument.fileName,
-        }
+
         getViewTokenUri({
-          variables: { file }
+          variables: { fileId: selectedInstrument?.fileId }
         }).then((result) => {
-          debugger
           selectedInstrument.viewToken = result.data.getViewTokenUri
         })
 
