@@ -1154,7 +1154,7 @@ function AddDealDialog(props) {
         ...stateApp,
         activeDeal: {
           ...stateApp.activeDeal,
-          contacts: [...getDealResult.deal.deal.contacts.map((c) => c)],
+          contacts: [...getDealResult?.deal?.deal?.contacts?.map((c) => c)],
           activity: getDealResult.deal.deal.activity
         },
       }));
