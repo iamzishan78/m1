@@ -3460,6 +3460,44 @@ function SubTable(props) {
               </div>
             );
           }
+          if (props.addAble?.type === "TractInterests" && (props.parent === "assocTaxRollInterests" || props.parent === "contactAssocTaxRollInterests")) {
+            return (
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    marginRight: "5px",
+                    height: "35px",
+                    display: "flex",
+                  }}
+                >
+                  <Button
+                    color="secondary"
+                    className={classes.multiSelectionTopBarButtons}
+                    style={{ width: "200px" }}
+                    disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+                    onClick={() => {
+                      setStateApp((stateApp) => ({
+                        ...stateApp,
+                        dealDialog: true,
+                        addExistingDeal: true,
+                        addType: props.parent === "contactAssocTaxRollInterests"? "tractInterests" : "interests",
+                        interestsIds: m1nSelectedRowsIds,
+                        activeDeal: { cardId: null, laneId: null },
+                      }));
+                    }}
+                  >
+                    + ADD TO DEAL
+                  </Button>
+                </div>
+              </div>
+            );
+          }
           if (props.addAble?.type === "wellInterest" && props.parent === "ownersPerUnit") {
 
             const getSelectedRows = () => {
