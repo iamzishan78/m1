@@ -404,7 +404,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
           <Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
             <Grid item md={10} xs={10}>
               <DialogTitle id="customized-dialog-title" style={{ fontWeight: "bold" }}>
-                {selectedRow ? "Update sdf " : "Add sd"} Tract Ownership sdf
+                {selectedRow ? "Update" : "Add"} Tract Ownership
                 {/* {selectedRow && (
               <IconButton
                 style={{ float: "right", marginRight: "5px" }}
