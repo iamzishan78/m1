@@ -58,7 +58,6 @@ function MyWellsGridTable(props) {
   }, [props.clickedRow])
 
   const deleteFunc = (ids) => {
-    debugger
     if (ids.length > 0) {
       props.setLoading(true);
       removeWells({

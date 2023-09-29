@@ -53,6 +53,7 @@ import { getRandomColor } from "components/Shared/functions/ui";
 import AssociatedFlowDealDetails from "../AssociatedFlowDealDetails";
 import { createPortal } from "react-dom/cjs/react-dom.production.min";
 import ExistingDeal from "./ExistingDeal";
+import { GET_FLOW_ASSOCIATED_SUMMARY } from "graphQL/useQueryFlowAssociatedData";
 
 function NumberFormatCustom(props) {
   const { inputRef, onChange, ...other } = props;
@@ -1218,6 +1219,16 @@ function AddDealDialog(props) {
   const [viewFiles, { data: viewFileResult, loading: viewFileLoading }] = useLazyQuery(VIEWFILESQUERY, {
     fetchPolicy: "no-cache",
   });
+  const [dealAssociatedSummary, { loading, data: dealSummaryData }] = useLazyQuery(GET_FLOW_ASSOCIATED_SUMMARY)
+
+  useEffect(() => {
+    dealAssociatedSummary({
+      variables: {
+        contactIds: stateApp.activeDeal?.contacts?.map(contact => contact._id),
+        dealId: stateApp?.activeDeal?.cardId
+      }
+    })
+  }, [stateApp.activeDeal?.contacts])
 
   useEffect(() => {
     getRecentFiles({
@@ -1363,6 +1374,7 @@ function AddDealDialog(props) {
                   <Drawer
                     dealSettingsNumber={getSubtaskNumber()}
                     mapSettings={mapSettings}
+                    dealSummaryData={dealSummaryData}
                   />
                   {!["Deal", "Map"].includes(stateApp.transactBarView) &&
                     (stateApp.activeDeal?.cardId ||
@@ -1639,41 +1651,41 @@ function AddDealDialog(props) {
                             </Grid>
                           </FormControl>
                           <FormControl variant="outlined" fullWidth size="small">
-                        <Grid container className={classes.gridStyle}>
-                          <Grid item xs={3}>
-                            <div>Closed Price</div>
-                          </Grid>
-                          <Grid item xs={9}>
-                            <TextField
-                              margin="dense"
-                              variant="outlined"
-                              value={closedPrice}
-                              error={isNaN(closedPrice)}
-                              helperText={
-                                isNaN(closedPrice)
-                                  ? "Closed Price must be a valid number"
-                                  : ""
-                              }
-                              className={classes.inputFieldCustomTextInput}
-                              fullWidth
-                              onChange={(e) => {
-                                setClosedPrice(e.target.value);
-                              }}
-                              InputProps={{
-                                inputComponent: NumberFormatCustom,
-                                classes: {
-                                  root: classes.customDataTextInputRoot,
-                                  focused: classes.focused,
-                                  notchedOutline: classes.notchedOutline,
-                                },
-                              }}
-                            />
-                          </Grid>
-                        </Grid>
-                      </FormControl>
+                            <Grid container className={classes.gridStyle}>
+                              <Grid item xs={3}>
+                                <div>Closed Price</div>
+                              </Grid>
+                              <Grid item xs={9}>
+                                <TextField
+                                  margin="dense"
+                                  variant="outlined"
+                                  value={closedPrice}
+                                  error={isNaN(closedPrice)}
+                                  helperText={
+                                    isNaN(closedPrice)
+                                      ? "Closed Price must be a valid number"
+                                      : ""
+                                  }
+                                  className={classes.inputFieldCustomTextInput}
+                                  fullWidth
+                                  onChange={(e) => {
+                                    setClosedPrice(e.target.value);
+                                  }}
+                                  InputProps={{
+                                    inputComponent: NumberFormatCustom,
+                                    classes: {
+                                      root: classes.customDataTextInputRoot,
+                                      focused: classes.focused,
+                                      notchedOutline: classes.notchedOutline,
+                                    },
+                                  }}
+                                />
+                              </Grid>
+                            </Grid>
+                          </FormControl>
                         </>
                       )}
-                    
+
                       <FormControl variant="outlined" fullWidth size="small">
                         <Grid container className={classes.gridStyle}>
                           <Grid item xs={3}>
@@ -1873,8 +1885,7 @@ function AddDealDialog(props) {
       {
         stateApp.transactBarShowGrid &&
         createPortal(<AssociatedFlowDealDetails
-          contacts={stateApp.activeDeal?.contacts?.map(contact => contact._id)}
-          deal={stateApp?.activeDeal?.cardId}
+          dealSummaryData={dealSummaryData}
         />, document.body)
       }
     </>
