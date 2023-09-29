@@ -53,6 +53,12 @@ const OwnersPerUnitHeadCells = [
     options: { filter: true },
   },
   {
+    name: "taxYear",
+    esKey: "taxYear.keyword",
+    label: "Tax Year",
+    options: { filter: true },
+  },
+  {
     name: "working_interest",
     esKey: "working_interest",
     type: "number",
