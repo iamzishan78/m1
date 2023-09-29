@@ -1401,7 +1401,7 @@ function SubTable(props) {
                 customRender: (value, tableMeta) => {
                   if (props.targetLabel === "unit") {
                     const targetSourceId = tableMeta.rowData[0];
-                    const commentValue = tableMeta.rowData[20];
+                    const commentValue = tableMeta.rowData[22];
 
                     const path = `/${column.label === 'Contact Name' ? 'contact/details' : 'map/units'}/${tableMeta.rowData[0]}`
 
@@ -3232,6 +3232,22 @@ function SubTable(props) {
     setSearchedRows(rows);
   }, [rows]);
 
+  useEffect(() => {
+    if (!props.selectedRowsValues || !m1nSelectedRowsIds) return
+    if (props.selectedRowsValues.length < m1nSelectedRowsIds.length) return
+
+    let selectedRowsIds = props.selectedRowsValues.map((row) => {
+      if (props.parent === "OwnersPerWell") return row.globalOwnerId;
+      if (props.parent === "owner_WellInterests") return row.wellId;
+      if (props.parent === "TractsTable") return row.contact._id;
+      if (row.id) return row.id;
+      if (row.Id) return row.Id;
+      if (row._id) return row._id;
+    });
+
+    setM1nSelectedRowsIds(selectedRowsIds);
+  }, [props.selectedRowsValues]);
+
   const searchData = (tableState) => {
     let rows = [];
     if (tableState.searchText) {
@@ -3467,6 +3483,44 @@ function SubTable(props) {
                       <DeleteIcon />
                     </IconButton>
                   </Tooltip>
+                </div>
+              </div>
+            );
+          }
+          if (props.addAble?.type === "TractInterests" && (props.parent === "assocTaxRollInterests" || props.parent === "contactAssocTaxRollInterests")) {
+            return (
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    marginRight: "5px",
+                    height: "35px",
+                    display: "flex",
+                  }}
+                >
+                  <Button
+                    color="secondary"
+                    className={classes.multiSelectionTopBarButtons}
+                    style={{ width: "200px" }}
+                    disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+                    onClick={() => {
+                      setStateApp((stateApp) => ({
+                        ...stateApp,
+                        dealDialog: true,
+                        addExistingDeal: true,
+                        addType: props.parent === "contactAssocTaxRollInterests"? "tractInterests" : "interests",
+                        interestsIds: m1nSelectedRowsIds,
+                        activeDeal: { cardId: null, laneId: null },
+                      }));
+                    }}
+                  >
+                    + ADD TO DEAL
+                  </Button>
                 </div>
               </div>
             );

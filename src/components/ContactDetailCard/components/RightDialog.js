@@ -51,6 +51,7 @@ export default function AlertDialogSlide(props) {
     <Dialog
       className={classes.dialog}
       open={props.open}
+      disableEnforceFocus={props.disableEnforceFocus}
       TransitionComponent={Transition}
       keepMounted
       onClose={props.handleClickDialogClose}

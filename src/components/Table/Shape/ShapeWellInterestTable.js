@@ -180,8 +180,8 @@ function ShapeWellInterestTable(props) {
             color="secondary"
             className={classes.multiSelectionTopBarButtons}
             onClick={() => {
-              // setAddToTable(true);
               setDrawer("wells");
+              setAddToTable(true);
               selectRow(null);
             }}
           >
@@ -191,7 +191,7 @@ function ShapeWellInterestTable(props) {
       );
     },
     onRowClick: (rowData, { dataIndex, rowIndex }) => {
-      // setAddToTable(true);
+      setAddToTable(true);
       setDrawer("wells");
       // if(drawer === "tract"){
       //   setDrawer(null)
