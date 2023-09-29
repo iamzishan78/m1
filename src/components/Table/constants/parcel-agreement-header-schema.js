@@ -54,25 +54,35 @@ const ParcelAgreementHeadCells = [
     {
         name: "effectiveDate",
         label: "Effective Date",
-        esKey: "effectiveDate.keyword",
+        esKey: "effectiveDate",
         options: {
-            display: true,
+            dbName: "effectiveDate",
+
+        },
+        custom: {
+            isDate: true,
         },
     },
     {
         name: "executionDate",
         label: "Instrument Date",
-        esKey: "executionDate.keyword",
+        esKey: "executionDate",
         options: {
             display: true,
+        },
+        custom: {
+            isDate: true,
         },
     },
     {
         name: "fileDate",
         label: "File Date",
-        esKey: "fileDate.keyword",
+        esKey: "fileDate",
         options: {
             display: true,
+        },
+        custom: {
+            isDate: true,
         },
     },
     {

@@ -30,6 +30,7 @@ import { DELETE_PARCEL_RUNSHEET } from "graphQL/useMutationDeleteParcelAgreement
 import ParcelInstrument from "components/ParcelsDetailCard/ParcelInstrument";
 import PdfWithZoom from "components/Shared/components/common/PdfWithZoom";
 import { downloadPdfsFile } from "utils/helper";
+import moment from "moment";
 
 const genericDataActions = ["comments", "tracks", "ifAreContacts"];
 const interestKeys = [
@@ -69,6 +70,9 @@ function ParcelAgreementTable(props) {
     ];
     const formatHits = (hits) => {
         hits = hits.map((hit) => {
+            hit.effectiveDate = hit.effectiveDate ? moment(hit.effectiveDate).format('MM/DD/YYYY') : ''
+            hit.executionDate = hit.executionDate ? moment(hit.executionDate).format('MM/DD/YYYY') : ''
+            hit.fileDate = hit.fileDate ? moment(hit.fileDate).format('MM/DD/YYYY') : ''
             if (hit?.tags?.length > 0) {
                 const tags = hit.tags.map((tag) => tag.tag)
                 if (tags[0])
