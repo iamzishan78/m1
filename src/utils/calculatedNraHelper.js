@@ -46,10 +46,10 @@ export const calculateNRAForUnitOwnerDialog = (interest1, interest2, interest3, 
 //   return nra;
 // };
 
-export const calculateNRAForParcelOwnerDialog = (tract_gross_acres, mineral_interest, sum_of_ri, orri, workspaceSettings) => {
+export const calculateStandardNraForTract = (tract_gross_acres, mineral_interest, ri, orri, workspaceSettings) => {
   const isStandardType = workspaceSettings?.settings?.map?.tractNra?.type === "standard";
   const divisor = isStandardType ? 0.125 : parseFloat(workspaceSettings?.settings?.map?.tractNra?.value || 0);
-  let nra = (parseFloat(tract_gross_acres || 0) * parseFloat(mineral_interest || 0) * (parseFloat(sum_of_ri || 0) + parseFloat(orri || 0)))
+  let nra = (parseFloat(tract_gross_acres || 0) * parseFloat(mineral_interest || 0) * (parseFloat(ri || 0) + parseFloat(orri || 0)))
   nra /= divisor;
   nra = addTrailingZeros(nra.toFixed(8));
   console.log('nra', nra)

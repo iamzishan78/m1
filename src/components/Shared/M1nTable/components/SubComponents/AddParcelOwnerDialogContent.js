@@ -34,7 +34,7 @@ import { Controller, useForm } from "react-hook-form";
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
 import AssociatedDealField from "components/ContactDetailCard/components/FieldContent/AssociatedDealField";
-import { calculateNRAForParcelOwnerDialog } from "utils/calculatedNraHelper"
+import { calculateStandardNraForTract } from "utils/calculatedNraHelper"
 
 const entities = [
   "Corporation",
@@ -194,7 +194,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         deals
       });
 
-      let calculatedNRA = calculateNRAForParcelOwnerDialog(get(stateApp, 'selectedParcel.sdGrossAcres'), mineral_interest, royalty_interest, orri, workspaceSettings)
+      let calculatedNRA = calculateStandardNraForTract(get(stateApp, 'selectedParcel.sdGrossAcres'), mineral_interest, royalty_interest, orri, workspaceSettings)
       if (!isNaN(parseFloat(calculatedNRA)))
         setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)))
 
@@ -513,7 +513,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   onChange={(e) => {
                     const value = e.target.value;
                     const net_acres = !isAcresOverridden ? calculateNetAcres(value) : newOwner.net_acres
-                    const nra = !isNraOverridden ? calculateNRAForParcelOwnerDialog(get(stateApp, 'selectedParcel.sdGrossAcres'), value, newOwner.royalty_interest, newOwner.orri, workspaceSettings) : newOwner.nra
+                    const nra = !isNraOverridden ? calculateStandardNraForTract(get(stateApp, 'selectedParcel.sdGrossAcres'), value, newOwner.royalty_interest, newOwner.orri, workspaceSettings) : newOwner.nra
 
                     setNewOwner((newOwner) => ({
                       ...newOwner,
@@ -537,7 +537,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     setNewOwner({
                       ...newOwner,
                       royalty_interest: value ? addTrailingZeros(e.target.value) : null,
-                      nra: !isNraOverridden ? calculateNRAForParcelOwnerDialog(get(stateApp, 'selectedParcel.sdGrossAcres'), newOwner.mineral_interest, value, newOwner.orri, workspaceSettings) : newOwner.nra,
+                      nra: !isNraOverridden ? calculateStandardNraForTract(get(stateApp, 'selectedParcel.sdGrossAcres'), newOwner.mineral_interest, value, newOwner.orri, workspaceSettings) : newOwner.nra,
                     });
                   }}
                   onWheel={(e) => e.target.blur()}
@@ -555,7 +555,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     setNewOwner({
                       ...newOwner,
                       orri: value ? addTrailingZeros(e.target.value) : null,
-                      nra: !isNraOverridden ? calculateNRAForParcelOwnerDialog(get(stateApp, 'selectedParcel.sdGrossAcres'), newOwner.mineral_interest, newOwner.royalty_interest, value, workspaceSettings) : newOwner.nra,
+                      nra: !isNraOverridden ? calculateStandardNraForTract(get(stateApp, 'selectedParcel.sdGrossAcres'), newOwner.mineral_interest, newOwner.royalty_interest, value, workspaceSettings) : newOwner.nra,
                     });
                   }}
                   onWheel={(e) => e.target.blur()}
@@ -697,7 +697,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   value={newOwner.nra}
                   onChange={(e) => {
                     const value = addTrailingZeros(e.target.value);
-                    const nra = calculateNRAForParcelOwnerDialog(get(stateApp, 'selectedParcel.sdGrossAcres'), newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings);
+                    const nra = calculateStandardNraForTract(get(stateApp, 'selectedParcel.sdGrossAcres'), newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings);
                     setIsNRAOverridden(parseFloat(nra) !== parseFloat(value))
                     setNewOwner({
                       ...newOwner,
@@ -711,7 +711,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                           <IconButton
                             aria-label="toggle royality-acres"
                             onClick={() => {
-                              const nra = calculateNRAForParcelOwnerDialog(get(stateApp, 'selectedParcel.sdGrossAcres'), newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
+                              const nra = calculateStandardNraForTract(get(stateApp, 'selectedParcel.sdGrossAcres'), newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
                               setIsNRAOverridden(false)
                               setNewOwner({ ...newOwner, nra });
                             }}
