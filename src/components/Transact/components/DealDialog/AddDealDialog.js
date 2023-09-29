@@ -1324,6 +1324,7 @@ function AddDealDialog(props) {
         <RightDialog
           open={props.open}
           handleClickDialogClose={handleClickDialogClose}
+          disableEnforceFocus={true}
           width="28vw"
           isTransactPage={props.isTransactPage}
           hiddenOverflow
