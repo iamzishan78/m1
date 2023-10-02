@@ -205,7 +205,7 @@ const useStyles = makeStyles(theme => ({
 
   toogleButtons: {
     zIndex: '9999',
-    padding: '0rem 0.75rem 0.5rem 1.25rem'
+    padding: '0.5rem 0.75rem 0.5rem 1.25rem'
   },
 }));
 
