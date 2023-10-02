@@ -509,7 +509,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     <TextField
                       size="small"
                       type="number"
-                      value={selectedRow.taxYear}
+                      value={selectedRow?.taxYear}
                       inputRef={props.ref}
                       disabled
                       fullWidth
