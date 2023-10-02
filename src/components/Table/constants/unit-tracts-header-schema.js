@@ -1,10 +1,49 @@
+import { history } from "store";
+import { GlobalStickyStyles } from "GlobalSettings";
 
+import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 const UnitTractHeadCells = [
   {
     name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
   },
   {
-    name: "name", label: "Tract Name", esKey: 'name.keyword', options: { sort: true, filter: true }, style: { minWidth: 250, maxWidth: 300 }
+    name: "name", label: "Name", options: {
+      sort: true,
+      filter: true,
+      ...GlobalStickyStyles({
+        setCellProps: {
+          left: '77px',
+          padding: "0px 25px 0px 35px"
+        },
+        setCellHeaderProps: {
+          left: '77px',
+        }
+      }),
+      customRender: (value, tableMeta) => {
+        const splitNumber = typeof value === "string" ? value?.split("_") : value;
+        return <ColumnWithLink
+          onClick={(e) => {
+            e.stopPropagation();
+            history.push(`/map/parcels/${tableMeta.rowData[2]}`, { showTractsBreadcrumb: !false });
+          }}
+          value={splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[3]}` : tableMeta?.rowData[3]}
+          link={`/map/parcels/${tableMeta.rowData[2]}`}
+        />;
+      },
+    }
+  },
+  {
+    name: "parcelId",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      empty: false,
+      viewColumns: false,
+    },
   },
   {
     name: "state", label: "State", esKey: 'state.keyword', options: { sort: true, filter: true }, style: { maxWidth: 70 }
