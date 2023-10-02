@@ -86,6 +86,7 @@ const tableESStateControllerHandler = state => ({
 			TableSchema,
 			defaultFlterMode,
 			defaultFilters,
+			isSelectall,
 			...rest
 		}
 	) => {
@@ -234,7 +235,7 @@ const tableESStateControllerHandler = state => ({
 			esIndex,
 			pageSize,
 			refetch: false,
-			isSelectall: false,
+			isSelectall: isSelectall || false,
 			showColumnFilters: false,
 			data: { rows: [], total: 0 },
 			isLoading: false,

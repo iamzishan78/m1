@@ -45,6 +45,7 @@ function ContactToolbar({ table, tableKey }) {
 		'filters',
 		'defaultSort',
 		'sorting',
+		'isSelectall',
 	]);
 	const tableStateValues = tableState.stateValues;
 	const isSomeRowsSelected = table.getIsSomeRowsSelected();
@@ -134,6 +135,7 @@ function ContactToolbar({ table, tableKey }) {
 		return {
 			selectedRows,
 			isAllRowsSelected,
+			isSelectall: tableStateValues?.isSelectall,
 			search,
 			sorting: tableStateValues?.sorting,
 			defaultSort: tableStateValues?.defaultSort,
@@ -147,6 +149,7 @@ function ContactToolbar({ table, tableKey }) {
 
 	const exportPropsPass = ExportProps();
 	const sidePropsPass = SideDialogProps();
+	console.log('tableStateValues', tableStateValues)
 	return (
 		<>
 			<>

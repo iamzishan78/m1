@@ -47,6 +47,7 @@ const ContactMeta = {
 	},
 	isInFiniteScroll: true,
 	columnVirtualization: true,
+	isSelectall: true,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
