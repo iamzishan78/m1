@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { tableGlobalController } from 'hookstate/tableController';
-import AddParcelOwnerDialogContent from 'components/Shared/M1nTable/components/SubComponents/AddParcelOwnerDialogContent';
+import AddParcelOwnerDialogContent from '../Dialog/AddParcelOwnerDialogContent';
 import ExportOwnersAndContacts from 'components/Shared/ExportOwnerAndContacts';
 
 function TractInterestTableDialogs() {
