@@ -161,6 +161,7 @@ const tableESStateControllerHandler = state => ({
 								esIndex={esIndex}
 								column={{
 									field: column.columnDef.name,
+									isComposite: column.columnDef.isComposite,
 									label: column.columnDef.header,
 									type: column.columnDef.type,
 									setFilterValue: column.setFilterValue,
@@ -212,6 +213,9 @@ const tableESStateControllerHandler = state => ({
 				} else if (schemaColumn.type === 'date') {
 					options = dateFilterOptions;
 				}
+				if (schemaColumn.isComposite)
+					options = options.filter((option) => option !== 'multiselect')
+
 				schemaColumn.columnFilterModeOptions = options;
 				schemaColumn.renderColumnFilterModeMenuItems = filterModeMenu({
 					options,

@@ -601,7 +601,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 										isCheckboxSticky
 									/> */}
 
-                  <div className={classes.toogleButtons}>
+                  <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
                     <Header />
                   </div>
                   <MRTTable name="TractPerUnitTable" overrideMeta={overrideMeta} />
