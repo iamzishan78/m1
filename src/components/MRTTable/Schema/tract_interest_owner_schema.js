@@ -373,7 +373,7 @@ const TractPerUnitMeta = {
 
 		{
 			name: 'deals.name.keyword',
-			accessorKey: 'deals',
+			accessorKey: 'deals.name',
 			isExport: 'dealsName',
 			header: 'Associated Deals',
 			size: 250,
