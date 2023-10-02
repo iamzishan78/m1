@@ -753,16 +753,10 @@ export default function RelatedFile(props) {
             margin="none"
             fullWidth
             onChange={(event) => {
-              const splittedDate = event?.target?.value.split("-");
-              if (splittedDate.length === 3) {
-                const newDate = new Date();
-                newDate.setFullYear(Number(splittedDate[0])); // Use setFullYear instead of setYear
-                newDate.setMonth(Number(splittedDate[1]) - 1);
-                newDate.setDate(Number(splittedDate[2]));
-                setNewDocument({ ...newDocument, dateTime: newDate });
-              } else {
-                setNewDocument({ ...newDocument, dateTime: "" });
-              }
+              setNewDocument({
+                ...newDocument,
+                dateTime: getParsedDate || "",
+              });
             }}
 
             InputLabelProps={{

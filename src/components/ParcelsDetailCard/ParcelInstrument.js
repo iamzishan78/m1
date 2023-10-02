@@ -8,6 +8,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import { AppContext } from "AppContext";
 import { Typography, Grid } from "@material-ui/core";
+import { Clear } from "@material-ui/icons";
 import loadashFilter from "lodash/filter";
 
 import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from "@material-ui/core";
@@ -30,6 +31,8 @@ import { RECORD_TYPE } from "graphQL/useQueryRecordType";
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
 import { GET_VIEW_TOKEN_URI } from "graphQL/useQueryGetViewTokenUri";
+import moment from "moment";
+import { parseDate } from "utils/helper";
 
 const filter = createFilterOptions();
 
@@ -148,6 +151,12 @@ const useStyles = makeStyles({
   },
   optionNumber: {
     fontSize: "12px",
+  },
+  dateRoot: {
+    color: "grey",
+    "& input": {
+      marginLeft: "20px",
+    },
   },
 });
 
@@ -549,22 +558,39 @@ export default function ParcelInstrument(props) {
               }}
             >
               <h4>Effective Date</h4>
-              <KeyboardDatePicker
+              <TextField
                 className={classes.maxWidth}
-                disableToolbar
-                variant="inline"
-                format="MM/DD/YYYY"
-                margin="normal"
-                id="date-picker-inline"
-                value={newInstrument?.effectiveDate ? new Date(newInstrument.effectiveDate) : null}
-                onChange={(date) => {
+                type="date"
+                id="filedate"
+                defaultValue={newInstrument?.effectiveDate ? moment(newInstrument?.effectiveDate).format("yyyy-MM-DD") : ""}
+                value={newInstrument?.effectiveDate ? moment(newInstrument?.effectiveDate).format("yyyy-MM-DD") : ""}
+                margin="none"
+                fullWidth
+                onChange={(event) => {
+                  const getParsedDate = parseDate(event?.target?.value);
+
                   setNewInstrument({
                     ...newInstrument,
-                    effectiveDate: date ? String(date["_d"]) : "",
+                    effectiveDate: getParsedDate || "",
                   });
                 }}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
+
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                disableToolbar
+                KeyboardButtonProps={{ "aria-label": "change date" }}
+                format="MM/DD/YYYY"
+                PopoverProps={{ disablePortal: false }}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton onClick={(event) => setNewInstrument({ ...newInstrument, effectiveDate: "" })}>
+                      <Clear style={{ height: 22, width: 22 }} />
+                    </IconButton>
+                  ),
+                  classes: {
+                    root: classes.dateRoot,
+                  },
                 }}
               />
             </ListItem>
@@ -576,22 +602,39 @@ export default function ParcelInstrument(props) {
               }}
             >
               <h4>Instrument Date</h4>
-              <KeyboardDatePicker
+              <TextField
                 className={classes.maxWidth}
-                disableToolbar
-                variant="inline"
-                format="MM/DD/YYYY"
-                margin="normal"
-                id="date-picker-inline"
-                value={newInstrument?.executionDate ? new Date(newInstrument.executionDate) : null}
-                onChange={(date) => {
+                type="date"
+                id="filedate"
+                defaultValue={newInstrument?.executionDate ? moment(newInstrument?.executionDate).format("yyyy-MM-DD") : ""}
+                value={newInstrument?.executionDate ? moment(newInstrument?.executionDate).format("yyyy-MM-DD") : ""}
+                margin="none"
+                fullWidth
+                onChange={(event) => {
+                  const getParsedDate = parseDate(event?.target?.value);
+
                   setNewInstrument({
                     ...newInstrument,
-                    executionDate: date ? String(date["_d"]) : "",
+                    executionDate: getParsedDate || "",
                   });
                 }}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
+
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                disableToolbar
+                KeyboardButtonProps={{ "aria-label": "change date" }}
+                format="MM/DD/YYYY"
+                PopoverProps={{ disablePortal: false }}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton onClick={(event) => setNewInstrument({ ...newInstrument, executionDate: "" })}>
+                      <Clear style={{ height: 22, width: 22 }} />
+                    </IconButton>
+                  ),
+                  classes: {
+                    root: classes.dateRoot,
+                  },
                 }}
               />
             </ListItem>
@@ -603,22 +646,39 @@ export default function ParcelInstrument(props) {
               }}
             >
               <h4>File Date</h4>
-              <KeyboardDatePicker
+              <TextField
                 className={classes.maxWidth}
-                disableToolbar
-                variant="inline"
-                format="MM/DD/YYYY"
-                margin="normal"
-                id="date-picker-inline"
-                value={newInstrument?.fileDate ? new Date(newInstrument.fileDate) : null}
-                onChange={(date) => {
+                type="date"
+                id="filedate"
+                defaultValue={newInstrument?.fileDate ? moment(newInstrument?.fileDate).format("yyyy-MM-DD") : ""}
+                value={newInstrument?.fileDate ? moment(newInstrument?.fileDate).format("yyyy-MM-DD") : ""}
+                margin="none"
+                fullWidth
+                onChange={(event) => {
+                  const getParsedDate = parseDate(event?.target?.value);
+
                   setNewInstrument({
                     ...newInstrument,
-                    fileDate: date ? String(date["_d"]) : "",
+                    fileDate: getParsedDate || "",
                   });
                 }}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
+
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                disableToolbar
+                KeyboardButtonProps={{ "aria-label": "change date" }}
+                format="MM/DD/YYYY"
+                PopoverProps={{ disablePortal: false }}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton onClick={(event) => setNewInstrument({ ...newInstrument, fileDate: "" })}>
+                      <Clear style={{ height: 22, width: 22 }} />
+                    </IconButton>
+                  ),
+                  classes: {
+                    root: classes.dateRoot,
+                  },
                 }}
               />
             </ListItem>
