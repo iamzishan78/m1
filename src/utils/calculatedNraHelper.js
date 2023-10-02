@@ -17,8 +17,8 @@ export const calculateNRAForAgreementOwnerAndTractDialog = (interest1, interest2
   return nra;
 };
 
-export const calculateStandardNraForUnit = (unitAcres, working_interest, royalty_interest, orri, nri, workspaceSettings) => {
-  const sumOfDecimalInterest = (parseFloat(working_interest || 0) + parseFloat(royalty_interest || 0) + parseFloat(orri || 0) + parseFloat(nri || 0))
+export const calculateStandardNraForUnit = (unitAcres, working_interest, royalty_interest, orri, workspaceSettings) => {
+  const sumOfDecimalInterest = (parseFloat(working_interest || 0) + parseFloat(royalty_interest || 0) + parseFloat(orri || 0))
   const isCustomType = workspaceSettings?.settings?.map?.unitNra?.type === "custom";
   const divisor = parseFloat(workspaceSettings?.settings?.map?.unitNra?.value || 0);
   let nra = unitAcres * sumOfDecimalInterest
