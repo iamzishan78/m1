@@ -406,6 +406,7 @@ export default function AssignOwnerToContactDrawer({
     return '';
   }
 
+  console.log('rows', rows)
   return (
     <RightDialog open width="700px">
       {rowsLoading ? (

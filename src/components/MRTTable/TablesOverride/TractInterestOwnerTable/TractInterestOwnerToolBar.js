@@ -46,6 +46,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		'defaultSort',
 		'sorting',
 		'defaultFilters',
+		'isSelectall',
 	]);
 	const tableStateValues = tableState.stateValues;
 	const { customLayer } = Controller.getValue('customProps');
@@ -94,6 +95,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		return {
 			selectedRows,
 			isAllRowsSelected,
+			isSelectall: tableStateValues?.isSelectall,
 			search,
 			sorting: tableStateValues?.sorting,
 			defaultSort: tableStateValues?.defaultSort,

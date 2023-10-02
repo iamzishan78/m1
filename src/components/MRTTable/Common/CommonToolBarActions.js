@@ -27,6 +27,7 @@ const openSideDialog = async (
 	type,
 	_selectedRows,
 	isAllRowsSelected,
+	isSelectall,
 	search,
 	sorting,
 	defaultSort,
@@ -37,7 +38,7 @@ const openSideDialog = async (
 	table
 ) => {
 	let showRows = _selectedRows;
-	if (isAllRowsSelected) {
+	if (isAllRowsSelected && isSelectall) {
 		tableGlobalController.updateState({
 			dialog: {
 				type,
@@ -60,6 +61,7 @@ export function BulkUpdate({
 	classes,
 	selectedRows,
 	isAllRowsSelected,
+	isSelectall,
 	search,
 	sorting,
 	defaultSort,
@@ -80,6 +82,7 @@ export function BulkUpdate({
 					'asign',
 					selectedRows,
 					isAllRowsSelected,
+					isSelectall,
 					search,
 					sorting,
 					defaultSort,
