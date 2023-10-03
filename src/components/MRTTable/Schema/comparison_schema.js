@@ -224,6 +224,10 @@ const ComparisonMeta = {
 			isPinned: false,
 			filter: true,
 			type: 'string',
+			Cell: ({ row }) => {
+				const apiNumbers = row?.original?.wells?.map(item => item.apiNumber);
+				return apiNumbers.length > 1 ? "Multiple" : apiNumbers[0];
+			},
 		},
 
 		{
@@ -235,6 +239,10 @@ const ComparisonMeta = {
 			isPinned: false,
 			filter: true,
 			type: 'string',
+			Cell: ({ row }) => {
+				const wellName = row?.original?.wells?.map(item => item.wellName);
+				return wellName.length > 1 ? "Multiple" : wellName[0];
+			},
 		},
 
 		{
