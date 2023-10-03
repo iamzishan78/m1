@@ -12,6 +12,10 @@ import { AppContext } from "../../../AppContext";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 // queries
 import { MenuItem, Select } from "@material-ui/core";
+import { calculateStandardNraForTract } from "utils/calculatedNraHelper"
+import { useSelector } from "react-redux";
+import { NavigationContext } from "components/Navigation/NavigationContext";
+import get from "lodash/get";
 // import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 // import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
@@ -103,6 +107,9 @@ const StyledTableCell = withStyles((theme) => ({
 export default function M1neralHeaders() {
   const classes = useStyles();
   const [stateApp, setStateApp] = React.useContext(AppContext);
+  const [stateNav, setStateNav] = React.useContext(NavigationContext);
+
+  const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
 
   let columns = [
     { label: "Import" },
@@ -189,6 +196,9 @@ export default function M1neralHeaders() {
           !return_obj["parcel.name"]) {
           filtered_data_to_send.push(null)
           continue;
+        } else {
+          if (!(!!return_obj["parcel.nra"]))
+            return_obj["parcel.nra"] = calculateStandardNraForTract(get(stateNav, 'bulkUploadParcel.sdGrossAcres'), return_obj["parcel.mineral_interest"], return_obj["parcel.royalty_interest"], return_obj["parcel.orri"], workspaceSettings)
         }
       }
       if (['SHAPEOWNER'].includes(stateApp.jobType)) {
