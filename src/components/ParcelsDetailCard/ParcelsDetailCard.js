@@ -579,7 +579,7 @@ export default function ParcelsDetailCard(props) {
       </Grid> */}
       <Grid item sm={12}>
         <Taps
-          tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "Documents"]}
+          tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "UNITS", "Documents"]}
           openTabIdex={props.selectTabIndex}
           tabPanels={[
             <div
@@ -652,6 +652,8 @@ export default function ParcelsDetailCard(props) {
                 showTracks
                 dense
               />
+            </div>,
+            <div className={showSummary ? classes.subContent : classes.subContent2}>
             </div>,
             <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
               <RelatedDetailsDocumentTable
