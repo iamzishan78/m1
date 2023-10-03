@@ -197,8 +197,13 @@ export default function M1neralHeaders() {
           filtered_data_to_send.push(null)
           continue;
         } else {
-          if (!(!!return_obj["parcel.nra"]))
-            return_obj["parcel.nra"] = calculateStandardNraForTract(get(stateNav, 'bulkUploadParcel.sdGrossAcres'), return_obj["parcel.mineral_interest"], return_obj["parcel.royalty_interest"], return_obj["parcel.orri"], workspaceSettings)
+          const nra = calculateStandardNraForTract(get(stateNav, 'bulkUploadParcel.sdGrossAcres'), return_obj["parcel.mineral_interest"], return_obj["parcel.royalty_interest"], return_obj["parcel.orri"], workspaceSettings)
+          if (!(!!return_obj["parcel.nra"])) {
+            return_obj["parcel.nra"] = nra
+            return_obj["parcel.isOverridden"] = true
+          } else {
+            return_obj["parcel.isOverridden"] = return_obj["parcel.nra"] === nra ? true : false
+          }
         }
       }
       if (['SHAPEOWNER'].includes(stateApp.jobType)) {
