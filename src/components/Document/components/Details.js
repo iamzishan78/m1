@@ -10,7 +10,6 @@ import get from "lodash/get";
 
 import { IconButton, TextField, withStyles } from "@material-ui/core";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
-import { Clear } from "@material-ui/icons";
 import UploadZone from "../../Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
 import GetAppIcon from "@material-ui/icons/GetApp";
@@ -24,9 +23,7 @@ import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 
 
 // functions
-import { getDateWithoutTime } from "components/Shared/functions";
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
-import moment from "moment";
 import ReactSelectField from "components/Shared/M1nTable/components/SubComponents/ReactSelectField";
 
 const filter = createFilterOptions();
@@ -434,35 +431,13 @@ export default function DocumentDetails(props) {
             className={classes.listItem}
           >
             <h4>File Date</h4>
-            <TextField
-              // autoOk
-              type="date"
-              id="filedate"
-              //variant="outlined"
-              defaultValue={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
-              margin="none"
-              fullWidth
-              onChange={(event) => {
-                const dateTime = getDateWithoutTime(event?.target?.value);
-                setNewDocument({ ...newDocument, dateTime: dateTime });
-              }}
-
-              InputLabelProps={{
-                shrink: true,
-              }}
-              disableToolbar
-              KeyboardButtonProps={{ "aria-label": "change date" }}
-              format="MM/DD/YYYY"
-              PopoverProps={{ disablePortal: false }}
-              InputProps={{
-                endAdornment: (
-                  <IconButton onClick={(event) => setNewDocument({ ...newDocument, dateTime: null })}>
-                    <Clear style={{ height: 22, width: 22 }} />
-                  </IconButton>
-                ),
-                classes: {
-                  root: classes.dateRoot,
-                },
+            <GenericDateField
+              value={newDocument?.dateTime}
+              onChange={(value) => {
+                setNewDocument({
+                  ...newDocument,
+                  dateTime: value,
+                });
               }}
             />
 
