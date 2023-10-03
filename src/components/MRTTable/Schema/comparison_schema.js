@@ -127,8 +127,8 @@ const ComparisonMeta = {
 
 		{
 			name: 'property.operator.keyword',
-			accessorFn: row => row?.property?.operator?.name,
-			id: 'property.operator.name',
+			accessorFn: row => row?.property?.operator,
+			id: 'property.operator',
 			header: 'Operator',
 			size: 250,
 			isPinned: false,
