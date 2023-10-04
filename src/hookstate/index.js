@@ -7,6 +7,12 @@ export const hookStateApp = hookstate({ layers: [], universalLoader: false });
 
 export const useHookStateApp = () => useHookstate(hookStateApp)
 
+export const resetESTableToggle = hookstate(false);
+
+export const useResetESTableToggle = () => useHookstate(resetESTableToggle)
+
+window.resetESTableToggle = resetESTableToggle
+
 const statesHelper = (keys, keysVal, stateValuesKey = 'stateValues') => {
 	const retObj = { [stateValuesKey]: {} };
 	Object.keys(keysVal).forEach((k, index) => {

@@ -4853,6 +4853,7 @@ function SubTable(props) {
         )}
         {openDialog === "asign" && (
           <AssignOwnerToContactDrawerContainer
+            header={props.header}
             onClose={handleCloseDialog}
             rows={expandedObject}
             setRows={setExpandedObject}
