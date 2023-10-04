@@ -134,6 +134,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 			total: tableStateValues?.data.total,
 			client,
 			table,
+			tableKey
 		};
 	};
 

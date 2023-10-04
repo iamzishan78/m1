@@ -27,6 +27,7 @@ import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import { resetESTableToggle } from "hookstate";
+import { Modals } from 'styles/Modal';
 
 const styles = () => ({
   topHeading: { fontWeight: 'bold' },
@@ -234,7 +235,7 @@ export default function AssignOwnerToContactDrawer({
       const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
       if (field === "Campaign Name") {
 
-        if (rest.header === 'Contacts') {
+        if (rest.header === 'ContactTable') {
           const variables = {
             campaigns,
             contactIds: rows.map(row => row._id)
@@ -360,7 +361,7 @@ export default function AssignOwnerToContactDrawer({
           <CampaignNameField
             value={fieldKey}
             className={classes.maxWidth}
-            onChange={values => {
+            onChange={(values, id) => {
               setFieldKey(values);
               // setCampaigns(values)
               setCampaigns([...campaigns, { _id: id, campaignName: values[values.length - 1] }])

@@ -35,7 +35,8 @@ const openSideDialog = async (
 	filters,
 	total,
 	client,
-	table
+	table,
+	tableKey
 ) => {
 	let showRows = _selectedRows;
 	if (isAllRowsSelected && isSelectall) {
@@ -51,6 +52,7 @@ const openSideDialog = async (
 		dialog: {
 			type,
 			selectedRows: showRows,
+			tableKey
 		},
 	});
 	table.resetRowSelection();
@@ -70,6 +72,7 @@ export function BulkUpdate({
 	total,
 	client,
 	table,
+	tableKey
 }) {
 	return (
 		<Button
@@ -90,7 +93,8 @@ export function BulkUpdate({
 					filters,
 					total,
 					client,
-					table
+					table,
+					tableKey
 				)
 			}
 		>
@@ -126,6 +130,7 @@ export function ViewContactData({
 	total,
 	client,
 	table,
+	tableKey
 }) {
 	return (
 		<FeatureFlag feature={FEATURES.IDICORE}>
@@ -147,7 +152,8 @@ export function ViewContactData({
 						filters,
 						total,
 						client,
-						table
+						table,
+						tableKey
 					)
 				}
 			>

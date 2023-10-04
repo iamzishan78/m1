@@ -68,6 +68,7 @@ function AllDialogs() {
 
 			{type === 'asign' && (
 				<AssignOwnerToContactDrawerContainer
+					header={rest.tableKey}
 					onClose={handleCloseDialog}
 					rows={rest?.selectedRows}
 					setSelectedRow={updateRows}
