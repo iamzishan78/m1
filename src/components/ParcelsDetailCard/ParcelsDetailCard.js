@@ -622,7 +622,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                 </div>,
               ]}
             />,
-            <div className={showSummary ? classes.subContent : classes.subContent2}>
+            <div className={classes.subContent}>
               <ParcelAgreementTable
                 esIndex='runsheetinstrument_flat'
                 parent="ownersPerParcel"
