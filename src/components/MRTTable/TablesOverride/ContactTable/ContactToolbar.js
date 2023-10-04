@@ -149,7 +149,7 @@ function ContactToolbar({ table, tableKey }) {
 
 	const exportPropsPass = ExportProps();
 	const sidePropsPass = SideDialogProps();
-	console.log('tableStateValues', tableStateValues)
+
 	return (
 		<>
 			<>
