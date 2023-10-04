@@ -161,7 +161,7 @@ const PipelineCustomDialog = (props) => {
   }, [selectedStageForDetail]);
 
   useEffect(() => {
-    if(data?.addPipeline?.success && !loading && called){
+    if (data?.addPipeline?.success && !loading && called) {
       // When new Pipeline is added then select that pipline and mark popup window to not newPipe
       history.push(`/flow/${data.addPipeline.pipeline._id}`)
       setFlowState({
@@ -169,7 +169,7 @@ const PipelineCustomDialog = (props) => {
       });
       client.reFetchObservableQueries(["getPipelines", "getPipeline"]);
 
-      if(openPipeDialog === "newPipe")
+      if (openPipeDialog === "newPipe")
         dispatch(setFlowState({ openPipeDialog: true }))
     }
   }, [data, loading, called])
@@ -250,7 +250,6 @@ const PipelineCustomDialog = (props) => {
 
     if (openPipeDialog === "newPipe") {
       // New flowline
-      debugger
       addPipeline({
         variables: {
           pipeline: {
@@ -260,7 +259,7 @@ const PipelineCustomDialog = (props) => {
           },
         },
         refetchQueries: isClosing ? ["getPipelines", "getPipeline"] : [],
-        awaitRefetchQueries:  !!isClosing,
+        awaitRefetchQueries: !!isClosing,
       });
     } else if (selectedPipe) {
       ////update
@@ -409,7 +408,7 @@ const PipelineCustomDialog = (props) => {
           open={openPipeDialog === "newPipe" || openPipeDialog}
           width={width}
           handleClickDialogClose={() => {
-            handleSaveOrUpdate({isClosing: true });
+            handleSaveOrUpdate({ isClosing: true });
             handleClose();
           }}
         >
@@ -573,9 +572,9 @@ const PipelineCustomDialog = (props) => {
               deleteDialogOpen === "pipe" ? `Delete Flowline` : `Delete Stage`
             }
             onClose={handleCloseDeleteDialog}
-            deleteFunc={deleteFunc ? deleteFunc : () => {}}
+            deleteFunc={deleteFunc ? deleteFunc : () => { }}
             m1nSelectedRowsIds={null}
-            setM1nSelectedRowsIndexes={() => {}}
+            setM1nSelectedRowsIndexes={() => { }}
           >
             {deleteDialogOpen === "pipe"
               ? "Are you sure you want to delete the flowline?"

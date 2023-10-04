@@ -26,6 +26,7 @@ import { copy } from 'utils/helper';
 import { popupController, popupState } from 'hookstate/popupStateController';
 import MRTTable from "components/MRTTable";
 import { tableController } from "hookstate/tableController";
+import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -621,13 +622,16 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                 </div>,
               ]}
             />,
-            <div className={classes.subContent}>
-              <ParcelDetailsRunsheetTable
-                customLayer={copy(parcelObj)}
-                parent="associatedRunsheetPerParcel"
+            <div className={showSummary ? classes.subContent : classes.subContent2}>
+              <ParcelAgreementTable
+                esIndex='runsheetinstrument_flat'
+                parent="ownersPerParcel"
                 targetLabel="parcelRunsheet"
-                header={<RunsheetHeader />}
+                customLayer={copy(parcelObj)}
                 dense
+                header={<RunsheetHeader />}
+                isSnapGrid
+                isCheckboxSticky={true}
               />
             </div>,
             <div className={classes.subContent}>

@@ -29,6 +29,7 @@ import { RECORD_TYPE } from "graphQL/useQueryRecordType";
 
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
+import { GET_VIEW_TOKEN_URI } from "graphQL/useQueryGetViewTokenUri";
 
 const filter = createFilterOptions();
 
@@ -151,6 +152,7 @@ const useStyles = makeStyles({
 });
 
 export default function ParcelInstrument(props) {
+  const { selectedInstrument, setSelectedInstrument } = props;
   const instrumentInitial = {
     instrumentType: "",
     recordType: "",
@@ -181,11 +183,14 @@ export default function ParcelInstrument(props) {
   const [getInstrumentTypes, { data: instrumentTypes }] = useLazyQuery(INSTRUMENT_TYPE, {
     fetchPolicy: "no-cache",
   });
+  const [getViewTokenUri, { data: viewTokenUri }] = useLazyQuery(GET_VIEW_TOKEN_URI, {
+    fetchPolicy: "no-cache",
+  });
   const [getRecordTypes, { data: recordTypes }] = useLazyQuery(RECORD_TYPE, {
     fetchPolicy: "no-cache",
   });
   const [deleteFile] = useMutation(DELETEDESCRIPTORRELATEDFILE);
-  const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT, { refetchQueries: ["getParcelAgreement"], awaitRefetchQueries: true });
+  const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT, { refetchQueries: ["getParcelAgreement", "getESSimpleSearch"], awaitRefetchQueries: true });
   const [updateParcelAgreement] = useMutation(UPDATE_PARCEL_AGREEMENT, {
     refetchQueries: ["getParcelAgreement"],
     awaitRefetchQueries: true,
@@ -198,18 +203,27 @@ export default function ParcelInstrument(props) {
 
   useEffect(() => {
     let ID = [];
-    if (stateApp.selectedAgreement?._id) {
-      if (stateApp.selectedAgreement?.fileId) {
-        ID.push(stateApp.selectedAgreement?.fileId);
+    if (selectedInstrument?._id) {
+      if (selectedInstrument?.fileId) {
+
+        getViewTokenUri({
+          variables: { fileId: selectedInstrument?.fileId }
+        }).then((result) => {
+          selectedInstrument.viewToken = result.data.getViewTokenUri
+        })
+
+        selectedInstrument.test = 'test'
+        ID.push(selectedInstrument?.fileId);
 
         viewFiles({
           variables: { fileIds: ID },
         });
       }
-      if (stateApp.selectedAgreement) {
+      if (selectedInstrument) {
         const {
           instrumentType,
           recordType,
+          descriptorObject,
           fromPartySummary,
           toPartySummary,
           effectiveDate,
@@ -220,10 +234,11 @@ export default function ParcelInstrument(props) {
           page,
           legalDescription,
           fileId,
-        } = stateApp.selectedAgreement;
+        } = selectedInstrument;
         setNewInstrument({
           instrumentType,
           recordType,
+          descriptorObject,
           fromPartySummary,
           toPartySummary,
           effectiveDate,
@@ -236,14 +251,12 @@ export default function ParcelInstrument(props) {
           fileId,
         });
       } else {
-        setStateApp((stateApp) => ({
-          ...stateApp,
-          selectedAgreement: null,
-        }));
+        setSelectedInstrument(null)
+
         setNewInstrument(instrumentInitial);
       }
     }
-  }, [stateApp.selectedAgreement]);
+  }, [selectedInstrument]);
 
   useEffect(() => {
     if (viewFileResult?.viewFile?.uri) {
@@ -271,20 +284,21 @@ export default function ParcelInstrument(props) {
   const handleDeleteAccept = () => {
     // Delete Document Logic goes here
 
-    if (!stateApp?.selectedAgreement?.fileId) {
+    if (!selectedInstrument?.fileId) {
       setFileData(null)
       return
     }
     setLoader(true);
     deleteFile({
       variables: {
-        descriptorObjectId: stateApp.selectedAgreement.fileId,
-        relatedObjectId: stateApp.selectedAgreement._id
+        descriptorObjectId: selectedInstrument.fileId,
+        relatedObjectId: selectedInstrument._id
       },
       refetchQueries: ["getParcelAgreement"],
       awaitRefetchQueries: true,
     }).then(() => {
       setFileData(null)
+      setSelectedInstrument(null)
       setStateApp({
         ...stateApp,
         DocumentDrawer: false,
@@ -305,6 +319,7 @@ export default function ParcelInstrument(props) {
 
   const handleClose = () => {
     props.setShowSlider(false);
+    setSelectedInstrument(null)
     setStateApp((stateApp) => ({
       ...stateApp,
       selectedAgreement: null,
@@ -350,11 +365,11 @@ export default function ParcelInstrument(props) {
 
     const fileId = fileData?.addFileDescriptor?.file?.id;
     setLoader(true);
-    if (stateApp.selectedAgreement) {
+    if (selectedInstrument) {
       updateParcelAgreement({
         variables: {
           agreement: {
-            _id: stateApp.selectedAgreement._id,
+            _id: selectedInstrument._id,
             instrumentType: instrumentType,
             effectiveDate: newInstrument.effectiveDate,
             fileDate: newInstrument.fileDate,
@@ -365,16 +380,19 @@ export default function ParcelInstrument(props) {
             page: newInstrument.page,
             recordationNumber: newInstrument.recordationNumber,
             recordType: recordType,
+            descriptorObject: newInstrument.descriptorObject,
             volume: newInstrument.volume,
             fileId: fileId,
             fileName: fileData?.addFileDescriptor?.file?.name,
             parcelId: props.parcelId,
           },
         },
-        refetchQueries: ["getParcelAgreement"],
+        refetchQueries: ["getParcelAgreement", "getESSimpleSearch"],
         awaitRefetchQueries: true,
       }).then(() => {
         props.setShowSlider(false);
+
+        setSelectedInstrument(null)
         setStateApp((stateApp) => ({
           ...stateApp,
           selectedAgreement: null,
@@ -407,6 +425,8 @@ export default function ParcelInstrument(props) {
         },
       }).then(() => {
         props.setShowSlider(false);
+
+        setSelectedInstrument(null)
         setStateApp((stateApp) => ({
           ...stateApp,
           selectedAgreement: null,
@@ -454,7 +474,7 @@ export default function ParcelInstrument(props) {
                 alignItems: "center",
               }}
             >
-              <ListItemText>{stateApp.selectedAgreement ? <h3>Update Instrument</h3> : <h3>Add New Instrument</h3>}</ListItemText>
+              <ListItemText>{selectedInstrument ? <h3>Update Instrument</h3> : <h3>Add New Instrument</h3>}</ListItemText>
               {/* <ListItemIcon style={{ cursor: "pointer" }}>
                 <IconButton size="small" onClick={() => handleClose()}>
                   <CloseIcon></CloseIcon>
@@ -746,10 +766,10 @@ export default function ParcelInstrument(props) {
                                   if (fileExtension === "pdf") {
                                     setStateApp((state) => ({
                                       ...state,
-                                      pdfView: stateApp.selectedAgreement,
+                                      pdfView: selectedInstrument,
                                     }));
                                   } else {
-                                    handleViewFile(stateApp.selectedAgreement.fileId);
+                                    handleViewFile(selectedInstrument.fileId);
                                   }
                                 }}
                               >

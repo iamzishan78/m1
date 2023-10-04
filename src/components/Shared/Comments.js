@@ -10,7 +10,6 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
-import TextField from "@material-ui/core/TextField";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "react-avatar";
 import FormGroup from "@material-ui/core/FormGroup";
@@ -31,6 +30,8 @@ import CommentType from "components/Shared/components/Comment/CommentType";
 // import value formatters
 import capitalizeFirstLetter from "../Shared/valueformatters/capitalize-first-letter.js";
 import { CommonCommentText } from "components/Shared/CommentComponent";
+import CommentField from "./components/Fields/CommentField";
+import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -235,6 +236,9 @@ export default function Comments(props) {
   const { data: userLists } = useQuery(GETMONGOUSERS, {
     fetchPolicy: "cache-and-network",
   });
+  const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
+    fetchPolicy: "cache-first",
+  });
 
   const [upsertComment] = useMutation(UPSERTCOMMENT);
   const [removeComment] = useMutation(REMOVECOMMENT);
@@ -435,11 +439,78 @@ export default function Comments(props) {
 
   useEffect(() => {
     if (props.focus) {
-      document.getElementById("commentInput").focus();
+      document.getElementById("commentInput")?.focus?.();
     }
   }, [props.focus]);
 
   let commentsDisplayedCount = 0;
+
+  // const [isEdit, setIsEdit] = useState(false);
+  const [profilesInfo, setProfilesInfo] = useState({});
+  const [users, setUsers] = useState([]);
+  const [comment, setComment] = useState("");
+  const [showActions, setShowActions] = useState(false);
+  // const [editCommentId, setEditCommentId] = useState("");
+
+
+  useEffect(() => {
+    if (userLists && userLists.allMongoUsers) {
+      const data = userLists.allMongoUsers
+        .map((user) => ({
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+        }))
+        .filter((user) => user._id && user.name);
+      setUsers(data);
+      const emails = userLists.allMongoUsers.map((user) => user.email);
+      getProfilesImages({
+        variables: { emails },
+      });
+    }
+  }, [userLists]);
+
+
+  useEffect(() => {
+    if (profilesData?.data?.profileByEmail?.profiles) {
+      setProfilesInfo(profilesData.data.profileByEmail.profiles);
+    }
+  }, [profilesData]);
+
+  const updateComment = (value) => {
+    setLoadingComments(true);
+
+    upsertComment({
+      variables: {
+        comment: {
+          comment:
+            typeof value === "object"
+              ? newCommentCleaner(value.comment)
+              : newCommentCleaner(value),
+          commentType: selectedCommentType,
+          user: stateApp.user.mongoId,
+          commentedOn: props.targetSourceId,
+          objectType: props.targetLabel,
+          public: publicComment,
+          pin: false
+        },
+      },
+      refetchQueries: [
+        "getCommentsByObjectId",
+        "getCommentsCounter",
+        "getCommentsByObjectsIds",
+        "getESPaginatedList",
+        "getESSimpleSearch",
+        ...props.refetchQueries,
+      ],
+      awaitRefetchQueries: true,
+    });
+    setShowActions(false);
+    // setComment("");
+    setComment("");
+    // setEditCommentId("");
+  };
+
 
   return (
     <Card
@@ -505,45 +576,19 @@ export default function Comments(props) {
             </FormGroup>
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              className={`${classes.textInput} ${emptyInput ? classes.emptyInput : ""}`}
-              id="commentInput"
-              variant="outlined"
-              label={props.detailCard || props.handleRightDialogClose ? null : "Comments"}
-              placeholder={props.detailCard || props.handleRightDialogClose ? "Add Comments" : null}
-              multiline
-              rows="4"
-              onChange={(e) => {
-                textFieldHandleChange(e);
-              }}
-              value={textValue}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && !event.shiftKey) {
-                  event.preventDefault();
-                  handleEnteringComment(event);
-                }
-              }}
-              onBlur={() => {
-                setEmptyInput(false);
-              }}
+            <CommentField
+              profilesInfo={profilesInfo}
+              users={users}
+              upsertComment={updateComment}
+              comment={comment}
+              setComment={setComment}
+              showActions={showActions}
+              setShowActions={setShowActions}
+            // setEditCommentId={setEditCommentId}
+            // isEdit={isEdit}
+            // setIsEdit={setIsEdit}
             />
           </Grid>
-          {!emptyInput ? (
-            <Grid item xs={12}>
-              <p className={classes.foodText}>
-                <span>Shift+Enter</span> to add a new line
-              </p>
-              <p className={classes.foodText}>
-                <span>Enter</span> to save
-              </p>
-            </Grid>
-          ) : (
-            <Grid item xs={12}>
-              <p className={classes.foodText}>
-                <span className="redColor">Required Field </span>
-              </p>
-            </Grid>
-          )}
         </Grid>
       </CardActions>
       <CardContent
