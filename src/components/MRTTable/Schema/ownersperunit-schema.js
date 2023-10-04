@@ -320,7 +320,7 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
-			name: 'deals',
+			name: 'deals.name.keyword',
 			accessorFn: row => row?.deals?.name,
 			id: 'deals.name',
 			header: 'Associated Deals',
