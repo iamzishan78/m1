@@ -113,7 +113,7 @@ const OwnersPerUnitMeta = {
 			filter: true,
 			type: 'number',
 			isExternalFilter: false,
-			isSearchField: true,
+			isSearchField: false,
 			enableColumnOrdering: true,
 			Aggregation: {
 				sumWorkingInterest: {
@@ -147,7 +147,7 @@ const OwnersPerUnitMeta = {
 			type: 'number',
 			isExternalFilter: false,
 			enableSorting: true,
-			isSearchField: true,
+			isSearchField: false,
 			enableColumnOrdering: true,
 			Aggregation: {
 				sumRoyaltyInterest: {
@@ -180,7 +180,7 @@ const OwnersPerUnitMeta = {
 			type: 'number',
 			isExternalFilter: false,
 			enableSorting: true,
-			isSearchField: true,
+			isSearchField: false,
 			enableColumnOrdering: true,
 			Aggregation: {
 				sumOrri: {
@@ -210,7 +210,7 @@ const OwnersPerUnitMeta = {
 			type: 'number',
 			isExternalFilter: false,
 			enableSorting: true,
-			isSearchField: true,
+			isSearchField: false,
 			enableColumnOrdering: true,
 			Aggregation: {
 				sumNri: {
@@ -239,7 +239,7 @@ const OwnersPerUnitMeta = {
 			type: 'number',
 			isExternalFilter: false,
 			enableSorting: true,
-			isSearchField: true,
+			isSearchField: false,
 			enableColumnOrdering: true,
 		},
 
@@ -253,7 +253,7 @@ const OwnersPerUnitMeta = {
 			type: 'number',
 			enableSorting: true,
 			isExternalFilter: false,
-			isSearchField: true,
+			isSearchField: false,
 			enableColumnOrdering: true,
 			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
@@ -268,7 +268,7 @@ const OwnersPerUnitMeta = {
 			type: 'number',
 			isExternalFilter: false,
 			enableSorting: true,
-			isSearchField: true,
+			isSearchField: false,
 			enableColumnOrdering: true,
 			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
@@ -283,7 +283,7 @@ const OwnersPerUnitMeta = {
 			type: 'number',
 			isExternalFilter: false,
 			enableSorting: true,
-			isSearchField: true,
+			isSearchField: false,
 			enableColumnOrdering: true,
 			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
