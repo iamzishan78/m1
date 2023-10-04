@@ -814,6 +814,9 @@ export const TableESHOC = (Component) => {
                             const tags = updatedData[0].map(d => d).toString().replace(/,/g, ' ')
                             updatedData = tags
                         }
+                    } else if (sampleCsv[j].name === 'deals' && Array.isArray(updatedData)) {
+                        const concatenatedNames = updatedData.map(item => item.name).join(',');
+                        updatedData = concatenatedNames;
                     } else if (Array.isArray(updatedData)) {
                         const data = updatedData.map(d => d).toString().replace(/,/g, ' ')
                         updatedData = data
@@ -841,7 +844,7 @@ export const TableESHOC = (Component) => {
 
                 const search = { query: searchQuery, fields: tableMeta.searchFields, advanceSearch: tableMeta.advanceSearch }
                 const filters = selectedFilters.current ? [...selectedFilters.current] : []
-                let filteredColumns = columns.filter(c => c?.options?.display !== false && c?.options?.display !== "false" && c?.label !== " ")
+                let filteredColumns = columns.filter(c => ((c?.options?.display !== false && c?.options?.display !== "false") || c?.options?.download) && c?.label !== " ")
                 filteredColumns = filteredColumns.map(({ name, label, esKey }) => {
                     if (Array.isArray(esKey)) {
                         esKey = esKey.map(key => key.replace(/\.keyword$/, ''));
@@ -906,7 +909,7 @@ export const TableESHOC = (Component) => {
                             })()
                         } : { sort: tableMeta.defaultSort },
 
-                        filters: selectedFilters.current ? [...selectedFilters.current] : [],
+                        filters: selectedFilters.current.length !== 0 ? [...selectedFilters.current] : tableMeta.filters,
                         customFilters: []
                     },
                 }
@@ -936,7 +939,7 @@ export const TableESHOC = (Component) => {
                 allRows = selectedData
 
                 const hits = tableMeta.formatHits(copy(allRows))
-                const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => c.display !== false && c.display !== "false" && c.label !== " "))
+                const csvData = getCSVData(hits, tableStateRef.current.columns.filter(c => (c?.display !== false && c?.display !== "false" && c.label !== " ") || c?.download))
 
                 var blob = new Blob([csvData]);
                 var url = URL.createObjectURL(blob);
@@ -1159,7 +1162,6 @@ export const TableESHOC = (Component) => {
                     && props.targetLabel !== "unit"
                     && props.targetLabel !== "operator"
                     && props.targetLabel !== "owner"
-                    && props.targetLabel !== "parcel"
                     && (
                         <div style={{ height: "48px", display: "flex" }}>
                             <div style={{ marginTop: "6px", height: "35px", display: "flex", }}>
@@ -1213,8 +1215,11 @@ export const TableESHOC = (Component) => {
         const esHocProps = React.useMemo(() => {
             const esPropObj = {}
             esPropObj.onInfiniteScroll = isFiniteScroll ? onInfiniteScroll : null
+
+            esPropObj.selectedRowsValues = selectedRowsValues
+
             return esPropObj
-        }, []);
+        }, [selectedRowsValues]);
 
         return (
             <span className={`${classes.ESHOCContainer} ${isFiniteScroll && classes.ESHOCInfScroll}`}>

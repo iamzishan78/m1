@@ -7,6 +7,8 @@ import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/
 
 const ComponentPropertyName = ({ value, tableMeta }) => {
   const history = useHistory();
+  const wellApiIndex = RevenuePropertiesHeadCells().findIndex(rp => rp.name === "wellApiNumber"),
+    wellName = RevenuePropertiesHeadCells().findIndex(rp => rp.name === "wellName");
 
   return (
     <div
@@ -14,7 +16,7 @@ const ComponentPropertyName = ({ value, tableMeta }) => {
         display: "flex",
         alignItems: "center",
       }}
-      // style={{borderRight: 'solid red'}}
+    // style={{borderRight: 'solid red'}}
     >
       <ColumnWithLink
         onClick={(e) => {
@@ -25,7 +27,7 @@ const ComponentPropertyName = ({ value, tableMeta }) => {
         link={`/revenue/property/details/${tableMeta.rowData[0]}`}
       />
       {/* <Button/> */}
-      {!(tableMeta?.rowData[5] && tableMeta?.rowData[6]) && (
+      {!(tableMeta?.rowData[wellApiIndex] && tableMeta?.rowData[wellName]) && (
         <div
           style={{ marginLeft: "15px", cursor: "pointer" }}
           onClick={(e) => {

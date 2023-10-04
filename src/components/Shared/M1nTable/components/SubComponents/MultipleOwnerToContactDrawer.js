@@ -172,6 +172,8 @@ const MultipleOwnerToContactDrawer = ({
       ownerIds = Ids.reduce((ids, row) => { ids.push({ id: row.globalOwnerId || row.id, ownershipType: row.ownershipType }); return ids; }, []);
     }
 
+    const autoCalculateOfferPrice = !!stateApp?.user?.features?.find((f) => f.name === "autoCalculateOfferPrice");
+
     let existingContactId = null;
     let action = actionType
     if (tab === TAB.EXISTING) {
@@ -186,9 +188,9 @@ const MultipleOwnerToContactDrawer = ({
     const values = getValues();
 
     if (entitiesIds.length === 0) {
-      convertMultipleOwnerToContactAction({ ...values, campaigns, rows, existingContactId, actionType: action, userId: userId, tags: newTagsIds, jobType, jobName });
+      convertMultipleOwnerToContactAction({ ...values, campaigns, rows, existingContactId, autoCalculateOfferPrice, actionType: action, userId: userId, tags: newTagsIds, jobType, jobName });
     } else {
-      convertMultipleOwnerToContactAction({ ...values, campaigns, entitiesIds, rows, existingContactId, actionType: action, contactOwner, userId: userId, tags: newTagsIds, jobType, jobName });
+      convertMultipleOwnerToContactAction({ ...values, campaigns, entitiesIds, rows, existingContactId, autoCalculateOfferPrice, actionType: action, contactOwner, userId: userId, tags: newTagsIds, jobType, jobName });
     }
     onClose();
     setLoading(false);

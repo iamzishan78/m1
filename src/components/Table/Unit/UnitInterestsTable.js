@@ -135,6 +135,9 @@ function UnitInterestsTable(props) {
             ?.map((qtr, i) => `${qtr}/${i + 1}`)
             ?.join();
           hit.unitCampaign = hit.contact.campaignName;
+          hit.block = hit?.shape?.shapeJson?.properties?.originalProperties?.Block;
+          hit.township = hit?.shape?.shapeJson?.properties?.originalProperties?.Township;
+          hit.description = hit?.shape?.shapeJson?.properties?.description;
           hit.tags =
             hit?.tags?.length > 0
               ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
@@ -143,8 +146,7 @@ function UnitInterestsTable(props) {
           hit = props.setGenricData(hit, hit.shape?._id, [
             'comments', 'tags'
           ]);
-          //remove until max offer price logic is fixed
-          //hit.uMaxUnitPricing = hit?.shape?.shapeJson?.properties?.uMaxUnitPricing;
+
           return hit;
         });
 

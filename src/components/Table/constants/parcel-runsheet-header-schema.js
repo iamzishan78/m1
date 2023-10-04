@@ -127,17 +127,17 @@ const DocumentsHeadCells = [
       viewColumns: false,
     },
   },
+
   {
-    name: "isTracked",
-    label: " ",
+    name: "viewToken",
+    label: "View Token",
     options: {
+      display: false,
       filter: false,
-      sort: false,
       searchable: false,
-      download: false,
-      print: false,
+      sort: false,
       viewColumns: false,
-    },
+    }
   },
 ];
 

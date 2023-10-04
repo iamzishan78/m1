@@ -115,13 +115,6 @@ function SuggestedShapeTaxOwnersTable(props) {
     }
   );
 
-  useEffect(() => {
-    console.log('dataShapeOwners', dataShapeOwners)
-  }, [dataShapeOwners])
-  useEffect(() => {
-    console.log('variablesShapeOwners', variablesShapeOwners)
-  }, [variablesShapeOwners])
-
   const [addOwnerToAShape, { data: shapeOwnerData }] = useMutation(ADD_OWNER_TOA_SHAPE);
 
   const [convertMultitpleOwnerToContact] = useMutation(
@@ -144,7 +137,6 @@ function SuggestedShapeTaxOwnersTable(props) {
     const queryPoly = getPolygonString(props.customLayer?.shape)
 
     props.setLoading(true)
-    console.log('gg')
 
     getPaginatedShapeWellOwners({
       variables: {
@@ -277,6 +269,7 @@ function SuggestedShapeTaxOwnersTable(props) {
         // getPaginatedShapeWellOwners(pageVariables);
         break;
       case "changePage":
+        setSelectedRows([])
         break;
       case "search":
         // props.setLoading(true);
@@ -327,7 +320,7 @@ function SuggestedShapeTaxOwnersTable(props) {
 
   const options = {
     rowsPerPageOptions:
-      count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
+      count > 25 ? [10, 25, 50, 100, 250] : count > 10 ? [10, 25] : [],
     count: count || 0,
     serverSide: false,
     searchable: true,
@@ -392,7 +385,8 @@ function SuggestedShapeTaxOwnersTable(props) {
   };
 
   const formatInterestForImport = () => {
-    const uAcres = props.customLayer?.shapeJson?.properties?.uAcres || 0
+    const uAcres = props.customLayer?.shapeJson?.properties?.uAcres || 0;
+
     return selectedRows.map((sR => {
       const rec = props.rows?.[sR.dataIndex];
       const ownershipPercentage = addTrailingZeros(rec.ownershipPercentage.toFixed(8))
@@ -403,6 +397,8 @@ function SuggestedShapeTaxOwnersTable(props) {
         royalty_interest: rec.interestType === 'ROYALTY INTEREST' ? ownershipPercentage : "",
         orri: rec.interestType === 'OVERRIDING ROYALTY' ? ownershipPercentage : "",
         nra: calculateNRAForShapeTaxOwnersTable(uAcres, ownershipPercentage, workspaceSettings),
+        uUnitPricing: props.customLayer?.shapeJson?.properties?.uUnitPricing || 0,
+        uMaxUnitPricing: props.customLayer?.shapeJson?.properties?.uMaxUnitPricing || 0,
         globalOwnerId: rec.globalOwnerId,
         isSuggested: true
       }

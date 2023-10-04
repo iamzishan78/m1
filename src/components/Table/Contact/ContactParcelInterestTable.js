@@ -49,7 +49,7 @@ function ContactParcelInterestTable(props) {
   const [updateWellInterest] = useMutation(UPDATEWELLINTEREST, { refetchQueries: ["getContactWells", "getContactParcelInterests"], awaitRefetchQueries: true });
   const tableData = dataContactParcels?.contactParcelInterest
 
-  const addAble = {}
+  const addAble = {type : "TractInterests"}
   const total = false
   const orderByTracks = false
 

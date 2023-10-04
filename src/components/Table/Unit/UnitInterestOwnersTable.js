@@ -39,14 +39,16 @@ function UnitInterestOwnersTable(props) {
       hit.qualifier = hit?.shape?.shapeJson?.properties?.qualifier?.name;
       hit.reviewer = hit?.shape?.shapeJson?.properties?.reviewer?.name;
       hit.uUnitPricing = hit?.shape?.shapeJson?.properties?.uUnitPricing;
-      //remove until max offer price logic is fixed
-      //hit.uMaxUnitPricing = hit?.shape?.shapeJson?.properties?.uMaxUnitPricing;
+      hit.uMaxUnitPricing = hit?.shape?.shapeJson?.properties?.uMaxUnitPricing;
       hit.uNumber = hit?.shape?.shapeJson?.properties?.uNumber;
       hit.shapeArea = hit?.shape?.shapeJson?.properties?.shapeArea;
       hit.uAcres = hit?.shape?.shapeJson?.properties?.uAcres;
 
       hit.contactStatus = hit?.contact?.contactStatus;
       hit.status = hit?.contact?.status;
+      hit.block = hit?.shape?.shapeJson?.properties?.originalProperties?.Block;
+      hit.township = hit?.shape?.shapeJson?.properties?.originalProperties?.Township;
+      hit.description = hit?.shape?.shapeJson?.properties?.description;
       hit.contactOwners = (hit?.contactOwners && hit?.contactOwners.length > 0) ? Array.isArray(hit?.contactOwners) ? hit?.contactOwners[0] : hit?.contactOwners : null;
 
       if (hit?.tags?.length > 0) {
@@ -68,30 +70,40 @@ function UnitInterestOwnersTable(props) {
   useEffect(() => {
     const search = esExtentedSearch(props.landSearchQuery, searchInput)
 
-    props.setInitialFilters([
+    const defaultFilters = [
       {
         field: 'shape.layer.keyword',
         value: 'unit',
+      },
+      {
+        field: 'contact.IsDeleted',
+        value: 'false',
+      },
+      {
+        field: 'shape.IsDeleted',
+        value: 'false',
       },
       ...(props.campaignName ? [{
         field: 'campaignName.keyword',
         value: props.campaignName
       }] : [])
-    ]);
+    ]
+
+    props.setInitialFilters(defaultFilters);
 
     setTableMeta({
       extendSearchQuery: isNaN(parseFloat(search.replaceAll('*', ''))) ? search : search.replaceAll('*', ''),
       searchFields: [
         'contact.entityDetail.name',
-        'contact.entityDetail.name.keyword',
-        'shape.shapeJson.properties.uName.keyword',
-        'shape.shapeJson.properties.uNumber.keyword',
-        'shape.shapeJson.properties.shapeArea.keyword',
-        'shape.shapeJson.properties.uUnitPricing.keyword',
-        'contact.contactStatus.keyword',
-        'campaignName.keyword',
-        'shape.shapeJson.properties.reviewer.name.keyword',
-        'shape.shapeJson.properties.qualifier.name.keyword',
+        'shape.shapeJson.properties.uName',
+        'shape.shapeJson.properties.uNumber',
+        'shape.shapeJson.properties.shapeArea',
+        'shape.shapeJson.properties.uUnitPricing',
+        'shape.shapeJson.properties.uAcres',
+        'contact.contactStatus',
+        'campaignName',
+        'shape.shapeJson.properties.reviewer.name',
+        'shape.shapeJson.properties.qualifier.name',
         ...(!search.includes(' ') ? [
           'working_interest',
           'royalty_interest',
@@ -105,6 +117,7 @@ function UnitInterestOwnersTable(props) {
       selectedGridView: GridViewModule || defaultView,
       typeKeyword: { gridViewCategory: 'UnitInterest' },
       startPaginationAt: 50,
+      filters: defaultFilters,
       defaultSort: { field: '_ts', order: 'desc' },
       polygon: stateApp?.currentFeature?.geometry && {
         type: 'geo_intersects',

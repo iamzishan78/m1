@@ -6,13 +6,14 @@ import Typography from "@material-ui/core/Typography";
 
 const filter = createFilterOptions();
 function AutoCompleteFieldComponent(props) {
-    const { inputRef, onChange, name, options, label, value, defaultValue, variant, ref, ...other } = props;
+    const { inputRef, onChange, name, options, label, value, defaultValue, variant, ref, disabled, ...other } = props;
     return (
         <Autocomplete
             options={options}
             onChange={(e, wellType) => {
                 onChange(wellType)
             }}
+            disabled
             inputRef={ref}
             value={value}
             defaultValue={defaultValue}

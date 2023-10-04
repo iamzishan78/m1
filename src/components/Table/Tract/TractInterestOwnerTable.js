@@ -144,6 +144,7 @@ function TractInterestOwnerTable(props) {
         key: "contact._id",
         actions: genericDataActions,
       },
+      isSelectedAllAllowed: true
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateApp.activitySearchQuery, props.filterToggle]);
@@ -245,9 +246,17 @@ function TractInterestOwnerTable(props) {
           header="Delete Tract Owner(s)"
           onClose={() => setOpenCustomDialog("")}
           deleteFunc={deleteFunc}
-          m1nSelectedRowsIds={props.selectedRows.map(
-            (sR) => props.rows[sR.dataIndex]?._id
-          )}
+          m1nSelectedRowsIds={(() => {
+            let rowsData = props.selectedRowsValues || []
+            if (rowsData?.length === 0) {
+              let rows = props.rows
+              props.selectedRows.forEach((data) => {
+                rowsData.push(rows[data.dataIndex]);
+              });
+            }
+
+            return rowsData.map(data => data._id)
+          })()}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
           {`Do you want to permanently delete the tract owner${props.selectedRows &&
@@ -331,10 +340,12 @@ function TractInterestOwnerTable(props) {
                     }
                     onClick={() => {
                       let owners = [];
+
+                      const rows = props.selectedRowsValues || props.rows;
                       for (let i in props.selectedRows) {
-                        owners.push(
-                          props.rows[props.selectedRows[i]?.dataIndex]
-                        );
+                        owners.push({
+                          ...rows[i],
+                        });
                       }
                       setSelectedRows(owners);
                       setOpenCustomDialog("bulkUpdate");
@@ -347,12 +358,17 @@ function TractInterestOwnerTable(props) {
                     color="secondary"
                     startIcon={<CloudDownloadIcon color="white" />}
                     className={classes.multiSelectionTopBarButtons}
+                    disabled={
+                      !props.selectedRows || props.selectedRows?.length === 0
+                    }
                     onClick={() => {
                       let owners = [];
+
+                      const rows = props.selectedRowsValues || props.rows;
                       for (let i in props.selectedRows) {
-                        owners.push(
-                          props.rows[props.selectedRows[i]?.dataIndex]
-                        );
+                        owners.push({
+                          ...rows[i],
+                        });
                       }
                       setSelectedRows(owners);
                       setOpenCustomDialog("exportOwnersAndContact");
@@ -376,6 +392,9 @@ function TractInterestOwnerTable(props) {
                     <IconButton
                       size="medium"
                       style={{ margin: "0 5px" }}
+                      disabled={
+                        !props.selectedRows || props.selectedRows?.length === 0
+                      }
                       onClick={(e) => {
                         setOpenCustomDialog("deleteOwner");
                       }}

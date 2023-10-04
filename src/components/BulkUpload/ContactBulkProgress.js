@@ -105,16 +105,29 @@ const ContactBulkProgress = () => {
   };
 
   const createOrUpdateToast = (state) => {
+    const asyncOperations = ["commentsCreation"];
+
     for (let i = 0; i < dataJobs.getJobsStatus.jobs.length; i++) {
       let progress = 0;
-      if (dataJobs.getJobsStatus.jobs[i].progress && dataJobs.getJobsStatus.jobs[i].totalProgress) {
-        progress = (dataJobs.getJobsStatus.jobs[i].progress / dataJobs.getJobsStatus.jobs[i].totalProgress) * 100;
+      const status = dataJobs.getJobsStatus.jobs[i].status;
+      const jobProgress = dataJobs.getJobsStatus.jobs[i].progress;
+      const totalProgress = dataJobs.getJobsStatus.jobs[i].totalProgress;
+      const requestPayload = dataJobs.getJobsStatus.jobs[i].requestPayload;
+      const lastMessage = dataJobs.getJobsStatus.jobs[i].activitiesStatus[dataJobs.getJobsStatus.jobs[i].activitiesStatus.length - 1];
+
+      if (jobProgress && totalProgress) {
+        progress = (jobProgress / totalProgress) * 100;
       }
       let message = "";
-      if (dataJobs.getJobsStatus.jobs[i].status === "Started" || dataJobs.getJobsStatus.jobs[i].status === "Pending") {
-        message = dataJobs.getJobsStatus.jobs[i].activitiesStatus[dataJobs.getJobsStatus.jobs[i].activitiesStatus.length - 1];
-      } else {
-        const status = dataJobs.getJobsStatus.jobs[i].status;
+      if (status === "Started" || status === "Pending") {
+        message = lastMessage;
+      }
+      else if (status === "Completed" && requestPayload.async) {
+        if (requestPayload.refetch)
+          refetchHelper(requestPayload.refetch);
+        message = lastMessage;
+      }
+      else {
         if (status === "Completed")
           dispatch(setReduxKey("contactsAdded", true))
         const type = dataJobs.getJobsStatus.jobs[i].type;
@@ -122,26 +135,38 @@ const ContactBulkProgress = () => {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Contacts creation completed" : "Contacts creation failed";
         } else if (type === 'PROPERTIES') {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Import successfully completed" : "Import Failed";
-        } else {
-          message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Export successfully completed" : "Export Failed";
-          if (type === 'SHAPEOWNER' && status === "Completed")
-            refetchHelper(['getCustomLayer'])
+        }
+        else {
+          if (status === 'Created') {
+            message = 'Waiting for job to start';
+          } else if (status === 'Completed') {
+            message = `${asyncOperations.includes(type) ? 'Async operation' : 'Export'} successfully completed`;
+          } else if (status === 'Completed with errors') {
+            message = `${asyncOperations.includes(type) ? 'Async operation' : 'Export'} completed with errors`;
+          } else {
+            message = `${asyncOperations.includes(type) ? 'Async operation' : 'Export'} Failed`;
+          }
 
+          if (
+            type === 'SHAPEOWNER' &&
+            (status === 'Completed' || status.includes('Completed'))
+          )
+            refetchHelper(['getCustomLayer']);
         }
         if (status === 'Completed with errors') message = status
       }
 
       if (state === "create") {
-        if (dataJobs.getJobsStatus.jobs[i].status !== "Completed" && dataJobs.getJobsStatus.jobs[i].status !== "Failed") {
+        if (status !== "Completed" && status !== "Failed") {
           Loader.createToast(dataJobs.getJobsStatus.jobs[i]._id, message, progress, onCloseToast);
         }
       } else {
-        if (dataJobs.getJobsStatus.jobs[i].status === "Completed" || dataJobs.getJobsStatus.jobs[i].status === "Completed with errors") {
+        if (status === "Completed" || status === "Completed with errors") {
           Loader.successToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
           downloadResults(dataJobs.getJobsStatus.jobs[i], onCloseToast);
           if (dataJobs.getJobsStatus.jobs[i].type === "contacts")
             refetchQueryByName("checkIfOwnersAreContacts");
-        } else if (dataJobs.getJobsStatus.jobs[i].status === "Failed") {
+        } else if (status === "Failed") {
           Loader.errorToast(dataJobs.getJobsStatus.jobs[i]._id, message, onCloseToast);
         } else {
           Loader.updateToast(dataJobs.getJobsStatus.jobs[i]._id, message, progress);
