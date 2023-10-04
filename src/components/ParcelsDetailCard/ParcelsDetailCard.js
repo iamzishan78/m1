@@ -305,6 +305,12 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
     ],
   }), [dataCustomLayer]);
 
+  const overrideMetaTractUnits = useMemo(() => ({
+    defaultFilters: [
+      { field: "parcel._id", value: dataCustomLayer?.customLayer?._id },
+    ],
+  }), [dataCustomLayer]);
+
   useEffect(() => {
     if (updatedParcel) {
       if (updatedParcel.updateCustomLayer?.success) {
@@ -384,6 +390,18 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
     return (
       <TabButtons
         labels={['Tract Ownership', 'Potential Ownership']}
+        value={selectedTab}
+        setValue={n => {
+          setSelectedTab(n);
+        }}
+      />
+    );
+  }
+
+  function UnitsHeader() {
+    return (
+      <TabButtons
+        labels={['Related Units', 'Potential Units']}
         value={selectedTab}
         setValue={n => {
           setSelectedTab(n);
@@ -568,7 +586,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
       </Grid> */}
       <Grid item sm={12}>
         <Taps
-          tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Documents']}
+          tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Units', 'Documents']}
           openTabIdex={selectTabIndex}
           tabPanels={[
             <div style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)' }}>
@@ -622,7 +640,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                 </div>,
               ]}
             />,
-            <div className={showSummary ? classes.subContent : classes.subContent2}>
+            <div className={classes.subContent}>
               <ParcelAgreementTable
                 esIndex='runsheetinstrument_flat'
                 parent="ownersPerParcel"
@@ -644,6 +662,25 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                 dense
               />
             </div>,
+            <TabPanels
+              value={selectedTab}
+              panels={[
+                <div
+                  style={{
+                    position: 'relative',
+                    height: '100%',
+                    padding: '0rem 0.75rem 0rem 0.75rem'
+                  }}>
+                  <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
+                    <UnitsHeader />
+                  </div>
+                  <MRTTable name="TractUnitsTable" overrideMeta={overrideMetaTractUnits} />
+
+                </div>,
+                <div className={classes.subContent}>
+                </div>,
+              ]}
+            />,
             <div className={`${classes.subContent} ${classes.parcelDocument}`}>
               <RelatedDetailsDocumentTable
                 customLayer={copy(parcelObj)}
