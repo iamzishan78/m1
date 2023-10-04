@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const REMOVECOMMONGRIDFUNCTIONALITY = gql`
-	mutation gridGenericRemove($modal: String, $Ids: [ID]) {
-		gridGenericRemove(modal: $modal, Ids: $Ids) {
+	mutation gridGenericRemove($tableKey: String, $Ids: [ID], $shapeIds: [ID]) {
+		gridGenericRemove(tableKey: $tableKey, Ids: $Ids, shapeIds: $shapeIds) {
 			success
 			message
 			error
