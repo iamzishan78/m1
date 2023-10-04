@@ -217,9 +217,9 @@ const OwnersPerUnitMeta = {
 					sum: { field: 'nri' },
 				},
 			},
-			Cell: ({ renderedCellValue }) => {
-				if (renderedCellValue) {
-					return <>{addTrailingZeros(parseFloat(renderedCellValue).toFixed(8))}</>;
+			Cell: ({ row }) => {
+				if (row?.original?.nri) {
+					return <>{addTrailingZeros(parseFloat(row?.original?.nri).toFixed(8))}</>;
 				}
 			},
 			Footer: () => {
