@@ -28,6 +28,7 @@ import EntityType from "components/ContactDetailCard/components/FieldContent/Ent
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import { resetESTableToggle } from "hookstate";
 import { Modals } from 'styles/Modal';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const styles = () => ({
   topHeading: { fontWeight: 'bold' },
@@ -123,7 +124,11 @@ export default function AssignOwnerToContactDrawer({
   const [assignOwnerToContact] = useMutation(ASSIGN_OWNER_TO_CONTACT, options);
   const [updateBulkContact] = useMutation(UPDATEBULKCONTACT, options);
   const [updateBulkTags] = useMutation(BULKUPSERTTAG, options);
-  const [upsertContactCampaigns] = useMutation(UPSERT_CONTACT_CAMPAIGNS);
+  const [upsertContactCampaigns] = useMutation(UPSERT_CONTACT_CAMPAIGNS, {
+    onCompleted: () => {
+      tableGlobalController.refetch();
+    },
+  });
 
   const fieldsToUpdate = [
     { title: 'Campaign Name', value: 'campaignName' },
@@ -234,7 +239,7 @@ export default function AssignOwnerToContactDrawer({
     else {
       const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
       if (field === "Campaign Name") {
-
+        debugger
         if (rest.header === 'ContactTable') {
           const variables = {
             campaigns,

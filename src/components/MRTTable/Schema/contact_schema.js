@@ -48,6 +48,9 @@ const ContactMeta = {
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	isSelectall: true,
+	search: {
+		fields: ["name^4", "_all"]
+	},
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
