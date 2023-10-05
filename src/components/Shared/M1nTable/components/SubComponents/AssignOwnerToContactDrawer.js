@@ -239,7 +239,6 @@ export default function AssignOwnerToContactDrawer({
     else {
       const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
       if (field === "Campaign Name") {
-        debugger
         if (rest.header === 'ContactTable') {
           const variables = {
             campaigns,
