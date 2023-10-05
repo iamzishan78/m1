@@ -1,14 +1,5 @@
 import { addTrailingZeros } from "components/Shared/functions";
 
-export const calculateNRAForShapeTaxOwnersTable = (uAcres, ownershipPercentage, workspaceSettings) => {
-  let nra = parseFloat(uAcres || 0) * ownershipPercentage;
-  if (workspaceSettings.settings?.map?.unitNra?.type === "custom" && workspaceSettings.settings?.map?.unitNra?.value) {
-    nra = nra / Number(workspaceSettings.settings?.map?.unitNra?.value);
-  }
-  nra = addTrailingZeros(nra.toFixed(8));
-  return nra;
-};
-
 export const calculateNRAForAgreementOwnerAndTractDialog = (interest1, interest2, net_acres) => {
   if (!interest1 && !interest2) return null;
   let nra = parseFloat(net_acres || 0) * (parseFloat(interest1 || 0) + parseFloat(interest2 || 0)) * 8;
@@ -17,14 +8,16 @@ export const calculateNRAForAgreementOwnerAndTractDialog = (interest1, interest2
   return nra;
 };
 
-export const calculateStandardNraForUnit = (unitAcres, working_interest, royalty_interest, orri, workspaceSettings) => {
-  const sumOfDecimalInterest = (parseFloat(working_interest || 0) + parseFloat(royalty_interest || 0) + parseFloat(orri || 0))
+export const calculateStandardNraForUnit = ({ uAcres, working_interest, royalty_interest, orri, ownershipPercentage, workspaceSettings }) => {
+  const sumOfDecimalInterest = ownershipPercentage ? ownershipPercentage : (parseFloat(working_interest || 0) + parseFloat(royalty_interest || 0) + parseFloat(orri || 0))
+  console.log('sumOfDecimalInterest', sumOfDecimalInterest)
   const isCustomType = workspaceSettings?.settings?.map?.unitNra?.type === "custom";
   const divisor = parseFloat(workspaceSettings?.settings?.map?.unitNra?.value || 0);
-  let nra = unitAcres * sumOfDecimalInterest
+  let nra = uAcres * sumOfDecimalInterest
   if (isCustomType)
     nra /= divisor;
   nra = addTrailingZeros(nra.toFixed(8));
+  console.log(workspaceSettings?.settings?.map?.unitNra?.value, 'nra', nra)
   return nra;
 };
 
