@@ -19,13 +19,11 @@ import { showSuccessMessage, showErrorMessage, setMapGridCardState } from 'actio
 import Taps from '../Shared/Taps';
 import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
-// import { getParcelOriginalProperties } from './utils/GetParcelOriginalProps';
-// import { AppContext } from '../../AppContext';
 import ParcelSummary from './ParcelSummary';
 import { copy } from 'utils/helper';
 import { popupController, popupState } from 'hookstate/popupStateController';
 import MRTTable from "components/MRTTable";
-import { tableController } from "hookstate/tableController";
+import { tableController, tableGlobalController } from "hookstate/tableController";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
 
 const useStyles = makeStyles(theme => ({
@@ -216,17 +214,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
   const [selectedTab, setSelectedTab] = useState(0);
   const [parcelObj, setParcelObj] = useState();
   const [properties, setProperties] = useState();
-  // const [originalProperties, setOriginalProperties] = useState(null);
-  // const [parcelName, setParcelName] = useState();
-  // const [grossAcres, setGrossAcres] = useState();
-  // const [legalDescription, setLegalDesc] = useState();
-  // const [stateApp, setStateApp] = useContext(AppContext);
-  // const [onChangeFooterLabel, setChangeFooterLabel] = useState({
-  // 	parcelName: false,
-  // 	grossAcres: false,
-  // 	legalDescription: false,
-  // });
-  // const [showSummary, setShowSummary] = useState(true);
+  const globalSelectedTabKey = tableGlobalController.useState(['tabKey']).stateValues;
 
   const contactsAdded = useSelector(state => state?.common?.contactsAdded);
   const [updateCustomLayer, { data: updatedParcel }] = useMutation(UPDATECUSTOMLAYER);
@@ -289,13 +277,21 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
       tableController("TractPerUnitTable").updateState({
         customProps: { customLayer: data }
       })
+      tableController("TractPotentialUnitsTable").updateState({
+        customProps: { customLayer: data }
+      })
 
       setProperties(shape.properties);
-      // setParcelName(shape.properties.shapeLabel);
-      // setGrossAcres(shape.properties.sdGrossAcres);
-      // setLegalDesc(shape.properties.legalDescription || '');
     }
   }, [dataCustomLayer]);
+
+  useEffect(() => {
+    if (typeof globalSelectedTabKey.tabKey === "number")
+      setSelectedTab(globalSelectedTabKey.tabKey);
+    tableGlobalController.updateState({
+      tabKey: null
+    });
+  }, [globalSelectedTabKey.tabKey]);
 
   const overrideMeta = useMemo(() => ({
     defaultFilters: [
@@ -308,6 +304,17 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
   const overrideMetaTractUnits = useMemo(() => ({
     defaultFilters: [
       { field: "parcel._id", value: dataCustomLayer?.customLayer?._id },
+    ],
+  }), [dataCustomLayer]);
+
+  const overrideMetaTractPotentialUnits = useMemo(() => ({
+    defaultFilters: [
+      {
+        type: 'geo_intersects',
+        field: 'shapeJson.geometry',
+        value: dataCustomLayer?.customLayer?.shapeJson?.geometry,
+      },
+      { field: 'layer.keyword', value: 'unit' }
     ],
   }), [dataCustomLayer]);
 
@@ -330,14 +337,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
       }
     }
   }, [updatedParcel]);
-
-  // useEffect(() => {
-  // 	if (parcelObj) {
-  // 		// const data = copy(parcelObj);
-  // 		// const original_properties = getParcelOriginalProperties(data.shape.properties);
-  // 		// setOriginalProperties(original_properties);
-  // 	}
-  // }, [parcelObj]);
 
   const updateProperties = (e, field, value) => {
     if (e?.preventDefault) {
@@ -444,146 +443,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
           <Tags width="100%" targetSourceId={id} targetLabel="parcel" publicLeftBottom />
         </div>
       </Grid>
-      {/* <Grid item sm={12} container>
-        {originalProperties && (
-          <Grid item sm={12} className={classes.gridItemGrey}>
-            <StateCard state={originalProperties.state} />
-            <CountyCard county={originalProperties.county} />
-            {originalProperties.state === "TX" ? (
-              [<SurveyCard survey={originalProperties.survey} />,
-              <BlockCard block={originalProperties.block} />,
-              <SectionCard section={originalProperties.section} />,
-              <AbstractCard abstract={originalProperties.abstract} />,
-              <AltSurveyCard altSurvey={originalProperties.altSurvey} />]
-            ) : (
-              [<MeridianCard meridian={originalProperties.meridian} />,
-              <TownshipCard township={originalProperties.township} />,
-              <RangeCard range={originalProperties.range} />,
-              <SectionCard section={originalProperties.section} />]
-            )}
-            <Box>
-              <IconButton
-                onClick={() => setShowSummary(!showSummary)}
-                aria-label="delete" color="primary">
-                {
-                  showSummary ? <KeyboardArrowUpIcon fontSize="large" /> : <KeyboardArrowDownIcon fontSize="large" />
-                }
-
-              </IconButton>
-            </Box>
-          </Grid>
-        )}
-        {showSummary &&
-          <Grid item
-
-            // sm={6}
-
-            // temporary code hiding the parcel QQ grid in texas until we can build out the component
-            sm={originalProperties && originalProperties !== null && originalProperties.state == "TX" ? 12 : 6}
-
-            className={classes.gridPacelDetails}>
-
-            <Grid item
-              sm={12}
-              container>
-              <div className={classes.calcSummary}>
-                <p className={classes.parcelSummmary}>Tract Name</p>
-                <TextField
-                  size="small"
-                  value={parcelName}
-                  variant="outlined"
-                  onChange={(e) => {
-                    setParcelName(e.target.value);
-
-                  }}
-                  onKeyDown={(e) => {
-                    updateParcel(e, "shapeLabel", parcelName);
-                  }}
-                  onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, parcelName: true }) }}
-                  onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, parcelName: false }) }}
-                  InputProps={{
-                    endAdornment: (onChangeFooterLabel.parcelName === true &&
-                      <p className={classes.foodText}>
-                        <span>Return</span> to save
-                      </p>)
-                  }}
-                  fullWidth
-                >
-                </TextField>
-                <p className={classes.parcelSummmary}>Gross Acres</p>
-                <TextField
-                  size="small"
-                  type="number"
-                  value={grossAcres}
-                  variant="outlined"
-                  onChange={(e) => {
-                    setGrossAcres(e.target.value);
-                  }}
-                  onKeyDown={(e) => {
-                    updateParcel(e, "sdGrossAcres", grossAcres);
-                  }}
-                  onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, grossAcres: true }) }}
-                  onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, grossAcres: false }) }}
-                  InputProps={{
-                    endAdornment: (onChangeFooterLabel.grossAcres === true &&
-                      <p className={classes.foodText}>
-                        <span>Return</span> to save
-                      </p>)
-                  }}
-                  fullWidth
-                />
-                <p className={classes.parcelSummmary}>Calc. Acres</p>
-                <TextField
-                  disabled
-                  size="small"
-                  value={properties.shapeArea}
-                  variant="outlined"
-                  fullWidth
-                  InputProps={{
-                    readOnly: true
-                  }}
-                />
-
-                <p className={classes.parcelSummmary}>Full Legal Description</p>
-                <TextField
-                  size="small"
-                  multiline
-                  rows={7}
-                  value={legalDescription}
-                  variant="outlined"
-                  fullWidth
-                  placeholder="Enter legal description here"
-
-                  onChange={(e) => {
-                    setLegalDesc(e.target.value);
-                  }}
-                  onKeyDown={(e) => {
-                    updateParcel(e, "legalDescription", legalDescription);
-                  }}
-                  onFocus={() => { setChangeFooterLabel({ ...onChangeFooterLabel, legalDescription: true }) }}
-                  onBlur={() => { setChangeFooterLabel({ ...onChangeFooterLabel, legalDescription: false }) }}
-                  InputProps={{
-                    endAdornment: (onChangeFooterLabel.legalDescription == true &&
-                      <p className={classes.foodText}>
-                        <span>Return</span> to save
-                      </p>)
-                  }}
-                />
-              </div>
-            </Grid>
-
-          </Grid>
-        }
-        {originalProperties && originalProperties !== null && originalProperties.state == "TX" ? (null) : (
-
-          <Grid item sm={6} className={classes.gridPortion}>
-            {showSummary &&
-              <QtrQtrSelector parcelData={parcelObj} setQtrQtr={setQtrQtr} />
-            }
-          </Grid>
-        )}
-
-      </Grid> */}
       <Grid item sm={12}>
         <Taps
           tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Units', 'Documents']}
@@ -608,17 +467,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                     height: '100%',
                     padding: '0rem 0.75rem 0rem 0.75rem'
                   }}>
-                  {/* <M1nTable parent="ownersPerParcel" customLayer={parcelObj} dense header={<Header />} /> */}
-                  {/* <TractInterestOwnerTable
-										esIndex="shapeowners_flat"
-										parent="ownersPerParcel"
-										targetLabel="Parcel Ownership"
-										customLayer={copy(parcelObj)}
-										dense
-										header={<Header />}
-										isSnapGrid
-										isCheckboxSticky
-									/> */}
 
                   <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
                     <Header />
@@ -677,7 +525,17 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                   <MRTTable name="TractUnitsTable" overrideMeta={overrideMetaTractUnits} />
 
                 </div>,
-                <div className={classes.subContent}>
+                <div
+                  style={{
+                    position: 'relative',
+                    height: '100%',
+                    padding: '0rem 0.75rem 0rem 0.75rem'
+                  }}>
+                  <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
+                    <UnitsHeader />
+                  </div>
+                  <MRTTable name="TractPotentialUnitsTable" overrideMeta={overrideMetaTractPotentialUnits} />
+
                 </div>,
               ]}
             />,
@@ -702,7 +560,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
         position: 'absolute',
         height: '100%',
         width: '100%',
-        // zIndex: "50",
       }}
     >
       <CircularProgress size={80} disableShrink color="secondary" />

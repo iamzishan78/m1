@@ -46,7 +46,6 @@ const TractUnitsMeta = {
             alignItems: "center",
           }}
         >
-          {console.log(row)}
           <ColumnWithLink
             value={renderedCellValue}
             link={`/map/units/${row.getValue("shape._id")}`}
@@ -97,6 +96,7 @@ const TractUnitsMeta = {
       accessorFn: (row) => row?.shape?.shapeJson?.properties?.uUnitPricing,
       id: "shape.shapeJson.properties.uUnitPricing",
       header: "Target Unit Pricing (Per NRA)",
+	  size: 320,
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -104,6 +104,7 @@ const TractUnitsMeta = {
       accessorFn: (row) => row?.shape?.shapeJson?.properties?.uMaxUnitPricing,
       id: "shape.shapeJson.properties.uMaxUnitPricing",
       header: "Max Unit Pricing (Per NRA)",
+	  size: 320,
     },
     {
       ...CommonSchema.COMMON_COLUMN,
