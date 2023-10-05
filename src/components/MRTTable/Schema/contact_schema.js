@@ -48,6 +48,9 @@ const ContactMeta = {
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	isSelectall: true,
+	search: {
+		fields: ["name^4", "_all"]
+	},
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
@@ -330,6 +333,10 @@ const ContactMeta = {
 			accessorFn: row => row?.contactOwners?.name,
 			id: 'contactOwners.name',
 			header: 'Contact Owner',
+			Cell: ({ row }) => {
+				const name = row?.original?.contactOwners.map(obj => obj.name)
+				return <p>{name[0]}</p>
+			},
 		},
 
 		{

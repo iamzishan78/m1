@@ -178,7 +178,9 @@ const ComparisonMeta = {
 			isPinned: false,
 			filter: true,
 			type: 'date',
-			Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue, false)}</>,
+			Cell: ({ row }) => {
+				return <>{formatDate(row?.original?.property?.interest?.effectiveDate, false)}</>
+			},
 		},
 
 		{
@@ -190,7 +192,9 @@ const ComparisonMeta = {
 			isPinned: false,
 			filter: true,
 			type: 'date',
-			Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue, false)}</>,
+			Cell: ({ row }) => {
+				return <>{formatDate(row?.original?.property?.interest?.endDate, false)}</>
+			},
 		},
 
 		{
@@ -226,7 +230,7 @@ const ComparisonMeta = {
 			type: 'string',
 			Cell: ({ row }) => {
 				const apiNumbers = row?.original?.wells?.map(item => item.apiNumber);
-				return apiNumbers.length > 1 ? "Multiple" : apiNumbers[0];
+				return apiNumbers?.length > 1 ? "Multiple" : apiNumbers[0];
 			},
 		},
 
@@ -241,7 +245,7 @@ const ComparisonMeta = {
 			type: 'string',
 			Cell: ({ row }) => {
 				const wellName = row?.original?.wells?.map(item => item.wellName);
-				return wellName.length > 1 ? "Multiple" : wellName[0];
+				return wellName?.length > 1 ? "Multiple" : wellName[0];
 			},
 		},
 
@@ -254,7 +258,9 @@ const ComparisonMeta = {
 			isPinned: false,
 			filter: true,
 			type: 'date',
-			Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue, false)}</>,
+			Cell: ({ row }) => {
+				return <>{formatDate(row?.original?.check?.checkDate, false)}</>
+			},
 		},
 
 		{
@@ -288,7 +294,9 @@ const ComparisonMeta = {
 			isPinned: false,
 			filter: true,
 			type: 'date',
-			Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue, false)}</>,
+			Cell: ({ row }) => {
+				return <>{formatDate(row?.original?.check?.depositDate, false)}</>
+			},
 		},
 
 		{
@@ -367,7 +375,9 @@ const ComparisonMeta = {
 			filter: true,
 			type: 'date',
 			isExternalFilter: true,
-			Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue, false)}</>,
+			Cell: ({ row }) => {
+				return <>{formatDate(row?.original?.date, false)}</>
+			},
 		},
 
 		{

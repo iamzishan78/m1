@@ -149,5 +149,8 @@ export function getDateWithoutTime(dateTime) {
   } else return null;
 }
 
-export const formatDate = (date, simple = true) =>
-  moment.parseZone(new Date(date)).format(simple ? 'MM/DD/YY' : 'MMMM D, YYYY');
+export const formatDate = (date, simple = true) => {
+  console.log('date', !!date)
+  if (!date) return '--'
+  return moment.parseZone(new Date(date)).format(simple ? 'MM/DD/YY' : 'MMMM D, YYYY');
+}

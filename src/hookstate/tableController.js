@@ -87,11 +87,12 @@ const tableESStateControllerHandler = state => ({
 			defaultFlterMode,
 			defaultFilters,
 			isSelectall,
+			search,
 			...rest
 		}
 	) => {
 		if (state.TableSchema.get()) return;
-		const searchFields = TableSchema.filter(column => column.isSearchField !== false).map(
+		const searchFields = search ? search?.fields : TableSchema.filter(column => column.isSearchField !== false).map(
 			column => column.id || column.accessorKey
 		);
 

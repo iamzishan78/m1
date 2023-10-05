@@ -104,6 +104,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 			total: tableStateValues?.data.total,
 			client,
 			table,
+			tableKey
 		};
 	};
 

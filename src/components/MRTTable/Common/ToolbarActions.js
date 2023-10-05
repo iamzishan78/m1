@@ -41,13 +41,15 @@ function ToolbarActions({ table, tableKey, children }) {
 	};
 
 	const handleDelete = () => {
-		const selectedIds = selectedRows && selectedRows.length > 0 ? selectedRows.map(item => item._id) : null;
+		const selectedIds = selectedRows?.length > 0 ? selectedRows.map(item => item._id) : null;
+		const shapeIds = selectedRows?.length > 0 ? [...new Set(selectedRows.map(item => item?.shape?._id))] : null;
 
 		tableGlobalController.updateState({
 			dialog: {
 				type: 'deleteGrid',
 				Ids: selectedIds,
-				modal: tableKey,
+				tableKey,
+				shapeIds
 			},
 		});
 

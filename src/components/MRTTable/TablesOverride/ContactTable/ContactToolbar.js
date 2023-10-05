@@ -144,12 +144,13 @@ function ContactToolbar({ table, tableKey }) {
 			total: tableStateValues?.data.total,
 			client,
 			table,
+			tableKey
 		};
 	};
 
 	const exportPropsPass = ExportProps();
 	const sidePropsPass = SideDialogProps();
-	console.log('tableStateValues', tableStateValues)
+
 	return (
 		<>
 			<>

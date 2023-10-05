@@ -16,7 +16,10 @@ import ExportConfirmationDialog from '../TableCells/ExportConfirmation';
 function AllDialogs() {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
 	const { type, ...rest } = stateValues.dialog || {};
-	const [removeCommonDelete] = useMutation(REMOVECOMMONGRIDFUNCTIONALITY);
+	const [removeCommonDelete] = useMutation(REMOVECOMMONGRIDFUNCTIONALITY, {
+		refetchQueries: ["customLayer"],
+		awaitRefetchQueries: true,
+	});
 
 	const handleCloseDialog = () => {
 		tableGlobalController.updateState({
@@ -36,7 +39,7 @@ function AllDialogs() {
 	const deleteFunc = async IdsToDelete => {
 		Loader.createToast('deletion', 'Deletion in Progress');
 		removeCommonDelete({
-			variables: { modal: rest?.modal, Ids: IdsToDelete },
+			variables: { tableKey: rest?.tableKey, Ids: IdsToDelete, shapeIds: rest?.shapeIds },
 		}).then(
 			res => {
 				if (res?.data?.gridGenericRemove) {
@@ -65,6 +68,7 @@ function AllDialogs() {
 
 			{type === 'asign' && (
 				<AssignOwnerToContactDrawerContainer
+					header={rest.tableKey}
 					onClose={handleCloseDialog}
 					rows={rest?.selectedRows}
 					setSelectedRow={updateRows}
