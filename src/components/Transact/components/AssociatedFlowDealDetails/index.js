@@ -127,18 +127,10 @@ function AssociatedFlowDetails(props) {
   const { mapGridCardActivated, mapGridCardActiveTap, selectedOwner } = useSelector(({ MapGridCard }) => MapGridCard, shallowEqual);
   const mapLayersPanelExtended = useSelector(({ MainMap }) => MainMap.mapLayersPanelExtended);
   const userGridViewFilters = useSelector(({ session }) => session.userGridViewSettings?.filters);
-  const [dealAssociatedSummary, { loading, data: dealSummaryData }] = useLazyQuery(GET_FLOW_ASSOCIATED_SUMMARY)
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dealAssociatedSummary({
-      variables: {
-        contactIds: props.contacts,
-        dealId: props.deal,
-      }
-    })
-  }, [props.contacts])
+
 
   const setSearchTapValue = (state) => {
     if (searchTapValue !== state) {
@@ -194,7 +186,7 @@ function AssociatedFlowDetails(props) {
                           <ListItemText
                             id={row.label}
                             // TODO: Get Summary of flow associated data
-                            primary={`${row.label} (${get(dealSummaryData, `flowDealSummary.data.${row.value}`, 0)})`}
+                            primary={`${row.label} (${get(props.dealSummaryData, `flowDealSummary.data.${row.value}`, 0)})`}
                           />
                         </ListItem>
                       );

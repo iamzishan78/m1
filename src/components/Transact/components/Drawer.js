@@ -1,17 +1,12 @@
 import React, { useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import MessageIcon from "@material-ui/icons/Message";
 import DescriptionIcon from "@material-ui/icons/DescriptionSharp";
-import CheckmarkIcon from "@material-ui/icons/CheckBoxOutlined";
-import ShareIcon from "@material-ui/icons/Share";
-import FolderIcon from "@material-ui/icons/Folder";
 import GridOnIcon from '@material-ui/icons/GridOn';
 import HomeIcon from "@material-ui/icons/HomeOutlined";
 import IdentityIcon from "@material-ui/icons/PermIdentity";
-import FlowIcon from "@material-ui/icons/Repeat";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import PanoramaIcon from "@material-ui/icons/Panorama";
-import RoomIcon from "@material-ui/icons/Room";
+import { get } from "lodash";
 import Tooltip from "@material-ui/core/Tooltip";
 import Badge from "@material-ui/core/Badge";
 import { AppContext } from "../../../AppContext";
@@ -83,7 +78,6 @@ export default function Drawer(props) {
       : classes.inactiveIcon;
   };
 
-  // console.log(stateApp)
 
   const drawerIcons = {
     // Comments: (props) => <MessageIcon {...props} />,
@@ -149,7 +143,7 @@ export default function Drawer(props) {
         color="primary"
         badgeContent={
           props?.mapSettings == null &&
-          stateApp?.activeDeal?.mapSettings == null
+            stateApp?.activeDeal?.mapSettings == null
             ? null
             : 1
           // (
@@ -170,6 +164,10 @@ export default function Drawer(props) {
             horizontal: "right",
           }}
           color="primary"
+          badgeContent={
+            get(props.dealSummaryData, "flowDealSummary.data.parcelInterests", 0) +
+            get(props.dealSummaryData, "flowDealSummary.data.unitInterests", 0)
+          }
         >
           <GridOnIcon {...props} />
         </Badge>
