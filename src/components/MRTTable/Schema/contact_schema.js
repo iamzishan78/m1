@@ -333,6 +333,10 @@ const ContactMeta = {
 			accessorFn: row => row?.contactOwners?.name,
 			id: 'contactOwners.name',
 			header: 'Contact Owner',
+			Cell: ({ row }) => {
+				const name = row?.original?.contactOwners.map(obj => obj.name)
+				return <p>{name[0]}</p>
+			},
 		},
 
 		{
