@@ -229,8 +229,9 @@ const ComparisonMeta = {
 			filter: true,
 			type: 'string',
 			Cell: ({ row }) => {
-				const apiNumbers = row?.original?.wells?.map(item => item.apiNumber);
-				return apiNumbers?.length > 1 ? "Multiple" : apiNumbers[0];
+				console.log('row?.original?.wells', row?.original?.wells)
+				const apiNumbers = row?.original?.wells?.map(item => item.apiNumber) || [];
+				return (apiNumbers?.length && apiNumbers?.length > 1) ? "Multiple" : apiNumbers[0];
 			},
 		},
 
@@ -244,8 +245,8 @@ const ComparisonMeta = {
 			filter: true,
 			type: 'string',
 			Cell: ({ row }) => {
-				const wellName = row?.original?.wells?.map(item => item.wellName);
-				return wellName?.length > 1 ? "Multiple" : wellName[0];
+				const wellName = row?.original?.wells?.map(item => item.wellName) || [];
+				return (wellName?.length && wellName?.length > 1) ? "Multiple" : wellName[0];
 			},
 		},
 
