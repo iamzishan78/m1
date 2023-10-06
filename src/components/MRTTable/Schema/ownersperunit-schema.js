@@ -4,11 +4,11 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
 import NameCell from 'components/MRTTable/TablesOverride/OwnersPerUnit/TableCell/NameCell';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import OwnersPerUnitToolBar from 'components/MRTTable/TablesOverride/OwnersPerUnit/OwnersPerUnitToolBar';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import ListChips from 'components/Common/ListChips';
 import { addTrailingZeros } from 'components/Shared/functions';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 const esIndex = 'shapeowners_flat';
 
@@ -48,44 +48,23 @@ const OwnersPerUnitMeta = {
 	},
 	TableSchema: [
 		{
+			...CommonSchema.HIDDEN,
 			name: '_id',
 			accessorKey: '_id',
-			isSearchField: false,
-			hidden: true,
-			enablePinning: false,
-			enableHiding: false,
-			enableColumnActions: false,
-			enableColumnOrdering: false,
-			enableSorting: false,
 		},
 
 		{
+			...CommonSchema.HIDDEN,
 			name: 'ownerEntity',
 			accessorKey: 'ownerEntity',
-			isSearchField: false,
-			hidden: true,
-			enablePinning: false,
-			enableHiding: false,
-			enableColumnActions: false,
-			enableColumnOrdering: false,
-			enableSorting: false,
 		},
 
 		{
+			...CommonSchema.INITAIL_PINNED,
 			name: 'contact.entityDetail.name.keyword',
 			accessorKey: 'contact.entityDetail.name',
 			isExport: 'name',
 			header: 'Owner Name',
-			enableColumnActions: true,
-			enableColumnOrdering: true,
-			size: 350,
-			isPinned: true,
-			enableHiding: false,
-			filter: true,
-			type: 'string',
-			isExternalFilter: false,
-			isSearchField: true,
-			enableSorting: true,
 			Cell: ({ renderedCellValue, row }) => {
 				const isPurchased = row.getValue('contact.isPurchased');
 				return <NameCell renderedCellValue={renderedCellValue} isPurchased={isPurchased} />;
@@ -93,31 +72,20 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.ownerType.keyword',
 			accessorFn: row => row?.contact?.ownerType,
 			id: 'contact.ownerType',
 			header: 'Entity Type',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			isExternalFilter: false,
-			enableSorting: true,
-			isSearchField: true,
-			enableColumnOrdering: true,
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'working_interest',
 			accessorKey: 'working_interest',
 			header: 'Working Interest',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'number',
-			isExternalFilter: false,
 			isSearchField: false,
-			enableColumnOrdering: true,
+			type: 'number',
 			Aggregation: {
 				sumWorkingInterest: {
 					sum: { field: 'working_interest' },
@@ -141,17 +109,12 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'royalty_interest',
 			accessorKey: 'royalty_interest',
 			header: 'Royalty Interest',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'number',
-			isExternalFilter: false,
-			enableSorting: true,
 			isSearchField: false,
-			enableColumnOrdering: true,
+			type: 'number',
 			Aggregation: {
 				sumRoyaltyInterest: {
 					sum: { field: 'royalty_interest' },
@@ -174,17 +137,12 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'orri',
 			accessorKey: 'orri',
 			header: 'ORRI',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'number',
-			isExternalFilter: false,
-			enableSorting: true,
 			isSearchField: false,
-			enableColumnOrdering: true,
+			type: 'number',
 			Aggregation: {
 				sumOrri: {
 					sum: { field: 'orri' },
@@ -204,17 +162,12 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'nri',
 			accessorKey: 'nri',
 			header: 'NRI',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'number',
-			isExternalFilter: false,
-			enableSorting: true,
 			isSearchField: false,
-			enableColumnOrdering: true,
+			type: 'number',
 			Aggregation: {
 				sumNri: {
 					sum: { field: 'nri' },
@@ -233,108 +186,68 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'nra',
 			accessorKey: 'nra',
 			header: 'NRA',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'number',
-			isExternalFilter: false,
-			enableSorting: true,
 			isSearchField: false,
-			enableColumnOrdering: true,
+			type: 'number',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'seller_asking_price',
 			accessorKey: 'seller_asking_price',
 			header: 'Seller Asking Price',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'number',
-			enableSorting: true,
-			isExternalFilter: false,
 			isSearchField: false,
-			enableColumnOrdering: true,
+			type: 'number',
 			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'competitor_offer_price',
 			accessorKey: 'competitor_offer_price',
 			header: 'Competitor Offer Price',
-			size: 270,
-			isPinned: false,
-			filter: true,
-			type: 'number',
-			isExternalFilter: false,
-			enableSorting: true,
 			isSearchField: false,
-			enableColumnOrdering: true,
+			type: 'number',
 			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'offer_price',
 			accessorKey: 'offer_price',
 			header: 'Offer Price',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'number',
-			isExternalFilter: false,
-			enableSorting: true,
 			isSearchField: false,
-			enableColumnOrdering: true,
+			type: 'number',
 			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.contactStatus.keyword',
 			accessorFn: row => row?.contact?.contactStatus,
 			id: 'contact.contactStatus',
 			header: 'Status',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			isExternalFilter: false,
-			enableSorting: true,
-			isSearchField: true,
-			enableColumnOrdering: true,
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'campaignName.keyword',
 			accessorFn: row => row?.campaignName,
 			id: 'campaignName',
 			header: 'Campaign Name',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			isExternalFilter: false,
-			isSearchField: true,
-			enableSorting: true,
-			enableColumnOrdering: true,
 			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'deals.name.keyword',
 			accessorFn: row => row?.deals?.name,
 			id: 'deals.name',
 			header: 'Associated Deals',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			isExternalFilter: false,
-			isSearchField: true,
-			enableSorting: true,
-			enableColumnOrdering: true,
+			isSearchField: false,
 			Cell: ({ row }) => {
 				return (
 					<div>
@@ -356,76 +269,33 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.ACTION_COLUMN,
 			name: 'tags.tag.keyword',
 			accessorKey: 'tags.tag',
 			header: 'Tags',
 			size: 270,
-			isPinned: false,
-			filter: false,
-			type: 'string',
-			isExternalFilter: false,
-			enableSorting: false,
-			enableColumnFilter: false,
-			isSearchField: false,
-			enableColumnOrdering: false,
-			enableColumnActions: false,
-			enableResizing: false,
 			Cell: ({ row }) => {
-				const id = `unit`;
 				const targetSourceId = row.getValue('ownerEntity');
-				return <TagCell id={id} targetSourceId={targetSourceId} tags={row?.original?.tags} />;
+				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} />;
 			},
 		},
 
 		{
+			...CommonSchema.ACTION_COLUMN,
 			name: 'isContact',
 			accessorKey: 'isContact',
-			enablePinning: false,
-			enableHiding: false,
-			enableColumnActions: false,
-			enableSorting: false,
-			size: 100,
-			enableColumnFilter: false,
-			isSearchField: false,
-			enableColumnOrdering: false,
-			enableResizing: false,
 			Cell: ({ row }) => {
 				const ownerEntity = row.getValue('ownerEntity');
 				return <IsContactCell contactId={ownerEntity} />;
 			},
 		},
 
-		{
-			name: 'commentsCounter',
-			accessorKey: 'comments',
-			enablePinning: false,
-			enableHiding: false,
-			enableColumnActions: false,
-			enableSorting: false,
-			size: 100,
-			enableColumnFilter: false,
-			isSearchField: false,
-			enableColumnOrdering: false,
-			enableResizing: false,
-			Cell: ({ renderedCellValue, row }) => {
-				const ownerEntity = row.getValue('ownerEntity');
-
-				return <CommentCell id={ownerEntity} value={renderedCellValue?.length || 0} />;
-			},
-		},
+		CommonSchema.COMMENTS,
 
 		{
+			...CommonSchema.ACTION_COLUMN,
 			name: 'actionMenu',
 			accessorKey: 'actionMenu',
-			enablePinning: false,
-			enableHiding: false,
-			enableColumnActions: false,
-			enableSorting: false,
-			size: 100,
-			enableColumnFilter: false,
-			isSearchField: false,
-			enableColumnOrdering: false,
-			enableResizing: false,
 			Cell: ({ row }) => {
 				const id = row.getValue('_id');
 				const name = row.getValue('name');
@@ -434,52 +304,11 @@ const OwnersPerUnitMeta = {
 			},
 		},
 
-		// {
-		//   name: 'contactId',
-		//   accessorKey: 'contactId',
-		//   isSearchField: false,
-		//   hidden: true,
-		//   enablePinning: false,
-		//   enableHiding: false,
-		//   enableColumnActions: false,
-		//   enableColumnOrdering: false,
-		//   enableSorting: false,
-		// },
-
-		// {
-		//   name: 'isSuggested',
-		//   accessorKey: 'isSuggested',
-		//   isSearchField: false,
-		//   hidden: true,
-		//   enablePinning: false,
-		//   enableHiding: false,
-		//   enableColumnActions: false,
-		//   enableColumnOrdering: false,
-		//   enableSorting: false,
-		// },
-
-		// {
-		//   name: 'isOverridden',
-		//   accessorKey: 'isOverridden',
-		//   isSearchField: false,
-		//   hidden: true,
-		//   enablePinning: false,
-		//   enableHiding: false,
-		//   enableColumnActions: false,
-		//   enableColumnOrdering: false,
-		//   enableSorting: false,
-		// },
-
 		{
+			...CommonSchema.HIDDEN,
 			name: 'isPurchased',
 			accessorFn: row => row?.contact?.isPurchased,
 			id: 'contact.isPurchased',
-			isSearchField: false,
-			enablePinning: false,
-			enableHiding: false,
-			hidden: true,
-			enableColumnActions: false,
-			enableSorting: false,
 		},
 	],
 };
