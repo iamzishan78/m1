@@ -6,12 +6,12 @@ import { tableGlobalController } from 'hookstate/tableController';
 import { AssignOwnerToContactDrawerContainer } from 'store/containers';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
-import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import DeleteConfirmationDialogContent from './ConfirmationDialog/DeleteConfirmationDialog';
 import { REMOVECOMMONGRIDFUNCTIONALITY } from 'graphQL/useMutationCommonGridRemove';
 import Loader from 'components/Loaders';
 import CommentDialog from './CommentDialog';
 import TagDialog from './TagDialog';
-import ExportConfirmationDialog from '../TableCells/ExportConfirmation';
+import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmation';
 
 function AllDialogs() {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
@@ -39,7 +39,7 @@ function AllDialogs() {
 	const deleteFunc = async IdsToDelete => {
 		Loader.createToast('deletion', 'Deletion in Progress');
 		removeCommonDelete({
-			variables: { tableKey: rest?.tableKey, Ids: IdsToDelete, shapeIds: rest?.shapeIds },
+			variables: { tableKey: rest?.tableKey, Ids: IdsToDelete },
 		}).then(
 			res => {
 				if (res?.data?.gridGenericRemove) {
@@ -104,7 +104,7 @@ function AllDialogs() {
 						header="Delete row (s)"
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
-						m1nSelectedRowsIds={rest?.Ids}
+						RowsIds={rest?.Ids}
 					>
 						{`Do you want to delete the selected row ${rest?.Ids?.length > 1 ? 's' : ''}?`}
 					</DeleteConfirmationDialogContent>
