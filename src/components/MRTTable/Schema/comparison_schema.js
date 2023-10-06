@@ -1,6 +1,7 @@
 import { ErrorOutline } from '@material-ui/icons';
 import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
 import { formatDate } from 'components/Shared/functions';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 const esIndex = 'checkdetailsinterestscomparison_flat';
 
@@ -17,29 +18,18 @@ const ComparisonMeta = {
 	columnVirtualization: true,
 	TableSchema: [
 		{
+			...CommonSchema.HIDDEN,
 			name: '_id',
 			accessorKey: '_id',
-			isSearchField: false,
-			hidden: true,
-			enablePinning: false,
-			enableHiding: false,
-			enableColumnActions: false,
-			enableColumnOrdering: false,
 		},
 
 		{
+			...CommonSchema.INITAIL_PINNED,
 			name: 'check.checkNumber.keyword',
 			accessorFn: row => row?.check?.checkNumber,
 			id: 'check.checkNumber',
 			header: 'Check Number',
 			size: 400,
-			isPinned: true,
-			enableHiding: false,
-			filter: true,
-			type: 'string',
-			isExternalFilter: true,
-			enableColumnActions: true,
-			enableColumnOrdering: false,
 			Cell: ({ row, cell }) => {
 				const interestAmount = row.getValue('property.interest.interestAmount');
 				const decimalInterest = row.getValue('disbursement');
@@ -81,102 +71,76 @@ const ComparisonMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.number.keyword',
 			accessorFn: row => row?.property?.number,
 			id: 'property.number',
 			header: 'Operator Prop # / Property Number',
-			size: 350,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 			isExternalFilter: true,
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.internalID.keyword',
 			accessorFn: row => row?.property?.internalID,
 			id: 'property.internalID',
 			header: 'Company ID',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.prospectID.keyword',
 			accessorFn: row => row?.property?.prospectID,
 			id: 'property.prospectID',
 			header: 'Prospect ID',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.acquisitionID.keyword',
 			accessorFn: row => row?.property?.acquisitionID,
 			id: 'property.acquisitionID',
 			header: 'Acquisition ID',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.operator.keyword',
 			accessorFn: row => row?.property?.operator,
 			id: 'property.operator',
 			header: 'Operator',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.purchaser.name.keyword',
 			accessorFn: row => row?.property?.purchaser?.name,
 			id: 'property.purchaser.name',
 			header: 'Purchaser Name',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.interest.interestType.keyword',
 			accessorFn: row => row?.property?.interest?.interestType,
 			id: 'property.interest.interestType',
 			header: 'Interest Type',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.interest.interestAmount',
 			accessorFn: row => row?.property?.interest?.interestAmount,
 			id: 'property.interest.interestAmount',
 			header: 'Interest Amount',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.interest.effectiveDate',
 			accessorFn: row => row?.interest?.effectiveDate,
 			id: 'property.interest.effectiveDate',
 			header: 'Effective Date',
-			size: 250,
-			isPinned: false,
-			filter: true,
 			type: 'date',
 			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.property?.interest?.effectiveDate, false)}</>
@@ -184,13 +148,11 @@ const ComparisonMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.interest.endDate',
 			accessorFn: row => row?.property?.interest?.endDate,
 			id: 'property.interest.endDate',
 			header: 'End Date',
-			size: 250,
-			isPinned: false,
-			filter: true,
 			type: 'date',
 			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.property?.interest?.endDate, false)}</>
@@ -198,52 +160,39 @@ const ComparisonMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.interest.status.keyword',
 			accessorFn: row => row?.property?.interest?.status,
 			id: 'property.interest.status',
 			header: 'status',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.interest.costFree.keyword',
 			accessorFn: row => row?.property?.interest?.costFree,
 			id: 'property.interest.costFree',
 			header: 'Cost Free',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'wells.apiNumber.keyword',
 			accessorFn: row => row?.wells?.apiNumber,
 			id: 'wells.apiNumber',
 			header: 'Well API',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 			Cell: ({ row }) => {
-				console.log('row?.original?.wells', row?.original?.wells)
 				const apiNumbers = row?.original?.wells?.map(item => item.apiNumber) || [];
 				return (apiNumbers?.length && apiNumbers?.length > 1) ? "Multiple" : apiNumbers[0];
 			},
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'wells.wellName.keyword',
 			accessorFn: row => row?.wells?.wellName,
 			id: 'wells.wellName',
 			header: 'Well Name',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 			Cell: ({ row }) => {
 				const wellName = row?.original?.wells?.map(item => item.wellName) || [];
 				return (wellName?.length && wellName?.length > 1) ? "Multiple" : wellName[0];
@@ -251,13 +200,11 @@ const ComparisonMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'check.checkDate',
 			accessorFn: row => row?.check?.checkDate,
 			id: 'check.checkDate',
 			header: 'Check Date',
-			size: 250,
-			isPinned: false,
-			filter: true,
 			type: 'date',
 			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.check?.checkDate, false)}</>
@@ -265,35 +212,27 @@ const ComparisonMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.ownerNumber.keyword',
 			accessorFn: row => row?.property?.ownerNumber,
 			id: 'property.ownerNumber',
 			header: 'Owner Number',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property._owner.name.keyword',
 			accessorFn: row => row?.property?._owner?.name,
 			id: 'property._owner.name',
 			header: 'Owner',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'check.depositDate',
 			accessorFn: row => row?.check?.depositDate,
 			id: 'check.depositDate',
 			header: 'Deposit Date',
-			size: 250,
-			isPinned: false,
-			filter: true,
 			type: 'date',
 			Cell: ({ row }) => {
 				return <>{formatDate(row?.original?.check?.depositDate, false)}</>
@@ -301,79 +240,59 @@ const ComparisonMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'check.checkAmount',
 			accessorFn: row => row?.check?.checkAmount,
 			id: 'check.checkAmount',
 			header: 'Check Amount',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'check.source.keyword',
 			accessorFn: row => row?.check?.source,
 			id: 'check.source',
 			header: 'Source',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'check.sourceId.keyword',
 			accessorFn: row => row?.check?.sourceId,
 			id: 'check.sourceId',
 			header: 'Source Id',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.name.keyword',
 			accessorFn: row => row?.property?.name,
 			id: 'property.name',
 			header: 'Property Name',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.state.keyword',
 			accessorFn: row => row?.property?.state,
 			id: 'property.state',
 			header: 'State',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 			isExternalFilter: true,
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.county.keyword',
 			accessorFn: row => row?.property?.county,
 			id: 'property.county',
 			header: 'County',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'date',
 			accessorKey: 'date',
 			header: 'Sales Date',
-			size: 250,
-			isPinned: false,
-			filter: true,
 			type: 'date',
 			isExternalFilter: true,
 			Cell: ({ row }) => {
@@ -382,193 +301,137 @@ const ComparisonMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'product.keyword',
 			accessorKey: 'product',
 			header: 'Product',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'disbursement',
 			accessorKey: 'disbursement',
 			header: 'Decimal Interest',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'check._id.keyword',
 			accessorKey: 'check._id',
 			header: 'Check Id',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'differnce',
 			accessorKey: 'differnce',
 			header: 'Difference',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'percentageDifference',
 			accessorKey: 'percentageDifference',
 			header: '% Difference',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'potentialGainLoss',
 			accessorKey: 'potentialGainLoss',
 			header: 'Potential Gain/Loss',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.purchaserNumber.keyword',
 			accessorFn: row => row?.property?.purchaserNumber,
 			id: 'property.purchaserNumber',
 			header: 'Purchaser Prop #',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'property.status.keyword',
 			accessorFn: row => row?.property?.status,
 			id: 'property.status',
 			header: 'Pay Status',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'price',
 			accessorKey: 'price',
 			header: 'Avg Price',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'grossPropertyVolume',
 			accessorKey: 'grossPropertyVolume',
 			header: 'Prop Gross Volume',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'grossPropertyValue',
 			accessorKey: 'grossPropertyValue',
 			header: 'Prop Gross Revenue',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'grossOwnerVolume',
 			accessorKey: 'grossOwnerVolume',
 			header: 'Gross Owner Volume',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'grossOwnerValue',
 			accessorKey: 'grossOwnerValue',
 			header: 'Owner Gross Revenue',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'ownerTax',
 			accessorKey: 'ownerTax',
 			header: 'Owner Tax Amt',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'taxType.keyword',
 			accessorKey: 'taxType',
 			header: 'Tax Type',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'ownerDeducts',
 			accessorKey: 'ownerDeducts',
 			header: 'Deduct Amt',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'deductType.keyword',
 			accessorKey: 'deductType',
 			header: 'Deduct Cd',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'netOwnerValue',
 			accessorKey: 'netOwnerValue',
 			header: 'Owner Net Rev',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
 		},
 
 		{
+			...CommonSchema.HIDDEN,
 			name: 'propertyId',
 			accessorKey: 'propertyId',
-			hidden: true,
-			enableHiding: false,
-			enableColumnActions: false,
 		},
 	],
 };
