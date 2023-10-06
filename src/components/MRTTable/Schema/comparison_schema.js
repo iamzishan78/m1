@@ -29,7 +29,6 @@ const ComparisonMeta = {
 			accessorFn: row => row?.check?.checkNumber,
 			id: 'check.checkNumber',
 			header: 'Check Number',
-			size: 400,
 			Cell: ({ row, cell }) => {
 				const interestAmount = row.getValue('property.interest.interestAmount');
 				const decimalInterest = row.getValue('disbursement');
@@ -76,6 +75,7 @@ const ComparisonMeta = {
 			accessorFn: row => row?.property?.number,
 			id: 'property.number',
 			header: 'Operator Prop # / Property Number',
+			size: 400,
 			isExternalFilter: true,
 		},
 
