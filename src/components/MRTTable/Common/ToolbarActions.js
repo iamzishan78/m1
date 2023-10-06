@@ -24,7 +24,8 @@ function ToolbarActions({ table, tableKey, children }) {
 		'columnVisibility',
 		'filters',
 		'defaultFilters',
-		'disableDelete'
+		'disableDelete',
+		'deletKeys',
 	]);
 	const tableStateValues = tableState.stateValues;
 
@@ -41,15 +42,24 @@ function ToolbarActions({ table, tableKey, children }) {
 	};
 
 	const handleDelete = () => {
-		const selectedIds = selectedRows?.length > 0 ? selectedRows.map(item => item._id) : null;
-		const shapeIds = selectedRows?.length > 0 ? [...new Set(selectedRows.map(item => item?.shape?._id))] : null;
-
+		const deletedIds = tableStateValues?.deletKeys || {
+			mainRecord: '_id',
+		};
+		const selectedIds = Object.keys(deletedIds).reduce((acc, key) => {
+			const originalKey = deletedIds[key];
+			if (originalKey.includes('.')) {
+				const keys = originalKey.split('.');
+				acc[key] = selectedRows?.length > 0 ? selectedRows.map(item => item[keys[0]]?.[keys[1]]) : null;
+			} else {
+				acc[key] = selectedRows?.length > 0 ? selectedRows.map(item => item[originalKey]) : null;
+			}
+			return acc;
+		}, {});
 		tableGlobalController.updateState({
 			dialog: {
 				type: 'deleteGrid',
 				Ids: selectedIds,
 				tableKey,
-				shapeIds
 			},
 		});
 

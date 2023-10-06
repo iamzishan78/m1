@@ -12,7 +12,7 @@ import { tableController } from 'hookstate/tableController';
 import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
 import { globalStateController } from 'hookstate/globalStateController';
 import { AppContext } from 'AppContext';
-import { Modals } from '../../../../styles/Modal';
+import { Modals } from '../../../../../styles/Modal';
 
 export default function ExportConfirmationDialog({ table, tableKey, header, onClose, children }) {
 	const [, setStateApp] = useContext(AppContext);

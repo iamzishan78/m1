@@ -3,10 +3,10 @@ import NameCell from 'components/MRTTable/TablesOverride/OwnersPerUnit/TableCell
 import ListChips from 'components/Common/ListChips';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import IsContactCell from 'components/MRTTable/Common/TableCells/isContactIcone';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
 import TractInterestOwnerToolBar from 'components/MRTTable/TablesOverride/TractInterestOwnerTable/TractInterestOwnerToolBar';
 import { addTrailingZeros } from 'components/Shared/functions';
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 
 const esIndex = 'shapeowners_flat';
 
@@ -40,73 +40,42 @@ const TractPerUnitMeta = {
 
 	TableSchema: [
 		{
+			...CommonSchema.HIDDEN,
 			name: '_id',
 			accessorKey: '_id',
-			isSearchField: false,
-			hidden: true,
-			enablePinning: false,
-			enableHiding: false,
-			enableColumnActions: false,
-			enableColumnOrdering: false,
-			enableSorting: false,
 		},
 
 		{
+			...CommonSchema.HIDDEN,
 			name: 'ownerEntity',
 			accessorKey: 'ownerEntity',
-			isSearchField: false,
-			hidden: true,
-			enablePinning: false,
-			enableHiding: false,
-			enableColumnActions: false,
-			enableColumnOrdering: false,
-			enableSorting: false,
 		},
 
 		{
+			...CommonSchema.INITAIL_PINNED,
 			name: 'contact.entityDetail.name.keyword',
 			accessorFn: row => row?.contact?.entityDetail?.name,
 			id: 'contact.entityDetail.name',
 			header: 'Owner Name',
-			size: 270,
-			isPinned: true,
-			enableHiding: false,
-			filter: true,
-			type: 'string',
-			isExternalFilter: false,
-			enableColumnActions: true,
-			enableColumnOrdering: false,
-			enableSorting: true,
-			isSearchField: true,
 			Cell: ({ renderedCellValue, row }) => (
 				<NameCell renderedCellValue={renderedCellValue} isPurchased={row.getValue('contact.isPurchased')} />
 			),
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.ownerType.keyword',
 			accessorKey: 'contact.ownerType',
 			header: 'Entity Type',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			enableSorting: true,
-			isExternalFilter: false,
-			isSearchField: true,
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'surface_interest',
 			accessorKey: 'surface_interest',
 			header: 'Surface Interest',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			enableSorting: true,
-			isExternalFilter: false,
 			isSearchField: false,
+			type: 'number',
 			Aggregation: {
 				sumSurfaceInterest: {
 					sum: { field: 'surface_interest' },
@@ -130,16 +99,12 @@ const TractPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'mineral_interest',
 			accessorKey: 'mineral_interest',
 			header: 'Mineral Interest',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			enableSorting: true,
-			isExternalFilter: false,
 			isSearchField: false,
+			type: 'number',
 			Aggregation: {
 				sumMineralInterest: {
 					sum: { field: 'mineral_interest' },
@@ -163,16 +128,12 @@ const TractPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'royalty_interest',
 			accessorKey: 'royalty_interest',
 			header: 'Royalty Interest',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			enableSorting: true,
-			isExternalFilter: false,
 			isSearchField: false,
+			type: 'number',
 			Aggregation: {
 				sumRoyaltyInterest: {
 					sum: { field: 'royalty_interest' },
@@ -196,16 +157,13 @@ const TractPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'orri',
 			accessorKey: 'orri',
 			header: 'ORRI',
 			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			enableSorting: true,
-			isExternalFilter: false,
 			isSearchField: false,
+			type: 'number',
 			Aggregation: {
 				sumORRI: {
 					sum: { field: 'orri' },
@@ -224,30 +182,13 @@ const TractPerUnitMeta = {
 			},
 		},
 
-		// {
-		// 	name: 'unknown_interest',
-		// 	accessorKey: 'unknown_interest',
-		// 	header: 'Unknown Interest',
-		// 	size: 230,
-		// 	isPinned: false,
-		// 	filter: true,
-		// 	type: 'string',
-		// 	enableSorting: true,
-		// 	isExternalFilter: false,
-		// 	isSearchField: false,
-		// },
-
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'record_title',
 			accessorKey: 'record_title',
 			header: 'Record Title',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			enableSorting: true,
-			isExternalFilter: false,
 			isSearchField: false,
+			type: 'number',
 			Cell: ({ row }) => {
 				const recordTiitle = row.getValue('record_title');
 				if (recordTiitle) {
@@ -257,16 +198,12 @@ const TractPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'operating_rights',
 			accessorKey: 'operating_rights',
 			header: 'Working Interest',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			enableSorting: true,
-			isExternalFilter: false,
 			isSearchField: false,
+			type: 'number',
 			Cell: ({ row }) => {
 				const operatingRights = row.getValue('operating_rights');
 				if (operatingRights) {
@@ -276,16 +213,12 @@ const TractPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'nri',
 			accessorKey: 'nri',
 			header: 'NRI',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			enableSorting: true,
-			isExternalFilter: false,
 			isSearchField: false,
+			type: 'number',
 			Cell: ({ row }) => {
 				const nri = row.getValue('nri');
 				if (nri) {
@@ -295,16 +228,12 @@ const TractPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'net_acres',
 			accessorKey: 'net_acres',
 			header: 'Net Acres',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			enableSorting: true,
-			isExternalFilter: false,
 			isSearchField: false,
+			type: 'number',
 			Cell: ({ row }) => {
 				const netAcres = row.getValue('net_acres');
 				if (netAcres) {
@@ -314,29 +243,21 @@ const TractPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'company_net_acres',
 			accessorKey: 'company_net_acres',
 			header: 'Co Net Acres',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'number',
-			enableSorting: true,
-			isExternalFilter: false,
 			isSearchField: false,
+			type: 'number',
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'nra',
 			accessorKey: 'nra',
 			header: 'NRA',
-			size: 230,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			enableSorting: true,
-			isExternalFilter: false,
 			isSearchField: false,
+			type: 'number',
 			Cell: ({ row }) => {
 				const nra = row.getValue('nra');
 				if (nra) {
@@ -346,42 +267,27 @@ const TractPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'depthFrom.keyword',
 			accessorKey: 'depthFrom',
 			header: 'Depth From',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			enableSorting: true,
-			isExternalFilter: false,
 			isSearchField: true,
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'depthTo.keyword',
 			accessorKey: 'depthTo',
 			header: 'Depth To',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			enableSorting: true,
-			isSearchField: true,
 			isExternalFilter: false,
 		},
 
 		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'deals.name.keyword',
 			accessorKey: 'deals.name',
 			isExport: 'dealsName',
 			header: 'Associated Deals',
-			size: 250,
-			isPinned: false,
-			filter: true,
-			type: 'string',
-			enableSorting: true,
-			isExternalFilter: false,
 			isSearchField: true,
 			Cell: ({ row }) => {
 				return (
@@ -404,20 +310,11 @@ const TractPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.ACTION_COLUMN,
 			name: 'tags.tag.keyword',
 			accessorKey: 'tags.tag',
 			header: 'Tags',
 			size: 270,
-			isPinned: false,
-			filter: false,
-			type: 'string',
-			isExternalFilter: false,
-			enableSorting: false,
-			enableColumnFilter: false,
-			isSearchField: false,
-			enableColumnActions: false,
-			enableColumnOrdering: false,
-			enableResizing: false,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('ownerEntity');
 				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} />;
@@ -425,54 +322,21 @@ const TractPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.ACTION_COLUMN,
 			name: 'isContact',
 			accessorKey: 'isContact',
-			enablePinning: false,
-			enableHiding: false,
-			enableColumnActions: false,
-			enableSorting: false,
-			size: 100,
-			enableColumnFilter: false,
-			isSearchField: false,
-			enableColumnOrdering: false,
-			enableResizing: false,
 			Cell: ({ row }) => {
 				const ownerEntity = row.getValue('ownerEntity');
 				return <IsContactCell contactId={ownerEntity} />;
 			},
 		},
 
-		{
-			name: 'commentsCounter',
-			accessorKey: 'comments',
-			enablePinning: false,
-			enableHiding: false,
-			enableColumnActions: false,
-			enableSorting: false,
-			size: 100,
-			enableColumnFilter: false,
-			isSearchField: false,
-			enableColumnOrdering: false,
-			enableResizing: false,
-			Cell: ({ renderedCellValue, row }) => {
-				const ownerEntity = row.getValue('ownerEntity');
-
-				return <CommentCell id={ownerEntity} value={renderedCellValue?.length || 0} />;
-			},
-		},
+		CommonSchema.COMMENTS,
 
 		{
+			...CommonSchema.ACTION_COLUMN,
 			name: 'actionMenu',
 			accessorKey: 'actionMenu',
-			enablePinning: false,
-			enableHiding: false,
-			enableColumnActions: false,
-			enableSorting: false,
-			size: 100,
-			enableColumnFilter: false,
-			isSearchField: false,
-			enableColumnOrdering: false,
-			enableResizing: false,
 			Cell: ({ row }) => {
 				const id = row.getValue('_id');
 				const name = row.getValue('name');
@@ -482,14 +346,9 @@ const TractPerUnitMeta = {
 		},
 
 		{
+			...CommonSchema.HIDDEN,
 			name: 'contact.isPurchased',
 			accessorKey: 'contact.isPurchased',
-			isSearchField: false,
-			enablePinning: false,
-			enableHiding: false,
-			hidden: true,
-			enableColumnActions: false,
-			enableSorting: false,
 		},
 	],
 };
