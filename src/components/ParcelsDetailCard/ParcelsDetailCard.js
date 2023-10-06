@@ -276,10 +276,13 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
 
       tableController("TractPerUnitTable").updateState({
         customProps: { customLayer: data }
-      })
+      });
+      tableController("TractUnitsTable").updateState({
+        customProps: { customLayer: data }
+      });
       tableController("TractPotentialUnitsTable").updateState({
         customProps: { customLayer: data }
-      })
+      });
 
       setProperties(shape.properties);
     }
