@@ -107,6 +107,10 @@ function ESAutoCompleteFilter({
 	} else if (multiple && !Array.isArray(filterValue)) {
 		filterValue = []
 		tableController(tableKey).clearFilter(field.replace('.keyword', ''))
+	} else if (type === 'date' && multiple) {
+		filterValue = [];
+	} else if (type === 'date' && !multiple) {
+		filterValue = '';
 	} else if (type === 'date' && filterValue) {
 		if (typeof filterValue === 'object') {
 			const formattedGte = formatDate(filterValue?.gte, false);
