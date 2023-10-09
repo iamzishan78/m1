@@ -107,7 +107,7 @@ function ESAutoCompleteFilter({
 	} else if (multiple && !Array.isArray(filterValue)) {
 		filterValue = []
 		tableController(tableKey).clearFilter(field.replace('.keyword', ''))
-	} else if (type === 'date' && typeof filterValue === 'string' ? filterValue : filterValue.length) {
+	} else if (type === 'date' && (typeof filterValue === 'string' ? filterValue : filterValue.length)) {
 		if (typeof filterValue === 'string') {
 			filterValue = formatDate(filterValue, false);
 		} else if (typeof filterValue === 'object' && !Array.isArray(filterValue)) {
