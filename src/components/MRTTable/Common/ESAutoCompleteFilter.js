@@ -108,7 +108,13 @@ function ESAutoCompleteFilter({
 		filterValue = []
 		tableController(tableKey).clearFilter(field.replace('.keyword', ''))
 	} else if (type === 'date' && filterValue) {
-		filterValue = formatDate(filterValue, false)
+		if (typeof filterValue === 'object') {
+			const formattedGte = formatDate(filterValue?.gte, false);
+			const formattedLte = formatDate(filterValue?.lte, false);
+			filterValue = `${formattedGte} to ${formattedLte}`;
+		} else {
+			filterValue = formatDate(filterValue, false)
+		}
 	}
 	const id = Array.isArray(field) ? field.join(' ') : field
 	return (
