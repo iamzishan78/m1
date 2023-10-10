@@ -76,7 +76,7 @@ function AddUnitTractDialog(props) {
       setSelectedShapeLayer(props.seletedTract);
       setTractValue({ _id: props.seletedTract.parcelId, name: props.seletedTract.name })
 
-      reset(pick(props.seletedTract, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'shapeArea','sdGrossAcres', 'uAcres', 'legalDescription']))
+      reset(pick(props.seletedTract, ['name', 'state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'shapeArea','sdGrossAcres', 'uAcres', 'legalDescription']))
     }
   }, [props.seletedTract]);
 

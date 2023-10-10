@@ -134,6 +134,7 @@ import { AUTO_CALCULATE_OFFER_PRICE } from "graphQL/useMutationAutoCalculateOffe
 import { Link } from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
+import { GET_VIEW_TOKEN_URI } from "graphQL/useQueryGetViewTokenUri";
 
 
 // suppress debug console logs
@@ -650,6 +651,9 @@ function SubTable(props) {
   const [getOperatorWells, { data: dataOperatorWells }] = useLazyQuery(OPERATORSLATSLONS);
   const [getLeaseWells, { data: dataLeaseWells }] = useLazyQuery(LEASELATSLONS);
   const [getContact, { data: contactData }] = useLazyQuery(CONTACT);
+  const [getViewTokenUri, { data: viewTokenUri }] = useLazyQuery(GET_VIEW_TOKEN_URI, {
+    fetchPolicy: "no-cache",
+  });
   const [autoCalculateOfferPrice, { data: autoCalculateOfferPriceData, }] = useMutation(
     AUTO_CALCULATE_OFFER_PRICE,
     {
@@ -1127,6 +1131,36 @@ function SubTable(props) {
     setExpandedObject(idOrValues);
     setOpenDialog(type);
   };
+
+  const openPdf = (type, docInfo) => {
+    const addAbleTypesToGetViewToken = ["parcelRunsheet"];
+    if (addAbleTypesToGetViewToken.includes(type) && docInfo.fileId) {
+      getViewTokenUri({
+        variables: { fileId: docInfo?.fileId }
+      }).then((result) => {
+        docInfo.viewToken = result.data.getViewTokenUri
+
+        setStateApp((state) => ({
+          ...state,
+          pdfView: docInfo,
+          viewDoc: {
+            uri: result.data.getViewTokenUri,
+            name: docInfo.fileName,
+          },
+        }));
+      })
+    }
+    else {
+      setStateApp((state) => ({
+        ...state,
+        pdfView: docInfo,
+        viewDoc: {
+          uri: docInfo.viewToken,
+          name: docInfo.fileName,
+        },
+      }));
+    }
+  }
 
   // handleActivity if type is 'deleteContact' open delete confirmation dialog otherwise open activiy modal for other types
   const handleActivity = async (contactId, activityType, type) => {
@@ -2299,9 +2333,8 @@ function SubTable(props) {
                 ...column.options,
 
                 customBodyRender: (value, tableMeta, updateValue) => {
-
                   let id = props.targetLabel + tableMeta.columnIndex;
-                  if (value[0]?.tag) {
+                  if (value && value[0]?.tag) {
                     const length = value.length
                     value[0] = value.map((tag) => tag.tag)
                     value[1] = length
@@ -2327,6 +2360,7 @@ function SubTable(props) {
                   if (props.parent === "ownersPerUnit" && props.targetLabel === "Unit Ownership") {
                     targetSourceId = tableMeta.rowData[1];
                   }
+                  console.log("targetSourceId : ", targetSourceId)
                   return (
                     <div style={{ marginRight: "10px" }}>
                       <Tooltip title={value && value[1] === 0 ? "Add Tags" : "Tags"} placement="top">
@@ -2415,14 +2449,7 @@ function SubTable(props) {
                             if (props.addAble?.type === "document") {
                               window.history.pushState("", "", `/documents/${row_line._id}/view`);
                             }
-                            setStateApp((state) => ({
-                              ...state,
-                              pdfView: docInfo,
-                              viewDoc: {
-                                uri: docInfo.viewToken,
-                                name: docInfo.fileName,
-                              },
-                            }));
+                            openPdf(props.addAble?.type, docInfo)
                           }}
                         >
                           {/* // this is the search icon in the grid on documents */}
@@ -3456,6 +3483,44 @@ function SubTable(props) {
                       <DeleteIcon />
                     </IconButton>
                   </Tooltip>
+                </div>
+              </div>
+            );
+          }
+          if (props.addAble?.type === "TractInterests" && (props.parent === "assocTaxRollInterests" || props.parent === "contactAssocTaxRollInterests")) {
+            return (
+              <div
+                style={{
+                  height: "48px",
+                  display: "flex",
+                }}
+              >
+                <div
+                  style={{
+                    marginTop: "6px",
+                    marginRight: "5px",
+                    height: "35px",
+                    display: "flex",
+                  }}
+                >
+                  <Button
+                    color="secondary"
+                    className={classes.multiSelectionTopBarButtons}
+                    style={{ width: "200px" }}
+                    disabled={!m1nSelectedRowsIndexes || m1nSelectedRowsIndexes.length < 1}
+                    onClick={() => {
+                      setStateApp((stateApp) => ({
+                        ...stateApp,
+                        dealDialog: true,
+                        addExistingDeal: true,
+                        addType: props.parent === "contactAssocTaxRollInterests"? "tractInterests" : "interests",
+                        interestsIds: m1nSelectedRowsIds,
+                        activeDeal: { cardId: null, laneId: null },
+                      }));
+                    }}
+                  >
+                    + ADD TO DEAL
+                  </Button>
                 </div>
               </div>
             );
