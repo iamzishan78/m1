@@ -88,22 +88,22 @@ const TractInterestOwnerHeadCells = (isSnapGrid = false) => [
       display: true,
     },
   },
-  {
-    name: "unknown_interest",
-    label: "Unknown Interest",
-    esKey: "unknown_interest",
-    options: {
-      display: false,
-    },
-  },
-  {
-    name: "record_title",
-    label: "Record Title",
-    esKey: "record_title",
-    options: {
-      display: true,
-    },
-  },
+  // {
+  //   name: "unknown_interest",
+  //   label: "Unknown Interest",
+  //   esKey: "unknown_interest",
+  //   options: {
+  //     display: false,
+  //   },
+  // },
+  // {
+  //   name: "record_title",
+  //   label: "Record Title",
+  //   esKey: "record_title",
+  //   options: {
+  //     display: true,
+  //   },
+  // },
   {
     name: "operating_rights",
     label: "Working Interest",
