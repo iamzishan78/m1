@@ -19,13 +19,14 @@ const useStyles = makeStyles({
     },
 });
 
-const AutoCompleteWithNewOption = ({ options, onChange, value, shapeType, typeKey, onBlur, ...rest }) => {
+const AutoCompleteWithNewOption = ({ options, onChange, value, shapeType, typeKey, onBlur, disabled = false, ...rest }) => {
     const classes = useStyles();
 
     return (
         <Autocomplete
             defaultValue={{ _id: value, name: value }}
             value={value ? { _id: value, name: value } : null}
+            disabled={disabled}
             disableListWrap
             id={rest?.id || "autocompleteWithNewOptions"}
             classes={classes}
