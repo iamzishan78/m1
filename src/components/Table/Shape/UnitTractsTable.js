@@ -90,7 +90,9 @@ function UnitTractsTable(props) {
     if (tableData?.hits?.length > 0) {
       let hits = tableData?.hits
       const isStateTx = !!hits.find((hit) => hit.state === 'TX')
-
+      hits.map((hit) => {
+        hit.parcelId = hit?.parcel?._id;
+      });
       props.setRows(hits);
       let headers = copy(TableHeader)
 

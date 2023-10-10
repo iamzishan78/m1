@@ -36,7 +36,7 @@ const OwnersPerParcelHeadCells = [
   { name: "royalty_interest", label: "Royalty Interest" },
   { name: "orri", label: "ORRI" },
   // { name: "unknown_interest", label: "Unknown Interest" },
-  { name: "record_title", label: "Record Title" },
+  // { name: "record_title", label: "Record Title" },
   { name: "operating_rights", label: "Working Interest" },
   { name: "nri", label: "NRI" },
   { name: "net_acres", label: "Net Acres" },
