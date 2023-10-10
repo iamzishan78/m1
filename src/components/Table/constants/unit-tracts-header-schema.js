@@ -24,9 +24,9 @@ const UnitTractHeadCells = [
         return <ColumnWithLink
           onClick={(e) => {
             e.stopPropagation();
-            history.push(`/map/parcels/${tableMeta.rowData[2]}`, { showTractsBreadcrumb: !false });
+            history.push(`/map/parcels/${tableMeta.rowData[2]}`, { showTractsBreadcrumb: !true });
           }}
-          value={splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[3]}` : tableMeta?.rowData[3]}
+          value={splitNumber?.[0] ? `${splitNumber?.[0]}` : tableMeta?.rowData[3]}
           link={`/map/parcels/${tableMeta.rowData[2]}`}
         />;
       },
