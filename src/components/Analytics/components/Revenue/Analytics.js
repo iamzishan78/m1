@@ -144,7 +144,7 @@ function AnalyticsCards(props) {
       getRevenueAnalyticsCount({
         variables: {
           index: 'checkdetailsinterestscomparison_flat',
-          filters: [...(tableStateValues?.filters || [])],
+          filters: [...(tableStateValues?.filters || []), { field: "IsDeleted", value: { $ne: true } }],
           filterKey: 'property._id.keyword',
           filterAggs: { query: '', field: 'property._id.keyword', size: tableStateValues?.data?.total || 0 },
         },
