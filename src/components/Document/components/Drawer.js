@@ -144,11 +144,11 @@ const useStyles = makeStyles({
   contentRoot: {
     maxHeight: "calc(100vh - 310px)",
   },
-  detailsFileWrapper:{
-    display:'flex !important',
-    flexDirection:'column !important',
-    height:'93vh !important',
-    marginRight:'60px !important'
+  detailsFileWrapper: {
+    display: 'flex !important',
+    flexDirection: 'column !important',
+    height: '93vh !important',
+    marginRight: '60px !important'
   }
 });
 
