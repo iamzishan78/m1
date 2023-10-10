@@ -481,7 +481,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                           ownerType: value ? addTrailingZeros(value.name) : null,
                         });
                       }}
-                      value={newOwner.ownershipType || ""}
+                      value={newOwner?.ownershipType || newOwner?.ownerType || nameAutValue?.ownerType || ""}
                     />
                   )}
                 />
