@@ -236,7 +236,7 @@ function UnitInterestOwnerTable(props) {
           <div style={{
             display: "inline",
             position: "absolute",
-            right: '121px',
+            right: '176px',
           }}>
             <IconButton onClick={props.onDownload} disabled={props.isExporting}>
               <Tooltip title="Download to CSV" aria-label="add">
@@ -249,7 +249,7 @@ function UnitInterestOwnerTable(props) {
               display: "inline",
               float: "left",
               marginTop: "5px",
-              marginRight: "5px",
+              marginRight: "62px",
             }}
           >
             <ButtonDropDown options={options} />
