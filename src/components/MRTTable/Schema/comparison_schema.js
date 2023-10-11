@@ -340,6 +340,7 @@ const ComparisonMeta = {
 			name: 'potentialGainLoss',
 			accessorKey: 'potentialGainLoss',
 			header: 'Potential Gain/Loss',
+			type: 'number',
 		},
 
 		{
