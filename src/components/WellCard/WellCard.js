@@ -285,7 +285,11 @@ function WellCard() {
                     Last 12
                   </Typography>
                   <Typography align="center" className={classes.text2} variant="caption">
-                    {`${formatBOE(stateApp.selectedWell.lastTwelveMonthBOE)} ${stateApp?.selectedWell?.wellType === "GAS" ? "MCFE" : "BOE"}`}
+                    {`${stateApp?.selectedWell?.wellType === "GAS" ?
+                      formatBOE(stateApp.selectedWell.lastTwelveMonthBOE / 6)
+                      :
+                      formatBOE(stateApp.selectedWell.lastTwelveMonthBOE)} 
+                    ${stateApp?.selectedWell?.wellType === "GAS" ? "MCFE" : "BOE"}`}
                   </Typography>
                 </div>
               </Button>
