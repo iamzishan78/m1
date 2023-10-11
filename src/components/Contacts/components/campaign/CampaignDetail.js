@@ -19,6 +19,7 @@ import {
   Tabs,
   Tab,
   Dialog,
+  CircularProgress,
 } from "@material-ui/core";
 import { InfoOutlined as InfoOutlinedIcon, MoreHoriz as MoreHorizIcon, Delete as DeleteIcon } from "@material-ui/icons";
 
@@ -100,7 +101,7 @@ const CampaignDetail = ({ viewDoc }) => {
   const campaignName = watch("name", "");
   const classes = useStyles({ name: campaignName, metaCollapse });
 
-  const [getCampaign, { data: campaignData }] = useLazyQuery(GET_CAMPAIGN);
+  const [getCampaign, { data: campaignData, loading }] = useLazyQuery(GET_CAMPAIGN);
 
   // const campaign = useMemo(() => get(campaignData, "getCampaign", {}), [campaignData]);
 
@@ -185,6 +186,26 @@ const CampaignDetail = ({ viewDoc }) => {
     }
     handleEndScroll();
   };
+
+  if (loading)
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <CircularProgress
+          style={{
+            color: '#12ABE0',
+          }}
+          size={80}
+          disableShrink
+        />
+      </div>
+    );
 
   return (
     <NavHeader title={campaignName}>
