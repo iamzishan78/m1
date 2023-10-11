@@ -286,7 +286,7 @@ function WellCard() {
                   </Typography>
                   <Typography align="center" className={classes.text2} variant="caption">
                     {`${stateApp?.selectedWell?.wellType === "GAS" ?
-                      formatBOE(stateApp.selectedWell.lastTwelveMonthBOE / 6)
+                      formatBOE(stateApp.selectedWell.lastTwelveMonthBOE * 6)
                       :
                       formatBOE(stateApp.selectedWell.lastTwelveMonthBOE)} 
                     ${stateApp?.selectedWell?.wellType === "GAS" ? "MCFE" : "BOE"}`}
