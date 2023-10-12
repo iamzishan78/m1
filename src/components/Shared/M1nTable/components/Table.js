@@ -2360,7 +2360,6 @@ function SubTable(props) {
                   if (props.parent === "ownersPerUnit" && props.targetLabel === "Unit Ownership") {
                     targetSourceId = tableMeta.rowData[1];
                   }
-                  console.log("targetSourceId : ", targetSourceId)
                   return (
                     <div style={{ marginRight: "10px" }}>
                       <Tooltip title={value && value[1] === 0 ? "Add Tags" : "Tags"} placement="top">
@@ -3513,7 +3512,7 @@ function SubTable(props) {
                         ...stateApp,
                         dealDialog: true,
                         addExistingDeal: true,
-                        addType: props.parent === "contactAssocTaxRollInterests"? "tractInterests" : "interests",
+                        addType: props.parent === "contactAssocTaxRollInterests" ? "tractInterests" : "interests",
                         interestsIds: m1nSelectedRowsIds,
                         activeDeal: { cardId: null, laneId: null },
                       }));

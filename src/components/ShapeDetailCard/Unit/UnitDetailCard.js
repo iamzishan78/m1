@@ -29,6 +29,7 @@ import { tableController } from 'hookstate/tableController';
 import { detailCardStyles } from '../style';
 import UnitSummary from './UnitSummary';
 import { DrawerContextProvider } from "components/Land/components/Agreements/detailComponents/DrawerContext";
+import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
 
 export default function UnitDetailCard(props) {
   const dispatch = useDispatch();

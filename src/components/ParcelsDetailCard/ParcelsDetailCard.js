@@ -630,10 +630,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                 customLayer={copy(parcelObj)}
                 dense
                 header={<RunsheetHeader />}
-                isSnapGrid
                 isCheckboxSticky={true}
               />
-            </div>,
+            </div >,
             <div className={classes.subContent}>
               <AssociatedWellsParcelTable
                 customLayer={copy(parcelObj)}
@@ -654,10 +653,11 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                 dense
               />
             </div>,
-          ]}
+          ]
+          }
         />
-      </Grid>
-    </Grid>
+      </Grid >
+    </Grid >
   ) : (
     <div
       style={{

@@ -76,14 +76,15 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
         as={TextField}
         id="tractName"
         // style={{ display: isNewTract ? "inherit" : "none" }}
+        disabled
         control={control}
         variant="outlined"
         margin="dense"
-        name="tract.tractName"
+        name={`${prefix}name`}
         label={"Tract Name"}
         InputLabelProps={{ shrink: true }}
         fullWidth
-        defaultValue={tract?.tractName || ""}
+        defaultValue={tract?.name || ""}
       />
       <Controller
         control={control}
@@ -92,6 +93,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
         render={(props) => (
           <AutoCompleteLandgrid
             {...props}
+            disabled
             value={props.value}
             filterKey={filterConsts.state.filterKey}
             filters={{ field: filterConsts.state.filterField, value: "State" }}
@@ -114,6 +116,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
         render={(props) => (
           <AutoCompleteLandgrid
             {...props}
+            disabled
             value={props.value}
             filterKey={filterConsts.county.filterKey}
             filters={[{ field: filterConsts.county.filterField, value: "County" }, ...getDependencies(filterConsts.county.dependencyArray)]}
@@ -133,6 +136,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
         defaultValue={tract?.basin || ""}
         render={({ onChange, value, ref }) => (
           <AutoCompleteWithNewOption
+            disabled
             margin="dense"
             label="Basin"
             InputLabelProps={{ shrink: true }}
@@ -152,6 +156,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
         defaultValue={tract?.field || ""}
         render={({ onChange, value, ref }) => (
           <AutoCompleteWithNewOption
+            disabled
             margin="dense"
             label="Field"
             InputLabelProps={{ shrink: true }}
@@ -173,6 +178,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             defaultValue={tract?.meridian || ""}
             render={(props) => (
               <AutoCompleteLandgrid
+                disabled
                 value={props.value}
                 filterKey={filterConsts.meridian.filterKey}
                 filters={[{ field: filterConsts.meridian.filterField, value: "Meridian" }, ...getDependencies(filterConsts.meridian.dependencyArray)]}
@@ -194,6 +200,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             defaultValue={tract?.township || ""}
             render={(props) => (
               <AutoCompleteLandgrid
+                disabled
                 value={props.value}
                 filterKey={filterConsts.township.filterKey}
                 filters={[{ field: filterConsts.township.filterField, value: "TownshipRange" }, ...getDependencies(filterConsts.township.dependencyArray)]}
@@ -215,6 +222,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             defaultValue={tract?.range || ""}
             render={(props) => (
               <AutoCompleteLandgrid
+                disabled
                 value={props.value}
                 filterKey={filterConsts.range.filterKey}
                 compoundValue={tract.township}
@@ -241,6 +249,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             defaultValue={tract?.survey || ""}
             render={(props) => (
               <AutoCompleteLandgrid
+                disabled
                 value={props.value}
                 filterKey={filterConsts.survey.filterKey}
                 filters={[{ field: filterConsts.survey.filterField, value: "Survey" }, ...getDependencies(filterConsts.survey.dependencyArray)]}
@@ -262,6 +271,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
             defaultValue={tract?.block || ""}
             render={(props) => (
               <AutoCompleteLandgrid
+                disabled
                 value={props.value}
                 filterKey={filterConsts.block.filterKey}
                 filters={[{ field: filterConsts.block.filterField, value: "Block" }, ...getDependencies(filterConsts.block.dependencyArray)]}
@@ -285,6 +295,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
         defaultValue={tract?.section || ""}
         render={(props) => (
           <AutoCompleteLandgrid
+            disabled
             value={props.value}
             filterKey={["TX", "Texas"].includes(stateName) ? "level5Name.keyword" : "level6Name.keyword"}
             filters={
@@ -312,6 +323,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
           defaultValue={tract?.abstract || ""}
           render={(props) => (
             <AutoCompleteLandgrid
+              disabled
               value={props.value}
               filterKey="level6Name.keyword"
               filters={[
@@ -333,6 +345,7 @@ function TractForm({ isNewTract, tract, tractValue, setSelectedShapeLayer, contr
 
       <Controller
         as={TextField}
+        disabled
         id="tractDescription"
         control={control}
         variant="outlined"
