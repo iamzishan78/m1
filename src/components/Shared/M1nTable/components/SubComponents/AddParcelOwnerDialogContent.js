@@ -481,7 +481,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                           ownerType: value ? addTrailingZeros(value.name) : null,
                         });
                       }}
-                      value={newOwner.ownershipType || ""}
+                      value={newOwner?.ownershipType || newOwner?.ownerType || nameAutValue?.ownerType || ""}
                     />
                   )}
                 />
@@ -578,7 +578,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   onWheel={(e) => e.target.blur()}
                 />
               </Grid> */}
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <h3>Record Title</h3>
                 <TextField
                   type="number"
@@ -594,7 +594,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   }}
                   onWheel={(e) => e.target.blur()}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs={12}>
                 <h3>Working Interest</h3>
                 <TextField

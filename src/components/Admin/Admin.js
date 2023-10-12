@@ -67,6 +67,12 @@ export default function Admin() {
         }
       });
     }
+
+    Object.keys(allPaths).forEach((path) => {
+      if (allPaths[path].featureFlag === 'AlWAYSSHOW') {
+        allAllowedPaths[path] = allPaths[path];
+      }
+    });
     setAllowablePaths(allAllowedPaths);
   }, [stateApp?.user]);
 
