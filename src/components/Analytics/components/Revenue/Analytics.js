@@ -144,9 +144,21 @@ function AnalyticsCards(props) {
       getRevenueAnalyticsCount({
         variables: {
           index: 'checkdetailsinterestscomparison_flat',
-          filters: [...(tableStateValues?.filters || []), { field: "IsDeleted", value: { $ne: true } }],
+          filters: [...(tableStateValues?.filters || [])],
           filterKey: 'property._id.keyword',
           filterAggs: { query: '', field: 'property._id.keyword', size: tableStateValues?.data?.total || 0 },
+          aggs: {
+            sumPotentialGainLoss: {
+              sum: {
+                field: "potentialGainLoss"
+              }
+            },
+            sumMisMatchedInterest: {
+              sum: {
+                field: "isMisMatchedInterest"
+              }
+            }
+          }
         },
         onCompleted: res => resolve(res?.getRevenueAnalyticsCounts?.result),
         onError: error => reject(error),
@@ -173,7 +185,7 @@ function AnalyticsCards(props) {
         propertiesCount,
         checksCount: revenueComparisonAnalytics?.distinctChecksCount,
         misMatchedInterestsCount: revenueComparisonAnalytics?.misMatchedCount,
-        potentialGainLossSum: revenueComparisonAnalytics?.potentialGainLossSum[0]?.totalSum,
+        potentialGainLossSum: revenueComparisonAnalytics?.potentialGainLossSum,
         propertyNumbers,
         checkNumbers,
       });
