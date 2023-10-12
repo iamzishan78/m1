@@ -94,7 +94,7 @@ export default function RevenueStatements() {
   const { user, workspaceSettings } = useSelector(({ app }) => app);
 
   const unitFormulaText = "Unit Acres * (Sum of Decimal Interest)"
-  const tractFormulaText = "Tract Gross Acress * Mineral Interest * (RI + ORRI)"
+  const tractFormulaText = "Tract Gross Acres * Mineral Interest * (RI + ORRI)"
   const showingFormulaText = calculationOption?.key === 'unit' ? unitFormulaText : tractFormulaText
 
   useEffect(() => {
