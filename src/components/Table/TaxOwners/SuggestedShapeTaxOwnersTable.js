@@ -34,7 +34,7 @@ import { getPolygonString } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 
 import { MultipleOwnerToContactDrawerContainer } from 'store/containers';
-import { calculateNRAForShapeTaxOwnersTable } from "utils/calculatedNraHelper"
+import { calculateStandardNraForUnit } from "utils/calculatedNraHelper"
 
 const AntSwitch = withStyles((theme) => ({
   root: {
@@ -375,15 +375,6 @@ function SuggestedShapeTaxOwnersTable(props) {
     setFilterByWells(filter);
   };
 
-  const calculateNRA = (uAcres, ownershipPercentage) => {
-    let nra = parseFloat(uAcres || 0) * ownershipPercentage;
-    if (workspaceSettings.settings?.map?.unitNra?.type === "custom" && workspaceSettings.settings?.map?.unitNra?.value) {
-      nra = nra / Number(workspaceSettings.settings?.map?.unitNra?.value);
-    }
-    nra = addTrailingZeros(nra.toFixed(8));
-    return nra;
-  };
-
   const formatInterestForImport = () => {
     const uAcres = props.customLayer?.shapeJson?.properties?.uAcres || 0;
 
@@ -396,7 +387,7 @@ function SuggestedShapeTaxOwnersTable(props) {
         working_interest: rec.interestType === 'WORKING INTEREST' ? ownershipPercentage : "",
         royalty_interest: rec.interestType === 'ROYALTY INTEREST' ? ownershipPercentage : "",
         orri: rec.interestType === 'OVERRIDING ROYALTY' ? ownershipPercentage : "",
-        nra: calculateNRAForShapeTaxOwnersTable(uAcres, ownershipPercentage, workspaceSettings),
+        nra: calculateStandardNraForUnit({ uAcres, ownershipPercentage, workspaceSettings }),
         uUnitPricing: props.customLayer?.shapeJson?.properties?.uUnitPricing || 0,
         uMaxUnitPricing: props.customLayer?.shapeJson?.properties?.uMaxUnitPricing || 0,
         globalOwnerId: rec.globalOwnerId,
