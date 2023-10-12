@@ -12,7 +12,6 @@ import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import SuggestedShapeTaxOwnersTable from 'components/Table/TaxOwners/SuggestedShapeTaxOwnersTable';
 import RelatedDetailsDocumentTable from 'components/Table/Documents/RelatedDetailsDocumentTable';
-import ParcelDetailsRunsheetTable from 'components/Table/Parcel/ParcelDetailsRunsheetTable';
 import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import ShapeWellInterestTable from 'components/Table/Shape/ShapeWellInterestTable';
 import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
@@ -305,15 +304,6 @@ export default function UnitDetailCard(props) {
                     </div>,
                   ]}
                 />,
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <ParcelDetailsRunsheetTable
-                    customLayer={uniObj}
-                    parent="associatedRunsheetPerParcel"
-                    targetLabel="parcelRunsheet"
-                    header={<RunsheetHeader />}
-                    dense
-                  />
-                </div>,
                 <TabPanels
                   value={selectedWellTab}
                   panels={[
