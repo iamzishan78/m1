@@ -34,7 +34,6 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import SuggestedTaxOwnersTable from "components/Table/TaxOwners/SuggestedTaxOwnersTable";
 import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsParcelTable";
 import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
-import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
 import TractInterestOwnerTable from "components/Table/Tract/TractInterestOwnerTable";
 import { showSuccessMessage, showErrorMessage, setMapGridCardState } from "actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
@@ -45,6 +44,7 @@ import ParcelSummary from "./ParcelSummary";
 import { findBoundsMap } from "components/MapControls/commonHelper";
 import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 import { copy } from 'utils/helper';
+import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
 
 const ENTER_KEY = 13;
 
@@ -624,13 +624,16 @@ export default function ParcelsDetailCard(props) {
               ]}
             />,
             <div className={showSummary ? classes.subContent : classes.subContent2}>
-              <ParcelDetailsRunsheetTable
-                customLayer={copy(parcelObj)}
-                parent="associatedRunsheetPerParcel"
+              <ParcelAgreementTable
+                esIndex='runsheetinstrument_flat'
+                parent="ownersPerParcel"
                 targetLabel="parcelRunsheet"
-                header={<RunsheetHeader />}
+                customLayer={copy(parcelObj)}
                 dense
+                header={<RunsheetHeader />}
+                isCheckboxSticky={true}
               />
+
             </div>,
             <div className={showSummary ? classes.subContent : classes.subContent2}>
               <AssociatedWellsParcelTable

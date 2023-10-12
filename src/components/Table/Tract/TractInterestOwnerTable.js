@@ -246,9 +246,17 @@ function TractInterestOwnerTable(props) {
           header="Delete Tract Owner(s)"
           onClose={() => setOpenCustomDialog("")}
           deleteFunc={deleteFunc}
-          m1nSelectedRowsIds={props.selectedRows.map(
-            (sR) => props.rows[sR.dataIndex]?._id
-          )}
+          m1nSelectedRowsIds={(() => {
+            let rowsData = props.selectedRowsValues || []
+            if (rowsData?.length === 0) {
+              let rows = props.rows
+              props.selectedRows.forEach((data) => {
+                rowsData.push(rows[data.dataIndex]);
+              });
+            }
+
+            return rowsData.map(data => data._id)
+          })()}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
           {`Do you want to permanently delete the tract owner${props.selectedRows &&

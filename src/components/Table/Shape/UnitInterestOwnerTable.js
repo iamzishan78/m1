@@ -236,7 +236,7 @@ function UnitInterestOwnerTable(props) {
           <div style={{
             display: "inline",
             position: "absolute",
-            right: '121px',
+            right: '176px',
           }}>
             <IconButton onClick={props.onDownload} disabled={props.isExporting}>
               <Tooltip title="Download to CSV" aria-label="add">
@@ -249,7 +249,7 @@ function UnitInterestOwnerTable(props) {
               display: "inline",
               float: "left",
               marginTop: "5px",
-              marginRight: "5px",
+              marginRight: "62px",
             }}
           >
             <ButtonDropDown options={options} />
@@ -444,9 +444,17 @@ function UnitInterestOwnerTable(props) {
           header="Delete Unit Owner(s)"
           onClose={() => setOpenCustomDialog("")}
           deleteFunc={deleteFunc}
-          m1nSelectedRowsIds={props.selectedRows.map(
-            (sR) => props.rows[sR.dataIndex]?._id
-          )}
+          m1nSelectedRowsIds={(() => {
+            let rowsData = props.selectedRowsValues || []
+            if (rowsData?.length === 0) {
+              let rows = props.rows
+              props.selectedRows.forEach((data) => {
+                rowsData.push(rows[data.dataIndex]);
+              });
+            }
+
+            return rowsData.map(data => data._id)
+          })()}
           setM1nSelectedRowsIndexes={props.setSelectedRows}
         >
           {`Do you want to permanently delete the unit owner${props.selectedRows &&

@@ -36,6 +36,19 @@ export const ifGenericShapeSource = (source) => {
         source === "contracts_source" || source === "deeds_source" || source === "leases_source" || source === "surfaces_source"
 }
 
+export const ifFileShapeSource = source => {
+    return ![
+        'interests_source',
+        'units_source',
+        'agreements_source',
+        'contracts_source',
+        'deeds_source',
+        'leases_source',
+        'surfaces_source',
+        'parcels_source',
+    ].includes(source);
+};
+
 export const setLayerLabelLayout = (layerId, labelLayout) => {
     if (layerId === "parcel") {
         labelLayout = {

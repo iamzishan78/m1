@@ -149,6 +149,20 @@ export const formatTaxOwners = (owners, formData) => {
   return updateOwners;
 };
 
+export const parseDate = (dateValue) => {
+  const splittedDate = dateValue.split("-");
+  if (splittedDate.length === 3) {
+    const newDate = new Date();
+    newDate.setFullYear(Number(splittedDate[0])); // Use setFullYear instead of setYear
+    newDate.setMonth(Number(splittedDate[1]) - 1);
+    newDate.setDate(Number(splittedDate[2]));
+
+    return newDate
+  } else {
+    return ""
+  }
+}
+
 export const downloadPdfsFile = (viewFile) => {
   if (viewFile?.viewToken) {
     let a = document.createElement("a");
