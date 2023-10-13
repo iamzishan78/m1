@@ -193,7 +193,7 @@ const unitsColumnHeaders = [
       sort: true,
       filter: true,
       customRender: (value) => {
-        return value?.unitNra;
+        return vf_number(Math.round(value?.unitNra));
       },
     },
   },
