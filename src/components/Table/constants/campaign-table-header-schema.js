@@ -23,17 +23,14 @@ const CampaignsHeadCells = [
       sort: true,
       filter: true,
       customRender: (value, tableMeta) => {
-        return value ? (
-          <ColumnWithLink
-            value={value}
-            link={`/contacts/campaign/details/${tableMeta.rowData[0]}`}
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          />
-        ) : (
-          <p style={{ color: "#898989b0" }}>N/A</p>
-        );
+        return <ColumnWithLink
+          value={value || 'N/A'}
+          muted={!value}
+          link={`/contacts/campaign/details/${tableMeta.rowData[0]}`}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        />
       },
     },
   },
