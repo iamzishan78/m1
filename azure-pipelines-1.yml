@@ -25,6 +25,7 @@ steps:
 
   - script: |
       echo $NODE_OPTIONS
+       npm install material-react-table  # Add this line to install 'material-react-table'
       npm run build
     failOnStderr: true
     displayName: "Prepare binaries"
