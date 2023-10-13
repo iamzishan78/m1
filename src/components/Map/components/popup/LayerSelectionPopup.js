@@ -14,8 +14,8 @@ import LayerSelectionIcon from "components/Shared/svgIcons/layerSelection";
 import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
 import { copy } from "utils/helper";
-import polylabel from "polylabel";
 import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
+import { parseUserDefinedLayerFeature } from "components/Shared/functions/shapeLayer";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -152,9 +152,11 @@ function LayerSelectionPopup(props) {
         if (layer.properties.layerShapeName) {
             const jsonLayer = copy(layer)
 
-            jsonLayer.properties.shapeCenter = polylabel(jsonLayer.geometry.coordinates);
+            const featureLayer = { ...jsonLayer.layer };
+            const feature = parseUserDefinedLayerFeature(jsonLayer, featureLayer)
+
             if (props.map)
-                drawBoundary(props.map, jsonLayer);
+                drawBoundary(props.map, feature);
 
             props.setStateApp((state) => {
                 return {
@@ -165,7 +167,7 @@ function LayerSelectionPopup(props) {
             });
             props.setStateApp((state) => {
                 if (!state.showDrawShapesPopup && state.shapeEditMode !== 'redraw') {
-                    props.createUDPopUp(jsonLayer.properties);
+                    props.createUDPopUp(feature.properties);
                 }
                 return state;
             });
