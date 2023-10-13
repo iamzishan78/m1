@@ -67,7 +67,7 @@ function CheckComparisonSection(props) {
         propertiesCount: propertiesCount,
         checksCount: revenueComparisonAnalytics?.distinctChecksCount,
         misMatchedInterestsCount: revenueComparisonAnalytics?.misMatchedCount,
-        potentialGainLossSum: revenueComparisonAnalytics?.potentialGainLossSum,
+        potentialGainLossSum: revenueComparisonAnalytics?.potentialGainLossSum[0]?.totalSum,
         propertyNumbers: propertyNumbers,
         checkNumbers: checkNumbers,
       });
@@ -193,18 +193,6 @@ function CheckComparisonSection(props) {
           filters: [...props.esFilters],
           filterKey: "property._id.keyword",
           filterAggs: { query: "", field: "property._id.keyword", size: props.total || 0 },
-          aggs: {
-            sumPotentialGainLoss: {
-              sum: {
-                field: "potentialGainLoss"
-              }
-            },
-            sumMisMatchedInterest: {
-              sum: {
-                field: "isMisMatchedInterest"
-              }
-            }
-          }
         },
         onCompleted: (res) => resolve(res?.getRevenueAnalyticsCounts?.result),
         onError: (error) => reject(error),

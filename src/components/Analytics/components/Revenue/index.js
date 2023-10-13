@@ -20,6 +20,7 @@ import SalesVolumeComparisonSection from './SalesVolumeComparisonSection';
 import MRTTable from 'components/MRTTable';
 import { GET_CHECK_DETAILS_DATA } from 'graphQL/useQueryCheckDetailsData';
 import { tableController } from 'hookstate/tableController';
+import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
 
 const useStyles = makeStyles(theme => ({
   mainTabContainer: {
@@ -125,13 +126,13 @@ export default function RevenueAnalytics(props) {
   const [checkDetailsData, setCheckDetailsData] = useState([]);
   const [propertyFilter, setPropertyFilter] = useState([]);
   const [lastCheckMinDate, setLastCheckMinDate] = useState('');
-  const [propertiesCount, setPropertiesCount] = useState(0);
-  const [checksCount, setChecksCount] = useState(0);
-  const [misMatchedInterestsCount, setMisMatchedInterestsCount] = useState(0);
-  const [potentialGainLossSum, setPotentialGainLossSum] = useState(0);
   const [propertyNumbers, setPropertyNumbers] = useState([]);
   const [checkNumbers, setCheckNumbers] = useState([]);
   const [comparisonReport, setComparisonReport] = useState('Check Detail Comparison');
+
+  const tableState = tableController(TableKey).useState(['filters', 'data']);
+  const tableStateValues = tableState.stateValues;
+
   const loadMore = { type: 'infiniteScroll', height: 'calc(100vh - 166px)' };
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
     fetchPolicy: 'no-cache',
@@ -149,6 +150,59 @@ export default function RevenueAnalytics(props) {
   const [getCheckDetailData, { data: checkDetailData }] = useLazyQuery(GET_CHECK_DETAILS_DATA, {
     fetchPolicy: 'no-cache',
   });
+
+  const [getCheckNumbers] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+    fetchPolicy: 'no-cache',
+  });
+
+  const [getPropertyNumbers] = useLazyQuery(GET_ES_SIMPLE_FILTER, {
+    fetchPolicy: 'no-cache',
+  });
+
+  const getPropertyOptions = async () => {
+    const propertyNumbersPromise = new Promise((resolve, reject) => {
+      getPropertyNumbers({
+        variables: {
+          index: 'checkdetailsinterestscomparison_flat',
+          filters: [...(tableStateValues?.filters || []), { field: 'property.IsDeleted', value: false, type: 'term' }],
+          filterKey: 'property.number.keyword',
+          filterAggs: { query: '', field: 'property.number.keyword', size: tableStateValues?.data?.total || 0 },
+        },
+        onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
+        onError: error => reject(error),
+      });
+    });
+
+
+    const checkNumbersPromise = new Promise((resolve, reject) => {
+      getCheckNumbers({
+        variables: {
+          index: 'checkdetailsinterestscomparison_flat',
+          filters: [...(tableStateValues?.filters || []), { field: "IsDeleted", value: false, type: 'term' }],
+          filterKey: 'check.checkNumber.keyword',
+          filterAggs: { query: '', field: 'check.checkNumber.keyword', size: tableStateValues?.data?.total || 0 },
+        },
+        onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
+        onError: error => reject(error),
+      });
+    });
+
+    const [propertiesOptions, checkOptions] = await Promise.all([
+      propertyNumbersPromise,
+      checkNumbersPromise
+    ]);
+    return { propertiesOptions, checkOptions };
+  };
+
+  useEffect(() => {
+    if (!tableStateValues?.data?.total) return;
+    (async () => {
+      const { propertiesOptions, checkOptions } = await getPropertyOptions();
+      setPropertyNumbers(propertiesOptions?.map(hit => hit.key) || [])
+      setCheckNumbers(checkOptions?.map(hit => hit.key) || [])
+    })();
+  }, [tableState?.filters, tableState?.data?.total]);
+
 
   useEffect(() => {
     getCheckDetailData({
@@ -222,19 +276,6 @@ export default function RevenueAnalytics(props) {
     }
     setMonths(months);
   };
-
-  const onGettingAnalytics = useCallback(analyticsList => {
-    const propertiesCount = analyticsList.propertiesCount;
-    const checksCount = analyticsList.checksCount;
-    const misMatchedInterestsCount = analyticsList.misMatchedInterestsCount;
-    const potentialGainLossSum = analyticsList.potentialGainLossSum;
-    setPropertiesCount(propertiesCount);
-    setChecksCount(checksCount);
-    setMisMatchedInterestsCount(misMatchedInterestsCount);
-    setPotentialGainLossSum(potentialGainLossSum);
-    setPropertyNumbers(analyticsList.propertyNumbers);
-    setCheckNumbers(analyticsList.checkNumbers);
-  }, []);
 
   const setESFilters = useCallback(newFilter => {
     if (newFilter.length === 0) {
@@ -371,14 +412,9 @@ export default function RevenueAnalytics(props) {
           ) : (
             <>
               <AnalyticsCards
-                propertiesCount={propertiesCount}
-                misMatchedInterestsCount={misMatchedInterestsCount}
-                potentialGainLossSum={potentialGainLossSum}
-                checksCount={checksCount}
                 esFilters={tableController(TableKey)?.getExternalFilter()}
                 setESFilters={setESFilters}
                 esIndex={TableKey}
-                onGettingAnalytics={onGettingAnalytics}
               />
               <div className={classes.revenueTableInfContainer}>
                 <Box sx={{ padding: '1em', marginLeft: '1em' }}>
