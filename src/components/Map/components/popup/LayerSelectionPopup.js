@@ -15,7 +15,7 @@ import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import capitalizeFirstLetter from "components/Shared/valueformatters/capitalize-first-letter";
 import { copy } from "utils/helper";
 import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
-import { parseUserDefinedLayerFeature } from "components/Shared/functions/shapeLayer";
+import { ifFileShapeSource, parseUserDefinedLayerFeature } from "components/Shared/functions/shapeLayer";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -149,7 +149,7 @@ function LayerSelectionPopup(props) {
     }
 
     const selectLayer = (layer) => {
-        if (layer.properties.layerShapeName) {
+        if (ifFileShapeSource(layer.source) && layer.properties.layerShapeName) {
             const jsonLayer = copy(layer)
 
             const featureLayer = { ...jsonLayer.layer };
@@ -188,7 +188,7 @@ function LayerSelectionPopup(props) {
 
     selectionLayers.forEach((selectionLayer) => {
         selectionLayer.sourceKey = selectionLayer.source
-        if (selectionLayer?.properties?.layerShapeName)
+        if (ifFileShapeSource(selectionLayer.source) && selectionLayer?.properties?.layerShapeName)
             selectionLayer.sourceKey = selectionLayer?.properties.layerShapeName
     })
 
