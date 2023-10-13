@@ -4,12 +4,16 @@ import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import GridView from 'components/MRTTable/Common/GridView';
+import { globalStateController } from 'hookstate/globalStateController';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomeRowsSelected = table.getIsSomeRowsSelected();
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
+
+	const { user } = globalStateController.useState(['user']);
+	const getUser = user.get({ noproxy: true });
 
 	const tableState = tableController(tableKey).useState([
 		'TableSchema',
@@ -59,6 +63,7 @@ function ToolbarActions({ table, tableKey, children }) {
 				type: 'deleteGrid',
 				Ids: selectedIds,
 				tableKey,
+				userId: getUser?._id,
 			},
 		});
 
