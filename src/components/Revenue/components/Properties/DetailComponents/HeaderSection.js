@@ -556,7 +556,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Purchaser Prop Description</div>
+                <div className={classes.label}>Purchaser Property Description</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
@@ -586,7 +586,7 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Purchaser Owner #</div>
+                <div className={classes.label}>Owner #</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
@@ -690,7 +690,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Purchaser Owner Name</div>
+                <div className={classes.label}>Owner Name</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
