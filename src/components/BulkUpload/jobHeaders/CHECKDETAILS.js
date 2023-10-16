@@ -434,6 +434,18 @@ const checkDetailsKeys = [
         required: false,
         actual_key: "property._id",
     },
+    {
+        label: "Purchaser Prop #",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.purchaserNumber",
+    },
+    {
+        label: "Purchaser",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.purchaser.name",
+    },
 ];
 
 export default checkDetailsKeys;
