@@ -105,13 +105,13 @@ function CampaignsTable(props) {
       <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
         {props.openDialog === "delete" && (
           <DeleteConfirmationDialogContent
-            header={`Delete Interest(s)`}
+            header={`Delete Campaign(s)`}
             onClose={() => props.setOpenDialog(null)}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
-            {`Do you want to delete the selected interest${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+            {`Do you want to delete the selected campaign${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
               }?`}
           </DeleteConfirmationDialogContent>
         )}
