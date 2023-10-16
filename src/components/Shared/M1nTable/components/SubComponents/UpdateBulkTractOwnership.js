@@ -128,7 +128,7 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
         { title: "Mineral Interest", value: "mineral_interest" },
         { title: "Royalty Interest", value: "royalty_interest" },
         { title: "Overriding Royalty Interest (ORRI)", value: "orri" },
-        { title: "Record Title", value: "record_title" },
+        //{ title: "Record Title", value: "record_title" },
         { title: "Working Interest", value: "operating_rights" },
         { title: "Net Revenue Interest (NRI)", value: "nri" },
         { title: "Net Acres", value: "net_acres" },
@@ -428,7 +428,7 @@ const SelectedFieldTest = React.memo(({ field, fieldKey, contactOwner, setFieldK
         case "Mineral Interest":
         case "Royalty Interest":
         case "Overriding Royalty Interest (ORRI)":
-        case "Record Title":
+        //case "Record Title":
         case "Working Interest":
         case "Net Revenue Interest (NRI)":
         case "Net Acres":
