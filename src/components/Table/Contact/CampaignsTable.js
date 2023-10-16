@@ -17,6 +17,7 @@ import convert_date from "components/Shared/valueformatters/convert_date.js";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { UPDATE_CAMPAIGN } from "graphQL/useMutationCampaign";
 import { useMutation } from "@apollo/client";
+import { resetESTableToggle } from "hookstate";
 
 export const getFilters = (appliedFilters) => {
   let filters = [];
@@ -53,7 +54,11 @@ function CampaignsTable(props) {
   const { appliedFilters, esIndex, searchFields, contactSearchQuery } = props;
   const [resetSelectedRow, setResetSelectedRow] = useState(false);
 
-  const [upsertCampaign] = useMutation(UPDATE_CAMPAIGN);
+  const [upsertCampaign] = useMutation(UPDATE_CAMPAIGN, {
+    onCompleted: () => {
+      resetESTableToggle.set(!resetESTableToggle.get())
+    }
+  });
 
   const formatHits = (hits) => {
     return hits.map((hit, i) => ({
@@ -94,7 +99,7 @@ function CampaignsTable(props) {
               isDeleted: true
             }
           },
-          refetchQueries: ["getCampaign", 'getESSimpleSearch'],
+          refetchQueries: ["getCampaign", 'getESSimpleSearch', 'getCampaignAnalytics'],
         });
       });
     }
