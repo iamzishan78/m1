@@ -9,6 +9,7 @@ import PersonIcon from "@material-ui/icons/Person";
 import InsertDriveFileOutlinedIcon from "@material-ui/icons/InsertDriveFileOutlined";
 // import TodayOutlinedIcon from '@material-ui/icons/TodayOutlined';
 import AddIcon from "@material-ui/icons/Add";
+import GavelIcon from '@material-ui/icons/Gavel';
 import { Button } from "@material-ui/core";
 import { useLazyQuery } from "@apollo/client";
 import CommentComponent from "components/Shared/CommentComponent";
@@ -102,6 +103,10 @@ export default function UnitSummary(props) {
                                         <Grid item>
                                             <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.documents || 0} </div>
                                             <InsertDriveFileOutlinedIcon className={classes.icon} opacity="1.0" small />
+                                        </Grid>
+                                        <Grid item>
+                                            <div className={classes.summaryValue}> {dataShapeSummaryDetails?.shapeSummaryDetails?.runsheets || 0} </div>
+                                            <GavelIcon className={classes.icon} opacity="1.0" small />
                                         </Grid>
                                         {/* <Grid item>
                                     <div className={classes.summaryValue}> 3 </div>

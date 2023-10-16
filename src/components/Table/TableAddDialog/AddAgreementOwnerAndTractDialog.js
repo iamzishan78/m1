@@ -51,11 +51,11 @@ import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoComple
 import AutoCompleteParcelOwners from "components/Shared/Forms/Fields/AutoCompleteParcelOwners";
 import Loaders from "components/Loaders";
 import { GET_TRACT_ABSTRACT_SHAPE } from "graphQL/useQueryGetTractAbstractShape";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import _ from "lodash";
-import { calculateNRAForAgreementOwnerAndTractDialog } from "utils/calculatedNraHelper"
+import { calculateStandardNraForTract } from "utils/calculatedNraHelper"
 
 const useStyles = makeStyles((theme) => ({
   dialogFooter: {
@@ -130,6 +130,8 @@ function AddAgreementOwnerAndTractDialog(props) {
   const tract = watch("tract", {});
   const state = watch("tract.state", '');
   const nra = watch("nra", '');
+  const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
+
 
   let layerType = _.upperFirst(props.layerType)
   layerType = layerType === 'Surface' ? 'Surface/ROW' : layerType
@@ -250,7 +252,7 @@ function AddAgreementOwnerAndTractDialog(props) {
 
       setTimeout(() => {
         const { royalty_interest, orri, net_acres, nra, mineral_interest, acquisition_nra, acquisition_cost } = props.seletedOwner
-        let calculatedNRA = calculateNRAForAgreementOwnerAndTractDialog(royalty_interest, orri, net_acres || getValues().net_acres);
+        let calculatedNRA = calculateStandardNraForTract(getValues()?.tract?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
         if (!isNaN(parseFloat(calculatedNRA)))
           setIsNRAOverridden(parseFloat(calculatedNRA) !== parseFloat(nra) && !isNaN(parseFloat(nra)))
 
@@ -773,7 +775,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             onChange={(e) => {
               onChange(e.target.value)
               const net_acres = !isAcresOverridden ? calculateNetAcres(e.target.value) : getValues().net_acres
-              const nra = !isNraOverridden ? calculateNRAForAgreementOwnerAndTractDialog(getValues().royalty_interest, getValues().orri, net_acres || getValues().net_acres) : getValues().nra
+              const nra = !isNraOverridden ? calculateStandardNraForTract(getValues()?.tract?.sdGrossAcres, e.target.value, getValues().royalty_interest, getValues().orri, workspaceSettings) : getValues().nra
               setValue('net_acres', net_acres)
               setValue('nra', nra)
             }}
@@ -821,7 +823,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             onChange={(e) => {
               onChange(e.target.value);
               if (!isNraOverridden)
-                setValue("nra", calculateNRAForAgreementOwnerAndTractDialog(e.target.value, getValues().orri, getValues().net_acres));
+                setValue("nra", calculateStandardNraForTract(getValues()?.tract?.sdGrossAcres, getValues().mineral_interest, e.target.value, getValues().orri, workspaceSettings));
             }}
           />
         )}
@@ -845,7 +847,7 @@ function AddAgreementOwnerAndTractDialog(props) {
             onChange={(e) => {
               onChange(e.target.value);
               if (!isNraOverridden)
-                setValue("nra", calculateNRAForAgreementOwnerAndTractDialog(e.target.value, getValues().orri, getValues().net_acres));
+                setValue("nra", calculateStandardNraForTract(getValues()?.tract?.sdGrossAcres, getValues().mineral_interest, getValues().royalty_interest, e.target.value, workspaceSettings));
             }}
           />
         )}
@@ -884,11 +886,9 @@ function AddAgreementOwnerAndTractDialog(props) {
           onWheel={(e) => e.target.blur()}
           onChange={(e) => {
             onChange(e.target.value);
-            const value = addTrailingZeros(e.target.value);
             const netAcres = calculateNetAcres(getValues().mineral_interest);
             setIsAcresOverridden(parseFloat(netAcres) !== e.target.value);
             onChange(e.target.value);
-            setValue("nra", calculateNRAForAgreementOwnerAndTractDialog(getValues().royalty_interest, getValues().orri, value || getValues().net_acres));
           }}
           InputProps={{
             endAdornment: (
@@ -900,7 +900,6 @@ function AddAgreementOwnerAndTractDialog(props) {
                       setValue("net_acres", calculateNetAcres());
                       const netAcres = calculateNetAcres(getValues().mineral_interest);
                       setIsAcresOverridden(false)
-                      setValue("nra", calculateNRAForAgreementOwnerAndTractDialog(getValues().royalty_interest, getValues().orri, netAcres || getValues().net_acres));
                       setValue("net_acres", netAcres);
                     }}
                   >
@@ -944,7 +943,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           onWheel={(e) => e.target.blur()}
           onChange={(e) => {
             onChange(e.target.value);
-            const nra = calculateNRAForAgreementOwnerAndTractDialog(getValues().royalty_interest, getValues().orri, getValues().net_acres);
+            const nra = calculateStandardNraForTract(getValues()?.tract?.sdGrossAcres, getValues().mineral_interest, getValues().royalty_interest, getValues().orri, workspaceSettings);
             setIsNRAOverridden(parseFloat(nra) !== parseFloat(e.target.value))
             setValue("nra", e.target.value);
           }}
@@ -955,7 +954,7 @@ function AddAgreementOwnerAndTractDialog(props) {
                   <IconButton
                     aria-label="toggle royality-acres"
                     onClick={() => {
-                      const nra = calculateNRAForAgreementOwnerAndTractDialog(getValues().royalty_interest, getValues().orri, getValues().net_acres);
+                      const nra = calculateStandardNraForTract(getValues()?.tract?.sdGrossAcres, getValues().mineral_interest, getValues().royalty_interest, getValues().orri, workspaceSettings)
                       setValue("nra", nra);
                       setIsNRAOverridden(false)
                     }}

@@ -34,7 +34,6 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import SuggestedTaxOwnersTable from "components/Table/TaxOwners/SuggestedTaxOwnersTable";
 import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsParcelTable";
 import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
-import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
 import TractInterestOwnerTable from "components/Table/Tract/TractInterestOwnerTable";
 import { showSuccessMessage, showErrorMessage, setMapGridCardState } from "actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
@@ -632,16 +631,9 @@ export default function ParcelsDetailCard(props) {
                 customLayer={copy(parcelObj)}
                 dense
                 header={<RunsheetHeader />}
-                isSnapGrid
                 isCheckboxSticky={true}
               />
-              {/* <ParcelDetailsRunsheetTable
-                customLayer={copy(parcelObj)}
-                parent="associatedRunsheetPerParcel"
-                targetLabel="parcelRunsheet"
-                header={<RunsheetHeader />}
-                dense
-              /> */}
+
             </div>,
             <div className={showSummary ? classes.subContent : classes.subContent2}>
               <AssociatedWellsParcelTable
