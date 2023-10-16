@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import useTableESSimple from 'components/MRTTable/Hooks/useTableESSimple';
 import AllDialogs from 'components/MRTTable/Common/Dialog';
@@ -12,6 +12,13 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 	const Controller = tableController(tableKey);
 	Controller.initialize(tableKey, extendedMeta);
 	const { tableProps, tablePropsState, initialized, classes } = useTableESSimple(tableKey);
+
+	useEffect(() => {
+		return () => {
+			Controller.reset()
+		};
+	}, []);
+
 
 	if (!initialized) return null;
 
