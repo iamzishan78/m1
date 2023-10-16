@@ -15,16 +15,17 @@ export default function AlertDialogSlide(props) {
   const useStyles = makeStyles((theme) => ({
     dialog: ({ quickActionsPanelState }) => ({
       "& .MuiDialog-paper": {
-        position: "fixed",
+        position: 'fixed',
         top: props.top ? props.top : '',
-        left: quickActionsPanelState ? "485px !important" : "60px !important",
+        left: quickActionsPanelState ? `calc(485px + ${props.left || '0px'}) !important` : `calc(60px + ${props.left || '0px'}) !important`,
         width: props.width ? String(props.width) : null,
-        maxWidth: "100% !important",
-        margin: "0 !important",
-        borderTopRightRadius: "0 !important",
-        overflowX: "hidden",
-        overflowY: props.hiddenOverflow ? "hidden" : "auto",
-        transition: "width 0.5s",
+        maxHeight: props.maxHeight ? props.maxHeight : '',
+        maxWidth: '100% !important',
+        margin: '0 !important',
+        borderTopRightRadius: '0 !important',
+        overflowX: 'hidden',
+        overflowY: props.hiddenOverflow ? 'hidden' : 'auto',
+        transition: 'width 0.5s',
       },
       "& .MuiBackdrop-root": {
         // display: "none"

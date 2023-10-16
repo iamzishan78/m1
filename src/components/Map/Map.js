@@ -84,10 +84,12 @@ import {
   defaultLayers,
   setLayerLabelLayout,
   showIfUserDefinedLayer,
+  ifFileShapeSource,
 } from "components/Shared/functions/shapeLayer";
 import LayerSelectionPopup from "./components/popup/LayerSelectionPopup";
 import { useHookstate } from '@hookstate/core';
 import { hookStateApp } from "hookstate";
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -1351,7 +1353,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       return false;
     };
 
-    const mapClickHandler = (e) => {
+    const mapClickHandler = async (e) => {
       const map = e.target;
       let layers = [];
       let clusterUDLayers = [];
@@ -1445,6 +1447,81 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       if (isNormalClick && features && features.length > 0) {
         const feature = features[0];
         const layerId = feature.layer.id;
+
+        /* -------------------- Get Full Feature For Shape Files -------------------- */
+        if (ifFileShapeSource(feature.source)) {
+          const { data: fileFeature } = await client.query({
+            query: GET_ES_SIMPLE_SEARCH,
+            variables: {
+              index: "shapefile_flat",
+              pagination: {
+                first: 1,
+                after: null
+              },
+              search: {
+                query: null,
+                fields: [
+                  "*"
+                ],
+              },
+              filters: [
+                {
+                  field: "properties.layerGeometry",
+                  value: feature.properties.layerGeometry
+                },
+                {
+                  field: "properties.layerShapeName",
+                  value: feature.properties.layerShapeName
+                },
+                {
+                  field: "id",
+                  value: feature.id
+                },
+                {
+                  type: "geo_intersects",
+                  field: "geometry",
+                  value: {
+                    type: "point",
+                    coordinates: [e.lngLat.lng, e.lngLat.lat]
+                  },
+                }
+              ]
+            },
+          })
+
+          if (fileFeature.getESSimpleSearch?.hits?.[0]?.geometry) {
+            feature.geometry = fileFeature.getESSimpleSearch.hits[0].geometry
+
+            const bounds = map.getBounds();
+            const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+            const bboxPolygon = turf.bboxPolygon(bbox);
+
+            let isGeometryWithinBbox = false;
+
+            if (feature.geometry.type === 'Polygon')
+              isGeometryWithinBbox = turf.booleanWithin(feature.geometry, bboxPolygon);
+            else
+              for (let i = 0; i < feature.geometry.coordinates.length; i++) {
+                let polygon = turf.polygon(feature.geometry.coordinates[i]);
+                if (turf.booleanWithin(polygon, bboxPolygon)) {
+                  isGeometryWithinBbox = true;
+                  break;
+                }
+              }
+
+            if (!isGeometryWithinBbox) {
+              const combined = turf.combine(turf.featureCollection([feature]))
+              const bbox = turf.bbox(combined)
+              map?.fitBounds(
+                [
+                  [bbox[0], bbox[1]], // southwestern corner of the bounds
+                  [bbox[2], bbox[3]] // northeastern corner of the bounds
+                ],
+                { padding: { top: 40, bottom: 40, left: 40, right: 40 }, easing: () => 1, }
+              )
+            }
+          }
+        }
 
         switch (true) {
           case clusterUDLayers.indexOf(layerId) > -1:
@@ -6238,7 +6315,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           <img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="150" />
         </div>
       </div>
-      <MapControlsProvider {...{ expandedPanel: expandedPanel, openSpeedDial: openSpeedDial }} />
+      <MapControlsProvider {...{ expandedPanel: expandedPanel, openSpeedDial: openSpeedDial }} showExpandableCard={showExpandableCard} expandedCard={stateApp.expandedCard} />
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <HugeRequest />
       {/* <Coordinates long={lng} lat={lat} zoom={zoom} /> */}
