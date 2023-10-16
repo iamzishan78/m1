@@ -441,7 +441,7 @@ const checkDetailsKeys = [
         actual_key: "property.purchaserNumber",
     },
     {
-        label: "Purchaser",
+        label: "Purchaser Name",
         mapped_key: "",
         required: false,
         actual_key: "property.purchaser.name",
