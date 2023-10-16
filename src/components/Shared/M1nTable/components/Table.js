@@ -5066,7 +5066,7 @@ function SubTable(props) {
 
                   {props.header === 'Contacts' &&
                     `Do you want to delete the selected ${['campaignContact'].includes(props.addAble?.type)
-                      ? 'descriptor'
+                      ? 'record'
                       : 'contact'
                     }${m1nSelectedRowsIds &&
                       m1nSelectedRowsIds.length > 1 &&
