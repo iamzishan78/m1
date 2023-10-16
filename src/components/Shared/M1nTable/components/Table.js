@@ -5064,8 +5064,15 @@ function SubTable(props) {
                     `Do you want to remove the contact${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
                     } from this owner?`}
 
-                  {props.header === "Contacts" &&
-                    `Do you want to delete the selected contact${m1nSelectedRowsIds && m1nSelectedRowsIds.length > 1 && removeDuplicatesIds(m1nSelectedRowsIds).length > 1 ? "s" : ""
+                  {props.header === 'Contacts' &&
+                    `Do you want to delete the selected ${['campaignContact'].includes(props.addAble?.type)
+                      ? 'descriptor'
+                      : 'contact'
+                    }${m1nSelectedRowsIds &&
+                      m1nSelectedRowsIds.length > 1 &&
+                      removeDuplicatesIds(m1nSelectedRowsIds).length > 1
+                      ? 's'
+                      : ''
                     }?`}
                 </DeleteConfirmationDialogContent>
               )}
