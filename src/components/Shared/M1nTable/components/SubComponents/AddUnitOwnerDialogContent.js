@@ -1,95 +1,124 @@
-import React, { useContext, useState, useEffect } from "react";
-import { get } from "lodash";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import IconButton from "@material-ui/core/IconButton";
-import AutorenewIcon from "@material-ui/icons/Autorenew";
-import { CircularProgress, Grid, Dialog, InputAdornment, Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import DeleteIcon from "@material-ui/icons/Delete";
-import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
+import React, { useContext, useState, useEffect } from 'react';
+import { get } from 'lodash';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import IconButton from '@material-ui/core/IconButton';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
+import {
+  CircularProgress,
+  Grid,
+  Dialog,
+  InputAdornment,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from '@material-ui/core';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 
-import { AppContext } from "AppContext";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { ADD_OWNER_TOA_SHAPE } from "graphQL/useMutationAddOwnerToAShape";
-import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
-import { makeStyles } from "@material-ui/core/styles";
-import { useDispatch, useSelector } from "react-redux";
-import { showErrorMessage, showSuccessMessage } from "actions";
-import RightDialog from "components/ContactDetailCard/components/RightDialog";
-import { addTrailingZeros } from "components/Shared/functions";
-import { Controller, useForm } from "react-hook-form";
-import AutocompEntityNamesList from "components/Shared/Forms/Fields/AutocompEntityNamesList";
-import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
+import { AppContext } from 'AppContext';
+import { useLazyQuery, useMutation } from '@apollo/client';
+import { ADD_OWNER_TOA_SHAPE } from 'graphQL/useMutationAddOwnerToAShape';
+import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
+import { makeStyles } from '@material-ui/core/styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { showErrorMessage, showSuccessMessage } from 'actions';
+import RightDialog from 'components/ContactDetailCard/components/RightDialog';
+import { addTrailingZeros } from 'components/Shared/functions';
+import { Controller, useForm } from 'react-hook-form';
+import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
-import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
-import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
-import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
-import AssociatedDealField from "components/ContactDetailCard/components/FieldContent/AssociatedDealField";
-import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
-import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
-import { calculateNRAForUnitOwnerDialog } from "utils/calculatedNraHelper"
-import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
-import { Status } from "components/ContactDetailCard/components/FieldContent";
-import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
+import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
+import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
+import DeleteConfirmationDialogContent from './DeleteConfirmationDialogContent';
+import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
+import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
+import { Status } from 'components/ContactDetailCard/components/FieldContent';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
+import { tableGlobalController } from 'hookstate/tableController';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   maxWidth: {
-    width: "100%",
+    width: '100%',
   },
   dialogContent: {
-    "& header": {
-      position: "absolute",
-      left: "0",
-      top: "55px",
+    '& header': {
+      position: 'absolute',
+      left: '0',
+      top: '55px',
     },
   },
   primary: {
-    color: "black",
-    backgroundColor: "#E0E0E0",
+    color: 'black',
+    backgroundColor: '#E0E0E0',
   },
   secondary: {
-    color: "white",
-    backgroundColor: "#26ACD8",
+    color: 'white',
+    backgroundColor: '#26ACD8',
   },
   dialogAction: {
-    "& .Mui-disabled": {
-      backgroundColor: "transparent",
+    '& .Mui-disabled': {
+      backgroundColor: 'transparent',
     },
   },
   move: {
     zIndex: 10000,
   },
   baseValueChanged: {
-    width: "100%",
-    "& .MuiInputBase-input": {
-      color: "dodgerblue",
-      fontWeight: "bold",
+    width: '100%',
+    '& .MuiInputBase-input': {
+      color: 'dodgerblue',
+      fontWeight: 'bold',
     },
   },
 }));
 
-export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, uMaxUnitPricing, ...props }) {
+export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, ...props }) {
   const dispatch = useDispatch();
   const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
   const [stateApp, setStateApp] = useContext(AppContext);
   const { control, reset, setValue, getValues, watch } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
   const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false);
-  const [isMaxOfferPriceOverridden, setIsMaxOfferPriceOverridden] = useState(false);
-
   const [statusOptions, setStatusOptions] = useState([]);
-  const [nameAutValue, setNameAutValue] = useState({ name: "", _id: null });
+  const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
   const [contact, setContact] = useState();
   const [anchorEl, setAnchorEl] = useState();
   const [loading, setLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const watchedNra = watch('nra')
+  const watchedNra = watch('nra');
 
-  const [getCampaignPriorityList, { data: priorityList }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  const [getCampaignPriorityList, { data: priorityList }] = useLazyQuery(GET_ES_FILTER_LIST, {
+    fetchPolicy: 'no-cache',
+  });
+
+  const calculateNRA = (interest1, interest2, interest3, interest4, unitAcres = uAcres) => {
+    if (!interest4 && !interest1 && !interest2 && !interest3) return null;
+
+    let nra =
+      parseFloat(unitAcres || 0) *
+      (parseFloat(interest1 || 0) + parseFloat(interest2 || 0) + parseFloat(interest3 || 0));
+
+    if (interest4) nra = parseFloat(interest4 || 0) * parseFloat(unitAcres || 0);
+
+    if (workspaceSettings.settings?.map?.unitNra?.type === 'custom' && workspaceSettings.settings?.map?.unitNra?.value)
+      nra = nra / Number(workspaceSettings.settings?.map?.unitNra?.value);
+
+    nra = addTrailingZeros(nra.toFixed(8));
+    return nra;
+  };
+
+  const calculateOfferPrice = nra => {
+    return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
+  };
 
   useEffect(() => {
     getCampaignPriorityList({
@@ -98,20 +127,20 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         filterKey: 'campaignPriority.keyword',
         size: 50,
       },
-    })
-  }, [getCampaignPriorityList])
+    });
+  }, [getCampaignPriorityList]);
 
-  const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
+  const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
 
   useEffect(() => {
     getFilters({
       variables: {
-        esIndex: "contacts_flat",
-        filterKey: "status.keyword",
+        esIndex: 'contacts_flat',
+        filterKey: 'status.keyword',
         size: 50,
       },
     });
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (selectedRow) {
@@ -124,8 +153,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         seller_asking_price,
         competitor_offer_price,
         offer_price,
-        max_offer_price,
-        actual_offer_price,
         customLayer,
         name,
         ownerEntity,
@@ -135,7 +162,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         campaignPriority,
         contact,
         campaignName,
-        deals
+        deals,
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
@@ -147,29 +174,20 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         seller_asking_price: seller_asking_price || null,
         competitor_offer_price: competitor_offer_price || null,
         offer_price: parseFloat(parseFloat(offer_price).toFixed(2)) || null,
-        max_offer_price: max_offer_price || null,
-        actual_offer_price: actual_offer_price || null,
         contactStatus: contactStatus || contact.contactStatus,
         status: status || contact.status,
         ownerType,
         campaignPriority,
         customLayer,
         campaignName,
-        deals
-      }
-      let calculatedNRA = calculateNRAForUnitOwnerDialog(royalty_interest, orri, nri, uAcres, workspaceSettings);
+        deals,
+      };
+      let calculatedNRA = calculateNRA(royalty_interest, orri, working_interest, nri);
       let calculatedOfferPrice = calculateOfferPrice(nra);
-      let calculatedMaxOfferPrice = calculateMaxOfferPrice(nra);
-
-
-      if (!isNaN(parseFloat(calculatedNRA)))
-        setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)))
+      if (!isNaN(parseFloat(calculatedNRA))) setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)));
 
       if (!isNaN(parseFloat(calculatedOfferPrice)))
-        setIsOfferPriceOverridden(calculatedOfferPrice !== owner.offer_price && !isNaN(parseFloat(offer_price)))
-
-      if (!isNaN(parseFloat(calculatedOfferPrice)))
-        setIsMaxOfferPriceOverridden(calculatedMaxOfferPrice !== owner.max_offer_price && !isNaN(parseFloat(max_offer_price)))
+        setIsOfferPriceOverridden(calculatedOfferPrice !== owner.offer_price && !isNaN(parseFloat(offer_price)));
 
       reset(owner);
     }
@@ -177,14 +195,14 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   useEffect(() => {
     if (filtersData?.getESFilterList?.hits) {
-      const allFiltersData = filtersData.getESFilterList.hits.map((hit) => hit.key);
-      let filterData = filtersData.getESFilterList.hits.map((hit) => hit.key);
+      const allFiltersData = filtersData.getESFilterList.hits.map(hit => hit.key);
+      let filterData = filtersData.getESFilterList.hits.map(hit => hit.key);
       for (let i = 0; i < contactStatusOptions.length; i++) {
-        filterData = filterData.filter((d) => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label);
+        filterData = filterData.filter(d => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label);
       }
       for (let i = 0; i < contactStatusOptions.length; i++) {
         if (
-          (contactStatusOptions[i].notInclude && allFiltersData.find((d) => d === contactStatusOptions[i].value)) ||
+          (contactStatusOptions[i].notInclude && allFiltersData.find(d => d === contactStatusOptions[i].value)) ||
           !contactStatusOptions[i].notInclude
         ) {
           filterData.push(contactStatusOptions[i].label);
@@ -205,9 +223,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   useEffect(() => {
     let type = null;
     if (mutationData && mutationData.addOwnerToAShape) {
-      type = { name: "add", success: mutationData.addOwnerToAShape.success };
+      type = { name: 'add', success: mutationData.addOwnerToAShape.success };
     } else if (updateData && updateData.updateShapeOwners) {
-      type = { name: "update", success: updateData.updateShapeOwners.success };
+      type = { name: 'update', success: updateData.updateShapeOwners.success };
     }
 
     if (type) {
@@ -222,34 +240,28 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
         handleClickDialogClose();
       } else {
-        dispatch(showErrorMessage("Error occurred"));
+        dispatch(showErrorMessage('Error occurred'));
       }
 
-      setStateApp((state) => ({
+      setStateApp(state => ({
         ...state,
         universalCircularLoaderAct: false,
       }));
+      tableGlobalController.refetch()
     }
   }, [mutationData, updateData]);
 
   useEffect(() => {
     if (nameAutValue) {
       if (nameAutValue.contactStatus) {
-        setValue('contactStatus', nameAutValue.contactStatus)
+        setValue('contactStatus', nameAutValue.contactStatus);
       }
     }
-  }, [nameAutValue])
+  }, [nameAutValue]);
 
   useEffect(() => {
-    const currentNraValue = getValues().nra;
-    if (getValues().nra) {
-      if (!isOfferPriceOverridden)
-        setValue("offer_price", calculateOfferPrice(currentNraValue))
-
-      if (!isMaxOfferPriceOverridden)
-        setValue("max_offer_price", calculateMaxOfferPrice(currentNraValue));
-    };
-  }, [watchedNra])
+    if (!isOfferPriceOverridden && getValues().nra) setValue('offer_price', calculateOfferPrice(getValues().nra));
+  }, [watchedNra]);
 
   const emptyStates = () => {
     setNameAutValue(null);
@@ -261,14 +273,14 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     emptyStates();
   };
 
-  const handleAddUpdate = (ownerToAdd) => {
+  const handleAddUpdate = ownerToAdd => {
     if (ownerToAdd.nra) {
       ownerToAdd.nra = addTrailingZeros(parseFloat(ownerToAdd.nra).toFixed(8));
     }
 
     Object.entries(ownerToAdd).forEach(([key, value]) => {
-      value === '' && delete ownerToAdd[key]
-    })
+      value === '' && delete ownerToAdd[key];
+    });
 
     if (selectedRow) {
       ownerToAdd._id = selectedRow._id;
@@ -277,7 +289,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           shapeType: props.shapeType,
           shapeOwners: [
             {
-              shapeId: props.shapeId ?? get(selectedRow, "customLayer._id"),
+              shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
               relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
               ...ownerToAdd,
               createBy: stateApp.user.mongoId,
@@ -286,43 +298,38 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           ],
           userId: stateApp.user.mongoId,
         },
-        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
+        refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
         awaitRefetchQueries: true,
       });
     } else {
-      ownerToAdd.working_interest = ownerToAdd.working_interest || 0
-      ownerToAdd.royalty_interest = ownerToAdd.royalty_interest || 0
-      ownerToAdd.orri = ownerToAdd.orri || 0
-      ownerToAdd.nri = ownerToAdd.nri || 0
-
       addOwnerToAShape({
         variables: {
           shapeType: props.shapeType,
           shapeOwner: {
-            shapeId: props.shapeId ?? get(selectedRow, "customLayer._id"),
+            shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
             relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
             ...ownerToAdd,
             createBy: stateApp.user.mongoId,
             lastUpdateBy: stateApp.user.mongoId,
           },
         },
-        refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
+        refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
         awaitRefetchQueries: true,
       });
     }
 
-    setStateApp((state) => ({ ...state, universalCircularLoaderAct: true }));
-  }
+    setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
+  };
 
-  const handleClickAdd = (e) => {
+  const handleClickAdd = e => {
     e.preventDefault();
     if (nameAutValue) {
       const ownerToAdd = { ...getValues() };
       // if (nameAutValue._id === "newEntity") ownerToAdd.name = nameAutValue.name;
       // else ownerToAdd.ownerEntity = nameAutValue._id;
 
-      Object.keys(ownerToAdd).forEach((key) => {
-        if (["working_interest", "royalty_interest", "orri", "nri", "nra"].includes(key))
+      Object.keys(ownerToAdd).forEach(key => {
+        if (['working_interest', 'royalty_interest', 'orri', 'nri', 'nra'].includes(key))
           ownerToAdd[key] = addTrailingZeros(ownerToAdd[key]);
       });
       if (nameAutValue._id && nameAutValue.name) {
@@ -331,7 +338,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerToAdd.name = nameAutValue.name;
       }
 
-      if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
+      if (
+        (ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
         (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
         (ownerToAdd.campaignPriority && selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
         (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
@@ -345,24 +353,15 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               lastUpdateBy: stateApp.user.mongoId,
               ownerType: ownerToAdd.ownerType,
               campaignPriority: ownerToAdd.campaignPriority,
-            }
-          }
-        })
+            },
+          },
+        });
       }
 
-      if (!ownerToAdd.campaignName || ownerToAdd.campaignName === '') ownerToAdd.campaignName = []
+      if (!ownerToAdd.campaignName || ownerToAdd.campaignName === '') ownerToAdd.campaignName = [];
 
       handleAddUpdate(ownerToAdd);
     }
-  };
-
-  const calculateOfferPrice = (nra) => {
-    return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
-  };
-
-
-  const calculateMaxOfferPrice = (nra) => {
-    return parseFloat((parseFloat(nra || 0) * parseFloat(uMaxUnitPricing || 0)).toFixed(2));
   };
 
   const openConfirmationDialog = () => {
@@ -372,7 +371,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const handleCloseDialog = () => {
     setDeleteDialogOpen(false);
   };
-  const handleMenuClick = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClick = event => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
   const deleteFunc = () => {
@@ -380,14 +379,13 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     updateShapeOwners({
       variables: {
         shapeType: props.shapeType,
-        shapeOwners: { _id: selectedRow?._id, shapeId: selectedRow?.customLayerId, isDeleted: true },
+        shapeOwners: { _id: selectedRow?._id, isDeleted: true },
       },
-      refetchQueries: ["getESSimpleSearch", "getCustomLayer"],
+      refetchQueries: ['getESSimpleSearch', 'getCustomLayer'],
       awaitRefetchQueries: true,
     }).finally(() => {
       setLoading(false);
     });
-
   };
   const classes = useStyles();
 
@@ -413,22 +411,31 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         </Dialog>
       )}
       <React.Fragment>
-        <RightDialog open={true} handleClickDialogClose={props.onClose} width={"450px"}>
+        <RightDialog open={true} handleClickDialogClose={props.onClose} width={'450px'}>
           <Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
             <Grid item md={10} xs={10}>
-              <DialogTitle id="customized-dialog-title" style={{ fontWeight: "bold" }}>
-                {selectedRow ? "Update" : "Add"} Unit Ownership
+              <DialogTitle id="customized-dialog-title" style={{ fontWeight: 'bold' }}>
+                {selectedRow ? 'Update' : 'Add'} Unit Ownership
               </DialogTitle>
             </Grid>
-
-            <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
-              <div style={{ "float": "right", display: 'flex', marginRight: '10px' }}>
+            {/* <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
+              <IconButton
+                size="small"
+                component="span"
+                style={{
+                  background: "transparent",
+                  align: "center",
+                  float: "right",
+                }}
+                onClick={props.onClose}
+              >
+                <KeyboardTabBlackIcon />
+              </IconButton>
+            </Grid> */}
+            <Grid item md={1} xs={1} style={{ marginLeft: '20px' }}>
+              <div style={{ float: 'right', display: 'flex', marginRight: '10px' }}>
                 <>
-                  <IconButton
-                    disabled={loading}
-                    size="small"
-                    style={{ margin: "0 8px" }}
-                  >
+                  <IconButton disabled={loading} size="small" style={{ margin: '0 8px' }}>
                     {loading ? (
                       <CircularProgress size={20} color="secondary" />
                     ) : (
@@ -443,12 +450,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     onClose={handleMenuClose}
                     className={classes.menu}
                     getContentAnchorEl={null}
-                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-                    transformOrigin={{ vertical: "top", horizontal: "center" }}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                    transformOrigin={{ vertical: 'top', horizontal: 'center' }}
                   >
-                    <MenuItem
-                      onClick={openConfirmationDialog}
-                    >
+                    <MenuItem onClick={openConfirmationDialog}>
                       <ListItemIcon>
                         <DeleteIcon size="medium" />
                       </ListItemIcon>
@@ -460,9 +465,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   size="small"
                   component="span"
                   style={{
-                    background: "transparent",
-                    align: "center",
-                    float: "right",
+                    background: 'transparent',
+                    align: 'center',
+                    float: 'right',
                   }}
                   onClick={props.onClose}
                 >
@@ -475,25 +480,30 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <h3>Name</h3>
-                <AutocompEntityNamesList userId={stateApp.user.mongoId} setContact={setContact} nameAutValue={nameAutValue} setNameAutValue={setNameAutValue} />
+                <AutocompEntityNamesList
+                  userId={stateApp.user.mongoId}
+                  setContact={setContact}
+                  nameAutValue={nameAutValue}
+                  setNameAutValue={setNameAutValue}
+                />
               </Grid>
               <Grid item xs={12}>
                 <h3>Entity Type</h3>
                 <Controller
                   control={control}
                   name="ownerType"
-                  render={(props) => (
+                  render={props => (
                     <EntityType
                       className={classes.maxWidth}
-                      setDocumentType={(value) => {
-                        let val = value.name
-                        const data = contactStatusOptions.find(s => s.label === val)
+                      setDocumentType={value => {
+                        let val = value.name;
+                        const data = contactStatusOptions.find(s => s.label === val);
                         if (data) {
-                          val = data.value
+                          val = data.value;
                         }
                         setValue('ownerType', val);
                       }}
-                      value={contact?.ownerType ?? ""}
+                      value={contact?.ownerType ?? ''}
                     />
                   )}
                 />
@@ -504,16 +514,16 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 <Controller
                   control={control}
                   name="working_interest"
-                  render={(props) => (
+                  render={props => (
                     <TextField
                       size="small"
                       type="number"
                       value={props.value}
                       inputRef={props.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => {
+                      onWheel={e => e.target.blur()}
+                      onChange={e => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) setValue("nra", calculateNRAForUnitOwnerDialog(getValues().royalty_interest, getValues().orri, e.target.value, getValues().nri));
+                        if (!isNraOverridden) setValue("nra", calculateStandardNraForUnit({ uAcres, working_interest: e.target.value, royalty_interest: getValues().royalty_interest, orri: getValues().orri, workspaceSettings }));
                       }}
                       fullWidth
                       defaultValue=""
@@ -526,16 +536,17 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 <Controller
                   control={control}
                   name="royalty_interest"
-                  render={(props) => (
+                  render={props => (
                     <TextField
                       size="small"
                       type="number"
                       value={props.value}
                       inputRef={props.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => {
+                      onWheel={e => e.target.blur()}
+                      onChange={e => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) setValue("nra", calculateNRAForUnitOwnerDialog(e.target.value, getValues().orri, getValues().nri, uAcres, workspaceSettings));
+                        if (!isNraOverridden) setValue("nra", calculateStandardNraForUnit({ uAcres, working_interest: getValues().working_interest, royalty_interest: e.target.value, orri: getValues().orri, workspaceSettings })
+                        );
                       }}
                       fullWidth
                       defaultValue=""
@@ -548,16 +559,16 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 <Controller
                   control={control}
                   name="orri"
-                  render={(props) => (
+                  render={props => (
                     <TextField
                       size="small"
                       type="number"
                       value={props.value}
                       inputRef={props.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => {
+                      onWheel={e => e.target.blur()}
+                      onChange={e => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) { setValue("nra", calculateNRAForUnitOwnerDialog(getValues().royalty_interest, e.target.value, getValues().nri, uAcres, workspaceSettings)); }
+                        if (!isNraOverridden) { setValue("nra", calculateStandardNraForUnit({ uAcres, working_interest: getValues().working_interest, royalty_interest: getValues().royalty_interest, orri: e.target.value, workspaceSettings })); }
                       }}
                       fullWidth
                       defaultValue=""
@@ -571,16 +582,15 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 <Controller
                   control={control}
                   name="nri"
-                  render={(props) => (
+                  render={props => (
                     <TextField
                       size="small"
                       type="number"
                       value={props.value}
                       inputRef={props.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => {
+                      onWheel={e => e.target.blur()}
+                      onChange={e => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) { setValue("nra", calculateNRAForUnitOwnerDialog(getValues().royalty_interest, getValues().orri, e.target.value, uAcres, workspaceSettings)); }
                       }}
                       fullWidth
                       defaultValue=""
@@ -608,18 +618,18 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 <Controller
                   control={control}
                   name="nra"
-                  render={(params) => (
+                  render={params => (
                     <TextField
                       size="small"
                       type="number"
                       value={params.value}
                       inputRef={params.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => {
+                      onWheel={e => e.target.blur()}
+                      onChange={e => {
                         const value = addTrailingZeros(e.target.value);
 
                         if (!isNraOverridden) {
-                          const nra = calculateNRAForUnitOwnerDialog(getValues().royalty_interest, getValues().orri, getValues().nri, uAcres, workspaceSettings)
+                          const nra = calculateStandardNraForUnit({ uAcres, working_interest: getValues().working_interest, royalty_interest: getValues().royalty_interest, orri: getValues().orri, workspaceSettings })
                           setIsNRAOverridden(parseFloat(value) !== parseFloat(nra))
                         }
 
@@ -634,7 +644,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                                 aria-label="toggle royality-acres"
                                 onClick={() => {
                                   setIsNRAOverridden(false)
-                                  setValue("nra", calculateNRAForUnitOwnerDialog(getValues().royalty_interest, getValues().orri, getValues().nri, uAcres, workspaceSettings));
+                                  setValue("nra", calculateStandardNraForUnit({ uAcres, working_interest: getValues().working_interest, royalty_interest: getValues().royalty_interest, orri: getValues().orri, workspaceSettings }));
                                 }}
                               >
                                 <AutorenewIcon />
@@ -655,13 +665,13 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 <Controller
                   control={control}
                   name="seller_asking_price"
-                  render={(props) => (
+                  render={props => (
                     <TextField
                       size="small"
                       value={props.value}
                       inputRef={props.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => {
+                      onWheel={e => e.target.blur()}
+                      onChange={e => {
                         props.onChange(e.target.value);
                       }}
                       InputProps={{
@@ -679,13 +689,13 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 <Controller
                   control={control}
                   name="competitor_offer_price"
-                  render={(props) => (
+                  render={props => (
                     <TextField
                       size="small"
                       value={props.value}
                       inputRef={props.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => {
+                      onWheel={e => e.target.blur()}
+                      onChange={e => {
                         props.onChange(e.target.value);
                       }}
                       InputProps={{
@@ -704,20 +714,16 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 <Controller
                   control={control}
                   name="offer_price"
-                  render={(props) => (
+                  render={props => (
                     <TextField
                       size="small"
                       value={props.value}
                       inputRef={props.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value).toFixed(2)
-
-                        if (!isOfferPriceOverridden) {
-                          const calculatedOfferPrice = calculateOfferPrice(getValues().nra)
-                          setIsOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice))
-                        }
-
+                      onWheel={e => e.target.blur()}
+                      onChange={e => {
+                        const value = parseFloat(e.target.value).toFixed(2);
+                        const calculatedOfferPrice = calculateOfferPrice(getValues().nra);
+                        setIsOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
                         props.onChange(value);
                       }}
                       className={isOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
@@ -729,8 +735,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                               <IconButton
                                 aria-label="toggle offer_price"
                                 onClick={() => {
-                                  setIsOfferPriceOverridden(false)
-                                  setValue("offer_price", calculateOfferPrice(getValues().nra));
+                                  setIsOfferPriceOverridden(false);
+                                  setValue('offer_price', calculateOfferPrice(getValues().nra));
                                 }}
                               >
                                 <AutorenewIcon />
@@ -745,77 +751,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   )}
                 />
               </Grid>
-
-              <Grid item xs={12}>
-                <h3>Max Offer Price</h3>
-                <Controller
-                  control={control}
-                  name="max_offer_price"
-                  render={(props) => (
-                    <TextField
-                      size="small"
-                      value={props.value}
-                      inputRef={props.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value).toFixed(2)
-
-                        if (!isMaxOfferPriceOverridden) {
-                          const calculatedMaxOfferPrice = calculateMaxOfferPrice(getValues().nra)
-                          setIsMaxOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedMaxOfferPrice))
-                        }
-
-                        props.onChange(value);
-                      }}
-                      className={isMaxOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
-                      InputProps={{
-                        inputComponent: CurrencyFormatCustom,
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            {isMaxOfferPriceOverridden && (
-                              <IconButton
-                                aria-label="toggle max_offer_price"
-                                onClick={() => {
-                                  setIsMaxOfferPriceOverridden(false)
-                                  setValue("max_offer_price", calculateMaxOfferPrice(getValues().nra));
-                                }}
-                              >
-                                <AutorenewIcon />
-                              </IconButton>
-                            )}
-                          </InputAdornment>
-                        ),
-                      }}
-                      fullWidth
-                      defaultValue=""
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <h3>Actual Offer Price</h3>
-                <Controller
-                  control={control}
-                  name="actual_offer_price"
-                  render={(props) => (
-                    <TextField
-                      size="small"
-                      value={props.value}
-                      inputRef={props.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => {
-                        props.onChange(e.target.value);
-                      }}
-                      InputProps={{
-                        inputComponent: CurrencyFormatCustom,
-                      }}
-                      fullWidth
-                      defaultValue=""
-                    />
-                  )}
-                />
-              </Grid>
-
               <Grid item xs={12}>
                 <h3>Status</h3>
 
@@ -823,15 +758,15 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   control={control}
                   defaultValue={''}
                   name="contactStatus"
-                  render={(props) => (
+                  render={props => (
                     <ContactStatus
                       className={classes.maxWidth}
-                      setValue={(value) => {
-                        let val = value.name
+                      setValue={value => {
+                        let val = value.name;
                         props.onChange(val);
                       }}
-                      value={props.value ? props.value : ""}
-                      fieldKey='contactStatus'
+                      value={props.value ? props.value : ''}
+                      fieldKey="contactStatus"
                     />
                   )}
                 />
@@ -843,18 +778,18 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   control={control}
                   defaultValue={''}
                   name="status"
-                  render={(props) => (
+                  render={props => (
                     <Status
                       className={classes.maxWidth}
                       options={statusOptions}
                       value={props.value}
-                      setDocumentType={(value) => {
+                      setDocumentType={value => {
                         let val = value.name;
-                        const data = contactStatusOptions.find((s) => s.label === val);
+                        const data = contactStatusOptions.find(s => s.label === val);
                         if (data) {
                           val = data.value;
                         }
-                        props.onChange(val)
+                        props.onChange(val);
                       }}
                     />
                   )}
@@ -867,7 +802,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   control={control}
                   defaultValue={''}
                   name="campaignName"
-                  render={(params) => (
+                  render={params => (
                     <CampaignNameField
                       {...params}
                       className={classes.maxWidth}
@@ -887,22 +822,18 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 <Controller
                   control={control}
                   name="campaignPriority"
-                  render={(params) => (
+                  render={params => (
                     <AutoCompleteWithAddNew
                       {...params}
-                      value={get(params, "value", "")}
-                      setValue={(value) => {
-                        if (value?._id)
-                          params.onChange({ _id: value._id, name: value.name });
+                      value={get(params, 'value', '')}
+                      // variant="outlined"
+                      setValue={value => {
+                        if (value?._id) params.onChange({ _id: value._id, name: value.name });
                         else params.onChange({});
-                        if (value?._id === "newEntity") delete value._id;
+                        if (value?._id === 'newEntity') delete value._id;
                         setValue('campaignPriority', value?.name);
                       }}
-                      options={get(
-                        priorityList,
-                        "getESFilterList.hits",
-                        []
-                      )?.map((payor) => ({
+                      options={get(priorityList, 'getESFilterList.hits', [])?.map(payor => ({
                         _id: get(payor, `original.hits.hits.${0}._id`),
                         name: payor.key,
                       }))}
@@ -917,7 +848,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 <Controller
                   control={control}
                   name="deals"
-                  render={(params) => (
+                  render={params => (
                     <AssociatedDealField
                       {...params}
                       className={classes.maxWidth}
@@ -934,17 +865,22 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             </Grid>
           </DialogContent>
           <DialogActions className={classes.dialogAction}>
-            <Button className={classes.primary} onClick={handleClickDialogClose} color="primary" style={{ marginBottom: "40px" }}>
+            <Button
+              className={classes.primary}
+              onClick={handleClickDialogClose}
+              color="primary"
+              style={{ marginBottom: '40px' }}
+            >
               Cancel
             </Button>
             <Button
               className={classes.secondary}
-              disabled={!nameAutValue || !nameAutValue.name || nameAutValue.name === "" ? true : false}
+              disabled={!nameAutValue || !nameAutValue.name || nameAutValue.name === '' ? true : false}
               onClick={handleClickAdd}
               color="secondary"
-              style={{ marginBottom: "40px", marginRight: "20px" }}
+              style={{ marginBottom: '40px', marginRight: '20px' }}
             >
-              {selectedRow ? "Update" : "Add"}
+              {selectedRow ? 'Update' : 'Add'}
             </Button>
           </DialogActions>
         </RightDialog>

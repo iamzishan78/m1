@@ -34,7 +34,9 @@ export default function DeleteConfirmationDialogContent(props) {
               ? props.deleteFunc(props.m1nSelectedRowsIds, props.completelyDelete === "false" ? false : true)
               : props.deleteFunc(props.m1nSelectedRowsIds);
             props.onClose();
-            props.setM1nSelectedRowsIndexes([]);
+            if (props.setM1nSelectedRowsIndexes) {
+              props.setM1nSelectedRowsIndexes([]);
+            }
           }}
           color="secondary"
         >

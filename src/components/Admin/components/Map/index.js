@@ -74,12 +74,28 @@ const StyledTab = withStyles((theme) => ({
 
 export default function RevenueStatements() {
   const classes = useStyles();
-
+  const options = [
+    {
+      key: "unit",
+      value: "Unit Interest NRA Calculation",
+      dbKey: "unitNra"
+    },
+    {
+      key: "tract",
+      value: "Tract Interest NRA Calculation",
+      dbKey: "tractNra"
+    }
+  ];
   const [tab, setTab] = useState(0);
+  const [calculationOption, setCalculationOption] = useState(options[0]);
   const [settings, setSettings] = useState();
   const [addOrUpdateWorkspaceSettings] = useMutation(UPSERT_WORKSPACE_SETTINGS);
 
   const { user, workspaceSettings } = useSelector(({ app }) => app);
+
+  const unitFormulaText = "Unit Acres * (Sum of Decimal Interest)"
+  const tractFormulaText = "Tract Gross Acres * Mineral Interest * (RI + ORRI)"
+  const showingFormulaText = calculationOption?.key === 'unit' ? unitFormulaText : tractFormulaText
 
   useEffect(() => {
     if (workspaceSettings) {
@@ -87,13 +103,20 @@ export default function RevenueStatements() {
     }
   }, [workspaceSettings]);
 
-  const onChangeType = (type, value = settings?.map?.unitNra?.value) => {
+  const onChangeType = (key, type, value = settings?.map?.[calculationOption?.dbKey]?.value) => {
+    const updatedSettings = {
+      map: {
+        ...settings?.map,
+        [key]: { type, value }
+      }
+    };
+
     addOrUpdateWorkspaceSettings({
       variables: {
         workspaceSettings: {
           name: workspaceTenantName(),
           modifier: user._id,
-          settings: { map: { unitNra: { type, value } } },
+          settings: updatedSettings,
         },
       },
       refetchQueries: ["getWorkspaceSettings"],
@@ -110,45 +133,49 @@ export default function RevenueStatements() {
       <div className={classes.actionsContainer}>
         <div className={classes.tabsHeader}>
           <StyledTabs value={tab} onChange={(event, tab) => setTab(tab)} aria-label="ant example">
-            <StyledTab id="settings" label="Calculations" />
+            <StyledTab id="settings" label="CALCULATIONS" />
             {/* <StyledTab id="validations" label="Validations" disabled /> */}
           </StyledTabs>
         </div>
       </div>
-      <Filters />
+      <Filters calculationOption={calculationOption} setCalculationOption={setCalculationOption} options={options} />
 
       <div className={classes.contenContainer}>
-        <span>Select the method by which Net Royalty Acres (NRA) should be calculated for unit owners:</span>
+        {calculationOption &&
+          <>
+            <span>Select the method by which Net Royalty Acres (NRA) should be calculated for {calculationOption.key} owners:</span>
 
-        <div className={classes.options}>
-          <RadioGroup column value={settings?.map?.unitNra?.type ?? "standard"} onChange={(event) => onChangeType(event.target.value)}>
-            <FormControlLabel value="standard" control={<Radio />} label="Standard Calculation = Unit Acres * (Sum of Decimal Interests)" />
-            <div>
-              <FormControlLabel value="custom" control={<Radio />} label="Custom Calculation = Unit Acres * (Sum of Decimal Interests) / " />
-              <TextField
-                variant="outlined"
-                margin="dense"
-                disabled={settings?.map?.unitNra?.type !== "custom"}
-                onBlur={(event) => onChangeType("custom", event.target.value)}
-                value={settings?.map?.unitNra?.value}
-                onChange={(event) => {
-                  const _settings = {
-                    ...settings,
-                    map: {
-                      ...settings.map,
-                      unitNra: {
-                        ...settings.map.unitNra,
-                        value: event.target.value,
-                      },
-                    },
-                  };
-                  setSettings(_settings);
-                }}
-              />
+            <div className={classes.options}>
+              <RadioGroup column value={settings?.map?.[calculationOption?.dbKey]?.type ?? "standard"} onChange={(event) => onChangeType(calculationOption?.dbKey, event.target.value)}>
+                <FormControlLabel value="standard" control={<Radio />} label={`Standard Calculation = ${showingFormulaText} ${calculationOption?.key === 'tract' ? "/ 0.125" : ''}`} />
+                <div>
+                  <FormControlLabel value="custom" control={<Radio />} label={`Custom Calculation = ${showingFormulaText} / `} />
+                  <TextField
+                    variant="outlined"
+                    margin="dense"
+                    disabled={settings?.map?.[calculationOption?.dbKey]?.type !== "custom"}
+                    onBlur={(event) => onChangeType(calculationOption.dbKey, "custom", event.target.value)}
+                    value={settings?.map?.[calculationOption?.dbKey]?.value}
+                    onChange={(event) => {
+                      const _settings = {
+                        ...settings,
+                        map: {
+                          ...settings.map,
+                          [calculationOption?.dbKey]: {
+                            ...settings?.map?.[calculationOption?.dbKey],
+                            value: event.target.value,
+                          },
+                        },
+                      };
+                      setSettings(_settings);
+                    }}
+                  />
+                </div>
+              </RadioGroup>
             </div>
-          </RadioGroup>
-        </div>
+          </>
+        }
       </div>
-    </div>
+    </div >
   );
 }
