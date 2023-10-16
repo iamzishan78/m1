@@ -1,5 +1,6 @@
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import { history } from "store";
+import vf_number from "components/Shared/valueformatters/vf_number";
 
 const CampaignsHeadCells = [
   {
@@ -66,7 +67,7 @@ const CampaignsHeadCells = [
       sort: true,
       filter: false,
       customRender: (value, tableMeta) => {
-        return <p>{value.toFixed(2)}</p>;
+        return <p>{vf_number(value.toFixed(0))}</p>;
       },
     },
   },
