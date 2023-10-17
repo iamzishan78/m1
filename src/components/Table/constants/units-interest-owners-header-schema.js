@@ -63,6 +63,16 @@ const UnitInterestsPageHeadCells = (isSnapGrid = false) => [
         },
     },
     {
+        name: 'taxYear',
+        label: 'Tax Year',
+        esKey: 'taxYear.keyword',
+        options: {
+            sort: true,
+            filter: true,
+            isMultiFilter: true,
+        },
+    },
+    {
         name: 'working_interest',
         esKey: 'working_interest',
         type: 'number',
