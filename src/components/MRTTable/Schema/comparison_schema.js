@@ -319,6 +319,7 @@ const ComparisonMeta = {
 			name: 'check._id.keyword',
 			accessorKey: 'check._id',
 			header: 'Check Id',
+			size: 300,
 		},
 
 		{
