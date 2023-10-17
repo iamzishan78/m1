@@ -1,4 +1,6 @@
 import { area, convertArea, length } from "@turf/turf";
+import polylabel from "polylabel";
+import * as turf from "@turf/turf";
 
 export const showIfUserDefinedLayer = (stateApp) => {
     return stateApp.selectedUserDefinedLayer !== null &&
@@ -127,4 +129,42 @@ export const calculateLandArea = (selectedFeature) => {
             return `${formatNumber(Math.round(distanceInMiles * 100) / 100)} miles`;
         }
     }
+};
+
+export const parseUserDefinedLayerFeature = (feature, layer) => {
+    let shapeCenter;
+    if (
+        (layer.layerGeometry === 'LineString' &&
+            feature.geometry.type === 'LineString') ||
+        (layer.layerGeometry === 'MultiLineString' &&
+            feature.geometry.type === 'LineString')
+    ) {
+        const lineLength = turf.length(feature.geometry, { units: 'miles' });
+        const lineCenterGeometry = turf.along(feature.geometry, lineLength / 2, {
+            units: 'miles',
+        });
+        shapeCenter = lineCenterGeometry.geometry.coordinates;
+    } else if (
+        (layer.layerGeometry === 'Circle' &&
+            feature.geometry.type === 'MultiPolygon') ||
+        (layer.layerGeometry === 'Point' && feature.geometry.coordinates.length === 2)
+    ) {
+        shapeCenter = feature.geometry.coordinates;
+    } else if (
+        layer.layerGeometry === 'Polygon' &&
+        feature.geometry.type === 'Polygon'
+    ) {
+        shapeCenter = polylabel(feature.geometry.coordinates);
+    } else {
+        shapeCenter = turf.centroid(feature.geometry)?.geometry?.coordinates;
+    }
+    return {
+        ...feature,
+        properties: {
+            ...feature.properties,
+            shapeCenter,
+        },
+        layer: layer,
+        geometry: feature.geometry || feature._geometry,
+    };
 };
