@@ -73,6 +73,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, uMaxUnitPricing, ...props }) {
+  console.log(selectedRow, props)
   const dispatch = useDispatch();
   const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -494,6 +495,25 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         setValue('ownerType', val);
                       }}
                       value={contact?.ownerType ?? ""}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Tax Year</h3>
+
+                <Controller
+                  control={control}
+                  name="taxYear"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={selectedRow?.taxYear}
+                      inputRef={props.ref}
+                      disabled
+                      fullWidth
+                      defaultValue=""
                     />
                   )}
                 />
