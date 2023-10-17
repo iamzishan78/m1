@@ -52,7 +52,7 @@ function ESAutoCompleteFilter({
 						query: '',
 						field: typeof field === 'string' ? field : undefined,
 						fields: typeof field !== 'string' ? field : undefined,
-						size: 10000,
+						size: 100000,
 					},
 				},
 			});
