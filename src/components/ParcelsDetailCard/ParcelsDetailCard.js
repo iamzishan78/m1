@@ -565,8 +565,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
       </Grid> */}
       <Grid item sm={12}>
         <Taps
-          tabLabels={['Summary', 'Interest Owners', 'Runsheet', 'Wells', 'Documents']}
-          openTabIdex={selectTabIndex}
+          tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "Units", "Documents"]}
+          openTabIdex={props.selectTabIndex}
           tabPanels={[
             <div style={{ overflow: 'overlay', maxHeight: 'calc(100vh - 285px)' }}>
               <ParcelSummary
@@ -640,7 +640,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                 dense
               />
             </div>,
-            <div className={`${classes.subContent} ${classes.parcelDocument}`}>
+            <div className={showSummary ? classes.subContent : classes.subContent2}>
+            </div>,
+            <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
               <RelatedDetailsDocumentTable
                 customLayer={copy(parcelObj)}
                 relatedObjectType="Parcel"
