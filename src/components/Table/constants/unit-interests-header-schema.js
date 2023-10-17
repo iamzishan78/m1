@@ -176,7 +176,14 @@ const UnitInterestsHeadCells = [
     //     }
     // },
     // {
-
+        {
+            name: "taxYear", label: "Tax Year", esKey: 'taxYear.keyword',
+            options: {
+                dbName: "taxYear.keyword",
+                sort: true,
+                filter: true
+            }
+        },
     {
         name: "working_interest", label: "Working Interest", esKey: 'working_interest',
         options: {

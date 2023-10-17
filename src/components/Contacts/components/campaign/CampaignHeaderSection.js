@@ -99,7 +99,7 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
                 Total Unit NRA
               </Typography>
               <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
-                {Math.round(get(campaign, "totalNra", 0))}
+                {vf_number(Math.round(get(campaign, "totalNra", 0)))}
               </Typography>
             </CardContent>
           </Card>
