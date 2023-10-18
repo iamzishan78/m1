@@ -28,8 +28,8 @@ const UnitInterestMeta = {
 			return view;
 		},
 		cssOverride: {
-			top: '199px',
-			left: '45px',
+			top: '161px',
+			left: '25px',
 		},
 	},
 	defaultSort: { field: '_ts', order: 'desc' },

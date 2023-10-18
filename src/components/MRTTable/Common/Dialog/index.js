@@ -39,7 +39,7 @@ function AllDialogs() {
 	const deleteFunc = async IdsToDelete => {
 		Loader.createToast('deletion', 'Deletion in Progress');
 		removeCommonDelete({
-			variables: { tableKey: rest?.tableKey, Ids: IdsToDelete },
+			variables: { tableKey: rest?.tableKey, Ids: IdsToDelete, userId: rest?.userId },
 		}).then(
 			res => {
 				if (res?.data?.gridGenericRemove) {

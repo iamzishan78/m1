@@ -14,8 +14,6 @@ import Tags from 'components/Shared/Tagger';
 import SuggestedTaxOwnersTable from 'components/Table/TaxOwners/SuggestedTaxOwnersTable';
 import AssociatedWellsParcelTable from 'components/Table/Wells/AssociatedWellsParcelTable';
 import RelatedDetailsDocumentTable from 'components/Table/Documents/RelatedDetailsDocumentTable';
-import ParcelDetailsRunsheetTable from 'components/Table/Parcel/ParcelDetailsRunsheetTable';
-import { showSuccessMessage, showErrorMessage, setMapGridCardState } from 'actions';
 import Taps from '../Shared/Taps';
 import { CUSTOMLAYER } from '../../graphQL/useQueryCustomLayer';
 import { UPDATECUSTOMLAYER } from '../../graphQL/useMutationUpdateCustomLayer';
@@ -25,6 +23,7 @@ import { popupController, popupState } from 'hookstate/popupStateController';
 import MRTTable from "components/MRTTable";
 import { tableController, tableGlobalController } from "hookstate/tableController";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
+import { showSuccessMessage, showErrorMessage, setMapGridCardState } from 'actions';
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -499,10 +498,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                 customLayer={copy(parcelObj)}
                 dense
                 header={<RunsheetHeader />}
-                isSnapGrid
                 isCheckboxSticky={true}
               />
-            </div>,
+            </div >,
             <div className={classes.subContent}>
               <AssociatedWellsParcelTable
                 customLayer={copy(parcelObj)}
@@ -552,10 +550,11 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                 dense
               />
             </div>,
-          ]}
+          ]
+          }
         />
-      </Grid>
-    </Grid>
+      </Grid >
+    </Grid >
   ) : (
     <div
       style={{

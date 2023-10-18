@@ -150,15 +150,11 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		const tableMeta = tableState.get({ noproxy: true });
 
 		if (!tableMeta || tableMeta.isFetching) return;
-		if (!tableMeta.pagination.first)
-			callQuery({
-				pageIndex: 0,
-				first: tableStateValues.pageSize,
-				after: null,
-			});
-		else {
-			callQuery();
-		}
+		callQuery({
+			pageIndex: 0,
+			first: tableStateValues?.pageSize || 50,
+			after: null,
+		});
 	}, [
 		tableState.filters,
 		tableState.searchFields,

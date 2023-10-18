@@ -104,17 +104,30 @@ const ApexChart = ({ esFilters, checkData }) => {
 
       const dateData = filteredCheckData.map((check) => {
         let pVolume = 0;
-        check.wells.forEach((well) => {
-          const prod = well.production.find(
-            (p) =>
-              moment(p.data.ReportDate).format("MM/yyyy") === moment(check.date).format("MM/yyyy")
-          );
-          if (prod) {
-            pVolume +=
-              prod.data[`allocated${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`];
-          }
-        });
-        console.log(check.statementVolume, pVolume);
+        if (check?.wells && Array.isArray(check.wells)) {
+          check.wells.forEach((well) => {
+            const prod = well.production.find(
+              (p) =>
+                moment(p.data.ReportDate).format("MM/yyyy") === moment(check.date).format("MM/yyyy")
+            );
+            if (prod) {
+              pVolume +=
+                prod.data[`allocated${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`];
+            }
+          }); check.wells.forEach((well) => {
+            const prod = well.production.find(
+              (p) =>
+                moment(p.data.ReportDate).format("MM/yyyy") === moment(check.date).format("MM/yyyy")
+            );
+            if (prod) {
+              pVolume +=
+                prod.data[`allocated${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`];
+            }
+          });
+        } else {
+          console.error('check.wells is undefined or not an array:', check);
+        }
+
         const overShort = check.statementVolume - pVolume;
         return { label: check.date, data: overShort };
       });

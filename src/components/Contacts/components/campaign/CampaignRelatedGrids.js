@@ -66,6 +66,8 @@ function CamapignRelatedGrids({ campaign }) {
     defaultFilters: [
       { field: 'shape.layer.keyword', value: 'unit' },
       { field: 'campaignName.keyword', value: campaign?.name },
+      { field: "contact.IsDeleted", value: "false" },
+      { field: "shape.IsDeleted", value: "false" }
     ],
     gridViewSettings: {
       label: 'Unit Interest Management',
@@ -87,13 +89,14 @@ function CamapignRelatedGrids({ campaign }) {
         maxHeight: '40%',
       },
     },
-    maxTableHeight: 'calc(100vh - 600px)',
+    // maxTableHeight: 'calc(100vh - 600px)',
+    height: '35vh',
   }), [campaign?.name]);
 
   return (
     <div className={classes.card}>
       <Card className={classes.dockMenu}>
-        <div className={`cancelDraggableEffect ${classes.mainPanelsDiv}`} style={{ position: 'relative' }}>
+        <div className={`cancelDraggableEffect ${searchTapValue.value === 'unitInterests' ? '' : classes.mainPanelsDiv}`} style={{ position: 'relative' }}>
           {/* //// search panel //// */}
           <Grid container direction="row" style={{ height: '100%' }}>
             <Grid item md={2} className={classes.selectorOptions}>

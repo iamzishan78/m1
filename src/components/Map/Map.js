@@ -34,11 +34,10 @@ import { setMainMapState, showErrorMessage } from "../../actions";
 import mapboxgl from "mapbox-gl";
 import * as turf from "@turf/turf";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import polylabel from "polylabel";
 import { CircleMode, DragCircleMode, DirectMode, SimpleSelectMode } from "mapbox-gl-draw-circle";
 import StaticMode from "@mapbox/mapbox-gl-draw-static-mode";
 // import { SRMode } from 'mapbox-gl-draw-scale-rotate-mode';
-import { SRMode, TxCenter } from './MapBoxDrawRotate/index';
+import { SRMode } from './MapBoxDrawRotate/index';
 import DrawRectangle from "mapbox-gl-draw-rectangle-mode";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
@@ -84,10 +83,13 @@ import {
   defaultLayers,
   setLayerLabelLayout,
   showIfUserDefinedLayer,
+  ifFileShapeSource,
+  parseUserDefinedLayerFeature,
 } from "components/Shared/functions/shapeLayer";
 import LayerSelectionPopup from "./components/popup/LayerSelectionPopup";
 import { useHookstate } from '@hookstate/core';
 import { hookStateApp } from "hookstate";
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -1284,35 +1286,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         });
       } else {
         // For user defined layers details popup
-        let shapeCenter,
-          featureLayer = { ...feature.layer, ...hookState.layers.get().find((l) => l.identifier === feature.layer.id) };
-        if (
-          (featureLayer.layerGeometry === "LineString" && feature.geometry.type === "LineString") ||
-          (featureLayer.layerGeometry === "MultiLineString" && feature.geometry.type === "LineString")
-        ) {
-          const lineLength = turf.length(feature.geometry, { units: "miles" });
-          const lineCenterGeometry = turf.along(feature.geometry, lineLength / 2, { units: "miles" });
-          shapeCenter = lineCenterGeometry.geometry.coordinates;
-        } else if (
-          (featureLayer.layerGeometry === "Circle" && feature.geometry.type === "MultiPolygon") ||
-          (featureLayer.layerGeometry === "Point" && feature.geometry.coordinates.length === 2)
-        ) {
-          shapeCenter = feature.geometry.coordinates;
-        } else if (featureLayer.layerGeometry === "Polygon" && feature.geometry.type === "Polygon") {
-          shapeCenter = polylabel(feature.geometry.coordinates);
-        } else {
-          shapeCenter = turf.centroid(feature.geometry)?.geometry?.coordinates
-        }
-        selectedUserDefinedLayer = {
-          ...feature,
-          properties: {
-            ...feature.properties,
-            shapeCenter,
-          },
-          layer: featureLayer,
-          geometry: feature.geometry || feature._geometry,
-        };
+        const featureLayer = { ...feature.layer, ...hookState.layers.get().find((l) => l.identifier === feature.layer.id) };
+
+        selectedUserDefinedLayer = parseUserDefinedLayerFeature(feature, featureLayer)
         feature = selectedUserDefinedLayer;
+
         setStateApp((state) => {
           if (state.showDrawShapesPopup) return state;
           drawBoundary(map, selectedUserDefinedLayer);
@@ -1351,7 +1329,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       return false;
     };
 
-    const mapClickHandler = (e) => {
+    const mapClickHandler = async (e) => {
       const map = e.target;
       let layers = [];
       let clusterUDLayers = [];
@@ -1445,6 +1423,81 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       if (isNormalClick && features && features.length > 0) {
         const feature = features[0];
         const layerId = feature.layer.id;
+
+        /* -------------------- Get Full Feature For Shape Files -------------------- */
+        if (ifFileShapeSource(feature.source)) {
+          const { data: fileFeature } = await client.query({
+            query: GET_ES_SIMPLE_SEARCH,
+            variables: {
+              index: "shapefile_flat",
+              pagination: {
+                first: 1,
+                after: null
+              },
+              search: {
+                query: null,
+                fields: [
+                  "*"
+                ],
+              },
+              filters: [
+                {
+                  field: "properties.layerGeometry",
+                  value: feature.properties.layerGeometry
+                },
+                {
+                  field: "properties.layerShapeName",
+                  value: feature.properties.layerShapeName
+                },
+                {
+                  field: "id",
+                  value: feature.id
+                },
+                {
+                  type: "geo_intersects",
+                  field: "geometry",
+                  value: {
+                    type: "point",
+                    coordinates: [e.lngLat.lng, e.lngLat.lat]
+                  },
+                }
+              ]
+            },
+          })
+
+          if (fileFeature.getESSimpleSearch?.hits?.[0]?.geometry) {
+            feature.geometry = fileFeature.getESSimpleSearch.hits[0].geometry
+
+            const bounds = map.getBounds();
+            const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+            const bboxPolygon = turf.bboxPolygon(bbox);
+
+            let isGeometryWithinBbox = false;
+
+            if (feature.geometry.type === 'Polygon')
+              isGeometryWithinBbox = turf.booleanWithin(feature.geometry, bboxPolygon);
+            else
+              for (let i = 0; i < feature.geometry.coordinates.length; i++) {
+                let polygon = turf.polygon(feature.geometry.coordinates[i]);
+                if (turf.booleanWithin(polygon, bboxPolygon)) {
+                  isGeometryWithinBbox = true;
+                  break;
+                }
+              }
+
+            if (!isGeometryWithinBbox) {
+              const combined = turf.combine(turf.featureCollection([feature]))
+              const bbox = turf.bbox(combined)
+              map?.fitBounds(
+                [
+                  [bbox[0], bbox[1]], // southwestern corner of the bounds
+                  [bbox[2], bbox[3]] // northeastern corner of the bounds
+                ],
+                { padding: { top: 40, bottom: 40, left: 40, right: 40 }, easing: () => 1, }
+              )
+            }
+          }
+        }
 
         switch (true) {
           case clusterUDLayers.indexOf(layerId) > -1:

@@ -541,7 +541,7 @@ const ContactMeta = {
 				{ label: 'Yes', value: 'true' },
 				{ label: 'No', value: 'false' },
 			],
-			Cell: ({ renderedCellValue }) => (renderedCellValue === 'true' ? 'Yes' : 'No'),
+			Cell: ({ row }) => (row?.original?.isPurchased === 'true' ? 'Yes' : 'No'),
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,

@@ -52,7 +52,7 @@ function ESAutoCompleteFilter({
 						query: '',
 						field: typeof field === 'string' ? field : undefined,
 						fields: typeof field !== 'string' ? field : undefined,
-						size: 10000,
+						size: 100000,
 					},
 				},
 			});
@@ -107,8 +107,16 @@ function ESAutoCompleteFilter({
 	} else if (multiple && !Array.isArray(filterValue)) {
 		filterValue = []
 		tableController(tableKey).clearFilter(field.replace('.keyword', ''))
-	} else if (type === 'date' && filterValue) {
-		filterValue = formatDate(filterValue, false)
+	} else if (type === 'date' && (typeof filterValue === 'string' ? filterValue : filterValue.length)) {
+		if (typeof filterValue === 'string') {
+			filterValue = formatDate(filterValue, false);
+		} else if (typeof filterValue === 'object' && !Array.isArray(filterValue)) {
+			const formattedGte = formatDate(filterValue?.gte, false);
+			const formattedLte = formatDate(filterValue?.lte, false);
+			filterValue = `${formattedGte} to ${formattedLte}`;
+		} else if (Array.isArray(filterValue)) {
+			filterValue = filterValue.map(val => formatDate(val, false));
+		}
 	}
 	const id = Array.isArray(field) ? field.join(' ') : field
 	return (
@@ -149,7 +157,14 @@ function ESAutoCompleteFilter({
 				}
 
 				const value = multiple
-					? option.map(option => (typeof option === 'object' ? option.value : option))
+					? option.map(option => {
+						if (typeof option === 'object') {
+							return option.value
+						} else {
+							const foundOption = _.find(options, { label: option });
+							return foundOption ? foundOption.value : option;
+						}
+					})
 					: option.value;
 				setFilterValue(value);
 

@@ -7,7 +7,7 @@ import { copy } from 'components/Shared/functions';
 import { vf_currency_dollar } from 'components/Shared/valueformatters/vf_currency';
 import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
-import { GET_REVENUE_ANALYTICS_COUNT } from 'graphQL/useQueryRevenueAnalyticsCounts';
+import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -80,6 +80,10 @@ const useStyles = makeStyles(() => ({
 function AnalyticsCards(props) {
   const classes = useStyles();
   const [isFiltered, setFiltered] = useState(null);
+  const [propertyNumbers, setPropertyNumbers] = useState(0);
+  const [checkNumbers, setCheckNumbers] = useState(0);
+  const [misMatchedInterestsCount, setMisMatchedInterestsCount] = useState(0);
+  const [sumPotentialGainLoss, setSumPotentialGainLoss] = useState(0);
 
   const tableState = tableController(props.esIndex).useState(['filters', 'data']);
   const tableStateValues = tableState.stateValues;
@@ -96,7 +100,7 @@ function AnalyticsCards(props) {
     fetchPolicy: 'no-cache',
   });
 
-  const [getRevenueAnalyticsCount] = useLazyQuery(GET_REVENUE_ANALYTICS_COUNT, {
+  const [getCardsCount] = useLazyQuery(GET_ES_AGGS_LIST, {
     fetchPolicy: 'no-cache',
   });
 
@@ -114,24 +118,11 @@ function AnalyticsCards(props) {
       });
     });
 
-    const propertyNumbersPromise = new Promise((resolve, reject) => {
-      getPropertyNumbers({
-        variables: {
-          index: 'checkdetailsinterestscomparison_flat',
-          filters: [...(tableStateValues?.filters || []), { field: 'property.IsDeleted', value: false, type: 'term' }],
-          filterKey: 'property.number.keyword',
-          filterAggs: { query: '', field: 'property.number.keyword', size: tableStateValues?.data?.total || 0 },
-        },
-        onCompleted: res => resolve(res?.getESSimpleFilter?.hits),
-        onError: error => reject(error),
-      });
-    });
-
     const checkNumbersPromise = new Promise((resolve, reject) => {
       getCheckNumbers({
         variables: {
           index: 'checkdetailsinterestscomparison_flat',
-          filters: [...(tableStateValues?.filters || [])],
+          filters: [...(tableStateValues?.filters || []), { field: "IsDeleted", value: false, type: 'term' }],
           filterKey: 'check.checkNumber.keyword',
           filterAggs: { query: '', field: 'check.checkNumber.keyword', size: tableStateValues?.data?.total || 0 },
         },
@@ -141,42 +132,45 @@ function AnalyticsCards(props) {
     });
 
     const otherSummaryPromise = new Promise((resolve, reject) => {
-      getRevenueAnalyticsCount({
+      getCardsCount({
         variables: {
-          index: 'checkdetailsinterestscomparison_flat',
+          esIndex: 'checkdetailsinterestscomparison_flat',
           filters: [...(tableStateValues?.filters || [])],
-          filterKey: 'property._id.keyword',
-          filterAggs: { query: '', field: 'property._id.keyword', size: tableStateValues?.data?.total || 0 },
+          aggs: {
+            sumPotentialGainLoss: {
+              sum: {
+                field: "potentialGainLoss"
+              }
+            },
+            sumMisMatchedInterest: {
+              sum: {
+                field: "isMisMatchedInterest"
+              }
+            }
+          }
         },
-        onCompleted: res => resolve(res?.getRevenueAnalyticsCounts?.result),
+        onCompleted: res => resolve(res?.getESAggsList?.aggregations),
         onError: error => reject(error),
       });
     });
 
-    const [propertiesCount, revenueComparisonAnalytics, propertyNumbersHits, checkNumbersHits] = await Promise.all([
+    const [propertiesCount, revenueComparisonAnalytics, checkNumbersHits] = await Promise.all([
       propertiesPromise,
       otherSummaryPromise,
-      propertyNumbersPromise,
       checkNumbersPromise,
     ]);
-    return { propertiesCount, revenueComparisonAnalytics, propertyNumbersHits, checkNumbersHits };
+    return { propertiesCount, revenueComparisonAnalytics, checkNumbersHits };
   };
 
   useEffect(() => {
     if (!tableStateValues?.data?.total) return;
     (async () => {
-      const { propertiesCount, revenueComparisonAnalytics, propertyNumbersHits, checkNumbersHits } =
+      const { propertiesCount, revenueComparisonAnalytics, checkNumbersHits } =
         await getRevenueComparisonAnalytics();
-      const propertyNumbers = propertyNumbersHits ? propertyNumbersHits.map(hit => hit.key) : [];
-      const checkNumbers = checkNumbersHits ? checkNumbersHits.map(hit => hit.key) : [];
-      props.onGettingAnalytics({
-        propertiesCount,
-        checksCount: revenueComparisonAnalytics?.distinctChecksCount,
-        misMatchedInterestsCount: revenueComparisonAnalytics?.misMatchedCount,
-        potentialGainLossSum: revenueComparisonAnalytics?.potentialGainLossSum[0]?.totalSum,
-        propertyNumbers,
-        checkNumbers,
-      });
+      setPropertyNumbers(propertiesCount || 0)
+      setCheckNumbers(checkNumbersHits?.length || 0)
+      setMisMatchedInterestsCount(revenueComparisonAnalytics?.sumMisMatchedInterest?.value || 0)
+      setSumPotentialGainLoss(revenueComparisonAnalytics?.sumPotentialGainLoss?.value || 0)
     })();
   }, [tableState?.filters, tableState?.data?.total]);
 
@@ -201,7 +195,7 @@ function AnalyticsCards(props) {
               Total Properties
             </Typography>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
-              {props?.propertiesCount || 0}
+              {propertyNumbers}
             </Typography>
           </CardContent>
         </Card>
@@ -213,7 +207,7 @@ function AnalyticsCards(props) {
               Total Checks
             </Typography>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography}>
-              {props?.checksCount || 0}
+              {checkNumbers}
             </Typography>
           </CardContent>
         </Card>
@@ -238,7 +232,7 @@ function AnalyticsCards(props) {
               </IconButton>
             </Typography>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography} style={{ color: 'red' }}>
-              {props?.misMatchedInterestsCount || 0}
+              {misMatchedInterestsCount}
             </Typography>
           </CardContent>
         </Card>
@@ -250,7 +244,7 @@ function AnalyticsCards(props) {
               Potential Gain/Loss
             </Typography>
             <Typography variant="h6" component="div" className={classes.cardNumberTypography} style={{ color: 'red' }}>
-              {vf_currency_dollar(props?.potentialGainLossSum, 2)}
+              {vf_currency_dollar(sumPotentialGainLoss, 2)}
             </Typography>
           </CardContent>
         </Card>
