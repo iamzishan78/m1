@@ -38,7 +38,19 @@ const useStyles = makeStyles((theme) => ({
 function AddTractUnitDialog(props) {
   const classes = useStyles();
   const { control, reset } = useForm();
-
+  const dialogFieldsKeys = [
+    { name: "uName", label: "Unit Name" },
+    { name: "uNumber", label: "Unit Number" },
+    { name: "uType", label: "Unit Type" },
+    { name: "uStatus", label: "Unit Status" },
+    { name: "uAcres", label: "Unit Acres" },
+    { name: "uPrimaryOperator", label: "Current Operator" },
+    { name: "uUnitPricing", label: "Target Unit Pricing (per NRA)" },
+    { name: "uMaxUnitPricing", label: "Max Unit Pricing (per NRA)" },
+    { name: "qualifier", label: "Qualifier" },
+    { name: "reviewer", label: "Reviewer" },
+    { name: "campaignNames", label: "Campaign" },
+  ];
   const [loading, setLoading] = useState(false);
   const [selectedShapeLayer, setSelectedShapeLayer] = useState(null);
 
@@ -89,6 +101,24 @@ function AddTractUnitDialog(props) {
     });
   };
 
+  const DialogFields = () => {
+    return dialogFieldsKeys.map(({ name, label }) => (
+      <Controller
+        key={name}
+        as={TextField}
+        control={control}
+        variant="outlined"
+        margin="dense"
+        name={name}
+        label={label}
+        InputLabelProps={{ shrink: true }}
+        fullWidth
+        disabled
+        defaultValue={""}
+      />
+    ));
+  };
+
   return (
     <>
       <RightDialog
@@ -125,138 +155,7 @@ function AddTractUnitDialog(props) {
               shapeType="unit"
               setSelectedShapeLayer={setSelectedShapeLayer}
             />
-            <Controller
-              as={TextField}
-              control={control}
-              variant="outlined"
-              margin="dense"
-              name="uName"
-              label={"Unit Name"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue={""}
-            />
-            <Controller
-              as={TextField}
-              control={control}
-              variant="outlined"
-              margin="dense"
-              name="uNumber"
-              label={"Unit Number"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue={""}
-            />
-            <Controller
-              as={TextField}
-              control={control}
-              variant="outlined"
-              margin="dense"
-              name="uType"
-              label={"Unit Type"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue={""}
-            />
-            <Controller
-              as={TextField}
-              control={control}
-              variant="outlined"
-              margin="dense"
-              name="uStatus"
-              label={"Unit Status"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue={""}
-            />
-            <Controller
-              as={TextField}
-              control={control}
-              variant="outlined"
-              margin="dense"
-              name="uAcres"
-              label={"Unit Acres"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue={""}
-            />
-            <Controller
-              as={TextField}
-              control={control}
-              variant="outlined"
-              margin="dense"
-              name="uPrimaryOperator"
-              label={"Current Operator"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue={""}
-            />
-            <Controller
-              as={TextField}
-              control={control}
-              variant="outlined"
-              margin="dense"
-              name="uUnitPricing"
-              label={"Target Unit Pricing (per NRA)"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue={""}
-            />
-            <Controller
-              as={TextField}
-              control={control}
-              variant="outlined"
-              margin="dense"
-              name="uMaxUnitPricing"
-              label={"Max Unit Pricing (per NRA)"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue={""}
-            />
-            <Controller
-              as={TextField}
-              control={control}
-              variant="outlined"
-              margin="dense"
-              name="qualifier"
-              label={"Qualifier"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue={""}
-            />
-            <Controller
-              as={TextField}
-              control={control}
-              variant="outlined"
-              margin="dense"
-              name="reviewer"
-              label={"Reviewer"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue={""}
-            />
-            <Controller
-              as={TextField}
-              control={control}
-              variant="outlined"
-              margin="dense"
-              name="campaignNames"
-              label={"Campaign"}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              disabled
-              defaultValue={""}
-            />
+            <DialogFields />
           </div>
 
           <div className={classes.dialogFooter}>
