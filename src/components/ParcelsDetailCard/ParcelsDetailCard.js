@@ -642,6 +642,7 @@ export default function ParcelsDetailCard(props) {
                 targetLabel="well"
                 header={<WellHeader />}
                 isCheckboxSticky={true}
+                showTracks
               />
             </div>,
             <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>

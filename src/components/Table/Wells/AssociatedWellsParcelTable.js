@@ -96,13 +96,7 @@ function ShapeGridWellsTable(props) {
         searchInput,
     ]);
 
-    useEffect(() => {
-        if (clickedRow) {
-            setSelectedInstrument({
-                ...clickedRow,
-            });
-        }
-    }, [clickedRow]);
+
 
     return (
         <Container
