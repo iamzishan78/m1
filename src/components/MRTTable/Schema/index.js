@@ -10,8 +10,8 @@ export const SCHEMA = {
 	ContactTable: ContactMeta,
 	ComparisonTable: ComparisonMeta,
 	PropertyIntrestTable: PropertyIntrestMeta,
-	OwnersPerUnitTable: OwnersPerUnitMeta,
-	TractPerUnitTable: TractPerUnitMeta,
+	OwnersPerUnitTable: OwnersPerUnitMeta, // unit detail => Interest owner grid schema
+	TractPerUnitTable: TractPerUnitMeta,// tract detail => Interest owner grid schema
 	UnitTable: UnitMeta,
 	UnitInterestTable: UnitInterestMeta,
 };

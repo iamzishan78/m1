@@ -44,6 +44,7 @@ export const CommonSchema = {
 		},
 	},
 	HIDDEN: {
+		header: ' ',
 		isSearchField: false,
 		hidden: true,
 		enablePinning: false,
@@ -72,6 +73,7 @@ export const CommonSchema = {
 		type: 'string',
 	},
 	ACTION_COLUMN: {
+		header: ' ',
 		isPinned: false,
 		hidden: false,
 		filter: true,
