@@ -66,6 +66,8 @@ function CamapignRelatedGrids({ campaign }) {
     defaultFilters: [
       { field: 'shape.layer.keyword', value: 'unit' },
       { field: 'campaignName.keyword', value: campaign?.name },
+      { field: "contact.IsDeleted", value: "false" },
+      { field: "shape.IsDeleted", value: "false" }
     ],
     gridViewSettings: {
       label: 'Unit Interest Management',
