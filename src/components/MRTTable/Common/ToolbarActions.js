@@ -28,7 +28,7 @@ function ToolbarActions({ table, tableKey, children }) {
 		'columnVisibility',
 		'filters',
 		'defaultFilters',
-		'disableDelete',
+		'isDeleteDisabled',
 		'deletKeys',
 	]);
 	const tableStateValues = tableState.stateValues;
@@ -93,7 +93,7 @@ function ToolbarActions({ table, tableKey, children }) {
 					</IconButton>
 				)}
 
-				{(isSomethingSelected && !(!!tableStateValues.disableDelete)) && (
+				{(isSomethingSelected && !(!!tableStateValues.isDeleteDisabled)) && (
 					<IconButton aria-label="delete" onClick={() => handleDelete()}>
 						<Tooltip title="Delete">
 							<DeleteIcon />

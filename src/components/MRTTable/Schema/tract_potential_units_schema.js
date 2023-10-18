@@ -16,7 +16,7 @@ const TractPotentialUnitsMeta = {
     height: '767px',
     isInFiniteScroll: true,
     columnVirtualization: true,
-    disableDelete: true,
+    isDeleteDisabled: true,
     TableSchema: [
         {
             ...CommonSchema.HIDDEN,
