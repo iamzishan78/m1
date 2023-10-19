@@ -50,7 +50,7 @@ function ToolbarActions({ table, tableKey, children }) {
 		const deletedKeys = tableStateValues?.deletedKeys || {
 			mainRecord: { key: '_id' },
 		};
-		const deletedKeysInformation = Object.keys(deletedKeys).reduce((acc, key) => {
+		const deletedData = Object.keys(deletedKeys).reduce((acc, key) => {
 			const { key: originalKey, func } = deletedKeys[key];
 			acc[key] = selectedRows?.length > 0 ? selectedRows.map(item => {
 				let val = _.get(item, originalKey)
@@ -63,7 +63,7 @@ function ToolbarActions({ table, tableKey, children }) {
 		tableGlobalController.updateState({
 			dialog: {
 				type: 'deleteGrid',
-				deletedKeysInformation,
+				deletedData,
 				tableKey,
 				userId: getUser?._id,
 			},

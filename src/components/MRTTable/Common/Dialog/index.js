@@ -36,10 +36,10 @@ function AllDialogs() {
 		});
 	};
 
-	const deleteFunc = async IdsToDelete => {
+	const deleteFunc = async dataToDelete => {
 		Loader.createToast('deletion', 'Deletion in Progress');
 		removeCommonDelete({
-			variables: { tableKey: rest?.tableKey, deletedKeysInformation: IdsToDelete, userId: rest?.userId },
+			variables: { tableKey: rest?.tableKey, deletedData: dataToDelete, userId: rest?.userId },
 		}).then(
 			res => {
 				if (res?.data?.gridGenericRemove) {
@@ -104,7 +104,7 @@ function AllDialogs() {
 						header="Delete row (s)"
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
-						RowsIds={rest?.deletedKeysInformation}
+						deletedData={rest?.deletedData}
 					>
 						{`Do you want to delete the selected row ${rest?.Ids?.length > 1 ? 's' : ''}?`}
 					</DeleteConfirmationDialogContent>

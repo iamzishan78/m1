@@ -30,7 +30,7 @@ export default function DeleteConfirmationDialogContent(props) {
         <Button
           id="deleteButton"
           onClick={() => {
-            props.deleteFunc(props.RowsIds);
+            props.deleteFunc(props.deletedData);
             props.onClose();
           }}
           color="secondary"
