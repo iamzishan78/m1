@@ -42,9 +42,9 @@ const OwnersPerUnitMeta = {
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	defaultFlterMode: 'multiselect',
-	deletKeys: {
-		mainRecord: '_id',
-		parentRecord: 'shape._id'
+	deletedKeys: {
+		mainRecord: { key: '_id' },
+		parentRecord: { key: 'shape._id' }
 	},
 	TableSchema: [
 		{

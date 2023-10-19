@@ -89,7 +89,13 @@ function CamapignRelatedGrids({ campaign }) {
         maxHeight: '40%',
       },
     },
-    // maxTableHeight: 'calc(100vh - 600px)',
+    deletedKeys: {
+      mainRecord: { key: '_id' },
+      campaignName: {
+        key: 'campaignName',
+        func: (campaignName) => campaignName.filter(c => c !== campaign?.name)
+      },
+    },
     height: '35vh',
   }), [campaign?.name]);
 
@@ -129,7 +135,7 @@ function CamapignRelatedGrids({ campaign }) {
                 {searchTapValue.value === 'units' && <CampaignUnitsTable campaign={campaign} header="Units" />}
                 {searchTapValue.value === 'unitInterests' && (
                   // <UnitInterestOwnersTable esIndex="shapeowners_flat" campaignName={campaign?.name} />
-                  <MRTTable name="UnitInterestTable" overrideMeta={overrideMeta} />
+                  <MRTTable name="CompaingUnitInterestTable" overrideMeta={overrideMeta} />
                 )}
               </div>
             </Grid>

@@ -37,9 +37,9 @@ const UnitInterestMeta = {
 	maxTableHeight: 'calc(100vh - 290px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	deletKeys: {
-		mainRecord: '_id',
-		parentRecord: 'shape._id'
+	deletedKeys: {
+		mainRecord: { key: '_id' },
+		parentRecord: { key: 'shape._id' }
 	},
 	TableSchema: [
 		{

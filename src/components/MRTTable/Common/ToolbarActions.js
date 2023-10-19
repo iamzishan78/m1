@@ -5,6 +5,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import GridView from 'components/MRTTable/Common/GridView';
 import { globalStateController } from 'hookstate/globalStateController';
+import _ from 'lodash';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const isAllRowsSelected = table.getIsAllRowsSelected();
@@ -29,7 +30,7 @@ function ToolbarActions({ table, tableKey, children }) {
 		'filters',
 		'defaultFilters',
 		'isDeleteDisabled',
-		'deletKeys',
+		'deletedKeys',
 	]);
 	const tableStateValues = tableState.stateValues;
 
@@ -46,23 +47,23 @@ function ToolbarActions({ table, tableKey, children }) {
 	};
 
 	const handleDelete = () => {
-		const deletedIds = tableStateValues?.deletKeys || {
-			mainRecord: '_id',
+		const deletedKeys = tableStateValues?.deletedKeys || {
+			mainRecord: { key: '_id' },
 		};
-		const selectedIds = Object.keys(deletedIds).reduce((acc, key) => {
-			const originalKey = deletedIds[key];
-			if (originalKey.includes('.')) {
-				const keys = originalKey.split('.');
-				acc[key] = selectedRows?.length > 0 ? selectedRows.map(item => item[keys[0]]?.[keys[1]]) : null;
-			} else {
-				acc[key] = selectedRows?.length > 0 ? selectedRows.map(item => item[originalKey]) : null;
+		const deletedKeysInformation = Object.keys(deletedKeys).reduce((acc, key) => {
+			const { key: originalKey, func } = deletedKeys[key];
+			acc[key] = selectedRows?.length > 0 ? selectedRows.map(item => {
+				let val = _.get(item, originalKey)
+				if (func) val = func(val)
+				return val
 			}
+			) : null;
 			return acc;
 		}, {});
 		tableGlobalController.updateState({
 			dialog: {
 				type: 'deleteGrid',
-				Ids: selectedIds,
+				deletedKeysInformation,
 				tableKey,
 				userId: getUser?._id,
 			},

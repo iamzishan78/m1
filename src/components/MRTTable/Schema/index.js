@@ -16,6 +16,7 @@ export const SCHEMA = {
 	TractPerUnitTable: TractPerUnitMeta,// tract detail => Interest owner grid schema
 	UnitTable: UnitMeta,
 	UnitInterestTable: UnitInterestMeta,
+	CompaingUnitInterestTable: UnitInterestMeta,
 	TractUnitsTable: TractUnitsMeta,
 	TractPotentialUnitsTable: TractPotentialUnitsMeta,
 };
