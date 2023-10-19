@@ -204,7 +204,15 @@ const UnitMeta = {
 			name: 'shapeJson.properties.uUnitPricing.keyword',
 			accessorFn: row => row?.shapeJson?.properties?.uUnitPricing,
 			id: 'shapeJson.properties.uUnitPricing',
-			header: 'Price/Acre',
+			header: 'Target Price/Acre',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.uMaxUnitPricing.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.uMaxUnitPricing,
+			id: 'shapeJson.properties.uMaxUnitPricing',
+			header: 'Max Price/Acre',
 		},
 
 		{

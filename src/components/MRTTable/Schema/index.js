@@ -10,12 +10,15 @@ import TractPotentialUnitsMeta from './tract_potential_units_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
+	CampaignContactTable: ContactMeta,
 	ComparisonTable: ComparisonMeta,
 	PropertyIntrestTable: PropertyIntrestMeta,
 	OwnersPerUnitTable: OwnersPerUnitMeta, // unit detail => Interest owner grid schema
 	TractPerUnitTable: TractPerUnitMeta,// tract detail => Interest owner grid schema
 	UnitTable: UnitMeta,
+	CampaignUnitTable: UnitMeta,
 	UnitInterestTable: UnitInterestMeta,
+	CampaignUnitInterestTable: UnitInterestMeta,
 	TractUnitsTable: TractUnitsMeta,
 	TractPotentialUnitsTable: TractPotentialUnitsMeta,
 };
