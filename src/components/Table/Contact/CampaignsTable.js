@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 // context
-import { Container } from "@material-ui/core";
+import { Container, Dialog } from "@material-ui/core";
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "components/Table/TableESHOC";
 
@@ -14,6 +14,10 @@ import { getRangeFilters } from "utils/helper";
 
 // value formatters
 import convert_date from "components/Shared/valueformatters/convert_date.js";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { UPDATE_CAMPAIGN } from "graphQL/useMutationCampaign";
+import { useMutation } from "@apollo/client";
+import { resetESTableToggle } from "hookstate";
 
 export const getFilters = (appliedFilters) => {
   let filters = [];
@@ -48,6 +52,13 @@ export const getFilters = (appliedFilters) => {
 function CampaignsTable(props) {
   const classes = usetableStyles();
   const { appliedFilters, esIndex, searchFields, contactSearchQuery } = props;
+  const [resetSelectedRow, setResetSelectedRow] = useState(false);
+
+  const [upsertCampaign] = useMutation(UPDATE_CAMPAIGN, {
+    onCompleted: () => {
+      resetESTableToggle.set(!resetESTableToggle.get())
+    }
+  });
 
   const formatHits = (hits) => {
     return hits.map((hit, i) => ({
@@ -74,8 +85,43 @@ function CampaignsTable(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contactSearchQuery, props.filterToggle, appliedFilters]);
 
+
+  const deleteFunc = (ids) => {
+    if (ids.length > 0) {
+      props.setLoading(true);
+      setResetSelectedRow(!resetSelectedRow);
+
+      ids.forEach(id => {
+        upsertCampaign({
+          variables: {
+            campaign: {
+              _id: id,
+              isDeleted: true
+            }
+          },
+          refetchQueries: ["getCampaign", 'getESSimpleSearch', 'getCampaignAnalytics'],
+        });
+      });
+    }
+  };
+
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
+      <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
+        {props.openDialog === "delete" && (
+          <DeleteConfirmationDialogContent
+            header={`Delete Campaign(s)`}
+            onClose={() => props.setOpenDialog(null)}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
+            setM1nSelectedRowsIndexes={props.setSelectedRows}
+          >
+            {`Do you want to delete the selected campaign${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+              }?`}
+          </DeleteConfirmationDialogContent>
+        )}
+      </Dialog>
+
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
@@ -91,8 +137,9 @@ function CampaignsTable(props) {
         onTableChange={props.onTableChange}
         options={{
           ...props.options,
-          customToolbarSelect: () => <div></div>,
+          // customToolbarSelect: () => <div></div>,
         }}
+        resetSelectedRow={resetSelectedRow}
         parent={props.parent}
         setColumnsBase={[]}
         {...props.esHocProps}

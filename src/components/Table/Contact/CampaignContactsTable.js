@@ -7,7 +7,7 @@ import TableHeader from "components/Table/constants/campaign-contacts-header-sch
 import Table from "components/Shared/M1nTable/components/Table";
 import TableESHOC from "../TableESHOC";
 
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { GET_CHECK_PURCHASE_DATA } from "graphQL/useQueryCheckPurchaseData";
 
 import { getContactsAddress, copy } from "utils/helper";
@@ -16,6 +16,7 @@ import { deepEqualObjects } from "components/Shared/functions";
 import { featureFlagChanges } from "components/ContactDetailedInfo/helper";
 import { usetableStyles } from "components/Table/Styles";
 import { uniqBy } from "lodash";
+import { UPSERT_CAMPAIGN_DESCRIPTORS } from "graphQL/useMutationCampaign";
 
 function ContactsTable(props) {
   const classes = usetableStyles();
@@ -28,6 +29,7 @@ function ContactsTable(props) {
 
   // queries
   const [getCheckPurchaseData, { data: ContactPurchaseData }] = useLazyQuery(GET_CHECK_PURCHASE_DATA);
+  const [upsertCampaignDescriptors] = useMutation(UPSERT_CAMPAIGN_DESCRIPTORS);
 
   const addAble = { parent: false, type: "campaignContact" };
   const targetLabel = "contact";
@@ -115,6 +117,26 @@ function ContactsTable(props) {
   props.options.search = false;
   props.options.rowsSelected = props.allRowsSelected;
 
+  const deleteFunc = (contactIds) => {
+    if (!contactIds || contactIds.length === 0) return
+
+    props.setLoading(true);
+
+    const descriptors = contactIds.map(contactId => ({
+      relatedObject: contactId,
+      descriptorObject: props.campaign._id,
+      isDeleted: true
+    }))
+
+    upsertCampaignDescriptors({
+      variables: {
+        descriptors
+      },
+      refetchQueries: ["getCampaign", "getESSimpleSearch"],
+      awaitRefetchQueries: true
+    })
+  }
+
   return (
     <>
       <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
@@ -159,6 +181,7 @@ function ContactsTable(props) {
             open: true,
           }}
           campaign={props.campaign}
+          deleteFunc={deleteFunc}
         />
       </Container>
     </>
