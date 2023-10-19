@@ -304,6 +304,17 @@ export default function UnitDetailCard(props) {
                     </div>,
                   ]}
                 />,
+                <div className={showSummary ? classes.subContent : classes.subContent2}>
+                  <ParcelAgreementTable
+                    esIndex='runsheetinstrument_flat'
+                    parent="associatedRunsheetPerParcel"
+                    targetLabel="parcelRunsheet"
+                    customLayer={copy(uniObj)}
+                    dense
+                    header={<RunsheetHeader />}
+                    isCheckboxSticky={true}
+                  />
+                </div>,
                 <TabPanels
                   value={selectedWellTab}
                   panels={[
