@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import UnitIcon from 'components/Shared/svgIcons/unit';
+import Contact from 'components/Shared/svgIcons/contact';
 
 import Card from '@material-ui/core/Card';
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
@@ -62,10 +63,10 @@ function CamapignRelatedGrids({ campaign }) {
     }
   };
 
-  const overrideMeta = useMemo(() => ({
+  const campaignUnitInterestoverrideMeta = useMemo(() => ({
     defaultFilters: [
       { field: 'shape.layer.keyword', value: 'unit' },
-      { field: 'campaignName.keyword', value: campaign?.name },
+      { field: 'campaignName.keyword', value: campaign?.name || '' },
       { field: "contact.IsDeleted", value: "false" },
       { field: "shape.IsDeleted", value: "false" }
     ],
@@ -99,10 +100,69 @@ function CamapignRelatedGrids({ campaign }) {
     height: '35vh',
   }), [campaign?.name]);
 
+  const campaignUnitoverrideMeta = useMemo(() => ({
+    defaultFilters: [
+      { field: 'layer.keyword', value: 'unit' },
+      { field: 'shapeJson.properties.campaignName.keyword', value: campaign?.name || '' },
+    ],
+    gridViewSettings: {
+      label: 'Unit Management',
+      module: 'Units',
+      Icon: UnitIcon,
+      defaultView: {
+        name: 'All Units',
+        type: 'Default',
+      },
+      handleDefaultView: (view, user) => {
+        if (view?.name === 'My Units') {
+          view.filters[0].value = user._id;
+        }
+        return view;
+      },
+      cssOverride: {
+        top: '532px',
+        left: '274px',
+        maxHeight: '40%',
+      },
+    },
+    height: '35vh',
+  }), [campaign?.name]);
+
+  const campaignContactoverrideMeta = useMemo(() => ({
+    defaultFilters: [
+      { field: 'campaignName.keyword', value: campaign?.name || '' },
+    ],
+    gridViewSettings: {
+      label: 'Contact Management',
+      module: 'Contacts',
+      Icon: Contact,
+      defaultView: {
+        name: 'All Contacts',
+        type: 'Default',
+      },
+      handleDefaultView: (view, user) => {
+        if (view?.name === 'My Contacts') {
+          view.filters[0].value = user.name;
+        }
+        if (view?.name === 'Recently Modified' || view.name === 'Recently Added') {
+          view.filters[0].value.range[view.filters[0].field].gte = moment().subtract(30, 'days').toISOString();
+          view.filters[0].value.range[view.filters[0].field].lte = moment().toISOString();
+        }
+        return view;
+      },
+      cssOverride: {
+        top: '532px',
+        left: '274px',
+        maxHeight: '40%',
+      },
+    },
+    height: '35vh',
+  }), [campaign?.name]);
+
   return (
     <div className={classes.card}>
       <Card className={classes.dockMenu}>
-        <div className={`cancelDraggableEffect ${searchTapValue.value === 'unitInterests' ? '' : classes.mainPanelsDiv}`} style={{ position: 'relative' }}>
+        <div style={{ position: 'relative' }}>
           {/* //// search panel //// */}
           <Grid container direction="row" style={{ height: '100%' }}>
             <Grid item md={2} className={classes.selectorOptions}>
@@ -131,11 +191,17 @@ function CamapignRelatedGrids({ campaign }) {
 
             <Grid item md={10} style={{ padding: '0px 0px', overflow: 'overlay' }}>
               <div style={{ position: 'relative' }} classes={classes.gridTables}>
-                {searchTapValue.value === 'contacts' && <CampaignContactsTable campaign={campaign} />}
-                {searchTapValue.value === 'units' && <CampaignUnitsTable campaign={campaign} header="Units" />}
+                {searchTapValue.value === 'contacts' && (
+                  // <CampaignContactsTable campaign={campaign} />
+                  <MRTTable name="CampaignContactTable" overrideMeta={campaignContactoverrideMeta} />
+                )}
+                {searchTapValue.value === 'units' && (
+                  // <CampaignUnitsTable campaign={campaign} header="Units" />
+                  <MRTTable name="CampaignUnitTable" overrideMeta={campaignUnitoverrideMeta} />
+                )}
                 {searchTapValue.value === 'unitInterests' && (
                   // <UnitInterestOwnersTable esIndex="shapeowners_flat" campaignName={campaign?.name} />
-                  <MRTTable name="CompaingUnitInterestTable" overrideMeta={overrideMeta} />
+                  <MRTTable name="CampaignUnitInterestTable" overrideMeta={campaignUnitInterestoverrideMeta} />
                 )}
               </div>
             </Grid>
