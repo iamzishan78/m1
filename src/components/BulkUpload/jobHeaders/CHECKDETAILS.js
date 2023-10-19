@@ -285,7 +285,7 @@
 
 const checkDetailsKeys = [
     {
-        label: "Payor",
+        label: "Purchaser",
         mapped_key: "",
         required: false,
         actual_key: "check.payor.name",
@@ -313,18 +313,16 @@ const checkDetailsKeys = [
         showAsSample: false
     },
     {
-        label: "Owner Number",
+        label: "M1 Property ID",
         mapped_key: "",
         required: false,
-        actual_key: "check.payee.number",
-        showAsSample: false
+        actual_key: "property._id",
     },
     {
-        label: "Owner Name",
+        label: "Purchaser Prop #",
         mapped_key: "",
         required: false,
-        actual_key: "check.payee.name",
-        showAsSample: false
+        actual_key: "property.purchaserNumber",
     },
     {
         label: "Operator Prop #",
@@ -337,6 +335,20 @@ const checkDetailsKeys = [
         mapped_key: "",
         required: false,
         actual_key: "property.internalID",
+    },
+    {
+        label: "Owner Number",
+        mapped_key: "",
+        required: false,
+        actual_key: "check.payee.number",
+        showAsSample: false
+    },
+    {
+        label: "Owner Name",
+        mapped_key: "",
+        required: false,
+        actual_key: "check.payee.name",
+        showAsSample: false
     },
     {
         label: "Sales Date",
@@ -428,24 +440,14 @@ const checkDetailsKeys = [
         required: false,
         actual_key: "netOwnerValue",
     },
-    {
-        label: "M1 Property ID",
-        mapped_key: "",
-        required: false,
-        actual_key: "property._id",
-    },
-    {
-        label: "Purchaser Prop #",
-        mapped_key: "",
-        required: false,
-        actual_key: "property.purchaserNumber",
-    },
-    {
-        label: "Purchaser Name",
-        mapped_key: "",
-        required: false,
-        actual_key: "property.purchaser.name",
-    },
+
+
+    // {
+    //     label: "Purchaser Name",
+    //     mapped_key: "",
+    //     required: false,
+    //     actual_key: "property.purchaser.name",
+    // },
 ];
 
 export default checkDetailsKeys;
