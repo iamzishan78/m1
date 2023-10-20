@@ -143,6 +143,7 @@ function CamapignRelatedGrids({ campaign }) {
         }
       },
     },
+    isCampaignRefetch: true,
     height: '35vh',
   }), [campaign?.name]);
 
@@ -178,6 +179,7 @@ function CamapignRelatedGrids({ campaign }) {
       mainRecord: { key: '_id' },
       parentRecord: { key: '', func: () => campaign?._id },
     },
+    isCampaignRefetch: true,
     height: '35vh',
   }), [campaign?.name]);
 

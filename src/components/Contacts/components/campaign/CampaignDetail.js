@@ -38,7 +38,7 @@ import { UPDATE_CAMPAIGN } from "graphQL/useMutationCampaign";
 import { GET_CAMPAIGN } from "graphQL/useQueryCampaign";
 import { useStyles } from "./styles";
 import { showInfoMessage } from "actions";
-import { tableGlobalController } from "hookstate/tableController";
+import { tableController, tableGlobalController } from "hookstate/tableController";
 
 const StyledTabs = withStyles({
   root: {
@@ -107,6 +107,13 @@ const CampaignDetail = ({ viewDoc }) => {
   const globalState = tableGlobalController.useState(['refetch'])
   const globalStateValues = globalState.stateValues;
 
+  const campaignContactTableState = tableController("CampaignContactTable").useState(['isCampaignRefetch']);
+  const campaignContactTableStateValues = campaignContactTableState.stateValues;
+
+  const CampaignUnitTable = tableController("CampaignUnitTable").useState(['isCampaignRefetch']);
+  const CampaignUnitTableValues = CampaignUnitTable.stateValues;
+
+
   // const campaign = useMemo(() => get(campaignData, "getCampaign", {}), [campaignData]);
 
   useEffect(() => {
@@ -119,7 +126,7 @@ const CampaignDetail = ({ viewDoc }) => {
   }, [campaignId, getCampaign]);
 
   useEffect(() => {
-    if (campaignId)
+    if (campaignContactTableStateValues.isCampaignRefetch || CampaignUnitTableValues.isCampaignRefetch)
       refetchCampaign()
   }, [globalStateValues?.refetch]);
 
