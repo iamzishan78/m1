@@ -38,6 +38,7 @@ import { UPDATE_CAMPAIGN } from "graphQL/useMutationCampaign";
 import { GET_CAMPAIGN } from "graphQL/useQueryCampaign";
 import { useStyles } from "./styles";
 import { showInfoMessage } from "actions";
+import { tableGlobalController } from "hookstate/tableController";
 
 const StyledTabs = withStyles({
   root: {
@@ -101,7 +102,10 @@ const CampaignDetail = ({ viewDoc }) => {
   const campaignName = watch("name", "");
   const classes = useStyles({ name: campaignName, metaCollapse });
 
-  const [getCampaign, { data: campaignData, loading }] = useLazyQuery(GET_CAMPAIGN);
+  const [getCampaign, { data: campaignData, loading, refetch: refetchCampaign }] = useLazyQuery(GET_CAMPAIGN);
+
+  const globalState = tableGlobalController.useState(['refetch'])
+  const globalStateValues = globalState.stateValues;
 
   // const campaign = useMemo(() => get(campaignData, "getCampaign", {}), [campaignData]);
 
@@ -113,6 +117,11 @@ const CampaignDetail = ({ viewDoc }) => {
         },
       });
   }, [campaignId, getCampaign]);
+
+  useEffect(() => {
+    if (campaignId)
+      refetchCampaign()
+  }, [globalStateValues?.refetch]);
 
   useEffect(() => {
     const camp = get(campaignData, "getCampaign", {});

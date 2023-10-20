@@ -7,7 +7,9 @@ import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'com
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 
 export const tableESState = {};
-export const tableGlobalState = hookstate({});
+export const tableGlobalState = hookstate({
+	refetch: false,
+});
 
 const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -235,7 +237,6 @@ const tableESStateControllerHandler = state => ({
 			tableKey,
 			esIndex,
 			pageSize,
-			refetch: false,
 			isSelectall: isSelectall || false,
 			showColumnFilters: false,
 			data: { rows: [], total: 0 },

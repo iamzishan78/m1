@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import { useMutation } from '@apollo/client';
+import { useMutation, useLazyQuery } from '@apollo/client';
 import ExportContacts from 'components/Shared/ExportContacts';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { AssignOwnerToContactDrawerContainer } from 'store/containers';
@@ -17,11 +17,8 @@ function AllDialogs() {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
 	const { type, ...rest } = stateValues.dialog || {};
 	const tableKey = rest?.tableKey
-	// const tableState = tableController(tableKey).useState(['refetchArray']);
-	// const tableStateValues = tableState.stateValues;
 
 	const [removeCommonDelete] = useMutation(REMOVECOMMONGRIDFUNCTIONALITY, {
-		refetchQueries: ["customLayer"],
 		awaitRefetchQueries: true,
 	});
 
