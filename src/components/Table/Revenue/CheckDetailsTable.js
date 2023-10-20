@@ -100,8 +100,9 @@ function CheckDetailsTable(props) {
 
     const formatHits = (hits) => {
         return hits.map((hit) => {
-            hit.number = hit?.property?.number;
+            hit.purchaserNumber = hit?.property?.purchaserNumber;
             hit.name = hit?.property?.name;
+            hit.number = hit?.property?.number;
             hit.state = hit.property?.state;
             hit.county = hit.property?.county;
             hit.date = hit.date ? convert_date(hit.date) : null;
