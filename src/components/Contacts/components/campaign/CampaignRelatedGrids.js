@@ -174,6 +174,10 @@ function CamapignRelatedGrids({ campaign }) {
         maxHeight: '40%',
       },
     },
+    deletedKeys: {
+      mainRecord: { key: '_id' },
+      parentRecord: { key: '', func: () => campaign?._id },
+    },
     height: '35vh',
   }), [campaign?.name]);
 
