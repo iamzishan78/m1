@@ -180,6 +180,7 @@ function CamapignRelatedGrids({ campaign }) {
       parentRecord: { key: '', func: () => campaign?._id },
     },
     isCampaignRefetch: true,
+    showAddContactButton: false,
     height: '35vh',
   }), [campaign?.name]);
 

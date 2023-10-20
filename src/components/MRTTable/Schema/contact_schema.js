@@ -51,6 +51,7 @@ const ContactMeta = {
 	search: {
 		fields: ["name^4", "_all"]
 	},
+	showAddContactButton: true,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
