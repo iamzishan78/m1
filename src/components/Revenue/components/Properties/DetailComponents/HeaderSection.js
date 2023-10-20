@@ -159,10 +159,18 @@ export default function HeaderSection(props) {
     return () => {
       const number = watch("number");
       const internalID = watch("internalID");
+      const purchaser = watch("purchaser");
+      const purchaserNumber = watch("purchaserNumber");
 
       if (!number && !internalID) {
         dispatch(
           showInfoMessage("Accounting Ref ID or Operator Prop # is required.")
+        );
+        history.goBack();
+      }
+      if (!purchaser || !purchaserNumber) {
+        dispatch(
+          showInfoMessage("Purchaser and Purchaser Prop # are required.")
         );
         history.goBack();
       }
@@ -271,37 +279,37 @@ export default function HeaderSection(props) {
           spacing={1}
           className={classes.fieldsSection}
         >
-            <Grid item xs={5}>
+          <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
                 <div className={classes.label}>M1neral System ID</div>
               </Grid>
               <Grid item xs={8}>
-              <Controller
-                control={control}
-                name="systemId"
-                render={(params) => (
-                  <TextField
-                    {...params}
-                    className={classes.textField}
-                    variant="outlined"
-                    margin="dense"
-                    type="text"
-                    fullWidth
-                    disabled
-                    InputProps={{
-                      readOnly: true,
-                    
-                    }}
-                    value={propertyDetails?._id}
-                  />
-                )}
-              />
+                <Controller
+                  control={control}
+                  name="systemId"
+                  render={(params) => (
+                    <TextField
+                      {...params}
+                      className={classes.textField}
+                      variant="outlined"
+                      margin="dense"
+                      type="text"
+                      fullWidth
+                      disabled
+                      InputProps={{
+                        readOnly: true,
+
+                      }}
+                      value={propertyDetails?._id}
+                    />
+                  )}
+                />
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
 
-        
+
 
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
@@ -457,24 +465,24 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Accounting Ref ID</div>
+                <div className={classes.label}>Purchaser Prop #</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
                   control={control}
-                  name="internalID"
+                  name="purchaserNumber"
                   render={(params) => (
                     <TextField
                       {...params}
                       className={classes.textField}
                       variant="outlined"
                       margin="dense"
-                      placeholder=""
+                      type="text"
                       fullWidth
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      onBlur={(e) => handleUpdate("internalID", e.target.value)}
+                      onBlur={(e) => handleUpdate("purchaserNumber", e.target.value)}
                     />
                   )}
                 />
@@ -516,28 +524,28 @@ export default function HeaderSection(props) {
               </Grid>
             </Grid>
           </Grid>
-          
+
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Purchaser Prop #</div>
+                <div className={classes.label}>Accounting Ref ID</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
                   control={control}
-                  name="purchaserNumber"
+                  name="internalID"
                   render={(params) => (
                     <TextField
                       {...params}
                       className={classes.textField}
                       variant="outlined"
                       margin="dense"
-                      type="text"
+                      placeholder=""
                       fullWidth
                       onChange={(e) => {
                         params.onChange(e.target.value);
                       }}
-                      onBlur={(e) => handleUpdate("purchaserNumber", e.target.value)}
+                      onBlur={(e) => handleUpdate("internalID", e.target.value)}
                     />
                   )}
                 />
@@ -548,7 +556,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Purchaser Prop Description</div>
+                <div className={classes.label}>Purchaser Property Description</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
@@ -573,12 +581,12 @@ export default function HeaderSection(props) {
             </Grid>
           </Grid>
 
-          
+
 
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Purchaser Owner #</div>
+                <div className={classes.label}>Owner #</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
@@ -682,7 +690,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Purchaser Owner Name</div>
+                <div className={classes.label}>Owner Name</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
