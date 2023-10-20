@@ -1399,7 +1399,7 @@ function SubTable(props) {
               column.options = {
                 ...column.options,
                 customRender: (value, tableMeta) => {
-                  if (props.targetLabel === "unit") {
+                  if (props.targetLabel === "unit" || props.targetLabel === 'campaignUnit') {
                     const targetSourceId = tableMeta.rowData[0];
                     const commentValue = tableMeta.rowData[22];
 
@@ -1574,7 +1574,7 @@ function SubTable(props) {
                             getWell({
                               variables: { wellId: value },
                             });
-                          } else if (props.parent === "assocTaxRollInterests" && (props.targetLabel === "unit" || props.targetLabel === 'contactUnits')) {
+                          } else if (props.parent === "assocTaxRollInterests" && (props.targetLabel === "unit" || props.targetLabel === 'campaignUnit' || props.targetLabel === 'contactUnits')) {
                             let selectedUnit = props.rows.find((row) => {
                               return row.shape._id === tableMeta.rowData[2];
                             })?.shape;
@@ -2068,7 +2068,7 @@ function SubTable(props) {
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
-                  if (props.parent === "assocTaxRollInterests" && props.targetLabel === "unit") {
+                  if (props.parent === "assocTaxRollInterests" && (props.targetLabel === "unit" || props.targetLabel === 'campaignUnit')) {
                     targetSourceId = tableMeta.rowData[2];
                   }
                   if (props.parent === "TractInterestsTable" && props.targetLabel === "tractInterest") {
@@ -2351,7 +2351,7 @@ function SubTable(props) {
                   if (props.parent === "assocTaxRollInterests" && props.targetLabel === "parcel") {
                     targetSourceId = tableMeta.rowData[15];
                   }
-                  if (props.parent === "assocTaxRollInterests" && props.targetLabel === "unit") {
+                  if (props.parent === "assocTaxRollInterests" && (props.targetLabel === "unit" || props.targetLabel === 'campaignUnit')) {
                     targetSourceId = tableMeta.rowData[2];
                   }
                   if (props.parent === "TractInterestsTable" && props.targetLabel === "tractInterest") {
@@ -3041,7 +3041,7 @@ function SubTable(props) {
                       // we will need to somehow eventually refactor this as it is annoying
                       */}
 
-                      {/* {props.targetLabel === "unit" && column.name === "name" && (
+                      {/* {(props.targetLabel === "unit" || props.targetLabel === 'campaignUnit') && column.name === "name" && (
 
                           <div>
                           <div
