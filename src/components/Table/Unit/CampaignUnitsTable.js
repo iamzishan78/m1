@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Container } from "@material-ui/core";
+import { Container, Dialog } from "@material-ui/core";
 import { debounce, get } from "lodash";
 import moment from "moment";
 
@@ -15,9 +15,14 @@ import TableHeader from "components/Table/constants/campaign-units-header-schema
 
 // Utilities
 import { usetableStyles } from "components/Table/Styles";
+import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { useMutation } from "@apollo/client";
+import { REMOVE_CAMPAIGN_FROM_CUSTOMLAYER } from "graphQL/useMutationCampaign";
 
 function MapGridUnitTable(props) {
   const classes = usetableStyles();
+
+  const [removeCampaignFromCustomLayer] = useMutation(REMOVE_CAMPAIGN_FROM_CUSTOMLAYER);
 
   const setTableMeta = React.useMemo(
     () =>
@@ -73,8 +78,52 @@ function MapGridUnitTable(props) {
 
   }, [props.campaign]);
 
+  const deleteFunc = (unitIds) => {
+    if (!unitIds || unitIds.length === 0) return
+
+    props.setLoading(true);
+
+    const customlayers = props.selectedRowsValues.map(row => ({
+      _id: row._id,
+      shapeJson: {
+        ...row.shapeJson,
+        properties: {
+          ...row.shapeJson.properties,
+          campaignName: row.shapeJson.properties.campaignName?.filter?.(name => name !== props.campaign.name) || []
+        }
+      }
+    }))
+
+    removeCampaignFromCustomLayer({
+      variables: {
+        campaignId: props.campaign._id,
+        customlayers,
+      },
+      onCompleted: () => {
+        props.setLoading(false)
+      },
+      refetchQueries: ["getCampaign", "getESSimpleSearch"],
+      awaitRefetchQueries: true
+    })
+  }
+
   return (
     <Container maxWidth={false} className={classes.container} id={props.id ? props.id : props.parent}>
+      <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
+        {props.openDialog === "delete" && (
+          <DeleteConfirmationDialogContent
+            header={`Delete Record(s)`}
+            onClose={() => props.setOpenDialog(null)}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
+            setM1nSelectedRowsIndexes={props.setSelectedRows}
+          >
+            {`Do you want to delete the selected record${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+              }?`}
+          </DeleteConfirmationDialogContent>
+        )}
+      </Dialog>
+
       <Table
         style={{ backgroundColor: "#fff" }}
         header={props.header}
@@ -94,6 +143,7 @@ function MapGridUnitTable(props) {
         }}
         parent={props.parent}
         setColumnsBase={[]}
+        deleteFunc={deleteFunc}
       />
     </Container>
   );
