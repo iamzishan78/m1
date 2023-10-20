@@ -104,7 +104,11 @@ export default function CampaignNameField(props) {
   }, [campaignfiltersData]);
 
   useEffect(() => {
-    const campaignName = props.value ? typeof props.value === "string" ? [props.value] : props.value.filter(item => item.trim() !== "") : [];
+    const campaignName = props.value
+      ? typeof props.value === 'string'
+        ? [props.value]
+        : props.value.filter(item => item && item?.trim() !== '')
+      : [];
 
     setInputValue(campaignName);
   }, [props.value]);

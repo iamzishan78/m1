@@ -54,13 +54,19 @@ addAfterLabel(unit, 'Unit Acres', {
 })
 
 addAfterLabel(unit, 'Unit Acres', {
-    label: "Unit Pricing",
+    label: "Target Price",
     mapped_key: "",
     required: true,
     actual_key: "shape.uUnitPricing",
 })
 
-addAfterLabel(unit, 'Unit Pricing', {
+addAfterLabel(unit, 'Target Price', {
+    label: "Max Price",
+    mapped_key: "",
+    actual_key: "shape.uMaxUnitPricing",
+})
+
+addAfterLabel(unit, 'Max Price', {
     label: "Unit Campaign",
     mapped_key: "",
     actual_key: "shape.campaignName",
