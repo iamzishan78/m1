@@ -7,14 +7,14 @@ const RevenueStatementHeadCells = [
         name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
     },
     {
-        name: "number", label: "Property #", esKey: 'property.number.keyword', options: { display: false, sort: false, filter: true, style: { minWidth: 250 }, }
+        name: "purchaserNumber", label: "Purchaser Prop #", esKey: 'property.purchaserNumber.keyword', options: { display: false, sort: false, filter: true, style: { minWidth: 250 }, }
     },
     {
         name: "name", label: "Property Name", esKey: 'property.name.keyword', options: { display: false, sort: false, filter: true }
     },
     {
         /// this is the control column for properties 
-        name: "number",
+        name: "purchaserNumber",
         label: "Property",
         // esKey: 'property.number.keyword',
         options: {
@@ -35,14 +35,16 @@ const RevenueStatementHeadCells = [
                 value={value?.split("_")?.[0]
                     ? tableMeta?.rowData[2] ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[2]}` : value
                     : tableMeta?.rowData[2]}
-                link={`/revenue/property/details/${tableMeta.rowData[20]}`}
+                link={`/revenue/property/details/${tableMeta.rowData[21]}`}
                 onClick={(e) => {
                     e.stopPropagation();
                 }}
             />,
         },
     },
-
+    {
+        name: "number", label: "Operator Prop #", esKey: 'property.number.keyword', options: { display: false, sort: false, filter: true, style: { minWidth: 250 }, }
+    },
     {
         name: "state", label: "State", esKey: 'property.state.keyword', options: { sort: true, filter: true }
     },

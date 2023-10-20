@@ -162,12 +162,12 @@ export default function HeaderSection(props) {
       const purchaser = watch("purchaser");
       const purchaserNumber = watch("purchaserNumber");
 
-      if (!number && !internalID) {
-        dispatch(
-          showInfoMessage("Accounting Ref ID or Operator Prop # is required.")
-        );
-        history.goBack();
-      }
+      // if (!number && !internalID) {
+      //   dispatch(
+      //     showInfoMessage("Accounting Ref ID or Operator Prop # is required.")
+      //   );
+      //   history.goBack();
+      // }
       if (!purchaser || !purchaserNumber) {
         dispatch(
           showInfoMessage("Purchaser and Purchaser Prop # are required.")
