@@ -125,6 +125,24 @@ function CamapignRelatedGrids({ campaign }) {
         maxHeight: '40%',
       },
     },
+    deletedKeys: {
+      mainRecord: { key: '_id' },
+      parentRecord: { key: '', func: () => campaign?._id },
+      customlayers: {
+        key: 'shapeJson',
+        func: (shapeJson) => {
+          return {
+            shapeJson: {
+              ...shapeJson,
+              properties: {
+                ...shapeJson.properties,
+                campaignName: shapeJson?.properties?.campaignName?.filter?.(name => name !== campaign?.name) || []
+              }
+            }
+          }
+        }
+      },
+    },
     height: '35vh',
   }), [campaign?.name]);
 
