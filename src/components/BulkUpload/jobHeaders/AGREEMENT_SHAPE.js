@@ -66,7 +66,7 @@ const Agreement = [
     actual_key: "effectiveDate",
   },
   {
-    label: "Term(months)",
+    label: "Primary Term(months)",
     mapped_key: "",
     required: false,
     actual_key: "agreementTerm",
@@ -78,22 +78,34 @@ const Agreement = [
     actual_key: "expirationDate",
   },
   {
+    label: "Extension Term(months)",
+    mapped_key: "",
+    required: false,
+    actual_key: "extensionTerm",
+  },
+  {
+    label: "Extension Expiration Date",
+    mapped_key: "",
+    required: true,
+    actual_key: "extensionDate",
+  },
+  {
     label: "Bonus Payment",
     mapped_key: "",
     required: true,
     actual_key: "bounusPayment",
   },
   {
+    label: "Agreement Royalty(%)",
+    mapped_key: "",
+    required: true,
+    actual_key: "agmtRoyalty",
+  },
+  {
     label: "Approval Status",
     mapped_key: "",
     required: true,
     actual_key: "approvalStatus",
-  },
-  {
-    label: "Extension Date",
-    mapped_key: "",
-    required: true,
-    actual_key: "extensionDate",
   },
   {
     label: "Description",
