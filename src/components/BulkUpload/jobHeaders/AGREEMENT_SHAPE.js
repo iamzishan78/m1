@@ -179,5 +179,29 @@ const Agreement = [
     required: true,
     actual_key: "internalCompany",
   },
+  {
+    label: "Agmt Report Gross",
+    mapped_key: "",
+    required: true,
+    actual_key: "reportGrossAcres",
+  },
+  {
+    label: "Agmt Gross",
+    mapped_key: "",
+    required: true,
+    actual_key: "grossAcres",
+  },
+  {
+    label: "Agmt Net",
+    mapped_key: "",
+    required: true,
+    actual_key: "netAcres",
+  },
+  {
+    label: "Agmt Co Net",
+    mapped_key: "",
+    required: true,
+    actual_key: "companyNetAcres",
+  },
 ];
 export default Agreement;
