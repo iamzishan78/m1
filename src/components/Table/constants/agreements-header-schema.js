@@ -151,7 +151,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
   },
   {
     name: "agreementTerm",
-    label: "Term",
+    label: "Primary Term (Mo)",
     esKey: "shapeJson.properties.agreementTerm.keyword",
     options: {
       dbName: " shapeJson.properties.agreementTerm",
@@ -171,8 +171,18 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     },
   },
   {
+    name: "extensionTerm",
+    label: "Extension Term (Mo)",
+    esKey: "shapeJson.properties.extensionTerm.keyword",
+    options: {
+      dbName: " shapeJson.properties.extensionTerm",
+      sort: true,
+      filter: true,
+    },
+  },
+  {
     name: "extensionDate",
-    label: "Ext Date",
+    label: "Extension Exp Date",
     esKey: "shapeJson.properties.extensionDate.keyword",
     options: {
       dbName: "shapeJson.properties.extensionDate",
