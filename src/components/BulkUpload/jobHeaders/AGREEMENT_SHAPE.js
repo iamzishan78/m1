@@ -96,6 +96,12 @@ const Agreement = [
     actual_key: "bounusPayment",
   },
   {
+    label: "Agreement Royalty(%)",
+    mapped_key: "",
+    required: true,
+    actual_key: "agmtRoyalty",
+  },
+  {
     label: "Approval Status",
     mapped_key: "",
     required: true,

@@ -90,6 +90,15 @@ const tableData = [
     },
   },
   {
+    label: "Agreement Royalty (%)",
+    type: "text",
+    key: "agmtRoyalty",
+    // formatValue: (value) => (value ? `$ ${value}` : ""),
+    InputProps: {
+      endAdornment: <InputAdornment position="positionEnd">%</InputAdornment>,
+    },
+  },
+  {
     label: "Acquisition ID",
     type: "autocomplete",
     key: "acquisitionID",

@@ -102,6 +102,15 @@ const fieldsList = (activeUser) => {
       },
     },
     {
+      label: "Agreement Royalty (%)",
+      type: "text",
+      key: "agmtRoyalty",
+      // formatValue: (value) => (value ? `$ ${value}` : ""),
+      InputProps: {
+        endAdornment: <InputAdornment position="positionEnd">%</InputAdornment>,
+      },
+    },
+    {
       label: "Approval Status",
       type: "autocomplete",
       key: "approvalStatus",

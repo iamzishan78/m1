@@ -1,5 +1,8 @@
 import { GlobalStickyStyles } from "GlobalSettings";
 
+//value formatters
+import vf_currency from "components/Shared/valueformatters/vf_currency";
+
 const AgreementsHeadCells = (isSnapGrid = false) => [
   {
     name: "_id",
@@ -189,6 +192,23 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     },
     custom: {
       isDate: true,
+    },
+  },
+  {
+    name: "bounusPayment",
+    label: "Bonus Payment",
+    esKey: "shapeJson.properties.bounusPayment.keyword",
+    options: {
+      dbName: "shapeJson.properties.bounusPayment",
+      filter: true, customRender: (value) => vf_currency(value) ,
+    },
+  },
+  {
+    name: "agmtRoyalty",
+    label: "Agmt Royalty(%)",
+    esKey: "shapeJson.properties.agmtRoyalty.keyword",
+    options: {
+      dbName: "shapeJson.properties.agmtRoyalty",
     },
   },
   {
