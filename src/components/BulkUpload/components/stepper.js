@@ -208,7 +208,7 @@ export default function CustomizedSteppers(props) {
     setButtonTitle(
       stateApp.activeStepNumber >= steps.length - 2 ? (stateApp.activeStepNumber === steps.length - 1 ? "Close" : "Upload") : "Continue"
     );
-  }, []);
+  }, [stateApp.activeStepNumber, steps.length]);
 
   useEffect(() => {
     if (createJobData?.createJob && jobId) {

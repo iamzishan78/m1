@@ -72,7 +72,7 @@ const fieldsList = (activeUser) => {
       key: "effectiveDate",
     },
     {
-      label: "Term (months)",
+      label: "Primary Term (months)",
       type: "number",
       key: "agreementTerm",
     },
@@ -82,7 +82,12 @@ const fieldsList = (activeUser) => {
       key: "expirationDate",
     },
     {
-      label: "Extension Date",
+      label: "Extension Term (months)",
+      type: "number",
+      key: "extensionTerm",
+    },
+    {
+      label: "Extension Expiration Date",
       type: "date",
       key: "extensionDate",
     },
@@ -94,6 +99,15 @@ const fieldsList = (activeUser) => {
       // formatValue: (value) => (value ? `$ ${value}` : ""),
       InputProps: {
         startAdornment: <InputAdornment position="start">$</InputAdornment>,
+      },
+    },
+    {
+      label: "Agreement Royalty (%)",
+      type: "text",
+      key: "agmtRoyalty",
+      // formatValue: (value) => (value ? `$ ${value}` : ""),
+      InputProps: {
+        endAdornment: <InputAdornment position="positionEnd">%</InputAdornment>,
       },
     },
     {

@@ -784,7 +784,8 @@ function AddAgreementOwnerAndTractDialog(props) {
       />
     )}
 
-    {interestMapping?.['Lease Royalty Interest']?.includes(layerType) && (
+
+    {/* {interestMapping?.['Lease Royalty Interest']?.includes(layerType) && (
       <Controller
         control={control}
         name="lease_royalty_interest"
@@ -804,7 +805,7 @@ function AddAgreementOwnerAndTractDialog(props) {
           />
         )}
       />
-    )}
+    )} */}
 
     {interestMapping?.['Royalty Interest']?.includes(layerType) && (
       <Controller
