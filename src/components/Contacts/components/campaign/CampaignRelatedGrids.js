@@ -216,15 +216,15 @@ function CamapignRelatedGrids({ campaign }) {
 
             <Grid item md={10} style={{ padding: '0px 0px', overflow: 'overlay' }}>
               <div style={{ position: 'relative' }} classes={classes.gridTables}>
-                {searchTapValue.value === 'contacts' && (
+                {(searchTapValue.value === 'contacts' && campaign?.name) && (
                   // <CampaignContactsTable campaign={campaign} />
                   <MRTTable name="CampaignContactTable" overrideMeta={campaignContactoverrideMeta} />
                 )}
-                {searchTapValue.value === 'units' && (
+                {(searchTapValue.value === 'units' && campaign?.name) && (
                   // <CampaignUnitsTable campaign={campaign} header="Units" />
                   <MRTTable name="CampaignUnitTable" overrideMeta={campaignUnitoverrideMeta} />
                 )}
-                {searchTapValue.value === 'unitInterests' && (
+                {(searchTapValue.value === 'unitInterests' && campaign?.name) && (
                   // <UnitInterestOwnersTable esIndex="shapeowners_flat" campaignName={campaign?.name} />
                   <MRTTable name="CampaignUnitInterestTable" overrideMeta={campaignUnitInterestoverrideMeta} />
                 )}
