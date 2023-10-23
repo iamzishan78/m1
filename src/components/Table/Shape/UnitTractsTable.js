@@ -90,7 +90,8 @@ function UnitTractsTable(props) {
     if (tableData?.hits?.length > 0) {
       let hits = tableData?.hits
       const isStateTx = !!hits.find((hit) => hit.state === 'TX')
-      hits.map((hit) => {
+      hits.forEach((hit) => {
+        hit.uAcres = hit.shape?.shapeJson?.properties?.uAcres || hit.uAcres;
         hit.parcelId = hit?.parcel?._id;
       });
       props.setRows(hits);
@@ -225,6 +226,7 @@ function UnitTractsTable(props) {
         onClose={() =>
           setAddToTable(false)
         }
+        uAcres={props.customLayer?.shapeJson?.properties?.uAcres}
       />}
 
       <Dialog open={openDialog ? true : false} onClose={() => setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
