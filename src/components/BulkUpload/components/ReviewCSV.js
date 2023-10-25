@@ -61,20 +61,20 @@ const table = {
 };
 
 export default function MaterialTableDemo() {
-  const { jobStateValues } = jobController.useState(
+  const { m1neralHeaders, jobStateValues } = jobController.useState(
     ['csvDataToSend', 'uploaderFormValues', 'm1neralHeaders'],
     'jobStateValues'
   );
 
-  let actual_columns = jobController.m1neralHeaders;
+  let columns = useMemo(() => {
+    const actual_columns = jobStateValues.m1neralHeaders.map((element) => ({
+      ...element,
+      title: element.label,
+      field: element.actual_key,
+    }));
 
-  let columns = () => {
-    actual_columns.forEach((element) => {
-      element.title = element.label;
-      element.field = element.actual_key;
-    });
     return actual_columns;
-  };
+  }, [m1neralHeaders])
 
   const checkProperties = (obj) => {
     for (var key in obj) {
@@ -111,7 +111,7 @@ export default function MaterialTableDemo() {
         <MaterialTable
           title="Contacts"
           icons={tableIcons}
-          columns={columns()}
+          columns={columns}
           data={jobStateValues.csvDataToSend}
           editable={{
             onRowAdd: jobController.onRowAdd,
