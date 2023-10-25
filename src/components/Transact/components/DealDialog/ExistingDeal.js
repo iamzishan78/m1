@@ -14,6 +14,7 @@ import { GET_SHAPE_OWNERS_DATA } from "graphQL/useQueryGetShapeOwnersData";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
 import { GET_PARCEL_OWNERS_DATA } from "graphQL/useQueryGetParcelOwnersData";
 import { UPDATEPARCELOWNER } from "graphQL/useMutationUpdateParcelOwner";
+import _ from "lodash";
 
 
 export default function ExistingDeal({ contactId, handleClickDialogClose }) {
@@ -50,7 +51,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 
     useEffect(() => {
         if (dealsData) {
-            setOpenDeals(dealsData?.openDeals?.deals);
+            setOpenDeals(_.uniqBy(dealsData?.openDeals?.deals, '_id'));
         }
     }, [dealsData]);
 
@@ -89,7 +90,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
                 refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
                 awaitRefetchQueries: true,
             });
-        }else if(stateApp?.addType === "tractInterests"){
+        } else if (stateApp?.addType === "tractInterests") {
             const dealName = dealsData?.openDeals?.deals.find((deal) => deal._id === dealId).name;
             const parcelOwnersData = (parcelOwners.getParcelOwnersData).map((parcelOwner) => {
                 parcelOwner.deals = parcelOwner.deals ? parcelOwner.deals : [];
@@ -110,7 +111,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
                 });
             });
             await Promise.all(parcelOwnerPromises);
-        }else {
+        } else {
             await dealDescriptor({
                 variables: {
                     deal: {
@@ -185,7 +186,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
                 <Grid item container xs={12}  >
                     <Grid item xs={11} style={{ minHeight: "35px" }}>
                         <Typography variant="h4" className={classes.heading}>
-                        Add {stateApp?.addType ? stateApp.addType : "Contact"} to Deal
+                            Add {stateApp?.addType ? stateApp.addType : "Contact"} to Deal
                         </Typography>
 
                     </Grid>
@@ -206,7 +207,7 @@ export default function ExistingDeal({ contactId, handleClickDialogClose }) {
 
                 <Grid className={classes.searchDeal}>
                     <InputLabel className={classes.label}>
-                        {stateApp?.addType? "Select a deal to associate selected interests" : "Search for existing deal to associate to contact"}
+                        {stateApp?.addType ? "Select a deal to associate selected interests" : "Search for existing deal to associate to contact"}
                     </InputLabel>
 
                     <Autocomplete
