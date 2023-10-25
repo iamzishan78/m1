@@ -1,7 +1,6 @@
-import React, { useEffect, forwardRef } from "react";
+import React, { useEffect, forwardRef, useMemo } from "react";
 import get from "lodash/get";
 import MaterialTable from "material-table";
-import { AppContext } from "../../../AppContext";
 import AddBox from "@material-ui/icons/AddBox";
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
 import Check from "@material-ui/icons/Check";
@@ -18,6 +17,7 @@ import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 import { TablePagination } from "@material-ui/core";
+import { jobController } from "hookstate/jobStateController";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -61,8 +61,12 @@ const table = {
 };
 
 export default function MaterialTableDemo() {
-  const [stateApp, setStateApp] = React.useContext(AppContext);
-  let actual_columns = stateApp.m1neralHeaders;
+  const { jobStateValues } = jobController.useState(
+    ['csvDataToSend', 'uploaderFormValues', 'm1neralHeaders'],
+    'jobStateValues'
+  );
+
+  let actual_columns = jobController.m1neralHeaders;
 
   let columns = () => {
     actual_columns.forEach((element) => {
@@ -83,18 +87,18 @@ export default function MaterialTableDemo() {
 
   useEffect(() => {
     let temp_state = [];
-    stateApp.csvDataToSend.forEach((element) => {
+    jobStateValues.csvDataToSend.forEach((element) => {
       let temp = { ...element };
       temp.leadSource = null;
       temp.tableData = null;
-      if (checkProperties(temp) == false) {
-        temp_state.push({ ...element, ...get(stateApp, "uploaderFormValues", {}) });
+      if (checkProperties(temp) === false) {
+        temp_state.push({ ...element, ...get(jobStateValues, "uploaderFormValues", {}) });
       }
     });
-    setStateApp({
-      ...stateApp,
+
+    jobController.updateState({
       csvDataToSend: temp_state,
-    });
+    })
   }, []);
 
   return (
@@ -108,54 +112,11 @@ export default function MaterialTableDemo() {
           title="Contacts"
           icons={tableIcons}
           columns={columns()}
-          data={stateApp.csvDataToSend}
+          data={jobStateValues.csvDataToSend}
           editable={{
-            onRowAdd: (newData) =>
-              new Promise((resolve) => {
-                setTimeout(() => {
-                  resolve();
-                  setStateApp((prevState) => {
-                    const csvDataToSend = [
-                      ...prevState.csvDataToSend,
-                    ];
-                    csvDataToSend.push(newData);
-                    return { ...prevState, csvDataToSend };
-                  });
-                }, 600);
-              }),
-            onRowUpdate: (newData, oldData) =>
-              new Promise((resolve) => {
-                setTimeout(() => {
-                  resolve();
-                  if (oldData) {
-                    setStateApp((prevState) => {
-                      const csvDataToSend = [
-                        ...prevState.csvDataToSend,
-                      ];
-                      csvDataToSend[
-                        csvDataToSend.indexOf(oldData)
-                      ] = newData;
-                      return { ...prevState, csvDataToSend };
-                    });
-                  }
-                }, 600);
-              }),
-            onRowDelete: (oldData) =>
-              new Promise((resolve) => {
-                setTimeout(() => {
-                  resolve();
-                  setStateApp((prevState) => {
-                    const csvDataToSend = [
-                      ...prevState.csvDataToSend,
-                    ];
-                    csvDataToSend.splice(
-                      csvDataToSend.indexOf(oldData),
-                      1
-                    );
-                    return { ...prevState, csvDataToSend };
-                  });
-                }, 600);
-              }),
+            onRowAdd: jobController.onRowAdd,
+            onRowUpdate: jobController.onRowUpdate,
+            onRowDelete: jobController.onRowDelete,
           }}
           components={{
             Pagination: (props) => (

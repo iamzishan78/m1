@@ -24,6 +24,7 @@ import {
 } from "store/type";
 import { showErrorMessage } from "actions";
 import { getPolygonString } from "components/Shared/functions";
+import { jobController } from "hookstate/jobStateController";
 
 function* getShapeOwnersAndCount(action) {
   try {
@@ -257,10 +258,7 @@ function* execAsyncExportJob(action) {
       },
     });
 
-    setStateApp((state) => ({
-      ...state,
-      bulkUpload: !state.bulkUpload,
-    }));
+    jobController.toggleBulkUpload()
 
     yield put(execAsyncExportJobAction.FULLFILLED({}));
   } catch (error) {
