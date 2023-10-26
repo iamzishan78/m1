@@ -212,6 +212,7 @@ const OwnersPerUnitMeta = {
 			header: 'Competitor Offer Price',
 			isSearchField: false,
 			type: 'number',
+			size: 300,
 			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
 

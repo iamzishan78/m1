@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
 import { IconButton } from '@material-ui/core';
 import Contact_card from 'components/Shared/svgIcons/contact_card';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(() => ({
 	icons: {
@@ -47,8 +48,16 @@ function IsContactCell({ contactId }) {
 					history.push(`/contact/details/${contactId}`);
 				}}
 				aria-label="show contact"
+				target="_blank"
 			>
-				<Contact_card style={{ margin: '4px' }} />
+				<Link
+					to={
+						`/contact/details/${contactId}/?tenant=${window.sessionStorage.getItem("tenantName")}`
+					}
+					onClick={(e) => e.preventDefault()}>
+					<Contact_card style={{ margin: "4px" }} />
+				</Link>
+
 			</IconButton>
 		</Tooltip>
 	);
