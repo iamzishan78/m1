@@ -9,6 +9,7 @@ import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 export const tableESState = {};
 export const tableGlobalState = hookstate({
 	refetch: false,
+	tabKey: 0
 });
 
 const handleVisiblityMenu = () => {

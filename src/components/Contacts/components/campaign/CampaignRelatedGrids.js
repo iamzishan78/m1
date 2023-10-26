@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 import Contact from 'components/Shared/svgIcons/contact';
@@ -11,6 +11,7 @@ import CampaignContactsTable from 'components/Table/Contact/CampaignContactsTabl
 import UnitInterestOwnersTable from 'components/Table/Unit/UnitInterestOwnersTable';
 import { campaignInitialData } from './data';
 import MRTTable from 'components/MRTTable';
+import { tableGlobalController } from 'hookstate/tableController';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -55,12 +56,12 @@ const useStyles = makeStyles(theme => ({
 
 function CamapignRelatedGrids({ campaign }) {
   const classes = useStyles();
-  const [searchTapValue, SearchTapValue] = useState(campaignInitialData[0]);
+  const globalSelectedTabKey = tableGlobalController.useState(['tabKey'])?.stateValues
 
   const setSearchTapValue = state => {
-    if (searchTapValue !== state) {
-      SearchTapValue(state);
-    }
+    tableGlobalController.updateState({
+      tabKey: state?.index
+    });
   };
 
   const campaignUnitInterestoverrideMeta = useMemo(() => ({
@@ -97,7 +98,7 @@ function CamapignRelatedGrids({ campaign }) {
         func: (campaignName) => campaignName.filter(c => c !== campaign?.name)
       },
     },
-    height: '35vh',
+    maxTableHeight: '35vh',
   }), [campaign?.name]);
 
   const campaignUnitoverrideMeta = useMemo(() => ({
@@ -144,7 +145,7 @@ function CamapignRelatedGrids({ campaign }) {
       },
     },
     isCampaignRefetch: true,
-    height: '35vh',
+    maxTableHeight: '35vh',
   }), [campaign?.name]);
 
   const campaignContactoverrideMeta = useMemo(() => ({
@@ -181,7 +182,7 @@ function CamapignRelatedGrids({ campaign }) {
     },
     isCampaignRefetch: true,
     showAddContactButton: false,
-    height: '35vh',
+    maxTableHeight: '35vh'
   }), [campaign?.name]);
 
   return (
@@ -201,7 +202,7 @@ function CamapignRelatedGrids({ campaign }) {
                   return (
                     <ListItem
                       button
-                      selected={row.value === searchTapValue.value}
+                      selected={row.value === globalSelectedTabKey.tabKey}
                       onClick={() => setSearchTapValue(row)}
                     >
                       <ListItemIcon style={{ minWidth: '40px' }}>
@@ -216,15 +217,15 @@ function CamapignRelatedGrids({ campaign }) {
 
             <Grid item md={10} style={{ padding: '0px 0px', overflow: 'overlay' }}>
               <div style={{ position: 'relative' }} classes={classes.gridTables}>
-                {(searchTapValue.value === 'contacts' && campaign?.name) && (
+                {(globalSelectedTabKey.tabKey === 0 && campaign?.name) && (
                   // <CampaignContactsTable campaign={campaign} />
                   <MRTTable name="CampaignContactTable" overrideMeta={campaignContactoverrideMeta} />
                 )}
-                {(searchTapValue.value === 'units' && campaign?.name) && (
+                {(globalSelectedTabKey.tabKey === 1 && campaign?.name) && (
                   // <CampaignUnitsTable campaign={campaign} header="Units" />
                   <MRTTable name="CampaignUnitTable" overrideMeta={campaignUnitoverrideMeta} />
                 )}
-                {(searchTapValue.value === 'unitInterests' && campaign?.name) && (
+                {(globalSelectedTabKey.tabKey === 2 && campaign?.name) && (
                   // <UnitInterestOwnersTable esIndex="shapeowners_flat" campaignName={campaign?.name} />
                   <MRTTable name="CampaignUnitInterestTable" overrideMeta={campaignUnitInterestoverrideMeta} />
                 )}
