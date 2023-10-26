@@ -171,7 +171,6 @@ const tableESStateControllerHandler = state => ({
 									setFilterValue: column.setFilterValue,
 									filterSelectOptions: column.columnDef.filterSelectOptions,
 									filterValue: column?.getFilterValue() || '',
-									advanceFilter: column.columnDef.advanceFilter || false,
 								}}
 								multiple={false}
 							/>
@@ -194,7 +193,6 @@ const tableESStateControllerHandler = state => ({
 									type: column.columnDef.type,
 									setFilterValue: column.setFilterValue,
 									filterValue: column?.getFilterValue() || [],
-									advanceFilter: column.columnDef.advanceFilter || false,
 								}}
 								multiple
 							/>
