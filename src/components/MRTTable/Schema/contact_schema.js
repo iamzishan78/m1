@@ -9,6 +9,7 @@ import Contact from 'components/Shared/svgIcons/contact';
 import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
 import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/ContactToolbar';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 
 const esIndex = 'contacts_flat';
 
@@ -557,7 +558,14 @@ const ContactMeta = {
 		},
 
 		CommonSchema.TAGS,
-		CommonSchema.COMMENTS,
+
+		{
+			...CommonSchema.COMMENTS,
+			Cell: ({ renderedCellValue, row }) => {
+				const id = row.getValue('_id');
+				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'contact'} />;
+			},
+		},
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'actionMenu',

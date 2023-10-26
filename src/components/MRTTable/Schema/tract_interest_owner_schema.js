@@ -7,6 +7,7 @@ import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActi
 import TractInterestOwnerToolBar from 'components/MRTTable/TablesOverride/TractInterestOwnerTable/TractInterestOwnerToolBar';
 import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 
 const esIndex = 'shapeowners_flat';
 
@@ -331,7 +332,13 @@ const TractPerUnitMeta = {
 			},
 		},
 
-		CommonSchema.COMMENTS,
+		{
+			...CommonSchema.COMMENTS,
+			Cell: ({ renderedCellValue, row }) => {
+				const id = row.getValue('_id');
+				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'Unit Ownership'} />;
+			},
+		},
 
 		{
 			...CommonSchema.ACTION_COLUMN,

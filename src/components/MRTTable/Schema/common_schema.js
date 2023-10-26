@@ -1,5 +1,4 @@
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 
 export const CommonSchema = {
 	COMMENTS: {
@@ -18,10 +17,6 @@ export const CommonSchema = {
 		enableColumnFilter: false,
 		enableColumnOrdering: false,
 		enableResizing: false,
-		Cell: ({ renderedCellValue, row }) => {
-			const id = row.getValue('_id');
-			return <CommentCell id={id} value={renderedCellValue.length} />;
-		},
 	},
 	TAGS: {
 		name: 'tags.tag.keyword',

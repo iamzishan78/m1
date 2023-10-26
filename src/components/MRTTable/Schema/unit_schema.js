@@ -3,6 +3,7 @@ import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map'
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 import { formatDate } from 'components/Shared/functions';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 
 const esIndex = 'shapes_flat';
 
@@ -204,7 +205,15 @@ const UnitMeta = {
 		},
 
 		CommonSchema.TAGS,
-		CommonSchema.COMMENTS,
+
+		{
+			...CommonSchema.COMMENTS,
+			Cell: ({ renderedCellValue, row }) => {
+				const id = row.getValue('_id');
+				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'unit'} />;
+			},
+		},
+
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'coordinates',

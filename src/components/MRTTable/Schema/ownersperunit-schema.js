@@ -9,6 +9,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import ListChips from 'components/Common/ListChips';
 import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 
 const esIndex = 'shapeowners_flat';
 
@@ -290,7 +291,13 @@ const OwnersPerUnitMeta = {
 			},
 		},
 
-		CommonSchema.COMMENTS,
+		{
+			...CommonSchema.COMMENTS,
+			Cell: ({ renderedCellValue, row }) => {
+				const id = row.getValue('_id');
+				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'Parcel Ownership'} />;
+			},
+		},
 
 		{
 			...CommonSchema.ACTION_COLUMN,
