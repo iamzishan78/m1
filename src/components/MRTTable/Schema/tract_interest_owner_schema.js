@@ -18,7 +18,7 @@ const onClickedRow = selectedRow => {
 	tableGlobalController.updateState({
 		tractInterestDialog: {
 			type: 'addTractInterest',
-			customLayerId: customLayer._id,
+			customLayerId: customLayer?._id,
 			customLayer,
 			selectedRow,
 		},

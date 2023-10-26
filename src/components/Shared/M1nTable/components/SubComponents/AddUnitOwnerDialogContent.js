@@ -44,6 +44,7 @@ import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
 import { Status } from 'components/ContactDetailCard/components/FieldContent';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { tableGlobalController } from 'hookstate/tableController';
+import { calculateStandardNraForUnit } from "utils/calculatedNraHelper"
 
 const useStyles = makeStyles(() => ({
   maxWidth: {
