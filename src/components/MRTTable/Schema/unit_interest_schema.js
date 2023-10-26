@@ -3,6 +3,7 @@ import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import ListChips from 'components/Common/ListChips';
 import { CommonSchema } from './common_schema';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 
 const esIndex = 'shapeowners_flat';
 
@@ -224,7 +225,13 @@ const UnitInterestMeta = {
 			},
 		},
 
-		CommonSchema.TAGS,
+		{
+			...CommonSchema.TAGS,
+			Cell: ({ row }) => {
+				const targetSourceId = row.getValue('_id');
+				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'unit'} />;
+			},
+		},
 	],
 };
 

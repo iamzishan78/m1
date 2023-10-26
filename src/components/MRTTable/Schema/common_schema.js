@@ -1,4 +1,3 @@
-import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 
 export const CommonSchema = {
 	COMMENTS: {
@@ -33,10 +32,6 @@ export const CommonSchema = {
 		enableColumnActions: false,
 		enableColumnOrdering: false,
 		enableResizing: false,
-		Cell: ({ row }) => {
-			const targetSourceId = row.getValue('_id');
-			return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} />;
-		},
 	},
 	HIDDEN: {
 		header: ' ',

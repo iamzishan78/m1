@@ -270,14 +270,10 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.ACTION_COLUMN,
-			name: 'tags.tag.keyword',
-			accessorKey: 'tags.tag',
-			header: 'Tags',
-			size: 270,
+			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('ownerEntity');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} />;
+				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'Unit Ownership'} />;
 			},
 		},
 

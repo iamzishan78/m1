@@ -10,6 +10,7 @@ import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActi
 import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/ContactToolbar';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 
 const esIndex = 'contacts_flat';
 
@@ -557,7 +558,13 @@ const ContactMeta = {
 			Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue, false)}</>,
 		},
 
-		CommonSchema.TAGS,
+		{
+			...CommonSchema.TAGS,
+			Cell: ({ row }) => {
+				const targetSourceId = row.getValue('_id');
+				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'contact'} />;
+			},
+		},
 
 		{
 			...CommonSchema.COMMENTS,

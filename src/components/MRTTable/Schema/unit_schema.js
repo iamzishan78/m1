@@ -4,6 +4,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 import { formatDate } from 'components/Shared/functions';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 
 const esIndex = 'shapes_flat';
 
@@ -204,7 +205,13 @@ const UnitMeta = {
 			Cell: ({ row }) => <div>{formatDate(row.getValue('_ts'), false)}</div>,
 		},
 
-		CommonSchema.TAGS,
+		{
+			...CommonSchema.TAGS,
+			Cell: ({ row }) => {
+				const targetSourceId = row.getValue('_id');
+				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'contact'} />;
+			},
+		},
 
 		{
 			...CommonSchema.COMMENTS,
