@@ -118,14 +118,14 @@ export function workspaceTenantName() {
 }
 
 export function getDateWithoutTime(dateTime) {
-  if (!dateTime || (typeof dateTime !== 'string' && typeof dateTime !== 'number')){
+  if (!dateTime || (typeof dateTime !== 'string' && typeof dateTime !== 'number')) {
     dateTime = "";
-  } 
+  }
 
   if (typeof dateTime === 'number') {
     dateTime = dateTime.toString();
   }
-  
+
   if (dateTime?.includes && dateTime.includes('/')) {
     const splittedDate = dateTime.split("/")
     const newDate = new Date()
@@ -142,4 +142,9 @@ export function getDateWithoutTime(dateTime) {
     newDate.setDate(Number(splittedDate[2]))
     return newDate;
   } else return null;
+}
+
+export const formatDate = (date, simple = true) => {
+  if (!date) return '--'
+  return moment.parseZone(new Date(date)).format(simple ? 'MM/DD/YY' : 'MMMM D, YYYY');
 }
