@@ -333,7 +333,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
 
       if (
-        ((ownerToAdd.contactStatus || selectedRow.contactStatus) &&
+        ((ownerToAdd.contactStatus || selectedRow?.contactStatus) &&
           selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
         ((ownerToAdd.status || selectedRow?.status) &&
           selectedRow?.status !== ownerToAdd.status) ||
