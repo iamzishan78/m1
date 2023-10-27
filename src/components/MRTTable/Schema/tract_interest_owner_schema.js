@@ -35,6 +35,7 @@ const TractPerUnitMeta = {
 	CustomToolBar: TractInterestOwnerToolBar,
 	onClickedRow,
 	defaultSort: { field: '_ts', order: 'asc' },
+	maxTableHeight: 'calc(100vh - 461px)',
 	height: '700px',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
@@ -331,8 +332,8 @@ const TractPerUnitMeta = {
 		{
 			...CommonSchema.COMMENTS,
 			Cell: ({ renderedCellValue, row }) => {
-				const id = row.getValue('_id');
-				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'Unit Ownership'} />;
+				const id = row.getValue('ownerEntity');
+				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'Parcel Ownership'} />;
 			},
 		},
 

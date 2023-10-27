@@ -16,7 +16,7 @@ const UnitMeta = {
 		pageSize: 50,
 	},
 	gridViewSettings: {
-		label: 'Unit Management',
+		label: 'Unit',
 		module: 'Units',
 		Icon: UnitIcon,
 		defaultView: {
@@ -36,7 +36,7 @@ const UnitMeta = {
 	},
 	defaultSort: { field: '_ts', order: 'desc' },
 	defaultFilters: [{ field: 'layer.keyword', value: 'unit' }],
-	maxTableHeight: 'calc(100vh - 290px)',
+	maxTableHeight: 'calc(100vh - 215px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	TableSchema: [
