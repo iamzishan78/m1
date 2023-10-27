@@ -38,7 +38,7 @@ const OwnersPerUnitMeta = {
 	CustomToolBar: OwnersPerUnitToolBar,
 	onClickedRow,
 	defaultSort: { field: '_ts', order: 'asc' },
-	// maxTableHeight: 'calc(100vh - 200px)',
+	maxTableHeight: 'calc(100vh - 489px)',
 	height: '767px',
 	isInFiniteScroll: true,
 	columnVirtualization: true,

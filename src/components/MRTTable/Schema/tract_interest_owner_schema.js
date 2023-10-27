@@ -35,6 +35,7 @@ const TractPerUnitMeta = {
 	CustomToolBar: TractInterestOwnerToolBar,
 	onClickedRow,
 	defaultSort: { field: '_ts', order: 'asc' },
+	maxTableHeight: 'calc(100vh - 461px)',
 	height: '700px',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
