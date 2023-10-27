@@ -16,6 +16,7 @@ function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, modul
 		'columnPinning',
 		'sorting',
 		'showColumnFilters',
+		'columnOrdering',
 	]);
 	const tableStateValues = tableState.stateValues;
 
@@ -91,6 +92,12 @@ function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, modul
 				const pinnedColumns = tableStateValues?.TableSchema?.filter(column => column.isPinned);
 				const pinnedFields = pinnedColumns?.map(column => column.id || column.accessorKey);
 				Controller.setColumnPinning(tableStateValues?.columnPinning, pinnedFields, tableStateValues.TableSchema);
+			}
+			if (selectedGridView?.columnOrdering) {
+				tableState?.columnOrdering?.set(selectedGridView?.columnOrdering);
+			} else {
+				const columnOrder = tableStateValues?.TableSchema.map(column => column.accessorKey || column.id);
+				tableState?.columnOrdering?.set(['mrt-row-select', 'mrt-row-numbers', ...columnOrder]);
 			}
 		}
 		// for groupedField applying functionality will be done here

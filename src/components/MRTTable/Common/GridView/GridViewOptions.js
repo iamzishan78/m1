@@ -320,7 +320,7 @@ function InputField({
 }) {
 	const classes = useStyles();
 	const Controller = tableController(tableKey);
-	const tableState = Controller.useState(['filters', 'columnVisibility', 'sorting', 'groupedField', 'columnPinning']);
+	const tableState = Controller.useState(['filters', 'columnVisibility', 'sorting', 'groupedField', 'columnPinning', 'columnOrdering']);
 	const tableStateValues = tableState.stateValues;
 
 	return (
@@ -369,6 +369,7 @@ function InputField({
 									sorting: tableStateValues?.sorting,
 									columnPinning: tableStateValues?.columnPinning,
 									groupedField: tableStateValues?.groupedField || [],
+									columnOrdering: tableStateValues?.columnOrdering || [],
 								},
 							},
 							refetchQueries: ['getGridViews'],

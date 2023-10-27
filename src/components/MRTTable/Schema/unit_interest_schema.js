@@ -15,7 +15,7 @@ const UnitInterestMeta = {
 		pageSize: 50,
 	},
 	gridViewSettings: {
-		label: 'Unit Interest Management',
+		label: 'Unit Interest',
 		module: 'UnitInterest',
 		Icon: UnitIcon,
 		defaultView: {

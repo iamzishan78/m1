@@ -108,6 +108,9 @@ const tableESStateControllerHandler = state => ({
 			column.enableColumnOrdering = false;
 			return column.id || column.accessorKey;
 		});
+
+		const columnOrder = TableSchema.map(column => column.accessorKey || column.id);
+
 		const tableCss = {
 			'& .MuiDialog-root': {
 				zIndex: '99999',
@@ -258,6 +261,7 @@ const tableESStateControllerHandler = state => ({
 			columnVisibility,
 			defaultSort,
 			filterModes,
+			columnOrdering: ['mrt-row-select', 'mrt-row-numbers', ...columnOrder],
 			columnPinning: {
 				left: [
 					...(pinnedFields.length > 0
@@ -350,6 +354,10 @@ const tableESStateControllerHandler = state => ({
 			state.tableCss?.set(tableCss);
 		}
 		handleVisiblityMenu();
+	},
+
+	setColumnOrdering: order => {
+		if (!deepEqual(state.columnOrdering?.get({ noproxy: true }), order)) state.columnOrdering?.set(order);
 	},
 
 	setPagination: pagination =>

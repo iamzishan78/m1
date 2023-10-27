@@ -42,6 +42,7 @@ const useTableESSimple = tableKey => {
 				id: filter.field,
 			})),
 			columnPinning: tableStateValues?.columnPinning,
+			columnOrder: tableStateValues?.columnOrdering,
 			globalFilter: tableStateValues?.globalFilter || '',
 			columnVisibility: tableStateValues?.columnVisibility,
 			showColumnFilters: tableStateValues?.showColumnFilters,
@@ -55,6 +56,7 @@ const useTableESSimple = tableKey => {
 		tableProps: {
 			initialState: {
 				columnVisibility: tableStateValues?.columnVisibility,
+				columnOrder: tableStateValues?.columnOrdering,
 				expanded: true,
 				grouping: tableStateValues?.groupedField ? [tableStateValues?.groupedField] : [],
 				showColumnFilters: tableStateValues?.showColumnFilters,
@@ -162,6 +164,10 @@ const useTableESSimple = tableKey => {
 						}),
 					});
 				});
+			},
+
+			onColumnOrderChange: (ordering) => {
+				Controller.setColumnOrdering(ordering);
 			},
 
 			muiTableBodyRowProps: row => ({
