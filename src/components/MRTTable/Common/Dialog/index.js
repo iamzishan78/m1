@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import { useMutation } from '@apollo/client';
+import { useMutation, useLazyQuery } from '@apollo/client';
 import ExportContacts from 'components/Shared/ExportContacts';
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { AssignOwnerToContactDrawerContainer } from 'store/containers';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
@@ -16,8 +16,9 @@ import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmation';
 function AllDialogs() {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
 	const { type, ...rest } = stateValues.dialog || {};
+	const tableKey = rest?.tableKey
+
 	const [removeCommonDelete] = useMutation(REMOVECOMMONGRIDFUNCTIONALITY, {
-		refetchQueries: ["customLayer"],
 		awaitRefetchQueries: true,
 	});
 
@@ -39,7 +40,7 @@ function AllDialogs() {
 	const deleteFunc = async dataToDelete => {
 		Loader.createToast('deletion', 'Deletion in Progress');
 		removeCommonDelete({
-			variables: { tableKey: rest?.tableKey, deletedData: dataToDelete, userId: rest?.userId },
+			variables: { tableKey, deletedData: dataToDelete, userId: rest?.userId }
 		}).then(
 			res => {
 				if (res?.data?.gridGenericRemove) {
@@ -68,7 +69,7 @@ function AllDialogs() {
 
 			{type === 'asign' && (
 				<AssignOwnerToContactDrawerContainer
-					header={rest.tableKey}
+					header={tableKey}
 					onClose={handleCloseDialog}
 					rows={rest?.selectedRows}
 					setSelectedRow={updateRows}
@@ -90,7 +91,7 @@ function AllDialogs() {
 			{type === 'exportCompleteGrid' && (
 				<ExportConfirmationDialog
 					table={rest.table}
-					tableKey={rest.tableKey}
+					tableKey={tableKey}
 					header={rest.header}
 					onClose={handleCloseDialog}
 				>

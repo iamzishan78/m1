@@ -164,7 +164,7 @@ export default function CSVFileReader(props) {
   // this function splits an upload array of comma seperated values 
   // it should be used for tag seperation on upload
   const separateValuesWithComas = (data) => {
-    if(!Array.isArray(data)){
+    if (!Array.isArray(data)) {
       throw new Error('Passed argument is not an Array');
     }
     const newData = [];
@@ -299,14 +299,28 @@ export default function CSVFileReader(props) {
         <Grid item xs={12}>
           <div className={classes.csvReader}>
             <CSVReader
-              onDrop={(data) => handleOnDrop(data.filter((el) => el.errors.length === 0))}
+              onDrop={(csvData) => {
+                csvData.forEach(({ data }) => {
+                  Object.entries(data).forEach(([key, value]) => {
+                    if (typeof value !== 'string') return
+
+                    console.log("🚀 ~ file: CSVFileReader.js:308 ~ Object.entries ~ value:", key, value)
+                    data[key] = value.replace('@#$%:', '')
+
+                    if (data[key].startsWith('string=')) data[key] = data[key].replace('string=', '')
+                  })
+                })
+
+                return handleOnDrop(csvData.filter((el) => el.errors.length === 0))
+              }}
+
               onError={handleOnError}
               addRemoveButton
               removeButtonColor="#659cef"
               config={{
                 header: true,
                 transform: (value, header) => {
-                  return value === "" ? undefined : value;
+                  return (!value || value === "") ? undefined : `@#$%:${value}`;
                 },
                 dynamicTyping: true,
               }}
@@ -391,7 +405,7 @@ export default function CSVFileReader(props) {
             </Table>
           </TableContainer> */}
         </div>
-        
+
       </div>
     </div>
   );

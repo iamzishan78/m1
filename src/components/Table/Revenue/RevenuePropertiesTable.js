@@ -39,6 +39,7 @@ function RevenuePropertiesTable(props) {
         hit.status = statusData.find((st) => st.value === hit.status).label;
       }
       hit = props.setGenricData(hit, hit._id, genericDataActions, genericDataActions);
+      hit.purchaserName = hit?.purchaser?.name;
       hit.payorName = hit?.operator?.name;
       hit.wellApiNumber = hit?.wells?.length > 1 ? "MULTIPLE" : hit?.wells && hit?.wells[0] ? hit?.wells[0].apiNumber : "";
       hit.wellName = hit?.wells?.length > 1 ? "MULTIPLE" : hit?.wells && hit?.wells[0] ? hit?.wells[0].wellName : "";

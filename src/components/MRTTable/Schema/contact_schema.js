@@ -9,6 +9,8 @@ import Contact from 'components/Shared/svgIcons/contact';
 import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActionMenu';
 import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/ContactToolbar';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 
 const esIndex = 'contacts_flat';
 
@@ -51,6 +53,7 @@ const ContactMeta = {
 	search: {
 		fields: ["name^4", "_all"]
 	},
+	showAddContactButton: true,
 	TableSchema: [
 		{
 			...CommonSchema.HIDDEN,
@@ -333,6 +336,7 @@ const ContactMeta = {
 			accessorFn: row => row?.contactOwners?.name,
 			id: 'contactOwners.name',
 			header: 'Contact Owner',
+			isExport: 'contactOwners[0].name',
 			Cell: ({ row }) => {
 				const name = row?.original?.contactOwners.map(obj => obj.name)
 				return <p>{name[0]}</p>
@@ -554,8 +558,21 @@ const ContactMeta = {
 			Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue, false)}</>,
 		},
 
-		CommonSchema.TAGS,
-		CommonSchema.COMMENTS,
+		{
+			...CommonSchema.TAGS,
+			Cell: ({ row }) => {
+				const targetSourceId = row.getValue('_id');
+				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'contact'} />;
+			},
+		},
+
+		{
+			...CommonSchema.COMMENTS,
+			Cell: ({ renderedCellValue, row }) => {
+				const id = row.getValue('_id');
+				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'contact'} />;
+			},
+		},
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'actionMenu',

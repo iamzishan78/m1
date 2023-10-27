@@ -291,7 +291,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
     if (typeof globalSelectedTabKey.tabKey === "number")
       setSelectedTab(globalSelectedTabKey.tabKey);
     tableGlobalController.updateState({
-      tabKey: null
+      tabKey: 0
     });
   }, [globalSelectedTabKey.tabKey]);
 

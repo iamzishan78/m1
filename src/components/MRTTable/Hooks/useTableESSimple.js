@@ -126,18 +126,13 @@ const useTableESSimple = tableKey => {
 					const column = tableStateValues.TableSchema.find(
 						column => column.id === item.id || column.accessorKey === item.id
 					);
-					item.id = column?.advanceFilter ? [column.advanceFilter?.field] : item?.id.split(',');
-					const idArray = item?.id;
+					const idArray = item?.id?.split(',');
 					idArray.forEach(idValue => {
-						const isOrFilter = column?.advanceFilter && idValue.split(',').length;
 						const newItem = {
 							id: idValue,
 							value: item.value,
 							type: item?.type,
 						};
-						if (isOrFilter > 1) {
-							newItem.oRFilter = true;
-						}
 						result.push(newItem);
 					});
 				});

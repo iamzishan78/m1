@@ -7,6 +7,7 @@ import ContactActionMenu from 'components/MRTTable/Common/TableCells/ContactActi
 import TractInterestOwnerToolBar from 'components/MRTTable/TablesOverride/TractInterestOwnerTable/TractInterestOwnerToolBar';
 import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 
 const esIndex = 'shapeowners_flat';
 
@@ -17,7 +18,7 @@ const onClickedRow = selectedRow => {
 	tableGlobalController.updateState({
 		tractInterestDialog: {
 			type: 'addTractInterest',
-			customLayerId: customLayer._id,
+			customLayerId: customLayer?._id,
 			customLayer,
 			selectedRow,
 		},
@@ -310,14 +311,10 @@ const TractPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.ACTION_COLUMN,
-			name: 'tags.tag.keyword',
-			accessorKey: 'tags.tag',
-			header: 'Tags',
-			size: 270,
+			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('ownerEntity');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} />;
+				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'Parcel Ownership'} />;
 			},
 		},
 
@@ -331,7 +328,13 @@ const TractPerUnitMeta = {
 			},
 		},
 
-		CommonSchema.COMMENTS,
+		{
+			...CommonSchema.COMMENTS,
+			Cell: ({ renderedCellValue, row }) => {
+				const id = row.getValue('_id');
+				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'Unit Ownership'} />;
+			},
+		},
 
 		{
 			...CommonSchema.ACTION_COLUMN,

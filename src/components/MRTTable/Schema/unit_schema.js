@@ -3,6 +3,8 @@ import FlyToMap from 'components/MRTTable/Common/TableCells/coordinates_fly_map'
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 import { formatDate } from 'components/Shared/functions';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 
 const esIndex = 'shapes_flat';
 
@@ -93,86 +95,31 @@ const UnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'shapeJson.properties.originalProperties.Survey.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.Survey,
-			id: 'shapeJson.properties.originalProperties.Survey',
+			name: 'shapeJson.properties.originalProperties.surveyMerdian.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.surveyMerdian,
+			id: 'shapeJson.properties.originalProperties.surveyMerdian',
 			header: 'Survey/ Meridian',
-			advanceFilter: {
-				field: JSON.stringify([
-					'shapeJson.properties.originalProperties.Survey.keyword',
-					'shapeJson.properties.originalProperties.PrincipalMeridian.keyword',
-				]),
-				oRFilter: true,
-			},
-			Cell: ({ row }) => {
-				const value =
-					row?.original?.shapeJson?.properties?.originalProperties?.Survey ||
-					row?.original?.shapeJson?.properties?.originalProperties?.PrincipalMeridian;
-				return <div>{value}</div>;
-			},
 		},
-
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'shapeJson.properties.originalProperties.Block.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.Block,
-			id: 'shapeJson.properties.originalProperties.Block',
+			name: 'shapeJson.properties.originalProperties.blockTownship.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.blockTownship,
+			id: 'shapeJson.properties.originalProperties.blockTownship',
 			header: 'Block/ Township',
-			advanceFilter: {
-				field: JSON.stringify([
-					'shapeJson.properties.originalProperties.Block.keyword',
-					'shapeJson.properties.originalProperties.Township.keyword',
-				]),
-				oRFilter: true,
-			},
-			Cell: ({ row }) => {
-				const value =
-					row?.original?.shapeJson?.properties?.originalProperties?.Block ||
-					row?.original?.shapeJson?.properties?.originalProperties?.Township;
-				return <div>{value}</div>;
-			},
 		},
-
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'shapeJson.properties.originalProperties.Range.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.Range,
-			id: 'shapeJson.properties.originalProperties.Range',
+			name: 'shapeJson.properties.originalProperties.rangeSection.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.rangeSection,
+			id: 'shapeJson.properties.originalProperties.rangeSection',
 			header: 'Section/ Range',
-			advanceFilter: {
-				field: JSON.stringify([
-					'shapeJson.properties.originalProperties.Range.keyword',
-					'shapeJson.properties.originalProperties.Section.keyword',
-				]),
-				oRFilter: true,
-			},
-			Cell: ({ row }) => {
-				const value =
-					row?.original?.shapeJson?.properties?.originalProperties?.Range ||
-					row?.original?.shapeJson?.properties?.originalProperties?.Section;
-				return <div>{value}</div>;
-			},
 		},
-
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'shapeJson.properties.originalProperties.AbstractName.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.AbstractName,
-			id: 'shapeJson.properties.originalProperties.AbstractName',
+			name: 'shapeJson.properties.originalProperties.abstractNameShortName.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.abstractNameShortName,
+			id: 'shapeJson.properties.originalProperties.abstractNameShortName',
 			header: 'Abstract/ Section',
-			advanceFilter: {
-				field: JSON.stringify([
-					'shapeJson.properties.originalProperties.AbstractName.keyword',
-					'shapeJson.properties.originalProperties.ShortName.keyword',
-				]),
-				oRFilter: true,
-			},
-			Cell: ({ row }) => {
-				const value =
-					row?.original?.shapeJson?.properties?.originalProperties?.AbstractName ||
-					row?.original?.shapeJson?.properties?.originalProperties?.ShortName;
-				return <div>{value}</div>;
-			},
 		},
 
 		{
@@ -258,8 +205,22 @@ const UnitMeta = {
 			Cell: ({ row }) => <div>{formatDate(row.getValue('_ts'), false)}</div>,
 		},
 
-		CommonSchema.TAGS,
-		CommonSchema.COMMENTS,
+		{
+			...CommonSchema.TAGS,
+			Cell: ({ row }) => {
+				const targetSourceId = row.getValue('_id');
+				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'unit'} />;
+			},
+		},
+
+		{
+			...CommonSchema.COMMENTS,
+			Cell: ({ renderedCellValue, row }) => {
+				const id = row.getValue('_id');
+				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'unit'} />;
+			},
+		},
+
 		{
 			...CommonSchema.ACTION_COLUMN,
 			name: 'coordinates',

@@ -9,6 +9,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import ListChips from 'components/Common/ListChips';
 import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 
 const esIndex = 'shapeowners_flat';
 
@@ -18,7 +19,7 @@ const onClickedRow = selectedRow => {
 	tableGlobalController.updateState({
 		ownerPerUnitDialog: {
 			type: 'addOwnerToUnit',
-			shapeId: customLayer._id,
+			shapeId: customLayer?._id,
 			uAcres: customLayer?.shapeJson?.properties?.uAcres,
 			uUnitPricing: customLayer?.shapeJson?.properties?.uUnitPricing,
 			shapeType: 'Unit',
@@ -211,6 +212,7 @@ const OwnersPerUnitMeta = {
 			header: 'Competitor Offer Price',
 			isSearchField: false,
 			type: 'number',
+			size: 300,
 			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
 
@@ -269,14 +271,10 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.ACTION_COLUMN,
-			name: 'tags.tag.keyword',
-			accessorKey: 'tags.tag',
-			header: 'Tags',
-			size: 270,
+			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('ownerEntity');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} />;
+				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'Unit Ownership'} />;
 			},
 		},
 
@@ -290,7 +288,13 @@ const OwnersPerUnitMeta = {
 			},
 		},
 
-		CommonSchema.COMMENTS,
+		{
+			...CommonSchema.COMMENTS,
+			Cell: ({ renderedCellValue, row }) => {
+				const id = row.getValue('_id');
+				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'Parcel Ownership'} />;
+			},
+		},
 
 		{
 			...CommonSchema.ACTION_COLUMN,

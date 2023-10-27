@@ -362,6 +362,18 @@ export function DetailComponents(props) {
           .format("YYYY-MM-DD");
       }
     }
+   //support for extensionTerm
+    if (field === "extensionTerm" || field === "expirationDate") {
+      if (field === "extensionTerm") {
+        shape.properties.extensionDate = moment(shape.properties.expirationDate, "YYYY-MM-DD")
+          .add(parseInt(value), "months")
+          .format("YYYY-MM-DD");
+      } else {
+        shape.properties.extensionDate = moment(value, "YYYY-MM-DD")
+          .add(parseInt(shape.properties.extensionTerm), "months")
+          .format("YYYY-MM-DD");
+      }
+    }
     // Used for Agreement nra, net_acres and grossAcres overidden
     if (value?.overridden?.toString()) {
       set(shape, `properties.overridden.${field}`, value.overridden);

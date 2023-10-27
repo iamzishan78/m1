@@ -1,5 +1,8 @@
 import { GlobalStickyStyles } from "GlobalSettings";
 
+//value formatters
+import vf_currency from "components/Shared/valueformatters/vf_currency";
+
 const AgreementsHeadCells = (isSnapGrid = false) => [
   {
     name: "_id",
@@ -151,7 +154,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
   },
   {
     name: "agreementTerm",
-    label: "Term",
+    label: "Primary Term (Mo)",
     esKey: "shapeJson.properties.agreementTerm.keyword",
     options: {
       dbName: " shapeJson.properties.agreementTerm",
@@ -171,14 +174,41 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     },
   },
   {
+    name: "extensionTerm",
+    label: "Extension Term (Mo)",
+    esKey: "shapeJson.properties.extensionTerm.keyword",
+    options: {
+      dbName: " shapeJson.properties.extensionTerm",
+      sort: true,
+      filter: true,
+    },
+  },
+  {
     name: "extensionDate",
-    label: "Ext Date",
+    label: "Extension Exp Date",
     esKey: "shapeJson.properties.extensionDate.keyword",
     options: {
       dbName: "shapeJson.properties.extensionDate",
     },
     custom: {
       isDate: true,
+    },
+  },
+  {
+    name: "bounusPayment",
+    label: "Bonus Payment",
+    esKey: "shapeJson.properties.bounusPayment.keyword",
+    options: {
+      dbName: "shapeJson.properties.bounusPayment",
+      filter: true, customRender: (value) => vf_currency(value) ,
+    },
+  },
+  {
+    name: "agmtRoyalty",
+    label: "Agmt Royalty(%)",
+    esKey: "shapeJson.properties.agmtRoyalty.keyword",
+    options: {
+      dbName: "shapeJson.properties.agmtRoyalty",
     },
   },
   {
