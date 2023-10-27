@@ -538,7 +538,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     <TextField
                       size="small"
                       type="number"
-                      value={props.value}
+                      value={parseFloat(props.value).toFixed(8)}
                       inputRef={props.ref}
                       onWheel={e => e.target.blur()}
                       onChange={e => {
@@ -560,7 +560,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     <TextField
                       size="small"
                       type="number"
-                      value={props.value}
+                      value={parseFloat(props.value).toFixed(8)}
                       inputRef={props.ref}
                       onWheel={e => e.target.blur()}
                       onChange={e => {
@@ -583,7 +583,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     <TextField
                       size="small"
                       type="number"
-                      value={props.value}
+                      value={parseFloat(props.value).toFixed(8)}
                       inputRef={props.ref}
                       onWheel={e => e.target.blur()}
                       onChange={e => {
@@ -606,7 +606,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     <TextField
                       size="small"
                       type="number"
-                      value={props.value}
+                      value={parseFloat(props.value).toFixed(8)}
                       inputRef={props.ref}
                       onWheel={e => e.target.blur()}
                       onChange={e => {
