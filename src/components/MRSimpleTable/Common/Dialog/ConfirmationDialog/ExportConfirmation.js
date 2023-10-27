@@ -30,7 +30,6 @@ export default function ExportConfirmationDialog({
 
 	const tableState = simpleTableController(tableKey).useState([
 		'TableSchema',
-		'esIndex',
 		'datasets',
 		'globalFilter',
 		'searchFields',
