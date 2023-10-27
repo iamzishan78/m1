@@ -211,6 +211,7 @@ const useTableESSimple = tableKey => {
 				ref: tableContainerRef, // get access to the table container element
 				sx: {
 					maxHeight: tableStateValues?.maxTableHeight,
+					minHeight: tableStateValues?.maxTableHeight,
 					height: tableStateValues?.height,
 				},
 				onScroll: e => fetchMoreOnBottomReached(e.target),

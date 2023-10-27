@@ -35,7 +35,7 @@ const UnitInterestMeta = {
 	},
 	defaultSort: { field: '_ts', order: 'desc' },
 	defaultFilters: [{ field: 'shape.layer.keyword', value: 'unit' }],
-	maxTableHeight: 'calc(100vh - 290px)',
+	maxTableHeight: 'calc(100vh - 215px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	deletedKeys: {
