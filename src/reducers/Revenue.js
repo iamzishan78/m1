@@ -16,6 +16,7 @@ export default function Revenue(state = INIT_STATE, action) {
           _id: eachRow._id,
           name: eachRow.name,
           number: eachRow.number,
+          purchaserName: eachRow?.purchaser?.name,
           payorName: eachRow?.operator?.name,
           state: eachRow.state,
           country: eachRow?.county,

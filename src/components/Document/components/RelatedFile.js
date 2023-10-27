@@ -30,6 +30,7 @@ import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
 import { GET_DOCUMENTS } from "graphQL/useQueryDocuments";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 import AutoCompleteDocumentList from "components/Shared/Forms/Fields/AutoCompleteDocumentList";
+import GenericDateField from "components/Shared/components/Fields/GenericDateFIeld";
 
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";

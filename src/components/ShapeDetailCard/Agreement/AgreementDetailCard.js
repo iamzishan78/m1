@@ -135,6 +135,14 @@ export default function AgreementDetailCard(props) {
       const newPath = `/map/${value}s/${uniObj._id}`;
       history.location.pathname !== newPath && history.replace(newPath);
     }
+    //add support for extension term calculation
+    if (field === "extensionTerm" || field === "expirationDate") {
+      if (field === "extensionTerm") {
+        shape.properties.extensionDate = moment(shape.properties.expirationDate).add(parseInt(value), "months").toDate();
+      } else {
+        shape.properties.extensionDate = moment(value).add(parseInt(shape.properties.extensionTerm), "months").toDate();
+      }
+    }
 
     if (field === "agreementTerm" || field === "effectiveDate") {
       if (field === "agreementTerm") {

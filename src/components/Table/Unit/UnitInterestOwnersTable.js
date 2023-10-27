@@ -1,18 +1,23 @@
 import React, { useEffect, useContext } from 'react';
 import { useSelector } from 'react-redux';
 import debounce from 'lodash/debounce';
-import { Container } from '@material-ui/core';
+import { Container, Dialog } from '@material-ui/core';
 import { AppContext } from 'AppContext';
 import Table from 'components/Shared/M1nTable/components/Table';
 import TableHeader from 'components/Table/constants/units-interest-owners-header-schema';
 import TableESHOC from 'components/Table/TableESHOC';
 import { deepEqualObjects, copy, esExtentedSearch } from 'components/Shared/functions';
 import { usetableStyles } from '../Styles';
+import DeleteConfirmationDialogContent from 'components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent';
+import { useMutation } from '@apollo/client';
+import { UPDATE_SHAPE_OWNERS } from 'graphQL/useMutationUpdateShapeOwners';
 
 const genericDataActions = ['comments', 'tracks'];
 function UnitInterestOwnersTable(props) {
   const classes = usetableStyles();
   const [stateApp] = useContext(AppContext);
+
+  const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS)
 
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
 
@@ -34,6 +39,7 @@ function UnitInterestOwnersTable(props) {
 
   const formatHits = hits => {
     hits = hits.map(hit => {
+      hit.descriptorId = hit?._id
       hit._id = hit?.contact?._id
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
       hit.qualifier = hit?.shape?.shapeJson?.properties?.qualifier?.name;
@@ -130,12 +136,54 @@ function UnitInterestOwnersTable(props) {
     // eslint-disable-next-line
   }, [searchInput, props.landSearchQuery, userGridViewSettings, props.campaignName]);
 
+  const isCampaignUnitInterestTable = props.targetLabel === 'campaignUnit'
+
+  const campaignUnitInterestDeleteFunc = (shapeOwnerIds) => {
+    if (!shapeOwnerIds || shapeOwnerIds.length === 0) return
+
+    props.setLoading(true);
+
+    const shapeOwners = props.selectedRowsValues.map(row => ({
+      _id: row.descriptorId,
+      campaignName: row.campaignName?.filter?.(name => name !== props.campaignName) || []
+    }))
+
+    updateShapeOwners({
+      variables: {
+        shapeOwners,
+      },
+      onCompleted: () => {
+        props.setLoading(false)
+      },
+      refetchQueries: ["getCampaign", "getESSimpleSearch"],
+      awaitRefetchQueries: true
+    });
+  }
+
+  const deleteFunc = isCampaignUnitInterestTable ? campaignUnitInterestDeleteFunc : () => { }
+
   return (
     <Container
       maxWidth={false}
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
+      <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
+        {props.openDialog === "delete" && (
+          <DeleteConfirmationDialogContent
+            header={`Delete ${isCampaignUnitInterestTable ? 'Record' : 'Unit Interest'}(s)`}
+            onClose={() => props.setOpenDialog(null)}
+            deleteFunc={deleteFunc}
+            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
+            setM1nSelectedRowsIndexes={props.setSelectedRows}
+          >
+            {`Do you want to delete the selected ${isCampaignUnitInterestTable ? 'record' : 'unit interest'
+              }${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? 's' : ''
+              }?`}
+          </DeleteConfirmationDialogContent>
+        )}
+      </Dialog>
+
       <Table
         style={{ backgroundColor: '#fff' }}
         header={props.header}

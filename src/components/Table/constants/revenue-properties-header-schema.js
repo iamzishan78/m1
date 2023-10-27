@@ -62,9 +62,9 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
   },
   {
     /// this is the control column for properties
-    name: "number",
+    name: "purchaserNumber",
     label: "Property",
-    esKey: "number.keyword",
+    esKey: "purchaserNumber.keyword",
     options: {
       ...GlobalStickyStyles({ isReportingGroup }),
       filter: true,
@@ -122,15 +122,46 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
     },
     esKey: "_id.keyword",
   },
+
+  {
+    name: "wellApiNumber",
+    label: "Well API",
+    esKey: "wells.apiNumber.keyword",
+  },
+  {
+    name: "wellName",
+    label: "Well Name",
+    esKey: "wells.wellName.keyword",
+  },
+  {
+    name: "purchaserNumber",
+    label: "Purchaser Prop #",
+    esKey: "purchasernumber.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      display: true,
+    },
+  },
+  {
+    name: "purchaserName",
+    label: "Purchaser",
+    esKey: "purchaser.name.keyword",
+  },
   {
     name: "number",
     label: "Operator Prop #",
     esKey: "number.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      display: true,
+    },
   },
   {
-    name: "description",
-    label: "Property description",
-    esKey: "description.keyword",
+    name: "payorName",
+    label: "Operator",
+    esKey: "operator.name.keyword",
   },
   {
     name: "state",
@@ -150,19 +181,9 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
     esKey: "county.keyword",
   },
   {
-    name: "wellApiNumber",
-    label: "Well API",
-    esKey: "wells.apiNumber.keyword",
-  },
-  {
-    name: "wellName",
-    label: "Well Name",
-    esKey: "wells.wellName.keyword",
-  },
-  {
-    name: "payorName",
-    label: "Operator",
-    esKey: "operator.name.keyword",
+    name: "description",
+    label: "Property description",
+    esKey: "description.keyword",
   },
   {
     name: "status",
