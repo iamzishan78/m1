@@ -3,8 +3,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import Tooltip from '@material-ui/core/Tooltip';
 import { IconButton } from '@material-ui/core';
-import Contact_card from 'components/Shared/svgIcons/contact_card';
+import ContactCard from 'components/Shared/svgIcons/contact_card';
 import { Link } from 'react-router-dom';
+import ConvertContact from 'components/Shared/svgIcons/convert_contact';
+import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 
 const useStyles = makeStyles(() => ({
 	icons: {
@@ -19,11 +21,11 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-function IsContactCell({ contactId }) {
+function IsContactCell({ contactId, rows }) {
 	const classes = useStyles();
 	let history = useHistory();
 
-	if (!!!contactId) {
+	if (!contactId) {
 		return (
 			<p
 				style={{
@@ -37,15 +39,34 @@ function IsContactCell({ contactId }) {
 		);
 	}
 
+	if (contactId === 'false')
+		return (
+			<Tooltip title="Convert To Contact" placement="top">
+				<IconButton
+					size={'medium'}
+					color="primary"
+					className={`${classes.icons} ${classes.noCommentsIcon}`}
+					onClick={e => {
+						simpleTableGlobalController.updateState({
+							dialog: {
+								type: 'multipleOwnerToContact',
+								rows,
+							},
+						});
+					}}
+					aria-label="create contact"
+				>
+					<ConvertContact style={{ margin: '4px' }} />
+				</IconButton>
+			</Tooltip>
+		);
+
 	return (
-		<Tooltip
-			title={!contactId ? 'Convert To Contact' : 'Contact Details'}
-			placement="top"
-		>
+		<Tooltip title="Contact Details" placement="top">
 			<IconButton
 				size={'medium'}
 				color="primary"
-				className={`${classes.icons} ${!contactId ? classes.noCommentsIcon : ''}`}
+				className={classes.icons}
 				onClick={e => {
 					e.stopPropagation();
 					history.push(`/contact/details/${contactId}`);
@@ -59,7 +80,7 @@ function IsContactCell({ contactId }) {
 					)}`}
 					onClick={e => e.preventDefault()}
 				>
-					<Contact_card style={{ margin: '4px' }} />
+					<ContactCard style={{ margin: '4px' }} />
 				</Link>
 			</IconButton>
 		</Tooltip>

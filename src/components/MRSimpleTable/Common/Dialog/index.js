@@ -2,7 +2,10 @@ import React, { memo } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import ExportContacts from 'components/Shared/ExportContacts';
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
-import { AssignOwnerToContactDrawerContainer } from 'store/containers';
+import {
+	AssignOwnerToContactDrawerContainer,
+	MultipleOwnerToContactDrawerContainer,
+} from 'store/containers';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
 import DeleteConfirmationDialogContent from './ConfirmationDialog/DeleteConfirmationDialog';
@@ -92,6 +95,14 @@ function AllDialogs() {
 							}?`}
 					</DeleteConfirmationDialogContent>
 				</Dialog>
+			)}
+
+			{type === 'multipleOwnerToContact' && (
+				<MultipleOwnerToContactDrawerContainer
+					onClose={handleCloseDialog}
+					rows={rest?.rows}
+					setRows={() => { }}
+				/>
 			)}
 		</>
 	);

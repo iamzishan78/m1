@@ -141,8 +141,8 @@ const PotentialOwnersMeta = {
       ...CommonSchema.ACTION_COLUMN,
       name: 'isContact',
       accessorKey: 'isContact',
-      Cell: () => {
-        return <IsContactCell />;
+      Cell: ({ row }) => {
+        return <IsContactCell contactId={'false'} rows={[row.original.node]} />;
       },
     },
     {
