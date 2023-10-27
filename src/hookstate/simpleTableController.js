@@ -462,6 +462,9 @@ const simpleTableGlobalControllerHandler = state => ({
 	refetch: () => {
 		state.refetch.set(!state.refetch.get({ noproxy: true }));
 	},
+	setSelectedTab: tab => {
+		if (tab !== state.tabKey.get()) state.tabKey.set(tab);
+	},
 });
 
 export const simpleTableGlobalController = {

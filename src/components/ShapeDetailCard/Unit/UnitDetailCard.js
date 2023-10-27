@@ -28,16 +28,21 @@ import { copy } from "components/Shared/functions";
 import { detailCardStyles } from "../style";
 import { DrawerContextProvider } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
+import { simpleTableGlobalController } from "hookstate/simpleTableController";
+import MRSimpleTable from "components/MRSimpleTable";
+
+const setSelectedTab = simpleTableGlobalController.setSelectedTab
 
 export default function UnitDetailCard(props) {
   const dispatch = useDispatch();
-  const [selectedTab, setSelectedTab] = useState(0);
   const [selectedWellTab, setWellSelectedTab] = useState(0);
   const [selectedTractTab, setTractSelectedTab] = useState(0);
   const [uniObj, setUniObj] = useState();
   const [properties, setProperties] = useState();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [updateCustomLayer, { data: updatedUnit, loading: updatingLayer }] = useMutation(UPDATECUSTOMLAYER);
+
+  const { stateValues: { tabKey: selectedTab } } = simpleTableGlobalController.useState(['tabKey'])
 
   const classes = detailCardStyles();
   const showSummary = true;
@@ -262,17 +267,14 @@ export default function UnitDetailCard(props) {
                   /> */}
                     </div>,
                     <div className={!isFiltered ? classes.subContent : classes.subContent3}>
-                      <SuggestedShapeTaxOwnersTable
-                        customLayer={uniObj}
-                        parent="potentialOwnersPerUnit"
-                        shapeType="Unit"
-                        targetLabel="well"
-                        jobType="SHAPEOWNER"
-                        jobName="Convert potential owner to unit owner"
-                        header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
-                        setSelectedTab={setSelectedTab}
-                        setIsFiltered={setIsFiltered}
-                        dense
+                      <MRSimpleTable
+                        name="PotentialOwners"
+                        overrideMeta={{
+                          customProps: {
+                            customLayer: uniObj,
+                            tabLabels: ['Unit Ownershi8p', 'Potential Ownership'],
+                          },
+                        }}
                       />
                     </div>,
                   ]}

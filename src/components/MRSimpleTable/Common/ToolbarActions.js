@@ -8,6 +8,7 @@ import {
 } from 'hookstate/simpleTableController';
 import { globalStateController } from 'hookstate/globalStateController';
 import _ from 'lodash';
+import TabHeader from './TabHeader';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const isAllRowsSelected = table.getIsAllRowsSelected();
@@ -20,7 +21,6 @@ function ToolbarActions({ table, tableKey, children }) {
 
 	const tableState = simpleTableController(tableKey).useState([
 		'TableSchema',
-		'esIndex',
 		'datasets',
 		'globalFilter',
 		'searchFields',
@@ -30,8 +30,10 @@ function ToolbarActions({ table, tableKey, children }) {
 		'columnVisibility',
 		'filters',
 		'defaultFilters',
-		'isDeleteDisabled',
 		'deletedKeys',
+		'customProps',
+		'isDeleteAllowed',
+		'isExportAllowed',
 	]);
 	const tableStateValues = tableState.stateValues;
 
@@ -80,23 +82,26 @@ function ToolbarActions({ table, tableKey, children }) {
 			style={{
 				display: 'flex',
 				width: '100%',
-				gap: '0.5rem',
-				marginLeft: '-9px',
-				justifyContent: 'end',
+				marginLeft: '1rem',
+				justifyContent: 'space-between',
+				marginTop: 'auto',
+				marginBottom: 'auto',
 			}}
 		>
+			<div style={{ marginTop: 'auto', marginBottom: 'auto' }}>
+				<TabHeader labels={tableStateValues.customProps.tabLabels} />
+			</div>
+
 			<div
 				style={{
 					display: 'flex',
 					gap: '0.5rem',
 					marginLeft: '0.5rem',
-					position: 'absolute',
-					right: '170px',
 				}}
 			>
 				{children || <div />}
 
-				{!isAllRowsSelected && (
+				{tableStateValues.isExportAllowed && !isAllRowsSelected && (
 					<IconButton onClick={handleExport}>
 						<Tooltip title="Download CSV" aria-label="add">
 							<CloudDownloadIcon />
@@ -104,7 +109,7 @@ function ToolbarActions({ table, tableKey, children }) {
 					</IconButton>
 				)}
 
-				{isSomethingSelected && !!!tableStateValues.isDeleteDisabled && (
+				{tableStateValues.isDeleteAllowed && isSomethingSelected && (
 					<IconButton aria-label="delete" onClick={() => handleDelete()}>
 						<Tooltip title="Delete">
 							<DeleteIcon />

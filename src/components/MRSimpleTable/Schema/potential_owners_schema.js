@@ -28,6 +28,8 @@ const PotentialOwnersMeta = {
     };
   },
   getDataFromRes: res => res?.data?.paginatedShapeWellOwners?.edges || [],
+  isDeleteAllowed: false,
+  isExportAllowed: false,
   TableSchema: [
     {
       ...CommonSchema.HIDDEN,
