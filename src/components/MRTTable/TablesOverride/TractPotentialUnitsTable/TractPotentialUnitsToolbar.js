@@ -33,7 +33,7 @@ function TractPotentialUnitsToolBar({ table, tableKey }) {
         const shapeTracts = selectedRows.map((row) => {
             return {
                 ...shapeTract,
-                parcelId: customLayer._id,
+                parcelId: customLayer?._id,
                 shapeId: row._id
             }
         });

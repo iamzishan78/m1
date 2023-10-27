@@ -18,7 +18,7 @@ const onClickedRow = selectedRow => {
 	tableGlobalController.updateState({
 		ownerPerUnitDialog: {
 			type: 'addOwnerToUnit',
-			shapeId: customLayer._id,
+			shapeId: customLayer?._id,
 			uAcres: customLayer?.shapeJson?.properties?.uAcres,
 			uUnitPricing: customLayer?.shapeJson?.properties?.uUnitPricing,
 			shapeType: 'Unit',
