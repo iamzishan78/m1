@@ -84,6 +84,7 @@ const ContactMeta = {
 								name={renderedCellValue.split(' ').splice(0, 2).join(' ')}
 								size="35"
 								round
+								
 							/>
 						)}
 
@@ -105,7 +106,13 @@ const ContactMeta = {
 							/>
 							{!!(row.getValue('isPurchased') === 'true') && (
 								<FeatureFlag feature={FEATURES.IDICORE}>
-									<MonetizationOnIcon />
+									<MonetizationOnIcon 
+									style={{
+										marginLeft: '10px',
+										color: "gray"
+									}}
+									
+										/>
 								</FeatureFlag>
 							)}
 						</p>
