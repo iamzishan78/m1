@@ -82,6 +82,13 @@ const OwnersPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'taxYear',
+			accessorKey: 'taxYear',
+			header: 'Tax Year',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'working_interest',
 			accessorKey: 'working_interest',
 			header: 'Working Interest',
@@ -220,7 +227,27 @@ const OwnersPerUnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'offer_price',
 			accessorKey: 'offer_price',
-			header: 'Offer Price',
+			header: 'Target Offer Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'max_offer_price',
+			accessorKey: 'max_offer_price',
+			header: 'Max Offer Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'actual_offer_price',
+			accessorKey: 'actual_offer_price',
+			header: 'Actual Offer Price',
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
@@ -236,12 +263,38 @@ const OwnersPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'contactOwners.keyword',
+			accessorKey: 'contactOwners',
+			header: 'Contact Owner',
+			Cell: ({ row }) => {
+				return <div>{row?.original?.contactOwners[0]}</div>
+			}
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.status.keyword',
+			accessorFn: row => row?.contact?.status,
+			id: 'contact.status',
+			header: 'Stage',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'campaignName.keyword',
 			accessorFn: row => row?.campaignName,
 			id: 'campaignName',
 			header: 'Campaign Name',
 			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
 		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'campaignPriority.keyword',
+			accessorKey: 'campaignPriority',
+			header: 'Campaign Priority',
+		},
+
 
 		{
 			...CommonSchema.COMMON_COLUMN,
