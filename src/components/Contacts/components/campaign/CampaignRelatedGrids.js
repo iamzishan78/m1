@@ -202,7 +202,7 @@ function CamapignRelatedGrids({ campaign }) {
                   return (
                     <ListItem
                       button
-                      selected={row.value === globalSelectedTabKey.tabKey}
+                      selected={row.index === globalSelectedTabKey.tabKey}
                       onClick={() => setSearchTapValue(row)}
                     >
                       <ListItemIcon style={{ minWidth: '40px' }}>
