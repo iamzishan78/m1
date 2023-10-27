@@ -340,8 +340,8 @@ const ContactMeta = {
 			header: 'Contact Owner',
 			isExport: 'contactOwners[0].name',
 			Cell: ({ row }) => {
-				const name = row?.original?.contactOwners.map(obj => obj.name)
-				return <p>{name[0]}</p>
+				const name = row?.original?.contactOwners?.map(obj => obj.name)
+				return <p>{name?.[0]}</p>
 			},
 		},
 

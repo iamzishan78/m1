@@ -229,7 +229,7 @@ const UnitInterestMeta = {
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('_id');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'unit'} />;
+				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'Unit Ownership'} />;
 			},
 		},
 	],
