@@ -89,6 +89,7 @@ function CamapignRelatedGrids({ campaign }) {
         top: '532px',
         left: '274px',
         maxHeight: '40%',
+        marginLeft: '-9px',
       },
     },
     deletedKeys: {
@@ -124,6 +125,7 @@ function CamapignRelatedGrids({ campaign }) {
         top: '532px',
         left: '274px',
         maxHeight: '40%',
+        marginLeft: '-9px',
       },
     },
     deletedKeys: {
@@ -174,6 +176,7 @@ function CamapignRelatedGrids({ campaign }) {
         top: '532px',
         left: '274px',
         maxHeight: '40%',
+        marginLeft: '-9px',
       },
     },
     deletedKeys: {
