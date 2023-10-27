@@ -38,6 +38,7 @@ export default function UnitDetailCard(props) {
   const [uniObj, setUniObj] = useState();
   const [properties, setProperties] = useState();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const OwnersPerUnitGridState = tableController('OwnersPerUnitTable').useState(['data']).stateValue;
   const [updateCustomLayer, { data: updatedUnit, loading: updatingLayer }] = useMutation(UPDATECUSTOMLAYER);
 
   const classes = detailCardStyles();
@@ -84,7 +85,7 @@ export default function UnitDetailCard(props) {
       });
       setProperties(shape.properties);
     }
-  }, [dataCustomLayer]);
+  }, [dataCustomLayer, OwnersPerUnitGridState?.data]);
 
   const overrideMeta = useMemo(() => ({
     defaultFilters: [
