@@ -67,48 +67,50 @@ const ContactMeta = {
 			accessorKey: 'name',
 			header: 'Name',
 			size: 450,
-			Cell: ({ renderedCellValue, row }) => (
-				<div
-					style={{
-						display: 'flex',
-						flexDirection: 'row',
-						alignItems: 'center',
-					}}
-				>
-					{typeof renderedCellValue === 'string' && (
-						<Avatar
-							color={Avatar.getRandomColor(renderedCellValue, ['#b5d2f6', '#ade2e9', '#eaeaea', '#f2c1e2', '#d7d6fb'])}
-							fgColor="#000"
-							name={renderedCellValue.split(' ').splice(0, 2).join(' ')}
-							size="35"
-							round
-						/>
-					)}
-
-					<p
+			Cell: ({ renderedCellValue, row }) => {
+				return (
+					<div
 						style={{
 							display: 'flex',
 							flexDirection: 'row',
 							alignItems: 'center',
-							minWidth: '300px',
-							marginLeft: '10px',
 						}}
 					>
-						<ColumnWithLink
-							value={renderedCellValue}
-							link={`/contact/details/${row.getValue('_id')}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
-							onClick={e => {
-								e.stopPropagation();
-							}}
-						/>
-						{!!row.getValue('isPurchased') && (
-							<FeatureFlag feature={FEATURES.IDICORE}>
-								<MonetizationOnIcon />
-							</FeatureFlag>
+						{typeof renderedCellValue === 'string' && (
+							<Avatar
+								color={Avatar.getRandomColor(renderedCellValue, ['#b5d2f6', '#ade2e9', '#eaeaea', '#f2c1e2', '#d7d6fb'])}
+								fgColor="#000"
+								name={renderedCellValue.split(' ').splice(0, 2).join(' ')}
+								size="35"
+								round
+							/>
 						)}
-					</p>
-				</div>
-			),
+
+						<p
+							style={{
+								display: 'flex',
+								flexDirection: 'row',
+								alignItems: 'center',
+								minWidth: '300px',
+								marginLeft: '10px',
+							}}
+						>
+							<ColumnWithLink
+								value={renderedCellValue}
+								link={`/contact/details/${row.getValue('_id')}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
+								onClick={e => {
+									e.stopPropagation();
+								}}
+							/>
+							{!!(row.getValue('isPurchased') === 'true') && (
+								<FeatureFlag feature={FEATURES.IDICORE}>
+									<MonetizationOnIcon />
+								</FeatureFlag>
+							)}
+						</p>
+					</div>
+				)
+			},
 		},
 
 		{
