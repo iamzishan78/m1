@@ -92,7 +92,6 @@ const simpleTableStateControllerHandler = state => ({
 	initialize: (
 		tableKey,
 		{
-			esIndex,
 			pageSize,
 			defaultSort,
 			isInFiniteScroll,
@@ -105,7 +104,6 @@ const simpleTableStateControllerHandler = state => ({
 			...rest
 		}
 	) => {
-		debugger;
 		if (state.TableSchema.get()) return;
 		const searchFields = search
 			? search?.fields
@@ -180,7 +178,7 @@ const simpleTableStateControllerHandler = state => ({
 						<div>
 							<ESAutoCompleteFilter
 								tableKey={tableKey}
-								esIndex={esIndex}
+								// esIndex={esIndex}
 								column={{
 									field: column.columnDef.name,
 									isComposite: column.columnDef.isComposite,
@@ -210,7 +208,7 @@ const simpleTableStateControllerHandler = state => ({
 						<div>
 							<ESAutoCompleteFilter
 								tableKey={tableKey}
-								esIndex={esIndex}
+								// esIndex={esIndex}
 								column={{
 									field: column.columnDef.name,
 									label: column.columnDef.header,
@@ -234,10 +232,10 @@ const simpleTableStateControllerHandler = state => ({
 					);
 				};
 
-				schemaColumn.Filter =
-					defaultFlterMode === 'multiselect'
-						? schemaColumn.MultiSelect
-						: schemaColumn.SingleSelect;
+				// schemaColumn.Filter =
+				// 	defaultFlterMode === 'multiselect'
+				// 		? schemaColumn.MultiSelect
+				// 		: schemaColumn.SingleSelect;
 			}
 			if (schemaColumn.filter) {
 				let options;
@@ -266,7 +264,6 @@ const simpleTableStateControllerHandler = state => ({
 			...rest,
 			initialized: true,
 			tableKey,
-			esIndex,
 			pageSize,
 			isSelectall: isSelectall || false,
 			showColumnFilters: false,
@@ -276,7 +273,7 @@ const simpleTableStateControllerHandler = state => ({
 			isError: false,
 			defaultFilters:
 				state?.defaultFilters?.get({ noproxy: true }) || defaultFilters || [],
-			customProps: state?.customProps?.get({ noproxy: true }) || [],
+			customProps: state?.customProps?.get({ noproxy: true }) || rest.customProps || {},
 			filters: [],
 			sorting: [],
 			searchFields,

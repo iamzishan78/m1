@@ -9,7 +9,6 @@ function MRSimpleTable({ tableKey, name, overrideMeta = {} }) {
 	const meta = SCHEMA[name];
 	const extendedMeta = { ...meta, ...overrideMeta };
 	tableKey = tableKey || name; // table key should be different if two tables with same name exist in same screen.
-	console.log('🚀 ~ file: index.js:12 ~ MRSimpleTable ~ tableKey:', tableKey);
 	const Controller = simpleTableController(tableKey);
 	Controller.initialize(tableKey, extendedMeta);
 	const { tableProps, tablePropsState, initialized, classes } =

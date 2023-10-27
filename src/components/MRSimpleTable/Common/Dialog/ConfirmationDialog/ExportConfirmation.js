@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import { useApolloClient } from '@apollo/client';
 import { simpleTableController } from 'hookstate/simpleTableController';
 import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
-// import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'hookstate/globalStateController';
 import { AppContext } from 'AppContext';
 import { Modals } from '../../../../../styles/Modal';
 
@@ -25,8 +25,8 @@ export default function ExportConfirmationDialog({
 	const dispatch = useDispatch();
 	const client = useApolloClient();
 	const modalClass = Modals();
-	// const { user } = globalStateController.useState(['user']);
-	// const getUser = user.get({ noproxy: true });
+	const { user } = globalStateController.useState(['user']);
+	const getUser = user.get({ noproxy: true });
 
 	const tableState = simpleTableController(tableKey).useState([
 		'TableSchema',
@@ -86,7 +86,7 @@ export default function ExportConfirmationDialog({
 				jobType: 'EXPORTCSV',
 				client,
 				setStateApp,
-				// userId: getUser?._id,
+				userId: getUser?._id,
 				requestPayload: {
 					total: tableStateValues?.data.total,
 					search,

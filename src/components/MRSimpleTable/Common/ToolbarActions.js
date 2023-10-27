@@ -6,7 +6,7 @@ import {
 	simpleTableController,
 	simpleTableGlobalController,
 } from 'hookstate/simpleTableController';
-// import { globalStateController } from 'hookstate/globalStateController';
+import { globalStateController } from 'hookstate/globalStateController';
 import _ from 'lodash';
 
 function ToolbarActions({ table, tableKey, children }) {
@@ -15,8 +15,8 @@ function ToolbarActions({ table, tableKey, children }) {
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 
-	// const { user } = globalStateController.useState(['user']);
-	// const getUser = user.get({ noproxy: true });
+	const { user } = globalStateController.useState(['user']);
+	const getUser = user.get({ noproxy: true });
 
 	const tableState = simpleTableController(tableKey).useState([
 		'TableSchema',
@@ -68,7 +68,7 @@ function ToolbarActions({ table, tableKey, children }) {
 				type: 'deleteGrid',
 				deletedData,
 				tableKey,
-				// userId: getUser?._id,
+				userId: getUser?._id,
 			},
 		});
 
