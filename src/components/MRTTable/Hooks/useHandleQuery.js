@@ -17,13 +17,14 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	const callQuery = async _pagination => {
 		const tableMeta = tableState.get({ noproxy: true });
 		const pagination = _pagination || tableMeta.pagination;
+		const { TableSchema } = tableMeta;
+		if (!TableSchema) return
+
 		Controller.updateState({
 			isLoading: true,
 			isFetching: true,
 			isError: false,
 		});
-
-		const { TableSchema } = tableMeta;
 
 		const sort = tableStateValues.sorting[0]
 			? {
@@ -87,6 +88,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 	async function fetchFooterAggregationData() {
 		const tableMeta = tableState.get({ noproxy: true });
 		const { TableSchema, defaultFilters, esIndex, filters } = tableMeta;
+		if (!TableSchema) return
 
 		const aggregationColumns = TableSchema.filter(column => column.Aggregation)?.map(column => column.Aggregation);
 
