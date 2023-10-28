@@ -58,6 +58,8 @@ function WellMasterTable(props) {
       selectedGridView: { filters: [] },
       startPaginationAt: 25,
       defaultSort: { field: "lastUpdateAt", order: "desc" },
+      downloadAll: { exportPx: '175px' },
+      datasets: { exportGrid: true },
       formatHits,
     });
     // eslint-disable-next-line
@@ -82,7 +84,7 @@ function WellMasterTable(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props?.total, props.dependencyUpdate]);
 
-  delete props.options.customToolbar;
+  // delete props.options.customToolbar;
   delete props.options.customToolbarSelect;
   delete props.options.onRowClick;
   props.options.search = props.searchBar;

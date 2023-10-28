@@ -1443,10 +1443,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
               },
               filters: [
                 {
-                  field: "properties.layerGeometry",
-                  value: feature.properties.layerGeometry
-                },
-                {
                   field: "properties.layerShapeName",
                   value: feature.properties.layerShapeName
                 },
