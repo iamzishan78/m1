@@ -112,6 +112,7 @@ const useMRSimpleTable = tableKey => {
 			// enableSelectAll: true,
 			enableStickyHeader: true,
 			enableStickyFooter: true,
+			selectAllMode: tableStateValues?.isSelectall ? 'all' : 'page',
 			enableSorting: tableStateValues?.grouping.length === 0,
 			muiTableBodyRowProps: row => ({
 				onClick: e => {

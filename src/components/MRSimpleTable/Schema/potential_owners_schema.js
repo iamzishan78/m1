@@ -33,6 +33,7 @@ const PotentialOwnersMeta = {
   },
   getDataFromRes: res => res?.data?.paginatedShapeWellOwners?.edges || [],
   CustomToolBar: PotentialOwnersToolbar,
+  isSelectall: true,
   isDeleteAllowed: false,
   isExportAllowed: false,
   TableSchema: [

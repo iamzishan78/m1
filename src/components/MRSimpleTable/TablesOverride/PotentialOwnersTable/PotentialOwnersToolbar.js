@@ -10,6 +10,7 @@ const PotentialOwnersToolbar = ({ table, tableKey }) => {
     const isSomeRowsSelected = table.getIsSomeRowsSelected();
     const isAllRowsSelected = table.getIsAllRowsSelected();
     const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
+    const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 
     const updateCustomProps = debounce(Controller.updateCustomProps, 500);
 
@@ -18,19 +19,27 @@ const PotentialOwnersToolbar = ({ table, tableKey }) => {
             <SelectFilter
                 options={[2019, 2020, 2021, 2022]}
                 initialValue={2022}
-                onValueChange={year => updateCustomProps({ year })}
+                onValueChange={year => {
+                    updateCustomProps({ year });
+                    table.resetRowSelection();
+                }}
             />
 
             <ToggleSwitch
                 label="Filter by unit wells"
-                onChange={filterByWells => updateCustomProps({ filterByWells })}
+                onChange={filterByWells => {
+                    updateCustomProps({ filterByWells });
+                    table.resetRowSelection();
+                }}
                 customLabelStyle={{ marginRight: '0px' }}
             />
 
             <ToolbarButton
                 label="+ ADD TO Unit"
                 disabled={!isSomethingSelected}
-                onClick={() => { }}
+                onClick={() => {
+                    table.resetRowSelection();
+                }}
             />
         </div>
     );
