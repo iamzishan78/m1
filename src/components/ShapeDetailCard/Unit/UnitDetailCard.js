@@ -28,6 +28,7 @@ import { copy } from "components/Shared/functions";
 import { detailCardStyles } from "../style";
 import { DrawerContextProvider } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
+import { jobController } from "hookstate/jobStateController";
 
 export default function UnitDetailCard(props) {
   const dispatch = useDispatch();
@@ -135,7 +136,7 @@ export default function UnitDetailCard(props) {
         userId: stateApp.user.mongoId
       },
     }).then(() => {
-      setStateApp((state) => ({ ...state, bulkUpload: !state.bulkUpload, }));
+      jobController.toggleBulkUpload()
     });
   };
 
