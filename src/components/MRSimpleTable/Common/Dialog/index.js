@@ -99,8 +99,11 @@ function AllDialogs() {
 
 			{type === 'multipleOwnerToContact' && (
 				<MultipleOwnerToContactDrawerContainer
+					jobType={rest?.jobType}
+					jobName={rest?.jobName}
 					onClose={handleCloseDialog}
 					rows={rest?.rows}
+					onSuccess={() => { }}
 					setRows={() => { }}
 				/>
 			)}
