@@ -9,12 +9,10 @@ import Taps from "components/Shared/Taps";
 import TabPanels from "components/Shared/TabPanels";
 import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
-import SuggestedShapeTaxOwnersTable from "components/Table/TaxOwners/SuggestedShapeTaxOwnersTable";
 import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import TabButtons from "components/Shared/TabPanels/TabButtons";
 import UnitSummary from "./UnitSummary";
-import UnitOwnersTable from "components/Table/Shape/UnitOwnersTable";
 import UnitInterestOwnerTable from "components/Table/Shape/UnitInterestOwnerTable";
 import ShapeWellInterestTable from "components/Table/Shape/ShapeWellInterestTable";
 import AssociatedWellsShapeTable from "components/Table/Wells/AssociatedWellsShapeTable";
@@ -30,6 +28,7 @@ import { DrawerContextProvider } from "components/Land/components/Agreements/det
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
 import { simpleTableGlobalController } from "hookstate/simpleTableController";
 import MRSimpleTable from "components/MRSimpleTable";
+import TabHeader from "components/MRSimpleTable/Common/TabHeader";
 
 const setSelectedTab = simpleTableGlobalController.setSelectedTab
 
@@ -163,16 +162,6 @@ export default function UnitDetailCard(props) {
     });
   };
 
-  const OwnershipHeader = ({ selectedTab, setSelectedTab }) => (
-    <TabButtons
-      labels={["Unit Ownership", "Potential Ownership"]}
-      value={selectedTab}
-      setValue={(n) => {
-        setSelectedTab(n);
-      }}
-    />
-  );
-
   const DocumentHeader = () => {
     const classes = detailCardStyles();
     return (
@@ -252,19 +241,9 @@ export default function UnitDetailCard(props) {
                         shapeType="Unit"
                         targetLabel="Unit Ownership"
                         setIsFiltered={setIsFiltered}
-                        header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
+                        header={<TabHeader labels={["Unit Ownership", "Potential Ownership"]} />}
                         dense
                       />
-                      {/* <UnitOwnersTable
-                    customLayer={uniObj}
-                    parent="ownersPerUnit"
-                    shapeType="Unit"
-                    targetLabel="Unit Ownership"
-                    header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
-                    setSelectedTab={setSelectedTab}
-                    setIsFiltered={setIsFiltered}
-                    dense
-                  /> */}
                     </div>,
                     <div className={!isFiltered ? classes.subContent : classes.subContent3}>
                       <MRSimpleTable
@@ -272,7 +251,7 @@ export default function UnitDetailCard(props) {
                         overrideMeta={{
                           customProps: {
                             customLayer: uniObj,
-                            tabLabels: ['Unit Ownershi8p', 'Potential Ownership'],
+                            tabLabels: ['Unit Ownership', 'Potential Ownership'],
                           },
                         }}
                       />

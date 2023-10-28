@@ -23,7 +23,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		const rows = tableMeta.getDataFromRes(res);
 
-		console.log('🚀 ~ file: useHandleQuery.js:29 ~ callQuery ~ rows:', rows);
 		Controller.updateState({
 			data: {
 				rows,
