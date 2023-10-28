@@ -1,6 +1,7 @@
 import CommentCell from 'components/MRSimpleTable/Common/TableCells/Comment';
 import TagCell from 'components/MRSimpleTable/Common/TableCells/Tag';
 import IsContactCell from 'components/MRSimpleTable/Common/TableCells/isContactIcone';
+import PotentialOwnersToolbar from 'components/MRSimpleTable/TablesOverride/PotentialOwnersTable/PotentialOwnersToolbar';
 import { globalStateController } from 'hookstate/globalStateController';
 import { getPolygonString } from 'components/Shared/functions';
 import { SHAPE_WELL_OWNERS } from 'graphQL/useQueryPaginatedShapeWellOwners';
@@ -28,6 +29,7 @@ const PotentialOwnersMeta = {
     };
   },
   getDataFromRes: res => res?.data?.paginatedShapeWellOwners?.edges || [],
+  CustomToolBar: PotentialOwnersToolbar,
   isDeleteAllowed: false,
   isExportAllowed: false,
   TableSchema: [
