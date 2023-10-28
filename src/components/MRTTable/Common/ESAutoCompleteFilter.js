@@ -14,6 +14,8 @@ function ESAutoCompleteFilter({
 	extendSearchQuery,
 	multiple,
 }) {
+	if (isComposite) field = field.split(',')
+
 	const [getFilters, { data: filtersData, loading }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
 
 	const [options, setOptions] = useState([]);

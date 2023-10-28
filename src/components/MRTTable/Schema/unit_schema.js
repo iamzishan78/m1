@@ -16,7 +16,7 @@ const UnitMeta = {
 		pageSize: 50,
 	},
 	gridViewSettings: {
-		label: 'Unit',
+		label: 'Units',
 		module: 'Units',
 		Icon: UnitIcon,
 		defaultView: {

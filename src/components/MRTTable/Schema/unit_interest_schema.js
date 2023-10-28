@@ -15,11 +15,11 @@ const UnitInterestMeta = {
 		pageSize: 50,
 	},
 	gridViewSettings: {
-		label: 'Unit Interest',
+		label: 'Unit Interests',
 		module: 'UnitInterest',
 		Icon: UnitIcon,
 		defaultView: {
-			name: 'All Units Interest',
+			name: 'All Unit Interests',
 			type: 'Default',
 		},
 		handleDefaultView: (view, user) => {
