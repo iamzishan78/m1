@@ -1,7 +1,7 @@
 import React from 'react';
 import { hookstate } from '@hookstate/core';
+import { isEqual } from 'lodash';
 import ESAutoCompleteFilter from 'components/MRSimpleTable/Common/ESAutoCompleteFilter';
-import { deepEqual } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
 import {
 	stringFilterOptions,
@@ -330,12 +330,12 @@ const simpleTableStateControllerHandler = state => ({
 	},
 
 	setColumnVisibility: visibility => {
-		if (!deepEqual(state.columnVisibility?.get({ noproxy: true }), visibility))
+		if (!isEqual(state.columnVisibility?.get({ noproxy: true }), visibility))
 			state.columnVisibility?.set(visibility);
 	},
 
 	setColumnPinning: (columnPinning, oldPinning, TableSchema) => {
-		if (!deepEqual(state.columnPinning?.get({ noproxy: true }), columnPinning)) {
+		if (!isEqual(state.columnPinning?.get({ noproxy: true }), columnPinning)) {
 			let size = 0;
 			columnPinning.left.forEach(pin => {
 				if (pin === 'mrt-row-select' || pin === 'mrt-row-numbers') size += 60;
@@ -384,18 +384,18 @@ const simpleTableStateControllerHandler = state => ({
 	},
 
 	setPagination: pagination =>
-		!deepEqual(state.pagination?.get({ noproxy: true }), pagination) &&
+		!isEqual(state.pagination?.get({ noproxy: true }), pagination) &&
 		state.pagination?.set(pagination),
 
 	setGlobalFilter: globalFilter =>
-		!deepEqual(state.globalFilter?.get({ noproxy: true }), globalFilter) &&
+		!isEqual(state.globalFilter?.get({ noproxy: true }), globalFilter) &&
 		state.globalFilter?.set(globalFilter),
 
 	setFilter: filter => {
 		const filtersState = state.filters?.get({ noproxy: true });
 
 		if (
-			deepEqual(
+			isEqual(
 				filtersState.find(({ field }) => field === filter.field),
 				filter
 			)
@@ -456,7 +456,7 @@ const simpleTableStateControllerHandler = state => ({
 			...customProps,
 		};
 
-		if (!deepEqual(currentState, updatedState)) state.customProps.set(updatedState);
+		if (!isEqual(currentState, updatedState)) state.customProps.set(updatedState);
 	},
 });
 

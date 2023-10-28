@@ -51,7 +51,6 @@ const PotentialOwnersMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      id: 'api',
       header: 'Api Number',
       accessorKey: 'api',
       name: 'api',
@@ -59,7 +58,6 @@ const PotentialOwnersMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      id: 'wellName',
       header: 'Well Name',
       accessorKey: 'wellName',
       name: 'wellName',
@@ -67,7 +65,6 @@ const PotentialOwnersMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      id: 'lease',
       header: 'Lease',
       accessorKey: 'lease',
       name: 'lease',
@@ -75,7 +72,6 @@ const PotentialOwnersMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      id: 'leaseNumber',
       header: 'Lease Number',
       accessorKey: 'leaseNumber',
       name: 'leaseNumber',
@@ -83,15 +79,6 @@ const PotentialOwnersMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      id: 'lease',
-      header: 'Lease',
-      accessorKey: 'lease',
-      name: 'lease',
-      accessorFn: row => row?.node?.lease,
-    },
-    {
-      ...CommonSchema.COMMON_COLUMN,
-      id: 'name',
       header: 'Owner Name',
       accessorKey: 'name',
       name: 'name',
@@ -99,7 +86,6 @@ const PotentialOwnersMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      id: 'ownershipType',
       header: 'Entity Type',
       accessorKey: 'ownershipType',
       name: 'ownershipType',
@@ -107,7 +93,6 @@ const PotentialOwnersMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      id: 'interestType',
       header: 'Type',
       accessorKey: 'interestType',
       name: 'interestType',
@@ -115,7 +100,6 @@ const PotentialOwnersMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      id: 'ownershipPercentage',
       header: 'Interest',
       accessorKey: 'ownershipPercentage',
       name: 'ownershipPercentage',
@@ -123,7 +107,6 @@ const PotentialOwnersMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      id: 'appraisedValue',
       header: 'Tax Value',
       accessorKey: 'appraisedValue',
       name: 'appraisedValue',
