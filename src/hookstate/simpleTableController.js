@@ -448,6 +448,16 @@ const simpleTableStateControllerHandler = state => ({
 			filtersState.filter(filter => !keysToClear.includes(filter.field))
 		);
 	},
+
+	updateCustomProps: customProps => {
+		const currentState = state.customProps.get({ noproxy: true });
+		const updatedState = {
+			...currentState,
+			...customProps,
+		};
+
+		if (!deepEqual(currentState, updatedState)) state.customProps.set(updatedState);
+	},
 });
 
 export const simpleTableController = TableKey => {

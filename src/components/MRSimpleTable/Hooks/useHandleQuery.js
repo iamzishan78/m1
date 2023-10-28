@@ -38,7 +38,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		if (!tableState.query.get()) return;
 
 		callQuery();
-	}, [tableState.query]);
+	}, [tableState.query, tableState.customProps]);
 
 	const fetchMoreOnBottomReached = useCallback(
 		debounce(containerRefElement => {

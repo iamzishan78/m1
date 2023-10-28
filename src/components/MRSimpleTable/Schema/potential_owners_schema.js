@@ -10,7 +10,10 @@ import { CommonSchema } from './common_schema';
 const PotentialOwnersMeta = {
   query: SHAPE_WELL_OWNERS,
   getVariables: tableMeta => {
-    const customLayer = tableMeta?.customProps?.customLayer;
+    const { customLayer, year, filterByWells } = tableMeta?.customProps || {};
+
+    if (!customLayer) return;
+
     const polygon = getPolygonString(customLayer?.shape);
     const user = globalStateController.getValue('user');
 
@@ -22,8 +25,8 @@ const PotentialOwnersMeta = {
       sort: {},
       filters: [],
       search: '',
-      selectedYear: '2022',
-      filterByWells: '',
+      selectedYear: `${year || ''}`,
+      filterByWells: filterByWells ? customLayer._id : '',
       polygon,
       userId: user._id,
     };
