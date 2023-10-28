@@ -82,6 +82,7 @@ function UnitTractsTable(props) {
   useEffect(() => {
     if (tableData?.hits?.length > 0) {
       const objectsIdsArray = tableData?.hits?.map((hit) => hit._id);
+
       props.initializeGenericData(objectsIdsArray, ['comments', 'tags']);
     }
   }, [tableData]);
@@ -90,8 +91,13 @@ function UnitTractsTable(props) {
     if (tableData?.hits?.length > 0) {
       let hits = tableData?.hits
       const isStateTx = !!hits.find((hit) => hit.state === 'TX')
-      hits.map((hit) => {
+      hits.forEach((hit) => {
         hit.parcelId = hit?.parcel?._id;
+        hit.sdGrossAcres = hit?.parcel?.shapeJson?.properties?.sdGrossAcres;
+        hit.field = hit?.parcel?.shapeJson?.properties?.field;
+        hit.basin = hit?.parcel?.shapeJson?.properties?.basin;
+        hit.legalDescription = hit?.parcel?.shapeJson?.properties?.legalDescription;
+        hit.shapeArea = hit?.parcel?.shapeJson?.properties?.shapeArea;
       });
       props.setRows(hits);
       let headers = copy(TableHeader)

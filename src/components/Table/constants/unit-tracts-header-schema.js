@@ -76,7 +76,7 @@ const UnitTractHeadCells = [
     name: "sdGrossAcres", label: "Tract Gross Acres", esKey: 'sdGrossAcres', options: { sort: true, filter: true }
   },
   {
-    name: "uAcres", label: "Unit Acres", esKey: 'uAcres', options: { sort: true, filter: true }
+    name: "uAcres", label: "Tract Unit Acres", esKey: 'uAcres', options: { sort: true, filter: true }
   },
 ];
 
