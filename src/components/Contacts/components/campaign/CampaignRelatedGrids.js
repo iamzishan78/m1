@@ -72,11 +72,11 @@ function CamapignRelatedGrids({ campaign }) {
       { field: "shape.IsDeleted", value: "false" }
     ],
     gridViewSettings: {
-      label: 'Unit Interest Management',
+      label: 'Unit Interests',
       module: 'UnitInterest',
       Icon: UnitIcon,
       defaultView: {
-        name: 'All Units Interest',
+        name: 'All Unit Interests',
         type: 'Default',
       },
       handleDefaultView: (view, user) => {
