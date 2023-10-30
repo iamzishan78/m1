@@ -132,7 +132,6 @@ const useMRSimpleTable = tableKey => {
 			enableFacetedValues: tableStateValues?.enableFacetedValues,
 			columns: tableStateValues?.TableSchema,
 			data: tableStateValues?.data?.rows || [],
-			rowCount: tableStateValues?.data.total,
 			enableRowNumbers: true,
 			muiToolbarAlertBannerProps: tableStateValues?.isError
 				? {
@@ -164,6 +163,7 @@ const useMRSimpleTable = tableKey => {
 
 			...(tableStateValues.isServerSide
 				? {
+					rowCount: tableStateValues?.data.total,
 					...(!tableStateValues?.isInFiniteScroll && {
 						manualPagination: true,
 						onPaginationChange: paginationFunc => {
