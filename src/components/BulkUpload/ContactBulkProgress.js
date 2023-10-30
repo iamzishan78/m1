@@ -9,11 +9,17 @@ import { GET_JOBS_STATUS } from "graphQL/useQueryGetJobStatus";
 import Loader from "components/Loaders/serverLoader";
 import { setReduxKey } from "store/actions/commonActions";
 import useRefetchHelper from "components/Shared/Hooks/useRefetchHelper";
+import { jobController } from "hookstate/jobStateController";
 
 const ContactBulkProgress = () => {
   const [stateApp] = useContext(AppContext);
   const bulkUpload = useSelector((state) => state.common.bulkUpload);
   const refetchHelper = useRefetchHelper()
+
+  const jobState = jobController.useState(
+    ['bulkUpload'],
+    'jobStateValues'
+  );
 
   const dispatch = useDispatch();
 
@@ -55,7 +61,7 @@ const ContactBulkProgress = () => {
       stopPolling();
       refetch();
     }
-  }, [stateApp.bulkUpload, bulkUpload]);
+  }, [jobState.bulkUpload, bulkUpload]);
 
   useEffect(() => {
     if (dataJobs?.getJobsStatus?.jobs?.length > 0) {
