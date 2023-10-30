@@ -25,7 +25,7 @@ import DeleteConfirmationDialogContent from "components/Shared/M1nTable/componen
 import TableHeader from "components/Table/constants/tract-interest-owner-header-schema";
 import { UPDATEPARCELOWNER } from "graphQL/useMutationUpdateParcelOwner";
 import vf_currency from "components/Shared/valueformatters/vf_currency";
-import { deepEqualObjects, copy } from "components/Shared/functions";
+import { deepEqualObjects, copy, getSelectedRowsFromProps } from "components/Shared/functions";
 import { addTrailingZeros } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 import { AssignOwnerToContactDrawerContainer } from "store/containers";
@@ -163,7 +163,7 @@ function TractInterestOwnerTable(props) {
   const getRows = () => {
     const selectedRows = [];
 
-    const rows = props.selectedRowsValues || props.rows;
+    const rows = getSelectedRowsFromProps(props);
     for (let i = 0; i < props.selectedRows.length; i++) {
       if (rows[props.selectedRows[i].index])
         selectedRows.push({
@@ -355,14 +355,13 @@ function TractInterestOwnerTable(props) {
                     onClick={() => {
                       let owners = [];
 
-                      const rows = props.selectedRowsValues || props.rows;
+                      const rows = getSelectedRowsFromProps(props);
                       for (let i in props.selectedRows) {
                         owners.push({
                           ...rows[props.selectedRows[i].dataIndex],
                           _id: rows[props.selectedRows[i].dataIndex].contact._id,
                         });
                       }
-                      console.log("🚀 ~ file: TractInterestOwnerTable.js:373 ~ TractInterestOwnerTable ~ owners:", owners)
                       setSelectedRows(owners);
                       setOpenCustomDialog("recalculate");
                     }}
@@ -379,7 +378,7 @@ function TractInterestOwnerTable(props) {
                     onClick={() => {
                       let owners = [];
 
-                      const rows = props.selectedRowsValues || props.rows;
+                      const rows = getSelectedRowsFromProps(props);
                       for (let i in props.selectedRows) {
                         owners.push({
                           ...rows[i],
@@ -402,7 +401,7 @@ function TractInterestOwnerTable(props) {
                     onClick={() => {
                       let owners = [];
 
-                      const rows = props.selectedRowsValues || props.rows;
+                      const rows = getSelectedRowsFromProps(props);
                       for (let i in props.selectedRows) {
                         owners.push({
                           ...rows[i],
