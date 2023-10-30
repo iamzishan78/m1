@@ -1,6 +1,7 @@
 import Loader from "components/Loaders";
 import { CREATE_JOB } from "graphQL/useMutationCreateJob";
 import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
+import { jobController } from "hookstate/jobStateController";
 
 const random_rgb = () => {
     var o = Math.round,
@@ -84,10 +85,7 @@ export const SimpleOrShapeFileImport = async (params) => {
             sendEmail: true,
         },
     });
-    setStateApp((state) => ({
-        ...state,
-        bulkUpload: !state.bulkUpload,
-    }));
+    jobController.toggleBulkUpload()
     // } else {
     //     Loader.createToast('layer-creation', 'Layer creation in progress')
     //     const interval = setInterval(() => {

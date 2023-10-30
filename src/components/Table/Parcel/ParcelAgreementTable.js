@@ -66,7 +66,8 @@ function ParcelAgreementTable(props) {
     const [deleteParcelRunsheet] = useMutation(DELETE_PARCEL_RUNSHEET, { refetchQueries: ["getParcelAgreement"], awaitRefetchQueries: true });
 
     const appliedFilters = [
-        { field: "customLayerId", value: customLayer._id }
+        { field: "customLayerId", value: customLayer._id },
+        { field: "isRunsheetInstrument", value: "true" },
     ];
     const formatHits = (hits) => {
         hits = hits.map((hit) => {
