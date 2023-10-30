@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { matchRoutes } from "react-router-config";
-import { AppContext } from "../../AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { makeStyles } from "@material-ui/core/styles";
-import Toolbar from "@material-ui/core/Toolbar";
 import Link from "@material-ui/core/Link";
 import Typography from "@material-ui/core/Typography";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
@@ -16,6 +14,7 @@ import M1neral_headers from "./jobHeaders";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import isEmpty from 'lodash/isEmpty'
+import { jobController } from "hookstate/jobStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,10 +50,15 @@ export let rawJobs = [
 ]
 
 export default function BulkUpload(props) {
-  const [stateApp, setStateApp] = React.useContext(AppContext);
   const [stateNav, setStateNav] = React.useContext(NavigationContext);
   const history = useHistory();
   let previousRoute = matchRoutes(props.routes, typeof history.pathHistory[1] === "string" ? history.pathHistory[1] : history?.pathHistory[1]?.pathname ?? "");
+
+
+  const { jobStateValues } = jobController.useState(
+    ['transferData'],
+    'jobStateValues'
+  );
 
   if (!isEmpty(history.location.state)) {
     previousRoute[0].match = { url: history.location.state.previousRoute }
@@ -86,9 +90,9 @@ export default function BulkUpload(props) {
     initialJob = jobs.find((job) => job.type.toLowerCase().includes(props.match.params.type.toLowerCase())) || jobs[0];
   }
 
-  if (initialJob.type === 'SHAPE_TO_M1_LAYER' && stateApp.transferData) {
-    initialJob.m1neralHeaders = stateApp.transferData.selectedSourceCategory.m1neralHeaders
-    initialJob.mappedHeadersFromCSV = stateApp.transferData.selectedSourceCategory.mappedHeadersFromCSV
+  if (initialJob.type === 'SHAPE_TO_M1_LAYER' && jobStateValues.transferData) {
+    initialJob.m1neralHeaders = jobStateValues.transferData.selectedSourceCategory.m1neralHeaders
+    initialJob.mappedHeadersFromCSV = jobStateValues.transferData.selectedSourceCategory.mappedHeadersFromCSV
   } else {
     rawJobs = rawJobs.filter((rawJob) => rawJob.type !== 'SHAPE_TO_M1_LAYER')
   }
@@ -120,16 +124,13 @@ export default function BulkUpload(props) {
   }, [selectedJob]);
 
   const reset_state = () => {
-    setStateApp((state) => ({
-      ...state,
-      csvDataToSend: [],
+    jobController.setState({
       activeStepNumber: selectedJob.initialActiveStepNumber || 0,
-      csvDataList: [],
-      job: selectedJob,
-      jobType: selectedJob.type,
-      m1neralHeaders: selectedJob.m1neralHeaders || M1neral_headers[selectedJob.type] || [],
       mappedHeadersFromCSV: selectedJob.mappedHeadersFromCSV || [],
-    }));
+      m1neralHeaders: selectedJob.m1neralHeaders || M1neral_headers[selectedJob.type] || [],
+      jobType: selectedJob.type,
+      job: selectedJob,
+    })
   };
   const classes = useStyles();
 

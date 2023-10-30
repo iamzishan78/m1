@@ -139,7 +139,7 @@ function Datasets({ headerButton, search, stateApp, setStateApp }) {
                     dataset.categoryCount = dataset.categories.length
                     dataset.visibility = typeof settings[dataset._id] === 'undefined' ? true : settings[dataset._id]
                     dataset.categories.forEach((category) => {
-                        category.file = dataset.file
+                        category.file = dataset.originalFile
                         category.layerName = category.name
                     })
                 }

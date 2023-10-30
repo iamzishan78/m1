@@ -339,11 +339,20 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerToAdd.name = nameAutValue.name;
       }
 
+
       if (
-        (ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
-        (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
-        (ownerToAdd.campaignPriority && selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
-        (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
+        ((ownerToAdd.contactStatus || selectedRow?.contactStatus) &&
+          selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
+        ((ownerToAdd.status || selectedRow?.status) &&
+          selectedRow?.status !== ownerToAdd.status) ||
+        ((ownerToAdd.ownerType || selectedRow?.ownerType) &&
+          selectedRow?.ownerType !== ownerToAdd.ownerType) ||
+        ((ownerToAdd.campaignPriority || selectedRow?.campaignPriority) &&
+          selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
+        ((ownerToAdd.campaignName || selectedRow?.campaignName) &&
+          selectedRow?.campaignName !== ownerToAdd.campaignName) ||
+        ownerToAdd.campaignName ||
+        selectedRow?.campaignName !== ownerToAdd.campaignName
       ) {
         updateContact({
           variables: {
