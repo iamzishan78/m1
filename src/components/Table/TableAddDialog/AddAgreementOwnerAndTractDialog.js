@@ -304,7 +304,7 @@ function AddAgreementOwnerAndTractDialog(props) {
         depthFrom: getValues().depthFrom || "All depths",
         tract: {
           tractId: selectedShapeLayer._id,
-          tractName: selectedShapeLayer.name,
+          name: selectedShapeLayer.name,
           sdGrossAcres,
           shapeArea,
           legalDescription,
