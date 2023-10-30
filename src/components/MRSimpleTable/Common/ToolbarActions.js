@@ -16,6 +16,9 @@ function ToolbarActions({ table, tableKey, children }) {
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 
+	const Controller = simpleTableController(tableKey);
+	Controller.setIsAllRowsSelected(isAllRowsSelected);
+
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
 

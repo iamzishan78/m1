@@ -99,7 +99,8 @@ const simpleTableStateControllerHandler = state => ({
 			TableSchema,
 			defaultFlterMode,
 			defaultFilters,
-			isSelectall,
+			isSelectAllAllowed,
+			isAllRowsSelected,
 			search,
 			...rest
 		}
@@ -265,7 +266,8 @@ const simpleTableStateControllerHandler = state => ({
 			initialized: true,
 			tableKey,
 			pageSize,
-			isSelectall: isSelectall || false,
+			isSelectAllAllowed: isSelectAllAllowed || false,
+			isAllRowsSelected: isAllRowsSelected || false,
 			showColumnFilters: false,
 			data: { rows: [], total: 0 },
 			isLoading: false,
@@ -325,8 +327,8 @@ const simpleTableStateControllerHandler = state => ({
 			},
 		});
 	},
-	setSelectAll: value => {
-		state.isSelectall.set(value);
+	setIsAllRowsSelected: value => {
+		state.isAllRowsSelected.set(value);
 	},
 
 	setColumnVisibility: visibility => {
