@@ -265,7 +265,7 @@ const tableESStateControllerHandler = state => ({
 			isLoading: false,
 			isFetching: false,
 			isError: false,
-			defaultFilters: state?.defaultFilters?.get({ noproxy: true }) || defaultFilters || [],
+			defaultFilters: defaultFilters || [],
 			customProps: state?.customProps?.get({ noproxy: true }) || [],
 			filters: [],
 			sorting: [],
