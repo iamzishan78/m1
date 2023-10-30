@@ -95,6 +95,13 @@ const UnitInterestMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'taxYear',
+			accessorKey: 'taxYear',
+			header: 'Tax Year',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'working_interest',
 			accessorKey: 'working_interest',
 			header: 'WI',
