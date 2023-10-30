@@ -614,7 +614,10 @@ export const Status = ({ setDocumentType, value, options, ...other }) => {
         if (newValue && newValue._id) {
           if (newValue._id !== "newEntity") setDocumentType(newValue);
           else setDocumentType({ _id: "newEntity", name: newValue.name });
-        } else setSearch("");
+        } else {
+          setSearch("")
+          setDocumentType({ _id: "", name: "" });
+        };
       }}
       renderInput={(params) => (
         <TextField
