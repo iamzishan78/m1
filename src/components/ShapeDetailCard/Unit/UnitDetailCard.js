@@ -245,7 +245,7 @@ export default function UnitDetailCard(props) {
                         dense
                       />
                     </div>,
-                    <div className={!isFiltered ? classes.subContent : classes.subContent3}>
+                    <div >
                       <MRSimpleTable
                         name="PotentialOwners"
                         overrideMeta={{

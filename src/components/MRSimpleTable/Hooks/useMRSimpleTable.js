@@ -129,6 +129,7 @@ const useMRSimpleTable = tableKey => {
 				},
 			}),
 			memoMode: 'cells',
+			enableFacetedValues: tableStateValues?.enableFacetedValues,
 			columns: tableStateValues?.TableSchema,
 			data: tableStateValues?.data?.rows || [],
 			rowCount: tableStateValues?.data.total,
@@ -143,6 +144,7 @@ const useMRSimpleTable = tableKey => {
 				ref: tableContainerRef, // get access to the table container element
 				sx: {
 					maxHeight: tableStateValues?.maxTableHeight,
+					minHeight: tableStateValues?.maxTableHeight,
 					height: tableStateValues?.height,
 				},
 				onScroll: e => fetchMoreOnBottomReached(e.target),
