@@ -45,7 +45,6 @@ import { Status } from 'components/ContactDetailCard/components/FieldContent';
 import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { tableGlobalController } from 'hookstate/tableController';
 import { calculateStandardNraForUnit } from "utils/calculatedNraHelper"
-import { jobController } from 'hookstate/jobStateController';
 
 const useStyles = makeStyles(() => ({
   maxWidth: {
@@ -96,7 +95,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const [anchorEl, setAnchorEl] = useState();
   const [loading, setLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [editField, setEditField] = useState(false);
   const watchedNra = watch('nra');
 
   const [getCampaignPriorityList, { data: priorityList }] = useLazyQuery(GET_ES_FILTER_LIST, {
@@ -169,14 +167,14 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
-        working_interest: parseFloat(working_interest).toFixed(8) || null,
-        royalty_interest: parseFloat(royalty_interest) || null,
-        orri: parseFloat(orri).toFixed(8) || null,
-        nri: parseFloat(nri).toFixed(8) || null,
-        nra: parseFloat(nra).toFixed(8) || null,
+        working_interest: working_interest || null,
+        royalty_interest: royalty_interest || null,
+        orri: orri || null,
+        nri: nri || null,
+        nra: nra || null,
         seller_asking_price: seller_asking_price || null,
         competitor_offer_price: competitor_offer_price || null,
-        offer_price: parseFloat(parseFloat(offer_price).toFixed(8)) || null,
+        offer_price: parseFloat(parseFloat(offer_price).toFixed(2)) || null,
         contactStatus: contactStatus || contact.contactStatus,
         status: status || contact.status,
         ownerType,
@@ -556,9 +554,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         props.onChange(e.target.value);
                         if (!isNraOverridden) setValue("nra", calculateStandardNraForUnit({ uAcres, working_interest: e.target.value, royalty_interest: getValues().royalty_interest, orri: getValues().orri, nri: getValues().nri, workspaceSettings }));
                       }}
-                      onBlur={e => {
-                        props.onChange(parseFloat(props.value).toFixed(8));
-                      }}
                       fullWidth
                       defaultValue=""
                     />
@@ -582,9 +577,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         if (!isNraOverridden) setValue("nra", calculateStandardNraForUnit({ uAcres, working_interest: getValues().working_interest, royalty_interest: e.target.value, orri: getValues().orri, nri: getValues().nri, workspaceSettings })
                         );
                       }}
-                      onBlur={e => {
-                        props.onChange(parseFloat(props.value).toFixed(8));
-                      }}
                       fullWidth
                       defaultValue=""
                     />
@@ -606,9 +598,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onChange={e => {
                         props.onChange(e.target.value);
                         if (!isNraOverridden) { setValue("nra", calculateStandardNraForUnit({ uAcres, working_interest: getValues().working_interest, royalty_interest: getValues().royalty_interest, orri: e.target.value, nri: getValues().nri, workspaceSettings })); }
-                      }}
-                      onBlur={e => {
-                        props.onChange(parseFloat(props.value).toFixed(8));
                       }}
                       fullWidth
                       defaultValue=""
@@ -632,9 +621,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onChange={e => {
                         props.onChange(e.target.value);
                         if (!isNraOverridden) { setValue("nra", calculateStandardNraForUnit({ uAcres, working_interest: getValues().working_interest, royalty_interest: getValues().royalty_interest, orri: getValues().orri, nri: e.target.value, workspaceSettings })); }
-                      }}
-                      onBlur={e => {
-                        props.onChange(parseFloat(props.value).toFixed(8));
                       }}
                       fullWidth
                       defaultValue=""
