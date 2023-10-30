@@ -6,16 +6,21 @@ import Table from "components/Shared/M1nTable/components/Table";
 import { deepEqualObjects, copy } from "components/Shared/functions";
 import TableHeader from 'components/Table/constants/property-revenue-details-header-schema';
 
+// value formatters
+import convert_date from "components/Shared/valueformatters/convert_date.js";
+
 function PropertyRevenueDetailsTable(props) {
     const classes = usetableStyles();
     const { propertyId, setTableMeta } = props;
 
     const formatHits = (hits) => {
         return hits.map((hit) => {
+            hit.purchaserNumber = hit?.property?.purchaserNumber;
             hit.number = hit?.property?.number;
             hit.name = hit?.property?.name;
             hit.checkNumber = hit?.check?.checkNumber;
-            hit.checkDate = hit?.check?.checkDate;
+            hit.checkDate = hit?.check?.checkDate ? convert_date(hit.check.checkDate) : null;
+            hit.salesDate = hit?.date ? convert_date(hit.date) : null;
             hit.checkId = hit?.check?._id;
             hit.purchaser = hit?.check?.payor?.name;
             return hit;

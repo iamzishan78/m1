@@ -201,12 +201,12 @@ const tracts = [
         required: false,
         actual_key: "owner.nra"
     },
-    {
-        label: "Lease Royalty Interest",
-        mapped_key: "",
-        required: false,
-        actual_key: "owner.lease_royalty_interest"
-    },
+    // {
+    //     label: "Lease Royalty Interest",
+    //     mapped_key: "",
+    //     required: false,
+    //     actual_key: "owner.lease_royalty_interest"
+    // },
     {
         label: "Acquistion $/NRA",
         mapped_key: "",

@@ -11,3 +11,9 @@ export const UPSERT_CAMPAIGN_DESCRIPTORS = gql`
     upsertCampaignDescriptors(descriptors: $descriptors)
   }
 `;
+
+export const REMOVE_CAMPAIGN_FROM_CUSTOMLAYER = gql`
+  mutation removeCampaignFromCustomLayer($campaignId: String, $customlayers: [JSON]) {
+    removeCampaignFromCustomLayer(campaignId: $campaignId, customlayers: $customlayers)
+  }
+`;

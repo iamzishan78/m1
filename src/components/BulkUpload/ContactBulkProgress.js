@@ -9,11 +9,17 @@ import { GET_JOBS_STATUS } from "graphQL/useQueryGetJobStatus";
 import Loader from "components/Loaders/serverLoader";
 import { setReduxKey } from "store/actions/commonActions";
 import useRefetchHelper from "components/Shared/Hooks/useRefetchHelper";
+import { jobController } from "hookstate/jobStateController";
 
 const ContactBulkProgress = () => {
   const [stateApp] = useContext(AppContext);
   const bulkUpload = useSelector((state) => state.common.bulkUpload);
   const refetchHelper = useRefetchHelper()
+
+  const jobState = jobController.useState(
+    ['bulkUpload'],
+    'jobStateValues'
+  );
 
   const dispatch = useDispatch();
 
@@ -55,7 +61,7 @@ const ContactBulkProgress = () => {
       stopPolling();
       refetch();
     }
-  }, [stateApp.bulkUpload, bulkUpload]);
+  }, [jobState.bulkUpload, bulkUpload]);
 
   useEffect(() => {
     if (dataJobs?.getJobsStatus?.jobs?.length > 0) {
@@ -137,14 +143,16 @@ const ContactBulkProgress = () => {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Import successfully completed" : "Import Failed";
         }
         else {
+          const labelType = ['checkDetails'].includes(type) ? 'Import' : 'Export'
+
           if (status === 'Created') {
             message = 'Waiting for job to start';
           } else if (status === 'Completed') {
-            message = `${asyncOperations.includes(type) ? 'Async operation' : 'Export'} successfully completed`;
+            message = `${asyncOperations.includes(type) ? 'Async operation' : labelType} successfully completed`;
           } else if (status === 'Completed with errors') {
-            message = `${asyncOperations.includes(type) ? 'Async operation' : 'Export'} completed with errors`;
+            message = `${asyncOperations.includes(type) ? 'Async operation' : labelType} completed with errors`;
           } else {
-            message = `${asyncOperations.includes(type) ? 'Async operation' : 'Export'} Failed`;
+            message = `${asyncOperations.includes(type) ? 'Async operation' : labelType} Failed`;
           }
 
           if (

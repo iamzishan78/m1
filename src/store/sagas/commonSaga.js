@@ -4,6 +4,7 @@ import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
 import { CREATE_JOB } from "graphQL/useMutationCreateJob";
 import { execCommonAsyncExportJobAction } from "store/actions/commonActions";
 import { EXEC_COMMON_ASYNC_EXPORT_JOB } from "store/type";
+import { jobController } from "hookstate/jobStateController";
 
 function* execCommonAsyncExportJob(action) {
   try {
@@ -26,10 +27,7 @@ function* execCommonAsyncExportJob(action) {
       },
     });
 
-    setStateApp((state) => ({
-      ...state,
-      bulkUpload: !state.bulkUpload,
-    }));
+    jobController.toggleBulkUpload()
 
     yield put(execCommonAsyncExportJobAction.FULLFILLED({}));
   } catch (error) {

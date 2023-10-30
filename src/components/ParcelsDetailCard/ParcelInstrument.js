@@ -358,7 +358,6 @@ export default function ParcelInstrument(props) {
         refetchQueries: ["getESSimpleSearch"],
         awaitRefetchQueries: true,
       }).then(() => {
-        debugger
         setFileData(null)
         setStateApp({
           ...stateApp,
