@@ -9,3 +9,7 @@
 [aria-label='Pin to right'] {
   display: none !important;
 }
+
+.MuiToolbar-root > .MuiBox-root > .MuiBox-root {
+  min-width: max-content;
+}

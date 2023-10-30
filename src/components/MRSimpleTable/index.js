@@ -5,6 +5,8 @@ import AllDialogs from 'components/MRSimpleTable/Common/Dialog';
 import { simpleTableController } from 'hookstate/simpleTableController';
 import { SCHEMA } from './Schema';
 
+import './index.css'
+
 function MRSimpleTable({ tableKey, name, overrideMeta = {} }) {
 	const meta = SCHEMA[name];
 	const extendedMeta = { ...meta, ...overrideMeta };

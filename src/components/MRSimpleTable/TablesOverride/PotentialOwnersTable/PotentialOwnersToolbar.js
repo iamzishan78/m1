@@ -76,22 +76,24 @@ const PotentialOwnersToolbar = ({ table, tableKey }) => {
                 customLabelStyle={{ marginRight: '0px' }}
             />
 
-            <ToolbarButton
-                label="+ ADD TO Unit"
-                disabled={!isSomethingSelected}
-                onClick={() => {
-                    simpleTableGlobalController.updateState({
-                        dialog: {
-                            type: 'multipleOwnerToContact',
-                            rows: formatInterestForImport(selectedRows),
-                            jobType: 'SHAPEOWNER',
-                            jobName: 'Convert potential owner to unit owner',
-                        },
-                    });
+            {isSomethingSelected && (
+                <ToolbarButton
+                    label="+ ADD TO Unit"
+                    disabled={!isSomethingSelected}
+                    onClick={() => {
+                        simpleTableGlobalController.updateState({
+                            dialog: {
+                                type: 'multipleOwnerToContact',
+                                rows: formatInterestForImport(selectedRows),
+                                jobType: 'SHAPEOWNER',
+                                jobName: 'Convert potential owner to unit owner',
+                            },
+                        });
 
-                    table.resetRowSelection();
-                }}
-            />
+                        table.resetRowSelection();
+                    }}
+                />
+            )}
         </div>
     );
 };
