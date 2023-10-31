@@ -2,7 +2,10 @@ import React, { memo } from 'react';
 import Badge from '@material-ui/core/Badge';
 import Tooltip from '@material-ui/core/Tooltip';
 import { makeStyles } from '@material-ui/core/styles';
-import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import {
+	simpleTableController,
+	simpleTableGlobalController,
+} from 'hookstate/simpleTableController';
 
 const useStyles = makeStyles(() => ({
 	tagsDiv: {
@@ -40,8 +43,14 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-function TagCell({ id, targetSourceId, tags, targetLabel }) {
+function TagCell({ id, targetSourceId, tags, targetLabel, tableKey }) {
 	const classes = useStyles();
+
+	const Controller = simpleTableController(tableKey);
+	const { stateValues } = Controller.useState(['tagsList']);
+
+	tags = stateValues.tagsList?.find(tag => tag._id === id)?.tags || tags;
+
 	return (
 		<div style={{ marginRight: '10px' }}>
 			<Tooltip title={tags?.length === 0 ? 'Add Tags' : 'Tags'} placement="top">
@@ -64,8 +73,8 @@ function TagCell({ id, targetSourceId, tags, targetLabel }) {
 				>
 					{tags?.length > 0 ? (
 						<>
-							<p className="first">{tags.map(cell => cell.tag).join(', ')}</p>
-							<p className="two">...</p>
+							<p className="first">{tags.join(', ')}</p>
+							{tags?.length > 1 && <p className="two">...</p>}
 						</>
 					) : (
 						<p className="three">No Tags</p>

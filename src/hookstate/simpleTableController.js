@@ -290,6 +290,8 @@ const simpleTableStateControllerHandler = state => ({
 			columnVisibility,
 			defaultSort,
 			filterModes,
+			commentsCounter: [],
+			tagsList: [],
 			columnPinning: {
 				left: [
 					...(pinnedFields.length > 0

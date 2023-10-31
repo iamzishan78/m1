@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { simpleTableController } from 'hookstate/simpleTableController';
 import useHandleQuery from './useHandleQuery';
+import useHandleAdditionalQueries from './useHandleAdditionalQueries';
 import ToolbarActions from '../Common/ToolbarActions';
 import { tableSimpleFilterModeOtions } from '../utils/data';
 
@@ -15,6 +16,12 @@ const useMRSimpleTable = tableKey => {
 	const tableStateValues = tableState?.get({ noproxy: true });
 	const { fetchMoreOnBottomReached } = useHandleQuery({
 		tableRef: tableStateValues?.isInFiniteScroll ? rowVirtualizerInstanceRef : tableRef,
+		tableKey,
+		tableState,
+		tableStateValues,
+	});
+
+	useHandleAdditionalQueries({
 		tableKey,
 		tableState,
 		tableStateValues,

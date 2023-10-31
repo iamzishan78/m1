@@ -1,5 +1,5 @@
-import PotentialOwnersMeta from './potential_owners_schema';
+import PotentialOwnersMeta, { potentialOwnerTableKey } from './potential_owners_schema';
 
 export const SCHEMA = {
-	PotentialOwners: PotentialOwnersMeta,
+	[potentialOwnerTableKey]: PotentialOwnersMeta,
 };

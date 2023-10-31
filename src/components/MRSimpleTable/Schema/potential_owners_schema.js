@@ -7,8 +7,11 @@ import { getPolygonString } from 'components/Shared/functions';
 import { SHAPE_WELL_OWNERS } from 'graphQL/useQueryPaginatedShapeWellOwners';
 import { CommonSchema } from './common_schema';
 
+export const potentialOwnerTableKey = 'PotentialOwners'
+
 const PotentialOwnersMeta = {
   query: SHAPE_WELL_OWNERS,
+  additionalQueries: ['comments', 'tags'],
   maxTableHeight: 'calc(100vh - 440px)',
   getVariables: tableMeta => {
     const { customLayer, year, filterByWells } = tableMeta?.customProps || {};
@@ -33,6 +36,7 @@ const PotentialOwnersMeta = {
     };
   },
   getDataFromRes: res => res?.data?.paginatedShapeWellOwners?.edges || [],
+  getIdsFromRows: rows => rows?.map(row => row.node?.id) || [],
   CustomToolBar: PotentialOwnersToolbar,
   isSelectAllAllowed: true,
   isDeleteAllowed: false,
@@ -117,13 +121,14 @@ const PotentialOwnersMeta = {
     {
       ...CommonSchema.TAGS,
       Cell: ({ row }) => {
-        const targetSourceId = row.getValue('_id');
+        const id = row.getValue('id');
         return (
           <TagCell
-            id={targetSourceId}
-            targetSourceId={targetSourceId}
+            id={id}
+            targetSourceId={id}
             tags={row?.original?.tags}
             targetLabel={'contact'}
+            tableKey={potentialOwnerTableKey}
           />
         );
       },
@@ -145,6 +150,7 @@ const PotentialOwnersMeta = {
             id={id}
             value={renderedCellValue?.length || 0}
             targetLabel={'contact'}
+            tableKey={potentialOwnerTableKey}
           />
         );
       },
