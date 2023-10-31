@@ -144,7 +144,6 @@ export const numberFilterOptions = [
 	...tableSimpleFilterModeOtions.inclusive,
 	...tableSimpleFilterModeOtions.comparison,
 	...tableSimpleFilterModeOtions.vacancy,
-	...tableSimpleFilterModeOtions.custom,
 ];
 
 export const dateFilterOptions = [...tableSimpleFilterModeOtions.custom];
