@@ -90,6 +90,7 @@ import LayerSelectionPopup from "./components/popup/LayerSelectionPopup";
 import { useHookstate } from '@hookstate/core';
 import { hookStateApp } from "hookstate";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
+import { jobController } from "hookstate/jobStateController";
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -410,7 +411,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       const elasticWellRes = await getElasticWell(paramId);
       const currentFeature = { ...elasticWellRes };
       if (currentFeature?.Id) currentFeature.id = currentFeature.Id;
-      setStateApp({ ...stateApp, selectedWell: currentFeature, selectedWellId: paramId.toLowerCase(), popupOpen: false, expandedCard: true });
+      setStateApp({ ...stateApp, selectedWell: currentFeature, selectedWellId: paramId.toLowerCase(), popupOpen: false, expandedCard: true, selectedParcel: null, selectedShape: null });
       setShowExpandableCard(true);
       if (map && currentFeature) {
         findBoundsMap([currentFeature.geoJSON], map);
@@ -1441,10 +1442,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                 ],
               },
               filters: [
-                {
-                  field: "properties.layerGeometry",
-                  value: feature.properties.layerGeometry
-                },
                 {
                   field: "properties.layerShapeName",
                   value: feature.properties.layerShapeName
@@ -5927,7 +5924,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
     }).then(() => {
-      setStateApp((state) => ({ ...state, bulkUpload: !state.bulkUpload, }));
+      jobController.toggleBulkUpload()
     });
   };
 

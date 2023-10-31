@@ -1,21 +1,14 @@
 import React, { useContext, useEffect, useRef } from "react";
-import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../../Navigation/NavigationContext";
 import { Button, Grid } from "@material-ui/core";
 import { CSVReader /* CSVDownloader */ } from "react-papaparse";
 import CSVDownloader from "react-csv-downloader";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
 import { useDispatch } from "react-redux";
 import Select from "@material-ui/core/Select";
 import { showErrorMessage } from "../../../actions";
-import M1neral_headers from "../jobHeaders";
+import { jobController } from "hookstate/jobStateController";
 
 const useStyles = makeStyles(() => ({
   table: {
@@ -149,11 +142,16 @@ const StyledTableCell = withStyles((theme) => ({
 
 export default function CSVFileReader(props) {
   const dispatch = useDispatch();
-  let [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav] = useContext(NavigationContext);
   const classes = useStyles({ disabled: props.disabled });
   let unmounted = useRef(false);
-  const csvColumns = [Object.fromEntries(stateApp.m1neralHeaders.map((col) => [col.label, ""]))];
+
+  const { jobStateValues } = jobController.useState(
+    ['m1neralHeaders', 'jobType'],
+    'jobStateValues'
+  );
+
+  const csvColumns = [Object.fromEntries(jobStateValues.m1neralHeaders.map((col) => [col.label, ""]))];
 
   useEffect(() => {
     return () => {
@@ -206,7 +204,7 @@ export default function CSVFileReader(props) {
             });
           });
 
-        if (["TRACTS", "UNITS"].includes(stateApp.jobType) === "TRACTS") {
+        if (["TRACTS", "UNITS"].includes(jobStateValues.jobType) === "TRACTS") {
           data.forEach((data) => {
             Object.assign(data.data, {
               ...((data.data["PLSS Township"] || data.data["PLSS Range"]) && {
@@ -217,11 +215,10 @@ export default function CSVFileReader(props) {
         }
 
         mapped_headers_from_CSV(data);
-        setStateApp((state) => ({
-          ...state,
+        jobController.updateState({
           csvDataList: data,
-          activeStepNumber: stateApp.activeStepNumber + 1,
-        }));
+        })
+        jobController.nextStep()
       } else {
         dispatch(
           showErrorMessage(
@@ -235,7 +232,7 @@ export default function CSVFileReader(props) {
   const mapped_headers_from_CSV = (data) => {
     if (data.length > 0) {
       let uniqueKeys = Object.keys(data[0].data);
-      let matchedKeys = [...stateApp.m1neralHeaders];
+      let matchedKeys = [...jobStateValues.m1neralHeaders];
       uniqueKeys = [...matchedKeys.filter(mk => !uniqueKeys.includes(mk.label)).map(mk => mk.label), ...uniqueKeys];
       for (let index in uniqueKeys) {
         const matchedKey = matchedKeys.find((el) => el?.label === uniqueKeys[index]);
@@ -252,7 +249,11 @@ export default function CSVFileReader(props) {
           matchedKey.required = uniqueKeys[index].required;
         }
       }
-      setStateApp((state) => ({ ...state, m1neralHeaders: matchedKeys, mappedHeadersFromCSV: uniqueKeys }));
+
+      jobController.updateState({
+        mappedHeadersFromCSV: uniqueKeys,
+        m1neralHeaders: matchedKeys
+      })
     }
   };
 
@@ -304,7 +305,6 @@ export default function CSVFileReader(props) {
                   Object.entries(data).forEach(([key, value]) => {
                     if (typeof value !== 'string') return
 
-                    console.log("🚀 ~ file: CSVFileReader.js:308 ~ Object.entries ~ value:", key, value)
                     data[key] = value.replace('@#$%:', '')
 
                     if (data[key].startsWith('string=')) data[key] = data[key].replace('string=', '')
@@ -341,7 +341,7 @@ export default function CSVFileReader(props) {
         <div style={{ ...big_text, ...padding_div_top }}>Preferred File Setup</div>
         <div style={mainContent}>
           <div style={big_grey_text}>You can use any CSV file but leveraging our template will save time mapping column headers</div>
-          <CSVDownloader datas={csvColumns} filename={`Sample_${stateApp.jobType}_Upload`} type="link" className={classes.linkStyle}>
+          <CSVDownloader datas={csvColumns} filename={`Sample_${jobStateValues.jobType}_Upload`} type="link" className={classes.linkStyle}>
             Click this link to download sample CSV template
           </CSVDownloader>
         </div>

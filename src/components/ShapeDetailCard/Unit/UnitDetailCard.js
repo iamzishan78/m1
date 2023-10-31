@@ -27,6 +27,7 @@ import { detailCardStyles } from "../style";
 import { DrawerContextProvider } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
 import { simpleTableGlobalController } from "hookstate/simpleTableController";
+import { jobController } from "hookstate/jobStateController";
 import MRSimpleTable from "components/MRSimpleTable";
 import TabHeader from "components/MRSimpleTable/Common/TabHeader";
 
@@ -139,7 +140,7 @@ export default function UnitDetailCard(props) {
         userId: stateApp.user.mongoId
       },
     }).then(() => {
-      setStateApp((state) => ({ ...state, bulkUpload: !state.bulkUpload, }));
+      jobController.toggleBulkUpload()
     });
   };
 
