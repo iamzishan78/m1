@@ -2,7 +2,7 @@ import React from 'react';
 import { hookstate } from '@hookstate/core';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
 import { copy, deepEqual } from 'components/Shared/functions';
-import { hookStateController } from 'hookstate';
+import { hookStateController } from 'hookstate/hookStateController';
 import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 

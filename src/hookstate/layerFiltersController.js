@@ -1,6 +1,6 @@
 import { hookstate } from '@hookstate/core';
 import { copy, deepEqual } from 'components/Shared/functions';
-import { hookStateController } from 'hookstate';
+import { hookStateController } from 'hookstate/hookStateController';
 import { globalStateController } from './globalStateController';
 
 const initialState = {
