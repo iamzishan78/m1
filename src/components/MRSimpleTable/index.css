@@ -13,3 +13,11 @@
 .MuiToolbar-root > .MuiBox-root > .MuiBox-root {
   min-width: max-content;
 }
+
+.MuiDialog-paperFullScreen {
+  margin-left: 61px !important;
+}
+
+.MuiDialog-paperFullScreen > div {
+  width: auto !important;
+}
