@@ -127,7 +127,7 @@ const PotentialOwnersMeta = {
             id={id}
             targetSourceId={id}
             tags={row?.original?.tags}
-            targetLabel={'contact'}
+            targetLabel={'well'}
             tableKey={potentialOwnerTableKey}
           />
         );
@@ -149,7 +149,7 @@ const PotentialOwnersMeta = {
           <CommentCell
             id={id}
             value={renderedCellValue?.length || 0}
-            targetLabel={'contact'}
+            targetLabel={'well'}
             tableKey={potentialOwnerTableKey}
           />
         );
