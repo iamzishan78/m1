@@ -1,6 +1,6 @@
 import { useApolloClient } from '@apollo/client';
 import { useEffect } from 'react';
-import { simpleTableController } from 'hookstate/simpleTableController';
+import { simpleTableController, simpleTableGlobalController } from 'hookstate/simpleTableController';
 import { COMMENTSCOUNTER } from 'graphQL/useQueryCommentsCounter';
 import { TAGSAMPLES } from 'graphQL/useQueryTagSamples';
 import { globalStateController } from 'hookstate/globalStateController';
@@ -9,6 +9,8 @@ import { isEqual } from 'lodash';
 const useHandleAdditionalQueries = ({ tableKey, tableState, tableStateValues }) => {
 	const Controller = simpleTableController(tableKey);
 	const client = useApolloClient();
+
+	const { refetchAdditionalQueries } = simpleTableGlobalController.useState(['refetchAdditionalQueries']);
 
 	const callCommentsQuery = async () => {
 		const user = globalStateController.getValue('user');
@@ -61,7 +63,7 @@ const useHandleAdditionalQueries = ({ tableKey, tableState, tableStateValues }) 
 		if (additionalQueries.includes('comments')) callCommentsQuery();
 		if (additionalQueries.includes('tags')) callTagsQuery();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [tableState.data, tableState.additionalQueries]);
+	}, [tableState.data, tableState.additionalQueries, refetchAdditionalQueries]);
 };
 
 export default useHandleAdditionalQueries;

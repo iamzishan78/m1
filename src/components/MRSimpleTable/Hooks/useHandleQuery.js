@@ -1,11 +1,13 @@
 import { useApolloClient } from '@apollo/client';
 import { debounce } from 'lodash';
 import { useCallback, useEffect } from 'react';
-import { simpleTableController } from 'hookstate/simpleTableController';
+import { simpleTableController, simpleTableGlobalController } from 'hookstate/simpleTableController';
 
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
 	const Controller = simpleTableController(tableKey);
 	const client = useApolloClient();
+
+	const { refetch } = simpleTableGlobalController.useState(['refetch']);
 
 	const callQuery = async () => {
 		const tableMeta = tableState.get({ noproxy: true });
@@ -38,7 +40,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		if (!tableState.query.get()) return;
 
 		callQuery();
-	}, [tableState.query, tableState.customProps]);
+	}, [tableState.query, tableState.customProps, refetch]);
 
 	const fetchMoreOnBottomReached = useCallback(
 		debounce(containerRefElement => {

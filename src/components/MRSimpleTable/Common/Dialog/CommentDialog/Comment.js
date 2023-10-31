@@ -364,7 +364,7 @@ export default function Comments(props) {
 			],
 			awaitRefetchQueries: true,
 		});
-		simpleTableGlobalController.refetch();
+		simpleTableGlobalController.refetchAdditionalQueries();
 		setLoading(false);
 	};
 
@@ -425,7 +425,7 @@ export default function Comments(props) {
 				});
 			}
 		}
-		simpleTableGlobalController.refetch();
+		simpleTableGlobalController.refetchAdditionalQueries();
 		setLoading(false);
 	};
 
@@ -665,14 +665,14 @@ export default function Comments(props) {
 												/>
 											}
 											secondary={`${comment?.user?.name}${comment.ids
-													? ''
-													: ` - ${new Intl.DateTimeFormat('en-US', {
-														year: 'numeric',
-														month: 'long',
-														day: '2-digit',
-														hour: '2-digit',
-														minute: '2-digit',
-													}).format(comment.ts)}`
+												? ''
+												: ` - ${new Intl.DateTimeFormat('en-US', {
+													year: 'numeric',
+													month: 'long',
+													day: '2-digit',
+													hour: '2-digit',
+													minute: '2-digit',
+												}).format(comment.ts)}`
 												}`}
 										/>
 										<ListItemSecondaryAction>

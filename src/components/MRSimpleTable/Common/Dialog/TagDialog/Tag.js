@@ -346,7 +346,7 @@ export default function Tags(props) {
 				}
 			}
 		}
-		simpleTableGlobalController.refetch();
+		simpleTableGlobalController.refetchAdditionalQueries();
 	};
 
 	/// ////////////////// DELETING A TAG ///////////////////////////////////////////////
@@ -413,7 +413,7 @@ export default function Tags(props) {
 				});
 			}
 		}
-		simpleTableGlobalController.refetch();
+		simpleTableGlobalController.refetchAdditionalQueries();
 	};
 
 	/// /////////////////////////////////////////////////////////////////////////////////////
