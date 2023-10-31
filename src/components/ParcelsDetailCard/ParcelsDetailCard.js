@@ -510,8 +510,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                 parent="associatedWellsPerParcel"
                 targetLabel="well"
                 header={<WellHeader />}
+                isCheckboxSticky={true}
                 showTracks
-                dense
               />
             </div>,
             <TabPanels
