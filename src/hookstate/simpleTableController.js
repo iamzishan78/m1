@@ -310,14 +310,15 @@ const simpleTableStateControllerHandler = state => ({
 
 		if (mode === 'singleselect') {
 			state.TableSchema?.[index]?.merge({
-				Filter: columnSchema?.SingleSelect,
+				filterVariant: 'select',
 			});
 		} else if (mode === 'multiselect') {
 			state.TableSchema?.[index]?.merge({
-				Filter: columnSchema?.MultiSelect,
+				filterVariant: 'text',
+				// filterVariant: 'multi-select',
 			});
-		} else if (columnSchema?.Filter) {
-			state.TableSchema?.[index]?.merge({ Filter: null });
+		} else {
+			state.TableSchema?.[index]?.merge({ filterVariant: 'text' });
 		}
 
 		state.filterModes?.merge({

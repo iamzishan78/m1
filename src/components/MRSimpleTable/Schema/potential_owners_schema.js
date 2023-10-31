@@ -56,7 +56,6 @@ const PotentialOwnersMeta = {
       header: 'Api Number',
       accessorKey: 'api',
       name: 'api',
-      filterVariant: 'select',
       accessorFn: row => row?.node?.api,
     },
     {
@@ -64,7 +63,6 @@ const PotentialOwnersMeta = {
       header: 'Well Name',
       accessorKey: 'wellName',
       name: 'wellName',
-      filterVariant: 'select',
       accessorFn: row => row?.node?.wellName,
     },
     {
@@ -72,7 +70,6 @@ const PotentialOwnersMeta = {
       header: 'Lease',
       accessorKey: 'lease',
       name: 'lease',
-      filterVariant: 'select',
       accessorFn: row => row?.node?.lease,
     },
     {
@@ -80,7 +77,6 @@ const PotentialOwnersMeta = {
       header: 'Lease Number',
       accessorKey: 'leaseNumber',
       name: 'leaseNumber',
-      filterVariant: 'select',
       accessorFn: row => row?.node?.leaseNumber,
     },
     {
@@ -88,7 +84,6 @@ const PotentialOwnersMeta = {
       header: 'Owner Name',
       accessorKey: 'name',
       name: 'name',
-      filterVariant: 'select',
       accessorFn: row => row?.node?.name,
     },
     {
@@ -96,7 +91,6 @@ const PotentialOwnersMeta = {
       header: 'Entity Type',
       accessorKey: 'ownershipType',
       name: 'ownershipType',
-      filterVariant: 'select',
       accessorFn: row => row?.node?.ownershipType,
     },
     {
@@ -104,7 +98,6 @@ const PotentialOwnersMeta = {
       header: 'Type',
       accessorKey: 'interestType',
       name: 'interestType',
-      filterVariant: 'select',
       accessorFn: row => row?.node?.interestType,
     },
     {

@@ -60,6 +60,7 @@ export const CommonSchema = {
 		isSearchField: true,
 		enableSorting: true,
 		type: 'string',
+		filterVariant: 'select',
 	},
 	ACTION_COLUMN: {
 		header: ' ',
