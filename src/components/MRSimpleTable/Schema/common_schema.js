@@ -52,7 +52,7 @@ export const CommonSchema = {
 		enableColumnOrdering: false,
 		size: 350,
 	},
-	COMMON_COLUMN: {
+	STRING_COLUMN: {
 		size: 250,
 		isPinned: false,
 		hidden: false,
@@ -60,6 +60,16 @@ export const CommonSchema = {
 		isSearchField: true,
 		enableSorting: true,
 		type: 'string',
+		filterVariant: 'select',
+	},
+	NUMBER_COLUMN: {
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: true,
+		isSearchField: true,
+		enableSorting: true,
+		type: 'number',
 	},
 	ACTION_COLUMN: {
 		header: ' ',
