@@ -82,8 +82,9 @@ const OwnersPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'taxYear',
-			accessorKey: 'taxYear',
+			name: 'taxYear.keyword',
+			accessorFn: row => row?.taxYear,
+			id: 'taxYear',
 			header: 'Tax Year',
 		},
 
