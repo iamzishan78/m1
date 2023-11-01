@@ -168,7 +168,7 @@ const categoryOptions = [
     value: "Parcel"
   },
   {
-    label: "Campaign Name",
+    label: "Campaigns",
     value: "Campaign Name"
   },
   {
