@@ -45,6 +45,7 @@ import { findBoundsMap } from "components/MapControls/commonHelper";
 import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 import { copy } from 'utils/helper';
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
+import { jobController } from "hookstate/jobStateController";
 
 const ENTER_KEY = 13;
 
@@ -373,6 +374,8 @@ export default function ParcelsDetailCard(props) {
         customLayerId: data._id,
         customLayer,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
@@ -391,6 +394,8 @@ export default function ParcelsDetailCard(props) {
         customLayerId: parcelObj._id,
         customLayer,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
