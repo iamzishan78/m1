@@ -641,8 +641,8 @@ export default function ParcelsDetailCard(props) {
                 parent="associatedWellsPerParcel"
                 targetLabel="well"
                 header={<WellHeader />}
+                isCheckboxSticky={true}
                 showTracks
-                dense
               />
             </div>,
             <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
