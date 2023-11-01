@@ -84,7 +84,7 @@ const ContactMeta = {
 								name={renderedCellValue.split(' ').splice(0, 2).join(' ')}
 								size="35"
 								round
-								
+
 							/>
 						)}
 
@@ -104,15 +104,15 @@ const ContactMeta = {
 									e.stopPropagation();
 								}}
 							/>
-							{!!(row.getValue('isPurchased') === 'true') && (
+							{!!(row.getValue('isPurchased') === 'true' || row.getValue('isPurchased') === true) && (
 								<FeatureFlag feature={FEATURES.IDICORE}>
-									<MonetizationOnIcon 
-									style={{
-										marginLeft: '10px',
-										color: "gray"
-									}}
-									
-										/>
+									<MonetizationOnIcon
+										style={{
+											marginLeft: '10px',
+											color: "gray"
+										}}
+
+									/>
 								</FeatureFlag>
 							)}
 						</p>

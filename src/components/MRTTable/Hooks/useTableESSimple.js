@@ -175,7 +175,7 @@ const useTableESSimple = tableKey => {
 					const { className } = e.target;
 					if (
 						tableStateValues?.onClickedRow &&
-						(className.includes('MuiTableCell-root') || className.includes('row-click'))
+						(typeof className === 'object' || className?.includes('MuiTableCell-root') || className?.includes('row-click'))
 					) {
 						tableStateValues?.onClickedRow(row?.row?.original);
 					}

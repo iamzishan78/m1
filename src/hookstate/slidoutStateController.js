@@ -1,5 +1,5 @@
 import { hookstate } from '@hookstate/core';
-import { hookStateController } from 'hookstate';
+import { hookStateController } from 'hookstate/hookStateController';
 import { copy } from 'utils/helper';
 
 const initialState = {

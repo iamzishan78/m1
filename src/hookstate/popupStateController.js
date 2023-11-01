@@ -1,7 +1,7 @@
 import { hookstate, useHookstate } from '@hookstate/core';
 import mapboxgl from 'mapbox-gl';
 import { copy } from 'components/Shared/functions';
-import { hookStateController } from 'hookstate';
+import { hookStateController } from 'hookstate/hookStateController';
 import { findBoundsMap } from 'components/MapControls/commonHelper';
 
 const initialState = {

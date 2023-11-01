@@ -167,10 +167,10 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
-        working_interest: working_interest || null,
-        royalty_interest: royalty_interest || null,
-        orri: orri || null,
-        nri: nri || null,
+        working_interest: working_interest ? parseFloat(working_interest).toFixed(8) : null,
+        royalty_interest: royalty_interest ? parseFloat(royalty_interest).toFixed(8) : null,
+        orri: orri ? parseFloat(orri).toFixed(8) : null,
+        nri: nri ? parseFloat(nri).toFixed(8) : null,
         nra: nra || null,
         seller_asking_price: seller_asking_price || null,
         competitor_offer_price: competitor_offer_price || null,
@@ -547,7 +547,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     <TextField
                       size="small"
                       type="number"
-                      value={parseFloat(props.value).toFixed(8)}
+                      value={props.value}
                       inputRef={props.ref}
                       onWheel={e => e.target.blur()}
                       onChange={e => {
@@ -569,7 +569,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     <TextField
                       size="small"
                       type="number"
-                      value={parseFloat(props.value).toFixed(8)}
+                      value={props.value}
                       inputRef={props.ref}
                       onWheel={e => e.target.blur()}
                       onChange={e => {
@@ -592,7 +592,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     <TextField
                       size="small"
                       type="number"
-                      value={parseFloat(props.value).toFixed(8)}
+                      value={props.value}
                       inputRef={props.ref}
                       onWheel={e => e.target.blur()}
                       onChange={e => {
@@ -615,7 +615,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     <TextField
                       size="small"
                       type="number"
-                      value={parseFloat(props.value).toFixed(8)}
+                      value={props.value}
                       inputRef={props.ref}
                       onWheel={e => e.target.blur()}
                       onChange={e => {
