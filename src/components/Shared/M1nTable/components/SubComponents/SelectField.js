@@ -22,8 +22,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange, column }) => {
-
+const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange, column, onClose }) => {
   const classes = useStyles();
   const [dropDownValues, setDropDownValues] = useState([]);
   const [displayedOptions, setDisplayedOptions] = useState(100);
@@ -101,6 +100,7 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
                 spacing={0}
                 onClick={() => {
                   setIsOpen(false);
+                  onClose()
                   setStateApp((stateApp) => ({
                     ...stateApp,
                     selectedMeta: column,
@@ -231,6 +231,7 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
   const handleKeyDown = (e) => {
     if (e.key === "Escape" && isOpen) {
       e.stopPropagation();
+      onClose()
       setIsOpen(!isOpen)
     }
   }
@@ -263,6 +264,7 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
     if (act?.value !== "editOption" && act?.value !== "search") {
       if (isSingleSelect) {
         onCustomKeyChange(act?.value !== defaultValue.value ? act?.value : null);
+        onClose()
         setIsOpen(false)
       }
       else {

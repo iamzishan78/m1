@@ -168,6 +168,10 @@ const categoryOptions = [
     value: "Parcel"
   },
   {
+    label: "Campaign Name",
+    value: "Campaign Name"
+  },
+  {
     label: "All (contacts, docs, flow, agreement, etc.)",
     value: "All",
   },
@@ -386,6 +390,8 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
     }
     rippleEffectCall(data);
   };
+
+  const isDisabled = type === "text" ? !title : !title || items.filter(item => !!item.value).length === 0
 
   return (<>
     <Dialog
@@ -647,11 +653,11 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
                     Cancel
                   </Button>
                   <Button
-                    className={!title ? "" : classes.btnColor}
+                    className={isDisabled ? "" : classes.btnColor}
                     style={{ margin: "25px 25px 25px 5px" }}
                     variant="outlined"
                     onClick={handleSave}
-                    disabled={!title}
+                    disabled={isDisabled}
                   >
                     {stateApp.selectedMeta ? "Update Field" : "Create Field"}
                   </Button>

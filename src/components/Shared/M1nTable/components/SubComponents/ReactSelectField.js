@@ -63,6 +63,7 @@ const ReactSelectField = ({
   showChevron,
   variant,
   tooltipView,
+  minHeight = "50px",
   ...rest
 }) => {
   if (!isSingleSelect && !Array.isArray(value) && value) {
@@ -141,7 +142,7 @@ const ReactSelectField = ({
         className={classes.root}
         style={{
           padding: "0px",
-          minHeight: "50px",
+          minHeight,
           width: "100%",
           border: variant === 'outlined' ? "1px solid rgba(0, 0, 0, 0.42)" : "none",
           borderBottom: fullWidth ? "1px solid rgba(0, 0, 0, 0.42)" : "none",
@@ -191,13 +192,14 @@ const ReactSelectField = ({
 
           }
         >
-         <SelectField 
-         dropdownOptions = {dropdownOptions} 
-         value = {value}
-         isSingleSelect = {isSingleSelect}
-         onCustomKeyChange = {onCustomKeyChange}
-         column = {column}
-        />
+          <SelectField
+            dropdownOptions={dropdownOptions}
+            value={value}
+            isSingleSelect={isSingleSelect}
+            onCustomKeyChange={onCustomKeyChange}
+            column={column}
+            onClose={() => setIsOpen(false)}
+          />
 
         </Dropdown>
       </div>
