@@ -9,6 +9,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import ListChips from 'components/Common/ListChips';
 import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 
 const esIndex = 'shapeowners_flat';
 
@@ -18,7 +19,7 @@ const onClickedRow = selectedRow => {
 	tableGlobalController.updateState({
 		ownerPerUnitDialog: {
 			type: 'addOwnerToUnit',
-			shapeId: customLayer._id,
+			shapeId: customLayer?._id,
 			uAcres: customLayer?.shapeJson?.properties?.uAcres,
 			uUnitPricing: customLayer?.shapeJson?.properties?.uUnitPricing,
 			shapeType: 'Unit',
@@ -37,7 +38,7 @@ const OwnersPerUnitMeta = {
 	CustomToolBar: OwnersPerUnitToolBar,
 	onClickedRow,
 	defaultSort: { field: '_ts', order: 'asc' },
-	// maxTableHeight: 'calc(100vh - 200px)',
+	maxTableHeight: 'calc(100vh - 489px)',
 	height: '767px',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
@@ -219,6 +220,7 @@ const OwnersPerUnitMeta = {
 			header: 'Competitor Offer Price',
 			isSearchField: false,
 			type: 'number',
+			size: 300,
 			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
 		},
 
@@ -226,7 +228,27 @@ const OwnersPerUnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'offer_price',
 			accessorKey: 'offer_price',
-			header: 'Offer Price',
+			header: 'Target Offer Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'max_offer_price',
+			accessorKey: 'max_offer_price',
+			header: 'Max Offer Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'actual_offer_price',
+			accessorKey: 'actual_offer_price',
+			header: 'Actual Offer Price',
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
@@ -242,12 +264,38 @@ const OwnersPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'contactOwners.keyword',
+			accessorKey: 'contactOwners',
+			header: 'Contact Owner',
+			Cell: ({ row }) => {
+				return <div>{row?.original?.contactOwners[0]}</div>
+			}
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.status.keyword',
+			accessorFn: row => row?.contact?.status,
+			id: 'contact.status',
+			header: 'Stage',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'campaignName.keyword',
 			accessorFn: row => row?.campaignName,
 			id: 'campaignName',
 			header: 'Campaign Name',
 			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
 		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'campaignPriority.keyword',
+			accessorKey: 'campaignPriority',
+			header: 'Campaign Priority',
+		},
+
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -277,14 +325,10 @@ const OwnersPerUnitMeta = {
 		},
 
 		{
-			...CommonSchema.ACTION_COLUMN,
-			name: 'tags.tag.keyword',
-			accessorKey: 'tags.tag',
-			header: 'Tags',
-			size: 270,
+			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
 				const targetSourceId = row.getValue('ownerEntity');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} />;
+				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'Unit Ownership'} />;
 			},
 		},
 
@@ -298,7 +342,13 @@ const OwnersPerUnitMeta = {
 			},
 		},
 
-		CommonSchema.COMMENTS,
+		{
+			...CommonSchema.COMMENTS,
+			Cell: ({ renderedCellValue, row }) => {
+				const id = row.getValue('ownerEntity');
+				return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'Unit Ownership'} />;
+			},
+		},
 
 		{
 			...CommonSchema.ACTION_COLUMN,

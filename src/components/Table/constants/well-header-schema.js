@@ -1,7 +1,8 @@
+import { GlobalStickyStyles } from "GlobalSettings";
 
-const WellsHeadCells = [
+const wellsColumnHeaders = [
   {
-    name: "wellId",
+    name: "Id",
     options: {
       display: false,
       filter: false,
@@ -13,31 +14,101 @@ const WellsHeadCells = [
     },
   },
   {
-    name: "id",
+    name: "ApiNumber",
+    label: "API",
+    esKey: "api.keyword",
+    options: {
+      ...GlobalStickyStyles({
+        setCellProps: {
+          maxWidth: "200px",
+          left: '77px'
+        },
+        setCellHeaderProps: {
+          paddingLeft: '35px',
+          left: '77px'
+        }
+      }),
+      sort: true,
+      filter: true,
+    }
+  },
+  {
+    name: "WellName",
+    label: "Well Name",
+    esKey: "wellName.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "leaseId",
+    label: "Lease Number",
+    esKey: "leaseId.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "Lease",
+    label: "Lease Name",
+    esKey: "Lease.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "operator",
+    label: "Operator",
+    esKey: "operator.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "wellType",
+    label: "Type",
+    esKey: "wellType.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "wellBoreProfile",
+    label: "Profile",
+    esKey: "wellBoreProfile.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "wellStatus",
+    label: "Status",
+    esKey: "wellStatus.keyword",
+    options: {
+      sort: true,
+      filter: true,
+    },
+  },
+  {
+    name: "globalWell",
+    label: "Global  Well",
+    esKey: "Id.keyword",
     options: {
       display: false,
       filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      viewColumns: false,
-    },
+    }
   },
-  { name: "api", label: "API", options: { dbName: "apiNumber" } },
-  // { name: "state", label: "State" },
-  // { name: "county", label: "County" },
-  { name: "wellName", label: "Well Name" },
-  { name: "leaseId", label: "Lease Number" },
-  { name: "lease", label: "Lease Name" },
-  { name: "operator", label: "Operator", options: { dbName: "currentOperator" } },
-  { name: "wellType", label: "Type" },
-  { name: "wellBoreProfile", label: "Profile", },
-  { name: "wellStatus", label: "Status", },
   {
     name: "tags",
     label: "Tags ",
     options: {
+      filter: false,
       sort: false,
       download: false,
       print: false,
@@ -72,23 +143,20 @@ const WellsHeadCells = [
     label: " ",
     options: {
       filter: false,
-      sort: false,
       searchable: false,
       download: false,
       print: false,
       viewColumns: false,
-    },
-  },
-  {
-    name: "detailCard",
-    label: " ",
-    options: {
-      filter: false,
-      sort: false,
-      searchable: false,
-      download: false,
-      print: false,
-      viewColumns: false,
+      filterOptions: {
+        names: ["Tracked", "Untracked"],
+        logic(tracked, filterVal) {
+          return !(
+            (filterVal.indexOf("Tracked") >= 0 && tracked) ||
+            (filterVal.indexOf("Untracked") >= 0 && !tracked)
+          );
+        },
+      },
+      filterType: "dropdown",
     },
   },
   {
@@ -102,7 +170,7 @@ const WellsHeadCells = [
       print: false,
       viewColumns: false,
     },
-  }
+  },
 ];
 
-export default WellsHeadCells;
+export default wellsColumnHeaders;

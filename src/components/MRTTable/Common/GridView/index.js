@@ -16,6 +16,7 @@ function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, modul
 		'columnPinning',
 		'sorting',
 		'showColumnFilters',
+		'columnOrdering',
 	]);
 	const tableStateValues = tableState.stateValues;
 
@@ -51,45 +52,53 @@ function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, modul
 
 	useEffect(() => {
 		const selectedGridView = tableStateValues?.gridView?.selectedGridView;
-		if (selectedGridView?.columns) {
-			const columnstoShow = selectedGridView?.columns.reduce((acc, obj) => {
-				acc[obj.name] = obj.display;
-				return acc;
-			}, {});
+		if (!!(selectedGridView)) {
+			if (selectedGridView?.columns) {
+				const columnstoShow = selectedGridView?.columns.reduce((acc, obj) => {
+					acc[obj.name] = obj.display;
+					return acc;
+				}, {});
 
-			Controller.setColumnVisibility(columnstoShow);
-		} else {
-			const defaultVisibility = tableStateValues?.TableSchema?.reduce(
-				(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: !cur?.hidden }),
-				{}
-			);
-			Controller.setColumnVisibility(defaultVisibility);
-		}
-		if (selectedGridView?.filters?.length) {
-			tableState?.showColumnFilters?.set(true);
-			Controller.clearFilters();
-			selectedGridView?.filters.forEach(filter => {
-				Controller.setFilter(filter);
-			});
-		} else {
-			tableState?.showColumnFilters?.set(false);
-			Controller.clearFilters();
-		}
-		if (selectedGridView?.sorting) {
-			tableState?.sorting?.set(selectedGridView?.sorting);
-		} else {
-			tableState?.sorting?.set([]);
-		}
-		if (selectedGridView?.columnPinning) {
-			Controller.setColumnPinning(
-				selectedGridView?.columnPinning,
-				tableStateValues?.columnPinning,
-				tableStateValues.TableSchema
-			);
-		} else {
-			const pinnedColumns = tableStateValues?.TableSchema?.filter(column => column.isPinned);
-			const pinnedFields = pinnedColumns?.map(column => column.id || column.accessorKey);
-			Controller.setColumnPinning(tableStateValues?.columnPinning, pinnedFields, tableStateValues.TableSchema);
+				Controller.setColumnVisibility(columnstoShow);
+			} else {
+				const defaultVisibility = tableStateValues?.TableSchema?.reduce(
+					(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: !cur?.hidden }),
+					{}
+				);
+				Controller.setColumnVisibility(defaultVisibility);
+			}
+			if (selectedGridView?.filters?.length) {
+				tableState?.showColumnFilters?.set(true);
+				Controller.clearFilters();
+				selectedGridView?.filters.forEach(filter => {
+					Controller.setFilter(filter);
+				});
+			} else {
+				tableState?.showColumnFilters?.set(false);
+				Controller.clearFilters();
+			}
+			if (selectedGridView?.sorting) {
+				tableState?.sorting?.set(selectedGridView?.sorting);
+			} else {
+				tableState?.sorting?.set([]);
+			}
+			if (selectedGridView?.columnPinning) {
+				Controller.setColumnPinning(
+					selectedGridView?.columnPinning,
+					tableStateValues?.columnPinning,
+					tableStateValues.TableSchema
+				);
+			} else {
+				const pinnedColumns = tableStateValues?.TableSchema?.filter(column => column.isPinned);
+				const pinnedFields = pinnedColumns?.map(column => column.id || column.accessorKey);
+				Controller.setColumnPinning(tableStateValues?.columnPinning, pinnedFields, tableStateValues.TableSchema);
+			}
+			if (selectedGridView?.columnOrdering) {
+				tableState?.columnOrdering?.set(selectedGridView?.columnOrdering);
+			} else {
+				const columnOrder = tableStateValues?.TableSchema.map(column => column.accessorKey || column.id);
+				tableState?.columnOrdering?.set(['mrt-row-select', 'mrt-row-numbers', ...columnOrder]);
+			}
 		}
 		// for groupedField applying functionality will be done here
 	}, [tableState.stateValues?.gridView?.selectedGridView]);

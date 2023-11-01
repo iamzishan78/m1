@@ -8,16 +8,14 @@ export const calculateNRAForAgreementOwnerAndTractDialog = (interest1, interest2
   return nra;
 };
 
-export const calculateStandardNraForUnit = ({ uAcres, working_interest, royalty_interest, orri, ownershipPercentage, workspaceSettings }) => {
-  const sumOfDecimalInterest = ownershipPercentage ? ownershipPercentage : (parseFloat(working_interest || 0) + parseFloat(royalty_interest || 0) + parseFloat(orri || 0))
-  console.log('sumOfDecimalInterest', sumOfDecimalInterest)
+export const calculateStandardNraForUnit = ({ uAcres, working_interest, royalty_interest, orri, nri, ownershipPercentage, workspaceSettings }) => {
+  const sumOfDecimalInterest = ownershipPercentage ? ownershipPercentage : (parseFloat(working_interest || 0) + parseFloat(royalty_interest || 0) + parseFloat(orri || 0) + parseFloat(nri || 0))
   const isCustomType = workspaceSettings?.settings?.map?.unitNra?.type === "custom";
   const divisor = parseFloat(workspaceSettings?.settings?.map?.unitNra?.value || 0);
   let nra = uAcres * sumOfDecimalInterest
   if (isCustomType)
     nra /= divisor;
   nra = addTrailingZeros(nra.toFixed(8));
-  console.log(workspaceSettings?.settings?.map?.unitNra?.value, 'nra', nra)
   return nra;
 };
 

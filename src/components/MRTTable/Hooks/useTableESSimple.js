@@ -42,6 +42,7 @@ const useTableESSimple = tableKey => {
 				id: filter.field,
 			})),
 			columnPinning: tableStateValues?.columnPinning,
+			columnOrder: tableStateValues?.columnOrdering,
 			globalFilter: tableStateValues?.globalFilter || '',
 			columnVisibility: tableStateValues?.columnVisibility,
 			showColumnFilters: tableStateValues?.showColumnFilters,
@@ -55,6 +56,7 @@ const useTableESSimple = tableKey => {
 		tableProps: {
 			initialState: {
 				columnVisibility: tableStateValues?.columnVisibility,
+				columnOrder: tableStateValues?.columnOrdering,
 				expanded: true,
 				grouping: tableStateValues?.groupedField ? [tableStateValues?.groupedField] : [],
 				showColumnFilters: tableStateValues?.showColumnFilters,
@@ -126,18 +128,13 @@ const useTableESSimple = tableKey => {
 					const column = tableStateValues.TableSchema.find(
 						column => column.id === item.id || column.accessorKey === item.id
 					);
-					item.id = column?.advanceFilter ? [column.advanceFilter?.field] : item?.id.split(',');
-					const idArray = item?.id;
+					const idArray = item?.id?.split(',');
 					idArray.forEach(idValue => {
-						const isOrFilter = column?.advanceFilter && idValue.split(',').length;
 						const newItem = {
 							id: idValue,
 							value: item.value,
 							type: item?.type,
 						};
-						if (isOrFilter > 1) {
-							newItem.oRFilter = true;
-						}
 						result.push(newItem);
 					});
 				});
@@ -169,12 +166,16 @@ const useTableESSimple = tableKey => {
 				});
 			},
 
+			onColumnOrderChange: (ordering) => {
+				Controller.setColumnOrdering(ordering);
+			},
+
 			muiTableBodyRowProps: row => ({
 				onClick: e => {
 					const { className } = e.target;
 					if (
 						tableStateValues?.onClickedRow &&
-						(className.includes('MuiTableCell-root') || className.includes('row-click'))
+						(typeof className === 'object' || className?.includes('MuiTableCell-root') || className?.includes('row-click'))
 					) {
 						tableStateValues?.onClickedRow(row?.row?.original);
 					}
@@ -216,6 +217,7 @@ const useTableESSimple = tableKey => {
 				ref: tableContainerRef, // get access to the table container element
 				sx: {
 					maxHeight: tableStateValues?.maxTableHeight,
+					minHeight: tableStateValues?.maxTableHeight,
 					height: tableStateValues?.height,
 				},
 				onScroll: e => fetchMoreOnBottomReached(e.target),

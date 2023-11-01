@@ -1,13 +1,32 @@
 import React from 'react';
 import { hookstate } from '@hookstate/core';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
-import { deepEqual } from 'components/Shared/functions';
-import { hookStateController } from 'hookstate';
+import { copy, deepEqual } from 'components/Shared/functions';
+import { hookStateController } from 'hookstate/hookStateController';
 import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 
+const initialState = {
+	defaultFilters: [],
+	customProps: [],
+	filters: [],
+	sorting: [],
+	searchFields: [],
+	groupedField: {},
+	grouping: [],
+	footerProps: [],
+	ExternalFilter: [],
+	defaultSort: {},
+	columnOrdering: [],
+	columnPinning: {
+		left: [],
+	},
+}
 export const tableESState = {};
-export const tableGlobalState = hookstate({});
+export const tableGlobalState = hookstate({
+	refetch: false,
+	tabKey: 0
+});
 
 const handleVisiblityMenu = () => {
 	const interval2 = setInterval(() => {
@@ -105,6 +124,13 @@ const tableESStateControllerHandler = state => ({
 			column.enableColumnOrdering = false;
 			return column.id || column.accessorKey;
 		});
+
+		const columnOrder = TableSchema.map(column => {
+			let col = column.accessorKey || column.id
+			if (Array.isArray(col)) col = col[0]
+			return col
+		});
+
 		const tableCss = {
 			'& .MuiDialog-root': {
 				zIndex: '99999',
@@ -169,7 +195,6 @@ const tableESStateControllerHandler = state => ({
 									setFilterValue: column.setFilterValue,
 									filterSelectOptions: column.columnDef.filterSelectOptions,
 									filterValue: column?.getFilterValue() || '',
-									advanceFilter: column.columnDef.advanceFilter || false,
 								}}
 								multiple={false}
 							/>
@@ -192,7 +217,6 @@ const tableESStateControllerHandler = state => ({
 									type: column.columnDef.type,
 									setFilterValue: column.setFilterValue,
 									filterValue: column?.getFilterValue() || [],
-									advanceFilter: column.columnDef.advanceFilter || false,
 								}}
 								multiple
 							/>
@@ -235,15 +259,14 @@ const tableESStateControllerHandler = state => ({
 			tableKey,
 			esIndex,
 			pageSize,
-			refetch: false,
 			isSelectall: isSelectall || false,
 			showColumnFilters: false,
 			data: { rows: [], total: 0 },
 			isLoading: false,
 			isFetching: false,
 			isError: false,
-			defaultFilters: state?.defaultFilters?.get({ noproxy: true }) || defaultFilters || [],
-			customProps: state?.customProps?.get({ noproxy: true }) || [],
+			defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }),
+			customProps: state?.customProps?.get({ noproxy: true }),
 			filters: [],
 			sorting: [],
 			searchFields,
@@ -258,6 +281,7 @@ const tableESStateControllerHandler = state => ({
 			columnVisibility,
 			defaultSort,
 			filterModes,
+			columnOrdering: ['mrt-row-select', 'mrt-row-numbers', ...columnOrder],
 			columnPinning: {
 				left: [
 					...(pinnedFields.length > 0
@@ -352,6 +376,11 @@ const tableESStateControllerHandler = state => ({
 		handleVisiblityMenu();
 	},
 
+	setColumnOrdering: order => {
+		console.log(order)
+		if (!deepEqual(state.columnOrdering?.get({ noproxy: true }), order)) state.columnOrdering?.set(order);
+	},
+
 	setPagination: pagination =>
 		!deepEqual(state.pagination?.get({ noproxy: true }), pagination) && state.pagination?.set(pagination),
 
@@ -411,10 +440,10 @@ const tableESStateControllerHandler = state => ({
 });
 
 export const tableController = TableKey => {
-	if (!tableESState[TableKey]) tableESState[TableKey] = hookstate({});
+	if (!tableESState[TableKey]) tableESState[TableKey] = hookstate(copy(initialState));
 	return {
 		...tableESStateControllerHandler(tableESState[TableKey]),
-		...hookStateController(tableESState[TableKey], {}),
+		...hookStateController(tableESState[TableKey], copy(initialState)),
 	};
 };
 

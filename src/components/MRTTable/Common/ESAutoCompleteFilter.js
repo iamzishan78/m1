@@ -10,10 +10,12 @@ import { formatDate, setStateIfDeepEqual } from 'components/Shared/functions';
 function ESAutoCompleteFilter({
 	tableKey,
 	esIndex,
-	column: { field, label, type, custom, setFilterValue, filterValue, advanceFilter, filterSelectOptions, isComposite },
+	column: { field, label, type, custom, setFilterValue, filterValue, filterSelectOptions, isComposite },
 	extendSearchQuery,
 	multiple,
 }) {
+	if (isComposite) field = field.split(',')
+
 	const [getFilters, { data: filtersData, loading }] = useLazyQuery(GET_ES_SIMPLE_FILTER, { fetchPolicy: 'no-cache' });
 
 	const [options, setOptions] = useState([]);
@@ -31,7 +33,6 @@ function ESAutoCompleteFilter({
 		if (search) search = type === 'number' ? search : `*${search}*`;
 
 		const filtersArray = [...filters, ...defaultFilters];
-		if (advanceFilter?.oRFilter) field = JSON.parse(advanceFilter.field);
 		if (!_.isEqual(filtersArray, filtersRef.current)) {
 			filtersRef.current = filtersArray;
 			getFilters({
@@ -83,7 +84,7 @@ function ESAutoCompleteFilter({
 		setStateIfDeepEqual(setOptions, filterSelectOptions || options);
 	}, [filtersData, filterValue]);
 
-	// If we have advanceFilter like orFilter then filterValue is null due to id mismatch
+	// If we have orFilter then filterValue is null due to id mismatch
 	if (isComposite) {
 		const key = field[0].replace('.keyword', '')
 		const _field = filters.find((f) => f?.field === key)
@@ -100,10 +101,8 @@ function ESAutoCompleteFilter({
 	// Handle Filter Value is changed from Single Select to Multi Select and vice versa
 	if (multiple && (typeof filterValue === 'string')) {
 		filterValue = [];
-		if (advanceFilter) tableController(tableKey).clearFilter(advanceFilter.field);
 	} else if (!multiple && Array.isArray(filterValue)) {
 		filterValue = '';
-		if (advanceFilter) tableController(tableKey).clearFilter(advanceFilter.field);
 	} else if (multiple && !Array.isArray(filterValue)) {
 		filterValue = []
 		tableController(tableKey).clearFilter(field.replace('.keyword', ''))
@@ -148,8 +147,6 @@ function ESAutoCompleteFilter({
 						field.forEach(singleField => {
 							tableController(tableKey).clearFilter(singleField.replace('.keyword', ''));
 						});
-					} else if (advanceFilter) {
-						tableController(tableKey).clearFilter(advanceFilter.field);
 					} else {
 						tableController(tableKey).clearFilter(field.replace('.keyword', ''));
 					}
@@ -174,11 +171,6 @@ function ESAutoCompleteFilter({
 							field: singleField.replace('.keyword', ''),
 							value,
 						});
-					});
-				} else if (advanceFilter) {
-					tableController(tableKey).setFilter({
-						...advanceFilter,
-						value,
 					});
 				} else {
 					tableController(tableKey).setFilter({

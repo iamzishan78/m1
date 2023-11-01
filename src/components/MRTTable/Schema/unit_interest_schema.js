@@ -3,6 +3,7 @@ import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import ListChips from 'components/Common/ListChips';
 import { CommonSchema } from './common_schema';
+import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 
 const esIndex = 'shapeowners_flat';
 
@@ -14,11 +15,11 @@ const UnitInterestMeta = {
 		pageSize: 50,
 	},
 	gridViewSettings: {
-		label: 'Unit Interest Management',
+		label: 'Unit Interests',
 		module: 'UnitInterest',
 		Icon: UnitIcon,
 		defaultView: {
-			name: 'All Units Interest',
+			name: 'All Unit Interests',
 			type: 'Default',
 		},
 		handleDefaultView: (view, user) => {
@@ -34,7 +35,7 @@ const UnitInterestMeta = {
 	},
 	defaultSort: { field: '_ts', order: 'desc' },
 	defaultFilters: [{ field: 'shape.layer.keyword', value: 'unit' }],
-	maxTableHeight: 'calc(100vh - 290px)',
+	maxTableHeight: 'calc(100vh - 215px)',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
 	deletedKeys: {
@@ -90,6 +91,13 @@ const UnitInterestMeta = {
 			name: 'shape.shapeJson.properties.uAcres.keyword',
 			accessorKey: 'shape.shapeJson.properties.uAcres',
 			header: 'Unit Acres',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'taxYear',
+			accessorKey: 'taxYear',
+			header: 'Tax Year',
 		},
 
 		{
@@ -224,7 +232,13 @@ const UnitInterestMeta = {
 			},
 		},
 
-		CommonSchema.TAGS,
+		{
+			...CommonSchema.TAGS,
+			Cell: ({ row }) => {
+				const targetSourceId = row.getValue('_id');
+				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'unit'} />;
+			},
+		},
 	],
 };
 

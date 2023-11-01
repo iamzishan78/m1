@@ -29,6 +29,7 @@ import { detailCardStyles } from '../style';
 import UnitSummary from './UnitSummary';
 import { DrawerContextProvider } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
+import { jobController } from "hookstate/jobStateController";
 
 export default function UnitDetailCard(props) {
   const dispatch = useDispatch();
@@ -38,6 +39,7 @@ export default function UnitDetailCard(props) {
   const [uniObj, setUniObj] = useState();
   const [properties, setProperties] = useState();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const OwnersPerUnitGridState = tableController('OwnersPerUnitTable').useState(['data']).stateValue;
   const [updateCustomLayer, { data: updatedUnit, loading: updatingLayer }] = useMutation(UPDATECUSTOMLAYER);
 
   const classes = detailCardStyles();
@@ -84,7 +86,7 @@ export default function UnitDetailCard(props) {
       });
       setProperties(shape.properties);
     }
-  }, [dataCustomLayer]);
+  }, [dataCustomLayer, OwnersPerUnitGridState?.data]);
 
   const overrideMeta = useMemo(() => ({
     defaultFilters: [
@@ -143,6 +145,8 @@ export default function UnitDetailCard(props) {
         customLayer,
         userId: stateApp.user.mongoId,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 

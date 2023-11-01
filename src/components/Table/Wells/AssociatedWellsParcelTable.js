@@ -1,282 +1,196 @@
-import React, { useContext, useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-
+import React, { useContext, useEffect, useState } from "react";
 // context
+import { useHistory } from "react-router-dom";
+import { Container, IconButton } from "@material-ui/core";
+import Typography from "@material-ui/core/Typography";
+import Grid from "@material-ui/core/Grid";
+import Toolbar from "@material-ui/core/Toolbar";
+import { useSelector } from "react-redux";
+import debounce from "lodash/debounce";
+import CloseIcon from "@material-ui/icons/Close";
+import GetAppIcon from "@material-ui/icons/GetApp";
+import Dialog from "@material-ui/core/Dialog";
+
 import { AppContext } from "AppContext";
-
-import { Container } from "@material-ui/core";
+import TableESHOC from "components/Table/TableESHOC";
 import Table from "components/Shared/M1nTable/components/Table";
-import TableHOC from "components/Table/TableHOC";
 
-// QUERIES 
-import { useLazyQuery } from "@apollo/client";
-import { SHAPEWELLS } from "graphQL/useQueryPaginatedShapeWells";
+import { NavigationContext } from "components/Navigation/NavigationContext";
 
-import { deepEqualObjects, setStateIfDeepEqual } from "components/Shared/functions";
-
-// Header Schemas 
+// import TableHeader from "components/Table/constants/map-grid-wells-header-schema";
 import TableHeader from 'components/Table/constants/well-header-schema.js'
 
-// Utilities
-import isEmpty from "lodash/isEmpty";
-import ticksToDateString from "../../Shared/valueformatters/ticks-to-string.js";
-import { getPolygonString } from "components/Shared/functions";
-import { handleTagColumn } from "../helpers/index.js";
-import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount.js";
+import { deepEqualObjects, copy, getPolygonString } from "components/Shared/functions";
+import { usetableStyles } from "../Styles";
+import { downloadPdfsFile, getMapFilters } from "utils/helper";
 
-const useStyles = makeStyles((theme) => ({
-    container: {
-        padding: "0 !important"
-    },
-}));
+const genericDataActions = ['tags', 'comments', 'tracks'];
+const startPaginationAt = 25;
 
 function ShapeGridWellsTable(props) {
-    const classes = useStyles();
-
-    // contexts
+    let history = useHistory();
+    const classes = usetableStyles();
+    const [resetSelectedRow, setResetSelectedRow] = useState(false);
+    const [isSelectAll, setIsSelectAll] = useState(false);
     const [stateApp, setStateApp] = useContext(AppContext);
-    const [count, setCount] = useState(0)
-    // function states 
-    const [columns, Columns] = useState([]);
-    const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
-    const [selectedYear, setSelectedYear] = useState(2022)  // production selected year state 
+    const [stateNav, setStateNav] = useContext(NavigationContext);
+    const { customLayer, clickedRow } = props;
+    const searchInput = useSelector(
+        (state) => state.MapGridCard.searchInputValue
+    );
+    const formatColumns = (headers, hits) => {
+        if (stateNav.operatorName?.length > 0) {
+            const index = headers.findIndex(header => header.name === 'operator')
+            headers[index].options.display = true
+        }
+        if (stateNav.profileName?.length > 0) {
+            const index = headers.findIndex(header => header.name === 'wellBoreProfile')
+            headers[index].options.display = true
+        }
+        return headers;
+    };
 
-    // queries 
-    // i have no idea why skip works, but if we dont use it, a query variable change during pagination will
-    // rerun the new query but also the "first" query https://github.com/apollographql/apollo-client/issues/5912#issuecomment-803013814
-    // may not have needed for paginatedContacts due to relayStylePagination type policy
-    const [getPaginatedShapeWells, { data: dataShapeWells, variables: variablesShapeWells }] = useLazyQuery(SHAPEWELLS, { fetchPolicy: "cache-and-network", skip: true,
-    onCompleted: (dataShapeWells) => {
-    setCount((state, props) => {
-        let newState = state || dataShapeWells?.paginatedShapeWells?.edges?.length;
-        let newStateIncrement = !variablesShapeWells?.pagination?.before &&
-          dataShapeWells?.paginatedShapeWells?.pageInfo?.hasNextPage
-            ? 1
-            : 0;
-
-        return newState + newStateIncrement
-        })
-      },
-    });
-    const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network", skip: true,
-    onCompleted: (dataShapeWellsCount) => {
-      setStateApp((state) => ({
-          ...state,
-          shapeGridWellsCount: dataShapeWellsCount?.shapeWellsCount,
-        }));
-      }, 
-    });
-    const tableData = dataShapeWells?.paginatedShapeWells
-
-    const addAble = false
-    const total = false
-    const orderByTracks = false
-
-    ////////////Contact Wells begin///////////////////////////////////////////////
-    useEffect(() => {
-        getPaginatedShapeWells({
-          variables: {
-            polygon: getPolygonString(props.customLayer?.shape),
-            userId: stateApp.user.mongoId,
-          },
+    const formatHits = (hits) => {
+        hits = hits.map((hit) => {
+            hit.coordinates = {};
+            if (hit.Longitude && hit.Latitude) {
+                hit.coordinates.center = [hit.Longitude, hit.Latitude];
+                hit.coordinates.wellId = hit.Id;
+            }
+            hit.globalWell = hit.Id
+            hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
+            return hit;
         });
-        getShapeWellsCount({
-          variables: {
-            polygon: getPolygonString(props.customLayer?.shape)
-          },
-      });
-    }, [props.parent]);
+        return hits
+    }
+
+    const setTableMeta = React.useMemo(
+        () =>
+            debounce((request, top, callback) => {
+                props.setTableMeta(request);
+            }, 500),
+        // eslint-disable-next-line
+        []
+    );
 
     useEffect(() => {
-        if (tableData?.edges?.length > 0) {
-            let wells = tableData.edges.map((el) => el.node)
-            const objectsIdsArray = wells.map((well) => well.id);
-            props.initializeGenericData(objectsIdsArray, ['comments', 'tags'])
-        }
-
-    }, [tableData])
-
-    useEffect(() => {
-        if (tableData?.edges?.length > 0) {
-            let wells = tableData.edges.map((el) => ({ ...el.node, cursor: el.cursor }))
-
-            wells = wells.map((w) => {
-                let well = { ...w };
-                well.wellId = w.id
-                //// temporary to fix the ticks dates fields comming from the rest api
-                if (well.permitApprovedDate && well.permitApprovedDate != "null")
-                    well.permitApprovedDate = ticksToDateString(
-                        well.permitApprovedDate
-                    );
-                if (well.spudDate && well.spudDate != "null")
-                    well.spudDate = ticksToDateString(well.spudDate);
-                if (well.completionDate && well.completionDate != "null")
-                    well.completionDate = ticksToDateString(well.completionDate);
-                if (well.firstProductionDate && well.firstProductionDate != "null")
-                    well.firstProductionDate = ticksToDateString(
-                        well.firstProductionDate
-                    );
-                //// temporary end
-
-                well.coordinates = {};
-                well.coordinates.wellId = well.wellId
-                if (well.longitude && well.latitude)
-                    well.coordinates.center = [well.longitude, well.latitude];
-
-                well.detailCard = well.id;
-
-                well.isTracked = false;
-                well.commentsCounter = 0;
-                well.tags = [[], 0];
-
-                well = props.setGenricData(well, well.id, ['comments', 'tracks', 'tags'])
-
-                return well;
-            });
-            props.setRows(wells);
-
-            const cleanAvailableTags = []; // get from backend
-
-            const columns = handleTagColumn(TableHeader, cleanAvailableTags);
-            setColumns(columns);
-            props.setLoading(false);
-
-        }
-        else if (tableData?.edges?.length === 0) {
-            props.setLoading(false);
-        }
-    }, [tableData, props.dependencyUpdate]);
-
-    ////////////Contact Wells end///////////////////////////////////////////////
-
-
-    const onTableChange = (action, tableState, rows, meta) => {
-
-        const pageVariables = {
-            variables: {
-                polygon: getPolygonString(props.customLayer?.shape),
-                userId: stateApp.user.mongoId,
-                pagination: {
-                    first: tableState.rowsPerPage,
-                    after: null,
-                },
-                ...(!isEmpty(tableState.sortOrder)) && {
-                    sort:
-                    {
-                        field: tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.dbName ||
-                            tableState.columns.find(el => el.name === tableState.sortOrder?.name)?.name,
-                        order:
-                            tableState.sortOrder?.direction === "asc"
-                                ? 1
-                                : -1,
-                    }
-                },
-
-                filters: {},
+        const { filters } = getMapFilters(stateNav, "", getPolygonString(props.customLayer?.shape), "simple");
+        setTableMeta({
+            extendSearchQuery: searchInput,
+            searchFields: ["wellName", "api"],
+            filters,
+            polygon: props.customLayer?.shape?.geometry && {
+                type: "geo_intersects",
+                field: "geoJSON",
+                value: props.customLayer?.shape?.geometry
             },
-        };
-
-        switch (action) {
-            case "changeRowsPerPage":
-                props.setLoading(true);
-                tableState.page = 0;
-                meta.setPageInd(tableState.page);
-                meta.setRowsPerPage(tableState.rowsPerPage);
-                getPaginatedShapeWells(
-                    pageVariables
-                );
-                break;
-            case "changePage":
-                props.setLoading(true);
-                if (tableState.page > meta.pageInd) {
-                  setCount((state, props) => {
-                    return (tableState.page + 1) * tableState.rowsPerPage
-                  })
-                }
-                getPaginatedShapeWells({
-                    ...pageVariables,
-                    variables: {
-                        ...pageVariables.variables,
-                        pagination: {
-                            ...pageVariables.variables.pagination,
-                            before:
-                                props.rows && tableState.page < meta.pageInd
-                                    ? props.rows[0]?.cursor
-                                    : null,
-                            after:
-                                props.rows && tableState.page > meta.pageInd
-                                    ? props.rows[props.rows.length - 1]?.cursor
-                                    : null,
-                        },
-                    },
-                });
-                break;
-            case "sort":
-                props.setLoading(true);
-                tableState.page = 0;
-                meta.setPageInd(tableState.page);
-                getPaginatedShapeWells(
-                    pageVariables
-                );
-                break;
-            case "search":
-                break;
-            case "onSearchClose":
-                break;
-            case "propsUpdate":
-                break;
-            case "filterChange":
-                break;
-            case "resetFilters":
-                break;
-            default:
-        }
-    }
+            TableHeader: copy(TableHeader),
+            esIndex: "platformData:wells",
+            startPaginationAt: 25,
+            formatColumns,
+            formatHits,
+            initializeGenericData: { key: 'id', actions: genericDataActions }
+        });
+        // eslint-disable-next-line
+    }, [
+        searchInput,
+    ]);
 
 
-    const options = {
-        rowsPerPageOptions: count > 25 ? [10, 25, 50, 100] : count > 10 ? [10, 25] : [],
-        count: stateApp.shapeGridWellsCount || count || 0,
-        serverSide: true,
-        // search: false, 
-        filter: false,
-        // column: false, 
-    }
-    ////////////-----Add your code section here-----///////////////////////
-    const getWellOwnersByYear = (selectedYear) => {
-        setSelectedYear(selectedYear)
-    }
+
     return (
-
-        <div className={classes.root}>
-            <Container
-                maxWidth={false}
-                className={classes.container}
-                id={props.id ? props.id : props.parent}
+        <Container
+            maxWidth={false}
+            className={classes.container}
+            id={props.id ? props.id : props.parent}
+        >
+            <Table
+                style={{ backgroundColor: "#fff" }}
+                header={props.header}
+                columns={props.columns}
+                rows={props.rows}
+                total={false}
+                loading={props.loading}
+                targetLabel={props.targetLabel}
+                uploadIcon={null}
+                dense
+                orderByTracks={false}
+                startPaginationAt={null}
+                onTableChange={props.onTableChange}
+                resetSelectedRow={resetSelectedRow}
+                options={{
+                    ...props.options
+                }}
+                onRowSelectionChange={(
+                    allRowsSelected,
+                ) => {
+                    if (
+                        allRowsSelected.length === startPaginationAt ||
+                        allRowsSelected.length === props.options.count
+                    ) {
+                        setIsSelectAll(true);
+                    } else {
+                        setIsSelectAll(false);
+                    }
+                }}
+                parent={props.parent}
+                setColumnsBase={[]}
+                {...props.esHocProps}
+            />
+            <Dialog
+                className={classes.dialogExpCard}
+                fullWidth
+                maxWidth="xl"
+                open={stateApp.pdfView ? true : false}
+                onClose={() => {
+                    setStateApp((state) => ({
+                        ...state,
+                        pdfView: null,
+                    }));
+                }}
             >
-                <Table
-                    style={{ backgroundColor: "#fff" }}
-                    header={props.header}
-                    columns={columns}
-                    rows={props.rows}
-                    total={total}
-                    loading={props.loading}
-                    addAble={addAble}
-                    targetLabel={props.targetLabel}
-                    deleteFunc={null}
-                    uploadIcon={null}
-                    dense={props.dense ? props.dense : undefined}
-                    orderByTracks={orderByTracks}
-                    startPaginationAt={null}
-                    onTableChange={onTableChange}
-                    options={options}
-                    parent={props.parent}
-                    setColumnsBase={[]}
-                    getWellOwnersByYear={getWellOwnersByYear}
-                />
-            </Container>
-        </div>
+                <Toolbar>
+                    <Grid
+                        justify="space-between" // Add it here :)
+                        container
+                        spacing={24}
+                    >
+                        <Grid item>
+                            <Typography className={classes.fileTitle} type="title" color="inherit">
+                                {stateApp.pdfView?.fileName}
+                            </Typography>
+                        </Grid>
+
+                        <Grid item>
+                            {stateApp.pdfView && (
+                                <IconButton onClick={() => downloadPdfsFile(stateApp.pdfView)}>
+                                    <GetAppIcon />
+                                </IconButton>
+                            )}
+                            <IconButton
+                                className="float-right"
+                                color="inherit"
+                                onClick={() => {
+                                    setStateApp((state) => ({
+                                        ...state,
+                                        pdfView: null,
+                                        viewDoc: null,
+                                    }));
+                                }}
+                                aria-label="close"
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </Grid>
+                    </Grid>
+                </Toolbar>
+
+            </Dialog>
+        </Container>
     );
 }
 
-export default React.memo(TableHOC(ShapeGridWellsTable), deepEqualObjects);
+export default React.memo(
+    TableESHOC(ShapeGridWellsTable),
+    deepEqualObjects
+);

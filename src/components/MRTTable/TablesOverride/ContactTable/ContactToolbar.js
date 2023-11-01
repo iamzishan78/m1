@@ -46,6 +46,7 @@ function ContactToolbar({ table, tableKey }) {
 		'defaultSort',
 		'sorting',
 		'isSelectall',
+		'showAddContactButton',
 	]);
 	const tableStateValues = tableState.stateValues;
 	const isSomeRowsSelected = table.getIsSomeRowsSelected();
@@ -154,7 +155,7 @@ function ContactToolbar({ table, tableKey }) {
 	return (
 		<>
 			<>
-				{!isSomethingSelected && <ButtonDropDown options={options} />}
+				{(!isSomethingSelected && tableStateValues?.showAddContactButton) && <ButtonDropDown options={options} />}
 
 				<ViewContactData isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 

@@ -40,7 +40,7 @@ const useStyles = makeStyles(() => ({
 	},
 }));
 
-function TagCell({ id, targetSourceId, tags }) {
+function TagCell({ id, targetSourceId, tags, targetLabel }) {
 	const classes = useStyles();
 	return (
 		<div style={{ marginRight: '10px' }}>
@@ -57,7 +57,7 @@ function TagCell({ id, targetSourceId, tags }) {
 							dialog: {
 								type: 'tags',
 								targetSourceId,
-								targetLabel: 'contact',
+								targetLabel,
 							},
 						});
 					}}

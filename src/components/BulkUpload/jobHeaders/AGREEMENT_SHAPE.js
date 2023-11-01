@@ -66,7 +66,7 @@ const Agreement = [
     actual_key: "effectiveDate",
   },
   {
-    label: "Term(months)",
+    label: "Primary Term(months)",
     mapped_key: "",
     required: false,
     actual_key: "agreementTerm",
@@ -78,22 +78,34 @@ const Agreement = [
     actual_key: "expirationDate",
   },
   {
+    label: "Extension Term(months)",
+    mapped_key: "",
+    required: false,
+    actual_key: "extensionTerm",
+  },
+  {
+    label: "Extension Expiration Date",
+    mapped_key: "",
+    required: true,
+    actual_key: "extensionDate",
+  },
+  {
     label: "Bonus Payment",
     mapped_key: "",
     required: true,
     actual_key: "bounusPayment",
   },
   {
+    label: "Agreement Royalty(%)",
+    mapped_key: "",
+    required: true,
+    actual_key: "agmtRoyalty",
+  },
+  {
     label: "Approval Status",
     mapped_key: "",
     required: true,
     actual_key: "approvalStatus",
-  },
-  {
-    label: "Extension Date",
-    mapped_key: "",
-    required: true,
-    actual_key: "extensionDate",
   },
   {
     label: "Description",
@@ -166,6 +178,30 @@ const Agreement = [
     mapped_key: "",
     required: true,
     actual_key: "internalCompany",
+  },
+  {
+    label: "Agmt Report Gross",
+    mapped_key: "",
+    required: true,
+    actual_key: "reportGrossAcres",
+  },
+  {
+    label: "Agmt Gross",
+    mapped_key: "",
+    required: true,
+    actual_key: "grossAcres",
+  },
+  {
+    label: "Agmt Net",
+    mapped_key: "",
+    required: true,
+    actual_key: "netAcres",
+  },
+  {
+    label: "Agmt Co Net",
+    mapped_key: "",
+    required: true,
+    actual_key: "companyNetAcres",
   },
 ];
 export default Agreement;

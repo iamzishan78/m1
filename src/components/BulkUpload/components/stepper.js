@@ -1,5 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useMemo, useState } from "react";
-import moment from "moment";
 import PropTypes from "prop-types";
 import { set, get } from "lodash";
 import { useForm } from "react-hook-form";
@@ -29,6 +29,7 @@ import { BlockBlobClient } from "@azure/storage-blob";
 import jobHeaders from "../jobHeaders";
 import { INITIALIZE_EXPORT_JOB } from "graphQL/useMutationinitializeExportJob";
 import { getDateWithoutTime } from "components/Shared/functions";
+import { jobController } from "hookstate/jobStateController";
 
 const QontoConnector = withStyles({
   alternativeLabel: {
@@ -178,10 +179,31 @@ const stepper_style = {
 export default function CustomizedSteppers(props) {
   const classes = useStyles();
   const { control, watch, getValues, reset } = useForm();
-  const [stateApp, setStateApp] = React.useContext(AppContext);
+  const [stateApp] = React.useContext(AppContext);
   const client = useApolloClient();
   const history = useHistory();
   const previousRoute = matchRoutes(props.routes, history.pathHistory[1]);
+
+  const {
+    activeStepNumber,
+    csvDataToSend,
+    transferData,
+    selectedShapeLayerOption,
+    jobType,
+    jobStateValues,
+  } = jobController.useState(
+    [
+      'activeStepNumber',
+      'csvDataToSend',
+      'mappedHeadersFromCSV',
+      'transferData',
+      'uploaderFormValues',
+      'selectedShapeLayerOption',
+      'jobType',
+      'job'
+    ],
+    'jobStateValues'
+  );
 
   const [contactList, setContactList] = useState(null);
   const [jobId, setJobId] = useState(null);
@@ -189,7 +211,7 @@ export default function CustomizedSteppers(props) {
 
   const [buttonTitle, setButtonTitle] = useState("false");
 
-  const steps = getSteps(stateApp.job);
+  const steps = getSteps(jobStateValues.job);
   const dispatch = useDispatch();
   const [getJobUploadUri, { data: contactUploadUri }] = useLazyQuery(GET_JOB_UPLOAD_URI, {
     fetchPolicy: "no-cache",
@@ -198,17 +220,16 @@ export default function CustomizedSteppers(props) {
   const [updateJob] = useMutation(UPDATE_JOB);
 
   const userID = stateApp.user.mongoId;
-  let data_to_send = stateApp.csvDataToSend;
-
-  const payor = watch("payor");
-  const checkAmount = watch("checkAmount");
-  const checkNumber = watch("checkNumber");
 
   useEffect(() => {
     setButtonTitle(
-      stateApp.activeStepNumber >= steps.length - 2 ? (stateApp.activeStepNumber === steps.length - 1 ? "Close" : "Upload") : "Continue"
+      jobStateValues.activeStepNumber >= steps.length - 2
+        ? jobStateValues.activeStepNumber === steps.length - 1
+          ? 'Close'
+          : 'Upload'
+        : 'Continue'
     );
-  }, []);
+  }, [activeStepNumber, steps.length]);
 
   useEffect(() => {
     if (createJobData?.createJob && jobId) {
@@ -226,10 +247,7 @@ export default function CustomizedSteppers(props) {
   useEffect(() => {
     if (contactUploadUri?.getJobUploadUri?.success && !processing) {
       setProcessing(true);
-      setStateApp((state) => ({
-        ...state,
-        bulkUpload: !stateApp.bulkUpload,
-      }));
+      jobController.toggleBulkUpload()
       const uri = contactUploadUri.getJobUploadUri.job.uri;
       const id = contactUploadUri.getJobUploadUri.job.id;
       const interal_key = contactUploadUri.getJobUploadUri.job.internalKey;
@@ -269,17 +287,17 @@ export default function CustomizedSteppers(props) {
   };
 
   const handleNext = async () => {
-    if (stateApp.activeStepNumber === steps.length - 2) {
-      if (stateApp.jobType === "SHAPE_TO_M1_LAYER") {
+    if (jobStateValues.activeStepNumber === steps.length - 2) {
+      if (jobStateValues.jobType === "SHAPE_TO_M1_LAYER") {
         const jobInitialization = await client.mutate({
           mutation: INITIALIZE_EXPORT_JOB,
           variables: {
             jobName: "SHAPE TO M1 LAYER",
             jobType: "SHAPE_TO_M1_LAYER",
             requestPayload: {
-              transferData: stateApp.transferData,
-              mappedHeadersFromCSV: stateApp.mappedHeadersFromCSV,
-              selectedShapeLayerOption: stateApp.selectedShapeLayerOption,
+              transferData: jobStateValues.transferData,
+              mappedHeadersFromCSV: jobStateValues.mappedHeadersFromCSV,
+              selectedShapeLayerOption: jobStateValues.selectedShapeLayerOption,
             },
             userId: userID,
           },
@@ -291,14 +309,11 @@ export default function CustomizedSteppers(props) {
             sendEmail: true,
           },
         });
-        setStateApp((state) => ({
-          ...state,
-          bulkUpload: !state.bulkUpload,
-        }));
+        jobController.toggleBulkUpload()
       } else {
         const changeDate = new Date();
-        const statementInfo = get(stateApp, "uploaderFormValues", {});
-        let data_to_send = stateApp.csvDataToSend.map((element, index) => {
+        const statementInfo = get(jobStateValues, "uploaderFormValues", {});
+        let data_to_send = jobStateValues.csvDataToSend.map((element, index) => {
           element.createBy = userID;
           element.createAt = changeDate;
           element.lastUpdateBy = userID;
@@ -319,21 +334,21 @@ export default function CustomizedSteppers(props) {
         });
         const requestPayload = {
           sampleCsv: jobHeaders[props.selectedJob.type],
-          uploadType: stateApp.selectedShapeLayerOption,
+          uploadType: jobStateValues.selectedShapeLayerOption,
         };
 
-        if (stateApp.jobType === "UNITS") {
+        if (jobStateValues.jobType === "UNITS") {
           const autoCalculateOfferPrice = !!stateApp?.user?.features?.find((f) => f.name === "autoCalculateOfferPrice");
           requestPayload["autoCalculateOfferPrice"] = autoCalculateOfferPrice;
         }
 
-        if (stateApp.jobType === "AGREEMENT_COMMENTS") {
+        if (jobStateValues.jobType === "AGREEMENT_COMMENTS") {
           requestPayload["type"] = "agreement";
         }
-        if (stateApp.jobType === "TRACT_COMMENTS") {
+        if (jobStateValues.jobType === "TRACT_COMMENTS") {
           requestPayload["type"] = "tract";
         }
-        if (stateApp.jobType === "CONTACT_COMMENTS") {
+        if (jobStateValues.jobType === "CONTACT_COMMENTS") {
           requestPayload["type"] = "contact";
         }
 
@@ -347,49 +362,32 @@ export default function CustomizedSteppers(props) {
         });
         setContactList(JSON.stringify(data_to_send));
 
-        setStateApp((state) => ({
-          ...state,
-          activeStepNumber: stateApp.activeStepNumber + 1,
+        jobController.updateState({
           uploaderFormValues: {}
-        }));
+        })
       }
 
-      setStateApp((state) => ({
-        ...state,
-        activeStepNumber: stateApp.activeStepNumber + 1,
-      }));
+      jobController.nextStep()
     } else {
-      setStateApp((state) => ({
-        ...state,
-        activeStepNumber: stateApp.activeStepNumber + 1,
-      }));
+      jobController.nextStep()
     }
-    if (stateApp.activeStepNumber === steps.length - 1) {
+    if (jobStateValues.activeStepNumber === steps.length - 1) {
       handleReset();
       routeChange(props.selectedJob.redirectTo || previousRoute[0]?.match?.url);
     }
   };
 
   const handleBack = () => {
-    if (stateApp.activeStepNumber === 0) {
+    if (jobStateValues.activeStepNumber === 0) {
       handleReset();
       routeChange(previousRoute[0]?.match?.url);
     } else {
-      setStateApp((state) => ({
-        ...state,
-        activeStepNumber: stateApp.activeStepNumber - 1,
-      }));
+      jobController.prevStep()
     }
   };
 
   const handleReset = () => {
-    setStateApp((state) => ({
-      ...state,
-      activeStepNumber: 0,
-      csvDataList: [],
-      csvDataToSend: [],
-      mappedHeadersFromCSV: [],
-    }));
+    jobController.reset()
   };
 
   let routeChange = (route) => {
@@ -397,22 +395,22 @@ export default function CustomizedSteppers(props) {
   };
 
   const isDisabled = useMemo(() => {
-    if (stateApp.jobType === "SHAPE_TO_M1_LAYER") {
-      return !(stateApp.selectedShapeLayerOption && stateApp.transferData);
-    } else if (stateApp.jobType === "AGREEMENT_HEADER") {
+    if (jobStateValues.jobType === "SHAPE_TO_M1_LAYER") {
+      return !(jobStateValues.selectedShapeLayerOption && jobStateValues.transferData);
+    } else if (jobStateValues.jobType === "AGREEMENT_HEADER") {
       return (
-        (stateApp.activeStepNumber === 1 && !stateApp.csvDataToSend) ||
-        stateApp.csvDataToSend.length === 0 ||
-        !stateApp.selectedShapeLayerOption
+        (jobStateValues.activeStepNumber === 1 && !jobStateValues.csvDataToSend) ||
+        jobStateValues.csvDataToSend.length === 0 ||
+        !jobStateValues.selectedShapeLayerOption
       );
     } else {
-      return (stateApp.activeStepNumber === 1 && !stateApp.csvDataToSend) || stateApp.csvDataToSend.length === 0;
+      return (jobStateValues.activeStepNumber === 1 && !jobStateValues.csvDataToSend) || jobStateValues.csvDataToSend.length === 0;
     }
-  }, [stateApp.selectedShapeLayerOption, stateApp.activeStepNumber, stateApp.csvDataToSend, stateApp.transferData, stateApp.jobType]);
+  }, [selectedShapeLayerOption, activeStepNumber, csvDataToSend, transferData, jobType]);
 
   return (
     <div className={classes.root}>
-      <Stepper style={stepper_style} alternativeLabel activeStep={stateApp.activeStepNumber} connector={<QontoConnector />}>
+      <Stepper style={stepper_style} alternativeLabel activeStep={jobStateValues.activeStepNumber} connector={<QontoConnector />}>
         {steps.map((label) => (
           <Step key={label}>
             <NewSteplabel StepIconComponent={QontoStepIcon}>{label}</NewSteplabel>
@@ -422,7 +420,7 @@ export default function CustomizedSteppers(props) {
       <div>
         <div>
           <div>
-            {steps[stateApp.activeStepNumber] === "Select" ? (
+            {steps[jobStateValues.activeStepNumber] === "Select" ? (
               <>
                 {props.selectedJob.type === "CHECKDETAILS" && (
                   <RevenueStatementInfoForm
@@ -430,8 +428,7 @@ export default function CustomizedSteppers(props) {
                     watch={watch}
                     getValues={getValues}
                     reset={reset}
-                    setStateApp={setStateApp}
-                    uploaderFormValues={stateApp.uploaderFormValues}
+                    uploaderFormValues={jobStateValues.uploaderFormValues}
                   />
                 )}
                 <CSVFileReader
@@ -441,17 +438,17 @@ export default function CustomizedSteppers(props) {
                 />
               </>
             ) : null}
-            {steps[stateApp.activeStepNumber] === "Match" ? <M1neralHeaders /> : null}
-            {steps[stateApp.activeStepNumber] === "Review" ? <ReviewCSV /> : null}
-            {steps[stateApp.activeStepNumber] === "Upload" ? <UploadStepperComponent /> : null}
+            {steps[jobStateValues.activeStepNumber] === "Match" ? <M1neralHeaders /> : null}
+            {steps[jobStateValues.activeStepNumber] === "Review" ? <ReviewCSV /> : null}
+            {steps[jobStateValues.activeStepNumber] === "Upload" ? <UploadStepperComponent /> : null}
           </div>
           <div style={mapping_buttons_div}>
-            {steps[stateApp.activeStepNumber] !== "Upload" ? (
+            {steps[jobStateValues.activeStepNumber] !== "Upload" ? (
               <Button onClick={handleBack} className={classes.buttonback}>
                 Back
               </Button>
             ) : null}
-            {steps[stateApp.activeStepNumber] !== "Select" ? (
+            {steps[jobStateValues.activeStepNumber] !== "Select" ? (
               <Button
                 id={`${buttonTitle}-button`}
                 disabled={isDisabled}

@@ -1,21 +1,14 @@
 import React, { useContext, useEffect, useRef } from "react";
-import { AppContext } from "../../../AppContext";
 import { NavigationContext } from "../../Navigation/NavigationContext";
 import { Button, Grid } from "@material-ui/core";
 import { CSVReader /* CSVDownloader */ } from "react-papaparse";
 import CSVDownloader from "react-csv-downloader";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
 import { useDispatch } from "react-redux";
 import Select from "@material-ui/core/Select";
 import { showErrorMessage } from "../../../actions";
-import M1neral_headers from "../jobHeaders";
+import { jobController } from "hookstate/jobStateController";
 
 const useStyles = makeStyles(() => ({
   table: {
@@ -149,11 +142,16 @@ const StyledTableCell = withStyles((theme) => ({
 
 export default function CSVFileReader(props) {
   const dispatch = useDispatch();
-  let [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav] = useContext(NavigationContext);
   const classes = useStyles({ disabled: props.disabled });
   let unmounted = useRef(false);
-  const csvColumns = [Object.fromEntries(stateApp.m1neralHeaders.map((col) => [col.label, ""]))];
+
+  const { jobStateValues } = jobController.useState(
+    ['m1neralHeaders', 'jobType'],
+    'jobStateValues'
+  );
+
+  const csvColumns = [Object.fromEntries(jobStateValues.m1neralHeaders.map((col) => [col.label, ""]))];
 
   useEffect(() => {
     return () => {
@@ -164,7 +162,7 @@ export default function CSVFileReader(props) {
   // this function splits an upload array of comma seperated values 
   // it should be used for tag seperation on upload
   const separateValuesWithComas = (data) => {
-    if(!Array.isArray(data)){
+    if (!Array.isArray(data)) {
       throw new Error('Passed argument is not an Array');
     }
     const newData = [];
@@ -206,7 +204,7 @@ export default function CSVFileReader(props) {
             });
           });
 
-        if (["TRACTS", "UNITS"].includes(stateApp.jobType) === "TRACTS") {
+        if (["TRACTS", "UNITS"].includes(jobStateValues.jobType) === "TRACTS") {
           data.forEach((data) => {
             Object.assign(data.data, {
               ...((data.data["PLSS Township"] || data.data["PLSS Range"]) && {
@@ -217,11 +215,10 @@ export default function CSVFileReader(props) {
         }
 
         mapped_headers_from_CSV(data);
-        setStateApp((state) => ({
-          ...state,
+        jobController.updateState({
           csvDataList: data,
-          activeStepNumber: stateApp.activeStepNumber + 1,
-        }));
+        })
+        jobController.nextStep()
       } else {
         dispatch(
           showErrorMessage(
@@ -235,7 +232,7 @@ export default function CSVFileReader(props) {
   const mapped_headers_from_CSV = (data) => {
     if (data.length > 0) {
       let uniqueKeys = Object.keys(data[0].data);
-      let matchedKeys = [...stateApp.m1neralHeaders];
+      let matchedKeys = [...jobStateValues.m1neralHeaders];
       uniqueKeys = [...matchedKeys.filter(mk => !uniqueKeys.includes(mk.label)).map(mk => mk.label), ...uniqueKeys];
       for (let index in uniqueKeys) {
         const matchedKey = matchedKeys.find((el) => el?.label === uniqueKeys[index]);
@@ -252,7 +249,11 @@ export default function CSVFileReader(props) {
           matchedKey.required = uniqueKeys[index].required;
         }
       }
-      setStateApp((state) => ({ ...state, m1neralHeaders: matchedKeys, mappedHeadersFromCSV: uniqueKeys }));
+
+      jobController.updateState({
+        mappedHeadersFromCSV: uniqueKeys,
+        m1neralHeaders: matchedKeys
+      })
     }
   };
 
@@ -299,14 +300,27 @@ export default function CSVFileReader(props) {
         <Grid item xs={12}>
           <div className={classes.csvReader}>
             <CSVReader
-              onDrop={(data) => handleOnDrop(data.filter((el) => el.errors.length === 0))}
+              onDrop={(csvData) => {
+                csvData.forEach(({ data }) => {
+                  Object.entries(data).forEach(([key, value]) => {
+                    if (typeof value !== 'string') return
+
+                    data[key] = value.replace('@#$%:', '')
+
+                    if (data[key].startsWith('string=')) data[key] = data[key].replace('string=', '')
+                  })
+                })
+
+                return handleOnDrop(csvData.filter((el) => el.errors.length === 0))
+              }}
+
               onError={handleOnError}
               addRemoveButton
               removeButtonColor="#659cef"
               config={{
                 header: true,
                 transform: (value, header) => {
-                  return value === "" ? undefined : value;
+                  return (!value || value === "") ? undefined : `@#$%:${value}`;
                 },
                 dynamicTyping: true,
               }}
@@ -327,7 +341,7 @@ export default function CSVFileReader(props) {
         <div style={{ ...big_text, ...padding_div_top }}>Preferred File Setup</div>
         <div style={mainContent}>
           <div style={big_grey_text}>You can use any CSV file but leveraging our template will save time mapping column headers</div>
-          <CSVDownloader datas={csvColumns} filename={`Sample_${stateApp.jobType}_Upload`} type="link" className={classes.linkStyle}>
+          <CSVDownloader datas={csvColumns} filename={`Sample_${jobStateValues.jobType}_Upload`} type="link" className={classes.linkStyle}>
             Click this link to download sample CSV template
           </CSVDownloader>
         </div>
@@ -391,7 +405,7 @@ export default function CSVFileReader(props) {
             </Table>
           </TableContainer> */}
         </div>
-        
+
       </div>
     </div>
   );
