@@ -12,6 +12,9 @@ import TableHeader from "components/Table/constants/revenue-statement-header-sch
 import { deepEqualObjects, copy } from "components/Shared/functions";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 
+//value formatters
+import convert_date from "components/Shared/valueformatters/convert_date.js";
+
 const genericDataActions = [];
 
 function RevenueStatementTable(props) {
@@ -38,8 +41,8 @@ function RevenueStatementTable(props) {
   const formatHits = useCallback(
     (hits) => {
       hits = hits.map((hit) => {
-        hit.checkDate = hit.checkDate ? moment(new Date(hit.checkDate)).format("MM/DD/YYYY") : null;
-        hit.depositDate = hit.depositDate ? moment(new Date(hit.depositDate)).format("MM/DD/YYYY") : null;
+        hit.checkDate = hit.checkDate ? convert_date(hit.checkDate) : null;
+        hit.depositDate = hit.depositDate ? convert_date(hit.depositDate) : null;
         hit.ownerName = hit.payee?.name || ''
         hit.ownerNumber = hit.payee?.number || ''
         hit = setGenricData(hit, hit._id, genericDataActions, genericDataActions);
