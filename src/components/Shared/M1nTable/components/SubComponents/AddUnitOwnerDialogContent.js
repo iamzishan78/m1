@@ -135,7 +135,11 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         campaignPriority,
         contact,
         campaignName,
-        deals
+        deals,
+        unitTractId,
+        tractAcres,
+        dataSource,
+        net_acres
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
@@ -155,7 +159,11 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         campaignPriority,
         customLayer,
         campaignName,
-        deals
+        deals,
+        unitTractId,
+        tractAcres,
+        dataSource,
+        net_acres
       }
       let calculatedNRA = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri, workspaceSettings })
       let calculatedOfferPrice = calculateOfferPrice(nra);
@@ -509,18 +517,39 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 />
               </Grid>
               <Grid item xs={12}>
-                <h3>Tax Year</h3>
+                <h3>Unit Tract ID</h3>
 
                 <Controller
                   control={control}
-                  name="taxYear"
+                  name="unitTractId"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="text"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => props.onChange(e.target.value)}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Tract Acres</h3>
+
+                <Controller
+                  control={control}
+                  name="tractAcres"
                   render={(props) => (
                     <TextField
                       size="small"
                       type="number"
-                      value={selectedRow?.taxYear}
+                      value={props.value}
                       inputRef={props.ref}
-                      disabled
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => props.onChange(e.target.value)}
                       fullWidth
                       defaultValue=""
                     />
@@ -617,21 +646,26 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     />
                   )}
                 />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Net Acres</h3>
 
-                {/* <TextField
-                  type="number"
-                  size="small"
-                  className={classes.maxWidth}
-                  value={newOwner.nri}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setNewOwner({
-                      ...newOwner,
-                      nri: value ? addTrailingZeros(e.target.value) : null,
-                    });
-                  }}
-                  onWheel={(e) => e.target.blur()}
-                /> */}
+                <Controller
+                  control={control}
+                  name="net_acres"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => props.onChange(e.target.value)}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
               </Grid>
               <Grid item xs={12}>
                 <h3>Net Royalty Acres (NRA)</h3>
@@ -957,6 +991,45 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       fullWidth
                       targetLabel="Contact"
                       simpleChips
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Data Source</h3>
+
+                <Controller
+                  control={control}
+                  name="dataSource"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="text"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => props.onChange(e.target.value)}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Tax Year</h3>
+
+                <Controller
+                  control={control}
+                  name="taxYear"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={selectedRow?.taxYear}
+                      inputRef={props.ref}
+                      disabled
+                      fullWidth
+                      defaultValue=""
                     />
                   )}
                 />
