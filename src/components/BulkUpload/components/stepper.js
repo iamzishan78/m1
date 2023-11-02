@@ -205,7 +205,7 @@ export default function CustomizedSteppers(props) {
     'jobStateValues'
   );
 
-  const [contactList, setContactList] = useState(null);
+  const [uploadList, setUploadList] = useState(null);
   const [jobId, setJobId] = useState(null);
   const [processing, setProcessing] = useState(false);
 
@@ -256,7 +256,7 @@ export default function CustomizedSteppers(props) {
 
       const blockBlobClient = new BlockBlobClient(uri);
       blockBlobClient
-        .uploadBrowserData(contactList, {
+        .uploadBrowserData(uploadList, {
           maxSingleShotSize: 4 * 1024 * 1024,
           blobHTTPHeaders: {
             blobContentDisposition: `attachment; filename="${id}"`,
@@ -318,11 +318,13 @@ export default function CustomizedSteppers(props) {
           element.createAt = changeDate;
           element.lastUpdateBy = userID;
           element.lastUpdateAt = changeDate;
-          element = { ...statementInfo, ...element };
+          if (statementInfo) {
+            element = { ...statementInfo, ...element };
+            setValue(element, "check.sourceId", statementInfo.sourceId);
+            setValue(element, "check.importType", statementInfo.importType);
+          }
           element['checkDate'] = getDateWithoutTime(element['check.checkDate'])
           element['check.checkDate'] = getDateWithoutTime(element['check.checkDate'])
-          setValue(element, "check.sourceId", statementInfo.sourceId);
-          setValue(element, "check.importType", statementInfo.importType);
           if (props.selectedJob.type === "UNITS") {
             element["shape.shapeType"] = "Unit";
           }
@@ -360,7 +362,7 @@ export default function CustomizedSteppers(props) {
             userId: userID,
           },
         });
-        setContactList(JSON.stringify(data_to_send));
+        setUploadList(JSON.stringify(data_to_send));
 
         jobController.updateState({
           uploaderFormValues: {}
