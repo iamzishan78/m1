@@ -53,33 +53,7 @@ addAfterLabel(unit, 'Unit Acres', {
     actual_key: "shape.uPrimaryOperator",
 })
 
-addAfterLabel(unit, 'Unit Tract ID', {
-    label: "Unit Tract ID",
-    mapped_key: "",
-    required: true,
-    actual_key: "unitTractId",
-})
 
-addAfterLabel(unit, 'Tract Acres', {
-    label: "Tract Acres",
-    mapped_key: "",
-    required: true,
-    actual_key: "tractAcres",
-})
-
-addAfterLabel(unit, 'Net Acres', {
-    label: "Net Acres",
-    mapped_key: "",
-    required: true,
-    actual_key: "net_acres",
-})
-
-addAfterLabel(unit, 'Data Source', {
-    label: "Data Source",
-    mapped_key: "",
-    required: true,
-    actual_key: "dataSource",
-})
 
 addAfterLabel(unit, 'Unit Acres', {
     label: "Target Price",
@@ -116,6 +90,33 @@ addAfterLabel(unit, 'Overriding Royalty', {
     label: "Net Revenue Interest",
     mapped_key: "",
     actual_key: "shape.nri"
+})
+addAfterLabel(unit, 'Net Royalty Acres', {
+    label: "Unit Tract ID",
+    mapped_key: "",
+    required: true,
+    actual_key: "unitTractId",
+})
+
+addAfterLabel(unit, 'Unit Tract ID', {
+    label: "Tract Acres",
+    mapped_key: "",
+    required: true,
+    actual_key: "tractAcres",
+})
+
+addAfterLabel(unit, 'Tract Acres', {
+    label: "Net Acres",
+    mapped_key: "",
+    required: true,
+    actual_key: "net_acres",
+})
+
+addAfterLabel(unit, 'Net Acres', {
+    label: "Data Source",
+    mapped_key: "",
+    required: true,
+    actual_key: "dataSource",
 })
 
 export default unit;
