@@ -8,6 +8,7 @@ import { AppContext } from "AppContext";
 import { addCustomShapeProperties, drawBoundary } from "../../components/DrawShapes/drawShapesHelpers";
 import { spatialDataAttributes } from "../DrawShapes/constants";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
+import { jobController } from "hookstate/jobStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -164,6 +165,8 @@ export default function ShapeAOIPopup(props) {
         },
         refetchQueries: ["getCustomLayers"],
         awaitRefetchQueries: true,
+      }).then(() => {
+        jobController.toggleBulkUpload()
       });
 
       updateSourceAndAoiLayer(currentFeature);

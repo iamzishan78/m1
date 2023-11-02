@@ -32,6 +32,7 @@ import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { useMutation } from "@apollo/client";
 // Helpers for area calcs
 import { area, convertArea, length } from "@turf/turf";
+import { jobController } from "hookstate/jobStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -322,6 +323,8 @@ export default function SpatialDataCardEdit(props) {
         },
         // refetchQueries: ["getCustomLayers"],
         // awaitRefetchQueries: true,
+      }).then(() => {
+        jobController.toggleBulkUpload()
       });
       props.closeSpatialDataCard();
     }
