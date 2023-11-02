@@ -5910,6 +5910,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       },
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
@@ -6025,6 +6027,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         },
         refetchQueries: ["getCustomLayers"],
         awaitRefetchQueries: true,
+      }).then(() => {
+        jobController.toggleBulkUpload()
       });
     }
   };

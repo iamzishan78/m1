@@ -42,6 +42,7 @@ import MapProvider from "components/Map/MapProvider";
 import { DrawerContext } from "./DrawerContext";
 import RelatedDocumets from "./relatedDocuments";
 import RelatedFile from "components/Document/components/RelatedFile";
+import { jobController } from "hookstate/jobStateController";
 
 const useStyles = makeStyles((theme) => ({
   mapProvider: {
@@ -362,7 +363,7 @@ export function DetailComponents(props) {
           .format("YYYY-MM-DD");
       }
     }
-   //support for extensionTerm
+    //support for extensionTerm
     if (field === "extensionTerm" || field === "expirationDate") {
       if (field === "extensionTerm") {
         shape.properties.extensionDate = moment(shape.properties.expirationDate, "YYYY-MM-DD")
@@ -419,6 +420,8 @@ export function DetailComponents(props) {
         userId: stateApp.user.mongoId,
       },
       refetchQueries: ["customLayer"],
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
@@ -463,6 +466,7 @@ export function DetailComponents(props) {
         },
       },
     }).then(({ data }) => {
+      jobController.toggleBulkUpload()
       if (data.updateCustomLayer?.success) history.push("/land/agreements");
     });
   };
