@@ -35,9 +35,9 @@ const useMRSimpleTable = tableKey => {
 	const localizationOptions = {
 		filterCustomFilterFn: 'AutoComplete',
 	};
-	if (tableStateValues?.isAllRowsSelected && tableStateValues?.isSelectAllAllowed) {
-		localizationOptions.selectedCountOfRowCountRowsSelected = `${tableStateValues?.data.total} of ${tableStateValues?.data.total} row(s) selected`;
-	}
+	// if (tableStateValues?.isAllRowsSelected && tableStateValues?.isSelectAllAllowed) {
+	// 	localizationOptions.selectedCountOfRowCountRowsSelected = `${tableStateValues?.data.total} of ${tableStateValues?.data.total} row(s) selected`;
+	// }
 
 	const { CustomToolBar } = tableStateValues;
 	return {
