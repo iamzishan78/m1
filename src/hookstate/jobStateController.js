@@ -9,7 +9,7 @@ const initialState = {
 	m1neralHeaders: [],
 	csvDataList: [],
 	transferData: null,
-	uploaderFormValues: null,
+	uploaderFormValues: {},
 	selectedShapeLayerOption: null,
 	bulkUpload: false,
 	jobType: null,
