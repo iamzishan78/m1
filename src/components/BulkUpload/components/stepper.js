@@ -321,8 +321,8 @@ export default function CustomizedSteppers(props) {
           element = { ...statementInfo, ...element };
           element['checkDate'] = getDateWithoutTime(element['check.checkDate'])
           element['check.checkDate'] = getDateWithoutTime(element['check.checkDate'])
-          setValue(element, "check.sourceId", statementInfo.sourceId);
-          setValue(element, "check.importType", statementInfo.importType);
+          setValue(element, "check.sourceId", statementInfo?.sourceId);
+          setValue(element, "check.importType", statementInfo?.importType);
           if (props.selectedJob.type === "UNITS") {
             element["shape.shapeType"] = "Unit";
           }
