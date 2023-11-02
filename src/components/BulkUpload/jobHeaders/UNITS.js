@@ -53,6 +53,34 @@ addAfterLabel(unit, 'Unit Acres', {
     actual_key: "shape.uPrimaryOperator",
 })
 
+addAfterLabel(unit, 'Unit Tract ID', {
+    label: "Unit Tract ID",
+    mapped_key: "",
+    required: true,
+    actual_key: "unitTractId",
+})
+
+addAfterLabel(unit, 'Tract Acres', {
+    label: "Tract Acres",
+    mapped_key: "",
+    required: true,
+    actual_key: "tractAcres",
+})
+
+addAfterLabel(unit, 'Net Acres', {
+    label: "Net Acres",
+    mapped_key: "",
+    required: true,
+    actual_key: "net_acres",
+})
+
+addAfterLabel(unit, 'Data Source', {
+    label: "Data Source",
+    mapped_key: "",
+    required: true,
+    actual_key: "dataSource",
+})
+
 addAfterLabel(unit, 'Unit Acres', {
     label: "Target Price",
     mapped_key: "",
