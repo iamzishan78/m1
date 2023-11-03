@@ -31,8 +31,11 @@ function ToolbarActions({ table, tableKey, children }) {
 		'defaultFilters',
 		'isDeleteDisabled',
 		'deletedKeys',
+		'isSelectAllAllowed',
 	]);
 	const tableStateValues = tableState.stateValues;
+	if (tableStateValues?.isSelectAllAllowed)
+		tableController(tableKey).setSelectAll(isAllRowsSelected);
 
 	const handleExport = () => {
 		tableGlobalController.updateState({

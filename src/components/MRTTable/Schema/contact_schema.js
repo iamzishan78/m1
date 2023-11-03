@@ -50,7 +50,7 @@ const ContactMeta = {
 	},
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	isSelectall: true,
+	isSelectAllAllowed: true,
 	search: {
 		fields: ["name^4", "_all"]
 	},
