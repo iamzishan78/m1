@@ -102,6 +102,31 @@ export default [
         required: false,
         actual_key: "shape.nra"
     },
+    {
+        label: "Unit Tract ID",
+        mapped_key: "",
+        required: false,
+        actual_key: "shape.unitTractId"
+    },
+    {
+        label: "Tract Acres",
+        mapped_key: "",
+        required: false,
+        actual_key: "shape.tractAcres"
+    },
+    {
+        label: "Net Acres",
+        mapped_key: "",
+        required: false,
+        actual_key: "shape.net_acres"
+    },
+    {
+        label: "Data Source",
+        mapped_key: "",
+        required: false,
+        actual_key: "shape.dataSource"
+    },
+
     // {
     //     label: "Depth From",
     //     mapped_key: "",

@@ -63,14 +63,16 @@ const UnitInterestsPageHeadCells = (isSnapGrid = false) => [
         },
     },
     {
-        name: 'taxYear',
-        label: 'Tax Year',
-        esKey: 'taxYear.keyword',
-        options: {
-            sort: true,
-            filter: true,
-            isMultiFilter: true,
-        },
+        name: "unitTractId",
+        esKey: "unitTractId.keyword",
+        label: "Unit Tract ID",
+        options: { filter: true },
+    },
+    {
+        name: "tractAcres",
+        esKey: "tractAcres.keyword",
+        label: "Tract Acres",
+        options: { filter: true },
     },
     {
         name: 'working_interest',
@@ -109,6 +111,13 @@ const UnitInterestsPageHeadCells = (isSnapGrid = false) => [
             sort: true, filter: true,
             isMultiFilter: true
         },
+    },
+    {
+        name: "net_acres",
+        esKey: "net_acres",
+        label: "Net Acres",
+        type: "number",
+        options: { filter: true },
     },
     {
         name: 'nra',
@@ -279,9 +288,9 @@ const UnitInterestsPageHeadCells = (isSnapGrid = false) => [
         label: 'Target Offer Price',
         esKey: 'offer_price',
         options: {
-          display: false,
-          download: true,
-          viewColumns: false,
+            display: false,
+            download: true,
+            viewColumns: false,
         },
     },
     {
@@ -442,6 +451,22 @@ const UnitInterestsPageHeadCells = (isSnapGrid = false) => [
                 return value && <ListChips list={value} />
             },
             setCellProps: () => ({ style: { minWidth: "200px" } }),
+            sort: true,
+            filter: true,
+            isMultiFilter: true,
+        },
+    },
+    {
+        name: "dataSource",
+        esKey: "dataSource.keyword",
+        label: "Data Source",
+        options: { filter: true },
+    },
+    {
+        name: 'taxYear',
+        label: 'Tax Year',
+        esKey: 'taxYear.keyword',
+        options: {
             sort: true,
             filter: true,
             isMultiFilter: true,

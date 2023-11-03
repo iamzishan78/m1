@@ -1,5 +1,6 @@
 import { GlobalStickyStyles } from "GlobalSettings";
 import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
+import convert_date from "components/Shared/valueformatters/convert_date.js";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 
 const RevenueStatementHeadCells = [
@@ -59,6 +60,13 @@ const RevenueStatementHeadCells = [
       key_as_string: true,
       isDate: true,
     },
+    // options: {
+    //   sort: true,
+    //   filter: true,
+    //   customRender: (value) => {
+    //     return value ? <p>{value ? convert_date(value) : ""}</p> : <p style={{ color: "#898989b0" }}>N/A</p>;
+    //   },
+    // },
   },
   {
     name: "ownerName",

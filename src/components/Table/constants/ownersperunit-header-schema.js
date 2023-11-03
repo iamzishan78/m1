@@ -53,9 +53,15 @@ const OwnersPerUnitHeadCells = [
     options: { filter: true },
   },
   {
-    name: "taxYear",
-    esKey: "taxYear.keyword",
-    label: "Tax Year",
+    name: "unitTractId",
+    esKey: "unitTractId.keyword",
+    label: "Unit Tract ID",
+    options: { filter: true },
+  },
+  {
+    name: "tractAcres",
+    esKey: "tractAcres.keyword",
+    label: "Tract Acres",
     options: { filter: true },
   },
   {
@@ -83,6 +89,13 @@ const OwnersPerUnitHeadCells = [
     name: "nri",
     esKey: "nri",
     label: "NRI",
+    type: "number",
+    options: { filter: true },
+  },
+  {
+    name: "net_acres",
+    esKey: "net_acres",
+    label: "Net Acres",
     type: "number",
     options: { filter: true },
   },
@@ -192,6 +205,18 @@ const OwnersPerUnitHeadCells = [
       sort: true,
       filter: true,
     },
+  },
+  {
+    name: "dataSource",
+    esKey: "dataSource.keyword",
+    label: "Data Source",
+    options: { filter: true },
+  },
+  {
+    name: "taxYear",
+    esKey: "taxYear.keyword",
+    label: "Tax Year",
+    options: { filter: true },
   },
   {
     name: "tags",

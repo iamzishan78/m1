@@ -31,7 +31,7 @@ import { AssignOwnerToContactDrawerContainer } from "store/containers";
 
 import TableHeader from "components/Table/constants/ownersperunit-header-schema";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
-import { deepEqualObjects, copy } from "components/Shared/functions";
+import { deepEqualObjects, copy, getSelectedRowsFromProps } from "components/Shared/functions";
 import { addTrailingZeros } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 import { forEach } from "lodash";
@@ -161,7 +161,7 @@ function UnitInterestOwnerTable(props) {
   const getRows = () => {
     const selectedRows = [];
 
-    const rows = props.selectedRowsValues || props.rows;
+    const rows = getSelectedRowsFromProps(props);
     for (let i = 0; i < props.selectedRows.length; i++) {
       if (rows[props.selectedRows[i].index])
         selectedRows.push({
@@ -173,7 +173,7 @@ function UnitInterestOwnerTable(props) {
   };
 
   const deleteFunc = (ids) => {
-    const rows = props.selectedRowsValues || props.rows;
+    const rows = getSelectedRowsFromProps(props);
     if (ids.length > 0) {
       props.setLoading(true);
       updateShapeOwners({
@@ -294,7 +294,7 @@ function UnitInterestOwnerTable(props) {
                   onClick={() => {
                     let owners = [];
 
-                    const rows = props.selectedRowsValues || props.rows;
+                    const rows = getSelectedRowsFromProps(props);
                     for (let i in props.selectedRows) {
                       owners.push({
                         ...rows[props.selectedRows[i].dataIndex],
@@ -317,7 +317,7 @@ function UnitInterestOwnerTable(props) {
                   onClick={() => {
                     let owners = [];
 
-                    const rows = props.selectedRowsValues || props.rows;
+                    const rows = getSelectedRowsFromProps(props);
                     for (let i in props.selectedRows) {
                       owners.push({
                         ...rows[i],

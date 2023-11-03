@@ -131,6 +131,7 @@ export function getDateWithoutTime(dateTime) {
     dateTime = dateTime.toString();
   }
 
+
   if (dateTime?.includes && dateTime.includes('/')) {
     const splittedDate = dateTime.split('/');
     const newDate = new Date();
@@ -147,6 +148,12 @@ export function getDateWithoutTime(dateTime) {
     newDate.setDate(Number(splittedDate[2]));
     return newDate;
   } else return null;
+}
+
+export const getSelectedRowsFromProps = (props = {}) => {
+  const { selectedRowsValues = [], rows = [] } = props
+
+  return selectedRowsValues.length > rows.length ? selectedRowsValues : rows
 }
 
 export const formatDate = (date, simple = true) => {
