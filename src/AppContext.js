@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
 import { heatLayers, baseMapLayers } from "./LayerConfig";
 import { useHookStateApp } from "hookstate";
+import { globalStateController } from 'hookstate/globalStateController';
 
 const AppContext = createContext([{}, () => { }]);
 
@@ -254,6 +255,10 @@ const AppProvider = (props) => {
       })
     );
   }, [stateApp.owners, stateApp.trackedwells]);
+
+  useEffect(() => {
+    globalStateController.updateState({ user: stateApp.user });
+  }, [stateApp.user]);
 
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>

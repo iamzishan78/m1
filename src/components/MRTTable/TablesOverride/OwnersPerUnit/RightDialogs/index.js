@@ -1,0 +1,47 @@
+import React, { memo } from 'react';
+import { tableGlobalController } from 'hookstate/tableController';
+import AddUnitOwnerDialogContent from 'components/Shared/M1nTable/components/SubComponents/AddUnitOwnerDialogContent';
+import RecalculateSlideout from 'components/Table/Shape/RecalculateSlideout';
+
+function OwnerPerUnitTableDialogs() {
+	const { stateValues } = tableGlobalController.useState(['ownerPerUnitDialog']);
+	const { type, ...rest } = stateValues.ownerPerUnitDialog || {};
+
+	const handleCloseDialog = () => {
+		tableGlobalController.updateState({
+			ownerPerUnitDialog: {},
+		});
+	};
+
+	const updateRows = rows => {
+		tableGlobalController.updateState({
+			ownerPerUnitDialog: {
+				type,
+				selectedRows: rows,
+			},
+		});
+	};
+
+	return (
+		<>
+			{type === 'addOwnerToUnit' && (
+				<AddUnitOwnerDialogContent
+					open
+					width="450px"
+					shapeId={rest?.shapeId}
+					uAcres={rest?.uAcres}
+					uUnitPricing={rest?.uUnitPricing}
+					shapeType={rest?.shapeType}
+					selectedRow={rest?.selectedRow}
+					onClose={handleCloseDialog}
+				/>
+			)}
+
+			{type === 'recalculate' && (
+				<RecalculateSlideout onClose={handleCloseDialog} rows={rest?.selectedRows} setRows={updateRows} />
+			)}
+		</>
+	);
+}
+
+export default memo(OwnerPerUnitTableDialogs);

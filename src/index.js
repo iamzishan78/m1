@@ -4,6 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import 'components/MRTTable/index.css'
 import * as serviceWorker from './serviceWorker';
 import 'react-toastify/dist/ReactToastify.min.css';
 

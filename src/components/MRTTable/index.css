@@ -1,0 +1,11 @@
+.MuiModal-root > .MuiPaper-root > .MuiMenu-list > div > button {
+	display: none;
+}
+.MuiModal-root > .MuiPaper-root > .MuiMenu-list > div,
+.MuiModal-root > .MuiPaper-root > .MuiMenu-list {
+	padding: 0;
+}
+
+[aria-label='Pin to right'] {
+	display: none !important;
+}
