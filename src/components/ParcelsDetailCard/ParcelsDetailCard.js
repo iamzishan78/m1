@@ -215,9 +215,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
   const [parcelObj, setParcelObj] = useState();
   const [properties, setProperties] = useState();
   const globalSelectedTabKey = tableGlobalController.useState(['tabKey']).stateValues;
-  const tractPerUnitGridState =  tableController("TractPerUnitTable").useState(['data']).stateValue;
-  const tractUnitsGridState =  tableController("TractUnitsTable").useState(['data']).stateValues;
-  const tractPotentialUnitsState =  tableController("TractPotentialUnitsTable").useState(['data']).stateValues;
+  const tractPerUnitGridState = tableController("TractPerUnitTable").useState(['data']).stateValue;
+  const tractUnitsGridState = tableController("TractUnitsTable").useState(['data']).stateValues;
+  const tractPotentialUnitsState = tableController("TractPotentialUnitsTable").useState(['data']).stateValues;
 
   const contactsAdded = useSelector(state => state?.common?.contactsAdded);
   const [updateCustomLayer, { data: updatedParcel }] = useMutation(UPDATECUSTOMLAYER);
