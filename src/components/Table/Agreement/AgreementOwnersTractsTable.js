@@ -55,7 +55,7 @@ function AgreementOwnersTractsTable(props) {
 
   const formatHits = (hits) => {
     return hits.map((hit) => {
-      if (hit?.tract?.tractName) hit.tractName = hit?.tract?.tractName;
+      if (hit?.tract?.tractName || hit?.tract?.name) hit.tractName = hit?.tract?.name || hit?.tract?.tractName;
       const isTX = hit.state === "TX"
       hit.name = hit?.contact?.entityDetail?.name
       hit.SurveyMeridian = isTX ? hit.survey : hit.meridian

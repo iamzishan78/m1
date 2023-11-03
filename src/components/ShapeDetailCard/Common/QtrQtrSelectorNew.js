@@ -16,6 +16,7 @@ import { useMutation } from "@apollo/client";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
 import { calculateLandArea } from "components/Shared/functions/shapeLayer";
+import { jobController } from "hookstate/jobStateController";
 
 const useStyles = makeStyles((theme) => ({
   mainDiv: {
@@ -188,6 +189,7 @@ export default function QtrQtrSelectorNew({ layerData }) {
         customLayer,
       },
     }).then(() => {
+        jobController.toggleBulkUpload()
       findBoundsMap([customLayer.shapeJson], stateApp.map);
       drawBoundary(stateApp.map, customLayer.shapeJson);
     });

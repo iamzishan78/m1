@@ -614,281 +614,282 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   onWheel={(e) => e.target.blur()}
                 />
               </Grid> */}
-            <Grid item xs={12}>
-              <h3>Working Interest</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.operating_rights}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setNewOwner({
-                    ...newOwner,
-                    operating_rights: value ? addTrailingZeros(e.target.value) : null,
-                  });
-                }}
-                onWheel={(e) => e.target.blur()}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Net Revenue Interest (NRI)</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.nri}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  const netAcres = calculateNetAcres(newOwner.mineral_interest);
-                  setNewOwner({
-                    ...newOwner,
-                    nri: value ? addTrailingZeros(e.target.value) : null,
-                  });
-                }}
-                onWheel={(e) => e.target.blur()}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Net Acres</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={isAcresOverridden ? classes.baseValueChanged : classes.maxWidth}
-                value={newOwner.net_acres}
-                onChange={(e) => {
-                  const value = addTrailingZeros(e.target.value);
-                  const netAcres = calculateNetAcres(newOwner.mineral_interest);
-                  setIsAcresOverridden(parseFloat(netAcres) !== parseFloat(value));
-                  setNewOwner((newOwner) => ({
-                    ...newOwner,
-                    net_acres: value,
-                  }));
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {isAcresOverridden && (
-                        <IconButton
-                          aria-label="toggle royality-acres"
-                          onClick={() => {
-                            const netAcres = calculateNetAcres(newOwner.mineral_interest);
-                            setIsAcresOverridden(false);
-                            setNewOwner((newOwner) => ({
-                              ...newOwner,
-                              net_acres: netAcres,
-                            }));
-                          }}
-                        >
-                          <AutorenewIcon />
-                        </IconButton>
-                      )}
-                    </InputAdornment>
-                  ),
-                }}
-                onWheel={(e) => e.target.blur()}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Company Net Acres</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.company_net_acres}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setNewOwner({
-                    ...newOwner,
-                    company_net_acres: value ? addTrailingZeros(e.target.value) : null,
-                  });
-                }}
-                onWheel={(e) => e.target.blur()}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Net Royalty Acres (NRA)</h3>
-              <TextField
-                id="standard-number"
-                type="number"
-                size="small"
-                className={isNraOverridden ? classes.baseValueChanged : classes.maxWidth}
-                value={newOwner.nra}
-                onChange={(e) => {
-                  const value = addTrailingZeros(e.target.value);
-                  const nra = calculateStandardNraForTract(get(stateApp, 'selectedParcel.sdGrossAcres'), newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings);
-                  setIsNRAOverridden(parseFloat(nra) !== parseFloat(value))
-                  setNewOwner({
-                    ...newOwner,
-                    nra: value || null,
-                  });
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {isNraOverridden && (
-                        <IconButton
-                          aria-label="toggle royality-acres"
-                          onClick={() => {
-                            const nra = calculateStandardNraForTract(get(stateApp, 'selectedParcel.sdGrossAcres'), newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
-                            setIsNRAOverridden(false)
-                            setNewOwner({ ...newOwner, nra });
-                          }}
-                        >
-                          <AutorenewIcon />
-                        </IconButton>
-                      )}
-                    </InputAdornment>
-                  ),
-                }}
-                onWheel={(e) => e.target.blur()}
-              />
-            </Grid>
-            {tenantName === "Providence" && (
-              <>
-                <Grid item xs={12}>
-                  <h3>Cost Bearing</h3>
-                  <TextField
-                    id="standard-number"
-                    type="text"
-                    size="small"
-                    className={classes.maxWidth}
-                    value={newOwner.cost_bearing}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setNewOwner({
-                        ...newOwner,
-                        cost_bearing: value || null,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Cost Free High Value</h3>
-                  <TextField
-                    id="standard-number"
-                    type="text"
-                    size="small"
-                    className={classes.maxWidth}
-                    value={newOwner.cost_free_high_value}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                    }}
-                    onChange={(e) => {
-                      const value = addTrailingZeros(e.target.value);
-                      setNewOwner({
-                        ...newOwner,
-                        cost_free_high_value: Number(value) || null,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Cost Bearing High Value</h3>
-                  <TextField
-                    id="standard-number"
-                    type="text"
-                    size="small"
-                    className={classes.maxWidth}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                    }}
-                    value={newOwner.cost_bearing_high_value}
-                    onChange={(e) => {
-                      const value = addTrailingZeros(e.target.value);
-                      setNewOwner({
-                        ...newOwner,
-                        cost_bearing_high_value: Number(value) || null,
-                      });
-                    }}
-                  />
-                </Grid>
-              </>
-            )}
-            {props?.customLayer?.state !== "TX" && (
-              <>
-                <Grid item xs={3}>
-                  <h3>QTR 1</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={(option) => option}
-                    value={newOwner.qtr[0]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                      qtr[0] = newInputValue ? newInputValue : "";
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={(params) => <TextField {...params} size="small" className={classes.maxWidth} multiline />}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <h3>QTR 2</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={(option) => option}
-                    value={newOwner.qtr[1]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                      qtr[1] = newInputValue ? newInputValue : "";
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={(params) => <TextField {...params} size="small" className={classes.maxWidth} multiline />}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <h3>QTR 3</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={(option) => option}
-                    value={newOwner.qtr[2]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                      qtr[2] = newInputValue ? newInputValue : "";
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={(params) => <TextField {...params} size="small" className={classes.maxWidth} multiline />}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <h3>QTR 4</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={(option) => option}
-                    value={newOwner.qtr[3]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                      qtr[3] = newInputValue ? newInputValue : "";
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={(params) => <TextField {...params} size="small" className={classes.maxWidth} multiline />}
-                  />
-                </Grid>
-              </>
-            )}
-            <Grid item xs={12}>
-              <RadioGroup
-                row
-                value={parcelOwnersRadioBValue}
-                onChange={(event) => {
-                  setParcelOwnersRadioBValue(event.target.value);
-                }}
-              >
-                <FormControlLabel value="true" control={<Radio />} label="All Depths" />
-                <FormControlLabel value="false" control={<Radio />} label="Footages/Formations" />
-              </RadioGroup>
-            </Grid>
+              <Grid item xs={12}>
+                <h3>Working Interest</h3>
+                <TextField
+                  type="number"
+                  size="small"
+                  className={classes.maxWidth}
+                  value={newOwner.operating_rights}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setNewOwner({
+                      ...newOwner,
+                      operating_rights: value ? addTrailingZeros(e.target.value) : null,
+                    });
+                  }}
+                  onWheel={(e) => e.target.blur()}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Net Revenue Interest (NRI)</h3>
+                <TextField
+                  type="number"
+                  size="small"
+                  className={classes.maxWidth}
+                  value={newOwner.nri}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const netAcres = calculateNetAcres(newOwner.mineral_interest);
+                    setNewOwner({
+                      ...newOwner,
+                      nri: value ? addTrailingZeros(e.target.value) : null,
+                    });
+                  }}
+                  onWheel={(e) => e.target.blur()}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Net Acres</h3>
+                <TextField
+                  type="number"
+                  size="small"
+                  className={isAcresOverridden ? classes.baseValueChanged : classes.maxWidth}
+                  value={newOwner.net_acres}
+                  onChange={(e) => {
+                    const value = addTrailingZeros(e.target.value);
+                    const netAcres = calculateNetAcres(newOwner.mineral_interest);
+                    setIsAcresOverridden(parseFloat(netAcres) !== parseFloat(value));
+                    setNewOwner((newOwner) => ({
+                      ...newOwner,
+                      net_acres: value,
+                    }));
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        {isAcresOverridden && (
+                          <IconButton
+                            aria-label="toggle royality-acres"
+                            onClick={() => {
+                              const netAcres = calculateNetAcres(newOwner.mineral_interest);
+                              setIsAcresOverridden(false);
+                              setNewOwner((newOwner) => ({
+                                ...newOwner,
+                                net_acres: netAcres,
+                              }));
+                            }}
+                          >
+                            <AutorenewIcon />
+                          </IconButton>
+                        )}
+                      </InputAdornment>
+                    ),
+                  }}
+                  onWheel={(e) => e.target.blur()}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Company Net Acres</h3>
+                <TextField
+                  type="number"
+                  size="small"
+                  className={classes.maxWidth}
+                  value={newOwner.company_net_acres}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setNewOwner({
+                      ...newOwner,
+                      company_net_acres: value ? addTrailingZeros(e.target.value) : null,
+                    });
+                  }}
+                  onWheel={(e) => e.target.blur()}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Net Royalty Acres (NRA)</h3>
+                <TextField
+                  id="standard-number"
+                  type="number"
+                  size="small"
+                  className={isNraOverridden ? classes.baseValueChanged : classes.maxWidth}
+                  value={newOwner.nra}
+                  onChange={(e) => {
+                    const value = addTrailingZeros(e.target.value);
+                    const nra = calculateStandardNraForTract(get(stateApp, 'selectedParcel.sdGrossAcres'), newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings);
+                    setIsNRAOverridden(parseFloat(nra) !== parseFloat(value))
+                    setNewOwner({
+                      ...newOwner,
+                      nra: value || null,
+                    });
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        {isNraOverridden && (
+                          <IconButton
+                            aria-label="toggle royality-acres"
+                            onClick={() => {
+                              const nra = calculateStandardNraForTract(get(stateApp, 'selectedParcel.sdGrossAcres'), newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
+                              setIsNRAOverridden(false)
+                              setNewOwner({ ...newOwner, nra });
+                            }}
+                          >
+                            <AutorenewIcon />
+                          </IconButton>
+                        )}
+                      </InputAdornment>
+                    ),
+                  }}
+                  onWheel={(e) => e.target.blur()}
+                />
+              </Grid>
+              {tenantName === "Providence" && (
+                <>
+                  <Grid item xs={12}>
+                    <h3>Cost Bearing</h3>
+                    <TextField
+                      id="standard-number"
+                      type="text"
+                      size="small"
+                      className={classes.maxWidth}
+                      value={newOwner.cost_bearing}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setNewOwner({
+                          ...newOwner,
+                          cost_bearing: value || null,
+                        });
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <h3>Cost Free High Value</h3>
+                    <TextField
+                      id="standard-number"
+                      type="text"
+                      size="small"
+                      className={classes.maxWidth}
+                      value={newOwner.cost_free_high_value}
+                      InputProps={{
+                        inputComponent: CurrencyFormatCustom,
+                      }}
+                      onChange={(e) => {
+                        const value = addTrailingZeros(e.target.value);
+                        setNewOwner({
+                          ...newOwner,
+                          cost_free_high_value: Number(value) || null,
+                        });
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <h3>Cost Bearing High Value</h3>
+                    <TextField
+                      id="standard-number"
+                      type="text"
+                      size="small"
+                      className={classes.maxWidth}
+                      InputProps={{
+                        inputComponent: CurrencyFormatCustom,
+                      }}
+                      value={newOwner.cost_bearing_high_value}
+                      onChange={(e) => {
+                        const value = addTrailingZeros(e.target.value);
+                        setNewOwner({
+                          ...newOwner,
+                          cost_bearing_high_value: Number(value) || null,
+                        });
+                      }}
+                    />
+                  </Grid>
+                </>
+              )}
+              {props?.customLayer?.state !== "TX" && (
+                <>
+                  <Grid item xs={3}>
+                    <h3>QTR 1</h3>
+                    <Autocomplete
+                      options={qtrOptions}
+                      getOptionLabel={(option) => option}
+                      value={newOwner.qtr[0]}
+                      onChange={(e, newInputValue) => {
+                        const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
+                        qtr[0] = newInputValue ? newInputValue : "";
+                        setNewOwner({
+                          ...newOwner,
+                          qtr,
+                        });
+                      }}
+                      renderInput={(params) => <TextField {...params} size="small" className={classes.maxWidth} multiline />}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <h3>QTR 2</h3>
+                    <Autocomplete
+                      options={qtrOptions}
+                      getOptionLabel={(option) => option}
+                      value={newOwner.qtr[1]}
+                      onChange={(e, newInputValue) => {
+                        const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
+                        qtr[1] = newInputValue ? newInputValue : "";
+                        setNewOwner({
+                          ...newOwner,
+                          qtr,
+                        });
+                      }}
+                      renderInput={(params) => <TextField {...params} size="small" className={classes.maxWidth} multiline />}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <h3>QTR 3</h3>
+                    <Autocomplete
+                      options={qtrOptions}
+                      getOptionLabel={(option) => option}
+                      value={newOwner.qtr[2]}
+                      onChange={(e, newInputValue) => {
+                        const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
+                        qtr[2] = newInputValue ? newInputValue : "";
+                        setNewOwner({
+                          ...newOwner,
+                          qtr,
+                        });
+                      }}
+                      renderInput={(params) => <TextField {...params} size="small" className={classes.maxWidth} multiline />}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <h3>QTR 4</h3>
+                    <Autocomplete
+                      options={qtrOptions}
+                      getOptionLabel={(option) => option}
+                      value={newOwner.qtr[3]}
+                      onChange={(e, newInputValue) => {
+                        const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
+                        qtr[3] = newInputValue ? newInputValue : "";
+                        setNewOwner({
+                          ...newOwner,
+                          qtr,
+                        });
+                      }}
+                      renderInput={(params) => <TextField {...params} size="small" className={classes.maxWidth} multiline />}
+                    />
+                  </Grid>
+                </>
+              )}
+              <Grid item xs={12}>
+              <h3>Depth Restrictions</h3>
+                <RadioGroup
+                  row
+                  value={parcelOwnersRadioBValue}
+                  onChange={(event) => {
+                    setParcelOwnersRadioBValue(event.target.value);
+                  }}
+                >
+                  <FormControlLabel value="true" control={<Radio />} label="All Depths" />
+                  <FormControlLabel value="false" control={<Radio />} label="Footages/Formations" />
+                </RadioGroup>
+              </Grid>
 
             {parcelOwnersRadioBValue === "false" && (
               <Grid item xs={12}>

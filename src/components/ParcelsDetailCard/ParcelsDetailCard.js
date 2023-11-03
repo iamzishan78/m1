@@ -23,6 +23,7 @@ import { popupController, popupState } from 'hookstate/popupStateController';
 import MRTTable from "components/MRTTable";
 import { tableController, tableGlobalController } from "hookstate/tableController";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
+import { jobController } from "hookstate/jobStateController";
 import { showSuccessMessage, showErrorMessage, setMapGridCardState } from 'actions';
 
 const useStyles = makeStyles(theme => ({
@@ -369,6 +370,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
         customLayerId: data._id,
         customLayer,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
@@ -387,6 +390,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
         customLayerId: parcelObj._id,
         customLayer,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 

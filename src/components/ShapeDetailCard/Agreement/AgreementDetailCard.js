@@ -29,6 +29,7 @@ import { detailCardStyles } from "../style";
 import { GET_AGREEMENT_PROVISIONS } from "graphQL/useQueryGetAgreementProvisions";
 import { GET_STANDARD_PROVISIONS } from "graphQL/useQueryGetStandardProvisions";
 import moment from "moment";
+import { jobController } from "hookstate/jobStateController";
 
 export default function AgreementDetailCard(props) {
   const dispatch = useDispatch();
@@ -52,7 +53,7 @@ export default function AgreementDetailCard(props) {
 
   useEffect(() => {
     return history.listen((location) => {
-	if (!properties?.agreementNumber && location && (typeof location === 'string' || Array.isArray(location)) && !location.includes(uniObj?._id)) {
+      if (!properties?.agreementNumber && location && (typeof location === 'string' || Array.isArray(location)) && !location.includes(uniObj?._id)) {
         setStateApp((state) => ({
           ...state,
           selectedShape: null,
@@ -187,14 +188,14 @@ export default function AgreementDetailCard(props) {
     customLayer.shapeJson = shape;
 
     const shapeSubtitle = [];
-    if(customLayer?.shapeJson?.properties?.county){
+    if (customLayer?.shapeJson?.properties?.county) {
       shapeSubtitle.push(customLayer?.shapeJson?.properties?.county);
     }
-    if(customLayer?.shapeJson?.properties?.state){
+    if (customLayer?.shapeJson?.properties?.state) {
       shapeSubtitle.push(customLayer.shapeJson.properties.state);
     }
-    
-    if(shapeSubtitle.length){
+
+    if (shapeSubtitle.length) {
       customLayer.shapeJson.properties.shapeSubtitle = shapeSubtitle.join(",")
     }
     updateCustomLayer({
@@ -204,6 +205,8 @@ export default function AgreementDetailCard(props) {
       },
       refetchQueries: ["getMetaData"],
       awaitRefetchQueries: true,
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
@@ -234,6 +237,8 @@ export default function AgreementDetailCard(props) {
         customLayerId: uniObj._id,
         customLayer,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
