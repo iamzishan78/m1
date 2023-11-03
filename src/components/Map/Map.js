@@ -411,7 +411,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       const elasticWellRes = await getElasticWell(paramId);
       const currentFeature = { ...elasticWellRes };
       if (currentFeature?.Id) currentFeature.id = currentFeature.Id;
-      setStateApp({ ...stateApp, selectedWell: currentFeature, selectedWellId: paramId.toLowerCase(), popupOpen: false, expandedCard: true });
+      setStateApp({ ...stateApp, selectedWell: currentFeature, selectedWellId: paramId.toLowerCase(), popupOpen: false, expandedCard: true, selectedParcel: null, selectedShape: null });
       setShowExpandableCard(true);
       if (map && currentFeature) {
         findBoundsMap([currentFeature.geoJSON], map);
@@ -5910,6 +5910,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       },
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
@@ -6025,6 +6027,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         },
         refetchQueries: ["getCustomLayers"],
         awaitRefetchQueries: true,
+      }).then(() => {
+        jobController.toggleBulkUpload()
       });
     }
   };

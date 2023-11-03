@@ -235,6 +235,21 @@ function AddAgreementOwnerAndTractDialog(props) {
     awaitRefetchQueries: true,
   });
 
+  const checkOwnerOverRidden = (owner) => {
+    const { royalty_interest, orri, net_acres, nra, mineral_interest, acquisition_nra, acquisition_cost } = owner
+    let calculatedNRA = calculateStandardNraForTract(getValues()?.tract?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
+    if (!isNaN(parseFloat(calculatedNRA)))
+      setIsNRAOverridden(parseFloat(calculatedNRA) !== parseFloat(nra) && !isNaN(parseFloat(nra)))
+
+    let calculatedAcres = calculateNetAcres(mineral_interest);
+    if (!isNaN(parseFloat(calculatedAcres)))
+      setIsAcresOverridden(parseFloat(calculatedAcres) !== parseFloat(net_acres) && !isNaN(parseFloat(net_acres)))
+
+    let calculatedAcquisitionCost = calculateAcquisitionCost(nra, acquisition_nra);
+    if (!isNaN(parseFloat(calculatedAcquisitionCost)))
+      setIsAcquisitionCostOverridden(parseFloat(calculatedAcquisitionCost) !== parseFloat(acquisition_cost) && !isNaN(parseFloat(acquisition_cost)))
+  }
+
   useEffect(() => {
     if (props.seletedOwner) {
       props.seletedOwner.realtedObject = props.seletedOwner?.contact?._id;
@@ -250,20 +265,7 @@ function AddAgreementOwnerAndTractDialog(props) {
       else props.seletedOwner.parcelOwnersRadioBValue = "false";
       reset(props.seletedOwner);
 
-      setTimeout(() => {
-        const { royalty_interest, orri, net_acres, nra, mineral_interest, acquisition_nra, acquisition_cost } = props.seletedOwner
-        let calculatedNRA = calculateStandardNraForTract(getValues()?.tract?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
-        if (!isNaN(parseFloat(calculatedNRA)))
-          setIsNRAOverridden(parseFloat(calculatedNRA) !== parseFloat(nra) && !isNaN(parseFloat(nra)))
-
-        let calculatedAcres = calculateNetAcres(mineral_interest);
-        if (!isNaN(parseFloat(calculatedAcres)))
-          setIsAcresOverridden(parseFloat(calculatedAcres) !== parseFloat(net_acres) && !isNaN(parseFloat(net_acres)))
-
-        let calculatedAcquisitionCost = calculateAcquisitionCost(nra, acquisition_nra);
-        if (!isNaN(parseFloat(calculatedAcquisitionCost)))
-          setIsAcquisitionCostOverridden(parseFloat(calculatedAcquisitionCost) !== parseFloat(acquisition_cost) && !isNaN(parseFloat(acquisition_cost)))
-      }, 0);
+      setTimeout(() => checkOwnerOverRidden(props.seletedOwner), 0);
 
       setIsNewTract(false)
       // reset(pick(props.seletedOwner, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'sdGrossAcres', 'uAcres', 'legalDescription']))
@@ -304,7 +306,7 @@ function AddAgreementOwnerAndTractDialog(props) {
         depthFrom: getValues().depthFrom || "All depths",
         tract: {
           tractId: selectedShapeLayer._id,
-          tractName: selectedShapeLayer.name,
+          name: selectedShapeLayer.name,
           sdGrossAcres,
           shapeArea,
           legalDescription,
@@ -450,19 +452,25 @@ function AddAgreementOwnerAndTractDialog(props) {
           getValues()?.tract?.sdGrossAcres ? (getValues()?.tract?.sdGrossAcres * value.ownerData.mineral_interest).toFixed(8) : null
         );
       }
-      reset({
+
+      const data = {
         ...getValues(),
         tract,
         ownerEntity: value._id,
         ownerName: value.name,
+        net_acres: net_acres || "",
+        ...value.ownerData,
         mineral_interest: value.ownerData.mineral_interest || "",
         royalty_interest: value.ownerData.royalty_interest || "",
         orri: value.ownerData.orri || "",
         depthFrom: value.ownerData.depthFrom || "",
         depthTo: value.ownerData.depthTo || "",
-        net_acres: net_acres || "",
-        ...value.ownerData,
-      });
+        nra: value.ownerData.nra?.toFixed?.(8) || '',
+      }
+
+      reset(data);
+
+      setTimeout(() => checkOwnerOverRidden(data), 0);
     } else {
       setNameAutValue(null);
     }

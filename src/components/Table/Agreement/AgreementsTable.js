@@ -32,6 +32,7 @@ import GridView from "components/Shared/GridView";
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import { REMOVE_AGREEMENTS } from "graphQL/useMutationRemoveAgreements";
+import { jobController } from "hookstate/jobStateController";
 
 function AgreementsTable(props) {
   const defaultView = {
@@ -185,6 +186,8 @@ function AgreementsTable(props) {
         customLayer: customLayer,
       },
       refetchQueries: ["customLayer"],
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
