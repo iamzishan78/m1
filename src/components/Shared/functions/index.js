@@ -124,12 +124,13 @@ export function workspaceTenantName() {
 
 export function getDateWithoutTime(dateTime) {
   if (!dateTime || (typeof dateTime !== 'string' && typeof dateTime !== 'number')) {
-    dateTime = "";
+    dateTime = '';
   }
 
   if (typeof dateTime === 'number') {
     dateTime = dateTime.toString();
   }
+
 
   if (dateTime?.includes && dateTime.includes('/')) {
     const splittedDate = dateTime.split('/');
@@ -149,12 +150,13 @@ export function getDateWithoutTime(dateTime) {
   } else return null;
 }
 
-export const formatDate = (date, simple = true) => {
-  if (!date) return '--'
-  return moment.parseZone(new Date(date)).format(simple ? 'MM/DD/YY' : 'MMMM D, YYYY');
-}
 export const getSelectedRowsFromProps = (props = {}) => {
   const { selectedRowsValues = [], rows = [] } = props
 
   return selectedRowsValues.length > rows.length ? selectedRowsValues : rows
+}
+
+export const formatDate = (date, simple = true) => {
+  if (!date) return '--'
+  return moment.parseZone(new Date(date)).format(simple ? 'MM/DD/YY' : 'MMMM D, YYYY');
 }

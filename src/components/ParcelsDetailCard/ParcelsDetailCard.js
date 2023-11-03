@@ -23,8 +23,8 @@ import { popupController, popupState } from 'hookstate/popupStateController';
 import MRTTable from "components/MRTTable";
 import { tableController, tableGlobalController } from "hookstate/tableController";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
-import { showSuccessMessage, showErrorMessage, setMapGridCardState } from 'actions';
 import { jobController } from "hookstate/jobStateController";
+import { showSuccessMessage, showErrorMessage, setMapGridCardState } from 'actions';
 
 const useStyles = makeStyles(theme => ({
   grid: {
