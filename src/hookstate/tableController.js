@@ -259,7 +259,7 @@ const tableESStateControllerHandler = state => ({
 			tableKey,
 			esIndex,
 			pageSize,
-			isSelectall: isSelectall || false,
+			isSelectall: false,
 			showColumnFilters: false,
 			data: { rows: [], total: 0 },
 			isLoading: false,

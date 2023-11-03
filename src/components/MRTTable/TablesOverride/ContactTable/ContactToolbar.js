@@ -54,8 +54,6 @@ function ContactToolbar({ table, tableKey }) {
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 
-	Controller.setSelectAll(isAllRowsSelected);
-
 	const routeChange = route => {
 		history.push(route);
 	};
@@ -136,7 +134,7 @@ function ContactToolbar({ table, tableKey }) {
 		return {
 			selectedRows,
 			isAllRowsSelected,
-			isSelectall: tableStateValues?.isSelectall,
+			isSelectall: isAllRowsSelected,
 			search,
 			sorting: tableStateValues?.sorting,
 			defaultSort: tableStateValues?.defaultSort,
