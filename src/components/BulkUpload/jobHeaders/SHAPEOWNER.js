@@ -1,8 +1,9 @@
 const CONTACTS_FIELDS = require("./CONTACTS").default
 
 const fields = JSON.parse(JSON.stringify(CONTACTS_FIELDS))
-fields.splice(CONTACTS_FIELDS.length-1,1)
+fields.splice(CONTACTS_FIELDS.length - 1, 1)
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default [
     ...fields,
     {
@@ -48,6 +49,24 @@ export default [
         actual_key: "shape.royalty_interest"
     },
     {
+        label: "Target Offer Price",
+        mapped_key: "",
+        required: false,
+        actual_key: "shape.offer_price"
+    },
+    {
+        label: "Max Offer Price",
+        mapped_key: "",
+        required: false,
+        actual_key: "shape.max_offer_price"
+    },
+    {
+        label: "Actual Offer Price",
+        mapped_key: "",
+        required: false,
+        actual_key: "shape.actual_offer_price"
+    },
+    {
         label: "Overriding Royalty",
         mapped_key: "",
         required: false,
@@ -83,6 +102,31 @@ export default [
         required: false,
         actual_key: "shape.nra"
     },
+    {
+        label: "Unit Tract ID",
+        mapped_key: "",
+        required: false,
+        actual_key: "shape.unitTractId"
+    },
+    {
+        label: "Tract Acres",
+        mapped_key: "",
+        required: false,
+        actual_key: "shape.tractAcres"
+    },
+    {
+        label: "Net Acres",
+        mapped_key: "",
+        required: false,
+        actual_key: "shape.net_acres"
+    },
+    {
+        label: "Data Source",
+        mapped_key: "",
+        required: false,
+        actual_key: "shape.dataSource"
+    },
+
     // {
     //     label: "Depth From",
     //     mapped_key: "",

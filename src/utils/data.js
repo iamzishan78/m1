@@ -494,13 +494,14 @@ export const US_STATES_CODES = {
 
 export const AdminManagementRoutes = {
   MAP: {
-    featureFlag: "CONTACTSUBMENU",
+    featureFlag: "AlWAYSSHOW",
     title: "Map",
     link: "/admin/map",
     component: "Map",
     value: "Activities",
     search: true,
     isDefault: true,
+    noCheck: true,
   },
   LAND: {
     featureFlag: "LANDMODULE",

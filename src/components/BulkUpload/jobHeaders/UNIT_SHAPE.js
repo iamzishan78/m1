@@ -6,7 +6,7 @@ const Unit = [
     actual_key: "_id",
   },
   {
-    label: "Unit Name",    
+    label: "Unit Name",
     mapped_key: "",
     required: true,
     actual_key: "name",
@@ -78,10 +78,16 @@ const Unit = [
     actual_key: "netRoyalityAcres",
   },
   {
-    label: "Unit Pricing (per NRA)",
+    label: "Target Price (per NRA)",
     mapped_key: "",
     required: true,
     actual_key: "uUnitPricing",
+  },
+  {
+    label: "Max Price (per NRA)",
+    mapped_key: "",
+    required: true,
+    actual_key: "uMaxUnitPricing",
   },
   {
     label: "Qualifier",

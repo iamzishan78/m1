@@ -10,7 +10,6 @@ import { CUSTOMLAYER } from "../../graphQL/useQueryCustomLayer";
 import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import SuggestedShapeTaxOwnersTable from "components/Table/TaxOwners/SuggestedShapeTaxOwnersTable";
 import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
-import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import TabButtons from "components/Shared/TabPanels/TabButtons"
 import GavelIcon from '@material-ui/icons/Gavel';
@@ -25,6 +24,8 @@ import { showSuccessMessage, showErrorMessage } from "../../actions";
 import { AppContext } from "../../AppContext";
 import set from 'lodash/set'
 import { copy } from "components/Shared/functions";
+import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
+import { jobController } from "hookstate/jobStateController";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -214,6 +215,8 @@ export default function UnitDetailCard(props) {
         customLayerId: uniObj._id,
         customLayer,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
@@ -236,6 +239,8 @@ export default function UnitDetailCard(props) {
         customLayerId: uniObj._id,
         customLayer,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
@@ -330,12 +335,14 @@ export default function UnitDetailCard(props) {
             />,
 
             <div className={showSummary ? classes.subContent : classes.subContent2}>
-              <ParcelDetailsRunsheetTable
-                customLayer={uniObj}
+              <ParcelAgreementTable
+                esIndex='runsheetinstrument_flat'
                 parent="associatedRunsheetPerParcel"
                 targetLabel="parcelRunsheet"
-                header={<RunsheetHeader />}
+                customLayer={copy(uniObj)}
                 dense
+                header={<RunsheetHeader />}
+                isCheckboxSticky={true}
               />
             </div>,
             <TabPanels

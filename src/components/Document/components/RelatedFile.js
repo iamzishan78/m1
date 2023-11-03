@@ -7,21 +7,15 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import SearchIcon from "@material-ui/icons/Search";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import { AppContext } from "AppContext";
-import CloseIcon from "@material-ui/icons/Close";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
-import moment from "moment";
 
 import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from "@material-ui/core";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
-import { KeyboardDatePicker } from "@material-ui/pickers";
 import UploadZone from "../../Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
-import { Clear } from "@material-ui/icons";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import DeleteIcon from "@material-ui/icons/Delete";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
@@ -36,6 +30,7 @@ import { DOCUMENT_TYPE } from "graphQL/useQueryDocumentType";
 import { GET_DOCUMENTS } from "graphQL/useQueryDocuments";
 import { setStateIfDeepEqual } from "components/Shared/functions";
 import AutoCompleteDocumentList from "components/Shared/Forms/Fields/AutoCompleteDocumentList";
+import GenericDateField from "components/Shared/components/Fields/GenericDateFIeld";
 
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
@@ -743,46 +738,17 @@ export default function RelatedFile(props) {
               "aria-label": "change date",
             }}
           /> */}
-          <TextField
-            // autoOk
-            type="date"
-            id="filedate"
-            //variant="outlined"
-            defaultValue={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
-            value={newDocument?.dateTime ? moment(newDocument?.dateTime).format("yyyy-MM-DD") : ""}
-            margin="none"
-            fullWidth
-            onChange={(event) => {
-              const splittedDate = event?.target?.value.split("-");
-              if (splittedDate.length === 3) {
-                const newDate = new Date();
-                newDate.setFullYear(Number(splittedDate[0])); // Use setFullYear instead of setYear
-                newDate.setMonth(Number(splittedDate[1]) - 1);
-                newDate.setDate(Number(splittedDate[2]));
-                setNewDocument({ ...newDocument, dateTime: newDate });
-              } else {
-                setNewDocument({ ...newDocument, dateTime: "" });
-              }
-            }}
 
-            InputLabelProps={{
-              shrink: true,
-            }}
-            disableToolbar
-            KeyboardButtonProps={{ "aria-label": "change date" }}
-            format="MM/DD/YYYY"
-            PopoverProps={{ disablePortal: false }}
-            InputProps={{
-              endAdornment: (
-                <IconButton onClick={(event) => setNewDocument({ ...newDocument, dateTime: "" })}>
-                  <Clear style={{ height: 22, width: 22 }} />
-                </IconButton>
-              ),
-              classes: {
-                root: classes.dateRoot,
-              },
+          <GenericDateField
+            value={newDocument?.dateTime}
+            onChange={(value) => {
+              setNewDocument({
+                ...newDocument,
+                dateTime: value,
+              });
             }}
           />
+
         </ListItem>
         {/* <ListItem
           style={{

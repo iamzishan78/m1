@@ -11,7 +11,6 @@ import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
 import SuggestedShapeTaxOwnersTable from "components/Table/TaxOwners/SuggestedShapeTaxOwnersTable";
 import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
-import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
 import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
 import TabButtons from "components/Shared/TabPanels/TabButtons";
 import UnitSummary from "./UnitSummary";
@@ -28,6 +27,8 @@ import { AppContext } from "AppContext";
 import { copy } from "components/Shared/functions";
 import { detailCardStyles } from "../style";
 import { DrawerContextProvider } from "components/Land/components/Agreements/detailComponents/DrawerContext";
+import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
+import { jobController } from "hookstate/jobStateController";
 
 export default function UnitDetailCard(props) {
   const dispatch = useDispatch();
@@ -135,7 +136,7 @@ export default function UnitDetailCard(props) {
         userId: stateApp.user.mongoId
       },
     }).then(() => {
-      setStateApp((state) => ({ ...state, bulkUpload: !state.bulkUpload, }));
+      jobController.toggleBulkUpload()
     });
   };
 
@@ -155,6 +156,8 @@ export default function UnitDetailCard(props) {
         customLayer,
         userId: stateApp.user.mongoId
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
@@ -208,49 +211,49 @@ export default function UnitDetailCard(props) {
     />
   );
 
-  return(
-      (
-        uniObj ? (
-    <Grid item sm={12} container className={classes.gridWidthScroll}>
-      <Grid item xs={12} style={{ padding: "10px 15px 0px 15px" }} className={classes.border}>
-        <div className={classes.tags}>
-          <Tags width="100%" targetSourceId={props.id} targetLabel="unit" publicLeftBottom />
-        </div>
-      </Grid>
-      <Grid item sm={12}>
-        <Taps
-          tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "Tracts", "Documents"]}
-          openTabIdex={selectedTab}
-          tabPanels={[
-            <div style={{
-              height: "calc(100vh - 285px)",
-              overflow: "overlay"
-            }}>
-              <UnitSummary
-                properties={properties}
-                setProperties={setProperties}
-                updateProperties={updateProperties}
-                updateCustomProperties={updateCustomProperties}
-                id={props.id}
-                customLayer={uniObj}
-                updating={updatingLayer}
-              />
-            </div>,
-            <TabPanels
-              value={selectedTab}
-              panels={[
-                <div className={!isFiltered ? classes.subContent : classes.subContent3}>
-                  <UnitInterestOwnerTable
-                    esIndex="shapeowners_flat"
+  return (
+    (
+      uniObj ? (
+        <Grid item sm={12} container className={classes.gridWidthScroll}>
+          <Grid item xs={12} style={{ padding: "10px 15px 0px 15px" }} className={classes.border}>
+            <div className={classes.tags}>
+              <Tags width="100%" targetSourceId={props.id} targetLabel="unit" publicLeftBottom />
+            </div>
+          </Grid>
+          <Grid item sm={12}>
+            <Taps
+              tabLabels={["Summary", "Interest Owners", "Runsheet", "Wells", "Tracts", "Documents"]}
+              openTabIdex={selectedTab}
+              tabPanels={[
+                <div style={{
+                  height: "calc(100vh - 285px)",
+                  overflow: "overlay"
+                }}>
+                  <UnitSummary
+                    properties={properties}
+                    setProperties={setProperties}
+                    updateProperties={updateProperties}
+                    updateCustomProperties={updateCustomProperties}
+                    id={props.id}
                     customLayer={uniObj}
-                    parent="ownersPerUnit"
-                    shapeType="Unit"
-                    targetLabel="Unit Ownership"
-                    setIsFiltered={setIsFiltered}
-                    header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
-                    dense
+                    updating={updatingLayer}
                   />
-                  {/* <UnitOwnersTable
+                </div>,
+                <TabPanels
+                  value={selectedTab}
+                  panels={[
+                    <div className={!isFiltered ? classes.subContent : classes.subContent3}>
+                      <UnitInterestOwnerTable
+                        esIndex="shapeowners_flat"
+                        customLayer={uniObj}
+                        parent="ownersPerUnit"
+                        shapeType="Unit"
+                        targetLabel="Unit Ownership"
+                        setIsFiltered={setIsFiltered}
+                        header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
+                        dense
+                      />
+                      {/* <UnitOwnersTable
                     customLayer={uniObj}
                     parent="ownersPerUnit"
                     shapeType="Unit"
@@ -260,103 +263,105 @@ export default function UnitDetailCard(props) {
                     setIsFiltered={setIsFiltered}
                     dense
                   /> */}
-                </div>,
-                <div className={!isFiltered ? classes.subContent : classes.subContent3}>
-                  <SuggestedShapeTaxOwnersTable
-                    customLayer={uniObj}
-                    parent="potentialOwnersPerUnit"
-                    shapeType="Unit"
-                    targetLabel="well"
-                    jobType="SHAPEOWNER"
-                    jobName="Convert potential owner to unit owner"
-                    header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
-                    setSelectedTab={setSelectedTab}
-                    setIsFiltered={setIsFiltered}
+                    </div>,
+                    <div className={!isFiltered ? classes.subContent : classes.subContent3}>
+                      <SuggestedShapeTaxOwnersTable
+                        customLayer={uniObj}
+                        parent="potentialOwnersPerUnit"
+                        shapeType="Unit"
+                        targetLabel="well"
+                        jobType="SHAPEOWNER"
+                        jobName="Convert potential owner to unit owner"
+                        header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
+                        setSelectedTab={setSelectedTab}
+                        setIsFiltered={setIsFiltered}
+                        dense
+                      />
+                    </div>,
+                  ]}
+                />,
+                <div className={showSummary ? classes.subContent : classes.subContent2}>
+                  <ParcelAgreementTable
+                    esIndex='runsheetinstrument_flat'
+                    parent="associatedRunsheetPerParcel"
+                    targetLabel="parcelRunsheet"
+                    customLayer={copy(uniObj)}
                     dense
+                    header={<RunsheetHeader />}
+                    isCheckboxSticky={true}
+                  />
+                </div>,
+                <TabPanels
+                  value={selectedWellTab}
+                  panels={[
+                    <div className={showSummary ? classes.subContent : classes.subContent2}>
+                      <DrawerContextProvider>
+                        <ShapeWellInterestTable
+                          customLayer={uniObj}
+                          shapeType="Unit"
+                          parent="associatedWellsPerUnits"
+                          targetLabel="well"
+                          header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
+                          showTracks
+                          dense
+                        />
+                      </DrawerContextProvider>
+                    </div>,
+                    <div className={showSummary ? classes.subContent : classes.subContent2}>
+                      <AssociatedWellsShapeTable
+                        customLayer={uniObj}
+                        shapeType="Unit"
+                        parent="associatedWellsPerUnits"
+                        targetLabel="well"
+                        header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
+                        showTracks
+                        setSelectedTab={setWellSelectedTab}
+                        dense
+                      />
+                    </div>,
+                  ]}
+                />,
+                <TabPanels
+                  value={selectedTractTab}
+                  panels={[
+                    <div className={showSummary ? classes.subContent : classes.subContent2}>
+                      <UnitTractsTable
+                        customLayer={uniObj}
+                        shapeType="Unit"
+                        header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                        dense
+                      />
+                    </div>,
+                    <div className={showSummary ? classes.subContent : classes.subContent2}>
+                      <AssociatedTractsShapeTable
+                        customLayer={uniObj}
+                        shapeType="Unit"
+                        header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
+                        setSelectedTab={setTractSelectedTab}
+                        dense
+                      />
+                    </div>,
+                  ]}
+                />,
+                <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
+                  <RelatedDetailsDocumentTable
+                    customLayer={uniObj}
+                    relatedObjectType="Shape"
+                    name="Unit"
+                    header={<DocumentHeader />}
+                    addAble={{ type: "UnitDocument" }}
+                    dense
+                    targetLabel="documents"
                   />
                 </div>,
               ]}
-            />,
-            <div className={showSummary ? classes.subContent : classes.subContent2}>
-              <ParcelDetailsRunsheetTable
-                customLayer={uniObj}
-                parent="associatedRunsheetPerParcel"
-                targetLabel="parcelRunsheet"
-                header={<RunsheetHeader />}
-                dense
-              />
-            </div>,
-            <TabPanels
-              value={selectedWellTab}
-              panels={[
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <DrawerContextProvider>
-                  <ShapeWellInterestTable
-                    customLayer={uniObj}
-                    shapeType="Unit"
-                    parent="associatedWellsPerUnits"
-                    targetLabel="well"
-                    header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
-                    showTracks
-                    dense
-                  />
-                  </DrawerContextProvider>
-                </div>,
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <AssociatedWellsShapeTable
-                    customLayer={uniObj}
-                    shapeType="Unit"
-                    parent="associatedWellsPerUnits"
-                    targetLabel="well"
-                    header={<WellHeader selectedWellTab={selectedWellTab} setWellSelectedTab={setWellSelectedTab} />}
-                    showTracks
-                    setSelectedTab={setWellSelectedTab}
-                    dense
-                  />
-                </div>,
-              ]}
-            />,
-            <TabPanels
-              value={selectedTractTab}
-              panels={[
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <UnitTractsTable
-                    customLayer={uniObj}
-                    shapeType="Unit"
-                    header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                    dense
-                  />
-                </div>,
-                <div className={showSummary ? classes.subContent : classes.subContent2}>
-                  <AssociatedTractsShapeTable
-                    customLayer={uniObj}
-                    shapeType="Unit"
-                    header={<TractHeader selectedTractTab={selectedTractTab} setTractSelectedTab={setTractSelectedTab} />}
-                    setSelectedTab={setTractSelectedTab}
-                    dense
-                  />
-                </div>,
-              ]}
-            />,
-            <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>
-              <RelatedDetailsDocumentTable
-                customLayer={uniObj}
-                relatedObjectType="Shape"
-                name="Unit"
-                header={<DocumentHeader />}
-                addAble={{ type: "UnitDocument" }}
-                dense
-                targetLabel="documents"
-              />
-            </div>,
-          ]}
-        />
-      </Grid>
-    </Grid>
-  ) : (
-    <div style={{ padding: "20px", position: "absolute", height: "100%", width: "100%" }}>
-      <CircularProgress size={80} disableShrink color="secondary" />
-    </div>
-  )
-  ))
+            />
+          </Grid>
+        </Grid>
+      ) : (
+        <div style={{ padding: "20px", position: "absolute", height: "100%", width: "100%" }}>
+          <CircularProgress size={80} disableShrink color="secondary" />
+        </div>
+      )
+    ))
 }

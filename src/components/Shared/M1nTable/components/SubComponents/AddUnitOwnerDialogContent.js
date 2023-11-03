@@ -31,7 +31,7 @@ import CampaignNameField from "components/ContactDetailCard/components/FieldCont
 import AssociatedDealField from "components/ContactDetailCard/components/FieldContent/AssociatedDealField";
 import DeleteConfirmationDialogContent from "./DeleteConfirmationDialogContent";
 import KeyboardTabBlackIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
-import { calculateNRAForUnitOwnerDialog } from "utils/calculatedNraHelper"
+import { calculateStandardNraForUnit } from "utils/calculatedNraHelper"
 import AutoCompleteWithAddNew from "components/Shared/AutoCompleteWithAddNew";
 import { Status } from "components/ContactDetailCard/components/FieldContent";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
@@ -135,7 +135,11 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         campaignPriority,
         contact,
         campaignName,
-        deals
+        deals,
+        unitTractId,
+        tractAcres,
+        dataSource,
+        net_acres
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
       const owner = {
@@ -155,9 +159,13 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         campaignPriority,
         customLayer,
         campaignName,
-        deals
+        deals,
+        unitTractId,
+        tractAcres,
+        dataSource,
+        net_acres
       }
-      let calculatedNRA = calculateNRAForUnitOwnerDialog(royalty_interest, orri, nri, uAcres, workspaceSettings);
+      let calculatedNRA = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri, workspaceSettings })
       let calculatedOfferPrice = calculateOfferPrice(nra);
       let calculatedMaxOfferPrice = calculateMaxOfferPrice(nra);
 
@@ -331,10 +339,20 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         ownerToAdd.name = nameAutValue.name;
       }
 
-      if ((ownerToAdd.contactStatus && selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
-        (ownerToAdd.ownerType && selectedRow?.ownerType !== ownerToAdd.ownerType) ||
-        (ownerToAdd.campaignPriority && selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
-        (ownerToAdd.campaignName && selectedRow?.campaignName !== ownerToAdd.campaignName)
+
+      if (
+        ((ownerToAdd.contactStatus || selectedRow?.contactStatus) &&
+          selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
+        ((ownerToAdd.status || selectedRow?.status) &&
+          selectedRow?.status !== ownerToAdd.status) ||
+        ((ownerToAdd.ownerType || selectedRow?.ownerType) &&
+          selectedRow?.ownerType !== ownerToAdd.ownerType) ||
+        ((ownerToAdd.campaignPriority || selectedRow?.campaignPriority) &&
+          selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
+        ((ownerToAdd.campaignName || selectedRow?.campaignName) &&
+          selectedRow?.campaignName !== ownerToAdd.campaignName) ||
+        ownerToAdd.campaignName ||
+        selectedRow?.campaignName !== ownerToAdd.campaignName
       ) {
         updateContact({
           variables: {
@@ -345,9 +363,9 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               lastUpdateBy: stateApp.user.mongoId,
               ownerType: ownerToAdd.ownerType,
               campaignPriority: ownerToAdd.campaignPriority,
-            }
-          }
-        })
+            },
+          },
+        });
       }
 
       if (!ownerToAdd.campaignName || ownerToAdd.campaignName === '') ownerToAdd.campaignName = []
@@ -499,6 +517,46 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 />
               </Grid>
               <Grid item xs={12}>
+                <h3>Unit Tract ID</h3>
+
+                <Controller
+                  control={control}
+                  name="unitTractId"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="text"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => props.onChange(e.target.value)}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Tract Acres</h3>
+
+                <Controller
+                  control={control}
+                  name="tractAcres"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => props.onChange(e.target.value)}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
                 <h3>Working Interest</h3>
 
                 <Controller
@@ -513,7 +571,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) setValue("nra", calculateNRAForUnitOwnerDialog(getValues().royalty_interest, getValues().orri, e.target.value, getValues().nri));
+                        if (!isNraOverridden) setValue("nra", calculateStandardNraForUnit({ uAcres, working_interest: e.target.value, royalty_interest: getValues().royalty_interest, orri: getValues().orri, nri: getValues().nri, workspaceSettings }));
                       }}
                       fullWidth
                       defaultValue=""
@@ -535,7 +593,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) setValue("nra", calculateNRAForUnitOwnerDialog(e.target.value, getValues().orri, getValues().nri, uAcres, workspaceSettings));
+                        if (!isNraOverridden) setValue("nra", calculateStandardNraForUnit({ uAcres, working_interest: getValues().working_interest, royalty_interest: e.target.value, orri: getValues().orri, nri: getValues().nri, workspaceSettings })
+                        );
                       }}
                       fullWidth
                       defaultValue=""
@@ -557,7 +616,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) { setValue("nra", calculateNRAForUnitOwnerDialog(getValues().royalty_interest, e.target.value, getValues().nri, uAcres, workspaceSettings)); }
+                        if (!isNraOverridden) { setValue("nra", calculateStandardNraForUnit({ uAcres, working_interest: getValues().working_interest, royalty_interest: getValues().royalty_interest, orri: e.target.value, nri: getValues().nri, workspaceSettings })); }
                       }}
                       fullWidth
                       defaultValue=""
@@ -580,28 +639,33 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => {
                         props.onChange(e.target.value);
-                        if (!isNraOverridden) { setValue("nra", calculateNRAForUnitOwnerDialog(getValues().royalty_interest, getValues().orri, e.target.value, uAcres, workspaceSettings)); }
+                        if (!isNraOverridden) { setValue("nra", calculateStandardNraForUnit({ uAcres, working_interest: getValues().working_interest, royalty_interest: getValues().royalty_interest, orri: getValues().orri, nri: e.target.value, workspaceSettings })); }
                       }}
                       fullWidth
                       defaultValue=""
                     />
                   )}
                 />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Net Acres</h3>
 
-                {/* <TextField
-                  type="number"
-                  size="small"
-                  className={classes.maxWidth}
-                  value={newOwner.nri}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setNewOwner({
-                      ...newOwner,
-                      nri: value ? addTrailingZeros(e.target.value) : null,
-                    });
-                  }}
-                  onWheel={(e) => e.target.blur()}
-                /> */}
+                <Controller
+                  control={control}
+                  name="net_acres"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => props.onChange(e.target.value)}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
               </Grid>
               <Grid item xs={12}>
                 <h3>Net Royalty Acres (NRA)</h3>
@@ -619,7 +683,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         const value = addTrailingZeros(e.target.value);
 
                         if (!isNraOverridden) {
-                          const nra = calculateNRAForUnitOwnerDialog(getValues().royalty_interest, getValues().orri, getValues().nri, uAcres, workspaceSettings)
+                          const nra = calculateStandardNraForUnit({ uAcres, working_interest: getValues().working_interest, royalty_interest: getValues().royalty_interest, orri: getValues().orri, nri: getValues().nri, workspaceSettings })
                           setIsNRAOverridden(parseFloat(value) !== parseFloat(nra))
                         }
 
@@ -634,7 +698,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                                 aria-label="toggle royality-acres"
                                 onClick={() => {
                                   setIsNRAOverridden(false)
-                                  setValue("nra", calculateNRAForUnitOwnerDialog(getValues().royalty_interest, getValues().orri, getValues().nri, uAcres, workspaceSettings));
+                                  setValue("nra", calculateStandardNraForUnit({ uAcres, working_interest: getValues().working_interest, royalty_interest: getValues().royalty_interest, orri: getValues().orri, nri: getValues().nri, workspaceSettings }));
                                 }}
                               >
                                 <AutorenewIcon />
@@ -927,6 +991,45 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       fullWidth
                       targetLabel="Contact"
                       simpleChips
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Data Source</h3>
+
+                <Controller
+                  control={control}
+                  name="dataSource"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="text"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => props.onChange(e.target.value)}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Tax Year</h3>
+
+                <Controller
+                  control={control}
+                  name="taxYear"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={selectedRow?.taxYear}
+                      inputRef={props.ref}
+                      disabled
+                      fullWidth
+                      defaultValue=""
                     />
                   )}
                 />

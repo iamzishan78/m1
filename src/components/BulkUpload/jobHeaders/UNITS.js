@@ -53,14 +53,22 @@ addAfterLabel(unit, 'Unit Acres', {
     actual_key: "shape.uPrimaryOperator",
 })
 
+
+
 addAfterLabel(unit, 'Unit Acres', {
-    label: "Unit Pricing",
+    label: "Target Price",
     mapped_key: "",
     required: true,
     actual_key: "shape.uUnitPricing",
 })
 
-addAfterLabel(unit, 'Unit Pricing', {
+addAfterLabel(unit, 'Target Price', {
+    label: "Max Price",
+    mapped_key: "",
+    actual_key: "shape.uMaxUnitPricing",
+})
+
+addAfterLabel(unit, 'Max Price', {
     label: "Unit Campaign",
     mapped_key: "",
     actual_key: "shape.campaignName",
@@ -82,6 +90,33 @@ addAfterLabel(unit, 'Overriding Royalty', {
     label: "Net Revenue Interest",
     mapped_key: "",
     actual_key: "shape.nri"
+})
+addAfterLabel(unit, 'Net Royalty Acres', {
+    label: "Unit Tract ID",
+    mapped_key: "",
+    required: false,
+    actual_key: "unitTractId",
+})
+
+addAfterLabel(unit, 'Unit Tract ID', {
+    label: "Tract Acres",
+    mapped_key: "",
+    required: false,
+    actual_key: "tractAcres",
+})
+
+addAfterLabel(unit, 'Tract Acres', {
+    label: "Net Acres",
+    mapped_key: "",
+    required: false,
+    actual_key: "net_acres",
+})
+
+addAfterLabel(unit, 'Net Acres', {
+    label: "Data Source",
+    mapped_key: "",
+    required: false,
+    actual_key: "dataSource",
 })
 
 export default unit;

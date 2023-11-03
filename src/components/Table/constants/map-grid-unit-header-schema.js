@@ -22,7 +22,7 @@ const unitsColumnHeaders = (isSnapGrid = false) => [
       filter: false,
       searchable: false,
       sort: false,
-      download: false,
+      download: true,
       print: false,
       viewColumns: false,
     },

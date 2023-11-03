@@ -6,6 +6,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import CloudDownloadIcon from "@material-ui/icons/CloudDownload";
 import EditIcon from "@material-ui/icons/Edit";
 import { useMutation } from "@apollo/client";
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 
 import { AppContext } from "AppContext";
 import TableESHOC from "components/Table/TableESHOC";
@@ -24,10 +25,11 @@ import DeleteConfirmationDialogContent from "components/Shared/M1nTable/componen
 import TableHeader from "components/Table/constants/tract-interest-owner-header-schema";
 import { UPDATEPARCELOWNER } from "graphQL/useMutationUpdateParcelOwner";
 import vf_currency from "components/Shared/valueformatters/vf_currency";
-import { deepEqualObjects, copy } from "components/Shared/functions";
+import { deepEqualObjects, copy, getSelectedRowsFromProps } from "components/Shared/functions";
 import { addTrailingZeros } from "components/Shared/functions";
 import { usetableStyles } from "../Styles";
 import { AssignOwnerToContactDrawerContainer } from "store/containers";
+import RecalculateSlideout from "../Shape/RecalculateSlideout";
 
 const genericDataActions = ["comments", "tracks", "ifAreContacts"];
 const interestKeys = [
@@ -160,11 +162,13 @@ function TractInterestOwnerTable(props) {
 
   const getRows = () => {
     const selectedRows = [];
+
+    const rows = getSelectedRowsFromProps(props);
     for (let i = 0; i < props.selectedRows.length; i++) {
-      if (props.rows[props.selectedRows[i].index])
+      if (rows[props.selectedRows[i].index])
         selectedRows.push({
-          ...props.rows[props.selectedRows[i].index],
-          _id: props.rows[props.selectedRows[i].index].contactId,
+          ...rows[props.selectedRows[i].index],
+          _id: rows[props.selectedRows[i].index].contactId,
         });
     }
     return selectedRows;
@@ -200,6 +204,16 @@ function TractInterestOwnerTable(props) {
           rows={selectedRows}
           setRows={setSelectedRows}
           onBulkUpdateComplete={onBulkUpdateComplete}
+        />
+      )}
+      {openCustomDialog === "recalculate" && (
+        <RecalculateSlideout
+          onClose={() => {
+            setOpenCustomDialog("")
+            setResetSelectedRow(!resetSelectedRow);
+          }}
+          rows={selectedRows}
+          setRows={setSelectedRows}
         />
       )}
       {openCustomDialog === "exportOwnersAndContact" && (
@@ -333,6 +347,29 @@ function TractInterestOwnerTable(props) {
                 >
                   <Button
                     color="secondary"
+                    startIcon={<AutorenewIcon color="white" />}
+                    className={classes.multiSelectionTopBarButtons}
+                    disabled={
+                      !props.selectedRows || props.selectedRows?.length === 0
+                    }
+                    onClick={() => {
+                      let owners = [];
+
+                      const rows = getSelectedRowsFromProps(props);
+                      for (let i in props.selectedRows) {
+                        owners.push({
+                          ...rows[props.selectedRows[i].dataIndex],
+                          _id: rows[props.selectedRows[i].dataIndex].contact._id,
+                        });
+                      }
+                      setSelectedRows(owners);
+                      setOpenCustomDialog("recalculate");
+                    }}
+                  >
+                    Recalculate
+                  </Button>
+                  <Button
+                    color="secondary"
                     startIcon={<EditIcon color="white" />}
                     className={classes.multiSelectionTopBarButtons}
                     disabled={
@@ -341,7 +378,7 @@ function TractInterestOwnerTable(props) {
                     onClick={() => {
                       let owners = [];
 
-                      const rows = props.selectedRowsValues || props.rows;
+                      const rows = getSelectedRowsFromProps(props);
                       for (let i in props.selectedRows) {
                         owners.push({
                           ...rows[i],
@@ -364,7 +401,7 @@ function TractInterestOwnerTable(props) {
                     onClick={() => {
                       let owners = [];
 
-                      const rows = props.selectedRowsValues || props.rows;
+                      const rows = getSelectedRowsFromProps(props);
                       for (let i in props.selectedRows) {
                         owners.push({
                           ...rows[i],

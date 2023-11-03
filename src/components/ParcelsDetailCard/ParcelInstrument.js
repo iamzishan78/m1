@@ -5,19 +5,20 @@ import Drawer from "@material-ui/core/Drawer";
 import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
+import { Menu, MenuItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import { AppContext } from "AppContext";
 import { Typography, Grid } from "@material-ui/core";
 import loadashFilter from "lodash/filter";
+import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 
 import { CircularProgress, Dialog, DialogTitle, IconButton, TextField, withStyles } from "@material-ui/core";
 import Autocomplete, { createFilterOptions } from "@material-ui/lab/Autocomplete";
-import { KeyboardDatePicker } from "@material-ui/pickers";
 import UploadZone from "components/Shared/UploadZone";
 import Tooltip from "@material-ui/core/Tooltip";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
 import DeleteIcon from "@material-ui/icons/Delete";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import joinAddress from "components/Shared/valueformatters/join-address.js";
 import { VIEWFILEQUERY, VIEWFILESQUERY } from "graphQL/useQueryViewFile";
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -30,6 +31,10 @@ import { RECORD_TYPE } from "graphQL/useQueryRecordType";
 // functions
 import get_file_icon from "components/Shared/functions/get_file_icon.js";
 import { GET_VIEW_TOKEN_URI } from "graphQL/useQueryGetViewTokenUri";
+import moment from "moment";
+import { parseDate } from "utils/helper";
+import { DELETE_PARCEL_RUNSHEET } from "graphQL/useMutationDeleteParcelAgreement";
+import GenericDateField from "components/Shared/components/Fields/GenericDateFIeld";
 
 const filter = createFilterOptions();
 
@@ -90,6 +95,26 @@ const useStyles = makeStyles({
     border: "2px dashed rgb(176, 176, 176)",
     marginBottom: "30px",
   },
+  titleSection: {
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%",
+    alignItems: "center",
+    padding: "10px 16px",
+    "& svg": {
+      fill: "#757575 !important",
+    },
+  },
+  menu: {
+    "& .MuiListItem-root": {
+      "& .MuiListItemIcon-root": {
+        minWidth: "30px",
+        "& .MuiSvgIcon-root": {
+          fill: "red !important",
+        },
+      },
+    },
+  },
   imageSubText: {
     letterSpacing: "0.5px",
     textAlign: "center",
@@ -149,6 +174,12 @@ const useStyles = makeStyles({
   optionNumber: {
     fontSize: "12px",
   },
+  dateRoot: {
+    color: "grey",
+    "& input": {
+      marginLeft: "20px",
+    },
+  },
 });
 
 export default function ParcelInstrument(props) {
@@ -168,12 +199,17 @@ export default function ParcelInstrument(props) {
   };
   const classes = useStyles();
   const anchor = "right";
+  const DELETE_OPTIONS_ENUMS = {
+    'file': 'File',
+    'parcelAgreement': 'Parcel Agreement'
+  }
   const [stateApp, setStateApp] = React.useContext(AppContext);
 
+  const [anchorEl, setAnchorEl] = useState();
   let [loader, setLoader] = useState(false);
   const [fileData, setFileData] = useState(null);
   const [newInstrument, setNewInstrument] = useState(instrumentInitial);
-  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
+  const [initiateDeleteDialogForFileOrAgreement, setInitiateDeleteDialogForFileOrAgreement] = useState(null);
   const [state, setState] = useState({
     right: false,
   });
@@ -190,11 +226,12 @@ export default function ParcelInstrument(props) {
     fetchPolicy: "no-cache",
   });
   const [deleteFile] = useMutation(DELETEDESCRIPTORRELATEDFILE);
-  const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT, { refetchQueries: ["getParcelAgreement", "getESSimpleSearch"], awaitRefetchQueries: true });
+  const [addParcelAgreement] = useMutation(ADD_PARCEL_AGREEMENT, { refetchQueries: ["getESSimpleSearch"], awaitRefetchQueries: true });
   const [updateParcelAgreement] = useMutation(UPDATE_PARCEL_AGREEMENT, {
-    refetchQueries: ["getParcelAgreement"],
+    refetchQueries: ["getESSimpleSearch"],
     awaitRefetchQueries: true,
   });
+  const [deleteParcelRunsheet] = useMutation(DELETE_PARCEL_RUNSHEET, { refetchQueries: ["getESSimpleSearch"], awaitRefetchQueries: true });
 
   useEffect(() => {
     getInstrumentTypes();
@@ -281,40 +318,75 @@ export default function ParcelInstrument(props) {
     viewFile({ variables: { fileId: id } });
   };
 
+  console.log("newInstrument : ", newInstrument)
+
   const handleDeleteAccept = () => {
     // Delete Document Logic goes here
 
-    if (!selectedInstrument?.fileId) {
+    if (!selectedInstrument) {
       setFileData(null)
       return
     }
     setLoader(true);
-    deleteFile({
-      variables: {
-        descriptorObjectId: selectedInstrument.fileId,
-        relatedObjectId: selectedInstrument._id
-      },
-      refetchQueries: ["getParcelAgreement"],
-      awaitRefetchQueries: true,
-    }).then(() => {
-      setFileData(null)
-      setSelectedInstrument(null)
-      setStateApp({
-        ...stateApp,
-        DocumentDrawer: false,
-        selectedDocument: {},
+    if (initiateDeleteDialogForFileOrAgreement === "parcelAgreement") {
+      deleteParcelRunsheet({
+        variables: {
+          id: selectedInstrument.descriptorObject,
+          parcelId: selectedInstrument.customLayerId,
+          fileId: selectedInstrument.fileId
+        },
+        refetchQueries: [
+          "getESSimpleSearch"
+        ],
+        awaitRefetchQueries: true,
+      }).then(() => {
+        props.setShowSlider(false);
+        setSelectedInstrument(null)
+        setStateApp((stateApp) => ({
+          ...stateApp,
+          selectedAgreement: null,
+        }));
+        setNewInstrument(instrumentInitial);
       });
-      setNewInstrument({
-        ...newInstrument,
-        fileId: null,
+    }
+    else if (initiateDeleteDialogForFileOrAgreement === "file") {
+      deleteFile({
+        variables: {
+          descriptorObjectId: selectedInstrument.fileId,
+          relatedObjectId: selectedInstrument._id
+        },
+        refetchQueries: ["getESSimpleSearch"],
+        awaitRefetchQueries: true,
+      }).then(() => {
+        setFileData(null)
+        setStateApp({
+          ...stateApp,
+          DocumentDrawer: false,
+          selectedDocument: {},
+        });
+        setNewInstrument({
+          ...newInstrument,
+          fileId: null,
+        });
+        setInitiateDeleteDialogForFileOrAgreement(false);
+        setLoader(false);
       });
-      setOpenDeleteConfirmDialog(false);
-      setLoader(false);
-    });
+    }
+
+
   };
 
   const handleDeleteCancel = () => {
-    setOpenDeleteConfirmDialog(false);
+    setInitiateDeleteDialogForFileOrAgreement(null);
+  };
+
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   const handleClose = () => {
@@ -387,7 +459,7 @@ export default function ParcelInstrument(props) {
             parcelId: props.parcelId,
           },
         },
-        refetchQueries: ["getParcelAgreement", "getESSimpleSearch"],
+        refetchQueries: ["getESSimpleSearch"],
         awaitRefetchQueries: true,
       }).then(() => {
         props.setShowSlider(false);
@@ -439,15 +511,15 @@ export default function ParcelInstrument(props) {
   return (
     <div>
       <Drawer anchor={"right"} open={true} ModalProps={{ onBackdropClick: handleClose }}>
-        <Dialog open={openDeleteConfirmDialog} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
+        <Dialog open={initiateDeleteDialogForFileOrAgreement} onClose={handleDeleteCancel} style={{ zIndex: 99999999999 }}>
           <DeleteConfirmationDialogContent
-            header="Delete Document"
+            header={`Delete  ${DELETE_OPTIONS_ENUMS[initiateDeleteDialogForFileOrAgreement]}`}
             onClose={handleDeleteCancel}
             deleteFunc={handleDeleteAccept}
             m1nSelectedRowsIds={[document._id]}
             setM1nSelectedRowsIndexes={() => { }}
           >
-            Do you want to delete the selected documents?
+            {`Do you want to delete the selected ${DELETE_OPTIONS_ENUMS[initiateDeleteDialogForFileOrAgreement]}?`}
           </DeleteConfirmationDialogContent>
         </Dialog>
         <Dialog open={loader} style={{ zIndex: 99999999999 }}>
@@ -465,22 +537,55 @@ export default function ParcelInstrument(props) {
           onClick={toggleDrawer(anchor, false)}
           onKeyDown={toggleDrawer(anchor, false)}
         >
-          <List>
-            <ListItem
-              style={{
-                display: "flex",
-                justifyContent: "between",
-                width: "100%",
-                alignItems: "center",
-              }}
-            >
-              <ListItemText>{selectedInstrument ? <h3>Update Instrument</h3> : <h3>Add New Instrument</h3>}</ListItemText>
-              {/* <ListItemIcon style={{ cursor: "pointer" }}>
+          <div style={{ flexShrink: 0 }}>
+            <div className={classes.titleSection}>
+              <div>{selectedInstrument ? <h2>Update Instrument</h2> : <h2>Add New Instrument</h2>}</div>
+              <div style={{ cursor: "pointer" }}>
+                {selectedInstrument && (
+                  <IconButton
+                    size="small"
+                    component="span"
+                    style={{
+                      background: "transparent",
+                      paddingLeft: "10px",
+                      align: "center",
+                    }}
+                    onClick={handleMenuClick}
+                  >
+                    <MoreHorizIcon id="fileDetailHorzIcon" size="medium" />
+                  </IconButton>
+                )}
                 <IconButton size="small" onClick={() => handleClose()}>
-                  <CloseIcon></CloseIcon>
+                  <CloseIcon />
                 </IconButton>
-              </ListItemIcon> */}
-            </ListItem>
+                <Menu
+                  id="dealMenu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                  className={classes.menu}
+                  getContentAnchorEl={null}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                  transformOrigin={{ vertical: "top", horizontal: "center" }}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      setInitiateDeleteDialogForFileOrAgreement("parcelAgreement");
+                      handleMenuClose();
+                    }}
+                  >
+                    <ListItemIcon>
+                      <DeleteIcon size="medium" />
+                    </ListItemIcon>
+                    <ListItemText>Delete</ListItemText>
+                  </MenuItem>
+                </Menu>
+              </div>
+            </div>
+          </div>
+
+          <List>
             <ListItem
               style={{
                 flexDirection: "column",
@@ -549,22 +654,13 @@ export default function ParcelInstrument(props) {
               }}
             >
               <h4>Effective Date</h4>
-              <KeyboardDatePicker
-                className={classes.maxWidth}
-                disableToolbar
-                variant="inline"
-                format="MM/DD/YYYY"
-                margin="normal"
-                id="date-picker-inline"
-                value={newInstrument?.effectiveDate ? new Date(newInstrument.effectiveDate) : null}
-                onChange={(date) => {
+              <GenericDateField
+                value={newInstrument?.effectiveDate}
+                onChange={(value) => {
                   setNewInstrument({
                     ...newInstrument,
-                    effectiveDate: date ? String(date["_d"]) : "",
+                    effectiveDate: value,
                   });
-                }}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
                 }}
               />
             </ListItem>
@@ -576,22 +672,13 @@ export default function ParcelInstrument(props) {
               }}
             >
               <h4>Instrument Date</h4>
-              <KeyboardDatePicker
-                className={classes.maxWidth}
-                disableToolbar
-                variant="inline"
-                format="MM/DD/YYYY"
-                margin="normal"
-                id="date-picker-inline"
-                value={newInstrument?.executionDate ? new Date(newInstrument.executionDate) : null}
-                onChange={(date) => {
+              <GenericDateField
+                value={newInstrument?.executionDate}
+                onChange={(value) => {
                   setNewInstrument({
                     ...newInstrument,
-                    executionDate: date ? String(date["_d"]) : "",
+                    executionDate: value,
                   });
-                }}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
                 }}
               />
             </ListItem>
@@ -603,22 +690,13 @@ export default function ParcelInstrument(props) {
               }}
             >
               <h4>File Date</h4>
-              <KeyboardDatePicker
-                className={classes.maxWidth}
-                disableToolbar
-                variant="inline"
-                format="MM/DD/YYYY"
-                margin="normal"
-                id="date-picker-inline"
-                value={newInstrument?.fileDate ? new Date(newInstrument.fileDate) : null}
-                onChange={(date) => {
+              <GenericDateField
+                value={newInstrument?.fileDate}
+                onChange={(value) => {
                   setNewInstrument({
                     ...newInstrument,
-                    fileDate: date ? String(date["_d"]) : "",
+                    fileDate: value,
                   });
-                }}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
                 }}
               />
             </ListItem>
@@ -736,7 +814,7 @@ export default function ParcelInstrument(props) {
                               <IconButton
                                 size="small"
                                 onClick={() => {
-                                  setOpenDeleteConfirmDialog(true);
+                                  setInitiateDeleteDialogForFileOrAgreement("file");
                                 }}
                               >
                                 <DeleteIcon />

@@ -1,5 +1,6 @@
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import { history } from "store";
+import vf_number from "components/Shared/valueformatters/vf_number";
 
 const CampaignsHeadCells = [
   {
@@ -23,17 +24,14 @@ const CampaignsHeadCells = [
       sort: true,
       filter: true,
       customRender: (value, tableMeta) => {
-        return value ? (
-          <ColumnWithLink
-            value={value}
-            link={`/contacts/campaign/details/${tableMeta.rowData[0]}`}
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          />
-        ) : (
-          <p style={{ color: "#898989b0" }}>N/A</p>
-        );
+        return <ColumnWithLink
+          value={value || 'N/A'}
+          muted={!value}
+          link={`/contacts/campaign/details/${tableMeta.rowData[0]}`}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        />
       },
     },
   },
@@ -69,7 +67,7 @@ const CampaignsHeadCells = [
       sort: true,
       filter: false,
       customRender: (value, tableMeta) => {
-        return <p>{value.toFixed(2)}</p>;
+        return <p>{vf_number(value.toFixed(0))}</p>;
       },
     },
   },

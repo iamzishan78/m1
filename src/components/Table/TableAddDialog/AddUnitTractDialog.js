@@ -76,7 +76,7 @@ function AddUnitTractDialog(props) {
       setSelectedShapeLayer(props.seletedTract);
       setTractValue({ _id: props.seletedTract.parcelId, name: props.seletedTract.name })
 
-      reset(pick(props.seletedTract, ['state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'shapeArea','sdGrossAcres', 'uAcres', 'legalDescription']))
+      reset(pick(props.seletedTract, ['name', 'state', 'county', 'survey', 'block', 'section', 'abstract', 'township', 'meridian', 'range', 'altSurvey', 'qtr', 'shapeArea', 'sdGrossAcres', 'uAcres', 'legalDescription', 'basin', 'field']))
     }
   }, [props.seletedTract]);
 
@@ -89,7 +89,7 @@ function AddUnitTractDialog(props) {
       const legalDescription = selectedShapeLayer?.shapeJson?.properties?.legalDescription;
       selectedShapeLayer.parcelId = selectedShapeLayer._id
       setTractValue({ _id: selectedShapeLayer._id, name: selectedShapeLayer.name })
-      reset({ ...getValues(), shapeArea,sdGrossAcres, legalDescription, ...originalProperties, name: selectedShapeLayer.name })
+      reset({ ...getValues(), shapeArea, sdGrossAcres, legalDescription, ...originalProperties, name: selectedShapeLayer.name })
     } else {
       if (selectedShapeLayer?.clear) {
         setTractValue({ name: "", _id: null })
@@ -240,9 +240,9 @@ function AddUnitTractDialog(props) {
               InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.shapeArea || ''} />
 
             <Controller as={TextField} control={control} variant="outlined" margin="dense" name='sdGrossAcres' label={"Tract Gross Acres"}
-              InputLabelProps={{ shrink: true }} fullWidth disabled  defaultValue={tract?.sdGrossAcres || ''} />
+              InputLabelProps={{ shrink: true }} fullWidth disabled defaultValue={tract?.sdGrossAcres || ''} />
 
-            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='uAcres' label={"Unit Acres"}
+            <Controller as={TextField} control={control} variant="outlined" margin="dense" name='uAcres' label={"Tract Unit Acres"}
               InputLabelProps={{ shrink: true }} type='number' fullWidth onWheel={(e) => e.target.blur()} />
 
           </div>

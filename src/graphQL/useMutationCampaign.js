@@ -16,3 +16,9 @@ export const UPSERT_CONTACT_CAMPAIGNS = gql`
     upsertContactCampaigns(campaigns: $campaigns, contactIds: $contactIds)
   }
 `;
+
+export const REMOVE_CAMPAIGN_FROM_CUSTOMLAYER = gql`
+  mutation removeCampaignFromCustomLayer($campaignId: String, $customlayers: [JSON]) {
+    removeCampaignFromCustomLayer(campaignId: $campaignId, customlayers: $customlayers)
+  }
+`;

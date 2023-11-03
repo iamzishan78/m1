@@ -34,7 +34,6 @@ import { UPDATECUSTOMLAYER } from "../../graphQL/useMutationUpdateCustomLayer";
 import SuggestedTaxOwnersTable from "components/Table/TaxOwners/SuggestedTaxOwnersTable";
 import AssociatedWellsParcelTable from "components/Table/Wells/AssociatedWellsParcelTable";
 import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
-import ParcelDetailsRunsheetTable from "components/Table/Parcel/ParcelDetailsRunsheetTable";
 import TractInterestOwnerTable from "components/Table/Tract/TractInterestOwnerTable";
 import { showSuccessMessage, showErrorMessage, setMapGridCardState } from "actions";
 import { getParcelOriginalProperties } from "./utils/GetParcelOriginalProps";
@@ -46,6 +45,7 @@ import { findBoundsMap } from "components/MapControls/commonHelper";
 import { drawBoundary } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 import { copy } from 'utils/helper';
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
+import { jobController } from "hookstate/jobStateController";
 
 const ENTER_KEY = 13;
 
@@ -374,6 +374,8 @@ export default function ParcelsDetailCard(props) {
         customLayerId: data._id,
         customLayer,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
@@ -392,6 +394,8 @@ export default function ParcelsDetailCard(props) {
         customLayerId: parcelObj._id,
         customLayer,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
@@ -632,16 +636,9 @@ export default function ParcelsDetailCard(props) {
                 customLayer={copy(parcelObj)}
                 dense
                 header={<RunsheetHeader />}
-                isSnapGrid
                 isCheckboxSticky={true}
               />
-              {/* <ParcelDetailsRunsheetTable
-                customLayer={copy(parcelObj)}
-                parent="associatedRunsheetPerParcel"
-                targetLabel="parcelRunsheet"
-                header={<RunsheetHeader />}
-                dense
-              /> */}
+
             </div>,
             <div className={showSummary ? classes.subContent : classes.subContent2}>
               <AssociatedWellsParcelTable
@@ -649,8 +646,8 @@ export default function ParcelsDetailCard(props) {
                 parent="associatedWellsPerParcel"
                 targetLabel="well"
                 header={<WellHeader />}
+                isCheckboxSticky={true}
                 showTracks
-                dense
               />
             </div>,
             <div className={`${showSummary ? classes.subContent : classes.subContent2} ${classes.parcelDocument}`}>

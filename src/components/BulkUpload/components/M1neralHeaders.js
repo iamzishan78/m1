@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
@@ -8,10 +8,14 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Checkbox from "@material-ui/core/Checkbox";
-import { AppContext } from "../../../AppContext";
 import { anyToDate } from "@amcharts/amcharts4/.internal/core/utils/Utils";
 // queries
 import { MenuItem, Select } from "@material-ui/core";
+import { calculateStandardNraForTract } from "utils/calculatedNraHelper"
+import { useSelector } from "react-redux";
+import { NavigationContext } from "components/Navigation/NavigationContext";
+import get from "lodash/get";
+import { jobController } from "hookstate/jobStateController";
 // import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 // import { GET_ES_PAGINATED_LIST } from "graphQL/useQueryESPaginatedList";
 
@@ -102,15 +106,22 @@ const StyledTableCell = withStyles((theme) => ({
 
 export default function M1neralHeaders() {
   const classes = useStyles();
-  const [stateApp, setStateApp] = React.useContext(AppContext);
+  const [stateNav] = React.useContext(NavigationContext);
+
+  const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
+
+  const { jobStateValues } = jobController.useState(
+    ['mappedHeadersFromCSV', 'transferData', 'selectedShapeLayerOption', 'm1neralHeaders', 'csvDataList', 'jobType'],
+    'jobStateValues'
+  );
 
   let columns = [
     { label: "Import" },
     { label: "Your Headers" },
     { label: "M1neral Headers" },
   ];
-  let data = stateApp.m1neralHeaders;
-  let CSV_headers = stateApp.mappedHeadersFromCSV;
+  let data = jobStateValues.m1neralHeaders;
+  let CSV_headers = jobStateValues.mappedHeadersFromCSV;
 
   // let options_from_list = options()
   const UpdateState = () => {
@@ -122,11 +133,10 @@ export default function M1neralHeaders() {
         }
       }
     }
-    setStateApp((state) => ({
-      ...state,
-      m1neralHeaders: data,
+
+    jobController.updateState({
       mappedHeadersFromCSV: CSV_headers,
-    }));
+    })
   };
 
   const handleChange_select = async (event, index) => {
@@ -160,8 +170,8 @@ export default function M1neralHeaders() {
   };
 
   const changeDataToSendState = async () => {
-    let headers = stateApp.mappedHeadersFromCSV;
-    let arr_data = stateApp.csvDataList;
+    let headers = jobStateValues.mappedHeadersFromCSV;
+    let arr_data = jobStateValues.csvDataList;
     let filtered_data_to_send = [];
     for await (const obj of arr_data) {
       let return_obj = {};
@@ -174,7 +184,12 @@ export default function M1neralHeaders() {
           return_obj[header.actual_key] = obj.data[header.mapped_key];
         }
       }
-      if (['PROPERTIES'].includes(stateApp.jobType)) {
+      if (['PROPERTIES'].includes(jobStateValues.jobType)) {
+        if (!return_obj["property.purchaser.name"] || !return_obj["property.purchaserNumber"]) {
+          filtered_data_to_send.push(null)
+          continue;
+        }
+
         Object.keys(return_obj).forEach(key => {
           if (return_obj[key] instanceof Date) {
             return_obj[key] = return_obj[key].toISOString()
@@ -184,23 +199,31 @@ export default function M1neralHeaders() {
           }
         })
       }
-      if (['PARCELINTERESTS'].includes(stateApp.jobType)) {
+      if (['PARCELINTERESTS'].includes(jobStateValues.jobType)) {
         if (!return_obj["parcel._id"] ||
           !return_obj["parcel.name"]) {
           filtered_data_to_send.push(null)
           continue;
+        } else {
+          const nra = calculateStandardNraForTract(get(stateNav, 'bulkUploadParcel.sdGrossAcres'), return_obj["parcel.mineral_interest"], return_obj["parcel.royalty_interest"], return_obj["parcel.orri"], workspaceSettings)
+          if (!(!!return_obj["parcel.nra"])) {
+            return_obj["parcel.nra"] = nra
+            return_obj["parcel.isOverridden"] = true
+          } else {
+            return_obj["parcel.isOverridden"] = return_obj["parcel.nra"] === nra ? true : false
+          }
         }
       }
-      if (['SHAPEOWNER'].includes(stateApp.jobType)) {
+      if (['SHAPEOWNER'].includes(jobStateValues.jobType)) {
         if (!return_obj["shape._id"] ||
           !return_obj["shape.name"]) {
           filtered_data_to_send.push(null)
           continue;
         }
       }
-      if (['CONTACTS', 'PARCELINTERESTS'].includes(stateApp.jobType)) {
+      if (['CONTACTS', 'PARCELINTERESTS'].includes(jobStateValues.jobType)) {
         if (
-          return_obj === {} ||
+          Object.keys(return_obj || {}).length === 0 ||
           !(
             return_obj["_id"] ||
             return_obj["entityDetail.firstName"] ||
@@ -242,10 +265,9 @@ export default function M1neralHeaders() {
       return false;
     });
 
-    setStateApp((state) => ({
-      ...state,
+    jobController.updateState({
       csvDataToSend: filtered_data_to_send,
-    }));
+    })
   };
 
   const shapeTransferOptions = [
@@ -344,73 +366,139 @@ export default function M1neralHeaders() {
           </TableContainer>
         </Paper>
 
-        {['AGREEMENT_HEADER', 'SHAPE_TO_M1_LAYER', 'UNITS'].includes(stateApp.jobType) ?
-          (
-            <>
-              <div style={{ ...medium_text, ...padding_div_top }}>
-                Select an import option for your data
-              </div>
-              <div >
-                <Select
-                  variant='outlined'
-                  style={{ width: '400px', marginTop: '10px', marginBottom: '10px', height: 40 }}
-                  labelId="agreement-outlined-label"
-                  id="agreement-outlined"
-                  value={stateApp.selectedShapeLayerOption}
-                  dense
-                  fullWidth
-                  onChange={(e) => {
-                    setStateApp((state) => ({ ...state, selectedShapeLayerOption: e.target.value }));
-                  }}
-                >
-                  {shapeTransferOptions.map((option) => <MenuItem id={`${option.label}`} style={{ display: stateApp.selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option.key} >{option.label}</MenuItem>)}
-                </Select>
-              </div>
+        {(() => {
+          switch (jobStateValues.jobType) {
+            case 'AGREEMENT_HEADER':
+            case 'SHAPE_TO_M1_LAYER':
+            case 'UNITS':
+              return (
+                <>
+                  <div style={{ ...medium_text, ...padding_div_top }}>
+                    Select an import option for your data
+                  </div>
+                  <div>
+                    <Select
+                      variant="outlined"
+                      style={{
+                        width: '400px',
+                        marginTop: '10px',
+                        marginBottom: '10px',
+                        height: 40,
+                      }}
+                      labelId="agreement-outlined-label"
+                      id="agreement-outlined"
+                      value={jobStateValues.selectedShapeLayerOption}
+                      dense
+                      fullWidth
+                      onChange={e => {
+                        jobController.updateState({
+                          selectedShapeLayerOption: e.target.value,
+                        })
+                      }}
+                    >
+                      {shapeTransferOptions.map(option => (
+                        <MenuItem
+                          id={`${option.label}`}
+                          style={{
+                            display:
+                              jobStateValues.selectedShapeLayerOption === option
+                                ? 'none'
+                                : 'inherit',
+                          }}
+                          value={option.key}
+                        >
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </div>
 
-              {stateApp.jobType !== 'UNITS' && (
-                <div style={{ ...text_grey }}>
-                  *Note: Existing {stateApp?.transferData?.selectedPlatformCategory?.label} will be matched on M1neral ID{stateApp?.transferData?.selectedPlatformCategory?.label === "Agreements" && ' or Agreement Number'}
+                  {jobStateValues.jobType !== 'UNITS' && (
+                    <div style={{ ...text_grey }}>
+                      *Note: Existing{' '}
+                      {jobStateValues?.transferData?.selectedPlatformCategory?.label} will be
+                      matched on M1neral ID
+                      {jobStateValues?.transferData?.selectedPlatformCategory?.label ===
+                        'Agreements' && ' or Agreement Number'}
+                    </div>
+                  )}
+                </>
+              );
+            case 'AGREEMENT_PROVISIONS':
+              return (
+                <>
+                  <div style={{ ...medium_text, ...padding_div_top }}>
+                    Select an import option for your data
+                  </div>
+                  <div>
+                    <Select
+                      variant="outlined"
+                      style={{
+                        width: '400px',
+                        marginTop: '10px',
+                        marginBottom: '10px',
+                        height: 40,
+                      }}
+                      labelId="agreement-outlined-label"
+                      id="agreement-outlined"
+                      value={jobStateValues.selectedShapeLayerOption}
+                      dense
+                      fullWidth
+                      onChange={e => {
+                        jobController.updateState({
+                          selectedShapeLayerOption: e.target.value,
+                        })
+                      }}
+                    >
+                      {shapeTransferOptions.map(option => (
+                        <MenuItem
+                          id={`${option.label}`}
+                          style={{
+                            display:
+                              jobStateValues.selectedShapeLayerOption === option
+                                ? 'none'
+                                : 'inherit',
+                          }}
+                          value={option.key}
+                        >
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </div>
+
+                  <div style={{ ...text_grey }}>
+                    *Note: Existing agreements will be matched on M1neral ID or Agreement
+                    Number
+                  </div>
+                </>
+              );
+            case 'AGREEMENT_COMMENTS':
+              return (
+                <div>
+                  * Comment will be tied to agreement when match on Agreement System ID or
+                  Agreement Number is made
                 </div>
-              )}
-
-            </>
-
-          ) : ['AGREEMENT_PROVISIONS'].includes(stateApp.jobType) ? (
-            <>
-              <div style={{ ...medium_text, ...padding_div_top }}>
-                Select an import option for your data
-              </div>
-              <div >
-                <Select
-                  variant='outlined'
-                  style={{ width: '400px', marginTop: '10px', marginBottom: '10px', height: 40 }}
-                  labelId="agreement-outlined-label"
-                  id="agreement-outlined"
-                  value={stateApp.selectedShapeLayerOption}
-                  dense
-                  fullWidth
-                  onChange={(e) => { setStateApp((state) => ({ ...state, selectedShapeLayerOption: e.target.value })); }}
-                >
-                  {shapeTransferOptions.map((option) => <MenuItem id={`${option.label}`} style={{ display: stateApp.selectedShapeLayerOption === option ? 'none' : 'inherit' }} value={option.key} >{option.label}</MenuItem>)}
-                </Select>
-              </div>
-
-              <div style={{ ...text_grey }}>
-                *Note: Existing agreements will be matched on M1neral ID or Agreement Number
-              </div>
-
-            </>
-          ) : ['AGREEMENT_COMMENTS'].includes(stateApp.jobType) ? (
-            <div>
-              * Comment will be tied to agreement when match on Agreement System ID or Agreement Number is made
-            </div>
-          ) : !['CHECKDETAILS'].includes(stateApp.jobType) && (
-            <div style={{ ...text_grey }}>
-              *First Name or Last Name is required to be mapped <br /> before
-              uploading contacts.
-            </div>
-          )
-        }
+              );
+            case 'PROPERTIES':
+              return (
+                <div style={{ ...text_grey }}>
+                  * Purchaser and Purchaser Prop # are required to be <br /> populated before
+                  uploading properties.
+                </div>
+              );
+            default:
+              if (!['CHECKDETAILS'].includes(jobStateValues.jobType)) {
+                return (
+                  <div style={{ ...text_grey }}>
+                    *First Name or Last Name is required to be mapped <br /> before
+                    uploading contacts.
+                  </div>
+                );
+              }
+              return null; // Default case
+          }
+        })()}
       </div>
     </div>
   );
