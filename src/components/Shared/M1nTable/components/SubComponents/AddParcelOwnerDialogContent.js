@@ -1110,22 +1110,12 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 />
               </Grid>
               <Grid item xs={12}>
-                <h3>Cost Free High Value</h3>
-                <TextField
-                  id="standard-number"
-                  type="text"
-                  size="small"
-                  className={classes.maxWidth}
-                  value={newOwner.cost_free_high_value}
-                  InputProps={{
-                    inputComponent: CurrencyFormatCustom,
-                  }}
+                <h3>Depth Restrictions</h3>
+                <RadioGroup
+                  row
+                  value={parcelOwnersRadioBValue}
                   onChange={e => {
-                    const value = addTrailingZeros(e.target.value);
-                    setNewOwner({
-                      ...newOwner,
-                      cost_free_high_value: Number(value) || null,
-                    });
+                    setParcelOwnersRadioBValue(e.target.value);
                   }}
                 />
               </Grid>

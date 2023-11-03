@@ -25,6 +25,7 @@ import { AppContext } from "../../AppContext";
 import set from 'lodash/set'
 import { copy } from "components/Shared/functions";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
+import { jobController } from "hookstate/jobStateController";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -214,6 +215,8 @@ export default function UnitDetailCard(props) {
         customLayerId: uniObj._id,
         customLayer,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
@@ -236,6 +239,8 @@ export default function UnitDetailCard(props) {
         customLayerId: uniObj._id,
         customLayer,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 

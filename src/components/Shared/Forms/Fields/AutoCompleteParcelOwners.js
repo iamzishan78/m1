@@ -54,11 +54,23 @@ const AutoCompleteParcelOwners = ({ onChange, value, parcel, onBlur, ...other })
 
     const options = useMemo(() => {
         if (esData?.length > 0)
-            return esData.map((data) => ({
+            return esData.map(data => ({
                 _id: data.ownerEntity,
                 ...data?.relatedObject?.entityDetail,
-                ownerData: pick(data, ['depthFrom', 'depthTo', 'mineral_interest', 'royalty_interest', 'orri', 'net_acres'])
-            }))
+                ownerData: {
+                    ...pick(data, [
+                        'depthFrom',
+                        'depthTo',
+                        'mineral_interest',
+                        'royalty_interest',
+                        'orri',
+                        'net_acres',
+                        'nra',
+                        'company_net_acres',
+                    ]),
+                    working_interest: data.operating_rights,
+                },
+            }));
 
         return []
 

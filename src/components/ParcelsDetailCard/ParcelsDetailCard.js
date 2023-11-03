@@ -24,6 +24,7 @@ import MRTTable from "components/MRTTable";
 import { tableController, tableGlobalController } from "hookstate/tableController";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
 import { showSuccessMessage, showErrorMessage, setMapGridCardState } from 'actions';
+import { jobController } from "hookstate/jobStateController";
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -214,9 +215,9 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
   const [parcelObj, setParcelObj] = useState();
   const [properties, setProperties] = useState();
   const globalSelectedTabKey = tableGlobalController.useState(['tabKey']).stateValues;
-  const tractPerUnitGridState =  tableController("TractPerUnitTable").useState(['data']).stateValue;
-  const tractUnitsGridState =  tableController("TractUnitsTable").useState(['data']).stateValues;
-  const tractPotentialUnitsState =  tableController("TractPotentialUnitsTable").useState(['data']).stateValues;
+  const tractPerUnitGridState = tableController("TractPerUnitTable").useState(['data']).stateValue;
+  const tractUnitsGridState = tableController("TractUnitsTable").useState(['data']).stateValues;
+  const tractPotentialUnitsState = tableController("TractPotentialUnitsTable").useState(['data']).stateValues;
 
   const contactsAdded = useSelector(state => state?.common?.contactsAdded);
   const [updateCustomLayer, { data: updatedParcel }] = useMutation(UPDATECUSTOMLAYER);
@@ -369,6 +370,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
         customLayerId: data._id,
         customLayer,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
@@ -387,6 +390,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
         customLayerId: parcelObj._id,
         customLayer,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 

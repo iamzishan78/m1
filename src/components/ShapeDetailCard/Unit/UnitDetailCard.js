@@ -166,6 +166,8 @@ export default function UnitDetailCard(props) {
         customLayer,
         userId: stateApp.user.mongoId,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
   };
 
