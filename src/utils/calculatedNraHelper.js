@@ -16,7 +16,6 @@ export const calculateStandardNraForUnit = ({ uAcres, working_interest, royalty_
   if (isCustomType)
     nra /= divisor;
   nra = addTrailingZeros(nra.toFixed(8));
-  console.log(workspaceSettings?.settings?.map?.unitNra?.value, 'nra', nra)
   return nra;
 };
 

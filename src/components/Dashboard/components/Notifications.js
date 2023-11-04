@@ -1,15 +1,13 @@
-import { Box, Button, ClickAwayListener, Grid, Menu, MenuItem, Typography } from "@material-ui/core";
+import { Box, Button, ClickAwayListener, Grid, Typography } from "@material-ui/core";
 import CardHeader from "@material-ui/core/CardHeader";
 import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import Paper from "@material-ui/core/Paper";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { makeStyles } from "@material-ui/core/styles";
-import DragIndicatorOutlinedIcon from "@material-ui/icons/DragIndicatorOutlined";
 import MarkUnreadIcon from "components/Shared/svgIcons/mark-unread";
 import ArchiveIcon from "components/Shared/svgIcons/archive";
 import React, { Fragment, useEffect, useState, useContext } from "react";
-import { sortableHandle } from "react-sortable-hoc";
 import { useHistory } from "react-router-dom";
 import Avatar from "react-avatar";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -24,7 +22,6 @@ import ContactIcon from "@material-ui/icons/Group";
 import FlowIcon from "@material-ui/icons/Repeat";
 import { LocalAtm } from "@material-ui/icons";
 import { DescriptionOutlined } from "@material-ui/icons";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
 import { UPDATE_NOTIFICATION_STATUS } from "graphQL/useMutationUpdateNotificationStatus";
@@ -157,17 +154,13 @@ const useStyles = makeStyles((theme) => ({
   })
 }));
 
-const DragHandle = sortableHandle(() => (
-  <IconButton aria-label="drag">
-    <DragIndicatorOutlinedIcon fontSize="default" htmlColor="#808080" />
-  </IconButton>
-));
-
 const Notifications = () => {
   let history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [notifications, setNotifications] = useState([]);
   const [profilesInfo, setProfilesInfo] = useState({});
+  const [page, setPage] = useState(1);
+  const [isFetching, setIsFetching] = useState(false);
   const [users, setUsers] = useState([]);
   const [tab, setTab] = useState(0);
   const [showArchiveOption, setShowArchiveOption] = useState(false)
@@ -192,6 +185,7 @@ const Notifications = () => {
       variables: {
         userId: stateApp.user.mongoId,
         state: "Active",
+        page,
       },
     });
   }, [getNotifications, stateApp.user]);
@@ -218,8 +212,12 @@ const Notifications = () => {
   }, [userLists]);
 
   useEffect(() => {
-    if (notificationsData?.getNotifications) {
-      setNotifications(notificationsData.getNotifications);
+    if (notificationsData?.getNotifications?.notifications) {
+      if (page === 1) {
+        setNotifications(notificationsData?.getNotifications?.notifications);
+        return;
+      }
+      setNotifications((prevNotifications) => [...prevNotifications, ...notificationsData?.getNotifications?.notifications]);
     }
   }, [notificationsData]);
 
@@ -228,6 +226,46 @@ const Notifications = () => {
       setProfilesInfo(profilesData.data.profileByEmail.profiles);
     }
   }, [profilesData]);
+
+  const refetchNotifications = async () => {
+    setPage(1);
+    await getNotifications({
+      variables: {
+        userId: stateApp.user.mongoId,
+        state: tab === 0 ? "Active" : "Archived",
+        page: 1
+      },
+    });
+  }
+
+  const fetchNotifications = async () => {
+    setIsFetching(true)
+    await getNotifications({
+      variables: {
+        userId: stateApp.user.mongoId,
+        state: tab === 0 ? "Active" : "Archived",
+        page
+      },
+    });
+    setPage(page + 1);
+    setIsFetching(false)
+  }
+
+  const handleScroll = () => {
+    const list = document.getElementById("noifications-list");
+    if (list) {
+      const scrollTop = list.scrollTop;
+      const scrollHeight = list.scrollHeight;
+      const clientHeight = list.clientHeight;
+
+      // Calculate the position where the user reaches the end of the list's content
+      const isAtEndOfList = scrollTop + clientHeight >= scrollHeight - 20;
+      if (notificationsData?.getNotifications?.notifications?.length === 0) return;
+      if (isAtEndOfList && !isFetching) {
+        fetchNotifications();
+      }
+    }
+  };
 
   const archiveAllAndClose = async () => {
     await archiveAllMentions({
@@ -244,7 +282,7 @@ const Notifications = () => {
     return (
 
       <Grid container className={classes.gridStyle}>
-        <ClickAwayListener onClickAway={()=>{setShowArchiveOption(false)}}>
+        <ClickAwayListener onClickAway={() => { setShowArchiveOption(false) }}>
           <Grid item xs={6} className={classes.menuBtn}>
             <Button aria-controls="simple-menu" aria-haspopup="true" onClick={archiveAllOption}>
               <Box display={"flex"} gridGap={2} alignItems={'center'}>
@@ -267,10 +305,12 @@ const Notifications = () => {
               textColor="primary"
               onChange={(e, newValue) => {
                 setTab(newValue);
+                setPage(1);
                 getNotifications({
                   variables: {
                     userId: stateApp.user.mongoId,
                     state: newValue === 0 ? "Active" : "Archived",
+                    page: 1
                   },
                 });
               }}
@@ -307,15 +347,14 @@ const Notifications = () => {
   return (
     <Fragment>
       <CardHeader
-        // action={<DragHandle />}
         title={<Title />}
         className={classes.header}
       />
 
-      {loading ? (
+      {(loading && !isFetching) ? (
         <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
       ) : (
-        <List style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
+        <List onScroll={handleScroll} id="noifications-list" style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
           {notifications.map(({ _id, state, source, parent, senderId, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
             const user = users.find((user) => source.user === user._id);
             return (
@@ -332,15 +371,14 @@ const Notifications = () => {
                   }
                   className={classes.listitem}
                   spacing={1}
-                  onClick={() => {
-                    updateNotificationStatus({
+                  onClick={async () => {
+                    await updateNotificationStatus({
                       variables: {
                         id: _id,
                         state: "READ",
                       },
-                      refetchQueries: ["getNotifications"],
-                      awaitRefetchQueries: false,
                     });
+                    refetchNotifications()
                     if (parentType === "DEAL") {
                       history.push(
                         `/flow/${pipelineId}/lane/${stageId}/card/${parent._id}/`
@@ -511,16 +549,15 @@ const Notifications = () => {
                   <Grid item xs={2} style={{ textAlign: "-webkit-center" }}>
                     <Tooltip title="Mark as unread">
                       <IconButton
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.stopPropagation();
-                          updateNotificationStatus({
+                          await updateNotificationStatus({
                             variables: {
                               id: _id,
                               state: "UNREAD",
                             },
-                            refetchQueries: ["getNotifications"],
-                            awaitRefetchQueries: false,
                           });
+                          refetchNotifications()
                         }}
                       >
                         <MarkUnreadIcon />
@@ -530,16 +567,15 @@ const Notifications = () => {
                       state !== "ARCHIVED" &&
                       <Tooltip title="Archive notification">
                         <IconButton
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.stopPropagation();
-                            updateNotificationStatus({
+                            await updateNotificationStatus({
                               variables: {
                                 id: _id,
                                 state: "ARCHIVED",
                               },
-                              refetchQueries: ["getNotifications"],
-                              awaitRefetchQueries: false,
                             });
+                            refetchNotifications()
                           }}
                         >
                           <ArchiveIcon />
@@ -551,6 +587,7 @@ const Notifications = () => {
               </Paper>
             );
           })}
+          {isFetching && <CircularProgress className={classes.progress} size={40} disableShrink color="secondary"></CircularProgress>}
         </List>
       )}
     </Fragment>

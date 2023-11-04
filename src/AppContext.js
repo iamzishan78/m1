@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "./actions";
 import { heatLayers, baseMapLayers } from "./LayerConfig";
 import { useHookStateApp } from "hookstate";
-import { globalStateController } from "hookstate/globalStateController";
+import { globalStateController } from 'hookstate/globalStateController';
 
 const AppContext = createContext([{}, () => { }]);
 

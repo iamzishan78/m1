@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-  - staging
+  - Staging2.0
 
 pool:
   vmImage: "ubuntu-latest"
@@ -25,6 +25,7 @@ steps:
 
   - script: |
       echo $NODE_OPTIONS
+       npm install material-react-table  # Add this line to install 'material-react-table'
       npm run build
     failOnStderr: true
     displayName: "Prepare binaries"

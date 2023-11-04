@@ -47,7 +47,7 @@ const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
 const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handleListItemClick, handleDrawerClose, handleDrawerOpen }) => {
   const [stateApp] = useContext(AppContext);
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
-  const [notifications, setNotifications] = useState([]);
+  const [notificationsLength, setNotificationsLength] = useState([]);
   const [showWorkspaceModal, setWorkspaceModal] = useState(false);
   const [logoSrc, setLogoSrc] = useState(`${process.env.PUBLIC_URL}/icons/logo-192x192.png`);
   const [logoTitle, setLogoTitle] = useState();
@@ -76,13 +76,14 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
       variables: {
         userId: stateApp.user.mongoId,
         state: "Active",
+        page: 1
       },
     });
   }, [getNotifications, stateApp.user]);
 
   useEffect(() => {
-    if (notificationsData?.getNotifications) {
-      setNotifications(notificationsData.getNotifications);
+    if (notificationsData?.getNotifications?.totalNotifications) {
+      setNotificationsLength(notificationsData?.getNotifications?.totalNotifications);
     }
   }, [notificationsData]);
 
@@ -169,7 +170,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               <Tooltip title="Dashboard" placement="right" classes={{ tooltip: classes.iconTooltip }}>
                 <ListItemIcon className={classes.sideNavIcon}>
                   {/* TODO: Add actual notification count here */}
-                  <Badge badgeContent={notifications.length} color="secondary">
+                  <Badge badgeContent={notificationsLength} color="secondary">
                     <DashboardIcon />
                   </Badge>
                 </ListItemIcon>

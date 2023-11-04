@@ -129,7 +129,7 @@ const Tasks = () => {
   console.log("data : ", data)
   useEffect(() => {
     if (orginalData && Array.isArray(orginalData.activities)) {
-      const sortCallBack = (a, b) => Number(a.dateTime) - Number(b.dateTime)
+      const sortCallBack = (a, b) => moment(b.dateTime).valueOf() - moment(a.dateTime).valueOf();
 
       if (tab === 0) {
         setData(
