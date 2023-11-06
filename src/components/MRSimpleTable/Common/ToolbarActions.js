@@ -23,20 +23,10 @@ function ToolbarActions({ table, tableKey, children }) {
 	const getUser = user.get({ noproxy: true });
 
 	const tableState = simpleTableController(tableKey).useState([
-		'TableSchema',
-		'datasets',
-		'globalFilter',
-		'searchFields',
-		'defaultSort',
-		'data',
-		'sorting',
-		'columnVisibility',
-		'filters',
-		'defaultFilters',
 		'deletedKeys',
-		'customProps',
 		'isDeleteAllowed',
 		'isExportAllowed',
+		'tabLabels',
 	]);
 	const tableStateValues = tableState.stateValues;
 
@@ -92,7 +82,7 @@ function ToolbarActions({ table, tableKey, children }) {
 			}}
 		>
 			<div style={{ marginTop: 'auto', marginBottom: 'auto' }}>
-				<TabHeader labels={tableStateValues.customProps.tabLabels} />
+				<TabHeader labels={tableStateValues.tabLabels} />
 			</div>
 
 			<div

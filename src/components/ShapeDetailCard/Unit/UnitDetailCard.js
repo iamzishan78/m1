@@ -91,6 +91,7 @@ export default function UnitDetailCard(props) {
   }, [dataCustomLayer, OwnersPerUnitGridState?.data]);
 
   const overrideMeta = useMemo(() => ({
+    tabLabels: ['Unit Ownership', 'Potential Ownership'],
     defaultFilters: [
       { field: 'shape._id', value: dataCustomLayer?.customLayer?._id },
       { field: 'contact.IsDeleted', value: 'false' },
@@ -173,18 +174,6 @@ export default function UnitDetailCard(props) {
     });
   };
 
-  function OwnershipHeader({ selectedTab, setSelectedTab }) {
-    return (
-      <TabButtons
-        labels={['Unit Ownership', 'Potential Ownership']}
-        value={selectedTab}
-        setValue={n => {
-          setSelectedTab(n);
-        }}
-      />
-    );
-  }
-
   function DocumentHeader() {
     const classes = detailCardStyles();
     return (
@@ -262,25 +251,16 @@ export default function UnitDetailCard(props) {
                 <TabPanels
                   value={selectedTab}
                   panels={[
-                    <div
-                      style={{
-                        position: 'relative',
-                        height: '100%',
-                        padding: '0rem 0.75rem 0rem 0.75rem'
-                      }}
-                    >
-                      <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
-                        <OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
-                      </div>
+                    <div>
                       <MRTTable name="OwnersPerUnitTable" overrideMeta={overrideMeta} />
                     </div>,
                     <div>
                       <MRSimpleTable
                         name="PotentialOwners"
                         overrideMeta={{
+                          tabLabels: ['Unit Ownership', 'Potential Ownership'],
                           customProps: {
                             customLayer: uniObj,
-                            tabLabels: ['Unit Ownership', 'Potential Ownership'],
                             year: 2022,
                             filterByWells: false
                           },
