@@ -158,7 +158,6 @@ const Notifications = () => {
   let history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
   const [notifications, setNotifications] = useState([]);
-  const [tabChanged, setTabChanged] = useState(false);
   const [profilesInfo, setProfilesInfo] = useState({});
   const [page, setPage] = useState(1);
   const [isFetching, setIsFetching] = useState(false);
@@ -214,10 +213,11 @@ const Notifications = () => {
 
   useEffect(() => {
     if (notificationsData?.getNotifications?.notifications) {
-      if (!tabChanged)
-        setNotifications((prevNotifications) => [...prevNotifications, ...notificationsData?.getNotifications?.notifications]);
-      else setNotifications((prevNotifications) => notificationsData?.getNotifications?.notifications);
-      setTabChanged(false);
+      if (page === 1) {
+        setNotifications(notificationsData?.getNotifications?.notifications);
+        return;
+      }
+      setNotifications((prevNotifications) => [...prevNotifications, ...notificationsData?.getNotifications?.notifications]);
     }
   }, [notificationsData]);
 
@@ -227,12 +227,23 @@ const Notifications = () => {
     }
   }, [profilesData]);
 
+  const refetchNotifications = async () => {
+    setPage(1);
+    await getNotifications({
+      variables: {
+        userId: stateApp.user.mongoId,
+        state: tab === 0 ? "Active" : "Archived",
+        page: 1
+      },
+    });
+  }
+
   const fetchNotifications = async () => {
     setIsFetching(true)
     await getNotifications({
       variables: {
         userId: stateApp.user.mongoId,
-        state: "Active",
+        state: tab === 0 ? "Active" : "Archived",
         page
       },
     });
@@ -249,6 +260,7 @@ const Notifications = () => {
 
       // Calculate the position where the user reaches the end of the list's content
       const isAtEndOfList = scrollTop + clientHeight >= scrollHeight - 20;
+      if (notificationsData?.getNotifications?.notifications?.length === 0) return;
       if (isAtEndOfList && !isFetching) {
         fetchNotifications();
       }
@@ -293,7 +305,6 @@ const Notifications = () => {
               textColor="primary"
               onChange={(e, newValue) => {
                 setTab(newValue);
-                setTabChanged(true);
                 setPage(1);
                 getNotifications({
                   variables: {
@@ -360,15 +371,14 @@ const Notifications = () => {
                   }
                   className={classes.listitem}
                   spacing={1}
-                  onClick={() => {
-                    updateNotificationStatus({
+                  onClick={async () => {
+                    await updateNotificationStatus({
                       variables: {
                         id: _id,
                         state: "READ",
                       },
-                      refetchQueries: ["getNotifications"],
-                      awaitRefetchQueries: false,
                     });
+                    refetchNotifications()
                     if (parentType === "DEAL") {
                       history.push(
                         `/flow/${pipelineId}/lane/${stageId}/card/${parent._id}/`
@@ -539,16 +549,15 @@ const Notifications = () => {
                   <Grid item xs={2} style={{ textAlign: "-webkit-center" }}>
                     <Tooltip title="Mark as unread">
                       <IconButton
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.stopPropagation();
-                          updateNotificationStatus({
+                          await updateNotificationStatus({
                             variables: {
                               id: _id,
                               state: "UNREAD",
                             },
-                            refetchQueries: ["getNotifications"],
-                            awaitRefetchQueries: false,
                           });
+                          refetchNotifications()
                         }}
                       >
                         <MarkUnreadIcon />
@@ -558,16 +567,15 @@ const Notifications = () => {
                       state !== "ARCHIVED" &&
                       <Tooltip title="Archive notification">
                         <IconButton
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.stopPropagation();
-                            updateNotificationStatus({
+                            await updateNotificationStatus({
                               variables: {
                                 id: _id,
                                 state: "ARCHIVED",
                               },
-                              refetchQueries: ["getNotifications"],
-                              awaitRefetchQueries: false,
                             });
+                            refetchNotifications()
                           }}
                         >
                           <ArchiveIcon />

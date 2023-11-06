@@ -22,3 +22,4 @@ export const REMOVE_CAMPAIGN_FROM_CUSTOMLAYER = gql`
     removeCampaignFromCustomLayer(campaignId: $campaignId, customlayers: $customlayers)
   }
 `;
+

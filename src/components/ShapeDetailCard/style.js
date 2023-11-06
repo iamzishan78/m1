@@ -127,6 +127,10 @@ export const detailCardStyles = makeStyles((theme) => ({
   maxWidth: {
     width: "100%",
   },
+  toogleButtons: {
+    zIndex: '9999',
+    padding: '0.5rem 0.75rem 0.5rem 1.25rem'
+  },
 }));
 
 export const summaryStyles = makeStyles((theme) => ({

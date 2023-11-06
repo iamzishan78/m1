@@ -6292,7 +6292,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           <img src="icons/M1LogoWhiteTransparent.png" alt="logo" width="150" />
         </div>
       </div>
-      <MapControlsProvider {...{ expandedPanel: expandedPanel, openSpeedDial: openSpeedDial }} />
+      <MapControlsProvider {...{ expandedPanel: expandedPanel, openSpeedDial: openSpeedDial }} showExpandableCard={showExpandableCard} expandedCard={stateApp.expandedCard} />
       <ZoomFault zoomFaultStatus={stateApp.zoomFault} />
       <HugeRequest />
       {/* <Coordinates long={lng} lat={lat} zoom={zoom} /> */}
