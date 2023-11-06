@@ -1,6 +1,6 @@
-import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import TractRelatedUnitsToolbar from "components/MRTTable/TablesOverride/TractRelatedUnitsTable/TractRelatedUnitsToolbar";
 import { CommonSchema } from "./common_schema";
+import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 
 const esIndex = "shapetracts_flat";
 
@@ -96,7 +96,7 @@ const TractUnitsMeta = {
       accessorFn: (row) => row?.shape?.shapeJson?.properties?.uUnitPricing,
       id: "shape.shapeJson.properties.uUnitPricing",
       header: "Target Unit Pricing (Per NRA)",
-	  size: 320,
+      size: 320,
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -104,7 +104,7 @@ const TractUnitsMeta = {
       accessorFn: (row) => row?.shape?.shapeJson?.properties?.uMaxUnitPricing,
       id: "shape.shapeJson.properties.uMaxUnitPricing",
       header: "Max Unit Pricing (Per NRA)",
-	  size: 320,
+      size: 320,
     },
     {
       ...CommonSchema.COMMON_COLUMN,
