@@ -44,7 +44,7 @@ const ContactMeta = {
 		},
 		cssOverride: {
 			top: '138px',
-			left: '45px',
+			left: '40px',
 			marginLeft: '-9px',
 		},
 	},
