@@ -21,10 +21,11 @@ import ParcelSummary from './ParcelSummary';
 import { copy } from 'utils/helper';
 import { popupController, popupState } from 'hookstate/popupStateController';
 import MRTTable from "components/MRTTable";
-import { tableController, tableGlobalController } from "hookstate/tableController";
+import { tableController } from "hookstate/tableController";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
 import { jobController } from "hookstate/jobStateController";
 import { showSuccessMessage, showErrorMessage, setMapGridCardState } from 'actions';
+import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -214,7 +215,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
   const [selectedTab, setSelectedTab] = useState(0);
   const [parcelObj, setParcelObj] = useState();
   const [properties, setProperties] = useState();
-  const globalSelectedTabKey = tableGlobalController.useState(['tabKey']).stateValues;
+  const globalSelectedTabKey = simpleTableGlobalController.useState(['tabKey']).stateValues;
   const tractPerUnitGridState = tableController("TractPerUnitTable").useState(['data']).stateValue;
   const tractUnitsGridState = tableController("TractUnitsTable").useState(['data']).stateValues;
   const tractPotentialUnitsState = tableController("TractPotentialUnitsTable").useState(['data']).stateValues;
@@ -294,9 +295,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
   useEffect(() => {
     if (typeof globalSelectedTabKey.tabKey === "number")
       setSelectedTab(globalSelectedTabKey.tabKey);
-    tableGlobalController.updateState({
-      tabKey: 0
-    });
+
+    simpleTableGlobalController.setSelectedTab(0);
   }, [globalSelectedTabKey.tabKey]);
 
   const overrideMeta = useMemo(() => ({
