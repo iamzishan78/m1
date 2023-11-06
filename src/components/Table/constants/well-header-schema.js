@@ -14,7 +14,7 @@ const wellsColumnHeaders = [
     },
   },
   {
-    name: "ApiNumber",
+    name: "api",
     label: "API",
     esKey: "api.keyword",
     options: {
@@ -33,7 +33,7 @@ const wellsColumnHeaders = [
     }
   },
   {
-    name: "WellName",
+    name: "wellName",
     label: "Well Name",
     esKey: "wellName.keyword",
     options: {
@@ -51,9 +51,9 @@ const wellsColumnHeaders = [
     },
   },
   {
-    name: "Lease",
+    name: "lease",
     label: "Lease Name",
-    esKey: "Lease.keyword",
+    esKey: "lease.keyword",
     options: {
       sort: true,
       filter: true,
