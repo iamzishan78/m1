@@ -14,7 +14,7 @@ const CampaignMeta = {
     pageSize: 50,
   },
   defaultSort: { field: 'flatSyncAt', order: 'desc' },
-  maxTableHeight: 'calc(100vh - 480px)',
+  maxTableHeight: 'calc(100vh - 490px)',
   TableSchema: [
     {
       ...CommonSchema.HIDDEN,
@@ -46,6 +46,7 @@ const CampaignMeta = {
       name: 'status.keyword',
       accessorKey: 'status',
       header: 'Campaign Stage',
+      isExternalFilter: true,
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -69,6 +70,7 @@ const CampaignMeta = {
       accessorFn: row => row?.owner?.name,
       id: 'owner.name',
       header: 'Supervisor',
+      isExternalFilter: true,
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -76,6 +78,7 @@ const CampaignMeta = {
       accessorKey: 'createdAt',
       header: 'Created Date',
       type: 'date',
+      isExternalFilter: true,
       Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue, false)}</>,
     },
     {
