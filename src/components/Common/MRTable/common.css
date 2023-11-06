@@ -21,3 +21,8 @@
 .MuiDialog-paperFullScreen > div {
   width: auto !important;
 }
+
+.MuiToolbar-root > .MuiBox-root > .MuiBox-root {
+  margin-top: auto;
+  margin-bottom: auto;
+}
