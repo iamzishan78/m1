@@ -34,7 +34,8 @@ const CampaignMeta = {
           }}
         >
           <ColumnWithLink
-            value={renderedCellValue}
+            value={renderedCellValue || 'N/A'}
+            muted={!renderedCellValue}
             link={`/contacts/campaign/details/${row.getValue('_id')}`}
           />
         </div>
