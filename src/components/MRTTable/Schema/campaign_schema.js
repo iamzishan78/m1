@@ -4,6 +4,7 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
+import CampaignIcon from 'components/Shared/svgIcons/campaign';
 import { UPDATE_CAMPAIGN } from 'graphQL/useMutationCampaign';
 import { tableGlobalController } from 'hookstate/tableController';
 import { isEmpty, pickBy } from 'lodash';
@@ -58,6 +59,25 @@ const CampaignMeta = {
   columnVirtualization: true,
   fetchMetaData: {
     category: 'Campaign Name',
+  },
+  gridViewSettings: {
+    label: 'Campaign Name',
+    module: 'Campaigns',
+    Icon: CampaignIcon,
+    defaultView: {
+      name: 'All Campaigns',
+      type: 'Default',
+    },
+    handleDefaultView: (view, user) => {
+      if (view?.name === 'My Campaigns') {
+        view.filters[0].value = user._id;
+      }
+      return view;
+    },
+    cssOverride: {
+      top: '461px',
+      left: '45px',
+    },
   },
   TableSchema: [
     {
