@@ -5,7 +5,8 @@ import hat from 'hat';
 import * as turf from '@turf/turf';
 import polylabel from 'polylabel';
 
-import { hookStateController, layerRefs } from 'hookstate';
+import { layerRefs } from 'hookstate';
+import { hookStateController } from 'hookstate/hookStateController';
 import { setMapGridCardState, toggleMapGridCardAtived } from 'actions';
 import { copy, getPolygonString } from 'components/Shared/functions';
 import {
@@ -708,9 +709,8 @@ const drawStateControllerHandler = state => {
 		if (abstractShape?.properties?.County && state) {
 			if (layerType === 'unit') {
 				if (abstractShape.properties.State === 'TX')
-					shapeSubtitle = `${abstractShape?.properties?.County}, ${state || ''} - ${blockTownship}${
-						section ? `, SEC ${section}` : ''
-					}`;
+					shapeSubtitle = `${abstractShape?.properties?.County}, ${state || ''} - ${blockTownship}${section ? `, SEC ${section}` : ''
+						}`;
 				else shapeSubtitle = `${abstractShape?.properties?.County}, ${state || ''} - ${shapeName}`;
 			}
 			if (layerType === 'agreement') shapeSubtitle = `${abstractShape?.properties?.County}, ${state}`;

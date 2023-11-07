@@ -13,7 +13,7 @@ export function CurrencyFormatCustom(props) {
         onChange({
           target: {
             name: props.name,
-            value: values.value,
+            value: parseFloat(values.value || 0).toFixed(2),
           },
         });
       }}

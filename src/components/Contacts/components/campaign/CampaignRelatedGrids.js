@@ -72,11 +72,11 @@ function CamapignRelatedGrids({ campaign }) {
       { field: "shape.IsDeleted", value: "false" }
     ],
     gridViewSettings: {
-      label: 'Unit Interest Management',
+      label: 'Unit Interests',
       module: 'UnitInterest',
       Icon: UnitIcon,
       defaultView: {
-        name: 'All Units Interest',
+        name: 'All Unit Interests',
         type: 'Default',
       },
       handleDefaultView: (view, user) => {
@@ -89,6 +89,7 @@ function CamapignRelatedGrids({ campaign }) {
         top: '532px',
         left: '274px',
         maxHeight: '40%',
+        marginLeft: '-9px',
       },
     },
     deletedKeys: {
@@ -124,6 +125,7 @@ function CamapignRelatedGrids({ campaign }) {
         top: '532px',
         left: '274px',
         maxHeight: '40%',
+        marginLeft: '-9px',
       },
     },
     deletedKeys: {
@@ -174,6 +176,7 @@ function CamapignRelatedGrids({ campaign }) {
         top: '532px',
         left: '274px',
         maxHeight: '40%',
+        marginLeft: '-9px',
       },
     },
     deletedKeys: {

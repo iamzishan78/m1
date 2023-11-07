@@ -46,6 +46,7 @@ import { copy, getPolygonString } from "components/Shared/functions";
 import { calculateLandArea } from "components/Shared/functions/shapeLayer";
 import ShapeEditActions from "components/MapControls/components/popup/ShapeEditActions";
 import ShapeTypeMenu from "./ShapeTypeMenu";
+import { jobController } from "hookstate/jobStateController";
 
 
 const useStyles = makeStyles({
@@ -595,6 +596,8 @@ const ShapeActionsPopup = (props) => {
         customLayerId: layerData._id,
         customLayer: customLayerData,
       },
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
     let layers = [...stateApp.customLayers];
     const layerIndex = layers.findIndex((l) => l._id === layerData._id)
@@ -672,6 +675,8 @@ const ShapeActionsPopup = (props) => {
       },
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
+    }).then(() => {
+      jobController.toggleBulkUpload()
     });
     setTimeout(() => popupCloseAction(), 0);
   };
@@ -735,6 +740,7 @@ const ShapeActionsPopup = (props) => {
       refetchQueries: ["getCustomLayers"],
       awaitRefetchQueries: true,
     }).then(result => {
+      jobController.toggleBulkUpload()
       if (isShapeResizeMode) {
         let newPath = '';
 

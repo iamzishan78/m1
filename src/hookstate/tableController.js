@@ -1,11 +1,27 @@
 import React from 'react';
 import { hookstate } from '@hookstate/core';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
-import { deepEqual } from 'components/Shared/functions';
-import { hookStateController } from 'hookstate';
+import { copy, deepEqual } from 'components/Shared/functions';
+import { hookStateController } from 'hookstate/hookStateController';
 import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 
+const initialState = {
+	defaultFilters: [],
+	customProps: [],
+	filters: [],
+	sorting: [],
+	searchFields: [],
+	groupedField: {},
+	grouping: [],
+	footerProps: [],
+	ExternalFilter: [],
+	defaultSort: {},
+	columnOrdering: [],
+	columnPinning: {
+		left: [],
+	},
+}
 export const tableESState = {};
 export const tableGlobalState = hookstate({
 	refetch: false,
@@ -109,7 +125,11 @@ const tableESStateControllerHandler = state => ({
 			return column.id || column.accessorKey;
 		});
 
-		const columnOrder = TableSchema.map(column => column.accessorKey || column.id);
+		const columnOrder = TableSchema.map(column => {
+			let col = column.accessorKey || column.id
+			if (Array.isArray(col)) col = col[0]
+			return col
+		});
 
 		const tableCss = {
 			'& .MuiDialog-root': {
@@ -239,14 +259,14 @@ const tableESStateControllerHandler = state => ({
 			tableKey,
 			esIndex,
 			pageSize,
-			isSelectall: isSelectall || false,
+			isSelectall: false,
 			showColumnFilters: false,
 			data: { rows: [], total: 0 },
 			isLoading: false,
 			isFetching: false,
 			isError: false,
-			defaultFilters: state?.defaultFilters?.get({ noproxy: true }) || defaultFilters || [],
-			customProps: state?.customProps?.get({ noproxy: true }) || [],
+			defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }),
+			customProps: state?.customProps?.get({ noproxy: true }),
 			filters: [],
 			sorting: [],
 			searchFields,
@@ -357,6 +377,7 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setColumnOrdering: order => {
+		console.log(order)
 		if (!deepEqual(state.columnOrdering?.get({ noproxy: true }), order)) state.columnOrdering?.set(order);
 	},
 
@@ -419,10 +440,10 @@ const tableESStateControllerHandler = state => ({
 });
 
 export const tableController = TableKey => {
-	if (!tableESState[TableKey]) tableESState[TableKey] = hookstate({});
+	if (!tableESState[TableKey]) tableESState[TableKey] = hookstate(copy(initialState));
 	return {
 		...tableESStateControllerHandler(tableESState[TableKey]),
-		...hookStateController(tableESState[TableKey], {}),
+		...hookStateController(tableESState[TableKey], copy(initialState)),
 	};
 };
 

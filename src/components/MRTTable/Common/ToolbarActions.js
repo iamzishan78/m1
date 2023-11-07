@@ -31,8 +31,11 @@ function ToolbarActions({ table, tableKey, children }) {
 		'defaultFilters',
 		'isDeleteDisabled',
 		'deletedKeys',
+		'isSelectAllAllowed',
 	]);
 	const tableStateValues = tableState.stateValues;
+	if (tableStateValues?.isSelectAllAllowed)
+		tableController(tableKey).setSelectAll(isAllRowsSelected);
 
 	const handleExport = () => {
 		tableGlobalController.updateState({
@@ -78,7 +81,7 @@ function ToolbarActions({ table, tableKey, children }) {
 				display: 'flex',
 				width: '100%',
 				gap: '0.5rem',
-				marginLeft: '-9px',
+				marginLeft: tableStateValues?.gridViewSettings?.cssOverride?.marginLeft || '0px',
 				justifyContent: `${tableStateValues.gridViewSettings ? 'space-between' : 'end'}`,
 			}}
 		>

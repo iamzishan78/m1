@@ -1,6 +1,6 @@
 import { hookstate, useHookstate } from '@hookstate/core';
 import { copy } from 'components/Shared/functions';
-import { hookStateController } from 'hookstate';
+import { hookStateController } from 'hookstate/hookStateController';
 
 const initialState = {
 	drawingMode: null,

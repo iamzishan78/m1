@@ -45,11 +45,12 @@ const ContactMeta = {
 		cssOverride: {
 			top: '138px',
 			left: '45px',
+			marginLeft: '-9px',
 		},
 	},
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	isSelectall: true,
+	isSelectAllAllowed: true,
 	search: {
 		fields: ["name^4", "_all"]
 	},
@@ -83,6 +84,7 @@ const ContactMeta = {
 								name={renderedCellValue.split(' ').splice(0, 2).join(' ')}
 								size="35"
 								round
+
 							/>
 						)}
 
@@ -102,9 +104,15 @@ const ContactMeta = {
 									e.stopPropagation();
 								}}
 							/>
-							{!!(row.getValue('isPurchased') === 'true') && (
+							{!!(row.getValue('isPurchased') === 'true' || row.getValue('isPurchased') === true) && (
 								<FeatureFlag feature={FEATURES.IDICORE}>
-									<MonetizationOnIcon />
+									<MonetizationOnIcon
+										style={{
+											marginLeft: '10px',
+											color: "gray"
+										}}
+
+									/>
 								</FeatureFlag>
 							)}
 						</p>
@@ -176,8 +184,8 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: ['address1.keyword', 'city.keyword', 'state.keyword', 'zip.keyword'],
-			accessorKey: ['address1', 'city', 'state', 'zip'],
+			name: ['address1.keyword', 'city.keyword', 'state.keyword', 'zip.keyword'].join(','),
+			accessorKey: ['address1', 'city', 'state', 'zip'].join(','),
 			header: 'Primary Address',
 			size: 700,
 			isComposite: true,

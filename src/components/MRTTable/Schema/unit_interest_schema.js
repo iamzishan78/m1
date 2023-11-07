@@ -15,11 +15,11 @@ const UnitInterestMeta = {
 		pageSize: 50,
 	},
 	gridViewSettings: {
-		label: 'Unit Interest',
+		label: 'Unit Interests',
 		module: 'UnitInterest',
 		Icon: UnitIcon,
 		defaultView: {
-			name: 'All Units Interest',
+			name: 'All Unit Interests',
 			type: 'Default',
 		},
 		handleDefaultView: (view, user) => {
@@ -97,6 +97,13 @@ const UnitInterestMeta = {
 			name: 'shape.shapeJson.properties.uAcres.keyword',
 			accessorKey: 'shape.shapeJson.properties.uAcres',
 			header: 'Unit Acres',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'taxYear',
+			accessorKey: 'taxYear',
+			header: 'Tax Year',
 		},
 
 		{
