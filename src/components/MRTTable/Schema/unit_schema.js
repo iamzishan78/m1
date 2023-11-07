@@ -31,7 +31,7 @@ const UnitMeta = {
 		},
 		cssOverride: {
 			top: '161px',
-			left: '115px',
+			left: '140px',
 		},
 	},
 	defaultSort: { field: '_ts', order: 'desc' },

@@ -30,7 +30,7 @@ const UnitInterestMeta = {
 		},
 		cssOverride: {
 			top: '161px',
-			left: '115px',
+			left: '190px',
 		},
 	},
 	defaultSort: { field: '_ts', order: 'desc' },

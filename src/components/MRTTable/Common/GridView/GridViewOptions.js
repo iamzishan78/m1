@@ -176,7 +176,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 		<LeftDialog
 			open
 			width="325px"
-			maxHeight={tableStateValues?.gridViewSettings?.cssOverride?.maxHeight}
+			maxHeight={tableStateValues?.gridViewSettings?.cssOverride?.maxHeight || '600px'}
 			top={`${tableStateValues?.gridViewSettings?.cssOverride?.top} !important`}
 			left={tableStateValues?.gridViewSettings?.cssOverride?.left}
 			handleClickDialogClose={() =>
@@ -257,6 +257,17 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 							Custom
 						</AccordionSummary>
 						<AccordionDetails className={classes.details}>
+							{tableStateValues?.gridView?.showSaveAsNew && (
+								<InputField
+									setEditGridView={setEditGridView}
+									viewName={viewName}
+									setViewName={setViewName}
+									addGridView={addGridView}
+									user={stateApp.user.mongoId}
+									module={module}
+									tableKey={tableKey}
+								/>
+							)}
 							{filterGridView.map(
 								view =>
 									view.type === 'Custom' &&
@@ -285,17 +296,6 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 											defaultView={defaultView}
 										/>
 									))
-							)}
-							{tableStateValues?.gridView?.showSaveAsNew && (
-								<InputField
-									setEditGridView={setEditGridView}
-									viewName={viewName}
-									setViewName={setViewName}
-									addGridView={addGridView}
-									user={stateApp.user.mongoId}
-									module={module}
-									tableKey={tableKey}
-								/>
 							)}
 						</AccordionDetails>
 					</Accordion>
