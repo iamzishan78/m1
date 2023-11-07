@@ -1,10 +1,48 @@
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import Loaders from 'components/Loaders';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
+import { UPDATE_CAMPAIGN } from 'graphQL/useMutationCampaign';
+import { tableGlobalController } from 'hookstate/tableController';
+import { isEmpty, pickBy } from 'lodash';
+import { copy } from 'utils/helper';
 
 const esIndex = 'campaigns_flat';
+
+const onCustomKeyChange = async (client, row, value, item) => {
+  const loaderId = `upadting-${row?._id}`;
+
+  try {
+    Loaders.createToast(loaderId, 'Updation in Progress');
+    const customData = copy(row?.custom_data) ?? {};
+    const filteredCustomData = pickBy(
+      customData,
+      value => value !== '' && !isEmpty(value)
+    );
+
+    const campaign = {
+      _id: row._id,
+      custom_data: {
+        ...filteredCustomData,
+        [item.name]: value,
+      },
+    };
+
+    await client.mutate({
+      variables: {
+        campaign,
+      },
+      mutation: UPDATE_CAMPAIGN,
+    });
+
+    Loaders.successToast(loaderId, 'Updation Complete');
+    tableGlobalController.refetch();
+  } catch (err) {
+    Loaders.errorToast(loaderId, 'Failed to Update');
+  }
+};
 
 const CampaignMeta = {
   esIndex,
@@ -15,6 +53,10 @@ const CampaignMeta = {
   },
   defaultSort: { field: 'flatSyncAt', order: 'desc' },
   maxTableHeight: 'calc(100vh - 490px)',
+  onCustomKeyChange,
+  fetchMetaData: {
+    category: 'Campaign Name',
+  },
   TableSchema: [
     {
       ...CommonSchema.HIDDEN,
@@ -74,6 +116,7 @@ const CampaignMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
+      showInLast: true,
       name: 'createdAt',
       accessorKey: 'createdAt',
       header: 'Created Date',
@@ -102,7 +145,7 @@ const CampaignMeta = {
         return (
           <CommentCell
             id={id}
-            value={renderedCellValue.length}
+            value={renderedCellValue?.length}
             targetLabel={'Campaign'}
           />
         );

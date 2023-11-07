@@ -77,8 +77,6 @@ const CampaignManagement = () => {
         filter.type !== "range"
     );
 
-    console.log(dateFilterToDate(null))
-
     if (fromDate && toDate)
       filters.unshift({
         field: 'createdAt',
