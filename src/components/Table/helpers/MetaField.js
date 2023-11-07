@@ -40,6 +40,7 @@ import { ADD_META_DATA } from "graphQL/useMutationAddMetaData";
 import { UPDATE_META_DATA } from "graphQL/useMutationUpdateMetaData";
 import { colorPallete } from "components/Table/helpers";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { tableController, tableGlobalController } from "hookstate/tableController";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -188,12 +189,13 @@ const iconOptions = [
   }
 ];
 
-const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPrefix = 'custom_data', customDataPostfix = '' }) => {
+const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPrefix = 'custom_data', customDataPostfix = '', tableKey }) => {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState("new");
   const [metaData, setMetaData] = useState(null);
   const [filteredMetaData, setFilteredMetaData] = useState(null);
   const [anchorEl, setAnchorEl] = useState();
+  const TableController = !!tableKey && tableController(tableKey);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectFilter, setSelectFilter] = useState(
@@ -323,6 +325,14 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
     handleClose();
   };
 
+  useEffect(() => {
+
+    return () => {
+      tableGlobalController.reInitialized();
+    };
+  }, []);
+
+
   const handleClose = () => {
     setItems([]);
     setStateApp((stateApp) => ({
@@ -330,6 +340,10 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
       showFieldModal: false,
       selectedMeta: null,
     }));
+
+    TableController?.updateState?.({
+      showFieldModal: false,
+    });
   };
 
   const handleDeleteMetaData = () => {
@@ -398,11 +412,15 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
       fullWidth
       maxWidth="md"
       open={true}
-      onClose={() =>
+      onClose={() => {
+        TableController?.updateState?.({
+          showFieldModal: false,
+        });
         setStateApp((stateApp) => ({
           ...stateApp,
           showFieldModal: false,
         }))
+      }
       }
     >
       <div>
