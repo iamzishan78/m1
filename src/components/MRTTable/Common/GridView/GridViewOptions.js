@@ -320,7 +320,7 @@ function InputField({
 }) {
 	const classes = useStyles();
 	const Controller = tableController(tableKey);
-	const tableState = Controller.useState(['filters', 'columnVisibility', 'sorting', 'groupedField', 'columnPinning', 'columnOrdering']);
+	const tableState = Controller.useState(['filters', 'columnVisibility', 'sorting', 'groupedField', 'columnPinning', 'columnOrdering', 'gridView']);
 	const tableStateValues = tableState.stateValues;
 
 	return (
