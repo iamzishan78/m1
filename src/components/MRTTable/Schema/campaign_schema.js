@@ -54,6 +54,8 @@ const CampaignMeta = {
   defaultSort: { field: 'flatSyncAt', order: 'desc' },
   maxTableHeight: 'calc(100vh - 490px)',
   onCustomKeyChange,
+  isInFiniteScroll: true,
+  columnVirtualization: true,
   fetchMetaData: {
     category: 'Campaign Name',
   },
