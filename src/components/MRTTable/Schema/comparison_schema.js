@@ -1,7 +1,7 @@
 import { ErrorOutline } from '@material-ui/icons';
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
 import { formatDate } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 
 const esIndex = 'checkdetailsinterestscomparison_flat';
 

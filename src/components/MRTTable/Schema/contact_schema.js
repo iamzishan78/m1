@@ -1,7 +1,6 @@
 import Avatar from 'react-avatar';
 import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
 import moment from 'moment';
-import ColumnWithLink from 'components/MRTTable/Common/TableCells/ColumnWithLink';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
 import { formatDate } from 'components/Shared/functions';
@@ -11,6 +10,7 @@ import ContactToolbar from 'components/MRTTable/TablesOverride/ContactTable/Cont
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 
 const esIndex = 'contacts_flat';
 
@@ -44,7 +44,7 @@ const ContactMeta = {
 		},
 		cssOverride: {
 			top: '138px',
-			left: '45px',
+			left: '40px',
 			marginLeft: '-9px',
 		},
 	},

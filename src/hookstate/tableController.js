@@ -25,7 +25,6 @@ const initialState = {
 export const tableESState = {};
 export const tableGlobalState = hookstate({
 	refetch: false,
-	tabKey: 0
 });
 
 const handleVisiblityMenu = () => {

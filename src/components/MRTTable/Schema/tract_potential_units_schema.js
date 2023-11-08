@@ -1,6 +1,6 @@
-import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import TractPotentialUnitsToolbar from "components/MRTTable/TablesOverride/TractPotentialUnitsTable/TractPotentialUnitsToolbar";
 import { CommonSchema } from "./common_schema";
+import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 
 const esIndex = "shapes_flat";
 

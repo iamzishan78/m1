@@ -131,7 +131,6 @@ export function getDateWithoutTime(dateTime) {
     dateTime = dateTime.toString();
   }
 
-
   if (dateTime?.includes && dateTime.includes('/')) {
     const splittedDate = dateTime.split('/');
     const newDate = new Date();
