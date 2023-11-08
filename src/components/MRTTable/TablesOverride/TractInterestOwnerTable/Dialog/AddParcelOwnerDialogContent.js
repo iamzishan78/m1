@@ -147,14 +147,14 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       setNameAutValue({ name, _id: ownerEntity });
 
       setNewOwner({
-        surface_interest: surface_interest || null,
+        surface_interest: surface_interest ? parseFloat(surface_interest).toFixed(8) : null,
         ownershipType: ownerType || null,
         cost_bearing: cost_bearing || null,
         cost_bearing_high_value: toNumber(cost_bearing_high_value) || null,
         cost_free_high_value: toNumber(cost_free_high_value) || null,
-        mineral_interest: mineral_interest || null,
-        royalty_interest: royalty_interest || null,
-        orri: orri || null,
+        mineral_interest: mineral_interest ? parseFloat(mineral_interest).toFixed(8) : null,
+        royalty_interest: royalty_interest ? parseFloat(royalty_interest).toFixed(8) : null,
+        orri: orri ? parseFloat(orri).toFixed(8) : null,
         unknown_interest: unknown_interest || null,
         record_title: record_title || null,
         operating_rights: operating_rights || null,
@@ -478,7 +478,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   const { value } = e.target;
                   setNewOwner({
                     ...newOwner,
-                    surface_interest: value ? addTrailingZeros(e.target.value) : null,
+                    surface_interest: value ? parseFloat(e.target.value).toFixed(8) : null,
                   });
                 }}
                 onWheel={e => e.target.blur()}
@@ -499,7 +499,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     : newOwner.nra;
                   setNewOwner(newOwner => ({
                     ...newOwner,
-                    mineral_interest: value ? addTrailingZeros(value) : null,
+                    mineral_interest: value ? parseFloat(value).toFixed(8) : null,
                     net_acres,
                     nra,
                   }));
@@ -518,7 +518,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   const { value } = e.target;
                   setNewOwner({
                     ...newOwner,
-                    royalty_interest: value ? addTrailingZeros(e.target.value) : null,
+                    royalty_interest: value ? parseFloat(value).toFixed(8) : null,
                     nra: !isNraOverridden ? calculateNRA(value, newOwner.orri, newOwner.nri) : newOwner.nra,
                   });
                 }}
@@ -536,7 +536,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   const { value } = e.target;
                   setNewOwner({
                     ...newOwner,
-                    orri: value ? addTrailingZeros(e.target.value) : null,
+                    orri: value ? parseFloat(value).toFixed(8) : null,
                     nra: !isNraOverridden ? calculateNRA(value, newOwner.royalty_interest, newOwner.nri) : newOwner.nra,
                   });
                 }}
