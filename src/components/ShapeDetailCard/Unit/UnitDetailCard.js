@@ -261,7 +261,7 @@ export default function UnitDetailCard(props) {
                           tabLabels: ['Unit Ownership', 'Potential Ownership'],
                           customProps: {
                             customLayer: uniObj,
-                            year: 2022,
+                            year: 2023,
                             filterByWells: false
                           },
                         }}

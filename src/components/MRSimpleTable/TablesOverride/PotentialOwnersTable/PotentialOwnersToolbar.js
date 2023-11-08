@@ -59,8 +59,8 @@ const PotentialOwnersToolbar = ({ table, tableKey }) => {
     return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
             <SelectFilter
-                options={[2019, 2020, 2021, 2022]}
-                initialValue={2022}
+                options={[2019, 2020, 2021, 2022, 2023]}
+                initialValue={2023}
                 onValueChange={year => {
                     updateCustomProps({ year });
                     table.resetRowSelection();
