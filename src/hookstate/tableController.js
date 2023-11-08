@@ -25,7 +25,6 @@ const initialState = {
 export const tableESState = {};
 export const tableGlobalState = hookstate({
 	refetch: false,
-	tabKey: 0
 });
 
 const handleVisiblityMenu = () => {
@@ -105,7 +104,7 @@ const tableESStateControllerHandler = state => ({
 			TableSchema,
 			defaultFlterMode,
 			defaultFilters,
-			isSelectall,
+			isSelectAllAllowed = true,
 			search,
 			...rest
 		}
@@ -260,6 +259,7 @@ const tableESStateControllerHandler = state => ({
 			esIndex,
 			pageSize,
 			isSelectall: false,
+			isSelectAllAllowed,
 			showColumnFilters: false,
 			data: { rows: [], total: 0 },
 			isLoading: false,

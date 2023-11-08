@@ -1,9 +1,9 @@
 import UnitIcon from 'components/Shared/svgIcons/unit';
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
 import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_currency';
 import ListChips from 'components/Common/ListChips';
 import { CommonSchema } from './common_schema';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
+import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 
 const esIndex = 'shapeowners_flat';
 
@@ -30,7 +30,7 @@ const UnitInterestMeta = {
 		},
 		cssOverride: {
 			top: '161px',
-			left: '25px',
+			left: '190px',
 		},
 	},
 	defaultSort: { field: '_ts', order: 'desc' },

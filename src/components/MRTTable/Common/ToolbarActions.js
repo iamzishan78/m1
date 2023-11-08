@@ -6,6 +6,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import GridView from 'components/MRTTable/Common/GridView';
 import { globalStateController } from 'hookstate/globalStateController';
 import _ from 'lodash';
+import TabHeader from 'components/MRSimpleTable/Common/TabHeader';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const isAllRowsSelected = table.getIsAllRowsSelected();
@@ -18,7 +19,6 @@ function ToolbarActions({ table, tableKey, children }) {
 
 	const tableState = tableController(tableKey).useState([
 		'TableSchema',
-		'esIndex',
 		'datasets',
 		'globalFilter',
 		'searchFields',
@@ -32,6 +32,7 @@ function ToolbarActions({ table, tableKey, children }) {
 		'isDeleteDisabled',
 		'deletedKeys',
 		'isSelectAllAllowed',
+		'tabLabels',
 	]);
 	const tableStateValues = tableState.stateValues;
 	if (tableStateValues?.isSelectAllAllowed)
@@ -55,12 +56,14 @@ function ToolbarActions({ table, tableKey, children }) {
 		};
 		const deletedData = Object.keys(deletedKeys).reduce((acc, key) => {
 			const { key: originalKey, func } = deletedKeys[key];
-			acc[key] = selectedRows?.length > 0 ? selectedRows.map(item => {
-				let val = _.get(item, originalKey)
-				if (func) val = func(val)
-				return val
-			}
-			) : null;
+			acc[key] =
+				selectedRows?.length > 0
+					? selectedRows.map(item => {
+						let val = _.get(item, originalKey);
+						if (func) val = func(val);
+						return val;
+					})
+					: null;
 			return acc;
 		}, {});
 		tableGlobalController.updateState({
@@ -81,12 +84,26 @@ function ToolbarActions({ table, tableKey, children }) {
 				display: 'flex',
 				width: '100%',
 				gap: '0.5rem',
-				marginLeft: tableStateValues?.gridViewSettings?.cssOverride?.marginLeft || '0px',
-				justifyContent: `${tableStateValues.gridViewSettings ? 'space-between' : 'end'}`,
+				marginLeft: tableStateValues?.gridViewSettings?.cssOverride?.marginLeft || '1rem',
+				justifyContent: 'space-between',
+				marginTop: 'auto',
+				marginBottom: 'auto',
 			}}
 		>
-			{tableStateValues.gridViewSettings && <GridView tableKey={tableKey} {...tableStateValues.gridViewSettings} />}
-			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem', position: 'absolute', right: '170px' }}>
+			<div
+				style={{
+					marginTop: 'auto',
+					marginBottom: 'auto',
+					display: 'flex',
+					alignItems: 'center',
+				}}
+			>
+				<TabHeader labels={tableStateValues.tabLabels} />
+				{tableStateValues.gridViewSettings && (
+					<GridView tableKey={tableKey} {...tableStateValues.gridViewSettings} />
+				)}
+			</div>
+			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
 				{children || <div />}
 
 				{!isAllRowsSelected && (
@@ -97,7 +114,7 @@ function ToolbarActions({ table, tableKey, children }) {
 					</IconButton>
 				)}
 
-				{(isSomethingSelected && !(!!tableStateValues.isDeleteDisabled)) && (
+				{isSomethingSelected && !!!tableStateValues.isDeleteDisabled && (
 					<IconButton aria-label="delete" onClick={() => handleDelete()}>
 						<Tooltip title="Delete">
 							<DeleteIcon />

@@ -38,7 +38,7 @@ function ShapeGridWellsTable(props) {
     // function states 
     const [columns, Columns] = useState([]);
     const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
-    const [selectedYear, setSelectedYear] = useState(2022)  // production selected year state 
+    const [selectedYear, setSelectedYear] = useState(2023)  // production selected year state 
 
     // queries 
     const [getPaginatedShapeWells, { data: dataShapeWells, variables: variablesShapeWells }] = useLazyQuery(SHAPEWELLS, {

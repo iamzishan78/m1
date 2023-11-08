@@ -104,7 +104,7 @@ function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, modul
 	}, [tableState.stateValues?.gridView?.selectedGridView]);
 
 	return (
-		<>
+		<div>
 			<GridViewComponent Icon={Icon} label={label} tableKey={tableKey} />
 
 			{tableStateValues?.gridView?.showViewModal && !loading && (
@@ -116,7 +116,7 @@ function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, modul
 					defaultView={defaultView}
 				/>
 			)}
-		</>
+		</div>
 	);
 }
 

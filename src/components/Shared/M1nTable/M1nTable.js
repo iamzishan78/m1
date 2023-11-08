@@ -166,7 +166,7 @@ function M1nTable(props) {
   const setDataTracks = (newState) => {
     setStateIfDeepEqual(DataTracks, newState);
   };
-  const [selectedYear, setSelectedYear] = useState(2022); // production selected year state
+  const [selectedYear, setSelectedYear] = useState(2023); // production selected year state
 
   // selectors
   const { searchloading, searchResultData, selectedOwnerWellIntsSummary } = useSelector(({ MapGridCard }) => MapGridCard);

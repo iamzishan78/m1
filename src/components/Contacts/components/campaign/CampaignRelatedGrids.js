@@ -1,17 +1,15 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import UnitIcon from 'components/Shared/svgIcons/unit';
 import Contact from 'components/Shared/svgIcons/contact';
 
 import Card from '@material-ui/core/Card';
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core';
-import CampaignUnitsTable from 'components/Table//Unit/CampaignUnitsTable';
-import CampaignContactsTable from 'components/Table/Contact/CampaignContactsTable';
 
-import UnitInterestOwnersTable from 'components/Table/Unit/UnitInterestOwnersTable';
 import { campaignInitialData } from './data';
 import MRTTable from 'components/MRTTable';
-import { tableGlobalController } from 'hookstate/tableController';
+import moment from 'moment';
+import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -56,12 +54,10 @@ const useStyles = makeStyles(theme => ({
 
 function CamapignRelatedGrids({ campaign }) {
   const classes = useStyles();
-  const globalSelectedTabKey = tableGlobalController.useState(['tabKey'])?.stateValues
+  const globalSelectedTabKey = simpleTableGlobalController.useState(['tabKey'])?.stateValues
 
   const setSearchTapValue = state => {
-    tableGlobalController.updateState({
-      tabKey: state?.index
-    });
+    simpleTableGlobalController.setSelectedTab(state?.index);
   };
 
   const campaignUnitInterestoverrideMeta = useMemo(() => ({
