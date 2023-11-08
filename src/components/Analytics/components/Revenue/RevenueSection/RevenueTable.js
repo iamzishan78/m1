@@ -6,8 +6,12 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import { Grid } from "@material-ui/core";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import { Grid, IconButton, Tooltip } from "@material-ui/core";
+import CSVDownloader from "react-csv-downloader";
+
 import vf_number from "components/Shared/valueformatters/vf_number";
+import { convertAnalyticsDataToCSV } from "components/Shared/M1nTable/components/MUIDataTable/utils";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -92,7 +96,15 @@ export default function AcccessibleTable({ monthsInterval, items }) {
             <Table className={classes.table} aria-label="caption table">
               <TableHead>
                 <TableRow>
-                  <TableCell></TableCell>
+                  <TableCell style={{ paddingLeft: 0 }} >
+                    <CSVDownloader datas={convertAnalyticsDataToCSV(items)} filename={`Revenue`} type="link">
+                      <IconButton style={{ display: 'flex' }}>
+                        <Tooltip title="Download CSV" aria-label="add">
+                          <CloudDownloadIcon />
+                        </Tooltip>
+                      </IconButton>
+                    </CSVDownloader>
+                  </TableCell>
                   <TableCell
                     align="center"
                     component="th"

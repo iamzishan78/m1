@@ -8,8 +8,12 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import ArrowDropRight from '@material-ui/icons/ArrowRight';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import { Box, Grid } from "@material-ui/core";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import { Box, Grid, IconButton, Tooltip } from "@material-ui/core";
+import CSVDownloader from "react-csv-downloader";
+
 import vf_number from "components/Shared/valueformatters/vf_number";
+import { convertAnalyticsDataToCSV } from "components/Shared/M1nTable/components/MUIDataTable/utils";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -101,7 +105,15 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
             <Table className={classes.table} aria-label="caption table">
               <TableHead>
                 <TableRow>
-                  <TableCell></TableCell>
+                  <TableCell style={{ paddingLeft: 0 }} >
+                    <CSVDownloader datas={convertAnalyticsDataToCSV(items)} filename={`Adjustments`} type="link">
+                      <IconButton style={{ display: 'flex' }}>
+                        <Tooltip title="Download CSV" aria-label="add">
+                          <CloudDownloadIcon />
+                        </Tooltip>
+                      </IconButton>
+                    </CSVDownloader>
+                  </TableCell>
                   <TableCell
                     align="center"
                     component="th"
