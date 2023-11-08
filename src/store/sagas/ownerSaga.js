@@ -137,7 +137,7 @@ function* getMapFilterShapeOwnersAndCount(action) {
     if (wellIds?.length > 0) {
       taxOwners = yield call(Api.query, OWNERS_BY_WELL_IDS, {
         wellIds: wellIds,
-        selectedYear: "2022",
+        selectedYear: "2023",
       });
     }
 

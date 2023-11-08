@@ -21,10 +21,11 @@ import ParcelSummary from './ParcelSummary';
 import { copy } from 'utils/helper';
 import { popupController, popupState } from 'hookstate/popupStateController';
 import MRTTable from "components/MRTTable";
-import { tableController, tableGlobalController } from "hookstate/tableController";
+import { tableController } from "hookstate/tableController";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
 import { jobController } from "hookstate/jobStateController";
 import { showSuccessMessage, showErrorMessage, setMapGridCardState } from 'actions';
+import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -208,16 +209,19 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const setSelectedTab = simpleTableGlobalController.setSelectedTab;
+
 export default function ParcelsDetailCard({ id, selectTabIndex }) {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const [selectedTab, setSelectedTab] = useState(0);
   const [parcelObj, setParcelObj] = useState();
   const [properties, setProperties] = useState();
-  const globalSelectedTabKey = tableGlobalController.useState(['tabKey']).stateValues;
   const tractPerUnitGridState = tableController("TractPerUnitTable").useState(['data']).stateValue;
   const tractUnitsGridState = tableController("TractUnitsTable").useState(['data']).stateValues;
   const tractPotentialUnitsState = tableController("TractPotentialUnitsTable").useState(['data']).stateValues;
+  const {
+    stateValues: { tabKey: selectedTab },
+  } = simpleTableGlobalController.useState(['tabKey']);
 
   const contactsAdded = useSelector(state => state?.common?.contactsAdded);
   const [updateCustomLayer, { data: updatedParcel }] = useMutation(UPDATECUSTOMLAYER);
@@ -291,15 +295,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
     }
   }, [dataCustomLayer, tractPerUnitGridState?.data, tractUnitsGridState?.data, tractPotentialUnitsState?.data]);
 
-  useEffect(() => {
-    if (typeof globalSelectedTabKey.tabKey === "number")
-      setSelectedTab(globalSelectedTabKey.tabKey);
-    tableGlobalController.updateState({
-      tabKey: 0
-    });
-  }, [globalSelectedTabKey.tabKey]);
-
   const overrideMeta = useMemo(() => ({
+    tabLabels: ['Tract Ownership', 'Potential Ownership'],
     defaultFilters: [
       { field: "shape._id", value: dataCustomLayer?.customLayer?._id },
       { field: "contact.IsDeleted", value: "false" },
@@ -308,12 +305,14 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
   }), [dataCustomLayer]);
 
   const overrideMetaTractUnits = useMemo(() => ({
+    tabLabels: ['Related Units', 'Potential Units'],
     defaultFilters: [
       { field: "parcel._id", value: dataCustomLayer?.customLayer?._id },
     ],
   }), [dataCustomLayer]);
 
   const overrideMetaTractPotentialUnits = useMemo(() => ({
+    tabLabels: ['Related Units', 'Potential Units'],
     defaultFilters: [
       {
         type: 'geo_intersects',
@@ -407,18 +406,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
     );
   }
 
-  function UnitsHeader() {
-    return (
-      <TabButtons
-        labels={['Related Units', 'Potential Units']}
-        value={selectedTab}
-        setValue={n => {
-          setSelectedTab(n);
-        }}
-      />
-    );
-  }
-
   function DocumentHeader() {
     return (
       <div className={classes.documentHeader}>
@@ -471,18 +458,8 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
             <TabPanels
               value={selectedTab}
               panels={[
-                <div
-                  style={{
-                    position: 'relative',
-                    height: '100%',
-                    padding: '0rem 0.75rem 0rem 0.75rem'
-                  }}>
-
-                  <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
-                    <Header />
-                  </div>
+                <div>
                   <MRTTable name="TractPerUnitTable" overrideMeta={overrideMeta} />
-
                 </div>,
                 <div className={classes.subContent}>
                   <SuggestedTaxOwnersTable
@@ -522,29 +499,11 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
             <TabPanels
               value={selectedTab}
               panels={[
-                <div
-                  style={{
-                    position: 'relative',
-                    height: '100%',
-                    padding: '0rem 0.75rem 0rem 0.75rem'
-                  }}>
-                  <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
-                    <UnitsHeader />
-                  </div>
+                <div>
                   <MRTTable name="TractUnitsTable" overrideMeta={overrideMetaTractUnits} />
-
                 </div>,
-                <div
-                  style={{
-                    position: 'relative',
-                    height: '100%',
-                    padding: '0rem 0.75rem 0rem 0.75rem'
-                  }}>
-                  <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
-                    <UnitsHeader />
-                  </div>
+                <div>
                   <MRTTable name="TractPotentialUnitsTable" overrideMeta={overrideMetaTractPotentialUnits} />
-
                 </div>,
               ]}
             />,

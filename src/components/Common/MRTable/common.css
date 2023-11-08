@@ -1,0 +1,28 @@
+.MuiModal-root > .MuiPaper-root > .MuiMenu-list > div > button {
+  display: none;
+}
+.MuiModal-root > .MuiPaper-root > .MuiMenu-list > div,
+.MuiModal-root > .MuiPaper-root > .MuiMenu-list {
+  padding: 0;
+}
+
+[aria-label='Pin to right'] {
+  display: none !important;
+}
+
+.MuiToolbar-root > .MuiBox-root > .MuiBox-root {
+  min-width: max-content;
+}
+
+.MuiDialog-paperFullScreen {
+  margin-left: 61px !important;
+}
+
+.MuiDialog-paperFullScreen > div {
+  width: auto !important;
+}
+
+.MuiToolbar-root > .MuiBox-root > .MuiBox-root {
+  margin-top: auto;
+  margin-bottom: auto;
+}
