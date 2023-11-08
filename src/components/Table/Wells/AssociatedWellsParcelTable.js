@@ -33,6 +33,11 @@ function ShapeGridWellsTable(props) {
     const [resetSelectedRow, setResetSelectedRow] = useState(false);
     const [isSelectAll, setIsSelectAll] = useState(false);
     const [stateApp, setStateApp] = useContext(AppContext);
+    const [count, setCount] = useState(0)
+    // function states 
+    const [columns, Columns] = useState([]);
+    const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
+    const [selectedYear, setSelectedYear] = useState(2023)  // production selected year state 
     const [stateNav, setStateNav] = useContext(NavigationContext);
     const { customLayer, clickedRow } = props;
     const searchInput = useSelector(

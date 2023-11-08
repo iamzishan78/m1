@@ -63,7 +63,7 @@ function WellDetailsDocumentTable(props) {
   const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
   const [searchedRows, setSearchedRows] = useState([])
   const [showDocumentSlider, setShowDocumentSlider] = useState(false)
-  const [selectedYear, setSelectedYear] = useState(2022)  // production selected year state 
+  const [selectedYear, setSelectedYear] = useState(2023)  // production selected year state 
   const [numPages, setNumPages] = useState(null);
   const [zoom, setzoom] = useState(2.0);
   const [isDocumentLoaded, setDocumentLoaded] = useState(false);
