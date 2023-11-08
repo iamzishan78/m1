@@ -257,7 +257,7 @@ export default function RevenueAnalytics(props) {
       ...(propertiesReportGroup || []),
       ...(filters || []),
     ])
-  }, [propertiesReportGroup, filters])
+  }, [propertiesReportGroup])
 
   useEffect(() => {
     if (!fromDate) return
