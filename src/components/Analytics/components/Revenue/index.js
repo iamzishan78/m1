@@ -21,6 +21,8 @@ import MRTTable from 'components/MRTTable';
 import { GET_CHECK_DETAILS_DATA } from 'graphQL/useQueryCheckDetailsData';
 import { tableController } from 'hookstate/tableController';
 import { GET_ES_SIMPLE_FILTER } from 'graphQL/useQueryESSimpleFilter';
+import PurchasersDropdown from './PurchasersDropdown';
+import AcquisitionIdDropdown from './AcquisitionIdDropdown';
 
 const useStyles = makeStyles(theme => ({
   mainTabContainer: {
@@ -129,6 +131,7 @@ export default function RevenueAnalytics(props) {
   const [propertyNumbers, setPropertyNumbers] = useState([]);
   const [checkNumbers, setCheckNumbers] = useState([]);
   const [comparisonReport, setComparisonReport] = useState('Check Detail Comparison');
+  const [filters, setFilters] = useState([...(propertiesReportGroup || [])])
 
   const tableState = tableController(TableKey).useState(['filters', 'data']);
   const tableStateValues = tableState.stateValues;
@@ -250,14 +253,22 @@ export default function RevenueAnalytics(props) {
   }, []);
 
   useEffect(() => {
-    if (toDate && fromDate)
-      getPortfolioSummary({
-        variables: {
-          filters: propertiesReportGroup || [],
-          filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) },
-        },
-      });
-  }, [propertiesReportGroup, toDate, fromDate]);
+    setFilters([
+      ...(propertiesReportGroup || []),
+      ...(filters || []),
+    ])
+  }, [propertiesReportGroup, filters])
+
+  useEffect(() => {
+    if (!fromDate) return
+
+    getPortfolioSummary({
+      variables: {
+        filters,
+        filterDate: { toDate: new Date(toDate || Date.now()), fromDate: new Date(fromDate) },
+      },
+    });
+  }, [filters, toDate, fromDate]);
 
   const onChangeDates = (fromDate, toDate) => {
     const months = [];
@@ -351,6 +362,7 @@ export default function RevenueAnalytics(props) {
                     isProperties={true}
                     lastCheckMinDate={lastCheckMinDate}
                     datesInputWidth={4}
+                    setAllDateToNull={false}
                   />
                 </Grid>
               </Grid>
@@ -358,8 +370,8 @@ export default function RevenueAnalytics(props) {
                 <Grid container display="flex" className={classes.actionsGrid}>
                   <ReportGroupHeader
                     type="Properties"
-                    esFilters={propertiesReportGroup || []}
-                    setESFilters={value => setPropertyFilter(value)}
+                    esFilters={filters}
+                    setESFilters={setFilters}
                     setFilterToggle={() => { }}
                     isBackground={false}
                     noUpdate={true}
@@ -368,6 +380,18 @@ export default function RevenueAnalytics(props) {
                     noPadding
                   />
                 </Grid>
+              </Grid>
+              <Grid item xs={4} md={2}>
+                <PurchasersDropdown
+                  esFilters={filters}
+                  setESFilters={setFilters}
+                />
+              </Grid>
+              <Grid item xs={4} md={2}>
+                <AcquisitionIdDropdown
+                  esFilters={filters}
+                  setESFilters={setFilters}
+                />
               </Grid>
             </Grid>
           </div>
