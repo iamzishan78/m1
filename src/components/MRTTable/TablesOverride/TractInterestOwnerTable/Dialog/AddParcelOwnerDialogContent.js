@@ -478,7 +478,14 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   const { value } = e.target;
                   setNewOwner({
                     ...newOwner,
-                    surface_interest: value ? parseFloat(e.target.value).toFixed(8) : null,
+                    surface_interest: value ? addTrailingZeros(e.target.value) : null,
+                  });
+                }}
+                onBlur={e => {
+                  const value = e.target.value || 0
+                  setNewOwner({
+                    ...newOwner,
+                    surface_interest: parseFloat(value).toFixed(8),
                   });
                 }}
                 onWheel={e => e.target.blur()}
@@ -499,10 +506,17 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     : newOwner.nra;
                   setNewOwner(newOwner => ({
                     ...newOwner,
-                    mineral_interest: value ? parseFloat(value).toFixed(8) : null,
+                    mineral_interest: value ? addTrailingZeros(value) : null,
                     net_acres,
                     nra,
                   }));
+                }}
+                onBlur={e => {
+                  const value = e.target.value || 0
+                  setNewOwner({
+                    ...newOwner,
+                    mineral_interest: parseFloat(value).toFixed(8),
+                  });
                 }}
                 onWheel={e => e.target.blur()}
               />
@@ -518,8 +532,15 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   const { value } = e.target;
                   setNewOwner({
                     ...newOwner,
-                    royalty_interest: value ? parseFloat(value).toFixed(8) : null,
+                    royalty_interest: value ? addTrailingZeros(e.target.value) : null,
                     nra: !isNraOverridden ? calculateNRA(value, newOwner.orri, newOwner.nri) : newOwner.nra,
+                  });
+                }}
+                onBlur={e => {
+                  const value = e.target.value || 0
+                  setNewOwner({
+                    ...newOwner,
+                    royalty_interest: parseFloat(value).toFixed(8),
                   });
                 }}
                 onWheel={e => e.target.blur()}
@@ -536,8 +557,15 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   const { value } = e.target;
                   setNewOwner({
                     ...newOwner,
-                    orri: value ? parseFloat(value).toFixed(8) : null,
+                    orri: value ? addTrailingZeros(e.target.value) : null,
                     nra: !isNraOverridden ? calculateNRA(value, newOwner.royalty_interest, newOwner.nri) : newOwner.nra,
+                  });
+                }}
+                onBlur={e => {
+                  const value = e.target.value || 0
+                  setNewOwner({
+                    ...newOwner,
+                    orri: parseFloat(value).toFixed(8),
                   });
                 }}
                 onWheel={e => e.target.blur()}
@@ -593,6 +621,13 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     nra: !isNraOverridden
                       ? calculateNRA(newOwner.orri, newOwner.royalty_interest, value, netAcres)
                       : newOwner.nra,
+                  });
+                }}
+                onBlur={e => {
+                  const value = e.target.value || 0
+                  setNewOwner({
+                    ...newOwner,
+                    nri: parseFloat(value).toFixed(8),
                   });
                 }}
                 onWheel={e => e.target.blur()}
