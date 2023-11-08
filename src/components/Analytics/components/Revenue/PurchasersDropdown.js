@@ -83,7 +83,7 @@ const PurchasersDropdown = ({
         },
       });
 
-      setOptions(propertyResult?.data?.getESSimpleFilter?.hits);
+      setOptions(propertyResult?.data?.getESSimpleFilter?.hits?.filter(hit => !!hit.key));
     })();
   }, [client, esFilters]);
 

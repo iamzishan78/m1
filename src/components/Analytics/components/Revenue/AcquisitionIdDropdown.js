@@ -83,7 +83,7 @@ const AcquisitionIdDropdown = ({
         },
       });
 
-      setOptions(acquisitionResult?.data?.getESSimpleFilter?.hits);
+      setOptions(acquisitionResult?.data?.getESSimpleFilter?.hits?.filter(hit => !!hit.key));
     })();
   }, [client, esFilters]);
 
