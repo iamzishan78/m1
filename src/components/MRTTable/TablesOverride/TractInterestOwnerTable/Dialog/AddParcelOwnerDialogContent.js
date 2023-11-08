@@ -876,6 +876,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               </>
             )}
             <Grid item xs={12}>
+            <h3>Depth Restrictions</h3>
               <RadioGroup
                 row
                 value={parcelOwnersRadioBValue}
