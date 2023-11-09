@@ -201,6 +201,21 @@ const OwnersPerUnitMeta = {
 			header: 'NRA',
 			isSearchField: false,
 			type: 'number',
+			Aggregation: {
+				sumNRA: {
+					sum: { field: 'nra' },
+				},
+			},
+			Cell: ({ row }) => {
+				if (row?.original?.nra) {
+					return <>{addTrailingZeros(parseFloat(row?.original?.nra).toFixed(8))}</>;
+				}
+			},
+			Footer: () => {
+				const Controller = tableController('OwnersPerUnitTable');
+				const { sumNRA } = Controller.getValue('footerProps') || {};
+				return <div>{sumNRA?.value ? addTrailingZeros(parseFloat(sumNRA?.value).toFixed(8)) : 0}</div>;
+			},
 		},
 
 		{

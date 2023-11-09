@@ -112,14 +112,14 @@ const TractInterestOwnerHeadCells = (isSnapGrid = false) => [
       display: true,
     },
   },
-  {
-    name: "nri",
-    label: "NRI",
-    esKey: "nri",
-    options: {
-      display: true,
-    },
-  },
+  // {
+  //   name: "nri",
+  //   label: "NRI",
+  //   esKey: "nri",
+  //   options: {
+  //     display: true,
+  //   },
+  // },
   {
     name: "net_acres",
     label: "Net Acres",
@@ -128,14 +128,7 @@ const TractInterestOwnerHeadCells = (isSnapGrid = false) => [
       display: true,
     },
   },
-  {
-    name: "company_net_acres",
-    label: "Co Net Acres",
-    esKey: "company_net_acres",
-    options: {
-      display: true,
-    },
-  },
+
   {
     name: "nra",
     label: "NRA",
@@ -143,6 +136,15 @@ const TractInterestOwnerHeadCells = (isSnapGrid = false) => [
     editable: true,
     options: { display: true },
     style: { minWidth: "100px" },
+  },
+
+    {
+    name: "company_net_acres",
+    label: "Co Net Acres",
+    esKey: "company_net_acres",
+    options: {
+      display: true,
+    },
   },
   {
     name: "cost_bearing",
