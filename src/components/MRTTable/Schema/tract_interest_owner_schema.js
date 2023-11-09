@@ -246,11 +246,22 @@ const TractPerUnitMeta = {
 			header: 'Net Acres',
 			isSearchField: false,
 			type: 'number',
+			Aggregation: {
+				sumNetAcres: {
+					sum: { field: 'net_acres' },
+				},
+			},
+
 			Cell: ({ row }) => {
 				const netAcres = row.getValue('net_acres');
 				if (netAcres) {
 					return <>{addTrailingZeros(parseFloat(netAcres).toFixed(8))}</>;
 				}
+			},
+			Footer: () => {
+				const Controller = tableController('TractPerUnitTable');
+				const { sumNetAcres } = Controller.getValue('footerProps') || {};
+				return <div>{sumNetAcres?.value ? addTrailingZeros(parseFloat(sumNetAcres?.value).toFixed(8)) : 0}</div>;
 			},
 		},
 
@@ -263,11 +274,21 @@ const TractPerUnitMeta = {
 			header: 'NRA',
 			isSearchField: false,
 			type: 'number',
+			Aggregation: {
+				sumNRA: {
+					sum: { field: 'nra' },
+				},
+			},
 			Cell: ({ row }) => {
 				const nra = row.getValue('nra');
 				if (nra) {
 					return <>{addTrailingZeros(parseFloat(nra).toFixed(8))}</>;
 				}
+			},
+			Footer: () => {
+				const Controller = tableController('TractPerUnitTable');
+				const { sumNRA } = Controller.getValue('footerProps') || {};
+				return <div>{sumNRA?.value ? addTrailingZeros(parseFloat(sumNRA?.value).toFixed(8)) : 0}</div>;
 			},
 		},
 
