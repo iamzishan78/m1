@@ -249,6 +249,16 @@ const TractInterestsHeadCells = [
         },
     },
     {
+        name: "operating_rights",
+        label: "Working Interest",
+        esKey: "operating_rights",
+        options: {
+            dbName: "operating_rights",
+            sort: true,
+            filter: true,
+        },
+    },
+    {
         name: "net_acres",
         label: "Net Acres",
         esKey: "net_acres",

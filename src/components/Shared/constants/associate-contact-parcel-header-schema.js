@@ -78,7 +78,7 @@ const AssociateContactWellHeadCells = [
   // { name: "unknown_interest", label: "Unknown Interest" },
   // { name: "record_title", label: "Record Title" },
   { name: "operating_rights", label: "Working Interest" },
-  { name: "nri", label: "NRI" },
+  // { name: "nri", label: "NRI" },
   { name: "net_acres", label: "Net Acres" },
   { name: "nra", label: "NRA", editable: true },
   { name: "cost_bearing", label: "Cost Bearing" },
