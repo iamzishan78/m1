@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { tableGlobalController } from 'hookstate/tableController';
 import AddParcelOwnerDialogContent from '../Dialog/AddParcelOwnerDialogContent';
 import ExportOwnersAndContacts from 'components/Shared/ExportOwnerAndContacts';
+import RecalculateSlideout from 'components/Table/Shape/RecalculateSlideout';
 
 function TractInterestTableDialogs() {
 	const { stateValues } = tableGlobalController.useState(['tractInterestDialog']);
@@ -10,6 +11,15 @@ function TractInterestTableDialogs() {
 	const handleCloseDialog = () => {
 		tableGlobalController.updateState({
 			tractInterestDialog: {},
+		});
+	};
+
+	const updateRows = rows => {
+		tableGlobalController.updateState({
+			tractInterestDialog: {
+				type,
+				selectedRows: rows,
+			},
 		});
 	};
 
@@ -36,6 +46,10 @@ function TractInterestTableDialogs() {
 					type="Tract"
 					open
 				/>
+			)}
+
+			{type === 'recalculate' && (
+				<RecalculateSlideout onClose={handleCloseDialog} rows={rest?.selectedRows} setRows={updateRows} />
 			)}
 		</>
 	);

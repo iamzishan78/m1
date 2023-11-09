@@ -6,6 +6,7 @@ import { useMutation } from '@apollo/client';
 import { RESET_OWNERS_CALCULATED_VALUES } from 'graphQL/useMutationResetOwnersCalculatedValues';
 import { useLocation } from "react-router-dom";
 import { hookStateApp } from 'hookstate';
+import { tableGlobalController } from 'hookstate/tableController';
 
 
 const useStyles = makeStyles(theme => ({
@@ -51,6 +52,7 @@ function DialogContent({ rows, setRows, onClose }) {
   useEffect(() => {
     if (!mutationData) return
 
+    tableGlobalController.refetch()
     hookStateApp.universalLoader.set(false)
     onClose()
   }, [mutationData])
