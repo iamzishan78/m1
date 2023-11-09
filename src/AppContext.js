@@ -7,6 +7,7 @@ import { setMapGridCardState } from "./actions";
 import { heatLayers, baseMapLayers } from "./LayerConfig";
 import { useHookStateApp } from "hookstate";
 import { globalStateController } from 'hookstate/globalStateController';
+import { popupController } from "hookstate/popupStateController";
 
 const AppContext = createContext([{}, () => { }]);
 
@@ -259,6 +260,9 @@ const AppProvider = (props) => {
   useEffect(() => {
     globalStateController.updateState({ user: stateApp.user });
   }, [stateApp.user]);
+  useEffect(() => {
+    popupController.updateState({ selectedParcel: stateApp.selectedParcel });
+  }, [stateApp.selectedParcel]);
 
   return (
     <AppContext.Provider value={[stateApp, setStateApp]}>

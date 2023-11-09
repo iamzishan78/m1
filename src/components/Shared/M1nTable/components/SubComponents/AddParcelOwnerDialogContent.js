@@ -36,6 +36,7 @@ import { ADDOWNERTOAPARCEL } from '../../../../../graphQL/useMutationAddOwnerToA
 import { Modals } from '../../../../../styles/Modal';
 import { AppContext } from '../../../../../AppContext';
 import { tableGlobalController } from 'hookstate/tableController';
+import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 
 const entities = [
   'Corporation',
