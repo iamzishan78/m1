@@ -153,7 +153,13 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 				</Button>
 			)}
 
-			{!isSomethingSelected && <ButtonDropDown options={options} />}
+			{!isSomethingSelected && (
+				<ButtonDropDown
+					options={options}
+					buttonStyles={{ padding: '12px 6px' }}
+					sideButtonStyles={{ minWidth: '25px', padding: 0 }}
+				/>
+			)}
 			{!isSomethingSelected && <TractInterestTableDialogs />}
 			{isSomethingSelected && (
 				<BulkUpdate isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
