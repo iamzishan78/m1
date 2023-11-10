@@ -160,8 +160,6 @@ function RelatedContactsTable(props) {
 
   };
 
-  console.log("!!!!!!!!! selectedRow !!!!!!!", selectedRow);
-
   return (
     <Container
       maxWidth={false}

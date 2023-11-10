@@ -83,9 +83,6 @@ export default function UnitDetailCard(props) {
         shape,
       });
 
-      tableController('OwnersPerUnitTable').updateState({
-        customProps: { customLayer: dataCustomLayer?.customLayer },
-      });
       setProperties(shape.properties);
     }
   }, [dataCustomLayer, OwnersPerUnitGridState?.data]);
@@ -96,6 +93,7 @@ export default function UnitDetailCard(props) {
       { field: 'shape._id', value: dataCustomLayer?.customLayer?._id },
       { field: 'contact.IsDeleted', value: 'false' },
     ],
+    customProps: { customLayer: dataCustomLayer?.customLayer },
   }), [dataCustomLayer]);
 
 

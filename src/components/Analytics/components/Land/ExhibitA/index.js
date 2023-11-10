@@ -167,7 +167,7 @@ export default function ExhibitATabPanel() {
     setESFilters(newFilters);
   };
   const filterChange = (filter) => {
-    console.log("filter", filter);
+    // console.log("filter", filter);
   };
 
   return (

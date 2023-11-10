@@ -280,8 +280,6 @@ export default function AddUserGroupData(props) {
         },
       });
 
-      console.log({ inAdd: stateMapControls.fileUploadedContent })
-
       await addDataset({
         variables: {
           dataset: {

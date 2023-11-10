@@ -170,12 +170,24 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         deals,
       });
 
-      const calculatedNRA = calculateStandardNraForTract(grossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
-      if (!isNaN(parseFloat(calculatedNRA))) setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)));
+      const calculatedNRA = calculateStandardNraForTract(
+        grossAcres,
+        mineral_interest,
+        royalty_interest,
+        orri,
+        workspaceSettings
+      );
+      if (!isNaN(parseFloat(calculatedNRA)))
+        setIsNRAOverridden(
+          !isNaN(parseFloat(nra)) && parseFloat(calculatedNRA) !== parseFloat(nra)
+        );
 
       const calculatedAcres = calculateNetAcres(mineral_interest);
       if (!isNaN(parseFloat(calculatedAcres)))
-        setIsAcresOverridden(calculatedAcres !== net_acres && !isNaN(parseFloat(net_acres)));
+        setIsAcresOverridden(
+          !isNaN(parseFloat(net_acres)) &&
+          parseFloat(calculatedAcres) !== parseFloat(net_acres)
+        );
 
       if (depthTo === 'All depths' && depthFrom === 'All depths') setParcelOwnersRadioBValue('true');
       else setParcelOwnersRadioBValue('false');
@@ -360,6 +372,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const selectedParcel = popupController.getValue('selectedParcel');
 
   const calculateNetAcres = interest => {
+    const selectedParcel = popupController.getValue('selectedParcel');
     if (!interest) return null;
     const netAcres = addTrailingZeros(
       selectedParcel?.sdGrossAcres ? (selectedParcel.sdGrossAcres * interest).toFixed(8) : null
@@ -853,7 +866,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               </>
             )}
             <Grid item xs={12}>
-            <h3>Depth Restrictions</h3>
+              <h3>Depth Restrictions</h3>
               <RadioGroup
                 row
                 value={parcelOwnersRadioBValue}

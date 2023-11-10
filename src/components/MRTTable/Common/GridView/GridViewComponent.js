@@ -67,7 +67,7 @@ function GridViewComponent({ Icon, label, tableKey }) {
 			<IconButton
 				onClick={() =>
 					Controller.updateState({
-						gridView: { ...tableStateValues.gridView, showViewModal: !tableStateValues.gridView.showViewModal },
+						gridView: { ...tableStateValues.gridView, showViewModal: !tableStateValues.gridView?.showViewModal },
 					})
 				}
 			>

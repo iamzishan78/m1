@@ -524,7 +524,6 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
   const handleOnContactView = () => `/contact/details/${nameAutValue._id}?tenant=${workspaceTenantName()}`;
 
   const dealValue = openDeals.find((deal) => deal._id === dealId) || null;
-  console.log("--*-*-*- selectedActivity *-*-*-*-", selectedActivity, outcomeFieldRef);
   return (
     <Dialog
       className={classes.dialogExpCard}

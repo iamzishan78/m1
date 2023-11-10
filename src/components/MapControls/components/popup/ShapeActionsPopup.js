@@ -874,7 +874,6 @@ const ShapeActionsPopup = (props) => {
                   aria-expanded={isCreateParcelMenu ? "true" : undefined}
                   ref={addShapeToLayerButton}
                   onClick={(event) => {
-                    console.log(1, event.currentTarget.getAttributeNames())
                     setAnchorEl(event.currentTarget)
                   }}
                 >

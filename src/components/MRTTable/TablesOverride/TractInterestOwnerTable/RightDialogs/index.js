@@ -28,7 +28,7 @@ function TractInterestTableDialogs() {
 			{type === 'addTractInterest' && (
 				<AddParcelOwnerDialogContent
 					onClose={handleCloseDialog}
-					customLayerId={rest?.customLayer._id}
+					customLayerId={rest?.customLayer?._id}
 					customLayer={rest?.customLayer}
 					selectedRow={rest?.selectedRow}
 				/>

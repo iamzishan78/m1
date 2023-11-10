@@ -187,7 +187,6 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
         setFieldKey('');
         setNameAutValue({ name: "", _id: null })
     }
-    console.log(nameAutValue)
     const onAssign = () => {
         let contactIds = rows.map((row) => row._id);
 
@@ -205,12 +204,12 @@ export default function UpdateBulkTractOwnership({ onClose, rows, setRows, showS
             updateBulkTags({
                 variables: {
                     tags: fieldKey,
-                    user: stateApp.user.mongoId, 
+                    user: stateApp.user.mongoId,
                     contactIds,
                     objectType: "Parcel Ownership"
                 },
                 refetchQueries: ["getESContacts", "getESSimpleSearch"],
-                awaitRefetchQueries: true, 
+                awaitRefetchQueries: true,
             }).then(
                 (res) => {
                     if (res.data && res.data.bulkUpsertTagOnContacts) {

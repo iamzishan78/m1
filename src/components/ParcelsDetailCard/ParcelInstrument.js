@@ -318,8 +318,6 @@ export default function ParcelInstrument(props) {
     viewFile({ variables: { fileId: id } });
   };
 
-  console.log("newInstrument : ", newInstrument)
-
   const handleDeleteAccept = () => {
     // Delete Document Logic goes here
 

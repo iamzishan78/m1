@@ -50,9 +50,9 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		'isSelectall',
 	]);
 	const tableStateValues = tableState.stateValues;
-	const { customLayer } = Controller.getValue('customProps');
 
 	const addOwnerToTract = e => {
+		const { customLayer } = Controller.getValue('customProps');
 		e.stopPropagation();
 		tableGlobalController.updateState({
 			tractInterestDialog: {

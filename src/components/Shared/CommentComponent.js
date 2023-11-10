@@ -164,10 +164,10 @@ export function getLikedPeoplesName(comment, myUserId) {
     else return <li>{user.name || user.displayName}</li>;
   });
 
-  if(names.length < 1)
+  if (names.length < 1)
     return "";
 
-  return <ul style={{listStyle: 'none', paddingLeft: 0}}>{names}</ul>;
+  return <ul style={{ listStyle: 'none', paddingLeft: 0 }}>{names}</ul>;
 }
 export const CommonCommentText = ({ eachComment, users, isPinned }) => {
   const classes = useStyles();
@@ -419,21 +419,21 @@ export default function CommentComponent(props) {
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")
+        .split("\n")
+        .map((line) => {
+          if (line.trim() !== ".") {
+            return line.trim();
+          }
+        })
+        .join("\n")
       : `${value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")}`;
+        .split("\n")
+        .map((line) => {
+          if (line.trim() !== ".") {
+            return line.trim();
+          }
+        })
+        .join("\n")}`;
 
   const updateComment = (value) => {
     setLoadingComments(true);
@@ -492,7 +492,6 @@ export default function CommentComponent(props) {
 
     const newCommentList = commentsArray.map((c) => {
       if (c._id === eachComment) {
-        console.log("ddaat", c);
         return {
           ...c,
           isPinned: true,
@@ -660,13 +659,13 @@ export default function CommentComponent(props) {
               <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
                 <IconButton>
                   {profilesInfo[pinnedComment?.user?.email]?.profileImage ||
-                  pinnedComment.isNew ? (
+                    pinnedComment.isNew ? (
                     <Avatar
                       src={
                         pinnedComment.isNew
                           ? profileImage
                           : profilesInfo[pinnedComment?.user?.email]
-                              .profileImage
+                            .profileImage
                       }
                       size="38"
                       round
@@ -806,7 +805,7 @@ export default function CommentComponent(props) {
                                   eachComment.isNew
                                     ? profileImage
                                     : profilesInfo[eachComment?.user?.email]
-                                        .profileImage
+                                      .profileImage
                                 }
                                 size="38"
                                 round
@@ -825,7 +824,7 @@ export default function CommentComponent(props) {
                           className={`${classes.paddingLeft10} ${classes.commentContent}`}
                           style={
                             eachComment?.commentType?.commentType ===
-                            "unitCreation"
+                              "unitCreation"
                               ? { marginTop: "1rem" }
                               : null
                           }
@@ -836,13 +835,13 @@ export default function CommentComponent(props) {
                             </span>
                             {eachComment?.commentType?.commentType ===
                               "unitCreation" && (
-                              <span style={{ display: 'inline-block', marginLeft: "8px" }}>{eachComment.comment}</span>
-                            )}
+                                <span style={{ display: 'inline-block', marginLeft: "8px" }}>{eachComment.comment}</span>
+                              )}
 
                             {!isNaN(eachComment.ts) && (
                               <ReactTimeAgo
                                 className={classes.commentTime}
-                                style={{whiteSpace: "nowrap"}}
+                                style={{ whiteSpace: "nowrap" }}
                                 date={new Date(Number(eachComment.ts))}
                                 locale="en-US"
                               />
@@ -856,18 +855,16 @@ export default function CommentComponent(props) {
                               showCommentActionId === eachComment._id &&
                               editCommentId !== eachComment._id &&
                               eachComment?.commentType?.commentType !==
-                                "unitCreation" && (
+                              "unitCreation" && (
                                 <div
-                                  className={`${classes.floatRight} ${
-                                    classes.cursorPointer
-                                  } ${classes.inlineFlex} ${
-                                    !(
+                                  className={`${classes.floatRight} ${classes.cursorPointer
+                                    } ${classes.inlineFlex} ${!(
                                       eachComment?.user?.email ===
-                                        stateApp.user.email &&
+                                      stateApp.user.email &&
                                       showCommentActionId === eachComment._id &&
                                       editCommentId !== eachComment._id
                                     ) && classes.hideMenuIcon
-                                  }`}
+                                    }`}
                                 >
                                   <ActionMenu
                                     eachComment={eachComment}
@@ -935,48 +932,48 @@ export default function CommentComponent(props) {
                         </Grid>
                         {eachComment?.commentType?.commentType !==
                           "unitCreation" && (
-                          <Grid
-                            item
-                            style={{ maxWidth: "75px", padding: "0px" }}
-                          >
-                            <IconButton
-                              onClick={() =>
-                                callToggleCommentReactionMutation(eachComment)
-                              }
+                            <Grid
+                              item
+                              style={{ maxWidth: "75px", padding: "0px" }}
                             >
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 5,
-                                }}
+                              <IconButton
+                                onClick={() =>
+                                  callToggleCommentReactionMutation(eachComment)
+                                }
                               >
-                                {eachComment?.likedBy?.length > 0 && (
-                                  <span style={{ fontSize: "12px" }}>
-                                    {eachComment?.likedBy?.length}
-                                  </span>
-                                )}
-
-                                <Tooltip
-                                  title={
-                                    <>
-                                      {getLikedPeoplesName(
-                                        eachComment,
-                                        stateApp.user._id
-                                      )}
-                                    </>
-                                  }
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 5,
+                                  }}
                                 >
-                                  {didILikedThisComment(eachComment) ? (
-                                    <ThumbUpIcon />
-                                  ) : (
-                                    <ThumbUpAltOutlinedIcon />
+                                  {eachComment?.likedBy?.length > 0 && (
+                                    <span style={{ fontSize: "12px" }}>
+                                      {eachComment?.likedBy?.length}
+                                    </span>
                                   )}
-                                </Tooltip>
-                              </div>
-                            </IconButton>
-                          </Grid>
-                        )}
+
+                                  <Tooltip
+                                    title={
+                                      <>
+                                        {getLikedPeoplesName(
+                                          eachComment,
+                                          stateApp.user._id
+                                        )}
+                                      </>
+                                    }
+                                  >
+                                    {didILikedThisComment(eachComment) ? (
+                                      <ThumbUpIcon />
+                                    ) : (
+                                      <ThumbUpAltOutlinedIcon />
+                                    )}
+                                  </Tooltip>
+                                </div>
+                              </IconButton>
+                            </Grid>
+                          )}
                       </Grid>
                     )}
                   </Fragment>
@@ -1001,7 +998,7 @@ export default function CommentComponent(props) {
               <Grid item style={{ maxWidth: "55px" }}>
                 <IconButton
                   className={classes.commentView}
-                  // style={{ top: "3px" }}
+                // style={{ top: "3px" }}
                 >
                   {profileImage ? (
                     <Avatar src={profileImage} size="38" round />

@@ -5,6 +5,7 @@ import { copy, deepEqual } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
 import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
+import { isEmpty } from 'lodash';
 
 const initialState = {
 	defaultFilters: [],
@@ -104,6 +105,7 @@ const tableESStateControllerHandler = state => ({
 			TableSchema,
 			defaultFlterMode,
 			defaultFilters,
+			customProps = {},
 			isSelectAllAllowed = true,
 			search,
 			...rest
@@ -266,7 +268,7 @@ const tableESStateControllerHandler = state => ({
 			isFetching: false,
 			isError: false,
 			defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }),
-			customProps: state?.customProps?.get({ noproxy: true }),
+			customProps: isEmpty(state?.customProps?.get({ noproxy: true })) ? customProps : state?.customProps?.get({ noproxy: true }),
 			filters: [],
 			sorting: [],
 			searchFields,

@@ -125,7 +125,6 @@ const Agreements = ({ platformWell, agreements }) => {
   const [addShapeWellInterest] = useMutation(ADD_SHAPE_WELL_INTEREST);
 
   const handleAddAgreement = (shapeId) => {
-    console.log(shapeId);
     addShapeWellInterest({
       variables: {
         wellInterest: {
