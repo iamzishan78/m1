@@ -48,7 +48,6 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 	const history = useHistory();
 	const client = useApolloClient();
 	const Controller = tableController(tableKey);
-	const { customLayer } = Controller.getValue('customProps');
 	const tableState = Controller.useState([
 		'esIndex',
 		'globalFilter',
@@ -66,6 +65,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 
 	const addOwnerToUnit = e => {
+		const { customLayer } = Controller.getValue('customProps');
 		e.stopPropagation();
 		tableGlobalController.updateState({
 			ownerPerUnitDialog: {
@@ -90,6 +90,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 			text: 'Import Interest Owners',
 			isShow: true,
 			action: () => {
+				const { customLayer } = Controller.getValue('customProps');
 				navController.updateState({
 					bulkUploadFromMap: true,
 					bulkUploadShape: {

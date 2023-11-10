@@ -372,6 +372,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const selectedParcel = popupController.getValue('selectedParcel');
 
   const calculateNetAcres = interest => {
+    const selectedParcel = popupController.getValue('selectedParcel');
     if (!interest) return null;
     const netAcres = addTrailingZeros(
       selectedParcel?.sdGrossAcres ? (selectedParcel.sdGrossAcres * interest).toFixed(8) : null

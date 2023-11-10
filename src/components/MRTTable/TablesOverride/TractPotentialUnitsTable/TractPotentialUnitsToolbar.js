@@ -15,9 +15,9 @@ function TractPotentialUnitsToolBar({ table, tableKey }) {
         awaitRefetchQueries: true,
     });
     const Controller = tableController(tableKey);
-    const { customLayer } = Controller.getValue("customProps");
     const selectedRows = table.getSelectedRowModel().flatRows.map((row) => row.original);
     const addUnitToTract = async (e) => {
+        const { customLayer } = Controller.getValue("customProps");
         e.stopPropagation();
         const shapeTract = {
             abstract: customLayer?.shapeJson?.properties?.AbstractName,
