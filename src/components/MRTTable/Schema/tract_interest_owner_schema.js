@@ -12,7 +12,6 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 const esIndex = 'shapeowners_flat';
 
 const onClickedRow = selectedRow => {
-	console.log('selectedRow', selectedRow)
 	const Controller = tableController('TractPerUnitTable');
 	const { customLayer } = Controller.getValue('customProps');
 	tableGlobalController.updateState({

@@ -125,7 +125,6 @@ export function getLikedPeoplesName(comment, myUserId) {
   });
 
   if (names.length < 1) return '';
-  console.log(" ------ names -----", names);
   return <ul style={{ listStyle: "none", paddingLeft: 0 }}>{names}</ul>;
 }
 
@@ -285,21 +284,21 @@ export default function DealComment(props) {
   const newCommentCleaner = (value) =>
     value.trim()[value.trim().length - 1] === "."
       ? value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")
+        .split("\n")
+        .map((line) => {
+          if (line.trim() !== ".") {
+            return line.trim();
+          }
+        })
+        .join("\n")
       : `${value
-          .split("\n")
-          .map((line) => {
-            if (line.trim() !== ".") {
-              return line.trim();
-            }
-          })
-          .join("\n")}`;
+        .split("\n")
+        .map((line) => {
+          if (line.trim() !== ".") {
+            return line.trim();
+          }
+        })
+        .join("\n")}`;
 
   const updateComment = (value) => {
     setLoadingComments(true);
@@ -351,7 +350,6 @@ export default function DealComment(props) {
   const pinToTop = (eachComment) => {
     const newCommentList = commentsArray.map((c) => {
       if (c._id === eachComment) {
-        console.log("ddaat", c);
         return {
           ...c,
           isPinned: true,
@@ -477,9 +475,7 @@ export default function DealComment(props) {
             }
           });
 
-          console.log("before", tempArr);
           const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
-          console.log("after", trueFirst);
           setCommentsArray(tempArray);
           setPinnedArray(trueFirst);
         } else {
@@ -495,10 +491,8 @@ export default function DealComment(props) {
               temp.push(item);
             }
           });
-          console.log("before", tempArr);
 
           const trueFirst = temp.sort((a, b) => Number(b.pin) - Number(a.pin));
-          console.log("after", trueFirst);
           setCommentsArray(tempArr);
           setPinnedArray(temp);
         }
@@ -590,7 +584,7 @@ export default function DealComment(props) {
                                 eachComment.isNew
                                   ? profileImage
                                   : profilesInfo[eachComment.user?.email]
-                                      .profileImage
+                                    .profileImage
                               }
                               size="38"
                               round
@@ -777,7 +771,7 @@ export default function DealComment(props) {
                                 eachComment.isNew
                                   ? profileImage
                                   : profilesInfo[eachComment.user?.email]
-                                      .profileImage
+                                    .profileImage
                               }
                               size="38"
                               round

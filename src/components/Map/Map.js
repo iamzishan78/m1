@@ -1667,7 +1667,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         else if (layer.layerType === "file layer") {
           let layerData = hookStateAppLayers.find((l) => l.file === layer.file);
           if (layerData?.layerName === 'la_units - 2 Layer')
-            console.log(layerData)
           if (layerData.fileUrl) {
             if (layerData.layerPaintProps?.[0]?.sourceProps) {
               if (!map?.getSource(layerData.layerPaintProps[0].sourceProps)) {
@@ -4727,7 +4726,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         ...stateApp,
         mapVars: stateApp.defaultMapVars,
       }));
-      // console.log('LOGGING', stateApp.defaultMapVars);
       map.jumpTo({
         center: [stateApp.defaultMapVars.center.lng, stateApp.defaultMapVars.center.lat],
         zoom: stateApp.defaultMapVars.zoom,
@@ -5616,7 +5614,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         wellSelectedCoordinates: [stateApp.flyTo.longitude, stateApp.flyTo.latitude],
       }));
 
-      console.log('LOGGING', stateApp.flyTo)
 
       !stateApp.activateWellDetailsFromTable &&
         map.jumpTo({
@@ -5753,8 +5750,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
   useEffect(() => {
     if (map && stateApp.toggleZoomOut) {
-      console.log('LOGGING', stateApp.toggleZoomOut)
-
       if (stateApp.toggleZoomOut === true) {
         map.jumpTo({
           center: stateApp.defaultMapVars.center,

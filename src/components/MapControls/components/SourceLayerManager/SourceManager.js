@@ -440,12 +440,10 @@ function SourceManager(props) {
   const handleDatasetChange = (dataset, value) => {
     const updatefn = {};
     const layersSettingsToUpdate = [];
-    console.log('STATEAPP', stateApp);
 
     if (stateApp.datasets?.filter((row) => row.visibility == true).length < source_limit || value == 0) {
       currentLayers.forEach((clayer, layerIndex) => {
         if (clayer.file === dataset.file) {
-          console.log(clayer.file, clayer)
           updatefn[layerIndex] = { layerSettings: { showable: { $set: value }, visiable: { $set: value } } };
           layersSettingsToUpdate.push({
             _id: clayer._id,
