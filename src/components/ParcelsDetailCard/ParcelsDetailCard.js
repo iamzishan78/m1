@@ -281,16 +281,6 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
       };
       setParcelObj(data);
 
-      tableController("TractPerUnitTable").updateState({
-        customProps: { customLayer: data }
-      });
-      tableController("TractUnitsTable").updateState({
-        customProps: { customLayer: data }
-      });
-      tableController("TractPotentialUnitsTable").updateState({
-        customProps: { customLayer: data }
-      });
-
       setProperties(shape.properties);
     }
   }, [dataCustomLayer, tractPerUnitGridState?.data, tractUnitsGridState?.data, tractPotentialUnitsState?.data]);
@@ -298,18 +288,20 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
   const overrideMeta = useMemo(() => ({
     tabLabels: ['Tract Ownership', 'Potential Ownership'],
     defaultFilters: [
-      { field: "shape._id", value: dataCustomLayer?.customLayer?._id },
+      { field: "shape._id", value: parcelObj?._id },
       { field: "contact.IsDeleted", value: "false" },
       { field: "descriptor", value: "ParcelDescriptor" }
     ],
-  }), [dataCustomLayer]);
+    customProps: { customLayer: parcelObj }
+  }), [parcelObj]);
 
   const overrideMetaTractUnits = useMemo(() => ({
     tabLabels: ['Related Units', 'Potential Units'],
     defaultFilters: [
-      { field: "parcel._id", value: dataCustomLayer?.customLayer?._id },
+      { field: "parcel._id", value: parcelObj?._id },
     ],
-  }), [dataCustomLayer]);
+    customProps: { customLayer: parcelObj }
+  }), [parcelObj]);
 
   const overrideMetaTractPotentialUnits = useMemo(() => ({
     tabLabels: ['Related Units', 'Potential Units'],
@@ -317,11 +309,12 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
       {
         type: 'geo_intersects',
         field: 'shapeJson.geometry',
-        value: dataCustomLayer?.customLayer?.shapeJson?.geometry,
+        value: parcelObj?.shapeJson?.geometry,
       },
       { field: 'layer.keyword', value: 'unit' }
     ],
-  }), [dataCustomLayer]);
+    customProps: { customLayer: parcelObj }
+  }), [parcelObj]);
 
   useEffect(() => {
     if (updatedParcel) {
