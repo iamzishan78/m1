@@ -99,7 +99,7 @@ function ToolbarActions({ table, tableKey, children }) {
 				}}
 			>
 				<TabHeader labels={tableStateValues.tabLabels} />
-				{tableStateValues.gridViewSettings && (
+				{tableStateValues.gridViewSettings && !isSomethingSelected && (
 					<GridView tableKey={tableKey} {...tableStateValues.gridViewSettings} />
 				)}
 			</div>

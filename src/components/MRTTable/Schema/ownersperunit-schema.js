@@ -10,6 +10,7 @@ import ListChips from 'components/Common/ListChips';
 import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import UnitIcon from 'components/Shared/svgIcons/unit';
 
 const esIndex = 'shapeowners_flat';
 
@@ -34,6 +35,25 @@ const OwnersPerUnitMeta = {
 	pagination: {
 		pageIndex: 0,
 		pageSize: 25,
+	},
+	gridViewSettings: {
+		label: 'Unit Owners',
+		module: 'UnitOwner',
+		Icon: UnitIcon,
+		defaultView: {
+			name: 'All Unit Owners',
+			type: 'Default',
+		},
+		handleDefaultView: (view, user) => {
+			if (view?.name === 'My Unit Owner') {
+				view.filters[0].value = user._id;
+			}
+			return view;
+		},
+		cssOverride: {
+			top: '361px',
+			left: '295px',
+		},
 	},
 	CustomToolBar: OwnersPerUnitToolBar,
 	onClickedRow,

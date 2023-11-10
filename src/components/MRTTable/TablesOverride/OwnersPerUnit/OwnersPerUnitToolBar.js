@@ -153,7 +153,13 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 
 	return (
 		<>
-			{!isSomethingSelected && <ButtonDropDown options={options} />}
+			{!isSomethingSelected && (
+				<ButtonDropDown
+					options={options}
+					buttonStyles={{ padding: '12px 6px' }}
+					sideButtonStyles={{ minWidth: '25px', padding: 0 }}
+				/>
+			)}
 
 			{isSomethingSelected && (
 				<Button

@@ -8,6 +8,7 @@ import TractInterestOwnerToolBar from 'components/MRTTable/TablesOverride/TractI
 import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TractIcon from 'components/Shared/svgIcons/tract';
 
 const esIndex = 'shapeowners_flat';
 
@@ -31,6 +32,25 @@ const TractPerUnitMeta = {
 	pagination: {
 		pageIndex: 0,
 		pageSize: 25,
+	},
+	gridViewSettings: {
+		label: 'Tract Owners',
+		module: 'TractOwner',
+		Icon: TractIcon,
+		defaultView: {
+			name: 'All Tract Owners',
+			type: 'Default',
+		},
+		handleDefaultView: (view, user) => {
+			if (view?.name === 'My Tract Owner') {
+				view.filters[0].value = user._id;
+			}
+			return view;
+		},
+		cssOverride: {
+			top: '331px',
+			left: '300px',
+		},
 	},
 	CustomToolBar: TractInterestOwnerToolBar,
 	onClickedRow,
