@@ -83,9 +83,21 @@ const AcquisitionIdDropdown = ({
         },
       });
 
-      setOptions(acquisitionResult?.data?.getESSimpleFilter?.hits?.filter(hit => !!hit.key));
+      setOptions(
+        acquisitionResult?.data?.getESSimpleFilter?.hits?.filter(hit => !!hit.key)
+      );
     })();
   }, [client, esFilters]);
+
+  useEffect(() => {
+    if (value === 'All Acquisitions') return;
+    if (options.some(option => option.key === value)) return;
+
+    setValue('All Acquisitions');
+    setESFilters(
+      esFilters.filter(filter => !['acquisitionID.keyword'].includes(filter.field))
+    );
+  }, [options, value]);
 
   return (
     <Grid

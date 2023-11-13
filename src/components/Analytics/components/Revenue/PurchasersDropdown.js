@@ -87,6 +87,16 @@ const PurchasersDropdown = ({
     })();
   }, [client, esFilters]);
 
+  useEffect(() => {
+    if (value === 'All Purchasers') return;
+    if (options.some(option => option.key === value)) return;
+
+    setValue('All Purchasers');
+    setESFilters(
+      esFilters.filter(filter => !['purchaser.name.keyword'].includes(filter.field))
+    );
+  }, [options, value]);
+
   return (
     <Grid
       container
