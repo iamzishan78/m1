@@ -526,46 +526,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                   )}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <h3>Unit Tract ID</h3>
-
-                <Controller
-                  control={control}
-                  name="unitTractId"
-                  render={(props) => (
-                    <TextField
-                      size="small"
-                      type="text"
-                      value={props.value}
-                      inputRef={props.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => props.onChange(e.target.value)}
-                      fullWidth
-                      defaultValue=""
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <h3>Tract Acres</h3>
-
-                <Controller
-                  control={control}
-                  name="tractAcres"
-                  render={(props) => (
-                    <TextField
-                      size="small"
-                      type="number"
-                      value={props.value}
-                      inputRef={props.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => props.onChange(e.target.value)}
-                      fullWidth
-                      defaultValue=""
-                    />
-                  )}
-                />
-              </Grid>
+             
               <Grid item xs={12}>
                 <h3>Working Interest</h3>
 
@@ -733,6 +694,46 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                           </InputAdornment>
                         ),
                       }}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Unit Tract ID</h3>
+
+                <Controller
+                  control={control}
+                  name="unitTractId"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="text"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => props.onChange(e.target.value)}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Unit Tract Acres</h3>
+
+                <Controller
+                  control={control}
+                  name="tractAcres"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => props.onChange(e.target.value)}
                       fullWidth
                       defaultValue=""
                     />
