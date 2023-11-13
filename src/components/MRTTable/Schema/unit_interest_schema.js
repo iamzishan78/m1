@@ -93,12 +93,7 @@ const UnitInterestMeta = {
 			header: 'Unit Acres',
 		},
 
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'taxYear',
-			accessorKey: 'taxYear',
-			header: 'Tax Year',
-		},
+
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -131,6 +126,12 @@ const UnitInterestMeta = {
 			header: 'NRI',
 			isSearchField: false,
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'net_acres',
+			accessorKey: 'net_acres',
+			header: 'Net Acres',
+		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -139,22 +140,55 @@ const UnitInterestMeta = {
 			header: 'NRA',
 			isSearchField: false,
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'unitTractId.keyword',
+			accessorKey: 'unitTractId',
+			header: 'Unit Tract ID',
+		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'shape.shapeJson.properties.uUnitPricing.keyword',
-			accessorKey: 'shape.shapeJson.properties.uUnitPricing',
-			header: 'Price/NRA',
+			name: 'tractAcres',
+			accessorKey: 'tractAcres',
+			header: 'Unit Tract Acres',
 		},
+
+		// {
+		// 	...CommonSchema.COMMON_COLUMN,
+		// 	name: 'shape.shapeJson.properties.uUnitPricing.keyword',
+		// 	accessorKey: 'shape.shapeJson.properties.uUnitPricing',
+		// 	header: 'Price/NRA',
+		// },
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'offer_price',
 			accessorKey: 'offer_price',
-			header: 'Offer Price',
+			header: 'Target Offer Price',
 			isSearchField: false,
 			Cell: ({ row }) => {
 				return <p>{vf_currency_to_fixed(row?.original?.offer_price, 2)}</p>
+			},
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'max_offer_price',
+			accessorKey: 'max_offer_price',
+			header: 'Max Offer Price',
+			isSearchField: false,
+			Cell: ({ row }) => {
+				return <p>{vf_currency_to_fixed(row?.original?.max_offer_price, 2)}</p>
+			},
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'actual_offer_price',
+			accessorKey: 'actual_offer_price',
+			header: 'Actual Offer Price',
+			isSearchField: false,
+			Cell: ({ row }) => {
+				return <p>{vf_currency_to_fixed(row?.original?.actual_offer_price, 2)}</p>
 			},
 		},
 
@@ -205,6 +239,18 @@ const UnitInterestMeta = {
 			name: 'shape.shapeJson.properties.qualifier.name.keyword',
 			accessorKey: 'shape.shapeJson.properties.qualifier.name',
 			header: 'Qualifier',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'dataSource.keyword',
+			accessorKey: 'dataSource',
+			header: 'Data Source',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'taxYear',
+			accessorKey: 'taxYear',
+			header: 'Tax Year',
 		},
 
 		{
