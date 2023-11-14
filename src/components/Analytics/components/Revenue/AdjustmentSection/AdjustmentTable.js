@@ -106,7 +106,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
               <TableHead>
                 <TableRow>
                   <TableCell style={{ paddingLeft: 0 }} >
-                    <CSVDownloader datas={convertAnalyticsDataToCSV(items)} filename={`Adjustments`} type="link">
+                    <CSVDownloader datas={convertAnalyticsDataToCSV(items, monthsInterval)} filename={`Adjustments`} type="link">
                       <IconButton style={{ display: 'flex' }}>
                         <Tooltip title="Download CSV" aria-label="add">
                           <CloudDownloadIcon />

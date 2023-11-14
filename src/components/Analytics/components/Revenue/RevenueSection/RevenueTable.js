@@ -97,7 +97,7 @@ export default function AcccessibleTable({ monthsInterval, items }) {
               <TableHead>
                 <TableRow>
                   <TableCell style={{ paddingLeft: 0 }} >
-                    <CSVDownloader datas={convertAnalyticsDataToCSV(items)} filename={`Revenue`} type="link">
+                    <CSVDownloader datas={convertAnalyticsDataToCSV(items, monthsInterval)} filename={`Revenue`} type="link">
                       <IconButton style={{ display: 'flex' }}>
                         <Tooltip title="Download CSV" aria-label="add">
                           <CloudDownloadIcon />

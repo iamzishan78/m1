@@ -114,7 +114,7 @@ export default function ProductTable({ monthsInterval, items, name, unit }) {
                     <span style={{ lineHeight: '1.5rem' }} >
                       {name}
                     </span>
-                    <CSVDownloader datas={convertAnalyticsDataToCSV(items)} filename={name} type="link">
+                    <CSVDownloader datas={convertAnalyticsDataToCSV(items, monthsInterval)} filename={name} type="link">
                       <IconButton style={{ paddingTop: 0, paddingBottom: 0 }} >
                         <Tooltip title="Download CSV" aria-label="add">
                           <CloudDownloadIcon />
