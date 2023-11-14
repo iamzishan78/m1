@@ -1666,7 +1666,6 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         }
         else if (layer.layerType === "file layer") {
           let layerData = hookStateAppLayers.find((l) => l.file === layer.file);
-          if (layerData?.layerName === 'la_units - 2 Layer')
           if (layerData.fileUrl) {
             if (layerData.layerPaintProps?.[0]?.sourceProps) {
               if (!map?.getSource(layerData.layerPaintProps[0].sourceProps)) {
