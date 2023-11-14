@@ -243,23 +243,23 @@ export default function AddLayer(props) {
   };
 
   const changeShowAble = (layer) => {
-    if (currentLayers?.filter((row) => row?.layerSettings?.showable == true).length < layer_limit || !layer?.layerSettings?.showable == 0) {
+    const visible = layer.type === "group" ? !!layer.layers.find((l) => l.layerSettings?.showable) : layer?.layerSettings?.showable;
+
+    if (currentLayers?.filter((row) => row?.layerSettings?.showable === true).length < layer_limit || visible) {
       const updatefn = {};
       if (layer.type === "group") {
-        const value = !!layer.layers.find((l) => l.layerSettings?.showable);
         layer.layers.forEach((l) => {
           const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === l.identifier);
-          updatefn[layerIndex] = { layerSettings: { showable: { $set: !value } } };
+          updatefn[layerIndex] = { layerSettings: { showable: { $set: !visible } } };
         });
       } else {
         const layerIndex = currentLayers.findIndex((clayer) => clayer.identifier === layer.identifier);
-        updatefn[layerIndex] = { layerSettings: { showable: { $set: !layer.layerSettings?.showable } } };
+        updatefn[layerIndex] = { layerSettings: { showable: { $set: !visible } } };
       }
 
       setCurrentLayers(update(currentLayers, updatefn));
       handleCurrentLayersChange();
-    }
-    else {
+    } else {
       dispatch(
         showInfoMessage("Cannot add additional layer. Number of active layers cannot exceed " + layer_limit)
       );
