@@ -55,7 +55,7 @@ import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 import { NavigationContext } from "components/Navigation/NavigationContext";
 import AddGroup from "./AddGroup";
 
-function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems }) {
+function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems, showSidePanel }) {
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
@@ -145,10 +145,11 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     }
   };
 
-  const togglePullout = () => {
+  const togglePullout = (expandedPanel) => {
+    console.log("🚀 ~ file: Panel.js:149 ~ togglePullout ~ expandedPanel:", expandedPanel)
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
-      expandedPanel: !stateMapControls.expandedPanel,
+      expandedPanel: expandedPanel ?? !stateMapControls.expandedPanel,
       addLayer: false,
       manageSourceLayer: false,
       manageLayer: false,
@@ -328,6 +329,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
     } else return false;
   }, [stateMapControls.addLayer, stateMapControls.manageSourceLayer, stateMapControls.manageTransferData, stateMapControls.selectedLayer, stateMapControls.manageLayer]);
 
+  useEffect(() => {
+    togglePullout(showSidePanel)
+  }, [showSidePanel])
+
   return (
     <div>
       <div
@@ -463,7 +468,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems 
             <SecondaryPanel />
           </TransitionGroup>
         </StyledMenu>
-        <div className={classes.pulloutBox} onClick={togglePullout}>
+        <div className={classes.pulloutBox} onClick={() => togglePullout()}>
           {stateMapControls.expandedPanel ? <ArrowBackIosIcon id="arrowBackIcon" /> : <ArrowForwardIosIcon />}
         </div>
       </div>

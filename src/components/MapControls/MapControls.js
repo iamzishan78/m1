@@ -355,7 +355,7 @@ export default function MapControls(props) {
         </SpeedDial>
       )}
 
-      {!props.showExpandableCard && !props.expandedCard && <SidePanel />}
+      <SidePanel showSidePanel={!props.showExpandableCard && !props.expandedCard} />
 
       {stateMapControls.selectedMapControl === "draw" ? <DrawShapes /> : null}
       {stateMapControls.layerAddControl === "add" ? <AddUserData /> : null}
