@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -97,6 +97,24 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
     return value ? <span>{vf_number(value.toFixed(2))}</span> : <span>-</span>
   }
 
+  const [csvItems, setCsvItems] = useState(items)
+
+  useEffect(() => {
+    const totalAdjustments = { name: 'TOTAL ADJUSTMENTS', total, data: {} }
+
+    monthsInterval.forEach((month) => {
+      let total = 0
+      items.forEach((item) => {
+        if (typeof item.data[month] === 'object')
+          total += item.data[month].total;
+      });
+
+      totalAdjustments.data[month] = total;
+    })
+
+    setCsvItems([...items, totalAdjustments])
+  }, [items, monthsInterval, total])
+
   return (
     <div className={classes.root}>
       <TableContainer>
@@ -106,7 +124,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
               <TableHead>
                 <TableRow>
                   <TableCell style={{ paddingLeft: 0 }} >
-                    <CSVDownloader datas={convertAnalyticsDataToCSV(items, monthsInterval)} filename={`Adjustments`} type="link">
+                    <CSVDownloader datas={convertAnalyticsDataToCSV(csvItems, monthsInterval)} filename={`Adjustments`} type="link">
                       <IconButton style={{ display: 'flex' }}>
                         <Tooltip title="Download CSV" aria-label="add">
                           <CloudDownloadIcon />
