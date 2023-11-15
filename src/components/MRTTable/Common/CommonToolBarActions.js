@@ -7,14 +7,14 @@ import RequestPageIcon from 'components/Shared/svgIcons/request_page';
 import { tableGlobalController } from 'hookstate/tableController';
 import { getAllData } from 'components/MRTTable/utils/GetAllData';
 
-const openSideExportDialog = (_selectedRows, search, filters, total, isSelectAll, esIndex, table) => {
+const openSideExportDialog = (_selectedRows, search, filters, total, isAllRowsSelected, esIndex, table) => {
 	tableGlobalController.updateState({
 		dialog: {
 			type: 'exportContacts',
 			search,
 			filters,
 			total,
-			isSelectAll,
+			isAllRowsSelected,
 			rows: _selectedRows,
 			esIndex,
 			open: true,
@@ -27,7 +27,6 @@ const openSideDialog = async (
 	type,
 	_selectedRows,
 	isAllRowsSelected,
-	isSelectall,
 	search,
 	sorting,
 	defaultSort,
@@ -39,7 +38,7 @@ const openSideDialog = async (
 	tableKey
 ) => {
 	let showRows = _selectedRows;
-	if (isAllRowsSelected && isSelectall) {
+	if (isAllRowsSelected) {
 		tableGlobalController.updateState({
 			dialog: {
 				type,
@@ -63,7 +62,6 @@ export function BulkUpdate({
 	classes,
 	selectedRows,
 	isAllRowsSelected,
-	isSelectall,
 	search,
 	sorting,
 	defaultSort,
@@ -85,7 +83,6 @@ export function BulkUpdate({
 					'asign',
 					selectedRows,
 					isAllRowsSelected,
-					isSelectall,
 					search,
 					sorting,
 					defaultSort,
@@ -103,13 +100,13 @@ export function BulkUpdate({
 	);
 }
 
-export function ExportData({ classes, _selectedRows, search, filters, total, isSelectAll, esIndex, table }) {
+export function ExportData({ classes, _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table }) {
 	return (
 		<Button
 			color="secondary"
 			startIcon={<CloudDownloadIcon color="white" />}
 			className={classes.selectTopBarButtons}
-			onClick={() => openSideExportDialog(_selectedRows, search, filters, total, isSelectAll, esIndex, table)}
+			onClick={() => openSideExportDialog(_selectedRows, search, filters, total, isAllRowsSelected, esIndex, table)}
 		>
 			Export
 		</Button>
@@ -121,7 +118,6 @@ export function ViewContactData({
 	classes,
 	selectedRows,
 	isAllRowsSelected,
-	isSelectAll,
 	search,
 	sorting,
 	defaultSort,
@@ -144,7 +140,6 @@ export function ViewContactData({
 						'buyContactsInfoData',
 						selectedRows,
 						isAllRowsSelected,
-						isSelectAll,
 						search,
 						sorting,
 						defaultSort,

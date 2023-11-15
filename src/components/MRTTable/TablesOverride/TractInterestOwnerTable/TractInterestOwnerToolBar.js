@@ -47,7 +47,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		'defaultSort',
 		'sorting',
 		'defaultFilters',
-		'isSelectall',
+		'isAllRowsSelected',
 	]);
 	const tableStateValues = tableState.stateValues;
 
@@ -95,8 +95,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 
 		return {
 			selectedRows,
-			isAllRowsSelected,
-			isSelectall: tableStateValues?.isSelectall,
+			isAllRowsSelected: tableStateValues.isAllRowsSelected,
 			search,
 			sorting: tableStateValues?.sorting,
 			defaultSort: tableStateValues?.defaultSort,
@@ -119,7 +118,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 				search,
 				filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
 				total: tableStateValues?.data.total,
-				isSelectAll: isAllRowsSelected,
+				isAllRowsSelected: tableStateValues.isAllRowsSelected,
 				selectedRows,
 				esIndex: tableStateValues.esIndex,
 			},

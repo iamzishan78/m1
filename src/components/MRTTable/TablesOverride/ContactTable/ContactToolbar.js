@@ -45,8 +45,8 @@ function ContactToolbar({ table, tableKey }) {
 		'filters',
 		'defaultSort',
 		'sorting',
-		'isSelectall',
 		'showAddContactButton',
+		'isAllRowsSelected',
 	]);
 	const tableStateValues = tableState.stateValues;
 	const isSomeRowsSelected = table.getIsSomeRowsSelected();
@@ -70,7 +70,7 @@ function ContactToolbar({ table, tableKey }) {
 
 	const openSideDialog = async (type, _selectedRows) => {
 		let showRows = _selectedRows;
-		if (isAllRowsSelected) {
+		if (tableStateValues.isAllRowsSelected) {
 			const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
 			const search = { fields: tableStateValues?.searchFields, query };
 
@@ -108,7 +108,7 @@ function ContactToolbar({ table, tableKey }) {
 			search,
 			filters: tableStateValues.filters,
 			total: tableStateValues?.data.total,
-			isSelectAll: isAllRowsSelected,
+			isAllRowsSelected: tableStateValues.isAllRowsSelected,
 			esIndex: tableStateValues.esIndex,
 			table,
 		};
@@ -133,8 +133,7 @@ function ContactToolbar({ table, tableKey }) {
 
 		return {
 			selectedRows,
-			isAllRowsSelected,
-			isSelectall: isAllRowsSelected,
+			isAllRowsSelected: tableStateValues.isAllRowsSelected,
 			search,
 			sorting: tableStateValues?.sorting,
 			defaultSort: tableStateValues?.defaultSort,

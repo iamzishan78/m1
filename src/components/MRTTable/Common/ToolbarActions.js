@@ -36,7 +36,7 @@ function ToolbarActions({ table, tableKey, children }) {
 	]);
 	const tableStateValues = tableState.stateValues;
 	if (tableStateValues?.isSelectAllAllowed)
-		tableController(tableKey).setSelectAll(isAllRowsSelected);
+		tableController(tableKey).setIsAllRowsSelected(isAllRowsSelected);
 
 	const handleExport = () => {
 		tableGlobalController.updateState({

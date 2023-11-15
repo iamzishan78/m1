@@ -40,7 +40,7 @@ function TractInterestTableDialogs() {
 					search={rest?.search}
 					filters={rest?.filters}
 					total={rest?.total}
-					isSelectAll={rest?.isSelectAll}
+					isSelectAll={rest?.isAllRowsSelected}
 					rows={rest?.selectedRows}
 					esIndex={rest?.esIndex}
 					type="Tract"

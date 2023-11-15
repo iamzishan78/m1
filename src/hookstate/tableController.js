@@ -5,7 +5,7 @@ import { copy, deepEqual } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
 import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
-import { isEmpty } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 
 const initialState = {
 	defaultFilters: [],
@@ -260,8 +260,8 @@ const tableESStateControllerHandler = state => ({
 			tableKey,
 			esIndex,
 			pageSize,
-			isSelectall: false,
 			isSelectAllAllowed,
+			isAllRowsSelected: false,
 			showColumnFilters: false,
 			data: { rows: [], total: 0 },
 			isLoading: false,
@@ -320,9 +320,6 @@ const tableESStateControllerHandler = state => ({
 				isKeyword: columnSchema.name.includes('.keyword'),
 			},
 		});
-	},
-	setSelectAll: value => {
-		state.isSelectall.set(value);
 	},
 
 	setColumnVisibility: visibility => {
@@ -438,6 +435,13 @@ const tableESStateControllerHandler = state => ({
 			.map(filter => filter.field);
 
 		state.filters?.set(filtersState.filter(filter => !keysToClear.includes(filter.field)));
+	},
+
+	setIsAllRowsSelected: value => {
+		if (!state.isSelectAllAllowed.get()) return;
+
+		if (!isEqual(value, state.isAllRowsSelected.get()))
+			state.isAllRowsSelected.set(value);
 	},
 });
 

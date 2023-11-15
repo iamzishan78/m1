@@ -56,7 +56,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 		'filters',
 		'defaultSort',
 		'sorting',
-		'isSelectall',
+		'isAllRowsSelected',
 	]);
 	const tableStateValues = tableState.stateValues;
 	const isSomeRowsSelected = table.getIsSomeRowsSelected();
@@ -113,7 +113,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 			search,
 			filters: tableStateValues.filters,
 			total: tableStateValues?.data.total,
-			isSelectAll: isAllRowsSelected,
+			isSelectAll: tableStateValues.isAllRowsSelected,
 			esIndex: tableStateValues.esIndex,
 			table,
 		};
@@ -125,8 +125,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 
 		return {
 			selectedRows,
-			isAllRowsSelected,
-			isSelectall: tableStateValues?.isSelectall,
+			isAllRowsSelected: tableStateValues.isAllRowsSelected,
 			search,
 			sorting: tableStateValues?.sorting,
 			defaultSort: tableStateValues?.defaultSort,

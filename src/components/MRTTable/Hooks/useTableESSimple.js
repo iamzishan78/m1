@@ -28,7 +28,7 @@ const useTableESSimple = tableKey => {
 	const localizationOptions = {
 		filterCustomFilterFn: 'AutoComplete',
 	};
-	if (tableStateValues?.isSelectall) {
+	if (tableStateValues?.isAllRowsSelected) {
 		localizationOptions.selectedCountOfRowCountRowsSelected = `${tableStateValues?.data.total} of ${tableStateValues?.data.total} row(s) selected`;
 	}
 
