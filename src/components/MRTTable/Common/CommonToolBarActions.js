@@ -23,26 +23,30 @@ const openSideExportDialog = (_selectedRows, search, filters, total, isAllRowsSe
 	table.resetRowSelection();
 };
 
-const openSideDialog = async (
-	type,
-	_selectedRows,
-	isAllRowsSelected,
-	search,
-	sorting,
-	defaultSort,
-	esIndex,
-	filters,
-	total,
-	client,
-	table,
-	tableKey
+export const openSideDialog = async (
+	{
+		type,
+		selectedRows,
+		isAllRowsSelected,
+		search,
+		sorting,
+		defaultSort,
+		esIndex,
+		filters,
+		total,
+		client,
+		table,
+		tableKey,
+		props = {}
+	}
 ) => {
-	let showRows = _selectedRows;
+	let showRows = selectedRows;
 	if (isAllRowsSelected) {
 		tableGlobalController.updateState({
 			dialog: {
 				type,
 				selectedRows: [],
+				...props
 			},
 		});
 		showRows = await getAllData(search, sorting, defaultSort, esIndex, filters, total, client);
@@ -51,7 +55,8 @@ const openSideDialog = async (
 		dialog: {
 			type,
 			selectedRows: showRows,
-			tableKey
+			tableKey,
+			...props
 		},
 	});
 	table.resetRowSelection();
@@ -80,18 +85,20 @@ export function BulkUpdate({
 			disabled={!isSomethingSelected}
 			onClick={() =>
 				openSideDialog(
-					'asign',
-					selectedRows,
-					isAllRowsSelected,
-					search,
-					sorting,
-					defaultSort,
-					esIndex,
-					filters,
-					total,
-					client,
-					table,
-					tableKey
+					{
+						type: 'asign',
+						selectedRows,
+						isAllRowsSelected,
+						search,
+						sorting,
+						defaultSort,
+						esIndex,
+						filters,
+						total,
+						client,
+						table,
+						tableKey
+					}
 				)
 			}
 		>
@@ -137,18 +144,20 @@ export function ViewContactData({
 				disabled={!isSomethingSelected}
 				onClick={() =>
 					openSideDialog(
-						'buyContactsInfoData',
-						selectedRows,
-						isAllRowsSelected,
-						search,
-						sorting,
-						defaultSort,
-						esIndex,
-						filters,
-						total,
-						client,
-						table,
-						tableKey
+						{
+							type: 'buyContactsInfoData',
+							selectedRows,
+							isAllRowsSelected,
+							search,
+							sorting,
+							defaultSort,
+							esIndex,
+							filters,
+							total,
+							client,
+							table,
+							tableKey
+						}
 					)
 				}
 			>

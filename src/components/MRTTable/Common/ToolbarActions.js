@@ -4,39 +4,43 @@ import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import GridView from 'components/MRTTable/Common/GridView';
-import { globalStateController } from 'hookstate/globalStateController';
-import _ from 'lodash';
 import TabHeader from 'components/MRSimpleTable/Common/TabHeader';
+import { openSideDialog } from './CommonToolBarActions';
+import { useApolloClient } from '@apollo/client';
 
 function ToolbarActions({ table, tableKey, children }) {
+	const client = useApolloClient();
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomeRowsSelected = table.getIsSomeRowsSelected();
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 
-	const { user } = globalStateController.useState(['user']);
-	const getUser = user.get({ noproxy: true });
-
-	const tableState = tableController(tableKey).useState([
-		'TableSchema',
-		'datasets',
-		'globalFilter',
-		'searchFields',
-		'defaultSort',
-		'data',
-		'gridViewSettings',
-		'sorting',
-		'columnVisibility',
-		'filters',
-		'defaultFilters',
-		'isDeleteDisabled',
-		'deletedKeys',
-		'isSelectAllAllowed',
-		'tabLabels',
-	]);
-	const tableStateValues = tableState.stateValues;
+	const tableState = tableController(tableKey).useCompleteState();
+	const tableStateValues = tableState?.get({ noproxy: true });
 	if (tableStateValues?.isSelectAllAllowed)
 		tableController(tableKey).setIsAllRowsSelected(isAllRowsSelected);
+
+
+	const SideDialogProps = () => {
+		const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
+		const search = { fields: tableStateValues?.searchFields, query };
+
+		return {
+			selectedRows,
+			search,
+			isAllRowsSelected: tableStateValues.isAllRowsSelected,
+			sorting: tableStateValues?.sorting,
+			defaultSort: tableStateValues?.defaultSort,
+			esIndex: tableStateValues.esIndex,
+			filters: tableStateValues.filters,
+			total: tableStateValues?.data?.total,
+			client,
+			table,
+			tableKey
+		};
+	};
+
+	const sidePropsPass = SideDialogProps();
 
 	const handleExport = () => {
 		tableGlobalController.updateState({
@@ -48,34 +52,6 @@ function ToolbarActions({ table, tableKey, children }) {
 				isSomeRowsSelected,
 			},
 		});
-	};
-
-	const handleDelete = () => {
-		const deletedKeys = tableStateValues?.deletedKeys || {
-			mainRecord: { key: '_id' },
-		};
-		const deletedData = Object.keys(deletedKeys).reduce((acc, key) => {
-			const { key: originalKey, func } = deletedKeys[key];
-			acc[key] =
-				selectedRows?.length > 0
-					? selectedRows.map(item => {
-						let val = _.get(item, originalKey);
-						if (func) val = func(val);
-						return val;
-					})
-					: null;
-			return acc;
-		}, {});
-		tableGlobalController.updateState({
-			dialog: {
-				type: 'deleteGrid',
-				deletedData,
-				tableKey,
-				userId: getUser?._id,
-			},
-		});
-
-		table.resetRowSelection();
 	};
 
 	return (
@@ -115,7 +91,24 @@ function ToolbarActions({ table, tableKey, children }) {
 				)}
 
 				{isSomethingSelected && !!!tableStateValues.isDeleteDisabled && (
-					<IconButton aria-label="delete" onClick={() => handleDelete()}>
+					<IconButton aria-label="delete"
+						onClick={() => openSideDialog(
+							{
+								type: 'deleteGrid',
+								selectedRows,
+								isAllRowsSelected: sidePropsPass.isAllRowsSelected,
+								search: sidePropsPass.search,
+								sorting: sidePropsPass.sorting,
+								defaultSort: sidePropsPass.defaultSort,
+								esIndex: sidePropsPass.esIndex,
+								filters: sidePropsPass.filters,
+								total: sidePropsPass.total,
+								client,
+								table,
+								tableKey,
+							}
+						)}
+					>
 						<Tooltip title="Delete">
 							<DeleteIcon />
 						</Tooltip>
