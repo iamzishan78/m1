@@ -56,9 +56,15 @@ function LayerStyling(props) {
   const handleApplyChanges = () => {
     const hookStateAppLayers = hookState.layers.get({ noproxy: true })
 
-    if ((hookStateAppLayers && layer &&
-      ((fillColor && fillColor.rgb && fillColor.alpha) || (strokeColor && strokeColor.rgb && strokeColor.alpha))) ||
-      width || layer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
+    if (
+      (hookStateAppLayers &&
+        layer &&
+        ((fillColor && fillColor.rgb && (fillColor.alpha || fillColor.alpha === 0)) ||
+          (strokeColor &&
+            strokeColor.rgb &&
+            (strokeColor.alpha || strokeColor.alpha === 0)))) ||
+      width ||
+      layer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
       layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability
     ) {
       let { currentLayer } = handleLayerChange()
