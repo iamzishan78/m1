@@ -16,6 +16,19 @@ const AssociateContactWellHeadCells = [
       viewColumns: false,
     },
   },
+  {
+    name: "parcelId",
+    options: {
+      display: false,
+      filter: false,
+      searchable: false,
+      sort: false,
+      download: false,
+      print: false,
+      empty: false,
+      viewColumns: false,
+    },
+  },
   // hide custom render of blue link for now as it is not consistent with unit interests
   {
     name: "parcelName", label: "Tract Name", options: {
@@ -32,7 +45,7 @@ const AssociateContactWellHeadCells = [
         }
       }),
       customRender: (value, tableMeta) => {
-        const parcelId = tableMeta.rowData[27]
+        const parcelId = tableMeta.rowData[1]
 
         return <ColumnWithLink value={value} link={`/map/parcels/${parcelId}`} />;
       },
@@ -97,19 +110,6 @@ const AssociateContactWellHeadCells = [
       setCellProps: () => ({ style: { minWidth: "200px" } }),
       sort: true,
       filter: true,
-    },
-  },
-  {
-    name: "parcelId",
-    options: {
-      display: false,
-      filter: false,
-      searchable: false,
-      sort: false,
-      download: false,
-      print: false,
-      empty: false,
-      viewColumns: false,
     },
   },
   {
