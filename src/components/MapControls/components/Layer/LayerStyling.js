@@ -70,7 +70,7 @@ function LayerStyling(props) {
       let { currentLayer } = handleLayerChange()
       //// saving to stateApp
       const currentLayers = [...hookStateAppLayers];
-      const index = currentLayers.findIndex((l) => l.layerName === currentLayer.layerName);
+      const index = currentLayers.findIndex((l) => l._id === currentLayer._id);
       currentLayers[index] = currentLayer;
       hookState.layers.set(currentLayers)
       setStateApp((stateApp) => ({ ...stateApp, layers: [...currentLayers] }));
