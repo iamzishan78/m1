@@ -168,7 +168,7 @@ export default function SummaryFields({ contactData }) {
                       let value = field.value ?? params.value;
                       if (value) {
                         initialized.current = true
-                        if (value.includes(',')) value = parseFloat(value.replace(/[^\d.-]/g, ''))
+                        if (value.toString().includes(',')) value = parseFloat(value.toString().replace(/[^\d.-]/g, ''))
                         params.onChange(parseFloat(value).toFixed(2));
                       }
                     } else {
