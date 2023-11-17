@@ -48,6 +48,7 @@ function ContactToolbar({ table, tableKey }) {
 		'isAllRowsSelected',
 		'rowSelection',
 		'tableStateValues',
+		'defaultFilters',
 	]);
 	const tableStateValues = tableState.stateValues;
 	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
