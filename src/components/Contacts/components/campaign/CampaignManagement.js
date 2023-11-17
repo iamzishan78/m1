@@ -90,6 +90,10 @@ const CampaignManagement = () => {
     setESFilters(filters);
   }, [fromDate, toDate, setESFilters])
 
+  useEffect(() => {
+    tableController(TableKey).setGlobalFilter(stateApp.contactSearchQuery);
+  }, [stateApp.contactSearchQuery])
+
   return (
     <div style={{ marginTop: '90px' }}>
       <CustomCampaignFilters
