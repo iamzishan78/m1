@@ -78,14 +78,14 @@ const useStyles = makeStyles(theme => ({
     float: "right",
     display: "flex",
     alignItems: "center",
-    marginTop: "15px",
+    // marginTop: "15px",
     cursor: "pointer",
   },
   addContactButtonSelected: {
     float: "right",
     display: "flex",
     alignItems: "center",
-    marginTop: "15px",
+    // marginTop: "15px",
     cursor: "pointer",
     color: `${theme.palette.secondary.main} !important`,
   },
@@ -432,7 +432,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               {selectedRow ? 'Update' : 'Add'} Tract Ownership
             </DialogTitle>
           </Grid>
-          <Grid item md={1} xs={1} style={{ marginLeft: '20px' }}>
+          <Grid item md={1} xs={1} style={{ marginRight: '30px' }}>
             <IconButton
               size="small"
               component="span"
