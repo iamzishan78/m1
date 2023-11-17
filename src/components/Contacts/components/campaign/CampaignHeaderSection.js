@@ -66,6 +66,7 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
                 placeholder="Assign Supervisor"
                 selectedUserId={get(campaign, 'owner._id')}
                 onChangeUser={user => updateCampaignInformation('owner', user.value)}
+                fieldSize={8}
               />
             </Grid>
             <Grid
@@ -73,11 +74,13 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
               container
               direction="row"
               display="flex"
-              justify="space-between"
               style={{ padding: '15px 0px 10px' }}
             >
-              <label style={{ marginTop: '10px', padding: 0 }}>Created Date</label>
-              <Grid item style={{ width: '75%' }}>
+              <Grid item md={3}>
+                <label style={{ marginTop: '10px', padding: 0 }}>Created Date</label>
+              </Grid>
+
+              <Grid item md={8}>
                 <TextField
                   style={{ marginTop: 0 }}
                   size="small"
