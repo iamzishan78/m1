@@ -522,7 +522,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
                     style={{ paddingRight: 20 }}
                     alignItems="center"
                   >
-                    <label style={{ margin: "5px 0px" }}>Field Title</label>
+                    <label style={{ margin: "5px 0px" }}>Field Name</label>
                     <Controller
                       control={control}
                       name="title"
@@ -689,14 +689,14 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
                   >
                     Cancel
                   </Button>
-                  {stateApp.selectedMeta && <Button
+                  {/* {stateApp.selectedMeta && <Button
                     className={isDisabled ? "" : classes.btnColorDanger}
                     variant="outlined"
                     onClick={handleDelete}
                     disabled={isDisabled}
                   >
                     Delete Field
-                  </Button>}
+                  </Button>} */}
                   <Button
                     className={isDisabled ? "" : classes.btnColor}
                     style={{ margin: "25px 25px 25px 5px" }}
