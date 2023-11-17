@@ -1,5 +1,6 @@
 import React from 'react';
 import { hookstate } from '@hookstate/core';
+import _, { get } from 'lodash';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
 import { copy, deepEqual } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
@@ -10,7 +11,6 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { globalStateController } from 'hookstate/globalStateController';
 import ReactSelectField from "components/MRTTable/Common/MetaData/ReactSelectField";
 import CustomFieldText from "components/MRTTable/Common/MetaData/CustomFieldText";
-import _, { get } from 'lodash';
 import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController'
 
 const initialState = {
