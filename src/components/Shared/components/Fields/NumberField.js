@@ -41,6 +41,7 @@ const NumberField = (props) => {
       }}
       disabled={props?.field?.disabled}
       value={value}
+      {...props.props}
     />
   );
 };

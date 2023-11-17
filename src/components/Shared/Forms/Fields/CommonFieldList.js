@@ -1,22 +1,59 @@
-import { Grid, MenuItem, Select, TextField } from '@material-ui/core';
+import {
+  Grid,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  Select,
+  TextField,
+  makeStyles,
+} from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
 import ReactSelectField from 'components/Shared/M1nTable/components/SubComponents/ReactSelectField';
 import NumberField from 'components/Shared/components/Fields/NumberField';
 import { get } from 'lodash';
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Controller } from 'react-hook-form';
 
-const CommonFieldList = ({
-  data,
-  fields,
-  control,
-  // editIconState,
-  // setEditIconState,
-  offClickHandler = () => { },
-}) => {
+const useStyles = makeStyles(theme => ({
+  text: {
+    '& div': {
+      paddingRight: 0,
+    },
+  },
+}));
+
+const CommonFieldList = ({ data, fields, control, offClickHandler = () => { } }) => {
+  const classes = useStyles();
+
+  const [isHovered, setIsHovered] = useState(false);
+
   if (!fields || fields.length === 0) return null;
 
   return fields.map((field, index) => {
     const fieldKey = (field.key || field.esKey).replaceAll('.keyword', '');
+
+    const handleEdit = () => {
+      window.setStateApp(stateApp => ({
+        ...stateApp,
+        selectedMeta: field,
+        showFieldModal: true,
+      }));
+    };
+
+    const isMetaField = field._id && field.category;
+
+    const endAdornment =
+      isMetaField && isHovered === field._id ? (
+        <InputAdornment position="end">
+          <IconButton
+            aria-label="Edit Meta"
+            style={{ padding: '6px' }}
+            onClick={handleEdit}
+          >
+            <EditIcon />
+          </IconButton>
+        </InputAdornment>
+      ) : undefined;
 
     return (
       <Grid
@@ -25,22 +62,22 @@ const CommonFieldList = ({
         key={index + field.label + fieldKey}
         style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
       >
-        <Grid
-          item
-          xs={3}
-          onMouseEnter={() => {
-            // setEditIconState({ [`${fieldKey}key`]: true });
-          }}
-          onMouseLeave={() => {
-            // setEditIconState({ [`${fieldKey}key`]: false });
-          }}
-        >
+        <Grid item xs={3}>
           <div style={{ wordBreak: 'break-word' }}>
             {fieldKey !== 'approvalStatus' && field.label}
           </div>
         </Grid>
 
-        <Grid item xs={8}>
+        <Grid
+          item
+          xs={8}
+          onMouseEnter={() => {
+            setIsHovered(field._id);
+          }}
+          onMouseLeave={() => {
+            setIsHovered(false);
+          }}
+        >
           <Fragment key={index}>
             {(field.type === 'text' ||
               field.type === 'number' ||
@@ -65,7 +102,11 @@ const CommonFieldList = ({
                             InputLabelProps={{
                               shrink: true,
                             }}
-                            InputProps={field.InputProps}
+                            className={classes.text}
+                            InputProps={{
+                              ...field.InputProps,
+                              endAdornment,
+                            }}
                             onBlur={event => offClickHandler(fieldKey, event.target.value)}
                           />
                         )}
@@ -78,6 +119,10 @@ const CommonFieldList = ({
                               offClickHandler(key, value);
                             }}
                             {...params}
+                            props={{
+                              className: classes.text,
+                              endAdornment,
+                            }}
                           />
                         )}
                         {field.type === 'dropdown' && (

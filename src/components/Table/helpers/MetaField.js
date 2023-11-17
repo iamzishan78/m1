@@ -116,6 +116,10 @@ const useStyles = makeStyles((theme) => ({
     color: "white",
     backgroundColor: "#4576CF",
   },
+  btnColorDanger: {
+    color: "white",
+    backgroundColor: "#FA7668",
+  },
 }));
 
 const options = [
@@ -325,6 +329,20 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
     handleClose();
   };
 
+  const handleDelete = () => {
+    if (stateApp.selectedMeta) {
+      updateMetaData({
+        variables: {
+          metaData: {
+            _id: stateApp.selectedMeta._id,
+            isDeleted: true
+          },
+        },
+      });
+    }
+    handleClose();
+  };
+
   useEffect(() => {
 
     return () => {
@@ -418,6 +436,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
         });
         setStateApp((stateApp) => ({
           ...stateApp,
+          selectedMeta: null,
           showFieldModal: false,
         }))
       }
@@ -670,6 +689,14 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
                   >
                     Cancel
                   </Button>
+                  {stateApp.selectedMeta && <Button
+                    className={isDisabled ? "" : classes.btnColorDanger}
+                    variant="outlined"
+                    onClick={handleDelete}
+                    disabled={isDisabled}
+                  >
+                    Delete Field
+                  </Button>}
                   <Button
                     className={isDisabled ? "" : classes.btnColor}
                     style={{ margin: "25px 25px 25px 5px" }}
