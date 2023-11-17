@@ -11,7 +11,7 @@ import _ from 'lodash';
 const ExcludeFilters = (tableKey) => {
 
 }
-const openSideExportDialog = ({ search, filters, total, isAllRowsSelected, esIndex, table, tableKey }) => {
+const openSideExportDialog = ({ _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey }) => {
 	const excludedIds = []
 	if (isAllRowsSelected) {
 		const rowSelection = tableController(tableKey).getValue('rowSelection');
@@ -26,6 +26,8 @@ const openSideExportDialog = ({ search, filters, total, isAllRowsSelected, esInd
 		}
 		total = total - missingNumbers.length
 		isAllRowsSelected = missingNumbers.length ? false : isAllRowsSelected
+	} else {
+		total = _selectedRows.length
 	}
 
 	const allFilters = [...filters, ...excludedIds]
@@ -139,13 +141,13 @@ export function BulkUpdate({
 	);
 }
 
-export function ExportData({ classes, search, filters, total, isAllRowsSelected, esIndex, table, tableKey }) {
+export function ExportData({ classes, _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey }) {
 	return (
 		<Button
 			color="secondary"
 			startIcon={<CloudDownloadIcon color="white" />}
 			className={classes.selectTopBarButtons}
-			onClick={() => openSideExportDialog({ search, filters, total, isAllRowsSelected, esIndex, table, tableKey })}
+			onClick={() => openSideExportDialog({ search, _selectedRows, filters, total, isAllRowsSelected, esIndex, table, tableKey })}
 		>
 			Export
 		</Button>
