@@ -140,9 +140,14 @@ export const useLayerStyle = (layer) => {
 
 
     const handleLayerChange = () => {
-        if ((layer &&
-            ((fillColor && fillColor.rgb && fillColor.alpha) || (strokeColor && strokeColor.rgb && strokeColor.alpha))) ||
-            width || layer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
+        if (
+            (layer &&
+                ((fillColor && fillColor.rgb && (fillColor.alpha || fillColor.alpha === 0)) ||
+                    (strokeColor &&
+                        strokeColor.rgb &&
+                        (strokeColor.alpha || strokeColor.alpha === 0)))) ||
+            width ||
+            layer.layerPaintProps[0]?.labelProps?.visibility !== layerLabelVisibility ||
             layer.layerSettings?.interaction?.interactionDetail?.click !== layerClickability
         ) {
             let currentLayer = { ...layer };
@@ -154,8 +159,8 @@ export const useLayerStyle = (layer) => {
             if (fillColor && fillColor.rgb)
                 fColor = fillColor.rgb.length === 3 ? "rgb(" + fillColor.rgb.join() + ")" : "rgba(" + fillColor.rgb.join() + ")";
 
-            if (fillColor && fillColor.alpha) fColorOp = fillColor.alpha;
-            if (strokeColor && strokeColor.alpha) sColorOp = strokeColor.alpha;
+            if (fillColor && (fillColor.alpha || fillColor.alpha === 0)) fColorOp = fillColor.alpha;
+            if (strokeColor && (strokeColor.alpha || strokeColor.alpha === 0)) sColorOp = strokeColor.alpha;
 
             if (strokeColor && strokeColor.rgb)
                 sColor = strokeColor.rgb.length === 3 ? "rgb(" + strokeColor.rgb.join() + ")" : "rgba(" + strokeColor.rgb.join() + ")";

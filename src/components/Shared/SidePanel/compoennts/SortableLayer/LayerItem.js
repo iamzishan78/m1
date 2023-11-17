@@ -102,6 +102,16 @@ const LayerItem = React.memo((props) => {
   });
 
   const handleLayerZoomClick = (data) => {
+    const bbox = data.defaultSettings?.bbox
+    if (bbox)
+      return map?.fitBounds(
+        [
+          [bbox[0], bbox[1]], // southwestern corner of the bounds
+          [bbox[2], bbox[3]], // northeastern corner of the bounds
+        ],
+        { padding: { top: 40, bottom: 40, left: 40, right: 40 }, easing: () => 1 }
+      );
+
     const sourceName = data.layerPaintProps[0].sourceProps
     let sourceUrl = map?.getSource(sourceName)?._data;
     if (sourceUrl) {

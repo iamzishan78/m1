@@ -367,7 +367,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
     });
   };
 
-  const updateCustomProperties = (value, key) => {
+  const updateCustomProperties = (type, value, key) => {
     const { shape } = parcelObj;
     set(properties, `${key}`, value);
     properties.custom_data_arr?.forEach(data => {

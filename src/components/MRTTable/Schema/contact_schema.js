@@ -68,6 +68,8 @@ const ContactMeta = {
 			header: 'Name',
 			size: 450,
 			Cell: ({ renderedCellValue, row }) => {
+				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
+
 				return (
 					<div
 						style={{
@@ -103,7 +105,7 @@ const ContactMeta = {
 									e.stopPropagation();
 								}}
 							/>
-							{!!(row.getValue('isPurchased') === 'true' || row.getValue('isPurchased') === true) && (
+							{isPurchased && (
 								<FeatureFlag feature={FEATURES.IDICORE}>
 									<MonetizationOnIcon
 										style={{
@@ -554,7 +556,11 @@ const ContactMeta = {
 				{ label: 'Yes', value: 'true' },
 				{ label: 'No', value: 'false' },
 			],
-			Cell: ({ row }) => (row?.original?.isPurchased === 'true' ? 'Yes' : 'No'),
+			Cell: ({ row }) => {
+				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
+
+				return <>{isPurchased ? 'Yes' : 'No'}</>;
+			},
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,

@@ -28,6 +28,8 @@ const useStyles = makeStyles(() => ({
 function NameCell({ renderedCellValue, isPurchased }) {
 	const classes = useStyles();
 
+	isPurchased = [true, 'true', 'True'].includes(isPurchased);
+
 	return (
 		<div
 			style={{
@@ -55,7 +57,7 @@ function NameCell({ renderedCellValue, isPurchased }) {
 					>
 						{renderedCellValue}
 
-						{!!isPurchased && (
+						{isPurchased && (
 							<FeatureFlag feature={FEATURES.IDICORE}>
 								<MonetizationOnIcon className={classes.monetizationIcon} />
 							</FeatureFlag>

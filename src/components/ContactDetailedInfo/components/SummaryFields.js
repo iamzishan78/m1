@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState, Fragment, useRef } from "react";
 import { get, set, isEmpty } from 'lodash';
 import { useMutation } from "@apollo/client";
 import { Controller, useForm } from "react-hook-form";
@@ -15,6 +15,7 @@ import { SUMMARY_FIELDS, featureFlagChanges } from "components/ContactDetailedIn
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
 import { contactNewStatusOptions } from "components/ContactDetailedInfo/helper";
+import { NumberFormatComma } from "components/Shared/Forms/Formatting/NumberFormatComma";
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -134,7 +135,7 @@ export default function SummaryFields({ contactData }) {
   const isChanged = (key, value) => {
     const _value = value ? typeof value === "string" ? Number(value.replace(/,/g, "")) : value : 0;
     if (key.includes("nraSum")) {
-      return get(contactData, "evaluatedContactInterests.nraSum") !== _value;
+      return get(contactData, "evaluatedContactInterests.nraSum")?.toFixed(2) !== _value?.toFixed(2);
     } else if (key.includes("offerPriceSum")) {
       return get(contactData, "evaluatedContactInterests.offerPriceSum")?.toFixed(2) !== _value?.toFixed(2);
     }
@@ -155,6 +156,26 @@ export default function SummaryFields({ contactData }) {
                 name={field.key}
                 render={(params) => {
                   const isValueOveridden = isChanged(field.key, params.value);
+
+                  // eslint-disable-next-line react-hooks/rules-of-hooks
+                  const initialized = useRef(false)
+
+                  // eslint-disable-next-line react-hooks/rules-of-hooks
+                  useEffect(() => {
+                    if (initialized.current) return
+
+                    if (field.key.includes('offerPriceSum') || field.key.includes('nraSum')) {
+                      let value = field.value ?? params.value;
+                      if (value) {
+                        initialized.current = true
+                        if (value.toString().includes(',')) value = parseFloat(value.toString().replace(/[^\d.-]/g, ''))
+                        params.onChange(parseFloat(value).toFixed(2));
+                      }
+                    } else {
+                      initialized.current = true
+                    }
+                  }, [field.value, params.value])
+
                   return (
                     <Fragment>
                       {field.type !== "autocomplete" ? (
@@ -171,7 +192,11 @@ export default function SummaryFields({ contactData }) {
                           onBlur={(event) => {
                             let currValue = event.target.value
 
-                            if (field.key.includes('offerPriceSum')) currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''))
+                            if (field.key.includes('offerPriceSum') || field.key.includes('nraSum')) {
+                              // params.onChange(parseFloat(event.target.value).toFixed(2));
+                            }
+
+                            if (field.key.includes('offerPriceSum') || field.key.includes('nraSum')) currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''))
 
                             const prevValue = get(contactData, field.key) || ''
 
@@ -179,12 +204,7 @@ export default function SummaryFields({ contactData }) {
                               updateFieldData(field.key, currValue)
                           }}
                           onChange={({ target }) => {
-                            if (field.key.includes('offerPriceSum') || field.key.includes('nraSum')) {
-                              params.onChange(parseFloat(target.value).toFixed(2));
-                            }
-                            else {
-                              params.onChange(target.value);
-                            }
+                            params.onChange(target.value);
                           }}
                           onKeyUp={e => {
                             if (e.key === 'Enter') e.target.blur()
@@ -196,7 +216,7 @@ export default function SummaryFields({ contactData }) {
                           // If field info is updating, show loading as adornment
                           // else show nothing
                           InputProps={{
-                            inputComponent: field.type === "currency" ? CurrencyFormatCustom : undefined,
+                            inputComponent: field.type === "currency" ? CurrencyFormatCustom : field.key.includes('nraSum') ? NumberFormatComma : undefined,
                             endAdornment:
                               field.type === "email" && contactData[field.key] ? (
                                 <a href={"mailto:" + contactData.primaryEmail} className={classes.emailAdornment}>
@@ -213,8 +233,14 @@ export default function SummaryFields({ contactData }) {
                                       htmlColor="#757575"
                                       onClick={() => {
                                         const key = `evaluatedContactInterests.${field.key.split(".")[1]}`;
-                                        updateFieldData(field.key, get(contactData, key));
-                                        params.onChange(get(contactData, key));
+
+                                        let value = get(contactData, key)
+                                        if (field.key.includes('offerPriceSum') || field.key.includes('nraSum')) {
+                                          value = parseFloat(value).toFixed(2);
+                                        }
+
+                                        updateFieldData(field.key, value);
+                                        params.onChange(value);
                                       }}
                                     />
                                   )}

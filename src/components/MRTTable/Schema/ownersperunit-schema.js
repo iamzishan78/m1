@@ -100,14 +100,7 @@ const OwnersPerUnitMeta = {
 			header: 'Entity Type',
 		},
 
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'taxYear',
-			type: 'number',
-			accessorFn: row => row?.taxYear,
-			id: 'taxYear',
-			header: 'Tax Year',
-		},
+
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -214,6 +207,13 @@ const OwnersPerUnitMeta = {
 				return <div>{sumNri?.value ? addTrailingZeros(parseFloat(sumNri?.value).toFixed(8)) : 0}</div>;
 			},
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'net_acres',
+			accessorKey: 'net_acres',
+			header: 'Net Acres',
+		},
+
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -237,6 +237,20 @@ const OwnersPerUnitMeta = {
 				const { sumNRA } = Controller.getValue('footerProps') || {};
 				return <div>{sumNRA?.value ? addTrailingZeros(parseFloat(sumNRA?.value).toFixed(8)) : 0}</div>;
 			},
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'unitTractId.keyword',
+			accessorKey: 'unitTractId',
+			header: 'Unit Tract ID',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'tractAcres',
+			accessorKey: 'tractAcres',
+			header: 'Unit Tract Acres',
 		},
 
 		{
@@ -331,7 +345,21 @@ const OwnersPerUnitMeta = {
 			accessorKey: 'campaignPriority',
 			header: 'Campaign Priority',
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'dataSource.keyword',
+			accessorKey: 'dataSource',
+			header: 'Data Source',
+		},
 
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'taxYear',
+			type: 'number',
+			accessorFn: row => row?.taxYear,
+			id: 'taxYear',
+			header: 'Tax Year',
+		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,

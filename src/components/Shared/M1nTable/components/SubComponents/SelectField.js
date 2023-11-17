@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange, column}) => {
+const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange, column }) => {
 
   const classes = useStyles();
   const [dropDownValues, setDropDownValues] = useState([]);
@@ -49,17 +49,17 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
       }
 
       const updateArray = props.options.slice(0, props.options.length - 1);
-        const startIndex = updateArray.length;
-        const endIndex = Math.min(startIndex + 100, dropDownValues.length);
-        setDisplayedOptions(endIndex)
-        const nextOptions = dropDownValues.slice(startIndex, endIndex);
-        const updatedOptions = updateArray.concat(nextOptions);
+      const startIndex = updateArray.length;
+      const endIndex = Math.min(startIndex + 100, dropDownValues.length);
+      setDisplayedOptions(endIndex)
+      const nextOptions = dropDownValues.slice(startIndex, endIndex);
+      const updatedOptions = updateArray.concat(nextOptions);
 
-        setOptions([...updatedOptions, { label: "edit", value: "editOption" }]);
-        const waypointElement = document.getElementById(`waypoint-${startIndex - 5}`);
-        if (waypointElement) {
-          waypointElement.scrollIntoView();
-        }
+      setOptions([...updatedOptions, { label: "edit", value: "editOption" }]);
+      const waypointElement = document.getElementById(`waypoint-${startIndex - 5}`);
+      if (waypointElement) {
+        waypointElement.scrollIntoView();
+      }
     };
 
     return (
@@ -299,15 +299,15 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
   };
 
   const onSearchChange = (value) => {
-    if(value){
+    if (value) {
       setDisplayedOptions(100)
       const filterOptions = dropdownOptions.filter(op => {
-        return op.value.toLowerCase()?.includes(value.toLowerCase());
+        return op.value?.toLowerCase()?.includes(value?.toLowerCase());
       });
       setDropDownValues(filterOptions)
       const endIndex = Math.min(100, filterOptions.length);
-      setOptions([...filterOptions.slice(0,endIndex), { label: "edit", value: "editOption" }]);
-    }else {
+      setOptions([...filterOptions.slice(0, endIndex), { label: "edit", value: "editOption" }]);
+    } else {
       setDisplayedOptions(100);
       onFilterChange('')
     }
