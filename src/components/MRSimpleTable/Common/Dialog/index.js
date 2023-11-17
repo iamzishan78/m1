@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import ExportContacts from 'components/Shared/ExportContacts';
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 import {
 	AssignOwnerToContactDrawerContainer,
@@ -45,10 +44,6 @@ function AllDialogs() {
 
 				{type === 'comments' && <CommentDialog {...rest} />}
 			</Dialog>
-
-			{type === 'exportContacts' && (
-				<ExportContacts {...rest} onClose={handleCloseDialog} />
-			)}
 
 			{type === 'asign' && (
 				<AssignOwnerToContactDrawerContainer

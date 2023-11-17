@@ -5,18 +5,18 @@ import ExportOwnersAndContacts from 'components/Shared/ExportOwnerAndContacts';
 import RecalculateSlideout from 'components/Table/Shape/RecalculateSlideout';
 
 function TractInterestTableDialogs() {
-	const { stateValues } = tableGlobalController.useState(['tractInterestDialog']);
-	const { type, ...rest } = stateValues.tractInterestDialog || {};
+	const { stateValues } = tableGlobalController.useState(['dialog']);
+	const { type, ...rest } = stateValues.dialog || {};
 
 	const handleCloseDialog = () => {
 		tableGlobalController.updateState({
-			tractInterestDialog: {},
+			dialog: {},
 		});
 	};
 
 	const updateRows = rows => {
 		tableGlobalController.updateState({
-			tractInterestDialog: {
+			dialog: {
 				type,
 				selectedRows: rows,
 			},
@@ -40,7 +40,7 @@ function TractInterestTableDialogs() {
 					search={rest?.search}
 					filters={rest?.filters}
 					total={rest?.total}
-					isSelectAll={rest?.isSelectAll}
+					isSelectAll={rest?.isAllRowsSelected}
 					rows={rest?.selectedRows}
 					esIndex={rest?.esIndex}
 					type="Tract"

@@ -10,7 +10,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import { navController } from 'hookstate/navStateController';
 import TractInterestTableDialogs from 'components/MRTTable/TablesOverride/TractInterestOwnerTable/RightDialogs';
 import { popupController } from 'hookstate/popupStateController';
-import { BulkUpdate, ViewContactData } from 'components/MRTTable/Common/CommonToolBarActions';
+import { BulkUpdate, ViewContactData, openSideDialog } from 'components/MRTTable/Common/CommonToolBarActions';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {
@@ -47,7 +47,9 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		'defaultSort',
 		'sorting',
 		'defaultFilters',
-		'isSelectall',
+		'isAllRowsSelected',
+		'rowSelection',
+		'defaultFilters',
 	]);
 	const tableStateValues = tableState.stateValues;
 
@@ -55,7 +57,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		const { customLayer } = Controller.getValue('customProps');
 		e.stopPropagation();
 		tableGlobalController.updateState({
-			tractInterestDialog: {
+			dialog: {
 				type: 'addTractInterest',
 				customLayerId: customLayer?._id,
 				customLayer,
@@ -84,7 +86,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		},
 	];
 
-	const isSomeRowsSelected = table.getIsSomeRowsSelected();
+	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
@@ -95,13 +97,12 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 
 		return {
 			selectedRows,
-			isAllRowsSelected,
-			isSelectall: tableStateValues?.isSelectall,
+			isAllRowsSelected: tableStateValues.isAllRowsSelected,
 			search,
 			sorting: tableStateValues?.sorting,
 			defaultSort: tableStateValues?.defaultSort,
 			esIndex: tableStateValues.esIndex,
-			filters: tableStateValues.filters,
+			filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
 			total: tableStateValues?.data.total,
 			client,
 			table,
@@ -109,35 +110,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		};
 	};
 
-	const handleExport = () => {
-		const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
-		const search = { fields: tableStateValues?.searchFields, query };
-
-		tableGlobalController.updateState({
-			tractInterestDialog: {
-				type: 'exportOwnersAndContact',
-				search,
-				filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
-				total: tableStateValues?.data.total,
-				isSelectAll: isAllRowsSelected,
-				selectedRows,
-				esIndex: tableStateValues.esIndex,
-			},
-		});
-		table.resetRowSelection();
-	};
-
 	const sidePropsPass = SideDialogProps();
-
-	const handleRecalculate = () => {
-		tableGlobalController.updateState({
-			tractInterestDialog: {
-				type: 'recalculate',
-				selectedRows,
-			},
-		});
-		table.resetRowSelection();
-	};
 
 	return (
 		<>
@@ -147,7 +120,22 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 					startIcon={<AutorenewIcon color="white" />}
 					className={classes.selectTopBarButtons}
 					disabled={false}
-					onClick={() => handleRecalculate()}
+					onClick={() => openSideDialog(
+						{
+							type: 'recalculate',
+							selectedRows,
+							isAllRowsSelected: sidePropsPass.isAllRowsSelected,
+							search: sidePropsPass.search,
+							sorting: sidePropsPass.sorting,
+							defaultSort: sidePropsPass.defaultSort,
+							esIndex: sidePropsPass.esIndex,
+							filters: sidePropsPass.filters,
+							total: sidePropsPass.total,
+							client,
+							table,
+							tableKey,
+						}
+					)}
 				>
 					Recalculate
 				</Button>
@@ -170,7 +158,29 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 					color="secondary"
 					startIcon={<CloudDownloadIcon color="white" />}
 					className={classes.selectTopBarButtons}
-					onClick={() => handleExport()}
+					onClick={() => openSideDialog(
+						{
+							type: 'exportOwnersAndContact',
+							selectedRows,
+							isAllRowsSelected: sidePropsPass.isAllRowsSelected,
+							search: sidePropsPass.search,
+							sorting: sidePropsPass.sorting,
+							defaultSort: sidePropsPass.defaultSort,
+							esIndex: sidePropsPass.esIndex,
+							filters: sidePropsPass.filters,
+							total: sidePropsPass.total,
+							client,
+							table,
+							tableKey,
+							props: {
+								search: sidePropsPass.search,
+								filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
+								total: tableStateValues?.data.total,
+								isAllRowsSelected: tableStateValues.isAllRowsSelected,
+								esIndex: tableStateValues.esIndex,
+							}
+						}
+					)}
 				>
 					Export
 				</Button>

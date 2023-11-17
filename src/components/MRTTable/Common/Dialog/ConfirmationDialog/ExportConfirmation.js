@@ -11,11 +11,9 @@ import { useApolloClient } from '@apollo/client';
 import { tableController } from 'hookstate/tableController';
 import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
 import { globalStateController } from 'hookstate/globalStateController';
-import { AppContext } from 'AppContext';
 import { Modals } from '../../../../../styles/Modal';
 
 export default function ExportConfirmationDialog({ table, tableKey, header, onClose, children }) {
-	const [, setStateApp] = useContext(AppContext);
 	const dispatch = useDispatch();
 	const client = useApolloClient();
 	const modalClass = Modals();
@@ -71,7 +69,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 			execCommonAsyncExportJobAction.STARTED({
 				jobType: 'EXPORTCSV',
 				client,
-				setStateApp,
+				setStateApp: window.setStateApp,
 				userId: getUser?._id,
 				requestPayload: {
 					total: tableStateValues?.data.total,

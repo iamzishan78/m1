@@ -332,7 +332,8 @@ const simpleTableStateControllerHandler = state => ({
 		});
 	},
 	setIsAllRowsSelected: value => {
-		state.isAllRowsSelected.set(value);
+		if (!isEqual(value, state.isAllRowsSelected.get()))
+			state.isAllRowsSelected.set(value);
 	},
 
 	setColumnVisibility: visibility => {
