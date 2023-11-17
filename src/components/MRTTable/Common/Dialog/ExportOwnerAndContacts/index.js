@@ -1,20 +1,16 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useApolloClient } from "@apollo/client";
 
 import { useDispatch } from "react-redux";
+import Box from "@material-ui/core/Box";
+import Grid from "@material-ui/core/Grid";
+import Drawer from "@material-ui/core/Drawer";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
-import RightDialog from "components/ContactDetailCard/components/RightDialog";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
-import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
-import Typography from "@material-ui/core/Typography";
-
-import { Modals } from "styles/Modal";
+import CloseIcon from "components/Shared/svgIcons/KeyboardTabBlackIcon";
 
 import { execCommonAsyncExportJobAction } from "store/actions/commonActions";
 import { globalStateController } from "hookstate/globalStateController";
@@ -23,13 +19,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: "557px",
     padding: "10px 30px",
-  },
-  topHeading: { fontWeight: "bold" },
-  dialogTitle: {
-    padding: "25px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center"
   },
   title: {
     display: "flex",
@@ -60,20 +49,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ExportContactsAndPurchase = ({
-  isAllRowsSelected,
+const ExportOwnerAndContacts = ({
   filters,
   esIndex,
   onClose,
   search,
   total,
   open,
-  type,
-  sort,
+  jobType,
   contactIdKey,
 }) => {
   const classes = useStyles();
-  const modalClass = Modals();
   const { user } = globalStateController.useState(['user']);
   const getUser = user.get({ noproxy: true });
   const client = useApolloClient();
@@ -85,53 +71,85 @@ const ExportContactsAndPurchase = ({
     name: "exportContacts",
     defaultValue: false,
   });
+  const exportInterestOwners = useWatch({
+    control,
+    name: "exportInterestOwners",
+    defaultValue: false,
+  });
 
-  const exportDisabled = !exportContacts;
+  const exportDisabled = !exportContacts && !exportInterestOwners;
 
   const onExport = () => {
-    onClose();
+    let datasets = {}
+    if (exportContacts) {
+      datasets.exportContacts = exportContacts;
+      datasets.exportContactsPurchase = exportContacts;
+    }
+
+    if (exportInterestOwners) {
+      datasets.exportShapeInterestOwner = exportInterestOwners;
+    }
+
     dispatch(execCommonAsyncExportJobAction.STARTED({
       jobType: 'EXPORTCSV',
       client,
       setStateApp: window.setStateApp,
       userId: getUser?._id,
       requestPayload: {
-        type,
+        type: jobType,
         total,
         search,
         filters,
         esIndex,
-        sort,
-        isSelectAll: isAllRowsSelected,
         contactIdKey,
-        datasets: {
-          exportContacts: exportContacts,
-          exportContactsPurchase: exportContacts,
-        },
+        datasets,
         counts: {
           exportContacts: total,
           exportContactsPurchase: total,
+          exportShapeInterestOwner: total
         },
       }
     }));
+    setTimeout(() => {
+      onClose();
+    }, 2000)
   };
 
   return (
-    <RightDialog open={open} width={'700px'}>
-      <MuiDialogTitle disableTypography className={classes.dialogTitle}>
-        <Typography className={classes.topHeading} variant="h5" component="h1">
-          Export Data to CSV
-        </Typography>
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          size="medium"
-        >
-          <KeyboardTabIcon fontSize="large" />
-        </IconButton>
-      </MuiDialogTitle>
-      <DialogContent>
+    <Drawer anchor="right" open={open}>
+      <div className={classes.root}>
+        <div className={classes.title}>
+          <h1>Export Data to CSV</h1>
+          <div style={{ cursor: "pointer" }}>
+            <IconButton size="small" onClick={onClose}>
+              <CloseIcon />
+            </IconButton>
+          </div>
+        </div>
         <label className={classes.bold}>Available Data Elements</label>
+
+        <div className={classes.field}>
+          <div className={classes.checkbox}>
+            <div>
+              <Controller
+                control={control}
+                name="exportInterestOwners"
+                defaultValue={false}
+                render={(props) => (
+                  <Checkbox
+                    {...props}
+                    disabled={total === 0}
+                    onChange={(e) => {
+                      props.onChange(e.target.checked);
+                    }}
+                  />
+                )}
+              />
+              <label className={classes.bold}>Tract Ownership Interest</label>
+            </div>
+            <label className={classes.value}>{total} selected</label>
+          </div>
+        </div>
 
         <div className={classes.field}>
           <div className={classes.checkbox}>
@@ -157,24 +175,35 @@ const ExportContactsAndPurchase = ({
             <label className={classes.value}>{total} selected</label>
           </div>
         </div>
-      </DialogContent>
-      <DialogActions className={modalClass.actionButtons}>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button
-          variant="contained"
-          component="span"
-          style={{
-            backgroundColor: exportDisabled ? "#D3D3D3" : "#00abed",
-            color: exportDisabled ? "#999999" : "white",
-          }}
-          onClick={onExport}
-          disabled={exportDisabled}
-        >
-          Export
-        </Button>
-      </DialogActions>
-    </RightDialog>
+        <Box pt={6} mt={6} mb={6} mr={2}>
+          <Grid
+            container
+            direction="row"
+            justify="flex-end"
+            alignItems="flex-end"
+          >
+            <Grid item>
+              <Button onClick={onClose}>Cancel</Button>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="contained"
+                component="span"
+                style={{
+                  backgroundColor: exportDisabled ? "#D3D3D3" : "#00abed",
+                  color: exportDisabled ? "#999999" : "white",
+                }}
+                onClick={onExport}
+                disabled={exportDisabled}
+              >
+                Export
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+      </div>
+    </Drawer>
   );
 };
 
-export default ExportContactsAndPurchase;
+export default ExportOwnerAndContacts;

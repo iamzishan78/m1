@@ -34,20 +34,6 @@ function TractInterestTableDialogs() {
 				/>
 			)}
 
-			{type === 'exportOwnersAndContact' && (
-				<ExportOwnersAndContacts
-					onClose={handleCloseDialog}
-					search={rest?.search}
-					filters={rest?.filters}
-					total={rest?.total}
-					isSelectAll={rest?.isAllRowsSelected}
-					rows={rest?.selectedRows}
-					esIndex={rest?.esIndex}
-					type="Tract"
-					open
-				/>
-			)}
-
 			{type === 'recalculate' && (
 				<RecalculateSlideout onClose={handleCloseDialog} rows={rest?.selectedRows} setRows={updateRows} />
 			)}

@@ -119,6 +119,8 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 			esIndex: tableStateValues.esIndex,
 			table,
 			tableKey,
+			type: 'exportContacts',
+			contactIdKey: '_id',
 		};
 	};
 
