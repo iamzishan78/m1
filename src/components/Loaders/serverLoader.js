@@ -93,7 +93,7 @@ export const createToast = (id, message, progress, onClose) => {
   return toastId;
 };
 
-export const updateToast = (id, message, progress) => {
+export const updateToast = (id, message, progress, isOpen = true) => {
   if (toastMeta[id]?.isOpen) {
     toast.update(toastMeta[id].toastId, {
       render: (
@@ -138,10 +138,10 @@ export const successToast = (id, newMessage, onClose) => {
       toastMeta[id].toastId = toastId;
       toastMeta[id].isOpen = true;
     }
-    // setTimeout(() => {
-    //   toast.dismiss(toastId);
-    //   delete toastMeta[id];
-    // }, 4000);
+    setTimeout(() => {
+      toast.dismiss(toastId);
+      delete toastMeta[id];
+    }, 4000);
   }
 };
 
