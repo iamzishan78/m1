@@ -81,6 +81,7 @@ function ContactToolbar({ table, tableKey }) {
 			isAllRowsSelected: tableStateValues.isAllRowsSelected,
 			esIndex: tableStateValues.esIndex,
 			table,
+			tableKey,
 		};
 	};
 

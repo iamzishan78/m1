@@ -118,6 +118,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 			isAllRowsSelected: tableStateValues.isAllRowsSelected,
 			esIndex: tableStateValues.esIndex,
 			table,
+			tableKey,
 		};
 	};
 

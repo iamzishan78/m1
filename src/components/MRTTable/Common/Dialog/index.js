@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { useMutation } from '@apollo/client';
-import ExportContacts from 'components/Shared/ExportContacts';
+import ExportContactsAndPurchase from 'components/MRTTable/Common/Dialog/ExportContactsAndPurchase';
 import { tableGlobalController } from 'hookstate/tableController';
 import { AssignOwnerToContactDrawerContainer } from 'store/containers';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
@@ -67,7 +67,7 @@ function AllDialogs() {
 				{type === 'comments' && <CommentDialog {...rest} />}
 			</Dialog>
 
-			{type === 'exportContacts' && <ExportContacts {...rest} onClose={handleCloseDialog} />}
+			{type === 'exportContacts' && <ExportContactsAndPurchase {...rest} onClose={handleCloseDialog} />}
 
 			{type === 'asign' && (
 				<AssignOwnerToContactDrawerContainer

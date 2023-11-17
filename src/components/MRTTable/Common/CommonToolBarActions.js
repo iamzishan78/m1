@@ -8,16 +8,36 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import { getAllData } from 'components/MRTTable/utils/GetAllData';
 import _ from 'lodash';
 
-const openSideExportDialog = (_selectedRows, search, filters, total, isAllRowsSelected, esIndex, table) => {
+const ExcludeFilters = (tableKey) => {
+
+}
+const openSideExportDialog = ({ search, filters, total, isAllRowsSelected, esIndex, table, tableKey }) => {
+	const excludedIds = []
+	if (isAllRowsSelected) {
+		const rowSelection = tableController(tableKey).getValue('rowSelection');
+		const { rows, total: rangeTotal } = tableController(tableKey).getValue('data');
+
+		const allNumbers = _.range(0, rangeTotal);
+
+		const missingNumbers = _.difference(allNumbers, _.keys(rowSelection).map(Number));
+
+		for (let i = 0; i < missingNumbers.length; i++) {
+			excludedIds.push({ field: '_id', value: rows[missingNumbers[i]]._id, type: "advanced", searchType: "notEquals", isKeyword: true },)
+		}
+		total = total - missingNumbers.length
+		isAllRowsSelected = missingNumbers.length ? false : isAllRowsSelected
+	}
+
+	const allFilters = [...filters, ...excludedIds]
 	tableGlobalController.updateState({
 		dialog: {
 			type: 'exportContacts',
 			search,
-			filters,
+			filters: allFilters,
 			total,
 			isAllRowsSelected,
-			rows: _selectedRows,
 			esIndex,
+			contactIdKey: '_id',
 			open: true,
 		},
 	});
@@ -119,13 +139,13 @@ export function BulkUpdate({
 	);
 }
 
-export function ExportData({ classes, _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table }) {
+export function ExportData({ classes, search, filters, total, isAllRowsSelected, esIndex, table, tableKey }) {
 	return (
 		<Button
 			color="secondary"
 			startIcon={<CloudDownloadIcon color="white" />}
 			className={classes.selectTopBarButtons}
-			onClick={() => openSideExportDialog(_selectedRows, search, filters, total, isAllRowsSelected, esIndex, table)}
+			onClick={() => openSideExportDialog({ search, filters, total, isAllRowsSelected, esIndex, table, tableKey })}
 		>
 			Export
 		</Button>

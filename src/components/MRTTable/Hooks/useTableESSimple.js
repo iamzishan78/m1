@@ -117,32 +117,33 @@ const useTableESSimple = tableKey => {
 				Controller.setColumnPinning(newPinning, tableStateValues?.columnPinning, tableStateValues.TableSchema);
 			},
 			onRowSelectionChange: (checkFunc) => {
-				if (typeof checkFunc === 'function') {
-					let newstate = checkFunc(tableStateValues?.rowSelection)
-					const selectAll = tableStateValues.data?.rows?.length === Object.keys(newstate)?.length;
-					if (selectAll) {
-						for (let i = 0; i < tableStateValues.data?.total; i++) {
-							newstate[i] = true
-						}
-					}
-					let unselectAll = true;
-
-					for (let i = 0; i < tableStateValues?.pageSize; i++) {
-						if (!!newstate[i]) {
-							unselectAll = false;
-							break;
-						}
-					}
-
-					if (unselectAll) {
-						Controller.setIsAllRowsSelected(false)
-						newstate = {}
-					}
-					Controller.setColumnCheck(newstate)
-				} else {
+				if (typeof checkFunc !== 'function') {
 					Controller.setIsAllRowsSelected(false)
 					Controller.setColumnCheck(checkFunc)
+					return
 				}
+
+				let newstate = checkFunc(tableStateValues?.rowSelection)
+				const selectAll = tableStateValues.data?.rows?.length === Object.keys(newstate)?.length;
+				if (selectAll) {
+					for (let i = 0; i < tableStateValues.data?.total; i++) {
+						newstate[i] = true
+					}
+				}
+				let unselectAll = true;
+
+				for (let i = 0; i < tableStateValues?.pageSize; i++) {
+					if (!!newstate[i]) {
+						unselectAll = false;
+						break;
+					}
+				}
+
+				if (unselectAll) {
+					Controller.setIsAllRowsSelected(false)
+					newstate = {}
+				}
+				Controller.setColumnCheck(newstate)
 			},
 			onColumnFiltersChange: filtersFunc => {
 				const newFilters = filtersFunc(
