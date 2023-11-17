@@ -16,7 +16,7 @@ const onClickedRow = selectedRow => {
 	const Controller = tableController('TractPerUnitTable');
 	const { customLayer } = Controller.getValue('customProps');
 	tableGlobalController.updateState({
-		tractInterestDialog: {
+		dialog: {
 			type: 'addTractInterest',
 			customLayerId: customLayer?._id,
 			customLayer,
@@ -397,7 +397,7 @@ const TractPerUnitMeta = {
 				const id = row.getValue('_id');
 				const name = row.getValue('name');
 
-				return <ContactActionMenu id={id} name={name} esIndex={esIndex} dialogType="tractInterestDialog" />;
+				return <ContactActionMenu id={id} name={name} esIndex={esIndex} dialogType="dialog" />;
 			},
 		},
 

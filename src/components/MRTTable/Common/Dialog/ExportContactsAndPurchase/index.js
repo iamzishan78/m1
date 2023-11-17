@@ -16,8 +16,8 @@ import Typography from "@material-ui/core/Typography";
 
 import { Modals } from "styles/Modal";
 
-import { AppContext } from "AppContext";
 import { execCommonAsyncExportJobAction } from "store/actions/commonActions";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ExportContacts = ({
+const ExportContactsAndPurchase = ({
   isAllRowsSelected,
   filters,
   esIndex,
@@ -68,13 +68,14 @@ const ExportContacts = ({
   search,
   total,
   open,
-  rows,
   type,
+  sort,
+  contactIdKey,
 }) => {
   const classes = useStyles();
   const modalClass = Modals();
-  const [stateApp, setStateApp] = useContext(AppContext);
-  const client = useApolloClient();
+  const { user } = globalStateController.useState(['user']);
+  const getUser = user.get({ noproxy: true }); const client = useApolloClient();
   const dispatch = useDispatch();
   const { control } = useForm();
 
@@ -91,24 +92,24 @@ const ExportContacts = ({
     dispatch(execCommonAsyncExportJobAction.STARTED({
       jobType: 'EXPORTCSV',
       client,
-      setStateApp,
-      userId: stateApp.user.mongoId,
+      setStateApp: window.setStateApp,
+      userId: getUser?._id,
       requestPayload: {
         type,
         total,
         search,
         filters,
         esIndex,
+        sort,
         isSelectAll: isAllRowsSelected,
-        contactIds: rows.map(row => row._id),
-        contactIdKey: '_id',
+        contactIdKey,
         datasets: {
           exportContacts: exportContacts,
           exportContactsPurchase: exportContacts,
         },
         counts: {
-          exportContacts: rows.length,
-          exportContactsPurchase: rows.length,
+          exportContacts: total,
+          exportContactsPurchase: total,
         },
       }
     }));
@@ -141,7 +142,7 @@ const ExportContacts = ({
                 render={(props) => (
                   <Checkbox
                     {...props}
-                    disabled={rows.length === 0}
+                    disabled={total === 0}
                     onChange={(e) => {
                       props.onChange(e.target.checked);
                     }}
@@ -152,7 +153,7 @@ const ExportContacts = ({
                 Contact Data (Basic & Purchased Info)
               </label>
             </div>
-            <label className={classes.value}>{isAllRowsSelected ? total : rows.length} selected</label>
+            <label className={classes.value}>{total} selected</label>
           </div>
         </div>
       </DialogContent>
@@ -175,4 +176,4 @@ const ExportContacts = ({
   );
 };
 
-export default ExportContacts;
+export default ExportContactsAndPurchase;

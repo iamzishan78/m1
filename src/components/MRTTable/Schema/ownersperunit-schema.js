@@ -18,7 +18,7 @@ const onClickedRow = selectedRow => {
 	const Controller = tableController('OwnersPerUnitTable');
 	const { customLayer } = Controller.getValue('customProps');
 	tableGlobalController.updateState({
-		ownerPerUnitDialog: {
+		dialog: {
 			type: 'addOwnerToUnit',
 			shapeId: customLayer?._id,
 			uAcres: customLayer?.shapeJson?.properties?.uAcres,
@@ -420,7 +420,7 @@ const OwnersPerUnitMeta = {
 				const id = row.getValue('_id');
 				const name = row.getValue('name');
 
-				return <ContactActionMenu id={id} name={name} esIndex={esIndex} dialogType="ownerPerUnitDialog" />;
+				return <ContactActionMenu id={id} name={name} esIndex={esIndex} dialogType="dialog" />;
 			},
 		},
 

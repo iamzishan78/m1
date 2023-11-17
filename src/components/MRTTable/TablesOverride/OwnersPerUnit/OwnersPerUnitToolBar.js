@@ -8,7 +8,7 @@ import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { navController } from 'hookstate/navStateController';
 import OwnerPerUnitTableDialogs from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs';
-import { BulkUpdate, ExportData, ViewContactData } from 'components/MRTTable/Common/CommonToolBarActions';
+import { BulkUpdate, ExportData, ViewContactData, openSideDialog } from 'components/MRTTable/Common/CommonToolBarActions';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {
@@ -56,10 +56,12 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 		'filters',
 		'defaultSort',
 		'sorting',
-		'isSelectall',
+		'isAllRowsSelected',
+		'rowSelection',
+		'defaultFilters',
 	]);
 	const tableStateValues = tableState.stateValues;
-	const isSomeRowsSelected = table.getIsSomeRowsSelected();
+	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
@@ -68,7 +70,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 		const { customLayer } = Controller.getValue('customProps');
 		e.stopPropagation();
 		tableGlobalController.updateState({
-			ownerPerUnitDialog: {
+			dialog: {
 				type: 'addOwnerToUnit',
 				shapeId: customLayer?._id,
 				uAcres: customLayer?.shapeJson?.properties?.uAcres,
@@ -111,11 +113,12 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 		return {
 			_selectedRows: selectedRows,
 			search,
-			filters: tableStateValues.filters,
+			filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
 			total: tableStateValues?.data.total,
-			isSelectAll: isAllRowsSelected,
+			isAllRowsSelected: tableStateValues.isAllRowsSelected,
 			esIndex: tableStateValues.esIndex,
 			table,
+			tableKey,
 		};
 	};
 
@@ -125,13 +128,12 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 
 		return {
 			selectedRows,
-			isAllRowsSelected,
-			isSelectall: tableStateValues?.isSelectall,
 			search,
+			isAllRowsSelected: tableStateValues.isAllRowsSelected,
 			sorting: tableStateValues?.sorting,
 			defaultSort: tableStateValues?.defaultSort,
 			esIndex: tableStateValues.esIndex,
-			filters: tableStateValues.filters,
+			filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
 			total: tableStateValues?.data.total,
 			client,
 			table,
@@ -141,16 +143,6 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 
 	const sidePropsPass = SideDialogProps();
 	const exportPropsPass = ExportProps();
-
-	const handleRecalculate = () => {
-		tableGlobalController.updateState({
-			ownerPerUnitDialog: {
-				type: 'recalculate',
-				selectedRows,
-			},
-		});
-		table.resetRowSelection();
-	};
 
 	return (
 		<>
@@ -168,7 +160,22 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 					startIcon={<AutorenewIcon color="white" />}
 					className={classes.multiSelectionTopBarButtons}
 					disabled={false}
-					onClick={() => handleRecalculate()}
+					onClick={() => openSideDialog(
+						{
+							type: 'recalculate',
+							selectedRows,
+							isAllRowsSelected: sidePropsPass.isAllRowsSelected,
+							search: sidePropsPass.search,
+							sorting: sidePropsPass.sorting,
+							defaultSort: sidePropsPass.defaultSort,
+							esIndex: sidePropsPass.esIndex,
+							filters: sidePropsPass.filters,
+							total: sidePropsPass.total,
+							client,
+							table,
+							tableKey,
+						}
+					)}
 				>
 					Recalculate
 				</Button>
