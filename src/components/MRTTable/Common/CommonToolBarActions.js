@@ -13,6 +13,7 @@ const ExcludeFilters = (tableKey) => {
 }
 const openSideExportDialog = ({ _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey }) => {
 	const excludedIds = []
+	const includedIds = []
 	if (isAllRowsSelected) {
 		const rowSelection = tableController(tableKey).getValue('rowSelection');
 		const { rows, total: rangeTotal } = tableController(tableKey).getValue('data');
@@ -28,9 +29,12 @@ const openSideExportDialog = ({ _selectedRows, search, filters, total, isAllRows
 		isAllRowsSelected = missingNumbers.length ? false : isAllRowsSelected
 	} else {
 		total = _selectedRows.length
+		for (let i = 0; i < _selectedRows.length; i++) {
+			includedIds.push({ field: '_id', value: _selectedRows[i]._id, type: "advanced", searchType: "equals", isKeyword: true },)
+		}
 	}
 
-	const allFilters = [...filters, ...excludedIds]
+	const allFilters = [...filters, ...excludedIds, ...includedIds]
 	tableGlobalController.updateState({
 		dialog: {
 			type: 'exportContacts',
