@@ -11,7 +11,7 @@ import _ from 'lodash';
 const ExcludeFilters = (tableKey) => {
 
 }
-export const openSideExportDialog = ({ _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, jobType }) => {
+export const openSideExportDialog = ({ _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) => {
 	const excludedIds = []
 	const includedIds = []
 	if (isAllRowsSelected) {
@@ -44,7 +44,7 @@ export const openSideExportDialog = ({ _selectedRows, search, filters, total, is
 			isAllRowsSelected,
 			esIndex,
 			contactIdKey,
-			jobType,
+			shapeType,
 			open: true,
 		},
 	});
@@ -146,13 +146,13 @@ export function BulkUpdate({
 	);
 }
 
-export function ExportData({ classes, _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, jobType }) {
+export function ExportData({ classes, _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) {
 	return (
 		<Button
 			color="secondary"
 			startIcon={<CloudDownloadIcon color="white" />}
 			className={classes.selectTopBarButtons}
-			onClick={() => openSideExportDialog({ search, _selectedRows, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, jobType })}
+			onClick={() => openSideExportDialog({ search, _selectedRows, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType })}
 		>
 			Export
 		</Button>

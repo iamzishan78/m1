@@ -121,6 +121,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 			tableKey,
 			type: 'exportContacts',
 			contactIdKey: '_id',
+			shapeType: 'Unit',
 		};
 	};
 

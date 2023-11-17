@@ -56,7 +56,7 @@ const ExportOwnerAndContacts = ({
   search,
   total,
   open,
-  jobType,
+  shapeType,
   contactIdKey,
 }) => {
   const classes = useStyles();
@@ -81,13 +81,17 @@ const ExportOwnerAndContacts = ({
 
   const onExport = () => {
     let datasets = {}
+    let counts = {}
     if (exportContacts) {
       datasets.exportContacts = exportContacts;
       datasets.exportContactsPurchase = exportContacts;
+      counts.exportContacts = total;
+      counts.exportContactsPurchase = total;
     }
 
     if (exportInterestOwners) {
       datasets.exportShapeInterestOwner = exportInterestOwners;
+      counts.exportShapeInterestOwner = total;
     }
 
     dispatch(execCommonAsyncExportJobAction.STARTED({
@@ -96,18 +100,14 @@ const ExportOwnerAndContacts = ({
       setStateApp: window.setStateApp,
       userId: getUser?._id,
       requestPayload: {
-        type: jobType,
+        type: shapeType,
         total,
         search,
         filters,
         esIndex,
         contactIdKey,
         datasets,
-        counts: {
-          exportContacts: total,
-          exportContactsPurchase: total,
-          exportShapeInterestOwner: total
-        },
+        counts,
       }
     }));
     setTimeout(() => {

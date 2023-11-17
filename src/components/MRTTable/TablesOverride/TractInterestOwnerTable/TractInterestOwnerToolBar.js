@@ -125,7 +125,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 			tableKey,
 			type: 'exportOwnersAndContact',
 			contactIdKey: 'contactId',
-			jobType: 'Tract',
+			shapeType: 'Tract',
 		};
 	};
 

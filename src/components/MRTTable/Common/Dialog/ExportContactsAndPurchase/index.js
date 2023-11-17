@@ -68,7 +68,7 @@ const ExportContactsAndPurchase = ({
   search,
   total,
   open,
-  type,
+  shapeType,
   sort,
   contactIdKey,
 }) => {
@@ -86,9 +86,30 @@ const ExportContactsAndPurchase = ({
     defaultValue: false,
   });
 
-  const exportDisabled = !exportContacts;
+  const exportInterestOwners = useWatch({
+    control,
+    name: "exportInterestOwners",
+    defaultValue: false,
+  });
+
+  const exportDisabled = !exportContacts && !exportInterestOwners;
 
   const onExport = () => {
+    let datasets = {}
+    let counts = {}
+    if (exportContacts) {
+      datasets.exportContacts = exportContacts;
+      datasets.exportContactsPurchase = exportContacts;
+      counts.exportContacts = total;
+      counts.exportContactsPurchase = total;
+    }
+
+    if (exportInterestOwners) {
+      datasets.exportShapeInterestOwner = exportInterestOwners;
+      counts.exportShapeInterestOwner = total;
+    }
+
+
     onClose();
     dispatch(execCommonAsyncExportJobAction.STARTED({
       jobType: 'EXPORTCSV',
@@ -96,7 +117,7 @@ const ExportContactsAndPurchase = ({
       setStateApp: window.setStateApp,
       userId: getUser?._id,
       requestPayload: {
-        type,
+        type: shapeType,
         total,
         search,
         filters,
@@ -104,14 +125,8 @@ const ExportContactsAndPurchase = ({
         sort,
         isSelectAll: isAllRowsSelected,
         contactIdKey,
-        datasets: {
-          exportContacts: exportContacts,
-          exportContactsPurchase: exportContacts,
-        },
-        counts: {
-          exportContacts: total,
-          exportContactsPurchase: total,
-        },
+        datasets,
+        counts,
       }
     }));
   };
@@ -132,6 +147,29 @@ const ExportContactsAndPurchase = ({
       </MuiDialogTitle>
       <DialogContent>
         <label className={classes.bold}>Available Data Elements</label>
+
+        <div className={classes.field}>
+          <div className={classes.checkbox}>
+            <div>
+              <Controller
+                control={control}
+                name="exportInterestOwners"
+                defaultValue={false}
+                render={(props) => (
+                  <Checkbox
+                    {...props}
+                    disabled={total === 0}
+                    onChange={(e) => {
+                      props.onChange(e.target.checked);
+                    }}
+                  />
+                )}
+              />
+              <label className={classes.bold}>Unit Ownership Interest</label>
+            </div>
+            <label className={classes.value}>{total} selected</label>
+          </div>
+        </div>
 
         <div className={classes.field}>
           <div className={classes.checkbox}>
