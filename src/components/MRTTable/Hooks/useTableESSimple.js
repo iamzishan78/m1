@@ -100,6 +100,7 @@ const useTableESSimple = tableKey => {
 			enableColumnResizing: true,
 			enableRowSelection: true,
 			enablePinning: true,
+			enableFullScreenToggle: false,
 			// enableMultiRowSelection: true,
 			// enableSelectAll: true,
 			enableStickyHeader: true,
