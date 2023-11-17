@@ -57,9 +57,11 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 		'defaultSort',
 		'sorting',
 		'isAllRowsSelected',
+		'rowSelection',
+		'defaultFilters',
 	]);
 	const tableStateValues = tableState.stateValues;
-	const isSomeRowsSelected = table.getIsSomeRowsSelected();
+	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
@@ -111,7 +113,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 		return {
 			_selectedRows: selectedRows,
 			search,
-			filters: tableStateValues.filters,
+			filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
 			total: tableStateValues?.data.total,
 			isAllRowsSelected: tableStateValues.isAllRowsSelected,
 			esIndex: tableStateValues.esIndex,
@@ -130,7 +132,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 			sorting: tableStateValues?.sorting,
 			defaultSort: tableStateValues?.defaultSort,
 			esIndex: tableStateValues.esIndex,
-			filters: tableStateValues.filters,
+			filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
 			total: tableStateValues?.data.total,
 			client,
 			table,

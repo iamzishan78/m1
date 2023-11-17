@@ -4,8 +4,9 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import RequestPageIcon from 'components/Shared/svgIcons/request_page';
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { getAllData } from 'components/MRTTable/utils/GetAllData';
+import _ from 'lodash';
 
 const openSideExportDialog = (_selectedRows, search, filters, total, isAllRowsSelected, esIndex, table) => {
 	tableGlobalController.updateState({
@@ -42,6 +43,8 @@ export const openSideDialog = async (
 ) => {
 	let showRows = selectedRows;
 	if (isAllRowsSelected) {
+		const rowSelection = tableController(tableKey).getValue('rowSelection');
+		const { rows, total: rangeTotal } = tableController(tableKey).getValue('data');
 		tableGlobalController.updateState({
 			dialog: {
 				type,
@@ -49,7 +52,16 @@ export const openSideDialog = async (
 				...props
 			},
 		});
-		showRows = await getAllData(search, sorting, defaultSort, esIndex, filters, total, client);
+		const allNumbers = _.range(0, rangeTotal);
+
+		const missingNumbers = _.difference(allNumbers, _.keys(rowSelection).map(Number));
+
+		const excludedIds = []
+		for (let i = 0; i < missingNumbers.length; i++) {
+			excludedIds.push({ field: '_id', value: rows[missingNumbers[i]]._id, type: "advanced", searchType: "notEquals", isKeyword: true },)
+		}
+		const allFilters = [...filters, ...excludedIds]
+		showRows = await getAllData(search, sorting, defaultSort, esIndex, allFilters, total, client);
 	}
 	tableGlobalController.updateState({
 		dialog: {

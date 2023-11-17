@@ -15,6 +15,8 @@ function TractPotentialUnitsToolBar({ table, tableKey }) {
         awaitRefetchQueries: true,
     });
     const Controller = tableController(tableKey);
+    const tableState = Controller.useState(['rowSelection']);
+    const tableStateValues = tableState.stateValues;
     const selectedRows = table.getSelectedRowModel().flatRows.map((row) => row.original);
     const addUnitToTract = async (e) => {
         const { customLayer } = Controller.getValue("customProps");
@@ -54,7 +56,7 @@ function TractPotentialUnitsToolBar({ table, tableKey }) {
 
         simpleTableGlobalController.setSelectedTab(0);
     };
-    const isSomeRowsSelected = table.getIsSomeRowsSelected();
+    const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
     const isAllRowsSelected = table.getIsAllRowsSelected();
     const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
     return (

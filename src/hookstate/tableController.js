@@ -271,6 +271,7 @@ const tableESStateControllerHandler = state => ({
 			customProps: isEmpty(state?.customProps?.get({ noproxy: true })) ? customProps : state?.customProps?.get({ noproxy: true }),
 			filters: [],
 			sorting: [],
+			rowSelection: {},
 			searchFields,
 			isInFiniteScroll,
 			columnVirtualization,
@@ -376,8 +377,11 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setColumnOrdering: order => {
-		console.log(order)
 		if (!deepEqual(state.columnOrdering?.get({ noproxy: true }), order)) state.columnOrdering?.set(order);
+	},
+
+	setColumnCheck: rowCheck => {
+		if (!deepEqual(state.rowSelection?.get({ noproxy: true }), rowCheck)) state.rowSelection?.set(rowCheck);
 	},
 
 	setPagination: pagination =>

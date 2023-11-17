@@ -10,14 +10,15 @@ import { useApolloClient } from '@apollo/client';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const client = useApolloClient();
+	const tableState = tableController(tableKey).useCompleteState();
+	const tableStateValues = tableState?.get({ noproxy: true });
+
 	const isAllRowsSelected = table.getIsAllRowsSelected();
-	const isSomeRowsSelected = table.getIsSomeRowsSelected();
+	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 
-	const tableState = tableController(tableKey).useCompleteState();
-	const tableStateValues = tableState?.get({ noproxy: true });
-	if (tableStateValues?.isSelectAllAllowed)
+	if (tableStateValues?.isSelectAllAllowed && isAllRowsSelected)
 		tableController(tableKey).setIsAllRowsSelected(isAllRowsSelected);
 
 
@@ -32,7 +33,7 @@ function ToolbarActions({ table, tableKey, children }) {
 			sorting: tableStateValues?.sorting,
 			defaultSort: tableStateValues?.defaultSort,
 			esIndex: tableStateValues.esIndex,
-			filters: tableStateValues.filters,
+			filters: [...tableStateValues.filters, tableStateValues.defaultFilters],
 			total: tableStateValues?.data?.total,
 			client,
 			table,
