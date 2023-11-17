@@ -65,7 +65,7 @@ const reorderLayers = (list, startPosition, endPosition) => {
   return { reorderedLayers, layersToUpdate };
 };
 
-export default function SidePanel() {
+export default function SidePanel({ showSidePanel }) {
   const [dragFunction, setDragFunction] = useState();
   const [toggleFunction, setToggleFunction] = useState();
   const [panelItems, setPanelItems] = useState();
@@ -291,6 +291,7 @@ export default function SidePanel() {
       panelItems={panelItems}
       onDragEnd={dragFunction}
       handleToggle={toggleFunction}
+      showSidePanel={showSidePanel}
     />
   ) : null;
 }

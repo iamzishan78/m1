@@ -36,6 +36,7 @@ import { ADDOWNERTOAPARCEL } from '../../../../../graphQL/useMutationAddOwnerToA
 import { Modals } from '../../../../../styles/Modal';
 import { AppContext } from '../../../../../AppContext';
 import { tableGlobalController } from 'hookstate/tableController';
+import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 
 const entities = [
   'Corporation',
@@ -631,7 +632,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 onWheel={(e) => e.target.blur()}
               />
             </Grid>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <h3>Net Revenue Interest (NRI)</h3>
               <TextField
                 type="number"
@@ -648,7 +649,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 }}
                 onWheel={(e) => e.target.blur()}
               />
-            </Grid>
+            </Grid> */}
             <Grid item xs={12}>
               <h3>Net Acres</h3>
               <TextField
@@ -689,23 +690,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 onWheel={(e) => e.target.blur()}
               />
             </Grid>
-            <Grid item xs={12}>
-              <h3>Company Net Acres</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.company_net_acres}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setNewOwner({
-                    ...newOwner,
-                    company_net_acres: value ? addTrailingZeros(e.target.value) : null,
-                  });
-                }}
-                onWheel={(e) => e.target.blur()}
-              />
-            </Grid>
+
             <Grid item xs={12}>
               <h3>Net Royalty Acres (NRA)</h3>
               <TextField
@@ -740,6 +725,23 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       )}
                     </InputAdornment>
                   ),
+                }}
+                onWheel={(e) => e.target.blur()}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <h3>Company Net Acres</h3>
+              <TextField
+                type="number"
+                size="small"
+                className={classes.maxWidth}
+                value={newOwner.company_net_acres}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setNewOwner({
+                    ...newOwner,
+                    company_net_acres: value ? addTrailingZeros(e.target.value) : null,
+                  });
                 }}
                 onWheel={(e) => e.target.blur()}
               />

@@ -62,7 +62,7 @@ function CheckDetailsTable(props) {
             });
         })();
     }, []);
-    
+
     useEffect(() => {
         (async () => {
             await new Promise((resolve, reject) => {
@@ -141,7 +141,7 @@ function CheckDetailsTable(props) {
     }
 
     const deleteFunc = (ids) => {
-    console.log(ids)    
+        // console.log(ids)    
     };
 
     props.options.customToolbarSelect = () => {
@@ -199,16 +199,16 @@ function CheckDetailsTable(props) {
                 </IconButton>
             </div>
 
-        <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
-            <Button
-                id="inputModeButton"
-                color="secondary"
-                className={classes.multiSelectionTopBarButtons}
-                onClick={() => handleInputModeClick()}
-            >
-                INPUT MODE
-            </Button>
-        </div>
+            <div style={{ display: "inline", "float": "left", marginRight: "15px", marginTop: "5px" }}>
+                <Button
+                    id="inputModeButton"
+                    color="secondary"
+                    className={classes.multiSelectionTopBarButtons}
+                    onClick={() => handleInputModeClick()}
+                >
+                    INPUT MODE
+                </Button>
+            </div>
         </>
     }
     return (

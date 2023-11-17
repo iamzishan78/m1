@@ -4,18 +4,18 @@ import AddUnitOwnerDialogContent from 'components/Shared/M1nTable/components/Sub
 import RecalculateSlideout from 'components/Table/Shape/RecalculateSlideout';
 
 function OwnerPerUnitTableDialogs() {
-	const { stateValues } = tableGlobalController.useState(['ownerPerUnitDialog']);
-	const { type, ...rest } = stateValues.ownerPerUnitDialog || {};
+	const { stateValues } = tableGlobalController.useState(['dialog']);
+	const { type, ...rest } = stateValues.dialog || {};
 
 	const handleCloseDialog = () => {
 		tableGlobalController.updateState({
-			ownerPerUnitDialog: {},
+			dialog: {},
 		});
 	};
 
 	const updateRows = rows => {
 		tableGlobalController.updateState({
-			ownerPerUnitDialog: {
+			dialog: {
 				type,
 				selectedRows: rows,
 			},

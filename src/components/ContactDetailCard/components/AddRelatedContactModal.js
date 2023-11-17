@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useMemo, useRef } from "react";
 import get from "lodash/get";
-import {Button, TextField, IconButton, CircularProgress, FormControl, Grid, makeStyles } from "@material-ui/core";
+import { Button, TextField, IconButton, CircularProgress, FormControl, Grid, makeStyles } from "@material-ui/core";
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 
 import { AppContext } from "../../../AppContext";
@@ -47,7 +47,7 @@ export default function AddRelatedContactModal(props) {
   const [getESSearch, { data: esFilter, loading }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, {
     fetchPolicy: "no-cache",
   });
-  const [addContact, { data: response, loading: isSubmitting}] = useMutation(ADD_RELATED_CONTACT, {
+  const [addContact, { data: response, loading: isSubmitting }] = useMutation(ADD_RELATED_CONTACT, {
     refetchQueries: ["getESSimpleSearch", "getContactSummary"]
   })
 
@@ -56,7 +56,7 @@ export default function AddRelatedContactModal(props) {
   }, [stateApp.addRelatedContactDialog]);
 
   useEffect(() => {
-    if(response?.addRelatedContact?.success){
+    if (response?.addRelatedContact?.success) {
       setFormFields({
         contact: null,
         relationType: ""
@@ -68,7 +68,7 @@ export default function AddRelatedContactModal(props) {
 
   const getContacts = (search = "") => {
     getESSearch({
-      variables:  { 
+      variables: {
         index: "contacts_flat",
         pagination: {
           first: 25,
@@ -90,14 +90,14 @@ export default function AddRelatedContactModal(props) {
       }
     });
   }
-  
-  const handleClose = () => setStateApp({...stateApp, addRelatedContactDialog: false})
+
+  const handleClose = () => setStateApp({ ...stateApp, addRelatedContactDialog: false })
   const handleSave = () => {
     addContact({
       variables: {
-        relationshipType: formFields.relationType, 
-        descriptorObject: formFields.contact.value, 
-        relatedObject: props.relatedObject, 
+        relationshipType: formFields.relationType,
+        descriptorObject: formFields.contact.value,
+        relatedObject: props.relatedObject,
         userId
       }
     })
@@ -115,138 +115,137 @@ export default function AddRelatedContactModal(props) {
     }))
 
     return options;
-  },[esFilter, loading])
+  }, [esFilter, loading])
 
   const formIsFilled = formFields.contact && formFields.relationType;
 
-  console.log(" -*-*-*- *autoCompletRef -*-*", autoCompletRef);
   return (
     <RightDialog
-        open={stateApp.addRelatedContactDialog}
-        handleClickDialogClose={handleClose}
-        width={props.width}
-      >
-        <div style={{ padding: "30px" }}>
-          <Grid item xs={12} style={{ minHeight: "35px" }}>
-            <h4
-              style={{
-                margin: 0,
-                "float": "left",
-                fontSize: "1.1rem",
-              }}
-            >
-              {stateApp.activeWellInterest ? "Update Related Contact" : "Add Related Contact"}
-            </h4>
-            <div style={{ "float": "right" }}>
-              <IconButton
-                onClick={handleClose}
-                size="small"
-              >
-                <KeyboardTabIcon fontSize="large" />
-              </IconButton>
-            </div>
-          </Grid>
-
-          <div style={{ marginTop: "15px" }}>
-            <FormControl
-              variant="outlined"
-              fullWidth
+      open={stateApp.addRelatedContactDialog}
+      handleClickDialogClose={handleClose}
+      width={props.width}
+    >
+      <div style={{ padding: "30px" }}>
+        <Grid item xs={12} style={{ minHeight: "35px" }}>
+          <h4
+            style={{
+              margin: 0,
+              "float": "left",
+              fontSize: "1.1rem",
+            }}
+          >
+            {stateApp.activeWellInterest ? "Update Related Contact" : "Add Related Contact"}
+          </h4>
+          <div style={{ "float": "right" }}>
+            <IconButton
+              onClick={handleClose}
               size="small"
             >
-            </FormControl>
-            <h4
-              style={{
-                //margin: "0 0 15px 0",
-                //float: "left",
-                //fontSize: "1.1rem",
-              }}
-            >
-              Selected a related contact and set relationship type
-            </h4>
-
-            <div style={{ marginBottom: '10px '}}>
-                <Autocomplete
-                  id="search-contacts"
-                  getOptionSelected={(option, value) => option.name === value.name}
-                  getOptionLabel={(option) => option.name}
-                  options={formattedContactOptions}
-                  loading={loading}
-                  value={formFields.contact}
-                  onInputChange={onInputChange}
-                  onChange={(_, newValue) => {
-                    setFormFields({... formFields, contact: newValue })
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Search Contact"
-                      variant="outlined"
-                      size="small"
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <React.Fragment>
-                            {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                            {params.InputProps.endAdornment}
-                          </React.Fragment>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-            </div>
-            <div style={{ marginBottom: "10px"}}>
-              <AutoCompleteAddNewField
-                ref={autoCompletRef}
-                id="related-contact-search"
-                queryParams={{
-                  esIndex: "contacts_flat",
-                  filterKey: "relatedContacts.relationshipType.keyword",
-                  size: 50,
-                }}
-                onChange={(data) => {
-                  setFormFields({...formFields, relationType: data.name})
-                }}
-                defaultOptions={RelationshipTypeOptions}
-                value={formFields.relationType}
-                inputProps={{ variant: "outlined", label: "Relationship Type" }}
-              />
-            </div>
+              <KeyboardTabIcon fontSize="large" />
+            </IconButton>
           </div>
+        </Grid>
 
-          <div className={classes.dialogFooter}>
-            <Button
-              variant="contained"
-              color="default"
-              size="medium"
-              disableElevation
-              onClick={handleClose}
-              disabled={loading}
-              className={classes.footerButton}
-              style={{
-                margin: "0px 15px 0px 0px",
+        <div style={{ marginTop: "15px" }}>
+          <FormControl
+            variant="outlined"
+            fullWidth
+            size="small"
+          >
+          </FormControl>
+          <h4
+            style={{
+              //margin: "0 0 15px 0",
+              //float: "left",
+              //fontSize: "1.1rem",
+            }}
+          >
+            Selected a related contact and set relationship type
+          </h4>
+
+          <div style={{ marginBottom: '10px ' }}>
+            <Autocomplete
+              id="search-contacts"
+              getOptionSelected={(option, value) => option.name === value.name}
+              getOptionLabel={(option) => option.name}
+              options={formattedContactOptions}
+              loading={loading}
+              value={formFields.contact}
+              onInputChange={onInputChange}
+              onChange={(_, newValue) => {
+                setFormFields({ ...formFields, contact: newValue })
               }}
-            >
-              Cancel
-            </Button>
-
-            <Button
-              variant="contained"
-              color="secondary"
-              size="medium"
-              disableElevation
-              onClick={handleSave}
-              className={classes.footerButton}
-              disabled={isSubmitting || !formIsFilled}
-            >
-              {isSubmitting ? (
-                <CircularProgress size={14} />
-              ) : (
-                "Save"
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Search Contact"
+                  variant="outlined"
+                  size="small"
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <React.Fragment>
+                        {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                        {params.InputProps.endAdornment}
+                      </React.Fragment>
+                    ),
+                  }}
+                />
               )}
-            </Button>
+            />
+          </div>
+          <div style={{ marginBottom: "10px" }}>
+            <AutoCompleteAddNewField
+              ref={autoCompletRef}
+              id="related-contact-search"
+              queryParams={{
+                esIndex: "contacts_flat",
+                filterKey: "relatedContacts.relationshipType.keyword",
+                size: 50,
+              }}
+              onChange={(data) => {
+                setFormFields({ ...formFields, relationType: data.name })
+              }}
+              defaultOptions={RelationshipTypeOptions}
+              value={formFields.relationType}
+              inputProps={{ variant: "outlined", label: "Relationship Type" }}
+            />
           </div>
         </div>
-      </RightDialog>
+
+        <div className={classes.dialogFooter}>
+          <Button
+            variant="contained"
+            color="default"
+            size="medium"
+            disableElevation
+            onClick={handleClose}
+            disabled={loading}
+            className={classes.footerButton}
+            style={{
+              margin: "0px 15px 0px 0px",
+            }}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            variant="contained"
+            color="secondary"
+            size="medium"
+            disableElevation
+            onClick={handleSave}
+            className={classes.footerButton}
+            disabled={isSubmitting || !formIsFilled}
+          >
+            {isSubmitting ? (
+              <CircularProgress size={14} />
+            ) : (
+              "Save"
+            )}
+          </Button>
+        </div>
+      </div>
+    </RightDialog>
   );
 }

@@ -1,50 +1,52 @@
 import React, { useState, useEffect, useContext, useMemo } from 'react';
-import { useLazyQuery, useMutation } from '@apollo/client';
-import set from 'lodash/set';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Grid from '@material-ui/core/Grid';
-import GavelIcon from '@material-ui/icons/Gavel';
-import { useDispatch, useSelector } from 'react-redux';
-import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-import Taps from 'components/Shared/Taps';
-import TabPanels from 'components/Shared/TabPanels';
-import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
-import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
-import SuggestedShapeTaxOwnersTable from 'components/Table/TaxOwners/SuggestedShapeTaxOwnersTable';
-import RelatedDetailsDocumentTable from 'components/Table/Documents/RelatedDetailsDocumentTable';
-import TabButtons from 'components/Shared/TabPanels/TabButtons';
-import ShapeWellInterestTable from 'components/Table/Shape/ShapeWellInterestTable';
-import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
-import UnitTractsTable from 'components/Table/Shape/UnitTractsTable';
-import AssociatedTractsShapeTable from 'components/Table/Wells/AssociatedTractsShapeTable';
-import Tags from 'components/Shared/Tagger';
-import { showSuccessMessage, showErrorMessage, setMapGridCardState } from 'actions';
-import { AppContext } from 'AppContext';
-
+import { useLazyQuery, useMutation } from "@apollo/client";
+import set from "lodash/set";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Grid from "@material-ui/core/Grid";
+import GavelIcon from "@material-ui/icons/Gavel";
+import { useDispatch, useSelector } from "react-redux";
+import Taps from "components/Shared/Taps";
+import TabPanels from "components/Shared/TabPanels";
+import { CUSTOMLAYER } from "graphQL/useQueryCustomLayer";
+import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
+import RelatedDetailsDocumentTable from "components/Table/Documents/RelatedDetailsDocumentTable";
+import DescriptionOutlinedIcon from "@material-ui/icons/DescriptionOutlined";
+import TabButtons from "components/Shared/TabPanels/TabButtons";
+import UnitSummary from "./UnitSummary";
+import ShapeWellInterestTable from "components/Table/Shape/ShapeWellInterestTable";
+import AssociatedWellsShapeTable from "components/Table/Wells/AssociatedWellsShapeTable";
+import UnitTractsTable from "components/Table/Shape/UnitTractsTable";
+import AssociatedTractsShapeTable from "components/Table/Wells/AssociatedTractsShapeTable";
+import Tags from "components/Shared/Tagger";
+import { showSuccessMessage, showErrorMessage, setMapGridCardState } from "actions";
+import { AppContext } from "AppContext";
 import { copy } from 'components/Shared/functions';
 import { popupController, popupState } from 'hookstate/popupStateController';
 import MRTTable from 'components/MRTTable';
 import { tableController } from 'hookstate/tableController';
 import { detailCardStyles } from '../style';
-import UnitSummary from './UnitSummary';
 import { DrawerContextProvider } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
+import { simpleTableGlobalController } from "hookstate/simpleTableController";
 import { jobController } from "hookstate/jobStateController";
+import MRSimpleTable from "components/MRSimpleTable";
+
+const setSelectedTab = simpleTableGlobalController.setSelectedTab
 
 export default function UnitDetailCard(props) {
   const dispatch = useDispatch();
-  const [selectedTab, setSelectedTab] = useState(0);
   const [selectedWellTab, setWellSelectedTab] = useState(0);
   const [selectedTractTab, setTractSelectedTab] = useState(0);
   const [uniObj, setUniObj] = useState();
   const [properties, setProperties] = useState();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [stateApp] = useContext(AppContext);
   const OwnersPerUnitGridState = tableController('OwnersPerUnitTable').useState(['data']).stateValue;
   const [updateCustomLayer, { data: updatedUnit, loading: updatingLayer }] = useMutation(UPDATECUSTOMLAYER);
 
+  const { stateValues: { tabKey: selectedTab } } = simpleTableGlobalController.useState(['tabKey'])
+
   const classes = detailCardStyles();
   const showSummary = true;
-  const [isFiltered, setIsFiltered] = useState(false);
 
   const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
@@ -81,18 +83,17 @@ export default function UnitDetailCard(props) {
         shape,
       });
 
-      tableController('OwnersPerUnitTable').updateState({
-        customProps: { customLayer: dataCustomLayer?.customLayer },
-      });
       setProperties(shape.properties);
     }
   }, [dataCustomLayer, OwnersPerUnitGridState?.data]);
 
   const overrideMeta = useMemo(() => ({
+    tabLabels: ['Unit Ownership', 'Potential Ownership'],
     defaultFilters: [
       { field: 'shape._id', value: dataCustomLayer?.customLayer?._id },
       { field: 'contact.IsDeleted', value: 'false' },
     ],
+    customProps: { customLayer: dataCustomLayer?.customLayer },
   }), [dataCustomLayer]);
 
 
@@ -171,18 +172,6 @@ export default function UnitDetailCard(props) {
     });
   };
 
-  function OwnershipHeader({ selectedTab, setSelectedTab }) {
-    return (
-      <TabButtons
-        labels={['Unit Ownership', 'Potential Ownership']}
-        value={selectedTab}
-        setValue={n => {
-          setSelectedTab(n);
-        }}
-      />
-    );
-  }
-
   function DocumentHeader() {
     const classes = detailCardStyles();
     return (
@@ -260,52 +249,20 @@ export default function UnitDetailCard(props) {
                 <TabPanels
                   value={selectedTab}
                   panels={[
-                    <div
-                      style={{
-                        position: 'relative',
-                        height: '100%',
-                        padding: '0rem 0.75rem 0rem 0.75rem'
-                      }}
-                    >
-                      {/* <UnitInterestOwnerTable
-										esIndex="shapeowners_flat"
-										customLayer={uniObj}
-										parent="ownersPerUnit"
-										shapeType="Unit"
-										targetLabel="Unit Ownership"
-										setIsFiltered={setIsFiltered}
-										header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
-										dense
-									/> */}
-                      {/* <UnitOwnersTable
-										customLayer={uniObj}
-										parent="ownersPerUnit"
-										shapeType="Unit"
-										targetLabel="Unit Ownership"
-										header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
-										setSelectedTab={setSelectedTab}
-										setIsFiltered={setIsFiltered}
-										dense
-									/> */}
-
-                      <div style={{ paddingTop: '10px', paddingBottom: '10px' }}>
-                        <OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
-                      </div>
+                    <div>
                       <MRTTable name="OwnersPerUnitTable" overrideMeta={overrideMeta} />
-
                     </div>,
-                    <div className={!isFiltered ? classes.subContent : classes.subContent3}>
-                      <SuggestedShapeTaxOwnersTable
-                        customLayer={uniObj}
-                        parent="potentialOwnersPerUnit"
-                        shapeType="Unit"
-                        targetLabel="well"
-                        jobType="SHAPEOWNER"
-                        jobName="Convert potential owner to unit owner"
-                        header={<OwnershipHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />}
-                        setSelectedTab={setSelectedTab}
-                        setIsFiltered={setIsFiltered}
-                        dense
+                    <div>
+                      <MRSimpleTable
+                        name="PotentialOwners"
+                        overrideMeta={{
+                          tabLabels: ['Unit Ownership', 'Potential Ownership'],
+                          customProps: {
+                            customLayer: uniObj,
+                            year: 2023,
+                            filterByWells: false
+                          },
+                        }}
                       />
                     </div>,
                   ]}

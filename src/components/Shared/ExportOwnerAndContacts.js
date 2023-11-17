@@ -94,15 +94,16 @@ const ExportOwnerAndContacts = ({
         isSelectAll,
         ownerIds: rows.map(row => row._id),
         contactIds: rows.map(row => row.contactId),
+        contactIdKey: 'contactId',
         datasets: {
           exportContacts: exportContacts,
           exportContactsPurchase: exportContacts,
-          exportShapeInterestOwner : exportInterestOwners
+          exportShapeInterestOwner: exportInterestOwners
         },
         counts: {
           exportContacts: rows.length,
           exportContactsPurchase: rows.length,
-          exportShapeInterestOwner : rows.length
+          exportShapeInterestOwner: rows.length
         },
       }
     }));

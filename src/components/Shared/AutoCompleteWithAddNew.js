@@ -28,7 +28,6 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, t
 
   const onInputChange = (event, value) => {
     const _value = event?.target?.value ?? value;
-    console.log('event?.target?.value ?? value', _value)
     if (onSearch) onSearch(_value);
   };
   return (
@@ -76,7 +75,6 @@ const AutoCompleteWithAddNew = ({ onSearch, setValue, value, options, variant, t
         const isExist = loadashFilter(filtered, (filter) => {
           return filter._id === params.inputValue?.trim() || filter.name === params.inputValue?.trim();
         });
-        console.log(params, value)
         // Suggest the creation of a new value
         if (params.inputValue !== "" && (!isExist || isExist.length === 0)) {
           filtered.unshift({

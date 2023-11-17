@@ -27,7 +27,7 @@ import AutocompEntityNamesVirtualizeList from "./AutocompEntityNamesVirtualizeLi
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
-import { setStateIfDeepEqual } from "../../../functions";
+import { copy, setStateIfDeepEqual } from "components/Shared/functions";
 
 import { PAGINATEDCONTACTSQUERY } from "graphQL/useQueryPaginatedContacts";
 
@@ -181,16 +181,18 @@ const MultipleOwnerToContactDrawer = ({
       action = ACTION.COMBINE
     }
 
-    const index = rows.findIndex(row => row.id === primaryOwner.id);
+    const selectedRows = copy(rows)
+
+    const index = selectedRows.findIndex(row => row.id === primaryOwner.id);
     if (index > -1) {
-      rows[index].isPrimary = true
+      selectedRows[index].isPrimary = true
     }
     const values = getValues();
 
     if (entitiesIds.length === 0) {
-      convertMultipleOwnerToContactAction({ ...values, campaigns, rows, existingContactId, autoCalculateOfferPrice, actionType: action, userId: userId, tags: newTagsIds, jobType, jobName });
+      convertMultipleOwnerToContactAction({ ...values, campaigns, rows: selectedRows, existingContactId, autoCalculateOfferPrice, actionType: action, userId: userId, tags: newTagsIds, jobType, jobName });
     } else {
-      convertMultipleOwnerToContactAction({ ...values, campaigns, entitiesIds, rows, existingContactId, autoCalculateOfferPrice, actionType: action, contactOwner, userId: userId, tags: newTagsIds, jobType, jobName });
+      convertMultipleOwnerToContactAction({ ...values, campaigns, entitiesIds, rows: selectedRows, existingContactId, autoCalculateOfferPrice, actionType: action, contactOwner, userId: userId, tags: newTagsIds, jobType, jobName });
     }
     onClose();
     setLoading(false);

@@ -126,7 +126,6 @@ const Tasks = () => {
   const classes = useStyles();
   const [tab, setTab] = useState(0);
   const [data, setData] = useState([]);
-  console.log("data : ", data)
   useEffect(() => {
     if (orginalData && Array.isArray(orginalData.activities)) {
       const sortCallBack = (a, b) => moment(b.dateTime).valueOf() - moment(a.dateTime).valueOf();

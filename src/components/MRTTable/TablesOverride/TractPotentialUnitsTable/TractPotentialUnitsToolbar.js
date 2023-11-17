@@ -1,8 +1,9 @@
 import React, { memo } from "react";
 import { Button } from "@material-ui/core";
-import { tableController, tableGlobalController } from "hookstate/tableController";
+import { tableController } from "hookstate/tableController";
 import { ADD_TRACTS_TOA_SHAPE } from "graphQL/useMutationAddTractsToAShape";
 import { useMutation } from "@apollo/client";
+import { simpleTableGlobalController } from "hookstate/simpleTableController";
 
 function TractPotentialUnitsToolBar({ table, tableKey }) {
     const [addShapeTract] = useMutation(ADD_TRACTS_TOA_SHAPE, {
@@ -14,9 +15,11 @@ function TractPotentialUnitsToolBar({ table, tableKey }) {
         awaitRefetchQueries: true,
     });
     const Controller = tableController(tableKey);
-    const { customLayer } = Controller.getValue("customProps");
+    const tableState = Controller.useState(['rowSelection']);
+    const tableStateValues = tableState.stateValues;
     const selectedRows = table.getSelectedRowModel().flatRows.map((row) => row.original);
     const addUnitToTract = async (e) => {
+        const { customLayer } = Controller.getValue("customProps");
         e.stopPropagation();
         const shapeTract = {
             abstract: customLayer?.shapeJson?.properties?.AbstractName,
@@ -50,11 +53,10 @@ function TractPotentialUnitsToolBar({ table, tableKey }) {
         tableController(tableKey).updateState({
             isLoading: false,
         });
-        tableGlobalController.updateState({
-            tabKey: 0
-        });
+
+        simpleTableGlobalController.setSelectedTab(0);
     };
-    const isSomeRowsSelected = table.getIsSomeRowsSelected();
+    const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
     const isAllRowsSelected = table.getIsAllRowsSelected();
     const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
     return (

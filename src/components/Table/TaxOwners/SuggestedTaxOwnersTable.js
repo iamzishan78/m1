@@ -46,7 +46,7 @@ function SuggestedOwnerTable(props) {
   const setColumns = (newState) => {
     setStateIfDeepEqual(Columns, newState);
   };
-  const [selectedYear, setSelectedYear] = useState(2022); // production selected year state
+  const [selectedYear, setSelectedYear] = useState(2023); // production selected year state
   const [count, setCount] = useState()  // local state for async count query
   const [suggestedOwnersCount, setSuggestedOwnersCount] = useState()  // local state for async count query
 

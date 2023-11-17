@@ -36,9 +36,9 @@ const ColumnWithLink = ({ value, link, ...rest }) => {
 				rest.onClick
 					? rest.onClick
 					: e => {
-							e.stopPropagation();
-							history.push(link);
-					  }
+						e.stopPropagation();
+						history.push(link);
+					}
 			}
 		>
 			{!rest.disabled ? (

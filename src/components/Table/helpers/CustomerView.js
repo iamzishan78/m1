@@ -90,7 +90,6 @@ const CustomerViewCol = (props) => {
             columns={columns}
             updateColumnSorting={updateColumnSorting}
             setItems={(value) => {
-              console.log('setItems', value)
               setItems(value)
               const stickyColumns = columns.filter(column => column.setCellProps && findInFunction("sticky", column.setCellProps))
               updateColumnSorting(stickyColumns.concat(value))
@@ -136,7 +135,6 @@ const SortableComponent = ({
   items,
 }) => {
   const onSortEnd = ({ oldIndex, newIndex }) => {
-    console.log('setItems SortableComponent', items)
     setItems(arrayMoveImmutable(items, oldIndex, newIndex));
   };
 
@@ -174,14 +172,12 @@ const SortableList = SortableContainer(
     const removeIndex = (index) => {
       const newItems = JSON.parse(JSON.stringify(items));
       newItems.splice(index, 1);
-      console.log('setItems removeIndex', items)
       setItems(newItems);
     };
 
     const updateIndex = (index, data) => {
       const newItems = JSON.parse(JSON.stringify(items));
       newItems[index] = data;
-      console.log('setItems updateIndex', items)
       setItems(newItems);
     };
 

@@ -5,6 +5,7 @@ import { copy, deepEqual } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
 import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
+import { isEmpty, isEqual } from 'lodash';
 
 const initialState = {
 	defaultFilters: [],
@@ -25,7 +26,6 @@ const initialState = {
 export const tableESState = {};
 export const tableGlobalState = hookstate({
 	refetch: false,
-	tabKey: 0
 });
 
 const handleVisiblityMenu = () => {
@@ -105,7 +105,8 @@ const tableESStateControllerHandler = state => ({
 			TableSchema,
 			defaultFlterMode,
 			defaultFilters,
-			isSelectall,
+			customProps = {},
+			isSelectAllAllowed = true,
 			search,
 			...rest
 		}
@@ -259,16 +260,18 @@ const tableESStateControllerHandler = state => ({
 			tableKey,
 			esIndex,
 			pageSize,
-			isSelectall: false,
+			isSelectAllAllowed,
+			isAllRowsSelected: false,
 			showColumnFilters: false,
 			data: { rows: [], total: 0 },
 			isLoading: false,
 			isFetching: false,
 			isError: false,
 			defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }),
-			customProps: state?.customProps?.get({ noproxy: true }),
+			customProps: isEmpty(state?.customProps?.get({ noproxy: true })) ? customProps : state?.customProps?.get({ noproxy: true }),
 			filters: [],
 			sorting: [],
+			rowSelection: {},
 			searchFields,
 			isInFiniteScroll,
 			columnVirtualization,
@@ -318,9 +321,6 @@ const tableESStateControllerHandler = state => ({
 				isKeyword: columnSchema.name.includes('.keyword'),
 			},
 		});
-	},
-	setSelectAll: value => {
-		state.isSelectall.set(value);
 	},
 
 	setColumnVisibility: visibility => {
@@ -377,8 +377,11 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setColumnOrdering: order => {
-		console.log(order)
 		if (!deepEqual(state.columnOrdering?.get({ noproxy: true }), order)) state.columnOrdering?.set(order);
+	},
+
+	setColumnCheck: rowCheck => {
+		if (!deepEqual(state.rowSelection?.get({ noproxy: true }), rowCheck)) state.rowSelection?.set(rowCheck);
 	},
 
 	setPagination: pagination =>
@@ -436,6 +439,13 @@ const tableESStateControllerHandler = state => ({
 			.map(filter => filter.field);
 
 		state.filters?.set(filtersState.filter(filter => !keysToClear.includes(filter.field)));
+	},
+
+	setIsAllRowsSelected: value => {
+		if (!state.isSelectAllAllowed.get()) return;
+
+		if (!isEqual(value, state.isAllRowsSelected.get()))
+			state.isAllRowsSelected.set(value);
 	},
 });
 

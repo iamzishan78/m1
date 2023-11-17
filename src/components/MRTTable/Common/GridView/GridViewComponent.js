@@ -20,6 +20,7 @@ function GridViewComponent({ Icon, label, tableKey }) {
 		'sorting',
 		'groupedField',
 		'columnPinning',
+		'columnOrdering'
 	]);
 	const tableStateValues = tableState.stateValues;
 	const selectedGridView = tableStateValues?.gridView?.selectedGridView;
@@ -48,6 +49,7 @@ function GridViewComponent({ Icon, label, tableKey }) {
 						sorting: tableStateValues?.sorting,
 						columnPinning: tableStateValues?.columnPinning,
 						groupedField: tableStateValues?.groupedField || [],
+						columnOrdering: tableStateValues?.columnOrdering || [],
 					},
 				},
 				refetchQueries: ['getGridViews'],
@@ -67,7 +69,7 @@ function GridViewComponent({ Icon, label, tableKey }) {
 			<IconButton
 				onClick={() =>
 					Controller.updateState({
-						gridView: { ...tableStateValues.gridView, showViewModal: !tableStateValues.gridView.showViewModal },
+						gridView: { ...tableStateValues.gridView, showViewModal: !tableStateValues.gridView?.showViewModal },
 					})
 				}
 			>

@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
+import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import {
   CircularProgress,
   Grid,
@@ -46,7 +47,7 @@ import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { tableGlobalController } from 'hookstate/tableController';
 import { calculateStandardNraForUnit } from "utils/calculatedNraHelper"
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   maxWidth: {
     width: '100%',
   },
@@ -80,6 +81,26 @@ const useStyles = makeStyles(() => ({
       fontWeight: 'bold',
     },
   },
+  addContactButton: {
+    float: "right",
+    display: "flex",
+    alignItems: "center",
+    // marginTop: "15px",
+    cursor: "pointer",
+  },
+  addContactButtonSelected: {
+    float: "right",
+    display: "flex",
+    alignItems: "center",
+    // marginTop: "15px",
+    cursor: "pointer",
+    color: `${theme.palette.secondary.main} !important`,
+  },
+
+  personAddIcon: {
+    color: `${theme.palette.secondary.main} !important`,
+    fill: `${theme.palette.secondary.main} !important`,
+  }
 }));
 
 export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, uMaxUnitPricing, ...props }) {
@@ -89,6 +110,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const { control, reset, setValue, getValues, watch } = useForm();
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
   const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false);
+  const [showAddNewContactFields, setShowAddNewContactFields] = useState(false);
   const [statusOptions, setStatusOptions] = useState([]);
   const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
   const [contact, setContact] = useState();
@@ -96,6 +118,19 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const [loading, setLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const watchedNra = watch('nra');
+  const [newContact, setNewContact] = useState({
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    mobilePhone: '',
+    homePhone: '',
+    primaryEmail: '',
+    address1: '',
+    address2: '',
+    city: '',
+    state: '',
+    zip: '',
+  });
 
   const [getCampaignPriorityList, { data: priorityList }] = useLazyQuery(GET_ES_FILTER_LIST, {
     fetchPolicy: 'no-cache',
@@ -311,12 +346,17 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         awaitRefetchQueries: true,
       });
     } else {
+      const relatedObject = showAddNewContactFields ? {
+        ...ownerToAdd,
+        ...newContact,
+      } : (ownerToAdd?.ownerEntity._id || ownerToAdd?.ownerEntity);
       addOwnerToAShape({
         variables: {
           shapeType: props.shapeType,
           shapeOwner: {
+            newOwner: showAddNewContactFields,
             shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
-            relatedObject: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
+            relatedObject,
             ...ownerToAdd,
             createBy: stateApp.user.mongoId,
             lastUpdateBy: stateApp.user.mongoId,
@@ -345,6 +385,11 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
         // now that we are using descriptors we ONLY want the contact _id
         ownerToAdd.ownerEntity = nameAutValue._id;
         ownerToAdd.name = nameAutValue.name;
+      } else {
+        if (showAddNewContactFields) {
+          handleAddUpdate(ownerToAdd);
+          return
+        }
       }
 
 
@@ -436,20 +481,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 {selectedRow ? 'Update' : 'Add'} Unit Ownership
               </DialogTitle>
             </Grid>
-            {/* <Grid item md={1} xs={1} style={{ marginLeft: "20px" }}>
-              <IconButton
-                size="small"
-                component="span"
-                style={{
-                  background: "transparent",
-                  align: "center",
-                  float: "right",
-                }}
-                onClick={props.onClose}
-              >
-                <KeyboardTabBlackIcon />
-              </IconButton>
-            </Grid> */}
             <Grid item md={1} xs={1} style={{ marginLeft: '20px' }}>
               <div style={{ float: 'right', display: 'flex', marginRight: '10px' }}>
                 <>
@@ -497,20 +528,95 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           <DialogContent className={classes.dialogContent}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <h3>Name</h3>
+                <h3 style={{ float: "left" }}>Name</h3>
+                {!selectedRow && (<div className={showAddNewContactFields ? classes.addContactButtonSelected : classes.addContactButton} onClick={() => setShowAddNewContactFields(!showAddNewContactFields)}>
+                  <PersonAddOutlinedIcon className={showAddNewContactFields ? classes.personAddIcon : null} />
+                  <p>&nbsp;Add new</p>
+                </div>)}
                 <AutocompEntityNamesList
                   userId={stateApp.user.mongoId}
                   setContact={setContact}
                   nameAutValue={nameAutValue}
                   setNameAutValue={setNameAutValue}
+                  disabled={showAddNewContactFields}
+                  placeholder={"Search existing contact"}
                 />
               </Grid>
-              <Grid item xs={12}>
-                <h3>Entity Type</h3>
-                <Controller
-                  control={control}
-                  name="ownerType"
-                  render={props => (
+
+              {!showAddNewContactFields &&
+                <Grid item xs={12}>
+                  <h3>Entity Type</h3>
+                  <Controller
+                    control={control}
+                    name="ownerType"
+                    render={props => (
+                      <EntityType
+                        className={classes.maxWidth}
+                        setDocumentType={value => {
+                          let val = value.name;
+                          const data = contactStatusOptions.find(s => s.label === val);
+                          if (data) {
+                            val = data.value;
+                          }
+                          setValue('ownerType', val);
+                        }}
+                        value={contact?.ownerType ?? ''}
+                      />
+                    )}
+                  />
+                </Grid>}
+              {showAddNewContactFields &&
+                <>
+                  <Grid item xs={12}>
+                    <h3>First Name</h3>
+                    <TextField
+                      id="firstName"
+                      size="small"
+                      className={classes.maxWidth}
+                      multiline
+                      value={newContact.firstName}
+                      onChange={e => {
+                        setNewContact({
+                          ...newContact,
+                          firstName: e.target.value,
+                        });
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <h3>Middle Name</h3>
+                    <TextField
+                      id="middleName"
+                      size="small"
+                      className={classes.maxWidth}
+                      multiline
+                      value={newContact.middleName}
+                      onChange={e => {
+                        setNewContact({
+                          ...newContact,
+                          middleName: e.target.value,
+                        });
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <h3>Last Name</h3>
+                    <TextField
+                      id="lastName"
+                      size="small"
+                      className={classes.maxWidth}
+                      multiline
+                      value={newContact.lastName}
+                      onChange={e => {
+                        setNewContact({
+                          ...newContact,
+                          lastName: e.target.value,
+                        });
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <h3>Entity Type</h3>
                     <EntityType
                       className={classes.maxWidth}
                       setDocumentType={value => {
@@ -519,53 +625,149 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         if (data) {
                           val = data.value;
                         }
-                        setValue('ownerType', val);
+                        setNewContact({
+                          ...newContact,
+                          ownerType: val,
+                        });
                       }}
-                      value={contact?.ownerType ?? ''}
+                      value={newContact.ownerType ?? ''}
                     />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <h3>Unit Tract ID</h3>
-
-                <Controller
-                  control={control}
-                  name="unitTractId"
-                  render={(props) => (
+                  </Grid>
+                  <Grid item xs={6}>
+                    <h3>Home phone</h3>
                     <TextField
+                      id="homePhone"
                       size="small"
-                      type="text"
-                      value={props.value}
-                      inputRef={props.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => props.onChange(e.target.value)}
-                      fullWidth
-                      defaultValue=""
+                      className={classes.maxWidth}
+                      multiline
+                      value={newContact.homePhone}
+                      onChange={e => {
+                        setNewContact({
+                          ...newContact,
+                          homePhone: e.target.value,
+                        });
+                      }}
                     />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <h3>Tract Acres</h3>
-
-                <Controller
-                  control={control}
-                  name="tractAcres"
-                  render={(props) => (
+                  </Grid>
+                  <Grid item xs={6}>
+                    <h3>Mobile Phone</h3>
                     <TextField
+                      id="mobilePhone"
                       size="small"
-                      type="number"
-                      value={props.value}
-                      inputRef={props.ref}
-                      onWheel={(e) => e.target.blur()}
-                      onChange={(e) => props.onChange(e.target.value)}
-                      fullWidth
-                      defaultValue=""
+                      // placeholder="E.g. xxx-xxx-xxxx"
+                      className={classes.maxWidth}
+                      multiline
+                      value={newContact.mobilePhone}
+                      onChange={e => {
+                        setNewContact({
+                          ...newContact,
+                          mobilePhone: e.target.value,
+                        });
+                      }}
                     />
-                  )}
-                />
-              </Grid>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <h3>Email</h3>
+                    <TextField
+                      id="email"
+                      size="small"
+                      // placeholder="E.g. jacob@m1neral.com"
+                      className={classes.maxWidth}
+                      multiline
+                      value={newContact.primaryEmail}
+                      onChange={e => {
+                        setNewContact({
+                          ...newContact,
+                          primaryEmail: e.target.value,
+                        });
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <h3>Address #1</h3>
+                    <TextField
+                      id="address1"
+                      size="small"
+                      className={classes.maxWidth}
+                      multiline
+                      autoComplete="nope"
+                      value={newContact.address1}
+                      onChange={e => {
+                        setNewContact({
+                          ...newContact,
+                          address1: e.target.value,
+                        });
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <h3>Address #2</h3>
+                    <TextField
+                      id="address2"
+                      size="small"
+                      className={classes.maxWidth}
+                      multiline
+                      autoComplete="nope"
+                      value={newContact.address2}
+                      onChange={e => {
+                        setNewContact({
+                          ...newContact,
+                          address2: e.target.value,
+                        });
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <h3>City</h3>
+                    <TextField
+                      id="city"
+                      size="small"
+                      className={classes.maxWidth}
+                      multiline
+                      value={newContact.city}
+                      onChange={e => {
+                        setNewContact({
+                          ...newContact,
+                          city: e.target.value,
+                        });
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <h3>State</h3>
+                    <TextField
+                      id="state"
+                      size="small"
+                      className={classes.maxWidth}
+                      multiline
+                      value={newContact.state}
+                      onChange={e => {
+                        setNewContact({
+                          ...newContact,
+                          state: e.target.value,
+                        });
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <h3>Zip Code</h3>
+                    <TextField
+                      id="zipCode"
+                      size="small"
+                      className={classes.maxWidth}
+                      multiline
+                      value={newContact.zip}
+                      onChange={e => {
+                        setNewContact({
+                          ...newContact,
+                          zip: e.target.value,
+                        });
+                      }}
+                    />
+                  </Grid>
+                </>
+              }
+
               <Grid item xs={12}>
                 <h3>Working Interest</h3>
 
@@ -733,6 +935,46 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                           </InputAdornment>
                         ),
                       }}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Unit Tract ID</h3>
+
+                <Controller
+                  control={control}
+                  name="unitTractId"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="text"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => props.onChange(e.target.value)}
+                      fullWidth
+                      defaultValue=""
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h3>Unit Tract Acres</h3>
+
+                <Controller
+                  control={control}
+                  name="tractAcres"
+                  render={(props) => (
+                    <TextField
+                      size="small"
+                      type="number"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => props.onChange(e.target.value)}
                       fullWidth
                       defaultValue=""
                     />
@@ -994,7 +1236,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
             </Button>
             <Button
               className={classes.secondary}
-              disabled={!nameAutValue || !nameAutValue.name || nameAutValue.name === '' ? true : false}
+              disabled={((!nameAutValue || !nameAutValue.name || nameAutValue.name === '') && !showAddNewContactFields) ? true : false}
               onClick={handleClickAdd}
               color="secondary"
               style={{ marginBottom: '40px', marginRight: '20px' }}

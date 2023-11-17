@@ -28,9 +28,8 @@ const useTableESSimple = tableKey => {
 	const localizationOptions = {
 		filterCustomFilterFn: 'AutoComplete',
 	};
-	if (tableStateValues?.isSelectall) {
-		localizationOptions.selectedCountOfRowCountRowsSelected = `${tableStateValues?.data.total} of ${tableStateValues?.data.total} row(s) selected`;
-	}
+
+	localizationOptions.selectedCountOfRowCountRowsSelected = `${Object.keys(tableStateValues?.rowSelection)?.length} of ${tableStateValues?.data.total} row(s) selected`;
 
 	const { CustomToolBar } = tableStateValues;
 	return {
@@ -52,6 +51,7 @@ const useTableESSimple = tableKey => {
 			isLoading: tableStateValues?.isLoading,
 			showAlertBanner: tableStateValues?.isError,
 			showProgressBars: tableStateValues?.isFetching,
+			rowSelection: tableStateValues?.rowSelection,
 		},
 		tableProps: {
 			initialState: {
@@ -60,6 +60,7 @@ const useTableESSimple = tableKey => {
 				expanded: true,
 				grouping: tableStateValues?.groupedField ? [tableStateValues?.groupedField] : [],
 				showColumnFilters: tableStateValues?.showColumnFilters,
+				rowSelection: tableStateValues?.rowSelection,
 			},
 			...(tableStateValues?.groupedField && {
 				enableGrouping: true,
@@ -99,6 +100,7 @@ const useTableESSimple = tableKey => {
 			enableColumnResizing: true,
 			enableRowSelection: true,
 			enablePinning: true,
+			enableFullScreenToggle: false,
 			// enableMultiRowSelection: true,
 			// enableSelectAll: true,
 			enableStickyHeader: true,
@@ -114,6 +116,35 @@ const useTableESSimple = tableKey => {
 					pinningFunc.left || pinningFunc.right ? pinningFunc : pinningFunc(tableStateValues?.columnPinning);
 
 				Controller.setColumnPinning(newPinning, tableStateValues?.columnPinning, tableStateValues.TableSchema);
+			},
+			onRowSelectionChange: (checkFunc) => {
+				if (typeof checkFunc !== 'function') {
+					Controller.setIsAllRowsSelected(false)
+					Controller.setColumnCheck(checkFunc)
+					return
+				}
+
+				let newstate = checkFunc(tableStateValues?.rowSelection)
+				const selectAll = tableStateValues.data?.rows?.length === Object.keys(newstate)?.length;
+				if (selectAll) {
+					for (let i = 0; i < tableStateValues.data?.total; i++) {
+						newstate[i] = true
+					}
+				}
+				let unselectAll = true;
+
+				for (let i = 0; i < tableStateValues?.pageSize; i++) {
+					if (!!newstate[i]) {
+						unselectAll = false;
+						break;
+					}
+				}
+
+				if (unselectAll) {
+					Controller.setIsAllRowsSelected(false)
+					newstate = {}
+				}
+				Controller.setColumnCheck(newstate)
 			},
 			onColumnFiltersChange: filtersFunc => {
 				const newFilters = filtersFunc(

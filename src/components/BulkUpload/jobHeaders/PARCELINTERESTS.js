@@ -41,24 +41,24 @@ export default [
         required: false,
         actual_key: "parcel.orri"
     },
-    {
-        label: "Record Title",
-        mapped_key: "",
-        required: false,
-        actual_key: "parcel.record_title"
-    },
+    // {
+    //     label: "Record Title",
+    //     mapped_key: "",
+    //     required: false,
+    //     actual_key: "parcel.record_title"
+    // },
     {
         label: "Working Interest",
         mapped_key: "",
         required: false,
         actual_key: "parcel.operating_rights"
     },
-    {
-        label: "Net Revenue Interest",
-        mapped_key: "",
-        required: false,
-        actual_key: "parcel.nri"
-    },
+    // {
+    //     label: "Net Revenue Interest",
+    //     mapped_key: "",
+    //     required: false,
+    //     actual_key: "parcel.nri"
+    // },
     {
         label: "Net Acres",
         mapped_key: "",

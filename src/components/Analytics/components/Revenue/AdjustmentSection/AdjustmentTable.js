@@ -160,7 +160,6 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {console.log('item',items)}
                 {items.map((item, index) => (
                   <TableRow className={`${(index + 1) % 2 !== 0 ? classes.highlightedRows : ""}`} key={index}>
                     {monthsInterval.map((month) => <TableCell scope="row" >

@@ -8,15 +8,15 @@ import TractInterestOwnerToolBar from 'components/MRTTable/TablesOverride/TractI
 import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import TractIcon from 'components/Shared/svgIcons/tract';
 
 const esIndex = 'shapeowners_flat';
 
 const onClickedRow = selectedRow => {
-	console.log('selectedRow', selectedRow)
 	const Controller = tableController('TractPerUnitTable');
 	const { customLayer } = Controller.getValue('customProps');
 	tableGlobalController.updateState({
-		tractInterestDialog: {
+		dialog: {
 			type: 'addTractInterest',
 			customLayerId: customLayer?._id,
 			customLayer,
@@ -31,6 +31,25 @@ const TractPerUnitMeta = {
 	pagination: {
 		pageIndex: 0,
 		pageSize: 25,
+	},
+	gridViewSettings: {
+		label: 'Tract Owners',
+		module: 'TractOwner',
+		Icon: TractIcon,
+		defaultView: {
+			name: 'All Tract Owners',
+			type: 'Default',
+		},
+		handleDefaultView: (view, user) => {
+			if (view?.name === 'My Tract Owner') {
+				view.filters[0].value = user._id;
+			}
+			return view;
+		},
+		cssOverride: {
+			top: '331px',
+			left: '300px',
+		},
 	},
 	CustomToolBar: TractInterestOwnerToolBar,
 	onClickedRow,
@@ -184,20 +203,20 @@ const TractPerUnitMeta = {
 			},
 		},
 
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'record_title',
-			accessorKey: 'record_title',
-			header: 'Record Title',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => {
-				const recordTiitle = row.getValue('record_title');
-				if (recordTiitle) {
-					return <>{addTrailingZeros(parseFloat(recordTiitle).toFixed(8))}</>;
-				}
-			},
-		},
+		// {
+		// 	...CommonSchema.COMMON_COLUMN,
+		// 	name: 'record_title',
+		// 	accessorKey: 'record_title',
+		// 	header: 'Record Title',
+		// 	isSearchField: false,
+		// 	type: 'number',
+		// 	Cell: ({ row }) => {
+		// 		const recordTiitle = row.getValue('record_title');
+		// 		if (recordTiitle) {
+		// 			return <>{addTrailingZeros(parseFloat(recordTiitle).toFixed(8))}</>;
+		// 		}
+		// 	},
+		// },
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -206,28 +225,38 @@ const TractPerUnitMeta = {
 			header: 'Working Interest',
 			isSearchField: false,
 			type: 'number',
+			Aggregation: {
+				sumWKI: {
+					sum: { field: 'operating_rights' },
+				},
+			},
 			Cell: ({ row }) => {
 				const operatingRights = row.getValue('operating_rights');
 				if (operatingRights) {
 					return <>{addTrailingZeros(parseFloat(operatingRights).toFixed(8))}</>;
 				}
 			},
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'nri',
-			accessorKey: 'nri',
-			header: 'NRI',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => {
-				const nri = row.getValue('nri');
-				if (nri) {
-					return <>{addTrailingZeros(parseFloat(nri).toFixed(8))}</>;
-				}
+			Footer: () => {
+				const Controller = tableController('TractPerUnitTable');
+				const { sumWKI } = Controller.getValue('footerProps') || {};
+				return <div>{sumWKI?.value ? addTrailingZeros(parseFloat(sumWKI?.value).toFixed(8)) : 0}</div>;
 			},
 		},
+
+		// {
+		// 	...CommonSchema.COMMON_COLUMN,
+		// 	name: 'nri',
+		// 	accessorKey: 'nri',
+		// 	header: 'NRI',
+		// 	isSearchField: false,
+		// 	type: 'number',
+		// 	Cell: ({ row }) => {
+		// 		const nri = row.getValue('nri');
+		// 		if (nri) {
+		// 			return <>{addTrailingZeros(parseFloat(nri).toFixed(8))}</>;
+		// 		}
+		// 	},
+		// },
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -236,11 +265,49 @@ const TractPerUnitMeta = {
 			header: 'Net Acres',
 			isSearchField: false,
 			type: 'number',
+			Aggregation: {
+				sumNetAcres: {
+					sum: { field: 'net_acres' },
+				},
+			},
+
 			Cell: ({ row }) => {
 				const netAcres = row.getValue('net_acres');
 				if (netAcres) {
 					return <>{addTrailingZeros(parseFloat(netAcres).toFixed(8))}</>;
 				}
+			},
+			Footer: () => {
+				const Controller = tableController('TractPerUnitTable');
+				const { sumNetAcres } = Controller.getValue('footerProps') || {};
+				return <div>{sumNetAcres?.value ? addTrailingZeros(parseFloat(sumNetAcres?.value).toFixed(8)) : 0}</div>;
+			},
+		},
+
+
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'nra',
+			accessorKey: 'nra',
+			header: 'NRA',
+			isSearchField: false,
+			type: 'number',
+			Aggregation: {
+				sumNRA: {
+					sum: { field: 'nra' },
+				},
+			},
+			Cell: ({ row }) => {
+				const nra = row.getValue('nra');
+				if (nra) {
+					return <>{addTrailingZeros(parseFloat(nra).toFixed(8))}</>;
+				}
+			},
+			Footer: () => {
+				const Controller = tableController('TractPerUnitTable');
+				const { sumNRA } = Controller.getValue('footerProps') || {};
+				return <div>{sumNRA?.value ? addTrailingZeros(parseFloat(sumNRA?.value).toFixed(8)) : 0}</div>;
 			},
 		},
 
@@ -251,21 +318,6 @@ const TractPerUnitMeta = {
 			header: 'Co Net Acres',
 			isSearchField: false,
 			type: 'number',
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'nra',
-			accessorKey: 'nra',
-			header: 'NRA',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => {
-				const nra = row.getValue('nra');
-				if (nra) {
-					return <>{addTrailingZeros(parseFloat(nra).toFixed(8))}</>;
-				}
-			},
 		},
 
 		{
@@ -345,7 +397,7 @@ const TractPerUnitMeta = {
 				const id = row.getValue('_id');
 				const name = row.getValue('name');
 
-				return <ContactActionMenu id={id} name={name} esIndex={esIndex} dialogType="tractInterestDialog" />;
+				return <ContactActionMenu id={id} name={name} esIndex={esIndex} dialogType="dialog" />;
 			},
 		},
 

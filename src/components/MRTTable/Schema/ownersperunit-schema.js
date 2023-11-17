@@ -10,6 +10,7 @@ import ListChips from 'components/Common/ListChips';
 import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import UnitIcon from 'components/Shared/svgIcons/unit';
 
 const esIndex = 'shapeowners_flat';
 
@@ -17,7 +18,7 @@ const onClickedRow = selectedRow => {
 	const Controller = tableController('OwnersPerUnitTable');
 	const { customLayer } = Controller.getValue('customProps');
 	tableGlobalController.updateState({
-		ownerPerUnitDialog: {
+		dialog: {
 			type: 'addOwnerToUnit',
 			shapeId: customLayer?._id,
 			uAcres: customLayer?.shapeJson?.properties?.uAcres,
@@ -34,6 +35,25 @@ const OwnersPerUnitMeta = {
 	pagination: {
 		pageIndex: 0,
 		pageSize: 25,
+	},
+	gridViewSettings: {
+		label: 'Unit Owners',
+		module: 'UnitOwner',
+		Icon: UnitIcon,
+		defaultView: {
+			name: 'All Unit Owners',
+			type: 'Default',
+		},
+		handleDefaultView: (view, user) => {
+			if (view?.name === 'My Unit Owner') {
+				view.filters[0].value = user._id;
+			}
+			return view;
+		},
+		cssOverride: {
+			top: '361px',
+			left: '295px',
+		},
 	},
 	CustomToolBar: OwnersPerUnitToolBar,
 	onClickedRow,
@@ -80,13 +100,7 @@ const OwnersPerUnitMeta = {
 			header: 'Entity Type',
 		},
 
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'taxYear.keyword',
-			accessorFn: row => row?.taxYear,
-			id: 'taxYear',
-			header: 'Tax Year',
-		},
+
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -193,6 +207,13 @@ const OwnersPerUnitMeta = {
 				return <div>{sumNri?.value ? addTrailingZeros(parseFloat(sumNri?.value).toFixed(8)) : 0}</div>;
 			},
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'net_acres',
+			accessorKey: 'net_acres',
+			header: 'Net Acres',
+		},
+
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -201,6 +222,35 @@ const OwnersPerUnitMeta = {
 			header: 'NRA',
 			isSearchField: false,
 			type: 'number',
+			Aggregation: {
+				sumNRA: {
+					sum: { field: 'nra' },
+				},
+			},
+			Cell: ({ row }) => {
+				if (row?.original?.nra) {
+					return <>{addTrailingZeros(parseFloat(row?.original?.nra).toFixed(8))}</>;
+				}
+			},
+			Footer: () => {
+				const Controller = tableController('OwnersPerUnitTable');
+				const { sumNRA } = Controller.getValue('footerProps') || {};
+				return <div>{sumNRA?.value ? addTrailingZeros(parseFloat(sumNRA?.value).toFixed(8)) : 0}</div>;
+			},
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'unitTractId.keyword',
+			accessorKey: 'unitTractId',
+			header: 'Unit Tract ID',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'tractAcres',
+			accessorKey: 'tractAcres',
+			header: 'Unit Tract Acres',
 		},
 
 		{
@@ -295,7 +345,19 @@ const OwnersPerUnitMeta = {
 			accessorKey: 'campaignPriority',
 			header: 'Campaign Priority',
 		},
-
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'dataSource.keyword',
+			accessorKey: 'dataSource',
+			header: 'Data Source',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'taxYear.keyword',
+			accessorFn: row => row?.taxYear,
+			id: 'taxYear',
+			header: 'Tax Year',
+		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -358,7 +420,7 @@ const OwnersPerUnitMeta = {
 				const id = row.getValue('_id');
 				const name = row.getValue('name');
 
-				return <ContactActionMenu id={id} name={name} esIndex={esIndex} dialogType="ownerPerUnitDialog" />;
+				return <ContactActionMenu id={id} name={name} esIndex={esIndex} dialogType="dialog" />;
 			},
 		},
 
