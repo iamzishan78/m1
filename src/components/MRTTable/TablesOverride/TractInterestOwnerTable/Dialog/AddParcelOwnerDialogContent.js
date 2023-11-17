@@ -35,6 +35,8 @@ import { ADDOWNERTOAPARCEL } from 'graphQL/useMutationAddOwnerToAParcel';
 import { AppContext } from 'AppContext';
 import { tableGlobalController } from 'hookstate/tableController';
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
+import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 
 const qtrOptions = ['E2', 'NE', 'NW', 'N2', 'SE', 'SW', 'S2', 'W2'];
 
@@ -72,6 +74,26 @@ const useStyles = makeStyles(theme => ({
       fontWeight: 'bold',
     },
   },
+  addContactButton: {
+    float: "right",
+    display: "flex",
+    alignItems: "center",
+    marginTop: "15px",
+    cursor: "pointer",
+  },
+  addContactButtonSelected: {
+    float: "right",
+    display: "flex",
+    alignItems: "center",
+    marginTop: "15px",
+    cursor: "pointer",
+    color: `${theme.palette.secondary.main} !important`,
+  },
+
+  personAddIcon: {
+    color: `${theme.palette.secondary.main} !important`,
+    fill: `${theme.palette.secondary.main} !important`,
+  }
 }));
 
 const toNumber = value => (value ? parseInt(value.replace(/\$/g, '').replace(/\,/g, '')) : null);
@@ -105,9 +127,23 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     customLayer: props.customLayerId,
     deals: [],
   });
+  const [newContact, setNewContact] = useState({
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    mobilePhone: '',
+    homePhone: '',
+    primaryEmail: '',
+    address1: '',
+    address2: '',
+    city: '',
+    state: '',
+    zip: '',
+  });
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
   const [isAcresOverridden, setIsAcresOverridden] = useState(false);
   const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] = useState('true');
+  const [showAddNewContactFields, setShowAddNewContactFields] = useState(false);
 
   const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
@@ -345,10 +381,16 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
           awaitRefetchQueries: true,
         });
       } else {
+        const relatedObject = showAddNewContactFields ? {
+          ...ownerToAdd,
+          ...newContact,
+        } : (ownerToAdd?.ownerEntity._id || ownerToAdd?.ownerEntity);
         addOwnerToAParcel({
           variables: {
             parcelOwner: {
+              newOwner: showAddNewContactFields,
               ...ownerToAdd,
+              relatedObject,
               createBy: stateApp.user.mongoId,
               lastUpdateBy: stateApp.user.mongoId,
             },
@@ -408,8 +450,11 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         <DialogContent className={classes.dialogContent}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <h3>Name</h3>
-
+              <h3 style={{ float: "left" }}>Name</h3>
+              {!selectedRow && (<div className={showAddNewContactFields ? classes.addContactButtonSelected : classes.addContactButton} onClick={() => setShowAddNewContactFields(!showAddNewContactFields)}>
+                <PersonAddOutlinedIcon className={showAddNewContactFields ? classes.personAddIcon : null} />
+                <p>&nbsp;Add new</p>
+              </div>)}
               <AutocompEntityNamesVirtualizeList
                 mongoEntitiesArray={mongoEntitiesArray}
                 setMongoEntitiesArray={setMongoEntitiesArray}
@@ -420,6 +465,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 hasNextPage={hasNextPage}
                 isNextPageLoading={isNextPageLoading}
                 loadNextPage={loadNextPage}
+                disabled={showAddNewContactFields}
+                placeholder={"Search existing contact"}
                 addNew
                 addNewOnClick={value => {
                   const contact = { name: value };
@@ -437,25 +484,231 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
-              <h3>Entity Type</h3>
-              <Controller
-                control={control}
-                name="ownershipType"
-                render={props => (
+            {!showAddNewContactFields &&
+              <Grid item xs={12}>
+                <h3>Entity Type</h3>
+                <Controller
+                  control={control}
+                  name="ownershipType"
+                  render={(props) => (
+                    <EntityType
+                      className={classes.maxWidth}
+                      setDocumentType={(value) => {
+                        setNewOwner({
+                          ...newOwner,
+                          ownerType: value ? addTrailingZeros(value.name) : null,
+                        });
+                      }}
+                      value={newOwner?.ownershipType || newOwner?.ownerType || nameAutValue?.ownerType || ""}
+                    />
+                  )}
+                />
+              </Grid>
+            }
+
+            {showAddNewContactFields &&
+              <>
+                <Grid item xs={12}>
+                  <h3>First Name</h3>
+                  <TextField
+                    id="firstName"
+                    size="small"
+                    className={classes.maxWidth}
+                    multiline
+                    value={newContact.firstName}
+                    onChange={e => {
+                      setNewContact({
+                        ...newContact,
+                        firstName: e.target.value,
+                      });
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <h3>Middle Name</h3>
+                  <TextField
+                    id="middleName"
+                    size="small"
+                    className={classes.maxWidth}
+                    multiline
+                    value={newContact.middleName}
+                    onChange={e => {
+                      setNewContact({
+                        ...newContact,
+                        middleName: e.target.value,
+                      });
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <h3>Last Name</h3>
+                  <TextField
+                    id="lastName"
+                    size="small"
+                    className={classes.maxWidth}
+                    multiline
+                    value={newContact.lastName}
+                    onChange={e => {
+                      setNewContact({
+                        ...newContact,
+                        lastName: e.target.value,
+                      });
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <h3>Entity Type</h3>
                   <EntityType
                     className={classes.maxWidth}
                     setDocumentType={value => {
-                      setNewOwner({
-                        ...newOwner,
-                        ownerType: value ? addTrailingZeros(value.name) : null,
+                      let val = value.name;
+                      const data = contactStatusOptions.find(s => s.label === val);
+                      if (data) {
+                        val = data.value;
+                      }
+                      setNewContact({
+                        ...newContact,
+                        ownerType: val,
                       });
                     }}
-                    value={newOwner.ownershipType || ''}
+                    value={newContact.ownerType ?? ''}
                   />
-                )}
-              />
-            </Grid>
+                </Grid>
+                <Grid item xs={6}>
+                  <h3>Home phone</h3>
+                  <TextField
+                    id="homePhone"
+                    size="small"
+                    className={classes.maxWidth}
+                    multiline
+                    value={newContact.homePhone}
+                    onChange={e => {
+                      setNewContact({
+                        ...newContact,
+                        homePhone: e.target.value,
+                      });
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <h3>Mobile Phone</h3>
+                  <TextField
+                    id="mobilePhone"
+                    size="small"
+                    // placeholder="E.g. xxx-xxx-xxxx"
+                    className={classes.maxWidth}
+                    multiline
+                    value={newContact.mobilePhone}
+                    onChange={e => {
+                      setNewContact({
+                        ...newContact,
+                        mobilePhone: e.target.value,
+                      });
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <h3>Email</h3>
+                  <TextField
+                    id="email"
+                    size="small"
+                    // placeholder="E.g. jacob@m1neral.com"
+                    className={classes.maxWidth}
+                    multiline
+                    value={newContact.primaryEmail}
+                    onChange={e => {
+                      setNewContact({
+                        ...newContact,
+                        primaryEmail: e.target.value,
+                      });
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <h3>Address #1</h3>
+                  <TextField
+                    id="address1"
+                    size="small"
+                    className={classes.maxWidth}
+                    multiline
+                    autoComplete="nope"
+                    value={newContact.address1}
+                    onChange={e => {
+                      setNewContact({
+                        ...newContact,
+                        address1: e.target.value,
+                      });
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <h3>Address #2</h3>
+                  <TextField
+                    id="address2"
+                    size="small"
+                    className={classes.maxWidth}
+                    multiline
+                    autoComplete="nope"
+                    value={newContact.address2}
+                    onChange={e => {
+                      setNewContact({
+                        ...newContact,
+                        address2: e.target.value,
+                      });
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <h3>City</h3>
+                  <TextField
+                    id="city"
+                    size="small"
+                    className={classes.maxWidth}
+                    multiline
+                    value={newContact.city}
+                    onChange={e => {
+                      setNewContact({
+                        ...newContact,
+                        city: e.target.value,
+                      });
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <h3>State</h3>
+                  <TextField
+                    id="state"
+                    size="small"
+                    className={classes.maxWidth}
+                    multiline
+                    value={newContact.state}
+                    onChange={e => {
+                      setNewContact({
+                        ...newContact,
+                        state: e.target.value,
+                      });
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <h3>Zip Code</h3>
+                  <TextField
+                    id="zipCode"
+                    size="small"
+                    className={classes.maxWidth}
+                    multiline
+                    value={newContact.zip}
+                    onChange={e => {
+                      setNewContact({
+                        ...newContact,
+                        zip: e.target.value,
+                      });
+                    }}
+                  />
+                </Grid>
+              </>
+            }
+
             <Grid item xs={12}>
               <h3>Surface Interest</h3>
               <TextField
@@ -952,7 +1205,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
           </Button>
           <Button
             className={classes.secondary}
-            disabled={!!(!nameAutValue || !nameAutValue.name || nameAutValue.name === '')}
+            disabled={((!nameAutValue || !nameAutValue.name || nameAutValue.name === '') && !showAddNewContactFields) ? true : false}
             onClick={handleClickAdd}
             color="secondary"
             style={{ marginBottom: '40px', marginRight: '20px' }}
