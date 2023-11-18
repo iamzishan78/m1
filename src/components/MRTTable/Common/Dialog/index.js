@@ -61,11 +61,16 @@ function AllDialogs() {
 
 	return (
 		<>
-			<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={type === 'comment'}>
-				{type === 'tags' && <TagDialog {...rest} />}
-
-				{type === 'comments' && <CommentDialog {...rest} />}
-			</Dialog>
+			{type === "tags" && (
+				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={false}>
+					<TagDialog {...rest} />
+				</Dialog>
+			)}
+			{type === "comments" && (
+				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
+					<CommentDialog {...rest} />
+				</Dialog>
+			)}
 
 			{type === 'exportContacts' && <ExportContactsAndPurchase {...rest} onClose={handleCloseDialog} />}
 
