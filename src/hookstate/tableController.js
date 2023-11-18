@@ -1,6 +1,6 @@
 import React from 'react';
 import { hookstate } from '@hookstate/core';
-import _, { get } from 'lodash';
+import _, { get, isEqual, isEmpty } from 'lodash';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
 import { copy, deepEqual } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
@@ -183,6 +183,8 @@ const tableESStateControllerHandler = state => ({
 			TableSchema,
 			defaultFlterMode,
 			defaultFilters,
+			customProps = {},
+			isSelectAllAllowed = true,
 			isSelectall,
 			search,
 			fetchMetaData,
@@ -350,13 +352,14 @@ const tableESStateControllerHandler = state => ({
 			fetchMetaData,
 			pageSize,
 			isSelectall: false,
+			isSelectAllAllowed,
 			showColumnFilters: false,
 			data: { rows: [], total: 0 },
 			isLoading: false,
 			isFetching: false,
 			isError: false,
 			defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }),
-			customProps: state?.customProps?.get({ noproxy: true }),
+			customProps: isEmpty(state?.customProps?.get({ noproxy: true })) ? customProps : state?.customProps?.get({ noproxy: true }),
 			filters: [],
 			sorting: [],
 			rowSelection: {},
@@ -472,6 +475,10 @@ const tableESStateControllerHandler = state => ({
 		if (!deepEqual(state.columnOrdering?.get({ noproxy: true }), order)) state.columnOrdering?.set(order);
 	},
 
+	setColumnCheck: rowCheck => {
+		if (!deepEqual(state.rowSelection?.get({ noproxy: true }), rowCheck)) state.rowSelection?.set(rowCheck);
+	},
+
 	setPagination: pagination =>
 		!deepEqual(state.pagination?.get({ noproxy: true }), pagination) && state.pagination?.set(pagination),
 
@@ -527,6 +534,13 @@ const tableESStateControllerHandler = state => ({
 			.map(filter => filter.field);
 
 		state.filters?.set(filtersState.filter(filter => !keysToClear.includes(filter.field)));
+	},
+
+	setIsAllRowsSelected: value => {
+		if (!state.isSelectAllAllowed.get()) return;
+
+		if (!isEqual(value, state.isAllRowsSelected.get()))
+			state.isAllRowsSelected.set(value);
 	},
 });
 
