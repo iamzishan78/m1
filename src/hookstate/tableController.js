@@ -359,6 +359,7 @@ const tableESStateControllerHandler = state => ({
 			customProps: state?.customProps?.get({ noproxy: true }),
 			filters: [],
 			sorting: [],
+			rowSelection: {},
 			searchFields,
 			isInFiniteScroll,
 			columnVirtualization,
