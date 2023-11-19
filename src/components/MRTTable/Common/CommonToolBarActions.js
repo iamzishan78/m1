@@ -11,7 +11,7 @@ import _ from 'lodash';
 const ExcludeFilters = (tableKey) => {
 
 }
-const openSideExportDialog = ({ _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey }) => {
+export const openSideExportDialog = ({ _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) => {
 	const excludedIds = []
 	const includedIds = []
 	if (isAllRowsSelected) {
@@ -37,13 +37,14 @@ const openSideExportDialog = ({ _selectedRows, search, filters, total, isAllRows
 	const allFilters = [...filters, ...excludedIds, ...includedIds]
 	tableGlobalController.updateState({
 		dialog: {
-			type: 'exportContacts',
+			type,
 			search,
 			filters: allFilters,
 			total,
 			isAllRowsSelected,
 			esIndex,
-			contactIdKey: '_id',
+			contactIdKey,
+			shapeType,
 			open: true,
 		},
 	});
@@ -145,13 +146,13 @@ export function BulkUpdate({
 	);
 }
 
-export function ExportData({ classes, _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey }) {
+export function ExportData({ classes, _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) {
 	return (
 		<Button
 			color="secondary"
 			startIcon={<CloudDownloadIcon color="white" />}
 			className={classes.selectTopBarButtons}
-			onClick={() => openSideExportDialog({ search, _selectedRows, filters, total, isAllRowsSelected, esIndex, table, tableKey })}
+			onClick={() => openSideExportDialog({ search, _selectedRows, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType })}
 		>
 			Export
 		</Button>

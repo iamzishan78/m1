@@ -10,7 +10,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import { navController } from 'hookstate/navStateController';
 import TractInterestTableDialogs from 'components/MRTTable/TablesOverride/TractInterestOwnerTable/RightDialogs';
 import { popupController } from 'hookstate/popupStateController';
-import { BulkUpdate, ViewContactData, openSideDialog } from 'components/MRTTable/Common/CommonToolBarActions';
+import { BulkUpdate, ViewContactData, openSideDialog, ExportData } from 'components/MRTTable/Common/CommonToolBarActions';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {
@@ -110,7 +110,27 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		};
 	};
 
+	const ExportProps = () => {
+		const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
+		const search = { fields: tableStateValues?.searchFields, query };
+
+		return {
+			_selectedRows: selectedRows,
+			search,
+			filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
+			total: tableStateValues?.data.total,
+			isAllRowsSelected: tableStateValues.isAllRowsSelected,
+			esIndex: tableStateValues.esIndex,
+			table,
+			tableKey,
+			type: 'exportOwnersAndContact',
+			contactIdKey: 'contactId',
+			shapeType: 'Tract',
+		};
+	};
+
 	const sidePropsPass = SideDialogProps();
+	const exportPropsPass = ExportProps();
 
 	return (
 		<>
@@ -154,36 +174,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 			)}
 
 			{isSomethingSelected && (
-				<Button
-					color="secondary"
-					startIcon={<CloudDownloadIcon color="white" />}
-					className={classes.selectTopBarButtons}
-					onClick={() => openSideDialog(
-						{
-							type: 'exportOwnersAndContact',
-							selectedRows,
-							isAllRowsSelected: sidePropsPass.isAllRowsSelected,
-							search: sidePropsPass.search,
-							sorting: sidePropsPass.sorting,
-							defaultSort: sidePropsPass.defaultSort,
-							esIndex: sidePropsPass.esIndex,
-							filters: sidePropsPass.filters,
-							total: sidePropsPass.total,
-							client,
-							table,
-							tableKey,
-							props: {
-								search: sidePropsPass.search,
-								filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
-								total: tableStateValues?.data.total,
-								isAllRowsSelected: tableStateValues.isAllRowsSelected,
-								esIndex: tableStateValues.esIndex,
-							}
-						}
-					)}
-				>
-					Export
-				</Button>
+				<ExportData classes={classes} {...exportPropsPass} />
 			)}
 
 			{isSomethingSelected && (
