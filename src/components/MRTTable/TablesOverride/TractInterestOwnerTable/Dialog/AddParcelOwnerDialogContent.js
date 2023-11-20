@@ -185,7 +185,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         deals,
         grossAcres,
         nonExecRightsOnly,
-        leaseStatus
+        leaseStatus,
+        campaignPriority,
+        campaignName,
 
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
@@ -212,6 +214,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         nonExecRightsOnly,
         leaseStatus,
         customLayer,
+        campaignPriority,
+        campaignName,
         deals,
       });
 
@@ -1235,11 +1239,11 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
               <Controller
                 control={control}
-                defaultValue={''}
                 name="campaignName"
                 render={params => (
                   <CampaignNameField
                     {...params}
+                    value={newOwner?.campaignName}
                     className={classes.maxWidth}
                     onChange={(values, id) => {
                       params.onChange(values);

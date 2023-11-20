@@ -9,6 +9,7 @@ import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TractIcon from 'components/Shared/svgIcons/tract';
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 
 const esIndex = 'shapeowners_flat';
 
@@ -342,6 +343,22 @@ const TractPerUnitMeta = {
 			accessorKey: 'depthTo',
 			header: 'Depth To',
 			isExternalFilter: false,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'campaignName.keyword',
+			accessorFn: row => row?.campaignName,
+			id: 'campaignName',
+			header: 'Campaign Name',
+			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'campaignPriority.keyword',
+			accessorKey: 'campaignPriority',
+			header: 'Campaign Priority',
 		},
 
 		{
