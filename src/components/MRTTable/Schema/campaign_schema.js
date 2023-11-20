@@ -146,7 +146,10 @@ const CampaignMeta = {
       header: 'Created Date',
       type: 'date',
       isExternalFilter: true,
-      Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue, false)}</>,
+      Cell: ({ row }) => {
+        const createdAt = row.getValue('createdAt');
+        return <>{formatDate(createdAt, false)}</>
+      },
     },
     {
       ...CommonSchema.TAGS,
