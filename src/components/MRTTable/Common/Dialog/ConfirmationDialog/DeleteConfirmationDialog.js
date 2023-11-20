@@ -35,7 +35,7 @@ export default function DeleteConfirmationDialogContent(props) {
           onClick={() => {
             const selectedRows = props.deletedData
 
-            const deletedKeys = tableController(props.tablekey).getValue('deletedKeys') || {
+            const deletedKeys = tableController(props.tableKey).getValue('deletedKeys') || {
               mainRecord: { key: '_id' },
             };
             const deletedData = Object.keys(deletedKeys).reduce((acc, key) => {
