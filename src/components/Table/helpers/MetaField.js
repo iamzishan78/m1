@@ -40,6 +40,7 @@ import { ADD_META_DATA } from "graphQL/useMutationAddMetaData";
 import { UPDATE_META_DATA } from "graphQL/useMutationUpdateMetaData";
 import { colorPallete } from "components/Table/helpers";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { tableController, tableGlobalController } from "hookstate/tableController";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -168,6 +169,10 @@ const categoryOptions = [
     value: "Parcel"
   },
   {
+    label: "Campaigns",
+    value: "Campaign Name"
+  },
+  {
     label: "All (contacts, docs, flow, agreement, etc.)",
     value: "All",
   },
@@ -184,12 +189,13 @@ const iconOptions = [
   }
 ];
 
-const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPrefix = 'custom_data', customDataPostfix = '' }) => {
+const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPrefix = 'custom_data', customDataPostfix = '', tableKey }) => {
   const classes = useStyles();
   const [selectedTab, setSelectedTab] = useState("new");
   const [metaData, setMetaData] = useState(null);
   const [filteredMetaData, setFilteredMetaData] = useState(null);
   const [anchorEl, setAnchorEl] = useState();
+  const TableController = !!tableKey && tableController(tableKey);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectFilter, setSelectFilter] = useState(
@@ -319,6 +325,13 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
     handleClose();
   };
 
+  useEffect(() => {
+    return () => {
+      tableGlobalController.reInitialized();
+    };
+  }, []);
+
+
   const handleClose = () => {
     setItems([]);
     setStateApp((stateApp) => ({
@@ -326,6 +339,10 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
       showFieldModal: false,
       selectedMeta: null,
     }));
+
+    TableController?.updateState?.({
+      showFieldModal: false,
+    });
   };
 
   const handleDeleteMetaData = () => {
@@ -387,16 +404,23 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
     rippleEffectCall(data);
   };
 
+  const isDisabled = type === "text" ? !title : !title || items.filter(item => !!item.value).length === 0
+
   return (<>
     <Dialog
       fullWidth
       maxWidth="md"
       open={true}
-      onClose={() =>
+      onClose={() => {
+        TableController?.updateState?.({
+          showFieldModal: false,
+        });
         setStateApp((stateApp) => ({
           ...stateApp,
+          selectedMeta: null,
           showFieldModal: false,
         }))
+      }
       }
     >
       <div>
@@ -479,7 +503,7 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
                     style={{ paddingRight: 20 }}
                     alignItems="center"
                   >
-                    <label style={{ margin: "5px 0px" }}>Field Title</label>
+                    <label style={{ margin: "5px 0px" }}>Field Name</label>
                     <Controller
                       control={control}
                       name="title"
@@ -647,11 +671,11 @@ const MetaField = ({ category, columns, updateColumnSorting, esKey, customDataPr
                     Cancel
                   </Button>
                   <Button
-                    className={!title ? "" : classes.btnColor}
+                    className={isDisabled ? "" : classes.btnColor}
                     style={{ margin: "25px 25px 25px 5px" }}
                     variant="outlined"
                     onClick={handleSave}
-                    disabled={!title}
+                    disabled={isDisabled}
                   >
                     {stateApp.selectedMeta ? "Update Field" : "Create Field"}
                   </Button>

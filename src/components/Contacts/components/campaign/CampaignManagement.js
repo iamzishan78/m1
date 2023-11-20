@@ -1,49 +1,20 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useLazyQuery } from "@apollo/client";
-import CampaignsTable from "components/Table/Contact/CampaignsTable";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState, useEffect, useContext, useCallback } from 'react';
+import { useLazyQuery } from '@apollo/client';
 
-import { AppContext } from "AppContext";
+import { AppContext } from 'AppContext';
 
-import CampaignAnalytics from "components/Contacts/components/CampaignAnalytics";
-import CustomCampaignFilters from "components/Contacts/components/CampaignFilter";
-import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginTop: "90px",
-    "& div": {
-      "&>.MuiPaper-root": {
-        "&>:nth-child(3)": {
-          maxHeight: "59vh",
-          minHeight: "59vh",
-          "@media (max-height:900px)": {
-            maxHeight: "53vh",
-            minHeight: "53vh",
-          },
-          "@media (max-height:800px)": {
-            maxHeight: "51vh",
-            minHeight: "51vh",
-          },
-          "@media (max-height:768px)": {
-            maxHeight: "51vh",
-            minHeight: "51vh",
-          },
-        },
-      },
-    },
-  },
-}));
+import CampaignAnalytics from 'components/Contacts/components/CampaignAnalytics';
+import CustomCampaignFilters from 'components/Contacts/components/CampaignFilter';
+import { GET_ES_MIN_VALUE } from 'graphQL/useQueryESMinValue';
+import MRTTable from 'components/MRTTable';
+import { tableController } from 'hookstate/tableController';
+import { copy, dateFilterToDate } from 'utils/helper';
 
 const CampaignManagement = () => {
-  const classes = useStyles();
-  // const { activeModule } = useSelector(({ common }) => common);
-
-  const esIndex = "campaigns_flat";
-  const searchFields = ["name", "_all"];
-  const [filterToggle, setFilterToggle] = useState(false);
-  const [lastCampaignMinDate, setLastCampaignMinDate] = useState("");
-  const [tableFilters, setTableFilters] = useState([]);
+  const esIndex = 'campaigns_flat';
+  const TableKey = 'CampaignTable';
+  const searchFields = ['name', '_all'];
+  const [lastCampaignMinDate, setLastCampaignMinDate] = useState('');
   const [appliedFilters, setAppliedFilters] = useState({
     fromDate: null,
     toDate: null,
@@ -52,12 +23,14 @@ const CampaignManagement = () => {
   const [toDate, setToDate] = useState(null);
   const [stateApp] = useContext(AppContext);
 
+  const { stateValues } = tableController(TableKey).useState(['filters'])
+
   const [getESMinValue] = useLazyQuery(GET_ES_MIN_VALUE, {
-    fetchPolicy: "no-cache",
-    onCompleted: (data) => {
+    fetchPolicy: 'no-cache',
+    onCompleted: data => {
       if (data?.getESMinValue) {
-        const date = new Date(data?.getESMinValue)
-        if (date?.toString() !== "Invalid Date")
+        const date = new Date(data?.getESMinValue);
+        if (date?.toString() !== 'Invalid Date')
           setLastCampaignMinDate(data?.getESMinValue);
       }
     },
@@ -67,7 +40,7 @@ const CampaignManagement = () => {
     getESMinValue({
       variables: {
         esIndex,
-        field: "createdAt",
+        field: 'createdAt',
         value_as_string: true,
       },
     });
@@ -77,39 +50,69 @@ const CampaignManagement = () => {
     setAppliedFilters({
       ...appliedFilters,
       fromDate,
-      toDate
-    })
+      toDate,
+    });
   }, [fromDate, toDate, setAppliedFilters]);
 
-  const filtersChange = (filters) => {
-    setTableFilters(filters);
-  };
+  const setESFilters = useCallback(newFilter => {
+    if (newFilter.length === 0) {
+      let externalFilters = tableController(TableKey).getExternalFilter()
+      tableController(TableKey).clearFilter(externalFilters[0]?.field);
+    } else {
+      newFilter.forEach(filter => {
+        const { field, value, type } = filter;
+        let filterToAdd;
+
+        filterToAdd = { field, value, type };
+
+        tableController(TableKey).setFilter(filterToAdd);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    let filters = copy(tableController(TableKey)?.getExternalFilter()) ?? [];
+    filters = filters.filter(
+      (filter) =>
+        filter.type !== "range"
+    );
+
+    if (fromDate && toDate)
+      filters.unshift({
+        field: 'createdAt',
+        value: {
+          gte: fromDate ? `${fromDate}T00:00:00.000Z` : null,
+          lte: toDate ? `${dateFilterToDate(toDate)}T00:00:00.000Z` : null,
+        },
+        type: "range",
+      });
+
+    setESFilters(filters);
+  }, [fromDate, toDate, setESFilters])
+
+  useEffect(() => {
+    tableController(TableKey).setGlobalFilter(stateApp.contactSearchQuery);
+  }, [stateApp.contactSearchQuery])
 
   return (
-    <div className={classes.root}>
+    <div style={{ marginTop: '90px' }}>
       <CustomCampaignFilters
         setFromDate={setFromDate}
         setToDate={setToDate}
         esIndex={esIndex}
         searchFields={searchFields}
-        tableFilters={tableFilters}
-        appliedFilters={{ ...appliedFilters, fromDate, toDate }}
-        setAppliedFilters={setAppliedFilters}
+        tableFilters={stateValues.filters}
+        appliedFilters={tableController(TableKey)?.getExternalFilter()}
+        setAppliedFilters={setESFilters}
         minDate={lastCampaignMinDate}
         contactSearchQuery={stateApp.contactSearchQuery}
       />
-      <div style={{ padding: "0px 30px" }}>
-        <CampaignAnalytics appliedFilters={appliedFilters} contactSearchQuery={stateApp.contactSearchQuery} />
-        <CampaignsTable
-          esIndex={esIndex}
-          searchFields={searchFields}
-          filtersChange={filtersChange}
-          appliedFilters={appliedFilters}
-          filterToggle={filterToggle}
-          targetLabel="Campaign"
-          header="Campaigns"
+      <div style={{ padding: '0px 30px' }}>
+        <CampaignAnalytics
+          appliedFilters={tableController(TableKey)?.getExternalFilter()}
           contactSearchQuery={stateApp.contactSearchQuery}
         />
+        <MRTTable name={TableKey} />
       </div>
     </div>
   );
