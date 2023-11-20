@@ -33,7 +33,7 @@ function ToolbarActions({ table, tableKey, children }) {
 			sorting: tableStateValues?.sorting,
 			defaultSort: tableStateValues?.defaultSort,
 			esIndex: tableStateValues.esIndex,
-			filters: [...tableStateValues.filters, tableStateValues.defaultFilters],
+			filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
 			total: tableStateValues?.data?.total,
 			client,
 			table,
