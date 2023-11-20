@@ -6,6 +6,9 @@ import { hookStateController } from 'hookstate/hookStateController';
 import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 import { isEmpty, isEqual } from 'lodash';
+import { globalStateController } from './globalStateController';
+import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
+import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController'
 
 const initialState = {
 	defaultFilters: [],
@@ -93,8 +96,23 @@ const handleColumnMenuClick = () => {
 	}, 300);
 };
 
+async function fetchGridViews(client, module, tableKey) {
+	const user = globalStateController.getValue('user')
+	const result = await client.query({
+		variables: {
+			module,
+			userId: user._id,
+		},
+		query: GET_GRID_VIEWS,
+	});
+	const allGridViews = result?.data?.getGridViews?.gridViews
+	const gridViewController = gridViewStateController(tableKey)
+	gridViewController?.initialize(tableKey, allGridViews);
+	return allGridViews
+}
+
 const tableESStateControllerHandler = state => ({
-	initialize: (
+	initialize: async (
 		tableKey,
 		{
 			esIndex,
@@ -108,10 +126,17 @@ const tableESStateControllerHandler = state => ({
 			customProps = {},
 			isSelectAllAllowed = true,
 			search,
+			gridViewSettings,
 			...rest
-		}
+		},
+		client,
 	) => {
 		if (state.TableSchema.get()) return;
+
+		let allGridViews = []
+		if (gridViewSettings) {
+			allGridViews = await fetchGridViews(client, gridViewSettings.module, tableKey)
+		}
 		const searchFields = search ? search?.fields : TableSchema.filter(column => column.isSearchField !== false).map(
 			column => column.id || column.accessorKey
 		);
@@ -254,11 +279,14 @@ const tableESStateControllerHandler = state => ({
 			return schemaColumn;
 		});
 
+		const defaultDisplay = allGridViews.find(obj => obj.isDefaultDisplay === true);
+
 		state.merge({
 			...rest,
-			initialized: true,
+			initialized: !!(defaultDisplay) ? false : true,
 			tableKey,
 			esIndex,
+			gridViewSettings,
 			pageSize,
 			isSelectAllAllowed,
 			isAllRowsSelected: false,
@@ -293,6 +321,11 @@ const tableESStateControllerHandler = state => ({
 				],
 			},
 		});
+
+		if (!!defaultDisplay) {
+			gridViewStateController(tableKey).gridViewApply(defaultDisplay)
+			state.merge({ initialized: true })
+		}
 	},
 
 	setFilterMode: (column, mode) => {
@@ -447,6 +480,21 @@ const tableESStateControllerHandler = state => ({
 		if (!isEqual(value, state.isAllRowsSelected.get()))
 			state.isAllRowsSelected.set(value);
 	},
+
+	setShowColumnFilters: value => {
+		if (!isEqual(value, state.showColumnFilters.get()))
+			state.showColumnFilters.set(value);
+	},
+
+	setSorting: sorting => {
+		state.sorting?.set(sorting);
+	},
+
+	setColumnOrdering: columnOrdering => {
+		state.columnOrdering?.set(columnOrdering);
+	}
+
+
 });
 
 export const tableController = TableKey => {
