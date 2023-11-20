@@ -70,8 +70,7 @@ export const openSideDialog = async (
 	}
 ) => {
 	let showRows = selectedRows;
-	if (isAllRowsSelected) {
-
+	if (isAllRowsSelected && !type.toLowerCase().includes('delete')) {
 		tableGlobalController.updateState({
 			dialog: {
 				type,
@@ -91,6 +90,9 @@ export const openSideDialog = async (
 			...props
 		},
 	});
+
+	if (table.getIsAllRowsSelected()) table.toggleAllRowsSelected();
+
 	table.resetRowSelection();
 };
 

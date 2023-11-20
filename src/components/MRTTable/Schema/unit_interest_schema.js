@@ -50,6 +50,12 @@ const UnitInterestMeta = {
 		},
 
 		{
+			...CommonSchema.HIDDEN,
+			name: 'contact._id.keyword',
+			accessorKey: 'contact._id',
+		},
+
+		{
 			...CommonSchema.INITAIL_PINNED,
 			name: 'contact.entityDetail.name.keyword',
 			accessorKey: 'contact.entityDetail.name',
@@ -283,8 +289,8 @@ const UnitInterestMeta = {
 		{
 			...CommonSchema.TAGS,
 			Cell: ({ row }) => {
-				const targetSourceId = row.getValue('_id');
-				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'unit'} />;
+				const targetSourceId = row.getValue('contact._id');
+				return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'Unit Ownership'} />;
 			},
 		},
 	],

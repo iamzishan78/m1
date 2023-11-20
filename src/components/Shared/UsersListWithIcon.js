@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const UsersListWithIcon = ({ label, placeholder, selectedUserId, onChangeUser }) => {
+const UsersListWithIcon = ({ label, placeholder, selectedUserId, onChangeUser, labelSize = 3, fieldSize = 9 }) => {
   const classes = useStyles();
   const [users, setUsers] = useState([]);
 
@@ -86,10 +86,10 @@ const UsersListWithIcon = ({ label, placeholder, selectedUserId, onChangeUser })
 
   return (
     <Grid container className={classes.gridStyle}>
-      <Grid item xs={3}>
+      <Grid item xs={labelSize}>
         <div>{label}</div>
       </Grid>
-      <Grid item xs={9}>
+      <Grid item xs={fieldSize}>
         <Autocomplete
           id="userList"
           options={users.filter((u) => u.text)}

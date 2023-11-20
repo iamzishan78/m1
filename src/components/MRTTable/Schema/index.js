@@ -7,6 +7,7 @@ import UnitMeta from './unit_schema';
 import UnitInterestMeta from './unit_interest_schema';
 import TractUnitsMeta from './tract_units_schema';
 import TractPotentialUnitsMeta from './tract_potential_units_schema';
+import CampaignMeta from './campaign_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -14,11 +15,12 @@ export const SCHEMA = {
 	ComparisonTable: ComparisonMeta,
 	PropertyIntrestTable: PropertyIntrestMeta,
 	OwnersPerUnitTable: OwnersPerUnitMeta, // unit detail => Interest owner grid schema
-	TractPerUnitTable: TractPerUnitMeta,// tract detail => Interest owner grid schema
+	TractPerUnitTable: TractPerUnitMeta, // tract detail => Interest owner grid schema
 	UnitTable: UnitMeta,
 	CampaignUnitTable: UnitMeta,
 	UnitInterestTable: UnitInterestMeta,
 	CampaignUnitInterestTable: UnitInterestMeta,
 	TractUnitsTable: TractUnitsMeta,
 	TractPotentialUnitsTable: TractPotentialUnitsMeta,
+	CampaignTable: CampaignMeta,
 };

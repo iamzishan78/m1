@@ -1,15 +1,21 @@
 import React from 'react';
 import { hookstate } from '@hookstate/core';
+import _, { get, isEqual, isEmpty } from 'lodash';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
 import { copy, deepEqual } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
 import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
-import { isEmpty, isEqual } from 'lodash';
-import { globalStateController } from './globalStateController';
+import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import { globalStateController } from 'hookstate/globalStateController';
+import ReactSelectField from "components/MRTTable/Common/MetaData/ReactSelectField";
+import CustomFieldText from "components/MRTTable/Common/MetaData/CustomFieldText";
+import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController'
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController'
 import { formatGridViewToMRT } from "components/MRTTable/utils/helper"
+
 
 const initialState = {
 	defaultFilters: [],
@@ -98,6 +104,77 @@ const handleColumnMenuClick = () => {
 	}, 300);
 };
 
+async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey) {
+
+	const _user = globalStateController.getValue('user')
+
+	const result = await client.query({
+		variables: {
+			user: _user?._id,
+			category: fetchMetaData?.category,
+		},
+		query: GET_META_DATA,
+	});
+
+	const data = result?.data?.getMetaData?.metaData
+
+	const metaDataTableSchema = data.map((item, index) => {
+		const key = item?.esKey.replaceAll('.keyword', '')
+
+		return ({
+			...item,
+			...CommonSchema.COMMON_COLUMN,
+			name: `${key}.keyword`,
+			id: key,
+			accessorFn: (row) => get(row, key),
+			header: item?.label,
+			isCustom: true,
+			size: 350,
+			inputType: item?.type,
+			dbKey: item?.name,
+			Cell: ({ row }) => {
+				const value = _.get(row?.original, `custom_data.${item?.name}`)
+
+				if (item?.type === "multiselect" || item?.type === "dropdown") {
+					return (
+						<div>
+							<ReactSelectField
+								tooltipView={true}
+								isSingleSelect={item.type !== "multiselect"}
+								dropdownOptions={item.dropdownOptions}
+								index={index}
+								column={item}
+								value={value}
+								id={item.label}
+								tableKey={tableKey}
+								onCustomKeyChange={(value) => onCustomKeyChange(client, row?.original, value, item)}
+							/>
+						</div>
+					);
+				}
+
+				if (item?.type === "text") {
+					return (
+						<CustomFieldText
+							value={value}
+							onCustomKeyChange={(value) => { onCustomKeyChange(client, row?.original, value, item) }}
+						/>
+					)
+				}
+
+				return <>{value}</>
+			},
+		})
+	});
+
+	metaDataColumnStateController(tableKey)?.initialize(tableKey, metaDataTableSchema);
+
+	const lastColumns = TableSchema.filter(obj => obj.showInLast === true)
+	const defaultColumns = TableSchema.filter(obj => obj.showInLast !== true)
+	const newTableSchema = [...defaultColumns, ...metaDataTableSchema, ...lastColumns]
+	return newTableSchema
+}
+
 async function fetchGridViews(client, module, tableKey) {
 	const user = globalStateController.getValue('user')
 	const result = await client.query({
@@ -113,6 +190,7 @@ async function fetchGridViews(client, module, tableKey) {
 	return allGridViews
 }
 
+
 const tableESStateControllerHandler = state => ({
 	initialize: async (
 		tableKey,
@@ -127,7 +205,10 @@ const tableESStateControllerHandler = state => ({
 			defaultFilters,
 			customProps = {},
 			isSelectAllAllowed = true,
+			isSelectall,
 			search,
+			fetchMetaData,
+			onCustomKeyChange,
 			gridViewSettings,
 			...rest
 		},
@@ -135,79 +216,18 @@ const tableESStateControllerHandler = state => ({
 	) => {
 		if (state.TableSchema.get()) return;
 
+		let _Schema = TableSchema;
+
+		if (fetchMetaData) {
+			_Schema = await fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey)
+		}
+
 		let allGridViews = []
 		if (gridViewSettings) {
 			allGridViews = await fetchGridViews(client, gridViewSettings.module, tableKey)
 		}
-		const searchFields = search ? search?.fields : TableSchema.filter(column => column.isSearchField !== false).map(
-			column => column.id || column.accessorKey
-		);
 
-		const ExternalFilter = TableSchema.filter(column => column.isExternalFilter === true).map(column => column.name);
-
-		const pinnedColumns = TableSchema.filter(column => column.isPinned);
-		const pinnedFields = pinnedColumns.map(column => {
-			column.enableResizing = false;
-			column.enableColumnDragging = false;
-			column.enableColumnOrdering = false;
-			return column.id || column.accessorKey;
-		});
-
-		const columnOrder = TableSchema.map(column => {
-			let col = column.accessorKey || column.id
-			if (Array.isArray(col)) col = col[0]
-			return col
-		});
-
-		const tableCss = {
-			'& .MuiDialog-root': {
-				zIndex: '99999',
-			},
-			'& .MuiToolbar-root': {
-				backgroundColor: '#F2F2F2',
-				borderBottom: '1px solid rgba(224, 224, 224, 1)',
-			},
-			'& th.MuiToolbar-root, .MuiTableRow-head, th.MuiTableCell-head': {
-				backgroundColor: '#F2F2F2',
-			},
-			'& .Mui-TableHeadCell-Content-Labels': {
-				width: '100%',
-			},
-			'& .Mui-selected': {
-				'&:hover': {
-					'& td': {
-						backgroundColor: '##cdd4de !important',
-					},
-				},
-				'& td': {
-					backgroundColor: '#e6ecf5 !important',
-				},
-			},
-		};
-		handleVisiblityMenuClick();
-		handleColumnMenuClick();
-
-		if (pinnedColumns.length > 0 && columnVirtualization) {
-			let size = 120;
-			pinnedColumns.forEach(column => {
-				size += column.size;
-			});
-			tableCss['& .MuiTableRow-root>:nth-child(2)'] = {
-				marginLeft: `-${size}px !important`,
-			};
-		}
-		const groupedField =
-			TableSchema.find(column => column.isGrouped)?.accessorKey || TableSchema.find(column => column.isGrouped)?.id;
-
-		const columnVisibility = TableSchema.reduce(
-			(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: !cur?.hidden }),
-			{}
-		);
-		const filterModes = TableSchema.filter(column => column.filter).reduce(
-			(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: 'custom' }),
-			{}
-		);
-		const _TableSchema = TableSchema.map(schemaColumn => {
+		const _TableSchema = _Schema.map(schemaColumn => {
 			if (schemaColumn.filter && !schemaColumn.Filter) {
 				schemaColumn.SingleSelect = function Comp({ column }) {
 					return (
@@ -281,6 +301,75 @@ const tableESStateControllerHandler = state => ({
 			return schemaColumn;
 		});
 
+		const searchFields = search ? search?.fields : _TableSchema.filter(column => column.isSearchField !== false).map(
+			column => column.id || column.accessorKey
+		);
+
+		const ExternalFilter = _TableSchema.filter(column => column.isExternalFilter === true).map(column => column.name);
+
+		const pinnedColumns = _TableSchema.filter(column => column.isPinned);
+		const pinnedFields = pinnedColumns.map(column => {
+			column.enableResizing = false;
+			column.enableColumnDragging = false;
+			column.enableColumnOrdering = false;
+			return column.id || column.accessorKey;
+		});
+
+		const columnOrder = _TableSchema.map(column => {
+			let col = column.accessorKey || column.id
+			if (Array.isArray(col)) col = col[0]
+			return col
+		});
+
+		const tableCss = {
+			'& .MuiDialog-root': {
+				zIndex: '99999',
+			},
+			'& .MuiToolbar-root': {
+				backgroundColor: '#F2F2F2',
+				borderBottom: '1px solid rgba(224, 224, 224, 1)',
+			},
+			'& th.MuiToolbar-root, .MuiTableRow-head, th.MuiTableCell-head': {
+				backgroundColor: '#F2F2F2',
+			},
+			'& .Mui-TableHeadCell-Content-Labels': {
+				width: '100%',
+			},
+			'& .Mui-selected': {
+				'&:hover': {
+					'& td': {
+						backgroundColor: '##cdd4de !important',
+					},
+				},
+				'& td': {
+					backgroundColor: '#e6ecf5 !important',
+				},
+			},
+		};
+		handleVisiblityMenuClick();
+		handleColumnMenuClick();
+
+		if (pinnedColumns.length > 0 && columnVirtualization) {
+			let size = 120;
+			pinnedColumns.forEach(column => {
+				size += column.size;
+			});
+			tableCss['& .MuiTableRow-root>:nth-child(2)'] = {
+				marginLeft: `-${size}px !important`,
+			};
+		}
+		const groupedField =
+			_TableSchema.find(column => column.isGrouped)?.accessorKey || _TableSchema.find(column => column.isGrouped)?.id;
+
+		const columnVisibility = _TableSchema.reduce(
+			(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: !cur?.hidden }),
+			{}
+		);
+		const filterModes = _TableSchema.filter(column => column.filter).reduce(
+			(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: 'custom' }),
+			{}
+		);
+
 		const defaultDisplay = allGridViews.find(obj => obj.isDefaultDisplay === true);
 		const formatGridView = formatGridViewToMRT(defaultDisplay)
 		const gridView = {
@@ -294,11 +383,12 @@ const tableESStateControllerHandler = state => ({
 			initialized: true,
 			tableKey,
 			esIndex,
+			fetchMetaData,
 			gridViewSettings,
 			gridView,
 			pageSize,
+			isSelectall: false,
 			isSelectAllAllowed,
-			isAllRowsSelected: false,
 			showColumnFilters: formatGridView?.filters ? true : false,
 			data: { rows: [], total: 0 },
 			isLoading: false,
@@ -359,6 +449,9 @@ const tableESStateControllerHandler = state => ({
 			},
 		});
 	},
+	setSelectAll: value => {
+		state.isSelectall.set(value);
+	},
 
 	setColumnVisibility: visibility => {
 		if (!deepEqual(state.columnVisibility?.get({ noproxy: true }), visibility)) state.columnVisibility?.set(visibility);
@@ -414,6 +507,7 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setColumnOrdering: order => {
+		console.log(order)
 		if (!deepEqual(state.columnOrdering?.get({ noproxy: true }), order)) state.columnOrdering?.set(order);
 	},
 
@@ -439,10 +533,6 @@ const tableESStateControllerHandler = state => ({
 			return;
 
 		state.filters?.set([...filtersState.filter(({ field }) => field !== filter.field), filter]);
-	},
-
-	setFilters: filters => {
-		state.filters?.set(filters);
 	},
 
 	getExternalFilter: () => {
@@ -502,7 +592,6 @@ const tableESStateControllerHandler = state => ({
 		state.columnOrdering?.set(columnOrdering);
 	}
 
-
 });
 
 export const tableController = TableKey => {
@@ -519,7 +608,7 @@ const tableGlobalControllerHandler = state => ({
 	},
 	reInitialized: () => {
 		state.reInitialized.set(!state.reInitialized.get({ noproxy: true }));
-	},
+	}
 });
 
 export const tableGlobalController = {

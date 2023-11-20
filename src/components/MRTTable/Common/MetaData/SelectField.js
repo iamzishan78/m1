@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-import Select, { defaultTheme, components } from 'react-select';
-import { Waypoint } from 'react-waypoint';
+import Select, { defaultTheme, components } from "react-select";
+import { Waypoint } from "react-waypoint";
 import { useInView } from "react-intersection-observer";
 import { colorPallete } from "components/Table/helpers";
 import { Grid, Tooltip, Typography } from "@material-ui/core";
@@ -9,6 +9,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { copy } from "components/Shared/functions";
 import EditIcon from "@material-ui/icons/Edit";
 import { AppContext } from "AppContext";
+import { tableController } from "hookstate/tableController";
 
 const useStyles = makeStyles((theme) => ({
   myClass: {
@@ -18,17 +19,24 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   reactSelect: {
-    '& .react-select__option': { backgroundColor: 'red' }
-  }
+    "& .react-select__option": { backgroundColor: "red" },
+  },
 }));
 
-const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange, column, onClose }) => {
+const SelectField = ({
+  dropdownOptions,
+  value,
+  isSingleSelect,
+  onCustomKeyChange,
+  column,
+  tableKey,
+}) => {
   const classes = useStyles();
   const [dropDownValues, setDropDownValues] = useState([]);
   const [displayedOptions, setDisplayedOptions] = useState(100);
   const [options, setOptions] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [, setStateApp] = useContext(AppContext);
+  const Controller = tableController(tableKey);
 
   const defaultValue = {
     label: "--",
@@ -50,12 +58,14 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
       const updateArray = props.options.slice(0, props.options.length - 1);
       const startIndex = updateArray.length;
       const endIndex = Math.min(startIndex + 100, dropDownValues.length);
-      setDisplayedOptions(endIndex)
+      setDisplayedOptions(endIndex);
       const nextOptions = dropDownValues.slice(startIndex, endIndex);
       const updatedOptions = updateArray.concat(nextOptions);
 
       setOptions([...updatedOptions, { label: "edit", value: "editOption" }]);
-      const waypointElement = document.getElementById(`waypoint-${startIndex - 5}`);
+      const waypointElement = document.getElementById(
+        `waypoint-${startIndex - 5}`
+      );
       if (waypointElement) {
         waypointElement.scrollIntoView();
       }
@@ -72,17 +82,18 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
                 )}
                 <MyOption setValue={props.setValue} opt={opt} index={index} />
               </React.Fragment>
-            )
+            );
           })}
         </>
       </components.MenuList>
-    )
-  }
-
+    );
+  };
 
   const MyOption = ({ opt, setValue, index }) => {
     const [ref, inView] = useInView();
-    const pallete = colorPallete.find((pallete) => pallete.id === opt.palleteId);
+    const pallete = colorPallete.find(
+      (pallete) => pallete.id === opt.palleteId
+    );
     return (
       <div ref={ref} id={`waypoint-${index}`}>
         {inView ? (
@@ -91,7 +102,7 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
               <Grid
                 id={opt.value}
                 style={{
-                  "flexWrap": "nowrap",
+                  flexWrap: "nowrap",
                   marginTop: "5px",
                   borderTop: "1px solid #959595",
                   padding: "8px 6px 2px 6px",
@@ -100,11 +111,12 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
                 spacing={0}
                 onClick={() => {
                   setIsOpen(false);
-                  onClose()
-                  setStateApp((stateApp) => ({
+                  Controller.updateState({
+                    showFieldModal: true,
+                  });
+                  window.setStateApp((stateApp) => ({
                     ...stateApp,
                     selectedMeta: column,
-                    showFieldModal: true,
                   }));
                 }}
               >
@@ -112,7 +124,7 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
                   style={{
                     "flex-grow": 1,
                     width: "fit-content",
-                    "maxWidth": "max-content",
+                    maxWidth: "max-content",
                   }}
                   container
                   item
@@ -120,7 +132,11 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
                   alignItems="center"
                 >
                   <EditIcon
-                    style={{ alignSelf: "center", fontSize: 18, marginRight: 5 }}
+                    style={{
+                      alignSelf: "center",
+                      fontSize: 18,
+                      marginRight: 5,
+                    }}
                   />
                 </Grid>
                 <Grid
@@ -130,7 +146,7 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
                   alignItems="center"
                   style={{
                     fontSize: 14,
-                    "whiteSpace": "nowrap",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   Edit options
@@ -151,7 +167,7 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
                   style={{
                     "flex-grow": 1,
                     width: "fit-content",
-                    "maxWidth": "max-content",
+                    maxWidth: "max-content",
                   }}
                   container
                   item
@@ -165,11 +181,10 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
                     }
                     onChange={(e) => {
                       if (e.target.checked) {
-                        setValue(opt, "select-option")
+                        setValue(opt, "select-option");
                       } else {
-                        setValue(opt, "deselect-option")
+                        setValue(opt, "deselect-option");
                       }
-
                     }}
                     color="default"
                     style={{ marginRight: 5 }}
@@ -188,55 +203,66 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
                   xs={10}
                   alignItems="center"
                 >
-                  <Grid style={{ "flex-grow": 1, width: "fit-content" }} item xs>
+                  <Grid
+                    style={{ "flex-grow": 1, width: "fit-content" }}
+                    item
+                    xs
+                  >
                     <Tooltip title={opt.value} placement="top">
-                      <Typography style={{
-                        width: "100%",
-                        fontWeight: 400,
-                        backgroundColor: pallete?.color,
-                        color: pallete?.textColor,
-                        padding: "3px 10px",
-                        borderRadius: 26,
-                        fontSize: 14,
-                        overflow: "hidden",
-                        "whiteSpace": "nowrap",
-                        "textOverflow": "ellipsis",
-                        textOverflow: 'ellipsis',
-                        maxWidth: "187px"
-                      }}>
+                      <Typography
+                        style={{
+                          width: "100%",
+                          fontWeight: 400,
+                          backgroundColor: pallete?.color,
+                          color: pallete?.textColor,
+                          padding: "3px 10px",
+                          borderRadius: 26,
+                          fontSize: 14,
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                          textOverflow: "ellipsis",
+                          textOverflow: "ellipsis",
+                          maxWidth: "187px",
+                        }}
+                      >
                         {opt.value}
                       </Typography>
-
                     </Tooltip>
-
                   </Grid>
                 </Grid>
               </Grid>
             )}
           </>
-        ) : (<div style={{ height: "30px" }}></div>)}
+        ) : (
+          <div style={{ height: "30px" }}></div>
+        )}
       </div>
-    )
-  }
+    );
+  };
 
   const onFilterChange = (search) => {
-    const filteroptions = JSON.parse(JSON.stringify(dropdownOptions.filter(op => op.value?.toLowerCase()?.includes(search.toLowerCase()))));
+    const filteroptions = JSON.parse(
+      JSON.stringify(
+        dropdownOptions.filter((op) =>
+          op.value?.toLowerCase()?.includes(search.toLowerCase())
+        )
+      )
+    );
     filteroptions.unshift(defaultValue);
-    setDropDownValues(filteroptions)
+    setDropDownValues(filteroptions);
     const endIndex = Math.min(displayedOptions, filteroptions.length);
     const initialOptions = filteroptions.slice(0, endIndex);
     setOptions([...initialOptions, { label: "edit", value: "editOption" }]);
-  }
+  };
 
   const handleKeyDown = (e) => {
     if (e.key === "Escape" && isOpen) {
       e.stopPropagation();
-      onClose()
-      setIsOpen(!isOpen)
+      setIsOpen(!isOpen);
     }
-  }
+  };
 
-  const Svg = p => (
+  const Svg = (p) => (
     <svg
       width="24"
       height="24"
@@ -259,15 +285,15 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
     </div>
   );
 
-  const onSelectChange = act => {
+  const onSelectChange = (act) => {
     // toggleOpen();
     if (act?.value !== "editOption" && act?.value !== "search") {
       if (isSingleSelect) {
-        onCustomKeyChange(act?.value !== defaultValue.value ? act?.value : null);
-        onClose()
-        setIsOpen(false)
-      }
-      else {
+        onCustomKeyChange(
+          act?.value !== defaultValue.value ? act?.value : null
+        );
+        setIsOpen(false);
+      } else {
         let newValue = value ? copy(value) : [];
         const selectedValue =
           act?.value !== defaultValue.value ? act?.value : null;
@@ -282,44 +308,49 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
         onCustomKeyChange(newValue);
       }
     }
-
   };
 
   const selectStyles = {
-    control: provided => ({ ...provided, minWidth: 240, margin: 8 }),
-    menu: () => ({ boxShadow: 'inset 0 1px 0 rgba(0, 0, 0, 0.1)' }),
-    menuPortal: base => ({ ...base, zIndex: 9999, backgroundColor: "white", position: "fixed" })
+    control: (provided) => ({ ...provided, minWidth: 240, margin: 8 }),
+    menu: () => ({ boxShadow: "inset 0 1px 0 rgba(0, 0, 0, 0.1)" }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 9999,
+      backgroundColor: "white",
+      position: "fixed",
+    }),
   };
 
-
-  const filterOptions = (candidate, input
-  ) => {
+  const filterOptions = (candidate, input) => {
     if (candidate.value === "editOption") {
       return true;
     }
-    return candidate.value.toLowerCase().includes(input?.toLowerCase())
+    return candidate.value.toLowerCase().includes(input?.toLowerCase());
   };
 
   const onSearchChange = (value) => {
     if (value) {
-      setDisplayedOptions(100)
-      const filterOptions = dropdownOptions.filter(op => {
-        return op.value?.toLowerCase()?.includes(value?.toLowerCase());
+      setDisplayedOptions(100);
+      const filterOptions = dropdownOptions.filter((op) => {
+        return op.value.toLowerCase()?.includes(value.toLowerCase());
       });
-      setDropDownValues(filterOptions)
+      setDropDownValues(filterOptions);
       const endIndex = Math.min(100, filterOptions.length);
-      setOptions([...filterOptions.slice(0, endIndex), { label: "edit", value: "editOption" }]);
+      setOptions([
+        ...filterOptions.slice(0, endIndex),
+        { label: "edit", value: "editOption" },
+      ]);
     } else {
       setDisplayedOptions(100);
-      onFilterChange('')
+      onFilterChange("");
     }
-  }
+  };
 
   return (
     <Select
       captureMenuScroll={false}
-      classNamePrefix='react-select'
-      className='react-select-container'
+      classNamePrefix="react-select"
+      className="react-select-container"
       autoFocus
       backspaceRemovesValue={false}
       controlShouldRenderValue={false}
@@ -340,7 +371,11 @@ const SelectField = ({ dropdownOptions, value, isSingleSelect, onCustomKeyChange
         onSearchChange(input);
       }}
       filterOption={filterOptions}
-      components={{ DropdownIndicator, IndicatorSeparator: null, MenuList: CustomMenuList }}
+      components={{
+        DropdownIndicator,
+        IndicatorSeparator: null,
+        MenuList: CustomMenuList,
+      }}
       placeholder="Search for value"
       styles={selectStyles}
       tabSelectsValue={false}
