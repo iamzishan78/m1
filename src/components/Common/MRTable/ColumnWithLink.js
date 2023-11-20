@@ -6,6 +6,20 @@ import { Box, Tooltip } from '@material-ui/core';
 
 import GlobalStyles from 'GlobalStyles';
 
+const commonLinkStyles = {
+	maxWidth: '380px',
+	whiteSpace: 'nowrap',
+	overflow: 'hidden',
+	textOverflow: 'ellipsis',
+	display: 'flow-root',
+	p: 2,
+	textDecoration: 'none',
+	'&:hover': {
+		textDecoration: 'underline !important',
+		fontWeight: GlobalStyles.font.boldFontWeight,
+	},
+};
+
 const useStyles = makeStyles(() => ({
 	root: {
 		color: `${GlobalStyles.colors.lightBlue} !important`,
@@ -13,17 +27,11 @@ const useStyles = makeStyles(() => ({
 	},
 	link: {
 		color: `${GlobalStyles.colors.lightBlue} !important`,
-		maxWidth: '380px',
-		whiteSpace: 'nowrap',
-		overflow: 'hidden',
-		textOverflow: 'ellipsis',
-		display: 'flow-root',
-		p: 2,
-		textDecoration: 'none',
-		'&:hover': {
-			textDecoration: 'underline !important',
-			fontWeight: GlobalStyles.font.boldFontWeight,
-		},
+		...commonLinkStyles,
+	},
+	mutedLink: {
+		color: `${GlobalStyles.colors.mutedGrey} !important`,
+		...commonLinkStyles,
 	},
 }));
 
@@ -47,7 +55,7 @@ const ColumnWithLink = ({ value, link, ...rest }) => {
 						<Tooltip title={value || ''} arrow>
 							<RouterLink
 								to={`${link}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
-								className={classes.link}
+								className={rest.muted ? classes.mutedLink : classes.link}
 							>
 								{value}
 							</RouterLink>
