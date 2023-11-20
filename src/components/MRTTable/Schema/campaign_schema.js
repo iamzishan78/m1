@@ -77,7 +77,8 @@ const CampaignMeta = {
     cssOverride: {
       top: '461px',
       left: '40px',
-      marginLeft: '-7px'
+      marginLeft: '-7px',
+      maxHeight: '445px'
     },
   },
   TableSchema: [
