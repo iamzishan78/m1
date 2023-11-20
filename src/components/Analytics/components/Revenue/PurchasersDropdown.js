@@ -111,11 +111,11 @@ const PurchasersDropdown = ({
         md={strechedWidth ? true : fullWidth ? 7 : 3}
       >
         <FormControl variant="outlined" fullWidth className={classes.formControl}>
-          <InputLabel id="select-outlined-label">Purchasers</InputLabel>
+          <InputLabel id="select-outlined-label">Purchaser</InputLabel>
           <Select
             labelId="select-outlined-label"
             id="select-outlined"
-            label="Purchasers"
+            label="Purchaser"
             value={value}
             fullWidth
             className={classes.viewSwitcher}
