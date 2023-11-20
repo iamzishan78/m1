@@ -39,6 +39,7 @@ import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 
 const qtrOptions = ['E2', 'NE', 'NW', 'N2', 'SE', 'SW', 'S2', 'W2'];
 
@@ -183,6 +184,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         qtr,
         deals,
         grossAcres,
+        nonExecRightsOnly,
+        leaseStatus
+
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
 
@@ -205,6 +209,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         depthFrom: depthFrom || '',
         depthTo: depthTo || '',
         qtr: qtr || [null, null, null, null],
+        nonExecRightsOnly,
+        leaseStatus,
         customLayer,
         deals,
       });
@@ -247,6 +253,10 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     fetchPolicy: 'no-cache',
   });
 
+  const [getCampaignPriorityList, { data: priorityList }] = useLazyQuery(GET_ES_FILTER_LIST, {
+    fetchPolicy: 'no-cache',
+  });
+
   const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 
   const [addOwnerToAParcel, { data: mutationData }] = useMutation(ADDOWNERTOAPARCEL);
@@ -271,6 +281,16 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       },
     });
   }, [getLeaseStatusList]);
+
+  useEffect(() => {
+    getCampaignPriorityList({
+      variables: {
+        esIndex: 'shapeowners_flat',
+        filterKey: 'campaignPriority.keyword',
+        size: 50,
+      },
+    });
+  }, [getCampaignPriorityList]);
 
   useEffect(() => {
     const uniqueList = Array.from(new Set(["HBP", "Leased", "Unleased", ...get(leaseStatusListRes, 'getESFilterList.hits', [])?.map(owner => owner.key)]));
@@ -792,15 +812,15 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             <Grid item xs={12}>
               <h3>Non-Exec Rights Only</h3>
               <Autocomplete
-                options={[{ label: "Yes", value: true }, { label: "No", value: false }]}
+                options={[{ label: "Yes", value: "Yes" }, { label: "No", value: "No" }]}
                 getOptionLabel={option => option.label}
                 getOptionSelected={(option, value) => option.value === value}
-                value={newOwner?.nonExecRightsOnly}
+                value={newOwner?.nonExecRightsOnly ? { label: newOwner?.nonExecRightsOnly, value: newOwner?.nonExecRightsOnly } : null}
                 onChange={(e, newInputValue) => {
                   setNewOwner({
                     ...newOwner,
-                    nonExecRightsOnly: newInputValue.value,
-                  });
+                    nonExecRightsOnly: newInputValue?.value,
+                  })
                 }}
                 renderInput={params => (
                   <TextField {...params} size="small" className={classes.maxWidth} multiline />
@@ -1211,6 +1231,59 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               </Grid>
             )}
             <Grid item xs={12}>
+              <h3>Campaign Names</h3>
+
+              <Controller
+                control={control}
+                defaultValue={''}
+                name="campaignName"
+                render={params => (
+                  <CampaignNameField
+                    {...params}
+                    className={classes.maxWidth}
+                    onChange={(values, id) => {
+                      params.onChange(values);
+                      setNewOwner({
+                        ...newOwner,
+                        campaignName: values,
+                      });
+                    }}
+                    fullWidth
+                    targetLabel="Contact"
+                    simpleChips
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <h3>Campaign Priority</h3>
+              <Controller
+                control={control}
+                name="campaignPriority"
+                render={params => (
+                  <AutoCompleteWithAddNew
+                    {...params}
+                    value={newOwner?.campaignPriority}
+                    // variant="outlined"
+                    setValue={value => {
+                      if (value?._id) params.onChange({ _id: value._id, name: value.name });
+                      else params.onChange(null);
+                      if (value?._id === 'newEntity') delete value._id;
+                      setNewOwner({
+                        ...newOwner,
+                        campaignPriority: value.name,
+                      });
+                    }}
+                    options={get(priorityList, 'getESFilterList.hits', [])?.map(payor => ({
+                      _id: get(payor, `original.hits.hits.${0}._id`),
+                      name: payor.key,
+                    }))}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
               <h3>Lease Status</h3>
               <Controller
                 control={control}
@@ -1218,7 +1291,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 render={params => (
                   <AutoCompleteWithAddNew
                     {...params}
-                    value={get(params, 'value', '')}
+                    value={newOwner?.leaseStatus}
                     setValue={value => {
                       if (value?._id) params.onChange({ _id: value._id, name: value.name });
                       else params.onChange(null);

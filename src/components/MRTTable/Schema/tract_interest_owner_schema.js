@@ -154,16 +154,6 @@ const TractPerUnitMeta = {
 			accessorKey: 'nonExecRightsOnly',
 			header: 'Non-Exec Rights Only',
 			id: "nonExecRightsOnly",
-			Cell: ({ row }) => {
-				const isNonExecRightsOnly = [true, 'true', 'True'].includes(row.getValue('nonExecRightsOnly'));
-				const isNotNonExecRightsOnly = [false, 'false', 'False'].includes(row.getValue('nonExecRightsOnly'));
-				return (
-					<>
-						{isNonExecRightsOnly && <p>Yes</p>}
-						{isNotNonExecRightsOnly && <p>No</p>}
-					</>
-				);
-			}
 		},
 
 		{
@@ -358,7 +348,7 @@ const TractPerUnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'leaseStatus.keyword',
 			accessorKey: 'leaseStatus',
-			header: 'lease Status',
+			header: 'Lease Status',
 		},
 
 		{
