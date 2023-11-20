@@ -9,6 +9,7 @@ import { isEmpty, isEqual } from 'lodash';
 import { globalStateController } from './globalStateController';
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController'
+import { formatGridViewToMRT } from "components/MRTTable/utils/helper"
 
 const initialState = {
 	defaultFilters: [],
@@ -29,6 +30,7 @@ const initialState = {
 export const tableESState = {};
 export const tableGlobalState = hookstate({
 	refetch: false,
+	reInitialized: false,
 });
 
 const handleVisiblityMenu = () => {
@@ -280,25 +282,32 @@ const tableESStateControllerHandler = state => ({
 		});
 
 		const defaultDisplay = allGridViews.find(obj => obj.isDefaultDisplay === true);
+		const formatGridView = formatGridViewToMRT(defaultDisplay)
+		const gridView = {
+			selectedGridView: !!defaultDisplay ? defaultDisplay : gridViewSettings.defaultView,
+			showViewModal: false,
+			showSaveAsNew: false,
+		}
 
 		state.merge({
 			...rest,
-			initialized: !!(defaultDisplay) ? false : true,
+			initialized: true,
 			tableKey,
 			esIndex,
 			gridViewSettings,
+			gridView,
 			pageSize,
 			isSelectAllAllowed,
 			isAllRowsSelected: false,
-			showColumnFilters: false,
+			showColumnFilters: formatGridView?.filters ? true : false,
 			data: { rows: [], total: 0 },
 			isLoading: false,
 			isFetching: false,
 			isError: false,
 			defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }),
 			customProps: isEmpty(state?.customProps?.get({ noproxy: true })) ? customProps : state?.customProps?.get({ noproxy: true }),
-			filters: [],
-			sorting: [],
+			filters: formatGridView?.filters ? formatGridView.filters : [],
+			sorting: formatGridView?.sorting ? formatGridView.sorting : [],
 			rowSelection: {},
 			searchFields,
 			isInFiniteScroll,
@@ -309,11 +318,11 @@ const tableESStateControllerHandler = state => ({
 			grouping: groupedField ? [groupedField] : [],
 			footerProps: [],
 			ExternalFilter,
-			columnVisibility,
+			columnVisibility: formatGridView?.columnVisibility ? formatGridView.columnVisibility : columnVisibility,
 			defaultSort,
 			filterModes,
-			columnOrdering: ['mrt-row-select', 'mrt-row-numbers', ...columnOrder],
-			columnPinning: {
+			columnOrdering: formatGridView?.columnOrdering ? formatGridView.columnOrdering : ['mrt-row-select', 'mrt-row-numbers', ...columnOrder],
+			columnPinning: formatGridView?.columnPinning ? formatGridView.columnPinning : {
 				left: [
 					...(pinnedFields.length > 0
 						? ['mrt-row-select', 'mrt-row-numbers', ...pinnedFields]
@@ -321,11 +330,6 @@ const tableESStateControllerHandler = state => ({
 				],
 			},
 		});
-
-		if (!!defaultDisplay) {
-			gridViewStateController(tableKey).gridViewApply(defaultDisplay)
-			state.merge({ initialized: true })
-		}
 	},
 
 	setFilterMode: (column, mode) => {
@@ -437,6 +441,10 @@ const tableESStateControllerHandler = state => ({
 		state.filters?.set([...filtersState.filter(({ field }) => field !== filter.field), filter]);
 	},
 
+	setFilters: filters => {
+		state.filters?.set(filters);
+	},
+
 	getExternalFilter: () => {
 		const filtersState = state.filters?.get({ noproxy: true });
 		const requiredFields = state.ExternalFilter?.get({ noproxy: true });
@@ -508,6 +516,9 @@ export const tableController = TableKey => {
 const tableGlobalControllerHandler = state => ({
 	refetch: () => {
 		state.refetch.set(!state.refetch.get({ noproxy: true }));
+	},
+	reInitialized: () => {
+		state.reInitialized.set(!state.reInitialized.get({ noproxy: true }));
 	},
 });
 

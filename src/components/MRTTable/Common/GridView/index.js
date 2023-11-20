@@ -20,18 +20,6 @@ function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, modul
 	const gridViewStateValues = gridViewState.stateValues;
 
 	useEffect(() => {
-		const defaultDisplay = gridViewStateValues.allGridViews.find(obj => obj.isDefaultDisplay === true);
-		if (!(!!defaultDisplay)) {
-			Controller.updateState({
-				gridView: {
-					selectedGridView: defaultView,
-					showViewModal: false,
-					showSaveAsNew: false,
-				},
-			});
-		}
-	}, [])
-	useEffect(() => {
 		const selectedGridView = tableStateValues?.gridView?.selectedGridView;
 		gridViewStateController(tableKey).gridViewApply(selectedGridView)
 	}, [tableState.stateValues?.gridView?.selectedGridView]);

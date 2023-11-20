@@ -22,7 +22,7 @@ import LeftDialog from 'components/Shared/LeftDialog';
 import { UPDATE_GRID_VIEW, UPDATE_FAVOURITE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
 
-import { tableController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { AppContext } from '../../../../AppContext';
 
 const useStyles = makeStyles(() => ({
@@ -335,7 +335,11 @@ function InputField({
 								},
 							},
 							refetchQueries: ['getGridViews'],
-						});
+						}).then(
+							res => {
+								tableGlobalController.reInitialized();
+							}
+						);
 					} else {
 						addGridView({
 							variables: {
@@ -356,7 +360,11 @@ function InputField({
 								},
 							},
 							refetchQueries: ['getGridViews'],
-						});
+						}).then(
+							res => {
+								tableGlobalController.reInitialized();
+							}
+						);;
 					}
 					Controller.updateState({
 						gridView: { ...tableStateValues.gridView, showSaveAsNew: false, showViewModal: false },
@@ -495,7 +503,11 @@ function View({
 								userId,
 							},
 							refetchQueries: ['getGridViews'],
-						});
+						}).then(
+							res => {
+								tableGlobalController.reInitialized();
+							}
+						);;
 						Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } });
 					}}
 				>
@@ -514,7 +526,11 @@ function View({
 									},
 								},
 								refetchQueries: ['getGridViews'],
-							});
+							}).then(
+								res => {
+									tableGlobalController.reInitialized();
+								}
+							);
 							if (view?._id === tableStateValues?.gridView?.selectedGridView?._id) {
 								Controller.updateState({
 									gridView: { ...tableStateValues.gridView, showViewModal: false, selectedGridView: defaultView },

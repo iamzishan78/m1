@@ -5,7 +5,6 @@ import AllDialogs from 'components/MRTTable/Common/Dialog';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { SCHEMA } from './Schema';
 import { useApolloClient } from '@apollo/client';
-import ToolbarActions from 'components/MRTTable/Common/ToolbarActions';
 
 function Table({ tableKey }) {
 	const { tableProps, tablePropsState, classes } = useTableESSimple(tableKey);
@@ -58,7 +57,6 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 					isLoading: true,
 					showProgressBars: true,
 				}}
-			// renderTopToolbarCustomActions={<ToolbarActions />}
 			/>
 		);
 
