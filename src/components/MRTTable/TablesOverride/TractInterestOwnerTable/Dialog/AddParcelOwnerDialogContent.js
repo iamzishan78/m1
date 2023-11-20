@@ -188,6 +188,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         leaseStatus,
         campaignPriority,
         campaignName,
+        seller_asking_price,
+        competitor_offer_price,
+        actual_offer_price
 
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
@@ -201,6 +204,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         mineral_interest: mineral_interest ? parseFloat(mineral_interest).toFixed(8) : null,
         royalty_interest: royalty_interest ? parseFloat(royalty_interest).toFixed(8) : null,
         orri: orri ? parseFloat(orri).toFixed(8) : null,
+        seller_asking_price: seller_asking_price || null,
+        competitor_offer_price: competitor_offer_price || null,
+        actual_offer_price: actual_offer_price || null,
         unknown_interest: unknown_interest || null,
         record_title: record_title || null,
         operating_rights: operating_rights || null,
@@ -1026,6 +1032,90 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   ),
                 }}
                 onWheel={e => e.target.blur()}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <h3>Seller Asking Price</h3>
+
+              <Controller
+                control={control}
+                name="seller_asking_price"
+                render={props => (
+                  <TextField
+                    size="small"
+                    value={newOwner.seller_asking_price}
+                    inputRef={props.ref}
+                    onWheel={e => e.target.blur()}
+                    onChange={e => {
+                      props.onChange(e.target.value);
+                      setNewOwner({
+                        ...newOwner,
+                        seller_asking_price: e.target.value || null,
+                      });
+                    }}
+                    InputProps={{
+                      inputComponent: CurrencyFormatCustom,
+                    }}
+                    fullWidth
+                    defaultValue=""
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <h3>Competitor Offer Price</h3>
+              <Controller
+                control={control}
+                name="competitor_offer_price"
+                render={props => (
+                  <TextField
+                    size="small"
+                    value={newOwner.competitor_offer_price}
+                    inputRef={props.ref}
+                    onWheel={e => e.target.blur()}
+                    onChange={e => {
+                      props.onChange(e.target.value);
+                      setNewOwner({
+                        ...newOwner,
+                        competitor_offer_price: e.target.value || null,
+                      });
+                    }}
+                    InputProps={{
+                      inputComponent: CurrencyFormatCustom,
+                    }}
+                    fullWidth
+                    defaultValue=""
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <h3>Actual Offer Price</h3>
+              <Controller
+                control={control}
+                name="actual_offer_price"
+                render={props => (
+                  <TextField
+                    size="small"
+                    value={newOwner.actual_offer_price}
+                    inputRef={props.ref}
+                    onWheel={e => e.target.blur()}
+                    onChange={e => {
+                      props.onChange(e.target.value);
+                      setNewOwner({
+                        ...newOwner,
+                        actual_offer_price: e.target.value || null,
+                      });
+                    }}
+                    InputProps={{
+                      inputComponent: CurrencyFormatCustom,
+                    }}
+                    fullWidth
+                    defaultValue=""
+                  />
+                )}
               />
             </Grid>
             <Grid item xs={12}>

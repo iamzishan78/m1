@@ -10,6 +10,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TractIcon from 'components/Shared/svgIcons/tract';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
 const esIndex = 'shapeowners_flat';
 
@@ -293,7 +294,37 @@ const TractPerUnitMeta = {
 			},
 		},
 
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'seller_asking_price',
+			accessorKey: 'seller_asking_price',
+			header: 'Seller Asking Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
+		},
 
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'competitor_offer_price',
+			accessorKey: 'competitor_offer_price',
+			header: 'Competitor Offer Price',
+			isSearchField: false,
+			type: 'number',
+			size: 300,
+			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
+		},
+
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'actual_offer_price',
+			accessorKey: 'actual_offer_price',
+			header: 'Actual Offer Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
+		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
