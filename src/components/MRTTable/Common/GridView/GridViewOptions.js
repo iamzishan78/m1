@@ -90,10 +90,6 @@ const viewOptions = [
 		label: 'Favorites',
 		value: 'favorites',
 	},
-	{
-		label: 'System',
-		value: 'system',
-	},
 ];
 
 function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, defaultView }) {
@@ -132,19 +128,6 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 			setFilterGridView([]);
 		}
 	}, [selectedTab]);
-
-	// useEffect(() => {
-	//   if (newGridView?.addGridView?.success) {
-	//     Controller.updateState({ gridView: { ...tableStateValues.gridView, showSaveAsNew: false } });
-	//   }
-	// }, [newGridView]);
-
-	// useEffect(() => {
-	//   if (updatedGridView?.updateGridView?.success) {
-	//     Controller.updateState({ gridView: { ...tableStateValues.gridView, showSaveAsNew: true } });
-	//     setEditGridView(null);
-	//   }
-	// }, [updatedGridView]);
 
 	useEffect(() => {
 		setTimeout(() => {
@@ -223,7 +206,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 							id="panel1a-header"
 							className={classes.summary}
 						>
-							Default
+							Standard
 						</AccordionSummary>
 						<AccordionDetails className={classes.details}>
 							{filterGridView.map(
@@ -413,7 +396,7 @@ function View({
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [showActions, setShowActions] = useState(false);
 	const Controller = tableController(tableKey);
-	const tableState = Controller.useState(['gridView']);
+	const tableState = Controller.useState(['gridView', 'gridViewSettings']);
 	const tableStateValues = tableState.stateValues;
 
 	const handleClick = event => {
@@ -479,6 +462,29 @@ function View({
 						Rename view
 					</MenuItem>
 				)}
+
+				{view.type !== 'Default' && (
+					<MenuItem
+						style={{ width: '250px' }}
+						onClick={() => {
+							handleClose();
+							updateGridView({
+								variables: {
+									gridView: {
+										_id: view._id,
+										module: tableStateValues.gridViewSettings.module,
+										isDefaultDisplay: true,
+									},
+								},
+								refetchQueries: ['getGridViews'],
+							});
+							Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } });
+						}}
+					>
+						Set as Default View
+					</MenuItem>
+				)}
+
 				<MenuItem
 					style={{ width: '250px' }}
 					onClick={() => {
@@ -495,26 +501,6 @@ function View({
 				>
 					{view.favouriteBy?.includes(userId) ? 'Remove as favorite' : 'Set as favorite'}
 				</MenuItem>
-				{view.type !== 'Default' && (
-					<MenuItem
-						style={{ width: '250px' }}
-						onClick={() => {
-							handleClose();
-							updateGridView({
-								variables: {
-									gridView: {
-										_id: view._id,
-										isPrivate: false,
-									},
-								},
-								refetchQueries: ['getGridViews'],
-							});
-							Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } });
-						}}
-					>
-						Share with others
-					</MenuItem>
-				)}
 				{view.type !== 'Default' && (
 					<MenuItem
 						style={{ width: '250px' }}
