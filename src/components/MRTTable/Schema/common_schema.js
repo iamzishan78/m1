@@ -16,6 +16,7 @@ export const CommonSchema = {
 		enableColumnFilter: false,
 		enableColumnOrdering: false,
 		enableResizing: false,
+		showInLast: true,
 	},
 	TAGS: {
 		name: 'tags.tag.keyword',
@@ -32,6 +33,7 @@ export const CommonSchema = {
 		enableColumnActions: false,
 		enableColumnOrdering: false,
 		enableResizing: false,
+		showInLast: true,
 	},
 	HIDDEN: {
 		header: ' ',
@@ -75,5 +77,6 @@ export const CommonSchema = {
 		enableColumnFilter: false,
 		enableColumnOrdering: false,
 		enableResizing: false,
+		showInLast: true,
 	},
 };

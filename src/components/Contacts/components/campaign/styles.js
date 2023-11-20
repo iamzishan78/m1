@@ -140,7 +140,7 @@ export const useStyles = makeStyles(() => ({
   },
 }));
 
-export const headerStyles = makeStyles(() => ({
+export const headerStyles = makeStyles((theme) => ({
   dateRoot: {
     border: "1px solid #EBEBEB",
     backgroundColor: "#fff",
@@ -187,6 +187,15 @@ export const headerStyles = makeStyles(() => ({
     "& .MuiTypography-root": {
       color: "#19a9dd",
       fontSize: "1.50rem",
+    },
+  },
+  addDataButton: {
+    backgroundColor: "white",
+    color: "black",
+    textTransform: "capitalize",
+    "&:hover": {
+      backgroundColor: theme.palette.common.white,
+      opacity: 0.15,
     },
   },
 }));

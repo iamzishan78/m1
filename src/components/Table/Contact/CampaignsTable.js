@@ -73,6 +73,7 @@ function CampaignsTable(props) {
   useEffect(() => {
     props.setTableMeta({
       filters: getFilters(appliedFilters),
+      typeKeyword: { metaModule: "Campaign Name" },
       extendSearchQuery: contactSearchQuery ? contactSearchQuery : null,
       searchFields,
       TableHeader: CampaignsHeader,

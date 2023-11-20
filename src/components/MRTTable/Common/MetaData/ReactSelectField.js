@@ -1,17 +1,18 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { colorPallete } from "components/Table/helpers";
 import CloseIcon from "@material-ui/icons/Close";
 import ArrowDropDownIcon from "@material-ui/lab/es/internal/svg-icons/ArrowDropDown";
-import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import { makeStyles } from "@material-ui/core/styles";
 import { copy } from "components/Shared/functions";
 import { Tooltip, Typography } from "@material-ui/core";
-import SelectField from "./SelectField";
+import SelectField from "components/MRTTable/Common/MetaData/SelectField";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     "&:hover": {
-      borderBottom: ({ showUnderline }) => showUnderline ? '2px solid rgba(0, 0, 0, 0.87) !important' : 'inherit'
+      borderBottom: ({ showUnderline }) =>
+        showUnderline ? "2px solid rgba(0, 0, 0, 0.87) !important" : "inherit",
     },
   },
   noBorder: {
@@ -47,8 +48,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   reactSelect: {
-    '& .react-select__option': { backgroundColor: 'red' }
-  }
+    "& .react-select__option": { backgroundColor: "red" },
+  },
 }));
 
 const ReactSelectField = ({
@@ -56,18 +57,18 @@ const ReactSelectField = ({
   isSingleSelect,
   onCustomKeyChange,
   dropdownOptions,
-  column,
   value,
   fullWidth,
   showUnderline,
   showChevron,
   variant,
   tooltipView,
-  minHeight = "50px",
+  tableKey,
+  column,
   ...rest
 }) => {
   if (!isSingleSelect && !Array.isArray(value) && value) {
-    value = [value]
+    value = [value];
   }
   const classes = useStyles({ showUnderline, showChevron });
   const [isOpen, setIsOpen] = useState(false);
@@ -77,7 +78,7 @@ const ReactSelectField = ({
   useEffect(() => {
     function handleClickOutside(event) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        setIsOpen(false)
+        setIsOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -86,52 +87,56 @@ const ReactSelectField = ({
     };
   }, [wrapperRef]);
 
-  const Menu = props => {
-    const shadow = 'hsla(218, 50%, 10%, 0.1)';
+  const Menu = (props) => {
+    const shadow = "hsla(218, 50%, 10%, 0.1)";
     return (
       <div
         css={{
-          backgroundColor: 'white',
+          backgroundColor: "white",
           borderRadius: 4,
           boxShadow: `0 0 0 1px ${shadow}, 0 4px 11px ${shadow}`,
           marginTop: 8,
-          position: 'absolute',
+          position: "absolute",
           zIndex: 2,
         }}
         {...props}
       />
     );
   };
-  const Blanket = props => (
+  const Blanket = (props) => (
     <div
       css={{
         bottom: 0,
         left: 0,
         top: 0,
         right: 0,
-        position: 'fixed',
+        position: "fixed",
         zIndex: 1,
       }}
       {...props}
     />
   );
   const Dropdown = ({ children, isOpen, target, onClose }) => (
-    <div css={{ position: 'relative' }}>
+    <div css={{ position: "relative" }}>
       {target}
-      {isOpen ? <Menu >{children}</Menu> : null}
+      {isOpen ? <Menu>{children}</Menu> : null}
       {isOpen ? <Blanket onClick={onClose} /> : null}
     </div>
   );
 
   const toggleOpen = () => {
-
-    setIsOpen(!isOpen)
+    setIsOpen(!isOpen);
   };
 
   const selectStyles = {
-    control: provided => ({ ...provided, minWidth: 240, margin: 8 }),
-    menu: () => ({ boxShadow: 'inset 0 1px 0 rgba(0, 0, 0, 0.1)' }),
-    menuPortal: base => ({ ...base, zIndex: 9999, backgroundColor: "white", position: "fixed" })
+    control: (provided) => ({ ...provided, minWidth: 240, margin: 8 }),
+    menu: () => ({ boxShadow: "inset 0 1px 0 rgba(0, 0, 0, 0.1)" }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 9999,
+      backgroundColor: "white",
+      position: "fixed",
+    }),
   };
 
   return (
@@ -142,21 +147,23 @@ const ReactSelectField = ({
         className={classes.root}
         style={{
           padding: "0px",
-          minHeight,
+          minHeight: "50px",
           width: "100%",
-          border: variant === 'outlined' ? "1px solid rgba(0, 0, 0, 0.42)" : "none",
+          border:
+            variant === "outlined" ? "1px solid rgba(0, 0, 0, 0.42)" : "none",
           borderBottom: fullWidth ? "1px solid rgba(0, 0, 0, 0.42)" : "none",
         }}
         onMouseLeave={(e) => {
           // setIsOpen(false);
-          setShowIcon(showChevron || false)
+          setShowIcon(showChevron || false);
         }}
-        onMouseEnter={(e) => { setShowIcon(true) }}
+        onMouseEnter={(e) => {
+          setShowIcon(true);
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         <Dropdown
           isOpen={isOpen}
-
           onClose={() => toggleOpen()}
           target={
             <div
@@ -179,17 +186,27 @@ const ReactSelectField = ({
                 />
               </span>
               <>
-                {
-                  showIcon && <>
-                    {
-                      isOpen ? (<ArrowDropUpIcon style={{ cursor: "pointer", color: 'rgba(0, 0, 0, 0.54)' }} />) : (<ArrowDropDownIcon style={{ cursor: "pointer", color: 'rgba(0, 0, 0, 0.54)' }} />)
-                    }
+                {showIcon && (
+                  <>
+                    {isOpen ? (
+                      <ArrowDropUpIcon
+                        style={{
+                          cursor: "pointer",
+                          color: "rgba(0, 0, 0, 0.54)",
+                        }}
+                      />
+                    ) : (
+                      <ArrowDropDownIcon
+                        style={{
+                          cursor: "pointer",
+                          color: "rgba(0, 0, 0, 0.54)",
+                        }}
+                      />
+                    )}
                   </>
-                }
+                )}
               </>
-
             </div>
-
           }
         >
           <SelectField
@@ -198,9 +215,8 @@ const ReactSelectField = ({
             isSingleSelect={isSingleSelect}
             onCustomKeyChange={onCustomKeyChange}
             column={column}
-            onClose={() => setIsOpen(false)}
+            tableKey={tableKey}
           />
-
         </Dropdown>
       </div>
     </>
@@ -209,7 +225,13 @@ const ReactSelectField = ({
 
 export default ReactSelectField;
 
-const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleSelect, tooltipView }) => {
+const MultSelectValues = ({
+  value,
+  dropdownOptions,
+  onCustomKeyChange,
+  isSingleSelect,
+  tooltipView,
+}) => {
   let tooltipValues = value?.slice(1) || [];
 
   const getCss = (value) => {
@@ -221,105 +243,101 @@ const MultSelectValues = ({ value, dropdownOptions, onCustomKeyChange, isSingleS
       // whiteSpace: 'nowrap',
       // overflow: 'hidden',
       // textOverflow: 'ellipsis',
-      maxWidth: '150px',
+      maxWidth: "150px",
       backgroundColor: pallete?.color,
       color: pallete?.textColor,
       display: "flex",
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      margin: '0px 2px',
-    }
-  }
+      justifyContent: "space-between",
+      alignItems: "center",
+      margin: "0px 2px",
+    };
+  };
 
-  const Badge = ({ badgeValue, index }) => <span
-    className="colorText"
-    style={getCss(badgeValue)}
-  >
-    <div
-      style={{
-        maxWidth: '100px',
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-      }}>
-      <span
-        id="badgeValue"
-      >{badgeValue}</span>
-    </div>
-
-    {isSingleSelect || (
-      <CloseIcon
-        style={{ fontSize: 13, marginLeft: 10, cursor: 'pointer' }}
-        onClick={(e) => {
-          e.stopPropagation();
-          const newValue = copy(value)
-          newValue.splice(index, 1);
-          onCustomKeyChange(newValue);
+  const Badge = ({ badgeValue, index }) => (
+    <span className="colorText" style={getCss(badgeValue)}>
+      <div
+        style={{
+          maxWidth: "100px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
         }}
-      />
-    )}
-  </span>
-
-  const ToolTipView = () => <>
-    <Badge badgeValue={value[0]} index={0} />
-    {
-      value?.slice(1).length > 0 && <Tooltip
-        title={
-          <React.Fragment>
-            {tooltipValues.map((v) => <Typography color="inherit">{v}</Typography>)}
-          </React.Fragment>
-        }
       >
-        <span
-          className="colorText"
-          style={{
-            borderRadius: '20px',
-            whiteSpace: "nowrap",
-            backgroundColor: '#c5c2c2',
-            color: 'black',
-            display: "flex",
-            padding: '5px 10px 5px 5px'
-          }}
-        >
-          +{tooltipValues.length}
-        </span>
-      </Tooltip>
-    }
-  </>
+        <span id="badgeValue">{badgeValue}</span>
+      </div>
 
-  const MultiSelectView = () => <>
-    {
-      value.map((v, index) => {
-        return (
-          <Badge badgeValue={v} index={index} />
-        );
-      })
-    }
-  </>
+      {isSingleSelect || (
+        <CloseIcon
+          style={{ fontSize: 13, marginLeft: 10, cursor: "pointer" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            const newValue = copy(value);
+            newValue.splice(index, 1);
+            onCustomKeyChange(newValue);
+          }}
+        />
+      )}
+    </span>
+  );
+
+  const ToolTipView = () => (
+    <>
+      <Badge badgeValue={value[0]} index={0} />
+      {value?.slice(1).length > 0 && (
+        <Tooltip
+          title={
+            <React.Fragment>
+              {tooltipValues.map((v) => (
+                <Typography color="inherit">{v}</Typography>
+              ))}
+            </React.Fragment>
+          }
+        >
+          <span
+            className="colorText"
+            style={{
+              borderRadius: "20px",
+              whiteSpace: "nowrap",
+              backgroundColor: "#c5c2c2",
+              color: "black",
+              display: "flex",
+              padding: "5px 10px 5px 5px",
+            }}
+          >
+            +{tooltipValues.length}
+          </span>
+        </Tooltip>
+      )}
+    </>
+  );
+
+  const MultiSelectView = () => (
+    <>
+      {value.map((v, index) => {
+        return <Badge badgeValue={v} index={index} />;
+      })}
+    </>
+  );
   return (
     <span
       style={{
         display: "flex",
         width: "max-content",
         flexWrap: "wrap",
-        maxWidth: "380px"
+        maxWidth: "380px",
       }}
     >
-
       {value && value.length > 0 && Array.isArray(value) ? (
-        <>
-          {tooltipView ? <ToolTipView /> : <MultiSelectView />}
-        </>
+        <>{tooltipView ? <ToolTipView /> : <MultiSelectView />}</>
       ) : (
         <>
-          {value && typeof value === 'string' ? (
-            <span
-              className="colorText"
-              style={getCss(value)}
-            >
+          {value && typeof value === "string" ? (
+            <span className="colorText" style={getCss(value)}>
               <span>{value}</span>
             </span>
-          ) : (<span className="colorText">--</span>)}
+          ) : (
+            <span className="colorText">--</span>
+          )}
         </>
       )}
     </span>
