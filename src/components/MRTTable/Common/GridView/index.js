@@ -20,57 +20,20 @@ function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, modul
 	const gridViewStateValues = gridViewState.stateValues;
 
 	useEffect(() => {
-		const selectedGridView = tableStateValues?.gridView?.selectedGridView;
-		if (!!(selectedGridView)) {
-			if (selectedGridView?.columns) {
-				const columnstoShow = selectedGridView?.columns.reduce((acc, obj) => {
-					acc[obj.name] = obj.display;
-					return acc;
-				}, {});
-
-				Controller.setColumnVisibility(columnstoShow);
-			} else {
-				const defaultVisibility = tableStateValues?.TableSchema?.reduce(
-					(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: !cur?.hidden }),
-					{}
-				);
-				Controller.setColumnVisibility(defaultVisibility);
-			}
-			if (selectedGridView?.filters?.length) {
-				Controller.setShowColumnFilters(true);
-				Controller.clearFilters();
-				selectedGridView?.filters.forEach(filter => {
-					Controller.setFilter(filter);
-				});
-			} else {
-				Controller.setShowColumnFilters(false);
-				Controller.clearFilters();
-			}
-			if (selectedGridView?.sorting) {
-				Controller.setSorting(selectedGridView?.sorting);
-			} else {
-				Controller.setSorting([]);
-			}
-			if (selectedGridView?.columnPinning) {
-				Controller.setColumnPinning(
-					selectedGridView?.columnPinning,
-					tableStateValues?.columnPinning,
-					tableStateValues.TableSchema
-				);
-			} else {
-				const pinnedColumns = tableStateValues?.TableSchema?.filter(column => column.isPinned);
-				const pinnedFields = pinnedColumns?.map(column => column.id || column.accessorKey);
-				Controller.setColumnPinning(tableStateValues?.columnPinning, pinnedFields, tableStateValues.TableSchema);
-			}
-			if (selectedGridView?.columnOrdering) {
-				Controller.setColumnOrdering(selectedGridView?.columnOrdering);
-			} else {
-				const columnOrder = tableStateValues?.TableSchema.map(column => column.accessorKey || column.id);
-				const defaultColumnOrder = ['mrt-row-select', 'mrt-row-numbers', ...columnOrder]
-				Controller.setColumnOrdering(defaultColumnOrder);
-			}
+		const defaultDisplay = gridViewStateValues.allGridViews.find(obj => obj.isDefaultDisplay === true);
+		if (!(!!defaultDisplay)) {
+			Controller.updateState({
+				gridView: {
+					selectedGridView: defaultView,
+					showViewModal: false,
+					showSaveAsNew: false,
+				},
+			});
 		}
-		// for groupedField applying functionality will be done here
+	}, [])
+	useEffect(() => {
+		const selectedGridView = tableStateValues?.gridView?.selectedGridView;
+		gridViewStateController(tableKey).gridViewApply(selectedGridView)
 	}, [tableState.stateValues?.gridView?.selectedGridView]);
 
 	return (
