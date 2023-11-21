@@ -478,7 +478,11 @@ function View({
 									},
 								},
 								refetchQueries: ['getGridViews'],
-							});
+							}).then(
+								res => {
+									tableGlobalController.reInitialized();
+								}
+							);
 							Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } });
 						}}
 					>
