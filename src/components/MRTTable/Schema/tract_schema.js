@@ -2,6 +2,7 @@ import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 
 const esIndex = 'shapes_flat';
 
@@ -92,6 +93,16 @@ const TractMeta = {
 			accessorFn: row => row?.shapeJson?.properties?.originalProperties?.abstractNameShortName,
 			id: 'shapeJson.properties.originalProperties.abstractNameShortName',
 			header: 'Abstract/ Section',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.campaignName.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.campaignName,
+			id: 'shapeJson.properties.campaignName',
+			header: 'Campaign Name',
+			size: 270,
+			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
 		},
 
 		{

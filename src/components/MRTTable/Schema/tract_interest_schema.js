@@ -2,6 +2,7 @@ import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 
 const esIndex = 'shapeowners_flat';
 
@@ -13,7 +14,11 @@ const TractInterestsMeta = {
     pageSize: 50,
   },
   defaultSort: { field: '_ts', order: 'desc' },
-  defaultFilters: [{ field: 'shape.layer.keyword', value: 'parcel' }],
+  defaultFilters: [
+    { field: 'shape.layer.keyword', value: 'parcel' },
+    { field: 'contact.IsDeleted', value: 'false' },
+    { field: 'shape.IsDeleted', value: 'false' },
+  ],
   maxTableHeight: 'calc(100vh - 550px)',
   isInFiniteScroll: true,
   columnVirtualization: true,
@@ -49,6 +54,21 @@ const TractInterestsMeta = {
           <ColumnWithLink value={renderedCellValue} link={`/map/parcels/${row.getValue('shape._id')}`} />
         </div>
       ),
+    },
+
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'layer.keyword',
+      accessorFn: row => row?.layer,
+      id: 'layer',
+      header: 'Layer',
+    },
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'shape.layer.keyword',
+      accessorFn: row => row?.shape?.layer,
+      id: 'shape.layer',
+      header: 'Layer2',
     },
 
     {
@@ -97,6 +117,14 @@ const TractInterestsMeta = {
       accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.abstractNameShortName,
       id: 'shape.shapeJson.properties.originalProperties.abstractNameShortName',
       header: 'Abstract/ Section',
+    },
+
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'campaignName.keyword',
+      accessorKey: 'campaignName',
+      header: 'Campaign Name',
+      Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
     },
 
     {
