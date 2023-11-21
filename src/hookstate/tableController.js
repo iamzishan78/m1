@@ -590,6 +590,10 @@ const tableESStateControllerHandler = state => ({
 
 	setColumnOrdering: columnOrdering => {
 		state.columnOrdering?.set(columnOrdering);
+	},
+
+	setFilters: filters => {
+		state.filters.set(filters)
 	}
 
 });

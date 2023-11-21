@@ -17,6 +17,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import LockIcon from '@material-ui/icons/Lock';
 import StarIcon from '@material-ui/icons/Star';
+import BookmarkIcon from '@material-ui/icons/Bookmark';
 
 import LeftDialog from 'components/Shared/LeftDialog';
 import { UPDATE_GRID_VIEW, UPDATE_FAVOURITE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
@@ -427,18 +428,10 @@ function View({
 					{view.name}
 				</div>
 				{view.favouriteBy?.includes(userId) && (
-					<StarIcon
-						onClick={() => {
-							updateFavouriteGridView({
-								variables: {
-									id: view._id,
-									userId,
-								},
-								refetchQueries: ['getGridViews'],
-							});
-						}}
-						style={{ marginTop: '5px' }}
-					/>
+					<StarIcon style={{ marginTop: '5px' }} />
+				)}
+				{!!(view?.isDefaultDisplay) && (
+					<BookmarkIcon style={{ marginTop: '5px' }} />
 				)}
 			</span>
 			{showActions && (
@@ -481,7 +474,7 @@ function View({
 									gridView: {
 										_id: view._id,
 										module: tableStateValues.gridViewSettings.module,
-										isDefaultDisplay: true,
+										isDefaultDisplay: !(!!view?.isDefaultDisplay),
 									},
 								},
 								refetchQueries: ['getGridViews'],
@@ -489,7 +482,7 @@ function View({
 							Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } });
 						}}
 					>
-						Set as Default View
+						{view?.isDefaultDisplay ? 'Remove as Default View' : 'Set as Default View'}
 					</MenuItem>
 				)}
 
@@ -507,7 +500,7 @@ function View({
 							res => {
 								tableGlobalController.reInitialized();
 							}
-						);;
+						);
 						Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } });
 					}}
 				>
