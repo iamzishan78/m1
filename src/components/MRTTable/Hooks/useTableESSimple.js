@@ -28,7 +28,7 @@ const useTableESSimple = tableKey => {
 	const localizationOptions = {
 		filterCustomFilterFn: 'AutoComplete',
 	};
-
+	if(tableStateValues.rowSelection)
 	localizationOptions.selectedCountOfRowCountRowsSelected = `${Object.keys(tableStateValues?.rowSelection)?.length} of ${tableStateValues?.data.total} row(s) selected`;
 
 	const { CustomToolBar } = tableStateValues;
@@ -236,7 +236,7 @@ const useTableESSimple = tableKey => {
 			memoMode: 'cells',
 			columns: tableStateValues?.TableSchema,
 			data: tableStateValues?.data?.rows || [],
-			rowCount: tableStateValues?.data.total,
+			rowCount: tableStateValues?.data?.total,
 			enableRowNumbers: true,
 			muiToolbarAlertBannerProps: tableStateValues?.isError
 				? {

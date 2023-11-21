@@ -203,7 +203,7 @@ const CampaignDetail = ({ viewDoc }) => {
     handleEndScroll();
   };
 
-  if (loading)
+  if (!campaignData && loading)
     return (
       <div
         style={{
