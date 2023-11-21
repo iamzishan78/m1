@@ -11,6 +11,7 @@ import { navController } from 'hookstate/navStateController';
 import TractInterestTableDialogs from 'components/MRTTable/TablesOverride/TractInterestOwnerTable/RightDialogs';
 import { popupController } from 'hookstate/popupStateController';
 import { BulkUpdate, ViewContactData, openSideDialog, ExportData } from 'components/MRTTable/Common/CommonToolBarActions';
+import { NavigationContext } from 'components/Navigation/NavigationContext';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {
@@ -37,6 +38,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 	const history = useHistory();
 	const classes = useStyles();
 	const client = useApolloClient();
+	const [, setStateNav] = React.useContext(NavigationContext);
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useState([
 		'esIndex',
@@ -81,6 +83,12 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 					bulkUploadFromMap: true,
 					bulkUploadParcel: popupController.getValue('selectedParcel'),
 				});
+				
+				setStateNav((state)=> ({
+					...state,
+					bulkUploadFromMap: true,
+					bulkUploadParcel: popupController.getValue('selectedParcel'),
+				}));
 				history.push('/bulkupload');
 			},
 		},

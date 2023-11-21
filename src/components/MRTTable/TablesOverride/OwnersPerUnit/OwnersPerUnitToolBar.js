@@ -9,6 +9,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import { navController } from 'hookstate/navStateController';
 import OwnerPerUnitTableDialogs from 'components/MRTTable/TablesOverride/OwnersPerUnit/RightDialogs';
 import { BulkUpdate, ExportData, ViewContactData, openSideDialog } from 'components/MRTTable/Common/CommonToolBarActions';
+import { NavigationContext } from 'components/Navigation/NavigationContext';
 
 const useStyles = makeStyles(() => ({
 	disabledTopBarButtons: {
@@ -48,6 +49,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 	const history = useHistory();
 	const client = useApolloClient();
 	const Controller = tableController(tableKey);
+	const [, setStateNav] = React.useContext(NavigationContext);
 	const tableState = Controller.useState([
 		'esIndex',
 		'globalFilter',
@@ -101,6 +103,17 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 						shapeType: 'Unit',
 					},
 				});
+
+				setStateNav((state)=> ({
+					...state,
+					bulkUploadFromMap: true,
+					bulkUploadShape: {
+						id: customLayer?._id,
+						shapeLabel: customLayer?.name,
+						shapeType: 'Unit',
+					},
+				}));
+
 				history.push('/bulkupload');
 			},
 		},
