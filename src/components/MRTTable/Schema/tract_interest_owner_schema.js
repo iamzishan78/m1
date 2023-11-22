@@ -47,7 +47,7 @@ const TractPerUnitMeta = {
 			return view;
 		},
 		cssOverride: {
-			top: '331px',
+			top: '300px',
 			left: '300px',
 		},
 	},
