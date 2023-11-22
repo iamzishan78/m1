@@ -51,6 +51,7 @@ import { TRACKBYOBJECTID } from "../../graphQL/useQueryTrackByObjectId";
 import { AppContext } from "../../AppContext";
 import { ExpandableCardContext } from "./ExpandableCardContext";
 import { showInfoMessage } from "actions";
+import { copy } from "utils/helper";
 
 function ExpandableCard(props) {
   // initials
@@ -535,20 +536,33 @@ function ExpandableCard(props) {
   };
 
   const handleEditParcelAndShape = () => {
-    setStateApp((state) => ({
-      ...state,
-      popupOpen: false,
-      expandedCard: false,
-      showDrawShapesPopup: true,
-      selectedUserDefinedLayer: state.selectedParcel?.feature || state.selectedShape?.feature,
-      currentFeature: state.selectedParcel?.feature || state.selectedShape?.feature,
-      featureToEdit: state.selectedParcel?.feature || state.selectedShape?.feature,
-      shapeToExtend: state.selectedParcel?.feature || state.selectedShape?.feature,
-      openDrawShapesControl: true,
-      editParcelAndShape: true,
-      editDraw: true,
-      shapeEditMode: "fullEdit",
-    }));
+    setStateApp(state => {
+      const selectedFeature = state.selectedParcel?.feature || state.selectedShape?.feature;
+
+      let updatedFeature =
+        state.customLayers?.find?.(layer => layer?._id === selectedFeature?.id)
+          ?.shapeJson || selectedFeature;
+
+      if (updatedFeature) {
+        updatedFeature = copy(updatedFeature);
+        updatedFeature.id = selectedFeature.id;
+      }
+
+      return {
+        ...state,
+        popupOpen: false,
+        expandedCard: false,
+        showDrawShapesPopup: true,
+        selectedUserDefinedLayer: updatedFeature,
+        currentFeature: updatedFeature,
+        featureToEdit: updatedFeature,
+        shapeToExtend: updatedFeature,
+        openDrawShapesControl: true,
+        editParcelAndShape: true,
+        editDraw: true,
+        shapeEditMode: 'fullEdit',
+      };
+    });
     handleClose();
   };
 
