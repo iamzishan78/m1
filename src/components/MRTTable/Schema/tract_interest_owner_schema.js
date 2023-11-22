@@ -152,29 +152,30 @@ const TractPerUnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'royalty_interest',
 			accessorKey: 'royalty_interest',
-			header: 'Royalty Interest',
+			header: 'Royalty Interest (Lease)',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumRoyaltyInterest: {
-					sum: { field: 'royalty_interest' },
-				},
-			},
-			Cell: ({ row }) => {
-				const royaltyInterest = row.getValue('royalty_interest');
-				if (royaltyInterest) {
-					return <>{addTrailingZeros(parseFloat(royaltyInterest).toFixed(8))}</>;
-				}
-			},
-			Footer: () => {
-				const Controller = tableController('TractPerUnitTable');
-				const { sumRoyaltyInterest } = Controller.getValue('footerProps') || {};
-				return (
-					<div>
-						{sumRoyaltyInterest?.value ? addTrailingZeros(parseFloat(sumRoyaltyInterest?.value).toFixed(8)) : 0}
-					</div>
-				);
-			},
+			size: 275,
+			// Aggregation: {
+			// 	sumRoyaltyInterest: {
+			// 		sum: { field: 'royalty_interest' },
+			// 	},
+			// },
+			// Cell: ({ row }) => {
+			// 	const royaltyInterest = row.getValue('royalty_interest');
+			// 	if (royaltyInterest) {
+			// 		return <>{addTrailingZeros(parseFloat(royaltyInterest).toFixed(8))}</>;
+			// 	}
+			// },
+			// Footer: () => {
+			// 	const Controller = tableController('TractPerUnitTable');
+			// 	const { sumRoyaltyInterest } = Controller.getValue('footerProps') || {};
+			// 	return (
+			// 		<div>
+			// 			{sumRoyaltyInterest?.value ? addTrailingZeros(parseFloat(sumRoyaltyInterest?.value).toFixed(8)) : 0}
+			// 		</div>
+			// 	);
+			// },
 		},
 
 		{
@@ -318,6 +319,22 @@ const TractPerUnitMeta = {
 			header: 'Co Net Acres',
 			isSearchField: false,
 			type: 'number',
+			Aggregation: {
+				sumCoNetAcres: {
+					sum: { field: 'company_net_acres' },
+				},
+			},
+			Cell: ({ row }) => {
+				const company_net_acres = row.getValue('company_net_acres');
+				if (company_net_acres) {
+					return <>{addTrailingZeros(parseFloat(company_net_acres).toFixed(8))}</>;
+				}
+			},
+			Footer: () => {
+				const Controller = tableController('TractPerUnitTable');
+				const { sumCoNetAcres } = Controller.getValue('footerProps') || {};
+				return <div>{sumCoNetAcres?.value ? addTrailingZeros(parseFloat(sumCoNetAcres?.value).toFixed(8)) : 0}</div>;
+			},
 		},
 
 		{
