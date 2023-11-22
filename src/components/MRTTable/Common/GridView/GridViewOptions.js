@@ -429,7 +429,21 @@ function View({
 					{view.name}
 				</div>
 				{view.favouriteBy?.includes(userId) && (
-					<StarIcon style={{ marginTop: '5px' }} />
+					<StarIcon style={{ marginTop: '5px' }}
+						onClick={() => {
+							updateFavouriteGridView({
+								variables: {
+									id: view._id,
+									userId,
+								},
+								refetchQueries: ['getGridViews'],
+							}).then(
+								res => {
+									tableGlobalController.reInitialized();
+								}
+							);
+						}}
+					/>
 				)}
 				{!!(view?.isDefaultDisplay) && (
 					<BookmarkIcon style={{ marginTop: '5px' }} />
