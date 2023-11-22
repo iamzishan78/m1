@@ -212,6 +212,23 @@ const OwnersPerUnitMeta = {
 			name: 'net_acres',
 			accessorKey: 'net_acres',
 			header: 'Net Acres',
+			isSearchField: false,
+			type: 'number',
+			Aggregation: {
+				sumNetAcres: {
+					sum: { field: 'net_acres' },
+				},
+			},
+			Cell: ({ row }) => {
+				if (row?.original?.net_acres) {
+					return <>{addTrailingZeros(parseFloat(row?.original?.net_acres).toFixed(8))}</>;
+				}
+			},
+			Footer: () => {
+				const Controller = tableController('OwnersPerUnitTable');
+				const { sumNetAcres } = Controller.getValue('footerProps') || {};
+				return <div>{sumNetAcres?.value ? addTrailingZeros(parseFloat(sumNetAcres?.value).toFixed(8)) : 0}</div>;
+			},
 		},
 
 
@@ -251,6 +268,23 @@ const OwnersPerUnitMeta = {
 			name: 'tractAcres',
 			accessorKey: 'tractAcres',
 			header: 'Unit Tract Acres',
+			isSearchField: false,
+			type: 'number',
+			Aggregation: {
+				sumUnitTractAcres: {
+					sum: { field: 'tractAcres' },
+				},
+			},
+			Cell: ({ row }) => {
+				if (row?.original?.tractAcres) {
+					return <>{addTrailingZeros(parseFloat(row?.original?.tractAcres).toFixed(8))}</>;
+				}
+			},
+			Footer: () => {
+				const Controller = tableController('OwnersPerUnitTable');
+				const { sumUnitTractAcres } = Controller.getValue('footerProps') || {};
+				return <div>{sumUnitTractAcres?.value ? addTrailingZeros(parseFloat(sumUnitTractAcres?.value).toFixed(8)) : 0}</div>;
+			},
 		},
 
 		{
