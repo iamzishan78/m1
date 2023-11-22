@@ -101,7 +101,9 @@ const toNumber = value => (value ? parseInt(value.replace(/\$/g, '').replace(/\,
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
   const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
-
+  const calculateOfferPrice = (nra, offer) => {
+    return parseFloat((parseFloat(nra || 0) * parseFloat(offer || 0)).toFixed(2));
+  };
   const tenantName = window.sessionStorage.getItem('tenantName');
   const [stateApp, setStateApp] = useContext(AppContext);
   const { control } = useForm();
@@ -180,6 +182,10 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         qtr,
         deals,
         grossAcres,
+        max_offer_price,
+        offer_price,
+        offer_price_nma,
+        max_offer_price_nma
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
 
@@ -204,6 +210,10 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         qtr: qtr || [null, null, null, null],
         customLayer,
         deals,
+        max_offer_price,
+        offer_price,
+        offer_price_nma,
+        max_offer_price_nma
       });
 
       const calculatedNRA = calculateStandardNraForTract(
@@ -892,6 +902,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     nra: !isNraOverridden
                       ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
                       : newOwner.nra,
+                    offer_price_nma: calculateOfferPrice(value, props?.customLayer?.shapeJson?.properties?.uUnitPricingNMA),
+                    max_offer_price_nma: calculateOfferPrice(value, props?.customLayer?.shapeJson?.properties?.uMaxUnitPricingNMA),
                   }));
                 }}
                 InputProps={{
@@ -923,6 +935,63 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             </Grid>
 
             <Grid item xs={12}>
+              <h3>Target Offer Price (per NMA)</h3>
+
+              <Controller
+                control={control}
+                name="offer_price_nma"
+                render={props => (
+                  <TextField
+                    size="small"
+                    value={newOwner?.offer_price_nma}
+                    inputRef={props.ref}
+                    onWheel={e => e.target.blur()}
+                    onChange={e => {
+                      const value = parseFloat(e.target.value).toFixed(2);
+                      props.onChange(value);
+                      setNewOwner(newOwner => ({
+                        ...newOwner,
+                        offer_price_nma: value,
+                      }));
+                    }}
+                    fullWidth
+                    defaultValue=""
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <h3>Max Offer Price (per NMA)</h3>
+
+              <Controller
+                control={control}
+                name="max_offer_price_nma"
+                render={props => (
+                  <TextField
+                    size="small"
+                    value={newOwner?.max_offer_price_nma}
+                    inputRef={props.ref}
+                    onWheel={e => e.target.blur()}
+                    onChange={e => {
+                      const value = parseFloat(e.target.value).toFixed(2);
+                      props.onChange(value);
+                      setNewOwner(newOwner => ({
+                        ...newOwner,
+                        max_offer_price_nma: value,
+                      }));
+                    }}
+                    InputProps={{
+                      inputComponent: CurrencyFormatCustom,
+                    }}
+                    fullWidth
+                    defaultValue=""
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
               <h3>Net Royalty Acres (NRA)</h3>
               <TextField
                 id="standard-number"
@@ -937,6 +1006,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   setNewOwner({
                     ...newOwner,
                     nra: value || null,
+                    offer_price: calculateOfferPrice(value, props?.customLayer?.shapeJson?.properties?.uUnitPricing),
+                    max_offer_price: calculateOfferPrice(value, props?.customLayer?.shapeJson?.properties?.uMaxUnitPricing)
                   });
                 }}
                 InputProps={{
@@ -960,6 +1031,64 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 onWheel={e => e.target.blur()}
               />
             </Grid>
+
+            <Grid item xs={12}>
+              <h3>Target Offer Price (per NRA)</h3>
+
+              <Controller
+                control={control}
+                name="offer_price"
+                render={props => (
+                  <TextField
+                    size="small"
+                    value={newOwner?.offer_price}
+                    inputRef={props.ref}
+                    onWheel={e => e.target.blur()}
+                    onChange={e => {
+                      const value = parseFloat(e.target.value).toFixed(2);
+                      props.onChange(value);
+                      setNewOwner(newOwner => ({
+                        ...newOwner,
+                        offer_price: value,
+                      }));
+                    }}
+                    fullWidth
+                    defaultValue=""
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <h3>Max Offer Price (per NRA)</h3>
+
+              <Controller
+                control={control}
+                name="max_offer_price"
+                render={props => (
+                  <TextField
+                    size="small"
+                    value={newOwner?.max_offer_price}
+                    inputRef={props.ref}
+                    onWheel={e => e.target.blur()}
+                    onChange={e => {
+                      const value = parseFloat(e.target.value).toFixed(2);
+                      props.onChange(value);
+                      setNewOwner(newOwner => ({
+                        ...newOwner,
+                        max_offer_price: value,
+                      }));
+                    }}
+                    InputProps={{
+                      inputComponent: CurrencyFormatCustom,
+                    }}
+                    fullWidth
+                    defaultValue=""
+                  />
+                )}
+              />
+            </Grid>
+
             <Grid item xs={12}>
               <h3>Company Net Acres</h3>
               <TextField

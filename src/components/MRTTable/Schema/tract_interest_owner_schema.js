@@ -9,6 +9,7 @@ import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TractIcon from 'components/Shared/svgIcons/tract';
+import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
 const esIndex = 'shapeowners_flat';
 
@@ -284,6 +285,26 @@ const TractPerUnitMeta = {
 			},
 		},
 
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'offer_price_nma',
+			accessorKey: 'offer_price_nma',
+			header: 'Target Offer (per NMA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price_nma)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'max_offer_price_nma',
+			accessorKey: 'max_offer_price_nma',
+			header: 'Max Offer (per NMA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price_nma)}</>,
+		},
+
 
 
 		{
@@ -309,6 +330,26 @@ const TractPerUnitMeta = {
 				const { sumNRA } = Controller.getValue('footerProps') || {};
 				return <div>{sumNRA?.value ? addTrailingZeros(parseFloat(sumNRA?.value).toFixed(8)) : 0}</div>;
 			},
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'offer_price',
+			accessorKey: 'offer_price',
+			header: 'Target Offer Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'max_offer_price',
+			accessorKey: 'max_offer_price',
+			header: 'Max Offer Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price)}</>,
 		},
 
 		{
