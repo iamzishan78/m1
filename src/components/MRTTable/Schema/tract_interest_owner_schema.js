@@ -301,7 +301,7 @@ const TractPerUnitMeta = {
 			header: 'Seller Asking Price',
 			isSearchField: false,
 			type: 'number',
-			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
+			Cell: ({ row }) => <>{vf_currency(row?.original?.seller_asking_price)}</>,
 		},
 
 		{
@@ -312,7 +312,7 @@ const TractPerUnitMeta = {
 			isSearchField: false,
 			type: 'number',
 			size: 300,
-			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
+			Cell: ({ row }) => <>{vf_currency(row?.original?.competitor_offer_price)}</>,
 		},
 
 
@@ -323,7 +323,7 @@ const TractPerUnitMeta = {
 			header: 'Actual Offer Price',
 			isSearchField: false,
 			type: 'number',
-			Cell: ({ renderedCellValue }) => <>{vf_currency(renderedCellValue)}</>,
+			Cell: ({ row }) => <>{vf_currency(row?.original?.actual_offer_price)}</>,
 		},
 
 		{
