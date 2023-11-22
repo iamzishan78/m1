@@ -212,6 +212,23 @@ const OwnersPerUnitMeta = {
 			name: 'net_acres',
 			accessorKey: 'net_acres',
 			header: 'Net Acres',
+			isSearchField: false,
+			type: 'number',
+			Aggregation: {
+				sumNetAcres: {
+					sum: { field: 'net_acres' },
+				},
+			},
+			Cell: ({ row }) => {
+				if (row?.original?.net_acres) {
+					return <>{addTrailingZeros(parseFloat(row?.original?.net_acres).toFixed(8))}</>;
+				}
+			},
+			Footer: () => {
+				const Controller = tableController('OwnersPerUnitTable');
+				const { sumNetAcres } = Controller.getValue('footerProps') || {};
+				return <div>{sumNetAcres?.value ? addTrailingZeros(parseFloat(sumNetAcres?.value).toFixed(8)) : 0}</div>;
+			},
 		},
 
 
@@ -251,6 +268,23 @@ const OwnersPerUnitMeta = {
 			name: 'tractAcres',
 			accessorKey: 'tractAcres',
 			header: 'Unit Tract Acres',
+			isSearchField: false,
+			type: 'number',
+			Aggregation: {
+				sumUnitTractAcres: {
+					sum: { field: 'tractAcres' },
+				},
+			},
+			Cell: ({ row }) => {
+				if (row?.original?.tractAcres) {
+					return <>{addTrailingZeros(parseFloat(row?.original?.tractAcres).toFixed(8))}</>;
+				}
+			},
+			Footer: () => {
+				const Controller = tableController('OwnersPerUnitTable');
+				const { sumUnitTractAcres } = Controller.getValue('footerProps') || {};
+				return <div>{sumUnitTractAcres?.value ? addTrailingZeros(parseFloat(sumUnitTractAcres?.value).toFixed(8)) : 0}</div>;
+			},
 		},
 
 		{
@@ -309,7 +343,15 @@ const OwnersPerUnitMeta = {
 			name: 'contact.contactStatus.keyword',
 			accessorFn: row => row?.contact?.contactStatus,
 			id: 'contact.contactStatus',
-			header: 'Status',
+			header: 'Contact Status',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.status.keyword',
+			accessorFn: row => row?.contact?.status,
+			id: 'contact.status',
+			header: 'Contact Stage',
 		},
 
 		{
@@ -321,15 +363,6 @@ const OwnersPerUnitMeta = {
 				return <div>{row?.original?.contactOwners[0]}</div>
 			}
 		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'contact.status.keyword',
-			accessorFn: row => row?.contact?.status,
-			id: 'contact.status',
-			header: 'Stage',
-		},
-
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'campaignName.keyword',
