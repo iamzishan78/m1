@@ -84,7 +84,7 @@ const useStyles = makeStyles(() => ({
 
 const viewOptions = [
 	{
-		label: 'Views',
+		label: 'All Views',
 		value: 'views',
 	},
 	{
@@ -470,7 +470,7 @@ function View({
 			</span>
 			{showActions && (
 				<span className={classes.actionIcons}>
-					{view.type === 'Custom' && view.isPrivate ? <LockIcon /> : <LockOpenIcon />}
+					{/* {view.type === 'Custom' && view.isPrivate ? <LockIcon /> : <LockOpenIcon />} */}
 					<MoreVertIcon onClick={handleClick} />
 				</span>
 			)}
@@ -518,7 +518,7 @@ function View({
 							Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } });
 						}}
 					>
-						{view?.defaultDisplayBy?.includes(userId) ? 'Remove as Default View' : 'Set as Default View'}
+						{view?.defaultDisplayBy?.includes(userId) ? 'Remove as default view' : 'Set as default view'}
 					</MenuItem>
 				)}
 
