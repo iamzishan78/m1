@@ -343,7 +343,15 @@ const OwnersPerUnitMeta = {
 			name: 'contact.contactStatus.keyword',
 			accessorFn: row => row?.contact?.contactStatus,
 			id: 'contact.contactStatus',
-			header: 'Status',
+			header: 'Contact Status',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.status.keyword',
+			accessorFn: row => row?.contact?.status,
+			id: 'contact.status',
+			header: 'Contact Stage',
 		},
 
 		{
@@ -355,15 +363,6 @@ const OwnersPerUnitMeta = {
 				return <div>{row?.original?.contactOwners[0]}</div>
 			}
 		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'contact.status.keyword',
-			accessorFn: row => row?.contact?.status,
-			id: 'contact.status',
-			header: 'Stage',
-		},
-
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'campaignName.keyword',
