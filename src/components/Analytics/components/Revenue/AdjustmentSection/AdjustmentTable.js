@@ -105,8 +105,8 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
     monthsInterval.forEach((month) => {
       let total = 0
       items.forEach((item) => {
-        if (typeof item.data[month] === 'object')
-          total += item.data[month].total;
+        if (typeof item?.data?.[month] === 'object')
+          total += item?.data?.[month]?.total;
       });
 
       totalAdjustments.data[month] = total;

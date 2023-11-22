@@ -194,7 +194,7 @@ const fuzzySearch = (items, query, queryKey = 'name') => {
     }, [])
     return ret;
 }
-function convertAnalyticsDataToCSV(data, months) {
+function convertAnalyticsDataToCSV(data = [], months = []) {
     const datas = data.flatMap(item => {
         const result = [];
         const newData = {};
@@ -202,9 +202,9 @@ function convertAnalyticsDataToCSV(data, months) {
         newData.Total = item.total?.toFixed(2) ?? '';
         months.forEach(key => {
             if (item.breakDown)
-                newData[key] = item.data[key]?.total?.toFixed(2) ?? '';
+                newData[key] = item.data?.[key]?.total?.toFixed(2) ?? '';
             else
-                newData[key] = item.data[key]?.toFixed(2) ?? '';
+                newData[key] = item.data?.[key]?.toFixed(2) ?? '';
         })
 
         result.push(newData);
@@ -213,9 +213,9 @@ function convertAnalyticsDataToCSV(data, months) {
             Object.keys(item.breakDown).forEach(breakdownKey => {
                 const newData = {};
                 newData.Name = `_${breakdownKey}`;
-                newData.Total = item.breakDown[breakdownKey]?.toFixed(2) ?? '';
+                newData.Total = item.breakDown?.[breakdownKey]?.toFixed(2) ?? '';
                 months.forEach(key => {
-                    newData[key] = item.data[key]?.breakDown[breakdownKey]?.toFixed(2) ?? '';
+                    newData[key] = item.data?.[key]?.breakDown[breakdownKey]?.toFixed(2) ?? '';
                 });
 
                 result.push(newData);
