@@ -20,7 +20,7 @@ import StarIcon from '@material-ui/icons/Star';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 
 import LeftDialog from 'components/Shared/LeftDialog';
-import { UPDATE_GRID_VIEW, UPDATE_FAVOURITE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
+import { UPDATE_GRID_VIEW, UPDATE_FAVOURITE_GRID_VIEW, UPDATE_DEFAULT_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
 
 import { tableController, tableGlobalController } from 'hookstate/tableController';
@@ -224,6 +224,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 											onClick={handleClick}
 											tableKey={tableKey}
 											defaultView={defaultView}
+											module={module}
 										/>
 									)
 							)}
@@ -279,6 +280,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 											updateFavouriteGridView={updateFavouriteGridView}
 											tableKey={tableKey}
 											defaultView={defaultView}
+											module={module}
 										/>
 									))
 							)}
@@ -401,6 +403,7 @@ function View({
 	updateGridView,
 	userId,
 	defaultView,
+	module,
 }) {
 	const classes = useStyles();
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -408,6 +411,7 @@ function View({
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useState(['gridView', 'gridViewSettings']);
 	const tableStateValues = tableState.stateValues;
+	const [updateDefaultGridView] = useMutation(UPDATE_DEFAULT_GRID_VIEW);
 
 	const handleClick = event => {
 		setAnchorEl(event.currentTarget);
@@ -445,8 +449,23 @@ function View({
 						}}
 					/>
 				)}
-				{!!(view?.isDefaultDisplay) && (
-					<BookmarkIcon style={{ marginTop: '5px' }} />
+				{!!(view?.defaultDisplayBy?.includes(userId)) && (
+					<BookmarkIcon style={{ marginTop: '5px' }}
+						onClick={() => {
+							updateDefaultGridView({
+								variables: {
+									id: view._id,
+									userId,
+									operation: 'REMOVE',
+									module
+								},
+							}).then(
+								res => {
+									tableGlobalController.reInitialized();
+								}
+							);
+						}}
+					/>
 				)}
 			</span>
 			{showActions && (
@@ -484,15 +503,13 @@ function View({
 						style={{ width: '250px' }}
 						onClick={() => {
 							handleClose();
-							updateGridView({
+							updateDefaultGridView({
 								variables: {
-									gridView: {
-										_id: view._id,
-										module: tableStateValues.gridViewSettings.module,
-										isDefaultDisplay: !(!!view?.isDefaultDisplay),
-									},
+									id: view._id,
+									userId,
+									operation: view?.defaultDisplayBy?.includes(userId) ? 'REMOVE' : 'ADD',
+									module
 								},
-								refetchQueries: ['getGridViews'],
 							}).then(
 								res => {
 									tableGlobalController.reInitialized();
@@ -501,7 +518,7 @@ function View({
 							Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } });
 						}}
 					>
-						{view?.isDefaultDisplay ? 'Remove as Default View' : 'Set as Default View'}
+						{view?.defaultDisplayBy?.includes(userId) ? 'Remove as Default View' : 'Set as Default View'}
 					</MenuItem>
 				)}
 
@@ -514,7 +531,6 @@ function View({
 								id: view._id,
 								userId,
 							},
-							refetchQueries: ['getGridViews'],
 						}).then(
 							res => {
 								tableGlobalController.reInitialized();

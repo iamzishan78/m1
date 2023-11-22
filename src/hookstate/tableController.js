@@ -370,7 +370,10 @@ const tableESStateControllerHandler = state => ({
 			{}
 		);
 
-		const defaultDisplay = allGridViews.find(obj => obj.isDefaultDisplay === true);
+		const _user = globalStateController.getValue('user')
+
+		const defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(_user?._id));
+
 		const formatGridView = formatGridViewToMRT(defaultDisplay)
 		const gridView = {
 			selectedGridView: !!defaultDisplay ? defaultDisplay : gridViewSettings.defaultView,

@@ -11,3 +11,9 @@ export const UPDATE_FAVOURITE_GRID_VIEW = gql`
     updateFavouriteGridView(id: $id, userId: $userId)
   }
 `;
+
+export const UPDATE_DEFAULT_GRID_VIEW = gql`
+  mutation updateDefaultGridView($id: ID, $userId: ID, $operation: String, $module: String) {
+    updateDefaultGridView(id: $id, userId: $userId, operation: $operation, module: $module)
+  }
+`;
