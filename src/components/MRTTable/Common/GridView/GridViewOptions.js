@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, memo } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
 	TextField,
@@ -24,7 +24,7 @@ import { UPDATE_GRID_VIEW, UPDATE_FAVOURITE_GRID_VIEW } from 'graphQL/useMutatio
 import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
 
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { AppContext } from '../../../../AppContext';
+import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -98,7 +98,8 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 	const tableState = Controller.useState(['filters', 'columnVisibility', 'gridView', 'gridViewSettings']);
 	const tableStateValues = tableState.stateValues;
 	const classes = useStyles();
-	const [stateApp] = useContext(AppContext);
+	const { user } = globalStateController.useState(['user']);
+	const getUser = user.get({ noproxy: true });
 
 	const [selectedTab, setSelectedTab] = useState('views');
 	const [filterGridView, setFilterGridView] = useState(allGridViews);
@@ -123,7 +124,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 		if (selectedTab === 'views') {
 			setFilterGridView(JSON.parse(JSON.stringify(allGridViews)));
 		} else if (selectedTab === 'favorites') {
-			const data = allGridViews.filter(view => view.favouriteBy?.includes(stateApp.user.mongoId));
+			const data = allGridViews.filter(view => view.favouriteBy?.includes(getUser?._id));
 			setFilterGridView(data);
 		} else {
 			setFilterGridView([]);
@@ -149,7 +150,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 	const handleClick = view => {
 		let data = JSON.parse(JSON.stringify(view));
 		if (data.type === 'Default') {
-			data = handleDefaultView(data, stateApp.user);
+			data = handleDefaultView(data, getUser?._id);
 		}
 		Controller.updateState({
 			gridView: { ...tableStateValues.gridView, selectedGridView: data, showViewModal: false },
@@ -218,7 +219,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 											setEditGridView={setEditGridView}
 											setViewName={setViewName}
 											updateGridView={updateGridView}
-											userId={stateApp.user.mongoId}
+											userId={getUser?._id}
 											updateFavouriteGridView={updateFavouriteGridView}
 											onClick={handleClick}
 											tableKey={tableKey}
@@ -247,7 +248,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 									viewName={viewName}
 									setViewName={setViewName}
 									addGridView={addGridView}
-									user={stateApp.user.mongoId}
+									user={getUser?._id}
 									module={module}
 									tableKey={tableKey}
 								/>
@@ -262,7 +263,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 											viewName={viewName}
 											setViewName={setViewName}
 											addGridView={addGridView}
-											user={stateApp.user.mongoId}
+											user={getUser?._id}
 											updateGridView={updateGridView}
 											module={module}
 											tableKey={tableKey}
@@ -273,7 +274,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 											setEditGridView={setEditGridView}
 											setViewName={setViewName}
 											updateGridView={updateGridView}
-											userId={stateApp.user.mongoId}
+											userId={getUser?._id}
 											onClick={handleClick}
 											updateFavouriteGridView={updateFavouriteGridView}
 											tableKey={tableKey}
@@ -365,7 +366,7 @@ function InputField({
 							res => {
 								tableGlobalController.reInitialized();
 							}
-						);;
+						);
 					}
 					Controller.updateState({
 						gridView: { ...tableStateValues.gridView, showSaveAsNew: false, showViewModal: false },
