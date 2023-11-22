@@ -12,7 +12,7 @@ export const calculateStandardNraForUnit = ({ uAcres, working_interest, royalty_
   const sumOfDecimalInterest = ownershipPercentage ? ownershipPercentage : (parseFloat(working_interest || 0) + parseFloat(royalty_interest || 0) + parseFloat(orri || 0) + parseFloat(nri || 0))
   const isCustomType = workspaceSettings?.settings?.map?.unitNra?.type === "custom";
   const divisor = parseFloat(workspaceSettings?.settings?.map?.unitNra?.value || 0);
-  let nra = uAcres * sumOfDecimalInterest
+  let nra = parseFloat(uAcres || 0) * sumOfDecimalInterest
   if (isCustomType)
     nra /= divisor;
   nra = addTrailingZeros(nra.toFixed(8));

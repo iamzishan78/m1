@@ -115,8 +115,7 @@ function AllDialogs() {
 						header="Delete row (s)"
 						onClose={handleCloseDialog}
 						deleteFunc={deleteFunc}
-						deletedData={rest?.selectedRows}
-						tableKey={rest?.tableKey}
+						deletedData={rest?.deletedData}
 					>
 						{`Do you want to delete the selected row ${rest?.Ids?.length > 1 ? 's' : ''}?`}
 					</DeleteConfirmationDialogContent>

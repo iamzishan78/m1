@@ -69,7 +69,7 @@ export const openSideDialog = async (
 	}
 ) => {
 	let showRows = selectedRows;
-	if (isAllRowsSelected && !type.toLowerCase().includes('delete')) {
+	if (isAllRowsSelected) {
 		const rowSelection = tableController(tableKey).getValue('rowSelection');
 		const { rows, total: rangeTotal } = tableController(tableKey).getValue('data');
 		tableGlobalController.updateState({
