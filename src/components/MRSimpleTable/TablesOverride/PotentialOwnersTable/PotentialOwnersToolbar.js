@@ -13,8 +13,8 @@ import { useSelector } from 'react-redux';
 
 const PotentialOwnersToolbar = ({ table, tableKey }) => {
     const Controller = simpleTableController(tableKey);
-    const { tableStateValues } = Controller.useState(['customProps'], 'tableStateValues', 'rowSelection');
-    const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
+    const { tableStateValues } = Controller.useState(['customProps'], 'tableStateValues');
+    const isSomeRowsSelected = table.getIsSomeRowsSelected();
     const isAllRowsSelected = table.getIsAllRowsSelected();
     const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
     const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original.node);
