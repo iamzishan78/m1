@@ -51,8 +51,8 @@ const OwnersPerUnitMeta = {
 			return view;
 		},
 		cssOverride: {
-			top: '361px',
-			left: '295px',
+			top: '325px',
+			left: '300px',
 		},
 	},
 	CustomToolBar: OwnersPerUnitToolBar,
