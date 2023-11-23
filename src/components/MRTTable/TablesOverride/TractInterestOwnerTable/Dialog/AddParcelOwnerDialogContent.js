@@ -1277,54 +1277,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 </Grid>
               </>
             )}
-            <Grid item xs={12}>
-              <h3>Depth Restrictions</h3>
-              <RadioGroup
-                row
-                value={parcelOwnersRadioBValue}
-                onChange={event => {
-                  setParcelOwnersRadioBValue(event.target.value);
-                }}
-              >
-                <FormControlLabel value="true" control={<Radio />} label="All Depths" />
-                <FormControlLabel value="false" control={<Radio />} label="Footages/Formations" />
-              </RadioGroup>
-            </Grid>
 
-            {parcelOwnersRadioBValue === 'false' && (
-              <Grid item xs={12}>
-                <h3>Depth From</h3>
-                <TextField
-                  size="small"
-                  className={classes.maxWidth}
-                  multiline
-                  value={newOwner.depthFrom}
-                  onChange={e => {
-                    setNewOwner({
-                      ...newOwner,
-                      depthFrom: e.target.value,
-                    });
-                  }}
-                />
-              </Grid>
-            )}
-            {parcelOwnersRadioBValue === 'false' && (
-              <Grid item xs={12}>
-                <h3>Depth To</h3>
-                <TextField
-                  size="small"
-                  className={classes.maxWidth}
-                  multiline
-                  value={newOwner.depthTo}
-                  onChange={e => {
-                    setNewOwner({
-                      ...newOwner,
-                      depthTo: e.target.value,
-                    });
-                  }}
-                />
-              </Grid>
-            )}
             <Grid item xs={12}>
               <h3>Campaign Names</h3>
 
@@ -1427,6 +1380,54 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 )}
               />
             </Grid>
+            <Grid item xs={12}>
+              <h3>Depth Restrictions</h3>
+              <RadioGroup
+                row
+                value={parcelOwnersRadioBValue}
+                onChange={event => {
+                  setParcelOwnersRadioBValue(event.target.value);
+                }}
+              >
+                <FormControlLabel value="true" control={<Radio />} label="All Depths" />
+                <FormControlLabel value="false" control={<Radio />} label="Footages/Formations" />
+              </RadioGroup>
+            </Grid>
+
+            {parcelOwnersRadioBValue === 'false' && (
+              <Grid item xs={12}>
+                <h3>Depth From</h3>
+                <TextField
+                  size="small"
+                  className={classes.maxWidth}
+                  multiline
+                  value={newOwner.depthFrom}
+                  onChange={e => {
+                    setNewOwner({
+                      ...newOwner,
+                      depthFrom: e.target.value,
+                    });
+                  }}
+                />
+              </Grid>
+            )}
+            {parcelOwnersRadioBValue === 'false' && (
+              <Grid item xs={12}>
+                <h3>Depth To</h3>
+                <TextField
+                  size="small"
+                  className={classes.maxWidth}
+                  multiline
+                  value={newOwner.depthTo}
+                  onChange={e => {
+                    setNewOwner({
+                      ...newOwner,
+                      depthTo: e.target.value,
+                    });
+                  }}
+                />
+              </Grid>
+            )}
           </Grid>
         </DialogContent>
         <DialogActions className={classes.dialogAction}>
