@@ -104,6 +104,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const calculateOfferPrice = (nra, offer) => {
     return parseFloat((parseFloat(nra || 0) * parseFloat(offer || 0)).toFixed(2));
   };
+  const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing } = props?.customLayer?.shapeJson?.properties;
   const tenantName = window.sessionStorage.getItem('tenantName');
   const [stateApp, setStateApp] = useContext(AppContext);
   const { control } = useForm();
@@ -144,6 +145,10 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   });
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
   const [isAcresOverridden, setIsAcresOverridden] = useState(false);
+  const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false);
+  const [isMaxOfferPriceOverridden, setIsMaxOfferPriceOverridden] = useState(false);
+  const [isOfferPriceNMAOverridden, setIsOfferPriceNMAOverridden] = useState(false);
+  const [isMaxOfferPriceNMAOverridden, setIsMaxOfferPriceNMAOverridden] = useState(false);
   const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] = useState('true');
   const [showAddNewContactFields, setShowAddNewContactFields] = useState(false);
 
@@ -902,8 +907,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     nra: !isNraOverridden
                       ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
                       : newOwner.nra,
-                    offer_price_nma: calculateOfferPrice(value, props?.customLayer?.shapeJson?.properties?.uUnitPricingNMA),
-                    max_offer_price_nma: calculateOfferPrice(value, props?.customLayer?.shapeJson?.properties?.uMaxUnitPricingNMA),
+                    offer_price_nma: calculateOfferPrice(value, uUnitPricingNMA),
+                    max_offer_price_nma: calculateOfferPrice(value, uMaxUnitPricingNMA),
                   }));
                 }}
                 InputProps={{
@@ -948,11 +953,35 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     onWheel={e => e.target.blur()}
                     onChange={e => {
                       const value = parseFloat(e.target.value).toFixed(2);
+                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.net_acres, uUnitPricingNMA);
+                      setIsOfferPriceNMAOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
                       props.onChange(value);
                       setNewOwner(newOwner => ({
                         ...newOwner,
                         offer_price_nma: value,
                       }));
+                    }}
+                    className={isOfferPriceNMAOverridden ? classes.baseValueChanged : classes.maxWidth}
+                    InputProps={{
+                      inputComponent: CurrencyFormatCustom,
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          {isOfferPriceNMAOverridden && (
+                            <IconButton
+                              aria-label="toggle offer_price_nma"
+                              onClick={() => {
+                                setIsOfferPriceNMAOverridden(false);
+                                setNewOwner(newOwner => ({
+                                  ...newOwner,
+                                  offer_price_nma: calculateOfferPrice(newOwner?.net_acres, uUnitPricingNMA),
+                                }));
+                              }}
+                            >
+                              <AutorenewIcon />
+                            </IconButton>
+                          )}
+                        </InputAdornment>
+                      ),
                     }}
                     fullWidth
                     defaultValue=""
@@ -975,14 +1004,35 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     onWheel={e => e.target.blur()}
                     onChange={e => {
                       const value = parseFloat(e.target.value).toFixed(2);
+                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.net_acres, uMaxUnitPricingNMA);
+                      setIsMaxOfferPriceNMAOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
                       props.onChange(value);
                       setNewOwner(newOwner => ({
                         ...newOwner,
                         max_offer_price_nma: value,
                       }));
                     }}
+                    className={isMaxOfferPriceNMAOverridden ? classes.baseValueChanged : classes.maxWidth}
                     InputProps={{
                       inputComponent: CurrencyFormatCustom,
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          {isMaxOfferPriceNMAOverridden && (
+                            <IconButton
+                              aria-label="toggle max_offer_price_nma"
+                              onClick={() => {
+                                setIsMaxOfferPriceNMAOverridden(false);
+                                setNewOwner(newOwner => ({
+                                  ...newOwner,
+                                  max_offer_price_nma: calculateOfferPrice(newOwner?.net_acres, uMaxUnitPricingNMA),
+                                }));
+                              }}
+                            >
+                              <AutorenewIcon />
+                            </IconButton>
+                          )}
+                        </InputAdornment>
+                      ),
                     }}
                     fullWidth
                     defaultValue=""
@@ -1006,8 +1056,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   setNewOwner({
                     ...newOwner,
                     nra: value || null,
-                    offer_price: calculateOfferPrice(value, props?.customLayer?.shapeJson?.properties?.uUnitPricing),
-                    max_offer_price: calculateOfferPrice(value, props?.customLayer?.shapeJson?.properties?.uMaxUnitPricing)
+                    offer_price: calculateOfferPrice(value, uUnitPricing),
+                    max_offer_price: calculateOfferPrice(value, uMaxUnitPricing)
                   });
                 }}
                 InputProps={{
@@ -1046,11 +1096,35 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     onWheel={e => e.target.blur()}
                     onChange={e => {
                       const value = parseFloat(e.target.value).toFixed(2);
+                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.nra, uUnitPricing);
+                      setIsOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
                       props.onChange(value);
                       setNewOwner(newOwner => ({
                         ...newOwner,
                         offer_price: value,
                       }));
+                    }}
+                    className={isOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
+                    InputProps={{
+                      inputComponent: CurrencyFormatCustom,
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          {isOfferPriceOverridden && (
+                            <IconButton
+                              aria-label="toggle offer_price"
+                              onClick={() => {
+                                setIsOfferPriceOverridden(false);
+                                setNewOwner(newOwner => ({
+                                  ...newOwner,
+                                  offer_price: calculateOfferPrice(newOwner?.nra, uUnitPricing),
+                                }));
+                              }}
+                            >
+                              <AutorenewIcon />
+                            </IconButton>
+                          )}
+                        </InputAdornment>
+                      ),
                     }}
                     fullWidth
                     defaultValue=""
@@ -1073,14 +1147,35 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     onWheel={e => e.target.blur()}
                     onChange={e => {
                       const value = parseFloat(e.target.value).toFixed(2);
+                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.nra, uMaxUnitPricing);
+                      setIsMaxOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
                       props.onChange(value);
                       setNewOwner(newOwner => ({
                         ...newOwner,
                         max_offer_price: value,
                       }));
                     }}
+                    className={isMaxOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
                     InputProps={{
                       inputComponent: CurrencyFormatCustom,
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          {isMaxOfferPriceOverridden && (
+                            <IconButton
+                              aria-label="toggle max_offer_price"
+                              onClick={() => {
+                                setIsMaxOfferPriceOverridden(false);
+                                setNewOwner(newOwner => ({
+                                  ...newOwner,
+                                  max_offer_price: calculateOfferPrice(newOwner?.nra, uMaxUnitPricing),
+                                }));
+                              }}
+                            >
+                              <AutorenewIcon />
+                            </IconButton>
+                          )}
+                        </InputAdornment>
+                      ),
                     }}
                     fullWidth
                     defaultValue=""
