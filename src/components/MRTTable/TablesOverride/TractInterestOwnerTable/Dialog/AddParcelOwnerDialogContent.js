@@ -792,7 +792,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               />
             </Grid>
             <Grid item xs={12}>
-              <h3>Royalty Interest</h3>
+              <h3>Royalty Interest (Lease)</h3>
               <TextField
                 type="number"
                 size="small"
