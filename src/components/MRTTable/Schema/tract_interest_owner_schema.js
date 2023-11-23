@@ -285,29 +285,6 @@ const TractPerUnitMeta = {
 				return <div>{sumNetAcres?.value ? addTrailingZeros(parseFloat(sumNetAcres?.value).toFixed(8)) : 0}</div>;
 			},
 		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'offer_price_nma',
-			accessorKey: 'offer_price_nma',
-			header: 'Target Offer (per NMA)',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price_nma)}</>,
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'max_offer_price_nma',
-			accessorKey: 'max_offer_price_nma',
-			header: 'Max Offer (per NMA)',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price_nma)}</>,
-		},
-
-
-
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'nra',
@@ -335,9 +312,30 @@ const TractPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'offer_price_nma',
+			accessorKey: 'offer_price_nma',
+			header: 'Target Offer (per NMA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price_nma)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'max_offer_price_nma',
+			accessorKey: 'max_offer_price_nma',
+			header: 'Max Offer (per NMA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price_nma)}</>,
+		},
+
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'offer_price',
 			accessorKey: 'offer_price',
-			header: 'Target Offer Price',
+			header: 'Target Offer (per NRA)',
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price)}</>,
@@ -347,7 +345,7 @@ const TractPerUnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'max_offer_price',
 			accessorKey: 'max_offer_price',
-			header: 'Max Offer Price',
+			header: 'Max Offer (per NRA)',
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price)}</>,

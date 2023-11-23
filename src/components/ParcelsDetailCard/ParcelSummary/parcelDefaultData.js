@@ -62,19 +62,7 @@ const tableData = [
         filterField: filterConsts.sectiontx.filterField,
         dependencyArray: filterConsts.sectiontx.dependencyArray,
     },
-    {
-        label: "Target Pricing (per NRA)",
-        type: "currency",
-        key: "uUnitPricing",
-        edit: true,
-        esKey: 'uUnitPricing',
-    },
-
-    {
-        label: "Max Pricing (per NRA)",
-        type: "currency",
-        key: "uMaxUnitPricing",
-    },
+    
     {
         label: "Abstract",
         type: "autocompletelandgrid",
@@ -166,6 +154,19 @@ const tableData = [
         label: "Max Pricing (per NMA)",
         type: "currency",
         key: "uMaxUnitPricingNMA",
+    },
+    {
+        label: "Target Pricing (per NRA)",
+        type: "currency",
+        key: "uUnitPricing",
+        edit: true,
+        esKey: 'uUnitPricing',
+    },
+
+    {
+        label: "Max Pricing (per NRA)",
+        type: "currency",
+        key: "uMaxUnitPricing",
     },
     // {
     //     label: "Tract Status",
