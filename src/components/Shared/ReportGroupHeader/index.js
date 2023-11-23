@@ -100,7 +100,16 @@ export default function ReportGroupHeader({
               setReportingGroup(name);
             } else {
               setReportingGroup(All_TYPE);
-              setESFilters([]);
+              setESFilters(
+                esFilters.filter(
+                  filter =>
+                    ![
+                      'state.keyword',
+                      'county.keyword',
+                      'internalCompany.keyword',
+                    ].includes(filter.field)
+                )
+              );
               setFilterToggle((value) => !value);
             }
           }
@@ -229,11 +238,30 @@ export default function ReportGroupHeader({
                     (view) => view.name === e.target.value
                   );
                   if (gridView) {
-                    setESFilters(gridView.filters);
+                    setESFilters([
+                      ...esFilters.filter(
+                        filter =>
+                          ![
+                            'state.keyword',
+                            'county.keyword',
+                            'internalCompany.keyword',
+                          ].includes(filter.field)
+                      ),
+                      ...gridView.filters,
+                    ]);
                     setFilterToggle((value) => !value);
                     // selectGridView(gridView)
                   } else {
-                    setESFilters([]);
+                    setESFilters(
+                      esFilters.filter(
+                        filter =>
+                          ![
+                            'state.keyword',
+                            'county.keyword',
+                            'internalCompany.keyword',
+                          ].includes(filter.field)
+                      )
+                    );
                     setFilterToggle((value) => !value);
                   }
                 }}

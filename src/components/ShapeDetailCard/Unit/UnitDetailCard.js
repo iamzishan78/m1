@@ -23,7 +23,7 @@ import { AppContext } from "AppContext";
 import { copy } from 'components/Shared/functions';
 import { popupController, popupState } from 'hookstate/popupStateController';
 import MRTTable from 'components/MRTTable';
-import { tableController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { detailCardStyles } from '../style';
 import { DrawerContextProvider } from "components/Land/components/Agreements/detailComponents/DrawerContext";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
@@ -43,14 +43,21 @@ export default function UnitDetailCard(props) {
   const OwnersPerUnitGridState = tableController('OwnersPerUnitTable').useState(['data']).stateValue;
   const [updateCustomLayer, { data: updatedUnit, loading: updatingLayer }] = useMutation(UPDATECUSTOMLAYER);
 
+  const globalState = tableGlobalController.useState(['refetch'])
+  const globalStateValues = globalState.stateValues;
+
   const { stateValues: { tabKey: selectedTab } } = simpleTableGlobalController.useState(['tabKey'])
 
   const classes = detailCardStyles();
   const showSummary = true;
 
-  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
+  const [getCustomLayer, { data: dataCustomLayer, refetch: refetchCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
   const contactsAdded = useSelector(state => state?.common?.contactsAdded);
+
+  useEffect(() => {
+    refetchCustomLayer()
+  }, [globalStateValues?.refetch]);
 
   useEffect(() => {
     dispatch(

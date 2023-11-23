@@ -64,6 +64,7 @@ export default function Portfolio({
   onChange,
   defaultRange,
   datesInputWidth = 1,
+  setAllDateToNull = true
 }) {
   const classes = useStyles();
   useEffect(() => {
@@ -96,7 +97,7 @@ export default function Portfolio({
   }, [lastCheckMinDate]);
 
   const handleDateTypeChange = (date) => {
-    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate, true);
+    handleCustomDateTypeChange(date, onChange, CUSTOM_DATES, setFromDate, setToDate, lastCheckMinDate, setAllDateToNull);
   };
 
   return (
