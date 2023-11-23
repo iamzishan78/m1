@@ -3,8 +3,15 @@ import GridViewComponent from 'components/MRTTable/Common/GridView/GridViewCompo
 import GridViewOptions from 'components/MRTTable/Common/GridView/GridViewOptions';
 import { tableController } from 'hookstate/tableController';
 import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController'
+import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
+import { useApolloClient } from '@apollo/client';
+import { globalStateController } from 'hookstate/globalStateController';
 
 function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, module }) {
+	const { user } = globalStateController.useState(['user']);
+	const getUser = user.get({ noproxy: true });
+	const client = useApolloClient();
+
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useState([
 		'TableSchema',
@@ -24,9 +31,23 @@ function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, modul
 		gridViewStateController(tableKey).gridViewApply(selectedGridView)
 	}, [tableState.stateValues?.gridView?.selectedGridView]);
 
+
+	async function fetchGridViews() {
+		const result = await client.query({
+			variables: {
+				module,
+				userId: getUser._id,
+			},
+			query: GET_GRID_VIEWS,
+		});
+		const allGridViews = result?.data?.getGridViews?.gridViews
+		const gridViewController = gridViewStateController(tableKey)
+		gridViewController?.updateState({ allGridViews })
+	}
+
 	return (
 		<div>
-			<GridViewComponent Icon={Icon} label={label} tableKey={tableKey} />
+			<GridViewComponent Icon={Icon} label={label} tableKey={tableKey} fetchGridViews={fetchGridViews} />
 
 			{tableStateValues?.gridView?.showViewModal && (
 				<GridViewOptions
@@ -35,6 +56,7 @@ function GridView({ tableKey, defaultView, handleDefaultView, Icon, label, modul
 					tableKey={tableKey}
 					allGridViews={gridViewStateValues?.allGridViews || []}
 					defaultView={defaultView}
+					fetchGridViews={fetchGridViews}
 				/>
 			)}
 		</div>
