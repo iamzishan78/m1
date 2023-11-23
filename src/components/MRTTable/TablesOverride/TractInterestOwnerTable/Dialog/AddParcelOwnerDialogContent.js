@@ -1034,6 +1034,24 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 onWheel={e => e.target.blur()}
               />
             </Grid>
+           
+            <Grid item xs={12}>
+              <h3>Company Net Acres</h3>
+              <TextField
+                type="number"
+                size="small"
+                className={classes.maxWidth}
+                value={newOwner.company_net_acres}
+                onChange={e => {
+                  const { value } = e.target;
+                  setNewOwner({
+                    ...newOwner,
+                    company_net_acres: value ? addTrailingZeros(e.target.value) : null,
+                  });
+                }}
+                onWheel={e => e.target.blur()}
+              />
+            </Grid>
             <Grid item xs={12}>
               <h3>Seller Asking Price</h3>
 
@@ -1116,23 +1134,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     defaultValue=""
                   />
                 )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Company Net Acres</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.company_net_acres}
-                onChange={e => {
-                  const { value } = e.target;
-                  setNewOwner({
-                    ...newOwner,
-                    company_net_acres: value ? addTrailingZeros(e.target.value) : null,
-                  });
-                }}
-                onWheel={e => e.target.blur()}
               />
             </Grid>
             {tenantName === 'Providence' && (

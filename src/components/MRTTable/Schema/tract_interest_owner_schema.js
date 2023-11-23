@@ -295,38 +295,7 @@ const TractPerUnitMeta = {
 			},
 		},
 
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'seller_asking_price',
-			accessorKey: 'seller_asking_price',
-			header: 'Seller Asking Price',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => <>{vf_currency(row?.original?.seller_asking_price)}</>,
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'competitor_offer_price',
-			accessorKey: 'competitor_offer_price',
-			header: 'Competitor Offer Price',
-			isSearchField: false,
-			type: 'number',
-			size: 300,
-			Cell: ({ row }) => <>{vf_currency(row?.original?.competitor_offer_price)}</>,
-		},
-
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'actual_offer_price',
-			accessorKey: 'actual_offer_price',
-			header: 'Actual Offer Price',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => <>{vf_currency(row?.original?.actual_offer_price)}</>,
-		},
-
+		
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'nra',
@@ -375,6 +344,37 @@ const TractPerUnitMeta = {
 				const { sumCoNetAcres } = Controller.getValue('footerProps') || {};
 				return <div>{sumCoNetAcres?.value ? addTrailingZeros(parseFloat(sumCoNetAcres?.value).toFixed(8)) : 0}</div>;
 			},
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'seller_asking_price',
+			accessorKey: 'seller_asking_price',
+			header: 'Seller Asking Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.seller_asking_price)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'competitor_offer_price',
+			accessorKey: 'competitor_offer_price',
+			header: 'Competitor Offer Price',
+			isSearchField: false,
+			type: 'number',
+			size: 300,
+			Cell: ({ row }) => <>{vf_currency(row?.original?.competitor_offer_price)}</>,
+		},
+
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'actual_offer_price',
+			accessorKey: 'actual_offer_price',
+			header: 'Actual Offer Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.actual_offer_price)}</>,
 		},
 
 		{
