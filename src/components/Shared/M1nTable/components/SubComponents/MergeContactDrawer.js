@@ -17,8 +17,8 @@ import { Modals } from 'styles/Modal';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { showSuccessMessage, showErrorMessage } from 'actions';
 import { MERGE_CONTACTS } from 'graphQL/useMutationMergeContact';
-import { AppContext } from 'AppContext';
 import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'hookstate/globalStateController';
 
 const styles = () => ({
   topHeading: { fontWeight: 'bold' },
@@ -46,7 +46,8 @@ const styles = () => ({
 const useStyles = makeStyles(styles);
 
 export default function MergeContactDrawer({ onClose, rows, setRows }) {
-  const [stateApp] = React.useContext(AppContext);
+  const { user } = globalStateController.useState(['user']);
+  const getUser = user.get({ noproxy: true });
   const dispatch = useDispatch();
   const classes = useStyles();
   const modalClass = Modals();
@@ -70,7 +71,7 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
     }, []);
     setLoading(true);
     mergeContacts({
-      variables: { primary: primaryContact._id, secondary: secondaryContacts, mergedBy: stateApp.user.mongoId },
+      variables: { primary: primaryContact._id, secondary: secondaryContacts, mergedBy: getUser?._id },
     }).then(
       () => {
         dispatch(showSuccessMessage('Contacts Merged Successfully'));
