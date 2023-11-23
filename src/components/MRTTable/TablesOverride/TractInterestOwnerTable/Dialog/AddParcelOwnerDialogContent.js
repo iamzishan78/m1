@@ -242,6 +242,19 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
       if (depthTo === 'All depths' && depthFrom === 'All depths') setParcelOwnersRadioBValue('true');
       else setParcelOwnersRadioBValue('false');
+
+      let calculatedOfferPrice = calculateOfferPrice(nra, uUnitPricing);
+      let calculatedMaxOfferPrice = calculateOfferPrice(nra, uMaxUnitPricing);
+      let calculatedOfferPriceNMA = calculateOfferPrice(net_acres, uUnitPricingNMA);
+      let calculatedMaxOfferPriceNMA = calculateOfferPrice(net_acres, uMaxUnitPricingNMA);
+      if (!isNaN(parseFloat(calculatedOfferPrice)))
+        setIsOfferPriceOverridden(calculatedOfferPrice !== parseFloat(parseFloat(offer_price).toFixed(2)) && !isNaN(parseFloat(offer_price)));
+      if (!isNaN(parseFloat(calculatedMaxOfferPrice)))
+        setIsMaxOfferPriceOverridden(calculatedMaxOfferPrice !== parseFloat(parseFloat(max_offer_price).toFixed(2)) && !isNaN(parseFloat(max_offer_price)));
+      if (!isNaN(parseFloat(calculatedOfferPriceNMA)))
+        setIsOfferPriceNMAOverridden(calculatedOfferPriceNMA !== parseFloat(parseFloat(offer_price_nma).toFixed(2)) && !isNaN(parseFloat(offer_price_nma)));
+      if (!isNaN(parseFloat(calculatedMaxOfferPriceNMA)))
+        setIsMaxOfferPriceNMAOverridden(calculatedMaxOfferPriceNMA !== parseFloat(parseFloat(max_offer_price_nma).toFixed(2)) && !isNaN(parseFloat(max_offer_price_nma)));
     }
   }, [selectedRow]);
 
