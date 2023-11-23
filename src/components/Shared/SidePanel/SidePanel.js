@@ -8,6 +8,7 @@ import { UPDATELAYERSETTINGS } from "graphQL/useMutationUpdateLayerSettings";
 import { useDispatch } from "react-redux";
 import { setMapGridCardState } from "actions";
 import { hookStateApp } from "hookstate";
+import { copy } from "utils/helper";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -157,7 +158,7 @@ export default function SidePanel({ showSidePanel }) {
       setToggleFunction(() => ({ index }) => {
         if (stateApp.baseMapLayers[index]?.name === 'Land Grid') {
           const currentLayers = [...stateApp.layers];
-          const layer = currentLayers.find((layer) => layer.identifier === 'Land Grid')
+          const layer = copy(currentLayers.find((layer) => layer.identifier === 'Land Grid'));
           if (layer) {
             layer.layerSettings.visiable = !layer.layerSettings.visiable
             hookStateApp.layers.set([...currentLayers])

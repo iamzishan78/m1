@@ -29,9 +29,9 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 	const Controller = tableController(tableKey);
 	const { reInitialized } = tableGlobalController.useState(['reInitialized']);
 
-	const { stateValues } = Controller.useState(['initialized'])
-	useEffect(() => {
+	const { stateValues } = Controller.useState(['initialized']);
 
+	useEffect(() => {
 		(async () => {
 			await Controller.initialize(tableKey, extendedMeta, client);
 		})()
@@ -41,9 +41,26 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 		};
 	}, [reInitialized]);
 
-	return (
-		stateValues.initialized ? <Table tableKey={tableKey} /> : <></>
-	);
+	if (!stateValues.initialized)
+		return (
+			<MaterialReactTable
+				columns={extendedMeta.TableSchema.filter(column => !column.hidden).map(
+					column => ({
+						id: column.id,
+						accessorKey: column.accessorKey,
+						header: column.header,
+						size: column.size,
+					})
+				)}
+				data={[]}
+				state={{
+					isLoading: true,
+					showProgressBars: true,
+				}}
+			/>
+		);
+
+	return <Table tableKey={tableKey} />;
 }
 
 export default memo(MRTTable);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, memo } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
 	TextField,
@@ -17,13 +17,14 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import LockIcon from '@material-ui/icons/Lock';
 import StarIcon from '@material-ui/icons/Star';
+import BookmarkIcon from '@material-ui/icons/Bookmark';
 
 import LeftDialog from 'components/Shared/LeftDialog';
-import { UPDATE_GRID_VIEW, UPDATE_FAVOURITE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
+import { UPDATE_GRID_VIEW, UPDATE_FAVOURITE_GRID_VIEW, UPDATE_DEFAULT_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 import { ADD_GRID_VIEW } from 'graphQL/useMutationAddGridView';
 
-import { tableController } from 'hookstate/tableController';
-import { AppContext } from '../../../../AppContext';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(() => ({
 	container: {
@@ -83,16 +84,12 @@ const useStyles = makeStyles(() => ({
 
 const viewOptions = [
 	{
-		label: 'Views',
+		label: 'All Views',
 		value: 'views',
 	},
 	{
 		label: 'Favorites',
 		value: 'favorites',
-	},
-	{
-		label: 'System',
-		value: 'system',
 	},
 ];
 
@@ -101,7 +98,8 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 	const tableState = Controller.useState(['filters', 'columnVisibility', 'gridView', 'gridViewSettings']);
 	const tableStateValues = tableState.stateValues;
 	const classes = useStyles();
-	const [stateApp] = useContext(AppContext);
+	const { user } = globalStateController.useState(['user']);
+	const getUser = user.get({ noproxy: true });
 
 	const [selectedTab, setSelectedTab] = useState('views');
 	const [filterGridView, setFilterGridView] = useState(allGridViews);
@@ -126,25 +124,12 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 		if (selectedTab === 'views') {
 			setFilterGridView(JSON.parse(JSON.stringify(allGridViews)));
 		} else if (selectedTab === 'favorites') {
-			const data = allGridViews.filter(view => view.favouriteBy?.includes(stateApp.user.mongoId));
+			const data = allGridViews.filter(view => view.favouriteBy?.includes(getUser?._id));
 			setFilterGridView(data);
 		} else {
 			setFilterGridView([]);
 		}
 	}, [selectedTab]);
-
-	// useEffect(() => {
-	//   if (newGridView?.addGridView?.success) {
-	//     Controller.updateState({ gridView: { ...tableStateValues.gridView, showSaveAsNew: false } });
-	//   }
-	// }, [newGridView]);
-
-	// useEffect(() => {
-	//   if (updatedGridView?.updateGridView?.success) {
-	//     Controller.updateState({ gridView: { ...tableStateValues.gridView, showSaveAsNew: true } });
-	//     setEditGridView(null);
-	//   }
-	// }, [updatedGridView]);
 
 	useEffect(() => {
 		setTimeout(() => {
@@ -165,7 +150,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 	const handleClick = view => {
 		let data = JSON.parse(JSON.stringify(view));
 		if (data.type === 'Default') {
-			data = handleDefaultView(data, stateApp.user);
+			data = handleDefaultView(data, getUser?._id);
 		}
 		Controller.updateState({
 			gridView: { ...tableStateValues.gridView, selectedGridView: data, showViewModal: false },
@@ -223,7 +208,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 							id="panel1a-header"
 							className={classes.summary}
 						>
-							Default
+							Standard
 						</AccordionSummary>
 						<AccordionDetails className={classes.details}>
 							{filterGridView.map(
@@ -234,11 +219,12 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 											setEditGridView={setEditGridView}
 											setViewName={setViewName}
 											updateGridView={updateGridView}
-											userId={stateApp.user.mongoId}
+											userId={getUser?._id}
 											updateFavouriteGridView={updateFavouriteGridView}
 											onClick={handleClick}
 											tableKey={tableKey}
 											defaultView={defaultView}
+											module={module}
 										/>
 									)
 							)}
@@ -263,7 +249,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 									viewName={viewName}
 									setViewName={setViewName}
 									addGridView={addGridView}
-									user={stateApp.user.mongoId}
+									user={getUser?._id}
 									module={module}
 									tableKey={tableKey}
 								/>
@@ -278,7 +264,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 											viewName={viewName}
 											setViewName={setViewName}
 											addGridView={addGridView}
-											user={stateApp.user.mongoId}
+											user={getUser?._id}
 											updateGridView={updateGridView}
 											module={module}
 											tableKey={tableKey}
@@ -289,11 +275,12 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 											setEditGridView={setEditGridView}
 											setViewName={setViewName}
 											updateGridView={updateGridView}
-											userId={stateApp.user.mongoId}
+											userId={getUser?._id}
 											onClick={handleClick}
 											updateFavouriteGridView={updateFavouriteGridView}
 											tableKey={tableKey}
 											defaultView={defaultView}
+											module={module}
 										/>
 									))
 							)}
@@ -352,7 +339,11 @@ function InputField({
 								},
 							},
 							refetchQueries: ['getGridViews'],
-						});
+						}).then(
+							res => {
+								tableGlobalController.reInitialized();
+							}
+						);
 					} else {
 						addGridView({
 							variables: {
@@ -373,7 +364,11 @@ function InputField({
 								},
 							},
 							refetchQueries: ['getGridViews'],
-						});
+						}).then(
+							res => {
+								tableGlobalController.reInitialized();
+							}
+						);
 					}
 					Controller.updateState({
 						gridView: { ...tableStateValues.gridView, showSaveAsNew: false, showViewModal: false },
@@ -408,13 +403,15 @@ function View({
 	updateGridView,
 	userId,
 	defaultView,
+	module,
 }) {
 	const classes = useStyles();
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [showActions, setShowActions] = useState(false);
 	const Controller = tableController(tableKey);
-	const tableState = Controller.useState(['gridView']);
+	const tableState = Controller.useState(['gridView', 'gridViewSettings']);
 	const tableStateValues = tableState.stateValues;
+	const [updateDefaultGridView] = useMutation(UPDATE_DEFAULT_GRID_VIEW);
 
 	const handleClick = event => {
 		setAnchorEl(event.currentTarget);
@@ -436,7 +433,7 @@ function View({
 					{view.name}
 				</div>
 				{view.favouriteBy?.includes(userId) && (
-					<StarIcon
+					<StarIcon style={{ marginTop: '5px' }}
 						onClick={() => {
 							updateFavouriteGridView({
 								variables: {
@@ -444,15 +441,36 @@ function View({
 									userId,
 								},
 								refetchQueries: ['getGridViews'],
-							});
+							}).then(
+								res => {
+									tableGlobalController.reInitialized();
+								}
+							);
 						}}
-						style={{ marginTop: '5px' }}
+					/>
+				)}
+				{!!(view?.defaultDisplayBy?.includes(userId)) && (
+					<BookmarkIcon style={{ marginTop: '5px' }}
+						onClick={() => {
+							updateDefaultGridView({
+								variables: {
+									id: view._id,
+									userId,
+									operation: 'REMOVE',
+									module
+								},
+							}).then(
+								res => {
+									tableGlobalController.reInitialized();
+								}
+							);
+						}}
 					/>
 				)}
 			</span>
 			{showActions && (
 				<span className={classes.actionIcons}>
-					{view.type === 'Custom' && view.isPrivate ? <LockIcon /> : <LockOpenIcon />}
+					{/* {view.type === 'Custom' && view.isPrivate ? <LockIcon /> : <LockOpenIcon />} */}
 					<MoreVertIcon onClick={handleClick} />
 				</span>
 			)}
@@ -479,6 +497,31 @@ function View({
 						Rename view
 					</MenuItem>
 				)}
+
+				{view.type !== 'Default' && (
+					<MenuItem
+						style={{ width: '250px' }}
+						onClick={() => {
+							handleClose();
+							updateDefaultGridView({
+								variables: {
+									id: view._id,
+									userId,
+									operation: view?.defaultDisplayBy?.includes(userId) ? 'REMOVE' : 'ADD',
+									module
+								},
+							}).then(
+								res => {
+									tableGlobalController.reInitialized();
+								}
+							);
+							Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } });
+						}}
+					>
+						{view?.defaultDisplayBy?.includes(userId) ? 'Remove as default view' : 'Set as default view'}
+					</MenuItem>
+				)}
+
 				<MenuItem
 					style={{ width: '250px' }}
 					onClick={() => {
@@ -488,8 +531,11 @@ function View({
 								id: view._id,
 								userId,
 							},
-							refetchQueries: ['getGridViews'],
-						});
+						}).then(
+							res => {
+								tableGlobalController.reInitialized();
+							}
+						);
 						Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } });
 					}}
 				>
@@ -504,31 +550,15 @@ function View({
 								variables: {
 									gridView: {
 										_id: view._id,
-										isPrivate: false,
-									},
-								},
-								refetchQueries: ['getGridViews'],
-							});
-							Controller.updateState({ gridView: { ...tableStateValues.gridView, showViewModal: false } });
-						}}
-					>
-						Share with others
-					</MenuItem>
-				)}
-				{view.type !== 'Default' && (
-					<MenuItem
-						style={{ width: '250px' }}
-						onClick={() => {
-							handleClose();
-							updateGridView({
-								variables: {
-									gridView: {
-										_id: view._id,
 										isDeleted: true,
 									},
 								},
 								refetchQueries: ['getGridViews'],
-							});
+							}).then(
+								res => {
+									tableGlobalController.reInitialized();
+								}
+							);
 							if (view?._id === tableStateValues?.gridView?.selectedGridView?._id) {
 								Controller.updateState({
 									gridView: { ...tableStateValues.gridView, showViewModal: false, selectedGridView: defaultView },

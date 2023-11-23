@@ -18,6 +18,7 @@ export const clearMapAndCloseShapeActionsPopup = (stateApp, setStateApp) => {
         shapeEdit: false,
         currentFeature: undefined,
         featureToEdit: undefined,
+        shapeToExtend: undefined,
         selectedUserDefinedLayer: null,
         isAbstractedLayersPolygon: false,
         multiSelectLandGrids: false,
@@ -85,7 +86,7 @@ export const drawShapeLayerToggle = (stateApp, value) => {
     stateApp.map.setLayoutProperty('gl-draw-polygon-and-line-vertex-stroke-inactive.hot', "visibility", value);
 }
 
-export const findBoundsMap = (shapes, map, padding, onlySendBounds=false) => {
+export const findBoundsMap = (shapes, map, padding, onlySendBounds = false) => {
     let bound = null;
     if (shapes && shapes.length > 0) {
         shapes.forEach((shape) => {
