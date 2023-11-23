@@ -372,15 +372,18 @@ const tableESStateControllerHandler = state => ({
 
 		const _user = globalStateController.getValue('user')
 
-		const defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(_user?._id));
+		let formatGridView = {}
+		let gridView = {}
+		if (gridViewSettings) {
+			const defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(_user?._id));
 
-		const formatGridView = formatGridViewToMRT(defaultDisplay)
-		const gridView = {
-			selectedGridView: !!defaultDisplay ? defaultDisplay : gridViewSettings.defaultView,
-			showViewModal: false,
-			showSaveAsNew: false,
+			formatGridView = formatGridViewToMRT(defaultDisplay)
+			gridView = {
+				selectedGridView: !!defaultDisplay ? defaultDisplay : gridViewSettings.defaultView,
+				showViewModal: false,
+				showSaveAsNew: false,
+			}
 		}
-
 		state.merge({
 			...rest,
 			initialized: true,
