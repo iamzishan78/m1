@@ -15,7 +15,6 @@ import DialogContent from "@material-ui/core/DialogContent";
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 
 import { AppContext } from "../../../../../AppContext";
-import { GETPERSONDATA } from "../../../../../graphQL/useQueryGetPersonData";
 import { GET_IDICORE_DATA } from "graphQL/useQueryGetIdiCoreData";
 import { GET_FEATURE_QUOTA } from "graphQL/useQueryGetFeatureQuota";
 import { showSuccessMessage, showErrorMessage } from "../../../../../actions";
@@ -25,6 +24,7 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 import ErrorIcon from "@material-ui/icons/Error";
 import { Tooltip } from "@material-ui/core";
+import { tableGlobalController } from "hookstate/tableController";
 
 const styles = (theme) => ({
   dialogTitle: {
@@ -124,6 +124,7 @@ export default function BuyContactsInfoDialogContent(props) {
     ) {
       setDataFetched(true)
       dispatch(showSuccessMessage("Contact data fetched successfully"));
+      tableGlobalController.refetch();
     } else if (idiCoreData?.getIdiCoreData?.success === false) {
       setDataFetched(true)
       dispatch(showErrorMessage("An error occurred - please try again"));
@@ -181,7 +182,7 @@ export default function BuyContactsInfoDialogContent(props) {
           missingContacts.push(row);
         } else if (row.firstName && row.lastName && row.address1) {
           let person = {
-            id: row._id,
+            id: row.contactId || row.contact?._id || row._id,
             firstName: row.firstName,
             lastName: row.lastName,
             address: row.address1,
