@@ -194,8 +194,40 @@ const fuzzySearch = (items, query, queryKey = 'name') => {
     }, [])
     return ret;
 }
+function convertAnalyticsDataToCSV(data = [], months = []) {
+    const datas = data.flatMap(item => {
+        const result = [];
+        const newData = {};
+        newData.Name = item.name;
+        newData.Total = item.total?.toFixed(2) ?? '';
+        months.forEach(key => {
+            if (item.breakDown)
+                newData[key] = item.data?.[key]?.total?.toFixed(2) ?? '';
+            else
+                newData[key] = item.data?.[key]?.toFixed(2) ?? '';
+        })
+
+        result.push(newData);
+
+        if (item.breakDown)
+            Object.keys(item.breakDown).forEach(breakdownKey => {
+                const newData = {};
+                newData.Name = `_${breakdownKey}`;
+                newData.Total = item.breakDown?.[breakdownKey]?.toFixed(2) ?? '';
+                months.forEach(key => {
+                    newData[key] = item.data?.[key]?.breakDown[breakdownKey]?.toFixed(2) ?? '';
+                });
+
+                result.push(newData);
+            });
+
+        return result;
+    });
+    return datas;
+}
 
 export {
+    convertAnalyticsDataToCSV,
     buildMap,
     getPageValue,
     getCollatorComparator,
