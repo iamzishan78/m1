@@ -156,6 +156,7 @@ const TractPerUnitMeta = {
 			accessorKey: 'nonExecRightsOnly',
 			header: 'Non-Exec Rights Only',
 			id: "nonExecRightsOnly",
+			size: 200,
 		},
 
 		{
@@ -379,22 +380,6 @@ const TractPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'depthFrom.keyword',
-			accessorKey: 'depthFrom',
-			header: 'Depth From',
-			isSearchField: true,
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'depthTo.keyword',
-			accessorKey: 'depthTo',
-			header: 'Depth To',
-			isExternalFilter: false,
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
 			name: 'campaignName.keyword',
 			accessorFn: row => row?.campaignName,
 			id: 'campaignName',
@@ -441,6 +426,21 @@ const TractPerUnitMeta = {
 					</div>
 				);
 			},
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'depthFrom.keyword',
+			accessorKey: 'depthFrom',
+			header: 'Depth From',
+			isSearchField: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'depthTo.keyword',
+			accessorKey: 'depthTo',
+			header: 'Depth To',
+			isExternalFilter: false,
 		},
 
 		{
