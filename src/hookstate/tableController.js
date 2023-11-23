@@ -187,7 +187,9 @@ async function fetchGridViews(client, module, tableKey) {
 	const allGridViews = result?.data?.getGridViews?.gridViews
 	const gridViewController = gridViewStateController(tableKey)
 	gridViewController?.initialize(tableKey, allGridViews);
-	return allGridViews
+
+	const defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(user?._id));
+	return defaultDisplay
 }
 
 
@@ -222,9 +224,19 @@ const tableESStateControllerHandler = state => ({
 			_Schema = await fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey)
 		}
 
-		let allGridViews = []
+		let defaultDisplay = []
+		let formatGridView = {}
+		let gridView = {}
+
 		if (gridViewSettings) {
-			allGridViews = await fetchGridViews(client, gridViewSettings.module, tableKey)
+			defaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey)
+
+			formatGridView = formatGridViewToMRT(defaultDisplay)
+			gridView = {
+				selectedGridView: !!defaultDisplay ? defaultDisplay : gridViewSettings.defaultView,
+				showViewModal: false,
+				showSaveAsNew: false,
+			}
 		}
 
 		const _TableSchema = _Schema.map(schemaColumn => {
@@ -370,20 +382,6 @@ const tableESStateControllerHandler = state => ({
 			{}
 		);
 
-		const _user = globalStateController.getValue('user')
-
-		let formatGridView = {}
-		let gridView = {}
-		if (gridViewSettings) {
-			const defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(_user?._id));
-
-			formatGridView = formatGridViewToMRT(defaultDisplay)
-			gridView = {
-				selectedGridView: !!defaultDisplay ? defaultDisplay : gridViewSettings.defaultView,
-				showViewModal: false,
-				showSaveAsNew: false,
-			}
-		}
 		state.merge({
 			...rest,
 			initialized: true,
