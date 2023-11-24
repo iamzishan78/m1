@@ -278,6 +278,128 @@ const TractInterestsHeadCells = [
             filter: true,
         },
     },
+    {
+        esKey: "nonExecRightsOnly.keyword",
+        name: 'nonExecRightsOnly',
+        label: 'Non-Exec Rights Only',
+        options: {
+            dbName: "nonExecRightsOnly",
+            sort: true,
+            filter: true,
+        },
+    },
+    {
+        esKey: 'seller_asking_price',
+        name: 'seller_asking_price',
+        label: 'Seller Asking Price',
+        options: {
+            dbName: "seller_asking_price",
+            sort: true,
+            filter: true,
+        },
+    },
+
+    {
+        esKey: 'competitor_offer_price',
+        name: 'competitor_offer_price',
+        label: 'Competitor Offer Price',
+        options: {
+            dbName: "competitor_offer_price",
+            sort: true,
+            filter: true,
+        },
+    },
+
+
+    {
+        esKey: 'actual_offer_price',
+        name: 'actual_offer_price',
+        label: 'Actual Offer Price',
+        options: {
+            dbName: "actual_offer_price",
+            sort: true,
+            filter: true,
+        },
+    },
+
+    {
+        esKey: 'leaseStatus.keyword',
+        name: 'leaseStatus',
+        label: 'Lease Status',
+        options: {
+            dbName: "leaseStatus",
+            sort: true,
+            filter: true,
+        },
+    },
+
+    {
+        esKey: 'offer_price_nma',
+        name: 'offer_price_nma',
+        label: 'Target Offer (per NMA)',
+        options: {
+            dbName: "offer_price_nma",
+            sort: true,
+            filter: true,
+        },
+    },
+
+    {
+        esKey: 'max_offer_price_nma',
+        name: 'max_offer_price_nma',
+        label: 'Max Offer (per NMA)',
+        options: {
+            dbName: "max_offer_price_nma",
+            sort: true,
+            filter: true,
+        },
+    },
+
+    {
+        esKey: 'offer_price',
+        name: 'offer_price',
+        label: 'Target Offer Price (per NRA)',
+        options: {
+            dbName: "offer_price",
+            sort: true,
+            filter: true,
+        },
+    },
+
+    {
+        esKey: 'max_offer_price',
+        name: 'max_offer_price',
+        label: 'Max Offer Price (per NRA)',
+        options: {
+            dbName: "max_offer_price",
+            sort: true,
+            filter: true,
+        },
+    },
+
+    {
+        name: "campaignName",
+        label: "Campaign Name",
+        esKey: "shapeJson.properties.campaignName.keyword",
+        options: {
+            customRender: (value) => {
+                return (typeof (value !== "string")) && value ? value?.join(", ") : value;
+            },
+            setCellProps: () => ({ style: { minWidth: "200px" } }),
+            sort: true,
+            filter: true,
+        },
+    },
+    {
+        esKey: 'campaignPriority.keyword',
+        name: 'campaignPriority',
+        label: 'Campaign Priority',
+        options: {
+            dbName: "campaignPriority",
+            sort: true,
+            filter: true,
+        },
+    },
 
     {
         name: "department",
