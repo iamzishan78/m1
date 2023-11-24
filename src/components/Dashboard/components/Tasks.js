@@ -279,7 +279,9 @@ const Tasks = () => {
             open={Boolean(anchorEl)}
             onClose={handleClose}
             getContentAnchorEl={null}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+
           >
             <MenuItem >
               <IconButton className={classes.menuItem} onClick={() => setStateApp({ ...stateApp, activityDialog: true })}>

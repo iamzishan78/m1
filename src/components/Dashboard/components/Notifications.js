@@ -362,7 +362,7 @@ const Notifications = () => {
               onClose={handleClose}
               getContentAnchorEl={null}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
               <MenuItem >
                 <IconButton className={classes.menuItem} onClick={archiveAllAndClose}>
