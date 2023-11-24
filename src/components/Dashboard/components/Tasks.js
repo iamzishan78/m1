@@ -130,6 +130,113 @@ const activityIcons = {
   mailer: <ContactMailIcon />,
 };
 
+
+const Title = ({ tab, setTab, data, setData, copyData }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [search, setSearch] = useState('');
+  const classes = useStyles();
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  useEffect(() => {
+    setSearch("")
+  }, [copyData])
+
+  useEffect(() => {
+    if (search && copyData?.length) {
+      if (search?.toLowerCase() === 'n/a') {
+        setData(copyData.filter(task => task?.name === ''));
+      } else {
+        setData(copyData.filter(task => task?.name?.toLowerCase()?.includes(search?.toLowerCase())));
+      }
+    }
+  }, [search])
+
+  return (
+    <Grid container className={classes.gridStyle}>
+      <Grid item xs={6} >
+        <Grid container alignItems="center" style={{ gap: '1rem' }}>
+          <div>My Tasks</div>
+          <TextField
+            value={search}
+            onChange={e => {
+              setSearch(e.target.value)
+            }}
+            style={{
+              margin: 0,
+              width: "70%"
+            }}
+            margin="dense"
+            variant="outlined"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment>
+                  <IconButton size="small">
+                    <SearchIcon htmlColor="grey" />
+                  </IconButton>
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <>
+                  <Tooltip title="Clear">
+                    <IconButton
+                      id="crossButton"
+                      size="small"
+                      htmlColor="#fff"
+                      onClick={() => setSearch("")}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  </Tooltip>
+                </>
+              ),
+            }}
+          />
+        </Grid>
+      </Grid>
+      <Grid item xs={6}>
+        <div className={classes.customTabs}>
+          <Tabs
+            value={tab}
+            textColor="primary"
+            onChange={(e, newValue) => {
+              setTab(newValue);
+            }}
+          >
+            <Tab label="Today" />
+            <Tab label="Upcoming" />
+            <Tab label="Overdue" />
+          </Tabs>
+          <MoreHorizIcon onClick={handleClick} />
+        </div>
+        <Menu
+          id="menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+          getContentAnchorEl={null}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+
+        >
+          <MenuItem >
+            <IconButton className={classes.menuItem} onClick={() => setStateApp({ ...stateApp, activityDialog: true })}>
+              <AddIcon /> {"New task"}
+            </IconButton>
+          </MenuItem>
+        </Menu>
+      </Grid>
+    </Grid>
+  );
+};
+
 const Tasks = () => {
   const history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -146,40 +253,41 @@ const Tasks = () => {
   const classes = useStyles();
   const [tab, setTab] = useState(0);
   const [data, setData] = useState([]);
+  const [copyData, setCopyData] = useState([])
+
   useEffect(() => {
     if (orginalData && Array.isArray(orginalData.activities)) {
       const sortCallBack = (a, b) => moment(b.dateTime).valueOf() - moment(a.dateTime).valueOf();
-
       if (tab === 0) {
-        setData(
-          orginalData.activities.filter(activity =>
-            !activity.isClosed &&
-            stateApp.user._id === activity.ownerId &&
-            moment.parseZone(new Date(activity.dateTime))?.isSame(new Date(), "day")
-          ).sort(sortCallBack)
-        )
+        const filterFirstTabData = orginalData.activities.filter(activity =>
+          !activity.isClosed &&
+          stateApp.user._id === activity.ownerId &&
+          moment.parseZone(new Date(activity.dateTime))?.isSame(new Date(), "day")
+        ).sort(sortCallBack)
+        setCopyData(filterFirstTabData)
+        setData(filterFirstTabData)
       } else if (tab === 1) {
         const tomorrow = moment().add(1, 'days').startOf('day'); // Start of the next day
         const futureDate = moment().add(7, 'days').endOf('day'); // Include the end of the 7th day
-        setData(
-          orginalData.activities.filter(
-            (activity) =>
-              !activity.isClosed &&
-              stateApp.user._id === activity.ownerId &&
-              moment
-                .parseZone(new Date(activity.dateTime))
-                .isBetween(tomorrow, futureDate)
-          ).sort(sortCallBack)
-        );
+        const filterSecondTabData = orginalData.activities.filter(
+          (activity) =>
+            !activity.isClosed &&
+            stateApp.user._id === activity.ownerId &&
+            moment
+              .parseZone(new Date(activity.dateTime))
+              .isBetween(tomorrow, futureDate)
+        ).sort(sortCallBack)
+        setCopyData(filterSecondTabData);
+        setData(filterSecondTabData);
       } else {
-        setData(
-          orginalData.activities.filter(
-            (activity) =>
-              !activity.isClosed &&
-              stateApp.user._id === activity.ownerId &&
-              moment.parseZone(new Date(activity.dateTime)).isBefore(moment())
-          ).sort(sortCallBack)
-        );
+        const filterThirldTabData = orginalData.activities.filter(
+          (activity) =>
+            !activity.isClosed &&
+            stateApp.user._id === activity.ownerId &&
+            moment.parseZone(new Date(activity.dateTime)).isBefore(moment())
+        ).sort(sortCallBack)
+        setCopyData(filterThirldTabData);
+        setData(filterThirldTabData);
       }
     }
   }, [orginalData, tab]);
@@ -205,99 +313,11 @@ const Tasks = () => {
     });
   };
 
-  const Title = () => {
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [search, setSearch] = useState('');
-
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
-
-    const handleClick = event => {
-      setAnchorEl(event.currentTarget);
-    };
-
-    return (
-      <Grid container className={classes.gridStyle}>
-        <Grid item xs={6} >
-          <Grid container alignItems="center" style={{ gap: '1rem' }}>
-            <div>My Tasks</div>
-            <TextField
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{
-                margin: 0,
-                width: "70%"
-              }}
-              margin="dense"
-              variant="outlined"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment>
-                    <IconButton size="small">
-                      <SearchIcon htmlColor="grey" />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <>
-                    <Tooltip title="Clear">
-                      <IconButton
-                        id="crossButton"
-                        size="small"
-                        htmlColor="#fff"
-                        onClick={() => setSearch("")}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </>
-                ),
-              }}
-            />
-          </Grid>
-        </Grid>
-        <Grid item xs={6}>
-          <div className={classes.customTabs}>
-            <Tabs
-              value={tab}
-              textColor="primary"
-              onChange={(e, newValue) => {
-                setTab(newValue);
-              }}
-            >
-              <Tab label="Today" />
-              <Tab label="Upcoming" />
-              <Tab label="Overdue" />
-            </Tabs>
-            <MoreHorizIcon onClick={handleClick} />
-          </div>
-          <Menu
-            id="menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            getContentAnchorEl={null}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-
-          >
-            <MenuItem >
-              <IconButton className={classes.menuItem} onClick={() => setStateApp({ ...stateApp, activityDialog: true })}>
-                <AddIcon /> {"New task"}
-              </IconButton>
-            </MenuItem>
-          </Menu>
-        </Grid>
-      </Grid>
-    );
-  };
   return (
     <Fragment>
       <CardHeader
         // action={<DragHandle />}
-        title={<Title />}
+        title={<Title tab={tab} setTab={setTab} data={data} setData={setData} copyData={copyData} />}
         className={classes.header}
       />
       {loading ? (
