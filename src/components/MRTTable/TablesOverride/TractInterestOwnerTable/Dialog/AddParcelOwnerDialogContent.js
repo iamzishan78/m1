@@ -32,11 +32,14 @@ import { showErrorMessage, showSuccessMessage } from '../../../../../../src/acti
 import { UPDATEPARCELOWNER } from 'graphQL/useMutationUpdateParcelOwner';
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { ADDOWNERTOAPARCEL } from 'graphQL/useMutationAddOwnerToAParcel';
+import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { AppContext } from 'AppContext';
 import { tableGlobalController } from 'hookstate/tableController';
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
+import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 
 const qtrOptions = ['E2', 'NE', 'NW', 'N2', 'SE', 'SW', 'S2', 'W2'];
 
@@ -141,6 +144,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     zip: '',
   });
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
+  const [leaseStatusList, setLeaseStatusList] = useState([]);
   const [isAcresOverridden, setIsAcresOverridden] = useState(false);
   const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] = useState('true');
   const [showAddNewContactFields, setShowAddNewContactFields] = useState(false);
@@ -180,6 +184,14 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         qtr,
         deals,
         grossAcres,
+        nonExecRightsOnly,
+        leaseStatus,
+        campaignPriority,
+        campaignName,
+        seller_asking_price,
+        competitor_offer_price,
+        actual_offer_price
+
       } = selectedRow;
       setNameAutValue({ name, _id: ownerEntity });
 
@@ -192,6 +204,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         mineral_interest: mineral_interest ? parseFloat(mineral_interest).toFixed(8) : null,
         royalty_interest: royalty_interest ? parseFloat(royalty_interest).toFixed(8) : null,
         orri: orri ? parseFloat(orri).toFixed(8) : null,
+        seller_asking_price: seller_asking_price || null,
+        competitor_offer_price: competitor_offer_price || null,
+        actual_offer_price: actual_offer_price || null,
         unknown_interest: unknown_interest || null,
         record_title: record_title || null,
         operating_rights: operating_rights || null,
@@ -202,7 +217,11 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         depthFrom: depthFrom || '',
         depthTo: depthTo || '',
         qtr: qtr || [null, null, null, null],
+        nonExecRightsOnly,
+        leaseStatus,
         customLayer,
+        campaignPriority,
+        campaignName,
         deals,
       });
 
@@ -240,6 +259,14 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     }
   );
 
+  const [getLeaseStatusList, { data: leaseStatusListRes }] = useLazyQuery(GET_ES_FILTER_LIST, {
+    fetchPolicy: 'no-cache',
+  });
+
+  const [getCampaignPriorityList, { data: priorityList }] = useLazyQuery(GET_ES_FILTER_LIST, {
+    fetchPolicy: 'no-cache',
+  });
+
   const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 
   const [addOwnerToAParcel, { data: mutationData }] = useMutation(ADDOWNERTOAPARCEL);
@@ -254,6 +281,35 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       });
     }
   }, [addContactData]);
+
+  useEffect(() => {
+    getLeaseStatusList({
+      variables: {
+        esIndex: 'shapeowners_flat',
+        filterKey: 'leaseStatus.keyword',
+        size: 50,
+      },
+    });
+  }, [getLeaseStatusList]);
+
+  useEffect(() => {
+    getCampaignPriorityList({
+      variables: {
+        esIndex: 'shapeowners_flat',
+        filterKey: 'campaignPriority.keyword',
+        size: 50,
+      },
+    });
+  }, [getCampaignPriorityList]);
+
+  useEffect(() => {
+    const uniqueList = Array.from(new Set(["HBP", "Leased", "Unleased", ...get(leaseStatusListRes, 'getESFilterList.hits', [])?.map(owner => owner.key)]));
+    const formattedList = uniqueList.map(leaseStatus => ({
+      _id: leaseStatus,
+      name: leaseStatus,
+    }));
+    setLeaseStatusList(formattedList);
+  }, [leaseStatusListRes])
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {
@@ -764,6 +820,24 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               />
             </Grid>
             <Grid item xs={12}>
+              <h3>Non-Exec Rights Only</h3>
+              <Autocomplete
+                options={[{ label: "Yes", value: "Yes" }, { label: "No", value: "No" }]}
+                getOptionLabel={option => option.label}
+                getOptionSelected={(option, value) => option.value === value}
+                value={newOwner?.nonExecRightsOnly ? { label: newOwner?.nonExecRightsOnly, value: newOwner?.nonExecRightsOnly } : null}
+                onChange={(e, newInputValue) => {
+                  setNewOwner({
+                    ...newOwner,
+                    nonExecRightsOnly: newInputValue?.value,
+                  })
+                }}
+                renderInput={params => (
+                  <TextField {...params} size="small" className={classes.maxWidth} multiline />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
               <h3>Royalty Interest (Lease)</h3>
               <TextField
                 type="number"
@@ -960,6 +1034,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 onWheel={e => e.target.blur()}
               />
             </Grid>
+           
             <Grid item xs={12}>
               <h3>Company Net Acres</h3>
               <TextField
@@ -975,6 +1050,90 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   });
                 }}
                 onWheel={e => e.target.blur()}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <h3>Seller Asking Price</h3>
+
+              <Controller
+                control={control}
+                name="seller_asking_price"
+                render={props => (
+                  <TextField
+                    size="small"
+                    value={newOwner.seller_asking_price}
+                    inputRef={props.ref}
+                    onWheel={e => e.target.blur()}
+                    onChange={e => {
+                      props.onChange(e.target.value);
+                      setNewOwner({
+                        ...newOwner,
+                        seller_asking_price: e.target.value || null,
+                      });
+                    }}
+                    InputProps={{
+                      inputComponent: CurrencyFormatCustom,
+                    }}
+                    fullWidth
+                    defaultValue=""
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <h3>Competitor Offer Price</h3>
+              <Controller
+                control={control}
+                name="competitor_offer_price"
+                render={props => (
+                  <TextField
+                    size="small"
+                    value={newOwner.competitor_offer_price}
+                    inputRef={props.ref}
+                    onWheel={e => e.target.blur()}
+                    onChange={e => {
+                      props.onChange(e.target.value);
+                      setNewOwner({
+                        ...newOwner,
+                        competitor_offer_price: e.target.value || null,
+                      });
+                    }}
+                    InputProps={{
+                      inputComponent: CurrencyFormatCustom,
+                    }}
+                    fullWidth
+                    defaultValue=""
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <h3>Actual Offer Price</h3>
+              <Controller
+                control={control}
+                name="actual_offer_price"
+                render={props => (
+                  <TextField
+                    size="small"
+                    value={newOwner.actual_offer_price}
+                    inputRef={props.ref}
+                    onWheel={e => e.target.blur()}
+                    onChange={e => {
+                      props.onChange(e.target.value);
+                      setNewOwner({
+                        ...newOwner,
+                        actual_offer_price: e.target.value || null,
+                      });
+                    }}
+                    InputProps={{
+                      inputComponent: CurrencyFormatCustom,
+                    }}
+                    fullWidth
+                    defaultValue=""
+                  />
+                )}
               />
             </Grid>
             {tenantName === 'Providence' && (
@@ -1118,6 +1277,109 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 </Grid>
               </>
             )}
+
+            <Grid item xs={12}>
+              <h3>Campaign Names</h3>
+
+              <Controller
+                control={control}
+                name="campaignName"
+                render={params => (
+                  <CampaignNameField
+                    {...params}
+                    value={newOwner?.campaignName}
+                    className={classes.maxWidth}
+                    onChange={(values, id) => {
+                      params.onChange(values);
+                      setNewOwner({
+                        ...newOwner,
+                        campaignName: values,
+                      });
+                    }}
+                    fullWidth
+                    targetLabel="Contact"
+                    simpleChips
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <h3>Campaign Priority</h3>
+              <Controller
+                control={control}
+                name="campaignPriority"
+                render={params => (
+                  <AutoCompleteWithAddNew
+                    {...params}
+                    value={newOwner?.campaignPriority}
+                    // variant="outlined"
+                    setValue={value => {
+                      if (value?._id) params.onChange({ _id: value._id, name: value.name });
+                      else params.onChange(null);
+                      if (value?._id === 'newEntity') delete value._id;
+                      setNewOwner({
+                        ...newOwner,
+                        campaignPriority: value.name,
+                      });
+                    }}
+                    options={get(priorityList, 'getESFilterList.hits', [])?.map(payor => ({
+                      _id: get(payor, `original.hits.hits.${0}._id`),
+                      name: payor.key,
+                    }))}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <h3>Lease Status</h3>
+              <Controller
+                control={control}
+                name="leaseStatus"
+                render={params => (
+                  <AutoCompleteWithAddNew
+                    {...params}
+                    value={newOwner?.leaseStatus}
+                    setValue={value => {
+                      if (value?._id) params.onChange({ _id: value._id, name: value.name });
+                      else params.onChange(null);
+                      if (value?._id === 'newEntity') delete value._id;
+                      setNewOwner({
+                        ...newOwner,
+                        leaseStatus: value?.name,
+                      });
+                    }}
+                    options={leaseStatusList}
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <h3>Associated Deals</h3>
+
+              <Controller
+                control={control}
+                name="deals"
+                render={params => (
+                  <AssociatedDealField
+                    {...params}
+                    className={classes.maxWidth}
+                    onChange={(values, id) => {
+                      setNewOwner({
+                        ...newOwner,
+                        deals: values || [],
+                      });
+                      params.onChange(values);
+                    }}
+                    value={newOwner?.deals}
+                    fullWidth
+                    targetLabel="Contact"
+                    simpleChips
+                  />
+                )}
+              />
+            </Grid>
             <Grid item xs={12}>
               <h3>Depth Restrictions</h3>
               <RadioGroup
@@ -1166,32 +1428,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 />
               </Grid>
             )}
-
-            <Grid item xs={12}>
-              <h3>Associated Deals</h3>
-
-              <Controller
-                control={control}
-                name="deals"
-                render={params => (
-                  <AssociatedDealField
-                    {...params}
-                    className={classes.maxWidth}
-                    onChange={(values, id) => {
-                      setNewOwner({
-                        ...newOwner,
-                        deals: values || [],
-                      });
-                      params.onChange(values);
-                    }}
-                    value={newOwner?.deals}
-                    fullWidth
-                    targetLabel="Contact"
-                    simpleChips
-                  />
-                )}
-              />
-            </Grid>
           </Grid>
         </DialogContent>
         <DialogActions className={classes.dialogAction}>
