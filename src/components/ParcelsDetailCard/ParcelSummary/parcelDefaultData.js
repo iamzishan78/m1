@@ -62,6 +62,7 @@ const tableData = [
         filterField: filterConsts.sectiontx.filterField,
         dependencyArray: filterConsts.sectiontx.dependencyArray,
     },
+    
     {
         label: "Abstract",
         type: "autocompletelandgrid",
@@ -141,6 +142,32 @@ const tableData = [
         key: "shapeArea",
         nonEditable: true,
     },
+    {
+        label: "Target Pricing (per NMA)",
+        type: "currency",
+        key: "uUnitPricingNMA",
+        edit: true,
+        esKey: 'uUnitPricingNMA',
+    },
+
+    {
+        label: "Max Pricing (per NMA)",
+        type: "currency",
+        key: "uMaxUnitPricingNMA",
+    },
+    {
+        label: "Target Pricing (per NRA)",
+        type: "currency",
+        key: "uUnitPricing",
+        edit: true,
+        esKey: 'uUnitPricing',
+    },
+
+    {
+        label: "Max Pricing (per NRA)",
+        type: "currency",
+        key: "uMaxUnitPricing",
+    },
     // {
     //     label: "Tract Status",
     //     type: "autocompletelandgrid",
@@ -168,6 +195,11 @@ const tableData = [
         // filterKey: filterConsts.mapStatus.filterKey,
         // filterField: filterConsts.mapStatus.filterField,
         // dependencyArray: filterConsts.mapStatus.dependencyArray,
+    },
+    {
+        label: "Campaign Name",
+        type: "custom",
+        key: "campaignName",
     },
     {
         label: "Basin",
