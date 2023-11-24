@@ -1,6 +1,5 @@
-import { Box, Button, ClickAwayListener, Grid, Typography } from "@material-ui/core";
+import { Box, ClickAwayListener, Grid, Typography } from "@material-ui/core";
 import CardHeader from "@material-ui/core/CardHeader";
-import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import Paper from "@material-ui/core/Paper";
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -13,7 +12,18 @@ import Avatar from "react-avatar";
 import Tooltip from "@material-ui/core/Tooltip";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import { CircularProgress } from "@material-ui/core";
+import {
+  CircularProgress,
+  Menu,
+  MenuItem,
+  TextField,
+  InputAdornment,
+  IconButton
+} from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import ClearIcon from "@material-ui/icons/Clear";
 import TractIcon from "components/Shared/svgIcons/tract";
 import UnitIcon from "components/Shared/svgIcons/unit";
 import NotificationsIcon from "@material-ui/icons/Notifications";
@@ -22,7 +32,6 @@ import ContactIcon from "@material-ui/icons/Group";
 import FlowIcon from "@material-ui/icons/Repeat";
 import { LocalAtm } from "@material-ui/icons";
 import { DescriptionOutlined } from "@material-ui/icons";
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
 import { UPDATE_NOTIFICATION_STATUS } from "graphQL/useMutationUpdateNotificationStatus";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
@@ -114,6 +123,8 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 0,
   },
   customTabs: {
+    display: 'flex',
+    alignItems: 'center ',
     float: "right",
     paddingRight: "30px",
     "& .MuiTab-root": {
@@ -134,24 +145,14 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
     backgroundColor: 'white',
   },
-  menuBtn: ({ isArchiving, showArchiveOption }) => ({
-    position: 'relative',
-    width: '218px',
-
-    '& button': {
-      width: 'inherit',
-      justifyContent: 'flex-start'
-    },
-
-    '&:hover #menu-icon': {
-      display: 'block',
-      transform: 'rotateX(180deg)'
-    },
-
-    '& #menu-icon': {
-      display: showArchiveOption && 'block'
+  menuItem: {
+    fontSize: '14px',
+    padding: 0,
+    '& > span': {
+      display: 'flex',
+      gap: '4px',
     }
-  })
+  },
 }));
 
 const Notifications = () => {
@@ -273,29 +274,62 @@ const Notifications = () => {
       awaitRefetchQueries: false,
     })
   };
-  const classes = useStyles({ isArchiving, showArchiveOption });
+  const classes = useStyles();
 
-  const archiveAllOption = () => {
-    setShowArchiveOption(!showArchiveOption);
-  }
   const Title = () => {
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [search, setSearch] = useState('');
+
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
+
+    const handleClick = event => {
+      setAnchorEl(event.currentTarget);
+    };
+
     return (
 
       <Grid container className={classes.gridStyle}>
-        <ClickAwayListener onClickAway={() => { setShowArchiveOption(false) }}>
-          <Grid item xs={6} className={classes.menuBtn}>
-            <Button aria-controls="simple-menu" aria-haspopup="true" onClick={archiveAllOption}>
-              <Box display={"flex"} gridGap={2} alignItems={'center'}>
-                <Typography variant="h5" style={{ fontWeight: '700' }}>Notifications</Typography>
-                <ExpandLessIcon id="menu-icon" className={classes.menuIcon} style={{ transform: showArchiveOption && 'rotate(180deg)' }} />
-              </Box>
-            </Button>
-            {showArchiveOption && (<Button className={classes.archiveBtn} onClick={archiveAllAndClose} disabled={isArchiving}>
-              <Box display={"flex"} gridGap={3} alignItems={'center'}>
-                {isArchiving && <CircularProgress size={15} />}
-                <Typography>Archive all</Typography>
-              </Box>
-            </Button>)}
+        <ClickAwayListener onClickAway={() => { }}>
+          <Grid item xs={6} container alignItems="center" style={{ gap: '1rem' }}>
+
+            <Typography variant="h5" style={{ fontWeight: '700' }}>Notifications</Typography>
+
+            <TextField
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{
+                margin: 0,
+              }}
+              margin="dense"
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment>
+                    <IconButton size="small">
+                      <SearchIcon htmlColor="grey" />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <>
+                    <Tooltip title="Clear">
+                      <IconButton
+                        id="crossButton"
+                        size="small"
+                        htmlColor="#fff"
+                        onClick={() => setSearch("")}
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                ),
+              }}
+            />
+
           </Grid>
         </ClickAwayListener>
         <Grid item xs={6}>
@@ -318,6 +352,24 @@ const Notifications = () => {
               <Tab label="Active" />
               <Tab label="Archive" />
             </Tabs>
+            <MoreHorizIcon onClick={handleClick} />
+
+            <Menu
+              id="menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+              getContentAnchorEl={null}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+            >
+              <MenuItem >
+                <IconButton className={classes.menuItem} onClick={archiveAllAndClose}>
+                  <Inventory2OutlinedIcon /> {"Archive All"}
+                </IconButton>
+              </MenuItem>
+            </Menu>
           </div>
         </Grid>
       </Grid>

@@ -1,6 +1,5 @@
 import { Grid } from "@material-ui/core";
 import CardHeader from "@material-ui/core/CardHeader";
-import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import Paper from "@material-ui/core/Paper";
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -11,7 +10,17 @@ import { sortableHandle } from "react-sortable-hoc";
 import Tooltip from "@material-ui/core/Tooltip";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import { CircularProgress } from "@material-ui/core";
+import {
+  CircularProgress,
+  Menu,
+  MenuItem,
+  TextField,
+  InputAdornment,
+  IconButton
+} from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import ClearIcon from "@material-ui/icons/Clear";
 import CheckCircleIcon from "components/Shared/svgIcons/CheckCircleIcon";
 import EventCalendarIcon from "components/Shared/svgIcons/EventCalendarIcon";
 import { GETALLACTIVITIES } from "../../../graphQL/useQueryGetAllActivities";
@@ -84,6 +93,8 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "3px !important",
   },
   customTabs: {
+    display: 'flex',
+    alignItems: 'center ',
     float: "right",
     paddingRight: "30px",
     "& .MuiTab-root": {
@@ -93,6 +104,15 @@ const useStyles = makeStyles((theme) => ({
       color: "#18AADD",
     },
   },
+
+  menuItem: {
+    fontSize: '14px',
+    padding: 0,
+    '& > span': {
+      display: 'flex',
+      gap: '4px',
+    }
+  }
 }));
 
 const DragHandle = sortableHandle(() => (
@@ -186,14 +206,55 @@ const Tasks = () => {
   };
 
   const Title = () => {
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [search, setSearch] = useState('');
+
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
+
+    const handleClick = event => {
+      setAnchorEl(event.currentTarget);
+    };
+
     return (
       <Grid container className={classes.gridStyle}>
         <Grid item xs={6} >
-          <Grid container alignItems="center">
+          <Grid container alignItems="center" style={{ gap: '1rem' }}>
             <div>My Tasks</div>
-            <IconButton title="Add new task" onClick={() => setStateApp({ ...stateApp, activityDialog: true })}>
-              <AddIcon />
-            </IconButton>
+            <TextField
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{
+                margin: 0,
+                width: "70%"
+              }}
+              margin="dense"
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment>
+                    <IconButton size="small">
+                      <SearchIcon htmlColor="grey" />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <>
+                    <Tooltip title="Clear">
+                      <IconButton
+                        id="crossButton"
+                        size="small"
+                        htmlColor="#fff"
+                        onClick={() => setSearch("")}
+                      >
+                        <ClearIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                ),
+              }}
+            />
           </Grid>
         </Grid>
         <Grid item xs={6}>
@@ -209,7 +270,23 @@ const Tasks = () => {
               <Tab label="Upcoming" />
               <Tab label="Overdue" />
             </Tabs>
+            <MoreHorizIcon onClick={handleClick} />
           </div>
+          <Menu
+            id="menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            getContentAnchorEl={null}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          >
+            <MenuItem >
+              <IconButton className={classes.menuItem} onClick={() => setStateApp({ ...stateApp, activityDialog: true })}>
+                <AddIcon /> {"New task"}
+              </IconButton>
+            </MenuItem>
+          </Menu>
         </Grid>
       </Grid>
     );
