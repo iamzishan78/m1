@@ -146,7 +146,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems,
   };
 
   const togglePullout = (expandedPanel) => {
-    console.log("🚀 ~ file: Panel.js:149 ~ togglePullout ~ expandedPanel:", expandedPanel)
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       expandedPanel: expandedPanel ?? !stateMapControls.expandedPanel,

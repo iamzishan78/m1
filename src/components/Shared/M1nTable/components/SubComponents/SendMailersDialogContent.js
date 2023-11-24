@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/client';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
 import { Modals } from 'styles/Modal';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -15,12 +15,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
 
-import { AppContext } from 'AppContext';
 import { showSuccessMessage, showErrorMessage } from 'actions';
 import { UPLOADRECIPIENTS } from 'graphQL/useMutationUploadStorefrontRecipientsList';
 
 // import value formatters
 import joinAddress from "components/Shared/valueformatters/join-address.js";
+import { globalStateController } from 'hookstate/globalStateController';
 
 
 const styles = (theme) => ({
@@ -82,13 +82,14 @@ export default function SendMailersDialogContent(props) {
 		if (!props.rows || props.rows.length === 0) props.onClose();
 	}, [props.rows]);
 
-	const [stateApp] = useContext(AppContext);
+	const { user } = globalStateController.useState(['user']);
+	const getUser = user.get({ noproxy: true });
 
-    useEffect(()=>{
-      if(props?.campaign?.name !== '' ){
-        setCampaign(props?.campaign?.name);
-      }
-    },[props.campaign]);
+	useEffect(() => {
+		if (props?.campaign?.name !== '') {
+			setCampaign(props?.campaign?.name);
+		}
+	}, [props.campaign]);
 	const runStorefront = () => {
 		if (campaign.trim() === '') {
 			dispatch(showErrorMessage('Please fill Campaign Name'));
@@ -97,7 +98,7 @@ export default function SendMailersDialogContent(props) {
 		uploadRecipients({
 			variables: {
 				campaign: campaign,
-				email: stateApp.user.email,
+				email: getUser?.email,
 				recipients: props.rows.map((row) => row._id),
 			},
 		});
