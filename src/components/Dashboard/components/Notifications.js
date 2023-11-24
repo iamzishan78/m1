@@ -155,6 +155,108 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const Title = ({ tab, setTab, setNotifications, copyData, setPage, archiveAllAndClose }) => {
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [search, setSearch] = useState('');
+  const classes = useStyles();
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  useEffect(() => {
+    // if (search && copyData?.length) {
+    //   setNotifications(copyData.filter(alert => alert?.parent?.name?.toLowerCase()?.includes(search?.toLowerCase())));
+    // }
+
+    // console.log('search', search)
+  }, [search])
+
+  return (
+
+    <Grid container className={classes.gridStyle}>
+
+      <Grid item xs={6} container alignItems="center" style={{ gap: '1rem' }}>
+
+        <Typography variant="h5" style={{ fontWeight: '700' }}>Notifications</Typography>
+
+        <TextField
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          style={{
+            margin: 0,
+          }}
+          margin="dense"
+          variant="outlined"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment>
+                <IconButton size="small">
+                  <SearchIcon htmlColor="grey" />
+                </IconButton>
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <>
+                <Tooltip title="Clear">
+                  <IconButton
+                    id="crossButton"
+                    size="small"
+                    htmlColor="#fff"
+                    onClick={() => setSearch("")}
+                  >
+                    <ClearIcon />
+                  </IconButton>
+                </Tooltip>
+              </>
+            ),
+          }}
+        />
+
+      </Grid>
+
+      <Grid item xs={6}>
+        <div className={classes.customTabs}>
+          <Tabs
+            value={tab}
+            textColor="primary"
+            onChange={(e, newValue) => {
+              setTab(newValue);
+              setPage(1);
+            }}
+          >
+            <Tab label="Active" />
+            <Tab label="Archive" />
+          </Tabs>
+          <MoreHorizIcon onClick={handleClick} />
+
+          <Menu
+            id="menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            getContentAnchorEl={null}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <MenuItem >
+              <IconButton className={classes.menuItem} onClick={archiveAllAndClose}>
+                <Inventory2OutlinedIcon /> {"Archive All"}
+              </IconButton>
+            </MenuItem>
+          </Menu>
+        </div>
+      </Grid>
+    </Grid>
+  );
+};
+
 const Notifications = () => {
   let history = useHistory();
   const [stateApp, setStateApp] = useContext(AppContext);
@@ -164,6 +266,7 @@ const Notifications = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [users, setUsers] = useState([]);
   const [tab, setTab] = useState(0);
+  const [copyData, setCopyData] = useState([])
   const [showArchiveOption, setShowArchiveOption] = useState(false)
 
   const [archiveAllMentions, { loading: isArchiving }] = useMutation(ARCHIVE_ALL_MUTATIONS);
@@ -185,11 +288,11 @@ const Notifications = () => {
     getNotifications({
       variables: {
         userId: stateApp.user.mongoId,
-        state: "Active",
+        state: tab === 0 ? "Active" : "Archived",
         page,
       },
     });
-  }, [getNotifications, stateApp.user]);
+  }, [getNotifications, stateApp.user, tab]);
 
   useEffect(() => {
     getAllMongoUsers();
@@ -276,105 +379,6 @@ const Notifications = () => {
   };
   const classes = useStyles();
 
-  const Title = () => {
-
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [search, setSearch] = useState('');
-
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
-
-    const handleClick = event => {
-      setAnchorEl(event.currentTarget);
-    };
-
-    return (
-
-      <Grid container className={classes.gridStyle}>
-        <ClickAwayListener onClickAway={() => { }}>
-          <Grid item xs={6} container alignItems="center" style={{ gap: '1rem' }}>
-
-            <Typography variant="h5" style={{ fontWeight: '700' }}>Notifications</Typography>
-
-            <TextField
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{
-                margin: 0,
-              }}
-              margin="dense"
-              variant="outlined"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment>
-                    <IconButton size="small">
-                      <SearchIcon htmlColor="grey" />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <>
-                    <Tooltip title="Clear">
-                      <IconButton
-                        id="crossButton"
-                        size="small"
-                        htmlColor="#fff"
-                        onClick={() => setSearch("")}
-                      >
-                        <ClearIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </>
-                ),
-              }}
-            />
-
-          </Grid>
-        </ClickAwayListener>
-        <Grid item xs={6}>
-          <div className={classes.customTabs}>
-            <Tabs
-              value={tab}
-              textColor="primary"
-              onChange={(e, newValue) => {
-                setTab(newValue);
-                setPage(1);
-                getNotifications({
-                  variables: {
-                    userId: stateApp.user.mongoId,
-                    state: newValue === 0 ? "Active" : "Archived",
-                    page: 1
-                  },
-                });
-              }}
-            >
-              <Tab label="Active" />
-              <Tab label="Archive" />
-            </Tabs>
-            <MoreHorizIcon onClick={handleClick} />
-
-            <Menu
-              id="menu"
-              anchorEl={anchorEl}
-              keepMounted
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-              getContentAnchorEl={null}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
-              <MenuItem >
-                <IconButton className={classes.menuItem} onClick={archiveAllAndClose}>
-                  <Inventory2OutlinedIcon /> {"Archive All"}
-                </IconButton>
-              </MenuItem>
-            </Menu>
-          </div>
-        </Grid>
-      </Grid>
-    );
-  };
   const getNotificationIcon = (type) => {
     switch (type) {
       case "PARCEL":
@@ -399,7 +403,7 @@ const Notifications = () => {
   return (
     <Fragment>
       <CardHeader
-        title={<Title />}
+        title={<Title tab={tab} setTab={setTab} setNotifications={setNotifications} copyData={copyData} setPage={setPage} archiveAllAndClose={archiveAllAndClose} />}
         className={classes.header}
       />
 
