@@ -66,6 +66,24 @@ export default [
         actual_key: "parcel.net_acres"
     },
     {
+        label: "Seller Asking Price",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.seller_asking_price"
+    },
+    {
+        label: "Competitor Offer Price",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.competitor_offer_price"
+    },
+    {
+        label: "Actual Offer Price",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.actual_offer_price"
+    },
+    {
         label: "Net Royalty Acres",
         mapped_key: "",
         required: false,
