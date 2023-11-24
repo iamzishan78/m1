@@ -93,7 +93,7 @@ const viewOptions = [
 	},
 ];
 
-function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, defaultView }) {
+function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, defaultView, fetchGridViews }) {
 	const Controller = tableController(tableKey);
 	const tableState = Controller.useState(['filters', 'columnVisibility', 'gridView', 'gridViewSettings']);
 	const tableStateValues = tableState.stateValues;
@@ -108,6 +108,7 @@ function GridViewOptions({ handleDefaultView, module, tableKey, allGridViews, de
 	const [viewName, setViewName] = useState(`${tableStateValues?.gridView?.selectedGridView?.name}-copy`);
 	const [addGridView] = useMutation(ADD_GRID_VIEW, {
 		onCompleted: data => {
+			fetchGridViews()
 			Controller.updateState({
 				gridView: {
 					selectedGridView: data?.addGridView?.newGridView,
@@ -364,11 +365,7 @@ function InputField({
 								},
 							},
 							refetchQueries: ['getGridViews'],
-						}).then(
-							res => {
-								tableGlobalController.reInitialized();
-							}
-						);
+						})
 					}
 					Controller.updateState({
 						gridView: { ...tableStateValues.gridView, showSaveAsNew: false, showViewModal: false },
