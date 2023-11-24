@@ -234,10 +234,10 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         campaignPriority,
         campaignName,
         deals,
-        max_offer_price,
-        offer_price,
-        offer_price_nma,
-        max_offer_price_nma
+        max_offer_price: parseFloat(parseFloat(max_offer_price)?.toFixed(2)),
+        offer_price: parseFloat(parseFloat(offer_price)?.toFixed(2)),
+        offer_price_nma: parseFloat(parseFloat(offer_price_nma)?.toFixed(2)),
+        max_offer_price_nma: parseFloat(parseFloat(max_offer_price_nma)?.toFixed(2))
       });
 
       const calculatedNRA = calculateStandardNraForTract(
