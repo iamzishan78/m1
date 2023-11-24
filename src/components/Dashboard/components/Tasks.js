@@ -131,7 +131,7 @@ const activityIcons = {
 };
 
 
-const Title = ({ tab, setTab, data, setData, copyData }) => {
+const Title = ({ tab, setTab, setData, copyData }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [search, setSearch] = useState('');
   const classes = useStyles();
@@ -317,7 +317,7 @@ const Tasks = () => {
     <Fragment>
       <CardHeader
         // action={<DragHandle />}
-        title={<Title tab={tab} setTab={setTab} data={data} setData={setData} copyData={copyData} />}
+        title={<Title tab={tab} setTab={setTab} setData={setData} copyData={copyData} />}
         className={classes.header}
       />
       {loading ? (
