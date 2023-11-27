@@ -227,7 +227,10 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 
         >
           <MenuItem >
-            <IconButton className={classes.menuItem} onClick={() => setStateApp({ ...stateApp, activityDialog: true })}>
+            <IconButton className={classes.menuItem} onClick={() => {
+              handleClose()
+              setStateApp({ ...stateApp, activityDialog: true })
+            }}>
               <AddIcon /> {"New task"}
             </IconButton>
           </MenuItem>
