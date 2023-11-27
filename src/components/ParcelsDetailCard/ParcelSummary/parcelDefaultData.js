@@ -146,7 +146,19 @@ const tableData = [
         label: "Net Royalty Acres (NRA)",
         type: "calculation",
         key: "netRoyalityAcres",
+        nonEditable: true,
     },
+    {
+        label: "Exec Net Acres",
+        key: "execNetAcres",
+        nonEditable: true,
+    },
+    {
+        label: "Non-Exec Net Acres",
+        key: "nonExecNetAcres",
+        nonEditable: true,
+    },
+
     {
         label: "Target Pricing (per NMA)",
         type: "currency",
