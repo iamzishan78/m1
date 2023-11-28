@@ -121,6 +121,22 @@ const TractsHeadCells = (isSnapGrid = false) => [
     },
   },
   {
+    label: "Exec Net Acres",
+    name: "execNetAcres",
+    esKey: "shapeJson.properties.execNetAcres.keyword",
+    options: {
+      dbName: "shapeJson.properties.execNetAcres.keyword",
+    },
+  },
+  {
+    label: "Non-Exec Net Acres",
+    name: "nonExecNetAcres",
+    esKey: "shapeJson.properties.nonExecNetAcres.keyword",
+    options: {
+      dbName: "shapeJson.properties.nonExecNetAcres.keyword",
+    },
+  },
+  {
     label: "Target Pricing (per NMA)",
     name: "uUnitPricingNMA",
     esKey: 'shapeJson.properties.uUnitPricingNMA',
@@ -182,7 +198,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.campaignName.keyword",
     options: {
       customRender: (value) => {
-        return (typeof (value !== "string")  ) && value? value?.join(", ") : value;
+        return (typeof (value !== "string")) && value ? value?.join(", ") : value;
       },
       setCellProps: () => ({ style: { minWidth: "200px" } }),
       sort: true,
