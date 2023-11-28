@@ -104,7 +104,10 @@ const toNumber = value => (value ? parseInt(value.replace(/\$/g, '').replace(/\,
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
   const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
-
+  const calculateOfferPrice = (nra, offer) => {
+    return parseFloat((parseFloat(nra || 0) * parseFloat(offer || 0)).toFixed(2));
+  };
+  const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing } = props?.customLayer?.shapeJson?.properties;
   const tenantName = window.sessionStorage.getItem('tenantName');
   const [stateApp, setStateApp] = useContext(AppContext);
   const { control } = useForm();
@@ -146,6 +149,10 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
   const [leaseStatusList, setLeaseStatusList] = useState([]);
   const [isAcresOverridden, setIsAcresOverridden] = useState(false);
+  const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false);
+  const [isMaxOfferPriceOverridden, setIsMaxOfferPriceOverridden] = useState(false);
+  const [isOfferPriceNMAOverridden, setIsOfferPriceNMAOverridden] = useState(false);
+  const [isMaxOfferPriceNMAOverridden, setIsMaxOfferPriceNMAOverridden] = useState(false);
   const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] = useState('true');
   const [showAddNewContactFields, setShowAddNewContactFields] = useState(false);
 
@@ -184,6 +191,10 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         qtr,
         deals,
         grossAcres,
+        max_offer_price,
+        offer_price,
+        offer_price_nma,
+        max_offer_price_nma,
         nonExecRightsOnly,
         leaseStatus,
         campaignPriority,
@@ -223,6 +234,10 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         campaignPriority,
         campaignName,
         deals,
+        max_offer_price: parseFloat(parseFloat(max_offer_price)?.toFixed(2)),
+        offer_price: parseFloat(parseFloat(offer_price)?.toFixed(2)),
+        offer_price_nma: parseFloat(parseFloat(offer_price_nma)?.toFixed(2)),
+        max_offer_price_nma: parseFloat(parseFloat(max_offer_price_nma)?.toFixed(2))
       });
 
       const calculatedNRA = calculateStandardNraForTract(
@@ -246,6 +261,19 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
       if (depthTo === 'All depths' && depthFrom === 'All depths') setParcelOwnersRadioBValue('true');
       else setParcelOwnersRadioBValue('false');
+
+      let calculatedOfferPrice = calculateOfferPrice(nra, uUnitPricing);
+      let calculatedMaxOfferPrice = calculateOfferPrice(nra, uMaxUnitPricing);
+      let calculatedOfferPriceNMA = calculateOfferPrice(net_acres, uUnitPricingNMA);
+      let calculatedMaxOfferPriceNMA = calculateOfferPrice(net_acres, uMaxUnitPricingNMA);
+      if (!isNaN(parseFloat(calculatedOfferPrice)))
+        setIsOfferPriceOverridden(calculatedOfferPrice !== parseFloat(parseFloat(offer_price).toFixed(2)) && !isNaN(parseFloat(offer_price)));
+      if (!isNaN(parseFloat(calculatedMaxOfferPrice)))
+        setIsMaxOfferPriceOverridden(calculatedMaxOfferPrice !== parseFloat(parseFloat(max_offer_price).toFixed(2)) && !isNaN(parseFloat(max_offer_price)));
+      if (!isNaN(parseFloat(calculatedOfferPriceNMA)))
+        setIsOfferPriceNMAOverridden(calculatedOfferPriceNMA !== parseFloat(parseFloat(offer_price_nma).toFixed(2)) && !isNaN(parseFloat(offer_price_nma)));
+      if (!isNaN(parseFloat(calculatedMaxOfferPriceNMA)))
+        setIsMaxOfferPriceNMAOverridden(calculatedMaxOfferPriceNMA !== parseFloat(parseFloat(max_offer_price_nma).toFixed(2)) && !isNaN(parseFloat(max_offer_price_nma)));
     }
   }, [selectedRow]);
 
@@ -966,6 +994,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     nra: !isNraOverridden
                       ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
                       : newOwner.nra,
+                    offer_price_nma: calculateOfferPrice(value, uUnitPricingNMA),
+                    max_offer_price_nma: calculateOfferPrice(value, uMaxUnitPricingNMA),
                   }));
                 }}
                 InputProps={{
@@ -997,6 +1027,108 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             </Grid>
 
             <Grid item xs={12}>
+              <h3>Target Offer Price (per NMA)</h3>
+
+              <Controller
+                control={control}
+                name="offer_price_nma"
+                render={props => (
+                  <TextField
+                    size="small"
+                    value={newOwner?.offer_price_nma}
+                    inputRef={props.ref}
+                    onWheel={e => e.target.blur()}
+                    onChange={e => {
+                      const value = parseFloat(e.target.value).toFixed(2);
+                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.net_acres, uUnitPricingNMA);
+                      setIsOfferPriceNMAOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
+                      props.onChange(value);
+                      setNewOwner(newOwner => ({
+                        ...newOwner,
+                        offer_price_nma: value,
+                      }));
+                    }}
+                    className={isOfferPriceNMAOverridden ? classes.baseValueChanged : classes.maxWidth}
+                    InputProps={{
+                      inputComponent: CurrencyFormatCustom,
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          {isOfferPriceNMAOverridden && (
+                            <IconButton
+                              aria-label="toggle offer_price_nma"
+                              onClick={() => {
+                                setIsOfferPriceNMAOverridden(false);
+                                setNewOwner(newOwner => ({
+                                  ...newOwner,
+                                  offer_price_nma: calculateOfferPrice(newOwner?.net_acres, uUnitPricingNMA),
+                                }));
+                              }}
+                            >
+                              <AutorenewIcon />
+                            </IconButton>
+                          )}
+                        </InputAdornment>
+                      ),
+                    }}
+                    fullWidth
+                    defaultValue=""
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <h3>Max Offer Price (per NMA)</h3>
+
+              <Controller
+                control={control}
+                name="max_offer_price_nma"
+                render={props => (
+                  <TextField
+                    size="small"
+                    value={newOwner?.max_offer_price_nma}
+                    inputRef={props.ref}
+                    onWheel={e => e.target.blur()}
+                    onChange={e => {
+                      const value = parseFloat(e.target.value).toFixed(2);
+                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.net_acres, uMaxUnitPricingNMA);
+                      setIsMaxOfferPriceNMAOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
+                      props.onChange(value);
+                      setNewOwner(newOwner => ({
+                        ...newOwner,
+                        max_offer_price_nma: value,
+                      }));
+                    }}
+                    className={isMaxOfferPriceNMAOverridden ? classes.baseValueChanged : classes.maxWidth}
+                    InputProps={{
+                      inputComponent: CurrencyFormatCustom,
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          {isMaxOfferPriceNMAOverridden && (
+                            <IconButton
+                              aria-label="toggle max_offer_price_nma"
+                              onClick={() => {
+                                setIsMaxOfferPriceNMAOverridden(false);
+                                setNewOwner(newOwner => ({
+                                  ...newOwner,
+                                  max_offer_price_nma: calculateOfferPrice(newOwner?.net_acres, uMaxUnitPricingNMA),
+                                }));
+                              }}
+                            >
+                              <AutorenewIcon />
+                            </IconButton>
+                          )}
+                        </InputAdornment>
+                      ),
+                    }}
+                    fullWidth
+                    defaultValue=""
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
               <h3>Net Royalty Acres (NRA)</h3>
               <TextField
                 id="standard-number"
@@ -1011,6 +1143,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   setNewOwner({
                     ...newOwner,
                     nra: value || null,
+                    offer_price: calculateOfferPrice(value, uUnitPricing),
+                    max_offer_price: calculateOfferPrice(value, uMaxUnitPricing)
                   });
                 }}
                 InputProps={{
@@ -1034,6 +1168,109 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 onWheel={e => e.target.blur()}
               />
             </Grid>
+
+            <Grid item xs={12}>
+              <h3>Target Offer Price (per NRA)</h3>
+
+              <Controller
+                control={control}
+                name="offer_price"
+                render={props => (
+                  <TextField
+                    size="small"
+                    value={newOwner?.offer_price}
+                    inputRef={props.ref}
+                    onWheel={e => e.target.blur()}
+                    onChange={e => {
+                      const value = parseFloat(e.target.value).toFixed(2);
+                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.nra, uUnitPricing);
+                      setIsOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
+                      props.onChange(value);
+                      setNewOwner(newOwner => ({
+                        ...newOwner,
+                        offer_price: value,
+                      }));
+                    }}
+                    className={isOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
+                    InputProps={{
+                      inputComponent: CurrencyFormatCustom,
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          {isOfferPriceOverridden && (
+                            <IconButton
+                              aria-label="toggle offer_price"
+                              onClick={() => {
+                                setIsOfferPriceOverridden(false);
+                                setNewOwner(newOwner => ({
+                                  ...newOwner,
+                                  offer_price: calculateOfferPrice(newOwner?.nra, uUnitPricing),
+                                }));
+                              }}
+                            >
+                              <AutorenewIcon />
+                            </IconButton>
+                          )}
+                        </InputAdornment>
+                      ),
+                    }}
+                    fullWidth
+                    defaultValue=""
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <h3>Max Offer Price (per NRA)</h3>
+
+              <Controller
+                control={control}
+                name="max_offer_price"
+                render={props => (
+                  <TextField
+                    size="small"
+                    value={newOwner?.max_offer_price}
+                    inputRef={props.ref}
+                    onWheel={e => e.target.blur()}
+                    onChange={e => {
+                      const value = parseFloat(e.target.value).toFixed(2);
+                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.nra, uMaxUnitPricing);
+                      setIsMaxOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
+                      props.onChange(value);
+                      setNewOwner(newOwner => ({
+                        ...newOwner,
+                        max_offer_price: value,
+                      }));
+                    }}
+                    className={isMaxOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
+                    InputProps={{
+                      inputComponent: CurrencyFormatCustom,
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          {isMaxOfferPriceOverridden && (
+                            <IconButton
+                              aria-label="toggle max_offer_price"
+                              onClick={() => {
+                                setIsMaxOfferPriceOverridden(false);
+                                setNewOwner(newOwner => ({
+                                  ...newOwner,
+                                  max_offer_price: calculateOfferPrice(newOwner?.nra, uMaxUnitPricing),
+                                }));
+                              }}
+                            >
+                              <AutorenewIcon />
+                            </IconButton>
+                          )}
+                        </InputAdornment>
+                      ),
+                    }}
+                    fullWidth
+                    defaultValue=""
+                  />
+                )}
+              />
+            </Grid>
+
            
             <Grid item xs={12}>
               <h3>Company Net Acres</h3>
