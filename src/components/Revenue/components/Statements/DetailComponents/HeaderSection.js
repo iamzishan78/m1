@@ -276,7 +276,7 @@ function HeaderFunction(props) {
                     }}
                     onBlur={(e) => {
                       handleUpdateCheck({
-                        checkDate: moment.utc(e.target.value).toISOString(),
+                        checkDate: moment(e.target.value).toDate().toISOString(),
                       });
                     }}
                     InputLabelProps={{
