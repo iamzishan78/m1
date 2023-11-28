@@ -39,7 +39,9 @@ import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
+import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import { Status } from 'components/ContactDetailCard/components/FieldContent';
 
 const qtrOptions = ['E2', 'NE', 'NW', 'N2', 'SE', 'SW', 'S2', 'W2'];
 
@@ -155,6 +157,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const [isMaxOfferPriceNMAOverridden, setIsMaxOfferPriceNMAOverridden] = useState(false);
   const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] = useState('true');
   const [showAddNewContactFields, setShowAddNewContactFields] = useState(false);
+  const [statusOptions, setStatusOptions] = useState([]);
 
   const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
@@ -194,6 +197,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         max_offer_price,
         offer_price,
         offer_price_nma,
+        contact,
         max_offer_price_nma,
         nonExecRightsOnly,
         leaseStatus,
@@ -234,6 +238,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         campaignPriority,
         campaignName,
         deals,
+        status: contact?.status,
+        contactStatus: contact?.contactStatus,
         max_offer_price: parseFloat(parseFloat(max_offer_price)?.toFixed(2)),
         offer_price: parseFloat(parseFloat(offer_price)?.toFixed(2)),
         offer_price_nma: parseFloat(parseFloat(offer_price_nma)?.toFixed(2)),
@@ -295,6 +301,18 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     fetchPolicy: 'no-cache',
   });
 
+  const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
+
+  useEffect(() => {
+    getFilters({
+      variables: {
+        esIndex: 'contacts_flat',
+        filterKey: 'status.keyword',
+        size: 50,
+      },
+    });
+  }, []);
+
   const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 
   const [addOwnerToAParcel, { data: mutationData }] = useMutation(ADDOWNERTOAPARCEL);
@@ -309,6 +327,25 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       });
     }
   }, [addContactData]);
+
+  useEffect(() => {
+    if (filtersData?.getESFilterList?.hits) {
+      const allFiltersData = filtersData.getESFilterList.hits.map(hit => hit.key);
+      let filterData = filtersData.getESFilterList.hits.map(hit => hit.key);
+      for (let i = 0; i < contactStatusOptions.length; i++) {
+        filterData = filterData.filter(d => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label);
+      }
+      for (let i = 0; i < contactStatusOptions.length; i++) {
+        if (
+          (contactStatusOptions[i].notInclude && allFiltersData.find(d => d === contactStatusOptions[i].value)) ||
+          !contactStatusOptions[i].notInclude
+        ) {
+          filterData.push(contactStatusOptions[i].label);
+        }
+      }
+      setStatusOptions(filterData);
+    }
+  }, [filtersData]);
 
   useEffect(() => {
     getLeaseStatusList({
@@ -1271,7 +1308,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               />
             </Grid>
 
-           
+
             <Grid item xs={12}>
               <h3>Company Net Acres</h3>
               <TextField
@@ -1587,6 +1624,59 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       });
                     }}
                     options={leaseStatusList}
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <h3>Contact Status</h3>
+
+              <Controller
+                control={control}
+                defaultValue={newOwner?.contactStatus ? newOwner?.contactStatus : ''}
+                name="contactStatus"
+                render={props => (
+                  <ContactStatus
+                    className={classes.maxWidth}
+                    setValue={value => {
+                      let val = value.name;
+                      props.onChange(val);
+                      setNewOwner({
+                        ...newOwner,
+                        contactStatus: val,
+                      });
+                    }}
+                    value={props.value ? props.value : ''}
+                    fieldKey="contactStatus"
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <h3>Contact Stage</h3>
+
+              <Controller
+                control={control}
+                defaultValue={newOwner?.status ? newOwner?.status : ''}
+                name="status"
+                render={props => (
+                  <Status
+                    className={classes.maxWidth}
+                    options={statusOptions}
+                    value={props.value}
+                    setDocumentType={value => {
+                      let val = value.name;
+                      const data = contactStatusOptions.find(s => s.label === val);
+                      if (data) {
+                        val = data.value;
+                      }
+                      props.onChange(val);
+                      setNewOwner({
+                        ...newOwner,
+                        status: val,
+                      });
+                    }}
                   />
                 )}
               />
