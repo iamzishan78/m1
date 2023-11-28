@@ -356,6 +356,22 @@ const OwnersPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.homePhone.keyword',
+			accessorFn: row => row?.contact?.homePhone,
+			id: 'contact.homePhone',
+			header: 'Contact Home Phone 1',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.mobilePhone.keyword',
+			accessorFn: row => row?.contact?.mobilePhone,
+			id: 'contact.mobilePhone',
+			header: 'Contact Mobile Phone 1',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'contactOwners.keyword',
 			accessorKey: 'contactOwners',
 			header: 'Contact Owner',
