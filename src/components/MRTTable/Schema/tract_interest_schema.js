@@ -35,6 +35,11 @@ const TractInterestsMeta = {
     },
     {
       ...CommonSchema.HIDDEN,
+      name: 'contact._id',
+      accessorKey: 'contact._id',
+    },
+    {
+      ...CommonSchema.HIDDEN,
       name: "shape._id.keyword",
       accessorFn: (row) => row?.shape?._id,
       id: "shape._id",
@@ -54,21 +59,6 @@ const TractInterestsMeta = {
           <ColumnWithLink value={renderedCellValue} link={`/map/parcels/${row.getValue('shape._id')}`} />
         </div>
       ),
-    },
-
-    {
-      ...CommonSchema.COMMON_COLUMN,
-      name: 'layer.keyword',
-      accessorFn: row => row?.layer,
-      id: 'layer',
-      header: 'Layer',
-    },
-    {
-      ...CommonSchema.COMMON_COLUMN,
-      name: 'shape.layer.keyword',
-      accessorFn: row => row?.shape?.layer,
-      id: 'shape.layer',
-      header: 'Layer2',
     },
 
     {
@@ -140,6 +130,7 @@ const TractInterestsMeta = {
       accessorFn: row => row?.shape?.shapeJson?.properties?.sdGrossAcres,
       id: 'shape.shapeJson.properties.sdGrossAcres',
       header: 'Gross Acres',
+      type: 'number',
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -168,6 +159,8 @@ const TractInterestsMeta = {
       accessorFn: row => row?.mineral_interest,
       id: 'mineral_interest',
       header: 'Mineral Interest',
+      type: 'number',
+      isSearchField: false,
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -175,6 +168,8 @@ const TractInterestsMeta = {
       accessorFn: row => row?.royalty_interest,
       id: 'royalty_interest',
       header: 'Royalty Ineterest',
+      type: 'number',
+      isSearchField: false,
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -182,6 +177,8 @@ const TractInterestsMeta = {
       accessorFn: row => row?.orri,
       id: 'orri',
       header: 'ORRI',
+      type: 'number',
+      isSearchField: false,
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -189,6 +186,8 @@ const TractInterestsMeta = {
       accessorFn: row => row?.net_acres,
       id: 'net_acres',
       header: 'Net Acres',
+      type: 'number',
+      isSearchField: false,
     },
     {
       ...CommonSchema.COMMON_COLUMN,
@@ -196,6 +195,8 @@ const TractInterestsMeta = {
       accessorFn: row => row?.nra,
       id: 'nra',
       header: 'NRA',
+      type: 'number',
+      isSearchField: false,
     },
     {
       ...CommonSchema.COMMON_COLUMN,
