@@ -424,7 +424,7 @@ const TractPerUnitMeta = {
 			name: 'contact.contactStatus.keyword',
 			accessorFn: row => row?.contact?.contactStatus,
 			id: 'contact.contactStatus',
-			header: 'Contact Status',
+			header: 'Status',
 		},
 
 		{
@@ -432,7 +432,7 @@ const TractPerUnitMeta = {
 			name: 'contact.status.keyword',
 			accessorFn: row => row?.contact?.status,
 			id: 'contact.status',
-			header: 'Contact Stage',
+			header: 'Stage',
 		},
 
 		{

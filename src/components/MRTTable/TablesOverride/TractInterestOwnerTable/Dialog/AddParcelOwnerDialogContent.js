@@ -1553,6 +1553,59 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             )}
 
             <Grid item xs={12}>
+              <h3>Status</h3>
+
+              <Controller
+                control={control}
+                defaultValue={newOwner?.contactStatus ? newOwner?.contactStatus : ''}
+                name="contactStatus"
+                render={props => (
+                  <ContactStatus
+                    className={classes.maxWidth}
+                    setValue={value => {
+                      let val = value.name;
+                      props.onChange(val);
+                      setNewOwner({
+                        ...newOwner,
+                        contactStatus: val,
+                      });
+                    }}
+                    value={props.value ? props.value : ''}
+                    fieldKey="contactStatus"
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <h3>Stage</h3>
+
+              <Controller
+                control={control}
+                defaultValue={newOwner?.status ? newOwner?.status : ''}
+                name="status"
+                render={props => (
+                  <Status
+                    className={classes.maxWidth}
+                    options={statusOptions}
+                    value={props.value}
+                    setDocumentType={value => {
+                      let val = value.name;
+                      const data = contactStatusOptions.find(s => s.label === val);
+                      if (data) {
+                        val = data.value;
+                      }
+                      props.onChange(val);
+                      setNewOwner({
+                        ...newOwner,
+                        status: val,
+                      });
+                    }}
+                  />
+                )}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
               <h3>Campaign Names</h3>
 
               <Controller
@@ -1629,58 +1682,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               />
             </Grid>
 
-            <Grid item xs={12}>
-              <h3>Contact Status</h3>
 
-              <Controller
-                control={control}
-                defaultValue={newOwner?.contactStatus ? newOwner?.contactStatus : ''}
-                name="contactStatus"
-                render={props => (
-                  <ContactStatus
-                    className={classes.maxWidth}
-                    setValue={value => {
-                      let val = value.name;
-                      props.onChange(val);
-                      setNewOwner({
-                        ...newOwner,
-                        contactStatus: val,
-                      });
-                    }}
-                    value={props.value ? props.value : ''}
-                    fieldKey="contactStatus"
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Contact Stage</h3>
-
-              <Controller
-                control={control}
-                defaultValue={newOwner?.status ? newOwner?.status : ''}
-                name="status"
-                render={props => (
-                  <Status
-                    className={classes.maxWidth}
-                    options={statusOptions}
-                    value={props.value}
-                    setDocumentType={value => {
-                      let val = value.name;
-                      const data = contactStatusOptions.find(s => s.label === val);
-                      if (data) {
-                        val = data.value;
-                      }
-                      props.onChange(val);
-                      setNewOwner({
-                        ...newOwner,
-                        status: val,
-                      });
-                    }}
-                  />
-                )}
-              />
-            </Grid>
 
             <Grid item xs={12}>
               <h3>Associated Deals</h3>
