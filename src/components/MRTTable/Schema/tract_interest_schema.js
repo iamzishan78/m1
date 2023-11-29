@@ -35,6 +35,11 @@ const TractInterestsMeta = {
     },
     {
       ...CommonSchema.HIDDEN,
+      name: 'ownerEntity',
+      accessorKey: 'ownerEntity',
+    },
+    {
+      ...CommonSchema.HIDDEN,
       name: 'contact._id',
       accessorKey: 'contact._id',
     },
@@ -208,19 +213,17 @@ const TractInterestsMeta = {
     {
       ...CommonSchema.TAGS,
       Cell: ({ row }) => {
-        const targetSourceId = row.getValue('_id');
-        const targetLabel = 'Parcel Ownership';
-        return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={targetLabel} />;
+        const targetSourceId = row.getValue('ownerEntity');
+        return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={'Parcel Ownership'} />;
       },
     },
     {
       ...CommonSchema.COMMENTS,
       Cell: ({ renderedCellValue, row }) => {
-        const id = row.getValue('_id');
-        const targetLabel = 'Parcel Ownership';
-        return <CommentCell id={id} value={renderedCellValue?.length} targetLabel={targetLabel} />;
+        const id = row.getValue('ownerEntity');
+        return <CommentCell id={id} value={renderedCellValue.length} targetLabel={'Parcel Ownership'} />;
       },
-    }
+    },
   ],
 };
 
