@@ -1,6 +1,12 @@
 
+import { Typography } from "@material-ui/core";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
+import vf_number from "components/Shared/valueformatters/vf_number";
 import { GlobalStickyStyles } from "GlobalSettings";
+
+const getFormattedValue = (value) => {
+    return <Typography>{value ? vf_number(value) : <span style={{ color: 'rgb(149,149,149)' }}>--</span>}</Typography>;
+}
 
 const RevenueStatementHeadCells = [
     {
@@ -64,34 +70,36 @@ const RevenueStatementHeadCells = [
         name: "interestType", label: "Type", esKey: 'interestType.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "price", label: "Avg Price", esKey: 'price', options: { sort: true, filter: true }
+        name: "price", label: "Avg Price", esKey: 'price', options: {
+            sort: true, filter: true, customRender: (value) => getFormattedValue(value)
+        }
     },
     {
-        name: "grossPropertyVolume", label: "Prop Gross Volume", esKey: 'grossPropertyVolume', options: { sort: true, filter: true }
+        name: "grossPropertyVolume", label: "Prop Gross Volume", esKey: 'grossPropertyVolume', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
     },
     {
-        name: "grossPropertyValue", label: "Prop Gross Revenue", esKey: 'grossPropertyValue', options: { sort: true, filter: true }
+        name: "grossPropertyValue", label: "Prop Gross Revenue", esKey: 'grossPropertyValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
     },
     {
-        name: "grossOwnerVolume", label: "Owner Volume", esKey: 'grossOwnerVolume', options: { sort: true, filter: true }
+        name: "grossOwnerVolume", label: "Owner Volume", esKey: 'grossOwnerVolume', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
     },
     {
-        name: "grossOwnerValue", label: "Owner Gross Revenue", esKey: 'grossOwnerValue', options: { sort: true, filter: true }
+        name: "grossOwnerValue", label: "Owner Gross Revenue", esKey: 'grossOwnerValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
     },
     {
-        name: "ownerTax", label: "Owner Tax Amt", esKey: 'ownerTax', options: { sort: true, filter: true }
+        name: "ownerTax", label: "Owner Tax Amt", esKey: 'ownerTax', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
     },
     {
         name: "taxType", label: "Tax Type", esKey: 'taxType', options: { sort: true, filter: true }
     },
     {
-        name: "ownerDeducts", label: "Deduct Amt", esKey: 'ownerDeducts', options: { sort: true, filter: true }
+        name: "ownerDeducts", label: "Deduct Amt", esKey: 'ownerDeducts', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
     },
     {
         name: "deductType", label: "Deduct Cd", esKey: 'deductType.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "netOwnerValue", label: "Owner Net Rev", esKey: 'netOwnerValue', options: { sort: true, filter: true }
+        name: "netOwnerValue", label: "Owner Net Rev", esKey: 'netOwnerValue', options: { sort: true, filter: true, customRender: (value) => getFormattedValue(value) }
     },
     {
         name: "propertyId", options: { filter: false, display: false, sort: false, viewColumns: false, }
