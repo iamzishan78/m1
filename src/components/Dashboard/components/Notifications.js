@@ -30,7 +30,7 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import FolderIcon from "@material-ui/icons/Folder";
 import ContactIcon from "@material-ui/icons/Group";
 import FlowIcon from "@material-ui/icons/Repeat";
-import { LocalAtm } from "@material-ui/icons";
+import { CollectionsOutlined, LocalAtm } from "@material-ui/icons";
 import { DescriptionOutlined } from "@material-ui/icons";
 import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
 import { UPDATE_NOTIFICATION_STATUS } from "graphQL/useMutationUpdateNotificationStatus";
@@ -42,6 +42,8 @@ import ReactTimeAgo from "react-time-ago";
 import { dateIsValid } from "utils/helper";
 import { CommonCommentText } from "components/Shared/CommentComponent";
 import { ARCHIVE_ALL_MUTATIONS } from "graphQL/useMutationArchiverAllMentions";
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -227,7 +229,7 @@ const Title = ({ tab, setTab, setNotifications, copyData, setPage, archiveAllAnd
             textColor="primary"
             onChange={(e, newValue) => {
               setTab(newValue);
-              setPage(1);
+              setPage(15);
             }}
           >
             <Tab label="Active" />
@@ -259,23 +261,22 @@ const Title = ({ tab, setTab, setNotifications, copyData, setPage, archiveAllAnd
 
 const Notifications = () => {
   let history = useHistory();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [_, setStateApp] = useContext(AppContext);
   const [notifications, setNotifications] = useState([]);
   const [profilesInfo, setProfilesInfo] = useState({});
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(15);
   const [isFetching, setIsFetching] = useState(false);
   const [users, setUsers] = useState([]);
   const [tab, setTab] = useState(0);
   const [copyData, setCopyData] = useState([])
-  const [showArchiveOption, setShowArchiveOption] = useState(false)
+  const { user } = globalStateController.useState(['user']);
+  const getUser = user.get({ noproxy: true });
 
-  const [archiveAllMentions, { loading: isArchiving }] = useMutation(ARCHIVE_ALL_MUTATIONS);
+  const [archiveAllMentions] = useMutation(ARCHIVE_ALL_MUTATIONS);
   const [updateNotificationStatus] = useMutation(UPDATE_NOTIFICATION_STATUS);
 
-  const [getNotifications, { data: notificationsData, loading }] =
-    useLazyQuery(GET_NOTIFICATIONS, {
-      fetchPolicy: 'cache-and-network'
-    });
+  const [getNotifications, { data: allNotifications, loading, refetch: refetchAllNotifications }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });;
+
 
   const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
     fetchPolicy: "cache-first",
@@ -285,14 +286,31 @@ const Notifications = () => {
   });
 
   useEffect(() => {
+
+    const filters = [{ field: "receiverId", value: getUser?._id }]
+    if (tab === 0) {
+      filters.push({ field: 'state', value: 'ARCHIVED', type: "advanced", searchType: "notEquals", isKeyword: true })
+    } else {
+      filters.push({ field: "state", value: "ARCHIVED" })
+    }
+
     getNotifications({
       variables: {
-        userId: stateApp.user.mongoId,
-        state: tab === 0 ? "Active" : "Archived",
-        page,
-      },
-    });
-  }, [getNotifications, stateApp.user, tab]);
+        index: "notification_flat",
+        filters,
+        sort: [],
+        pagination: {
+          first: 10000,
+          after: null,
+        }
+      }
+    })
+  }, [tab])
+
+  useEffect(() => {
+    if (allNotifications)
+      setNotifications(allNotifications?.getESSimpleSearch?.hits)
+  }, [allNotifications])
 
   useEffect(() => {
     getAllMongoUsers();
@@ -316,45 +334,20 @@ const Notifications = () => {
   }, [userLists]);
 
   useEffect(() => {
-    if (notificationsData?.getNotifications?.notifications) {
-      if (page === 1) {
-        setNotifications(notificationsData?.getNotifications?.notifications);
-        return;
-      }
-      setNotifications((prevNotifications) => [...prevNotifications, ...notificationsData?.getNotifications?.notifications]);
-    }
-  }, [notificationsData]);
-
-  useEffect(() => {
     if (profilesData?.data?.profileByEmail?.profiles) {
       setProfilesInfo(profilesData.data.profileByEmail.profiles);
     }
   }, [profilesData]);
 
   const refetchNotifications = async () => {
-    setPage(1);
-    await getNotifications({
-      variables: {
-        userId: stateApp.user.mongoId,
-        state: tab === 0 ? "Active" : "Archived",
-        page: 1
-      },
-    });
+    setPage(15);
+    refetchAllNotifications()
   }
-
   const fetchNotifications = async () => {
     setIsFetching(true)
-    await getNotifications({
-      variables: {
-        userId: stateApp.user.mongoId,
-        state: tab === 0 ? "Active" : "Archived",
-        page
-      },
-    });
-    setPage(page + 1);
+    setPage(page + 15);
     setIsFetching(false)
   }
-
   const handleScroll = () => {
     const list = document.getElementById("noifications-list");
     if (list) {
@@ -364,7 +357,7 @@ const Notifications = () => {
 
       // Calculate the position where the user reaches the end of the list's content
       const isAtEndOfList = scrollTop + clientHeight >= scrollHeight - 20;
-      if (notificationsData?.getNotifications?.notifications?.length === 0) return;
+      if (allNotifications?.getESSimpleSearch?.hits?.length === 0) return;
       if (isAtEndOfList && !isFetching) {
         fetchNotifications();
       }
@@ -373,9 +366,9 @@ const Notifications = () => {
 
   const archiveAllAndClose = async () => {
     await archiveAllMentions({
-      refetchQueries: ["getNotifications"],
       awaitRefetchQueries: false,
     })
+    refetchAllNotifications()
   };
   const classes = useStyles();
 
@@ -400,6 +393,7 @@ const Notifications = () => {
         return;
     }
   };
+
   return (
     <Fragment>
       <CardHeader
@@ -411,8 +405,8 @@ const Notifications = () => {
         <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
       ) : (
         <List onScroll={handleScroll} id="noifications-list" style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
-          {notifications.map(({ _id, state, source, parent, senderId, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
-            const user = users.find((user) => source.user === user._id);
+          {notifications.map(({ _id, state, source, parent, sender, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
+            const user = users.find((user) => source?.user === user?._id);
             return (
               <Paper key={i} className={classes.paper}>
                 <Grid
@@ -512,25 +506,25 @@ const Notifications = () => {
                           <IconButton
                             style={{ marginTop: "0px", marginLeft: "14px" }}
                           >
-                            {profilesInfo[senderId?.email]?.profileImage ? (
+                            {profilesInfo[sender?.email]?.profileImage ? (
                               <Avatar
-                                src={profilesInfo[senderId?.email].profileImage}
+                                src={profilesInfo[sender?.email].profileImage}
                                 size="38"
                                 round
                               />
                             ) : (
-                              <Avatar name={senderId?.name} size="38" round />
+                              <Avatar name={sender?.name} size="38" round />
                             )}
                           </IconButton>
                         </Grid>
                         <Grid item xs={11} className={classes.paddingLeft10}>
                           <div>
-                            <span className={classes.bold}>{senderId?.name}</span>
+                            <span className={classes.bold}>{sender?.name}</span>
                             {
                               notificationType === "TASK_COMPLETED" ? "  has completed the Task" : "  has assigned you a Task"
                             }
                           </div>
-                          <div>{parent.name}</div>
+                          <div>{parent?.name}</div>
                         </Grid>
                       </Grid>
                     }
@@ -589,15 +583,15 @@ const Notifications = () => {
                         <Grid item xs={11} className={classes.paddingLeft10}>
                           <div>
                             <span className={classes.bold}>{user?.name}</span>
-                            {
+                            {!!source &&
                               <ReactTimeAgo
                                 className={classes.commentTime}
-                                date={new Date(!isNaN(Number(source.ts)) ? Number(source.ts) : source.ts)}
+                                date={new Date(!isNaN(Number(source?.ts)) ? Number(source?.ts) : source?.ts)}
                                 locale="en-US"
                               />
                             }
                           </div>
-                          <CommonCommentText users={users} eachComment={source} />
+                          {!!source && <CommonCommentText users={users} eachComment={source} />}
                         </Grid>
                       </Grid>
                     )}
@@ -643,7 +637,7 @@ const Notifications = () => {
               </Paper>
             );
           })}
-          {isFetching && <CircularProgress className={classes.progress} size={40} disableShrink color="secondary"></CircularProgress>}
+          {loading && <CircularProgress className={classes.progress} size={40} disableShrink color="secondary"></CircularProgress>}
         </List>
       )}
     </Fragment>
