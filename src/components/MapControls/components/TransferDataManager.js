@@ -136,7 +136,7 @@ export default function TransferDataManager(props) {
             }
           }],
         },
-        filters: [{ field: "file._id", value: selectedSourceCategory?.file }],
+        filters: [{ field: "file._id", value: [selectedSourceCategory?.file, selectedSourceCategory?.originalFile].filter(Boolean) }],
         pagination: {
           first: 5,
           after: null,
