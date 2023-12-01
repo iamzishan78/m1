@@ -360,6 +360,7 @@ const OwnersPerUnitMeta = {
 			accessorFn: row => row?.contact?.homePhone,
 			id: 'contact.homePhone',
 			header: 'Contact Home Phone 1',
+			size: 275,
 		},
 
 		{
@@ -368,6 +369,7 @@ const OwnersPerUnitMeta = {
 			accessorFn: row => row?.contact?.mobilePhone,
 			id: 'contact.mobilePhone',
 			header: 'Contact Mobile Phone 1',
+			size: 275,
 		},
 
 		{
