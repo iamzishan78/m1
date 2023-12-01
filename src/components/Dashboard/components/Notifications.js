@@ -405,8 +405,8 @@ const Notifications = () => {
         <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
       ) : (
         <List onScroll={handleScroll} id="noifications-list" style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
-          {notifications.map(({ _id, state, source, parent, sender, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
-            const user = users.find((user) => source?.user === user?._id);
+          {notifications.map(({ _id, state, comment, parent, sender, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
+            const user = users.find((user) => comment?.user === user?._id);
             return (
               <Paper key={i} className={classes.paper}>
                 <Grid
@@ -583,15 +583,13 @@ const Notifications = () => {
                         <Grid item xs={11} className={classes.paddingLeft10}>
                           <div>
                             <span className={classes.bold}>{user?.name}</span>
-                            {!!source &&
-                              <ReactTimeAgo
-                                className={classes.commentTime}
-                                date={new Date(!isNaN(Number(source?.ts)) ? Number(source?.ts) : source?.ts)}
-                                locale="en-US"
-                              />
-                            }
+                            {comment?.ts && <ReactTimeAgo
+                              className={classes.commentTime}
+                              date={new Date(comment?.ts)}
+                              locale="en-US"
+                            />}
                           </div>
-                          {!!source && <CommonCommentText users={users} eachComment={source} />}
+                          <CommonCommentText users={users} eachComment={comment} />
                         </Grid>
                       </Grid>
                     )}
