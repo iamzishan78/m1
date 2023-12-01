@@ -1553,7 +1553,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             )}
 
             <Grid item xs={12}>
-              <h3>Status</h3>
+              <h3>Contact Status</h3>
 
               <Controller
                 control={control}
@@ -1577,7 +1577,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               />
             </Grid>
             <Grid item xs={12}>
-              <h3>Stage</h3>
+              <h3>Contact Stage</h3>
 
               <Controller
                 control={control}

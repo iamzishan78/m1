@@ -424,7 +424,7 @@ const TractPerUnitMeta = {
 			name: 'contact.contactStatus.keyword',
 			accessorFn: row => row?.contact?.contactStatus,
 			id: 'contact.contactStatus',
-			header: 'Status',
+			header: 'Contact Status',
 		},
 
 		{
@@ -432,7 +432,16 @@ const TractPerUnitMeta = {
 			name: 'contact.status.keyword',
 			accessorFn: row => row?.contact?.status,
 			id: 'contact.status',
-			header: 'Stage',
+			header: 'Contact Stage',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contactOwners.keyword',
+			accessorKey: 'contactOwners',
+			header: 'Contact Owner',
+			Cell: ({ row }) => {
+				return <div>{row?.original?.contactOwners[0]}</div>
+			}
 		},
 
 		{
