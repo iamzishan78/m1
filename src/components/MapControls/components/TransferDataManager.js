@@ -115,7 +115,7 @@ export default function TransferDataManager(props) {
         search: {
           query: "",
           fields: ['*'],
-          advanceSearch: selectedSourceCategory.layerGeometry === 'Polygon' ? [{
+          advanceSearch: selectedSourceCategory?.layerGeometry === 'Polygon' ? [{
             "bool": {
               "should": [
                 {
