@@ -1,4 +1,4 @@
-import { Box, ClickAwayListener, Grid, Typography } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import CardHeader from "@material-ui/core/CardHeader";
 import List from "@material-ui/core/List";
 import Paper from "@material-ui/core/Paper";
@@ -30,9 +30,8 @@ import NotificationsIcon from "@material-ui/icons/Notifications";
 import FolderIcon from "@material-ui/icons/Folder";
 import ContactIcon from "@material-ui/icons/Group";
 import FlowIcon from "@material-ui/icons/Repeat";
-import { CollectionsOutlined, LocalAtm } from "@material-ui/icons";
+import { LocalAtm } from "@material-ui/icons";
 import { DescriptionOutlined } from "@material-ui/icons";
-import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
 import { UPDATE_NOTIFICATION_STATUS } from "graphQL/useMutationUpdateNotificationStatus";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
@@ -157,7 +156,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Title = ({ tab, setTab, setNotifications, copyData, setPage, archiveAllAndClose }) => {
+const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [search, setSearch] = useState('');
@@ -172,11 +171,21 @@ const Title = ({ tab, setTab, setNotifications, copyData, setPage, archiveAllAnd
   };
 
   useEffect(() => {
-    // if (search && copyData?.length) {
-    //   setNotifications(copyData.filter(alert => alert?.parent?.name?.toLowerCase()?.includes(search?.toLowerCase())));
-    // }
+    setSearch("")
+  }, [tab])
 
-    // console.log('search', search)
+  useEffect(() => {
+    if (search && copyData?.length) {
+      const showNotification = copyData.filter(notification => {
+        const parentName = notification?.parent?.name;
+        if (Array.isArray(parentName)) {
+          return parentName.some(name => name.toLowerCase().includes(search?.toLowerCase()));
+        } else {
+          return parentName?.toLowerCase()?.includes(search?.toLowerCase());
+        }
+      });
+      setNotifications(showNotification)
+    }
   }, [search])
 
   return (
@@ -229,7 +238,6 @@ const Title = ({ tab, setTab, setNotifications, copyData, setPage, archiveAllAnd
             textColor="primary"
             onChange={(e, newValue) => {
               setTab(newValue);
-              setPage(15);
             }}
           >
             <Tab label="Active" />
@@ -264,8 +272,6 @@ const Notifications = () => {
   const [_, setStateApp] = useContext(AppContext);
   const [notifications, setNotifications] = useState([]);
   const [profilesInfo, setProfilesInfo] = useState({});
-  const [page, setPage] = useState(15);
-  const [isFetching, setIsFetching] = useState(false);
   const [users, setUsers] = useState([]);
   const [tab, setTab] = useState(0);
   const [copyData, setCopyData] = useState([])
@@ -298,7 +304,7 @@ const Notifications = () => {
       variables: {
         index: "notification_flat",
         filters,
-        sort: [],
+        sort: { field: 'dateTimeAdded', order: 'desc' },
         pagination: {
           first: 10000,
           after: null,
@@ -308,8 +314,15 @@ const Notifications = () => {
   }, [tab])
 
   useEffect(() => {
-    if (allNotifications)
-      setNotifications(allNotifications?.getESSimpleSearch?.hits)
+    if (allNotifications) {
+      // if notificationType is MENTION then comment key must exist in array 
+      // {notificationType: "MENTION", comment: { $exists: true }}
+      const showNotifications = allNotifications?.getESSimpleSearch?.hits?.filter(notificationObj => {
+        return notificationObj.notificationType !== "MENTION" || (notificationObj.notificationType === "MENTION" && notificationObj.comment !== undefined);
+      });
+      setNotifications(showNotifications)
+      setCopyData(showNotifications)
+    }
   }, [allNotifications])
 
   useEffect(() => {
@@ -340,28 +353,40 @@ const Notifications = () => {
   }, [profilesData]);
 
   const refetchNotifications = async () => {
-    setPage(15);
-    refetchAllNotifications()
-  }
-  const fetchNotifications = async () => {
-    setIsFetching(true)
-    setPage(page + 15);
-    setIsFetching(false)
-  }
-  const handleScroll = () => {
-    const list = document.getElementById("noifications-list");
-    if (list) {
-      const scrollTop = list.scrollTop;
-      const scrollHeight = list.scrollHeight;
-      const clientHeight = list.clientHeight;
-
-      // Calculate the position where the user reaches the end of the list's content
-      const isAtEndOfList = scrollTop + clientHeight >= scrollHeight - 20;
-      if (allNotifications?.getESSimpleSearch?.hits?.length === 0) return;
-      if (isAtEndOfList && !isFetching) {
-        fetchNotifications();
-      }
+    const filters = [{ field: "receiverId", value: getUser?._id }]
+    if (tab === 0) {
+      filters.push({ field: 'state', value: 'ARCHIVED', type: "advanced", searchType: "notEquals", isKeyword: true })
+    } else {
+      filters.push({ field: "state", value: "ARCHIVED" })
     }
+
+    getNotifications({
+      variables: {
+        index: "notification_flat",
+        filters,
+        sort: { field: 'dateTimeAdded', order: 'desc' },
+        pagination: {
+          first: 10000,
+          after: null,
+        }
+      }
+    })
+  }
+
+  const handleScroll = () => {
+    // const list = document.getElementById("noifications-list");
+    // if (list) {
+    //   const scrollTop = list.scrollTop;
+    //   const scrollHeight = list.scrollHeight;
+    //   const clientHeight = list.clientHeight;
+
+    //   // Calculate the position where the user reaches the end of the list's content
+    //   const isAtEndOfList = scrollTop + clientHeight >= scrollHeight - 20;
+    //   if (allNotifications?.getESSimpleSearch?.hits?.length === 0) return;
+    //   if (isAtEndOfList && !isFetching) {
+
+    //   }
+    // }
   };
 
   const archiveAllAndClose = async () => {
@@ -397,11 +422,11 @@ const Notifications = () => {
   return (
     <Fragment>
       <CardHeader
-        title={<Title tab={tab} setTab={setTab} setNotifications={setNotifications} copyData={copyData} setPage={setPage} archiveAllAndClose={archiveAllAndClose} />}
+        title={<Title tab={tab} setTab={setTab} setNotifications={setNotifications} copyData={copyData} archiveAllAndClose={archiveAllAndClose} />}
         className={classes.header}
       />
 
-      {(loading && !isFetching) ? (
+      {(loading) ? (
         <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
       ) : (
         <List onScroll={handleScroll} id="noifications-list" style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
