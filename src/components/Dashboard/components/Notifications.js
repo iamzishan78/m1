@@ -160,6 +160,7 @@ const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) 
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [search, setSearch] = useState('');
+  const [defaultData, setDefaultData] = useState([])
   const classes = useStyles();
 
   const handleClose = () => {
@@ -176,6 +177,7 @@ const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) 
 
   useEffect(() => {
     if (search && copyData?.length) {
+      setDefaultData(copyData)
       const showNotification = copyData.filter(notification => {
         const parentName = notification?.parent?.name;
         if (Array.isArray(parentName)) {
@@ -219,7 +221,10 @@ const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) 
                     id="crossButton"
                     size="small"
                     htmlColor="#fff"
-                    onClick={() => setSearch("")}
+                    onClick={() => {
+                      setNotifications(defaultData)
+                      setSearch("")
+                    }}
                   >
                     <ClearIcon />
                   </IconButton>

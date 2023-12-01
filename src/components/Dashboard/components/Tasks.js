@@ -134,6 +134,7 @@ const activityIcons = {
 const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [search, setSearch] = useState('');
+  const [defaultData, setDefaultData] = useState([])
   const classes = useStyles();
 
   const handleClose = () => {
@@ -150,6 +151,7 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
 
   useEffect(() => {
     if (search && copyData?.length) {
+      setDefaultData(copyData)
       if (search?.toLowerCase() === 'n/a') {
         setData(copyData.filter(task => task?.name === ''));
       } else {
@@ -189,7 +191,11 @@ const Title = ({ tab, setTab, setData, copyData, stateApp, setStateApp }) => {
                       id="crossButton"
                       size="small"
                       htmlColor="#fff"
-                      onClick={() => setSearch("")}
+                      onClick={() => {
+                        setData(defaultData)
+                        setSearch("")
+                      }
+                      }
                     >
                       <ClearIcon />
                     </IconButton>
