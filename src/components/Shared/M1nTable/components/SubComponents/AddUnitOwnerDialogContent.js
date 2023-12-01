@@ -136,22 +136,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     fetchPolicy: 'no-cache',
   });
 
-  const calculateNRA = (interest1, interest2, interest3, interest4, unitAcres = uAcres) => {
-    if (!interest4 && !interest1 && !interest2 && !interest3) return null;
-
-    let nra =
-      parseFloat(unitAcres || 0) *
-      (parseFloat(interest1 || 0) + parseFloat(interest2 || 0) + parseFloat(interest3 || 0));
-
-    if (interest4) nra = parseFloat(interest4 || 0) * parseFloat(unitAcres || 0);
-
-    if (workspaceSettings.settings?.map?.unitNra?.type === 'custom' && workspaceSettings.settings?.map?.unitNra?.value)
-      nra = nra / Number(workspaceSettings.settings?.map?.unitNra?.value);
-
-    nra = addTrailingZeros(nra.toFixed(8));
-    return nra;
-  };
-
   const calculateOfferPrice = nra => {
     return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
   };

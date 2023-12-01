@@ -9,6 +9,8 @@ import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TractIcon from 'components/Shared/svgIcons/tract';
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
 const esIndex = 'shapeowners_flat';
 
@@ -150,6 +152,15 @@ const TractPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: "nonExecRightsOnly.keyword",
+			accessorKey: 'nonExecRightsOnly',
+			header: 'Non-Exec Rights Only',
+			id: "nonExecRightsOnly",
+			size: 200,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'royalty_interest',
 			accessorKey: 'royalty_interest',
 			header: 'Royalty Interest (Lease)',
@@ -285,8 +296,7 @@ const TractPerUnitMeta = {
 			},
 		},
 
-
-
+		
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'nra',
@@ -314,6 +324,47 @@ const TractPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'offer_price_nma',
+			accessorKey: 'offer_price_nma',
+			header: 'Target Offer (per NMA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price_nma)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'max_offer_price_nma',
+			accessorKey: 'max_offer_price_nma',
+			header: 'Max Offer (per NMA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price_nma)}</>,
+		},
+
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'offer_price',
+			accessorKey: 'offer_price',
+			header: 'Target Offer (per NRA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'max_offer_price',
+			accessorKey: 'max_offer_price',
+			header: 'Max Offer (per NRA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'company_net_acres',
 			accessorKey: 'company_net_acres',
 			header: 'Co Net Acres',
@@ -336,21 +387,59 @@ const TractPerUnitMeta = {
 				return <div>{sumCoNetAcres?.value ? addTrailingZeros(parseFloat(sumCoNetAcres?.value).toFixed(8)) : 0}</div>;
 			},
 		},
-
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'depthFrom.keyword',
-			accessorKey: 'depthFrom',
-			header: 'Depth From',
-			isSearchField: true,
+			name: 'seller_asking_price',
+			accessorKey: 'seller_asking_price',
+			header: 'Seller Asking Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.seller_asking_price)}</>,
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'depthTo.keyword',
-			accessorKey: 'depthTo',
-			header: 'Depth To',
-			isExternalFilter: false,
+			name: 'competitor_offer_price',
+			accessorKey: 'competitor_offer_price',
+			header: 'Competitor Offer Price',
+			isSearchField: false,
+			type: 'number',
+			size: 300,
+			Cell: ({ row }) => <>{vf_currency(row?.original?.competitor_offer_price)}</>,
+		},
+
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'actual_offer_price',
+			accessorKey: 'actual_offer_price',
+			header: 'Actual Offer Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.actual_offer_price)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'campaignName.keyword',
+			accessorFn: row => row?.campaignName,
+			id: 'campaignName',
+			header: 'Campaign Name',
+			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'campaignPriority.keyword',
+			accessorKey: 'campaignPriority',
+			header: 'Campaign Priority',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'leaseStatus.keyword',
+			accessorKey: 'leaseStatus',
+			header: 'Lease Status',
 		},
 
 		{
@@ -378,6 +467,21 @@ const TractPerUnitMeta = {
 					</div>
 				);
 			},
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'depthFrom.keyword',
+			accessorKey: 'depthFrom',
+			header: 'Depth From',
+			isSearchField: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'depthTo.keyword',
+			accessorKey: 'depthTo',
+			header: 'Depth To',
+			isExternalFilter: false,
 		},
 
 		{

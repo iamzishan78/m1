@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -8,8 +8,12 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import ArrowDropRight from '@material-ui/icons/ArrowRight';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import { Box, Grid } from "@material-ui/core";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import { Box, Grid, IconButton, Tooltip } from "@material-ui/core";
+import CSVDownloader from "react-csv-downloader";
+
 import vf_number from "components/Shared/valueformatters/vf_number";
+import { convertAnalyticsDataToCSV } from "components/Shared/M1nTable/components/MUIDataTable/utils";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -93,6 +97,24 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
     return value ? <span>{vf_number(value.toFixed(2))}</span> : <span>-</span>
   }
 
+  const [csvItems, setCsvItems] = useState(items)
+
+  useEffect(() => {
+    const totalAdjustments = { name: 'TOTAL ADJUSTMENTS', total, data: {} }
+
+    monthsInterval.forEach((month) => {
+      let total = 0
+      items.forEach((item) => {
+        if (typeof item?.data?.[month] === 'object')
+          total += item?.data?.[month]?.total;
+      });
+
+      totalAdjustments.data[month] = total;
+    })
+
+    setCsvItems([...items, totalAdjustments])
+  }, [items, monthsInterval, total])
+
   return (
     <div className={classes.root}>
       <TableContainer>
@@ -101,7 +123,15 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
             <Table className={classes.table} aria-label="caption table">
               <TableHead>
                 <TableRow>
-                  <TableCell></TableCell>
+                  <TableCell style={{ paddingLeft: 0 }} >
+                    <CSVDownloader datas={convertAnalyticsDataToCSV(csvItems, monthsInterval)} filename={`Adjustments`} type="link">
+                      <IconButton style={{ display: 'flex' }}>
+                        <Tooltip title="Download CSV" aria-label="add">
+                          <CloudDownloadIcon />
+                        </Tooltip>
+                      </IconButton>
+                    </CSVDownloader>
+                  </TableCell>
                   <TableCell
                     align="center"
                     component="th"
