@@ -1,6 +1,7 @@
 import { history } from "store";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import { GlobalStickyStyles } from "GlobalSettings";
+import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 
 const TractInterestsHeadCells = [
     {
@@ -296,6 +297,9 @@ const TractInterestsHeadCells = [
             dbName: "seller_asking_price",
             sort: true,
             filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
         },
     },
 
@@ -307,6 +311,9 @@ const TractInterestsHeadCells = [
             dbName: "competitor_offer_price",
             sort: true,
             filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
         },
     },
 
@@ -319,6 +326,9 @@ const TractInterestsHeadCells = [
             dbName: "actual_offer_price",
             sort: true,
             filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
         },
     },
 
@@ -341,6 +351,9 @@ const TractInterestsHeadCells = [
             dbName: "offer_price_nma",
             sort: true,
             filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
         },
     },
 
@@ -352,6 +365,9 @@ const TractInterestsHeadCells = [
             dbName: "max_offer_price_nma",
             sort: true,
             filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
         },
     },
 
@@ -363,6 +379,9 @@ const TractInterestsHeadCells = [
             dbName: "offer_price",
             sort: true,
             filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
         },
     },
 
@@ -374,6 +393,9 @@ const TractInterestsHeadCells = [
             dbName: "max_offer_price",
             sort: true,
             filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
         },
     },
 

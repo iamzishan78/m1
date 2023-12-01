@@ -2,6 +2,7 @@ import { history } from "store";
 import { GlobalStickyStyles } from "GlobalSettings";
 
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
+import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 
 const TractsHeadCells = (isSnapGrid = false) => [
   {
@@ -144,6 +145,9 @@ const TractsHeadCells = (isSnapGrid = false) => [
       dbName: "shapeJson.properties.uUnitPricingNMA",
       sort: true,
       filter: true,
+      customRender: (value) => {
+        return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+      },
     },
   },
 
@@ -155,6 +159,9 @@ const TractsHeadCells = (isSnapGrid = false) => [
       dbName: "shapeJson.properties.uMaxUnitPricingNMA",
       sort: true,
       filter: true,
+      customRender: (value) => {
+        return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+      },
     },
   },
   {
@@ -165,6 +172,9 @@ const TractsHeadCells = (isSnapGrid = false) => [
       dbName: "shapeJson.properties.uUnitPricing",
       sort: true,
       filter: true,
+      customRender: (value) => {
+        return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+      },
     },
   },
 
@@ -176,6 +186,9 @@ const TractsHeadCells = (isSnapGrid = false) => [
       dbName: "shapeJson.properties.uMaxUnitPricing",
       sort: true,
       filter: true,
+      customRender: (value) => {
+        return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+      },
     },
   },
   // {
