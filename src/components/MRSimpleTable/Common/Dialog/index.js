@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import ExportContacts from 'components/Shared/ExportContacts';
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
 import {
 	AssignOwnerToContactDrawerContainer,
@@ -27,7 +26,7 @@ function AllDialogs() {
 
 	const updateRows = rows => {
 		simpleTableGlobalController.updateState({
-			contactDialog: {
+			dialog: {
 				type,
 				selectedRows: rows,
 			},
@@ -40,14 +39,15 @@ function AllDialogs() {
 
 	return (
 		<>
-			<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={type === 'comment'}>
-				{type === 'tags' && <TagDialog {...rest} />}
-
-				{type === 'comments' && <CommentDialog {...rest} />}
-			</Dialog>
-
-			{type === 'exportContacts' && (
-				<ExportContacts {...rest} onClose={handleCloseDialog} />
+			{type === "tags" && (
+				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={false}>
+					<TagDialog {...rest} />
+				</Dialog>
+			)}
+			{type === "comments" && (
+				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
+					<CommentDialog {...rest} />
+				</Dialog>
 			)}
 
 			{type === 'asign' && (

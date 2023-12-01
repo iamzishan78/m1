@@ -7,8 +7,12 @@ import { tableController } from 'hookstate/tableController';
 import { UPDATE_GRID_VIEW } from 'graphQL/useMutationUpdateGridView';
 import { CircularProgress } from '@material-ui/core';
 
-function GridViewComponent({ Icon, label, tableKey }) {
-	const [updateGridView] = useMutation(UPDATE_GRID_VIEW);
+function GridViewComponent({ Icon, label, tableKey, fetchGridViews }) {
+	const [updateGridView, { data }] = useMutation(UPDATE_GRID_VIEW, {
+		onCompleted: () => {
+			fetchGridViews()
+		},
+	});
 	const [showIcon, setShowIcon] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
@@ -20,6 +24,7 @@ function GridViewComponent({ Icon, label, tableKey }) {
 		'sorting',
 		'groupedField',
 		'columnPinning',
+		'columnOrdering'
 	]);
 	const tableStateValues = tableState.stateValues;
 	const selectedGridView = tableStateValues?.gridView?.selectedGridView;
@@ -48,6 +53,7 @@ function GridViewComponent({ Icon, label, tableKey }) {
 						sorting: tableStateValues?.sorting,
 						columnPinning: tableStateValues?.columnPinning,
 						groupedField: tableStateValues?.groupedField || [],
+						columnOrdering: tableStateValues?.columnOrdering || [],
 					},
 				},
 				refetchQueries: ['getGridViews'],

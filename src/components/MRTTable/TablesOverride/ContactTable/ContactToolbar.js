@@ -7,8 +7,7 @@ import EmailRoundedIcon from '@material-ui/icons/EmailRounded';
 import { makeStyles } from '@material-ui/core/styles';
 import ButtonDropDown from 'components/Shared/M1nTable/components/ButtonGroup';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
-import { BulkUpdate, ExportData, ViewContactData } from 'components/MRTTable/Common/CommonToolBarActions';
-import { getAllData } from 'components/MRTTable/utils/GetAllData';
+import { BulkUpdate, ExportData, ViewContactData, openSideDialog } from 'components/MRTTable/Common/CommonToolBarActions';
 import ContactTableDialogs from './RightDialogs';
 
 const useStyles = makeStyles(() => ({
@@ -45,11 +44,14 @@ function ContactToolbar({ table, tableKey }) {
 		'filters',
 		'defaultSort',
 		'sorting',
-		'isSelectall',
 		'showAddContactButton',
+		'isAllRowsSelected',
+		'rowSelection',
+		'tableStateValues',
+		'defaultFilters',
 	]);
 	const tableStateValues = tableState.stateValues;
-	const isSomeRowsSelected = table.getIsSomeRowsSelected();
+	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
@@ -61,39 +63,8 @@ function ContactToolbar({ table, tableKey }) {
 	const addContact = e => {
 		e.stopPropagation();
 		tableGlobalController.updateState({
-			contactDialog: {
+			dialog: {
 				type: 'addContact',
-			},
-		});
-		table.resetRowSelection();
-	};
-
-	const openSideDialog = async (type, _selectedRows) => {
-		let showRows = _selectedRows;
-		if (isAllRowsSelected) {
-			const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
-			const search = { fields: tableStateValues?.searchFields, query };
-
-			tableGlobalController.updateState({
-				contactDialog: {
-					type,
-					selectedRows: [],
-				},
-			});
-			showRows = await getAllData(
-				search,
-				tableStateValues?.sorting,
-				tableStateValues?.defaultSort,
-				tableStateValues.esIndex,
-				tableStateValues.filters,
-				tableStateValues?.data.total,
-				client
-			);
-		}
-		tableGlobalController.updateState({
-			contactDialog: {
-				type,
-				selectedRows: showRows,
 			},
 		});
 		table.resetRowSelection();
@@ -108,9 +79,12 @@ function ContactToolbar({ table, tableKey }) {
 			search,
 			filters: tableStateValues.filters,
 			total: tableStateValues?.data.total,
-			isSelectAll: isAllRowsSelected,
+			isAllRowsSelected: tableStateValues.isAllRowsSelected,
 			esIndex: tableStateValues.esIndex,
 			table,
+			tableKey,
+			type: 'exportContacts',
+			contactIdKey: '_id',
 		};
 	};
 
@@ -133,13 +107,12 @@ function ContactToolbar({ table, tableKey }) {
 
 		return {
 			selectedRows,
-			isAllRowsSelected,
-			isSelectall: isAllRowsSelected,
 			search,
+			isAllRowsSelected: tableStateValues.isAllRowsSelected,
 			sorting: tableStateValues?.sorting,
 			defaultSort: tableStateValues?.defaultSort,
 			esIndex: tableStateValues.esIndex,
-			filters: tableStateValues.filters,
+			filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
 			total: tableStateValues?.data.total,
 			client,
 			table,
@@ -155,7 +128,7 @@ function ContactToolbar({ table, tableKey }) {
 			<>
 				{(!isSomethingSelected && tableStateValues?.showAddContactButton) && <ButtonDropDown options={options} />}
 
-				<ViewContactData isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
+				<ViewContactData isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} gg={sidePropsPass} />
 
 				<BulkUpdate isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 
@@ -166,7 +139,22 @@ function ContactToolbar({ table, tableKey }) {
 						isSomethingSelected && selectedRows.length > 1 ? classes.selectTopBarButtons : classes.disabledTopBarButtons
 					}
 					disabled={!(isSomethingSelected && selectedRows.length > 1)}
-					onClick={() => openSideDialog('merge', selectedRows)}
+					onClick={() => openSideDialog(
+						{
+							type: 'merge',
+							selectedRows,
+							isAllRowsSelected: sidePropsPass.isAllRowsSelected,
+							search: sidePropsPass.search,
+							sorting: sidePropsPass.sorting,
+							defaultSort: sidePropsPass.defaultSort,
+							esIndex: sidePropsPass.esIndex,
+							filters: sidePropsPass.filters,
+							total: sidePropsPass.total,
+							client,
+							table,
+							tableKey,
+						}
+					)}
 				>
 					Merge
 				</Button>
@@ -175,7 +163,22 @@ function ContactToolbar({ table, tableKey }) {
 					startIcon={<EmailRoundedIcon />}
 					className={isSomethingSelected ? classes.selectTopBarButtons : classes.disabledTopBarButtons}
 					disabled={!isSomethingSelected}
-					onClick={() => openSideDialog('sendMailers', selectedRows)}
+					onClick={() => openSideDialog(
+						{
+							type: 'sendMailers',
+							selectedRows,
+							isAllRowsSelected: sidePropsPass.isAllRowsSelected,
+							search: sidePropsPass.search,
+							sorting: sidePropsPass.sorting,
+							defaultSort: sidePropsPass.defaultSort,
+							esIndex: sidePropsPass.esIndex,
+							filters: sidePropsPass.filters,
+							total: sidePropsPass.total,
+							client,
+							table,
+							tableKey,
+						}
+					)}
 				>
 					Mailers
 				</Button>

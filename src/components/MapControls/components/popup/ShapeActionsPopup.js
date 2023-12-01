@@ -4,7 +4,6 @@ import get from "lodash/get";
 import { useHistory } from "react-router-dom";
 import * as turf from "@turf/turf";
 import hat from "hat";
-import polylabel from "polylabel";
 import { Menu, MenuItem } from "@material-ui/core";
 import { Grid } from "@material-ui/core";
 import Modal from "@material-ui/core/Modal";
@@ -29,7 +28,7 @@ import { UPSERTCUSTOMLAYER } from "graphQL/useMutationUpsertCustomLayer";
 import { USERBYEMAIL } from "graphQL/useQueryUserByEmail";
 import { ABSTRACTGEOCONTAINSQUERY } from "graphQL/useQueryAbstractGeoContains";
 import { UPDATECUSTOMLAYER } from "graphQL/useMutationUpdateCustomLayer";
-import { addCustomShapeProperties, drawBoundary, getDrawAdustedShape } from "../DrawShapes/drawShapesHelpers";
+import { addCustomShapeProperties, calculateShapeCenter, drawBoundary, getDrawAdustedShape } from "../DrawShapes/drawShapesHelpers";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleMapGridCardAtived } from "actions";
@@ -388,8 +387,6 @@ const ShapeActionsPopup = (props) => {
     return stateApp.currentFeature.geometry?.type === "LineString" ? true : false;
   };
 
-  const calculateShapeCenter = (shapeCoordinates) => polylabel(shapeCoordinates);
-
   const getAbstractGeoSource = (abstractShape) => {
     if (!abstractShape.properties.State && !abstractShape.properties.StateAbbreviation) {
       const featuresList = stateApp.map?.getSource("abstract_geo_source")._data.features;
@@ -441,6 +438,9 @@ const ShapeActionsPopup = (props) => {
     let parcelName = getParcelAndShapeName(abstractShape);
     originalProperties = abstractShape.properties;
 
+    const shapeArea = calculateLandArea(abstractShape);
+    const shapeCenter = calculateShapeCenter(abstractShape.geometry);
+
     const featureId = hat();
     const newShapeFeature = {
       id: featureId,
@@ -454,8 +454,8 @@ const ShapeActionsPopup = (props) => {
         projectName: "",
         sdNotes: "",
         sdGrossAcres: "",
-        shapeArea: calculateLandArea(abstractShape),
-        shapeCenter: calculateShapeCenter(abstractShape.geometry.coordinates),
+        shapeArea,
+        shapeCenter,
         shapeLabelLayer: "",
         id: featureId,
       },
@@ -487,7 +487,7 @@ const ShapeActionsPopup = (props) => {
         sdGrossAcres: "",
         shapeArea: calculateLandArea(abstractShape),
         // needs to be a string to be consistent with queried data
-        shapeCenter: JSON.stringify(calculateShapeCenter(abstractShape.geometry.coordinates)),
+        shapeCenter: JSON.stringify(calculateShapeCenter(abstractShape.geometry)),
         shapeLabelLayer: "",
         id: featureId,
       },
@@ -534,7 +534,7 @@ const ShapeActionsPopup = (props) => {
         shapeLabel: shapeName,
         ...properties,
         shapeArea: calculateLandArea(abstractShape),
-        shapeCenter: calculateShapeCenter(abstractShape.geometry.coordinates),
+        shapeCenter: calculateShapeCenter(abstractShape.geometry),
         id: featureId,
       },
     };
@@ -581,7 +581,7 @@ const ShapeActionsPopup = (props) => {
       ...layerData.shapeJson.properties,
       originalProperties: abstractShape?.properties,
       shapeArea: calculateLandArea(abstractShape),
-      shapeCenter: calculateShapeCenter(abstractShape?.geometry.coordinates),
+      shapeCenter: calculateShapeCenter(abstractShape?.geometry),
     }
     const customLayerData = {
       shapeJson: layerData.shapeJson,
@@ -654,7 +654,7 @@ const ShapeActionsPopup = (props) => {
     const shapeJson = {
       ...currentFeature,
       shapeArea: calculateLandArea(currentFeature),
-      shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates),
+      shapeCenter: calculateShapeCenter(currentFeature.geometry),
     };
     const customLayerData = {
       shapeJson,
@@ -722,7 +722,7 @@ const ShapeActionsPopup = (props) => {
       properties: {
         ...featureToEdit.properties,
         shapeArea: calculateLandArea(currentFeature),
-        shapeCenter: calculateShapeCenter(currentFeature.geometry.coordinates),
+        shapeCenter: calculateShapeCenter(currentFeature.geometry),
       }
     };
     const customLayerData = {

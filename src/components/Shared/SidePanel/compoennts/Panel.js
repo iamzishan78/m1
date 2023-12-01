@@ -146,7 +146,6 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems,
   };
 
   const togglePullout = (expandedPanel) => {
-    console.log("🚀 ~ file: Panel.js:149 ~ togglePullout ~ expandedPanel:", expandedPanel)
     setStateMapControls((stateMapControls) => ({
       ...stateMapControls,
       expandedPanel: expandedPanel ?? !stateMapControls.expandedPanel,
@@ -440,7 +439,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems,
             {/* base Stuff */}
             {type === "base" && getBasemapImageBox()}
 
-            {type === "layer" &&
+            {type === "layer" && showSidePanel &&
               (<SortableLayer search={search} mongoId={stateApp.user.mongoId} />)}
             {type === "base" && (
               <Box height="calc((100vh - 50px) - 631px)" overflow='hidden scroll' >

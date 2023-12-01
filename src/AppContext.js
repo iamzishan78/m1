@@ -196,6 +196,8 @@ const AppProvider = (props) => {
     },
   });
 
+  window.setStateApp = setStateApp;
+
   const { universalLoader } = useHookStateApp()
 
   const dispatch = useDispatch();

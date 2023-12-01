@@ -4,8 +4,9 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
-import { Modals } from "../../../../../styles/Modal";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import _ from "lodash";
+import { Modals } from "../../../../../styles/Modal";
 
 export default function DeleteConfirmationDialogContent(props) {
   const modalClass = Modals();

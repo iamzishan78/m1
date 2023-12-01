@@ -4,57 +4,103 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
 import { FEATURES } from 'components/Shared/FeatureFlag/common';
 import RequestPageIcon from 'components/Shared/svgIcons/request_page';
-import { tableGlobalController } from 'hookstate/tableController';
+import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { getAllData } from 'components/MRTTable/utils/GetAllData';
+import _ from 'lodash';
 
-const openSideExportDialog = (_selectedRows, search, filters, total, isSelectAll, esIndex, table) => {
+const ExcludeFilters = (tableKey) => {
+
+}
+export const openSideExportDialog = ({ _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) => {
+	const excludedIds = []
+	const includedIds = []
+	if (isAllRowsSelected) {
+		const rowSelection = tableController(tableKey).getValue('rowSelection');
+		const { rows, total: rangeTotal } = tableController(tableKey).getValue('data');
+
+		const allNumbers = _.range(0, rangeTotal);
+
+		const missingNumbers = _.difference(allNumbers, _.keys(rowSelection).map(Number));
+
+		for (let i = 0; i < missingNumbers.length; i++) {
+			excludedIds.push({ field: '_id', value: rows[missingNumbers[i]]._id, type: "advanced", searchType: "notEquals", isKeyword: true },)
+		}
+		total = total - missingNumbers.length
+		isAllRowsSelected = missingNumbers.length ? false : isAllRowsSelected
+	} else {
+		total = _selectedRows.length
+		for (let i = 0; i < _selectedRows.length; i++) {
+			includedIds.push({ field: '_id', value: _selectedRows[i]._id, type: "advanced", searchType: "equals", isKeyword: true },)
+		}
+	}
+
+	const allFilters = [...filters, ...excludedIds, ...includedIds]
 	tableGlobalController.updateState({
 		dialog: {
-			type: 'exportContacts',
+			type,
 			search,
-			filters,
+			filters: allFilters,
 			total,
-			isSelectAll,
-			rows: _selectedRows,
+			isAllRowsSelected,
 			esIndex,
+			contactIdKey,
+			shapeType,
 			open: true,
 		},
 	});
 	table.resetRowSelection();
 };
 
-const openSideDialog = async (
-	type,
-	_selectedRows,
-	isAllRowsSelected,
-	isSelectall,
-	search,
-	sorting,
-	defaultSort,
-	esIndex,
-	filters,
-	total,
-	client,
-	table,
-	tableKey
+export const openSideDialog = async (
+	{
+		type,
+		selectedRows,
+		isAllRowsSelected,
+		search,
+		sorting,
+		defaultSort,
+		esIndex,
+		filters,
+		total,
+		client,
+		table,
+		tableKey,
+		props = {}
+	}
 ) => {
-	let showRows = _selectedRows;
-	if (isAllRowsSelected && isSelectall) {
+	let showRows = selectedRows;
+	if (isAllRowsSelected && !type.toLowerCase().includes('delete')) {
+		const rowSelection = tableController(tableKey).getValue('rowSelection');
+		const { rows, total: rangeTotal } = tableController(tableKey).getValue('data');
 		tableGlobalController.updateState({
 			dialog: {
 				type,
 				selectedRows: [],
+				...props
 			},
 		});
-		showRows = await getAllData(search, sorting, defaultSort, esIndex, filters, total, client);
+		const allNumbers = _.range(0, rangeTotal);
+
+		const missingNumbers = _.difference(allNumbers, _.keys(rowSelection).map(Number));
+
+		const excludedIds = []
+		for (let i = 0; i < missingNumbers.length; i++) {
+			excludedIds.push({ field: '_id', value: rows[missingNumbers[i]]._id, type: "advanced", searchType: "notEquals", isKeyword: true },)
+		}
+		const allFilters = [...filters, ...excludedIds]
+		showRows = await getAllData(search, sorting, defaultSort, esIndex, allFilters, total, client);
 	}
 	tableGlobalController.updateState({
 		dialog: {
 			type,
 			selectedRows: showRows,
-			tableKey
+			tableKey,
+			...props
 		},
 	});
+
+	if (table.getIsAllRowsSelected()) table.toggleAllRowsSelected();
+
 	table.resetRowSelection();
 };
 
@@ -63,7 +109,6 @@ export function BulkUpdate({
 	classes,
 	selectedRows,
 	isAllRowsSelected,
-	isSelectall,
 	search,
 	sorting,
 	defaultSort,
@@ -82,19 +127,20 @@ export function BulkUpdate({
 			disabled={!isSomethingSelected}
 			onClick={() =>
 				openSideDialog(
-					'asign',
-					selectedRows,
-					isAllRowsSelected,
-					isSelectall,
-					search,
-					sorting,
-					defaultSort,
-					esIndex,
-					filters,
-					total,
-					client,
-					table,
-					tableKey
+					{
+						type: 'asign',
+						selectedRows,
+						isAllRowsSelected,
+						search,
+						sorting,
+						defaultSort,
+						esIndex,
+						filters,
+						total,
+						client,
+						table,
+						tableKey
+					}
 				)
 			}
 		>
@@ -103,13 +149,13 @@ export function BulkUpdate({
 	);
 }
 
-export function ExportData({ classes, _selectedRows, search, filters, total, isSelectAll, esIndex, table }) {
+export function ExportData({ classes, _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) {
 	return (
 		<Button
 			color="secondary"
 			startIcon={<CloudDownloadIcon color="white" />}
 			className={classes.selectTopBarButtons}
-			onClick={() => openSideExportDialog(_selectedRows, search, filters, total, isSelectAll, esIndex, table)}
+			onClick={() => openSideExportDialog({ search, _selectedRows, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType })}
 		>
 			Export
 		</Button>
@@ -121,7 +167,6 @@ export function ViewContactData({
 	classes,
 	selectedRows,
 	isAllRowsSelected,
-	isSelectAll,
 	search,
 	sorting,
 	defaultSort,
@@ -141,19 +186,20 @@ export function ViewContactData({
 				disabled={!isSomethingSelected}
 				onClick={() =>
 					openSideDialog(
-						'buyContactsInfoData',
-						selectedRows,
-						isAllRowsSelected,
-						isSelectAll,
-						search,
-						sorting,
-						defaultSort,
-						esIndex,
-						filters,
-						total,
-						client,
-						table,
-						tableKey
+						{
+							type: 'buyContactsInfoData',
+							selectedRows,
+							isAllRowsSelected,
+							search,
+							sorting,
+							defaultSort,
+							esIndex,
+							filters,
+							total,
+							client,
+							table,
+							tableKey
+						}
 					)
 				}
 			>

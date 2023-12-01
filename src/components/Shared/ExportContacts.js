@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ExportContacts = ({
-  isSelectAll,
+  isAllRowsSelected,
   filters,
   esIndex,
   onClose,
@@ -99,8 +99,9 @@ const ExportContacts = ({
         search,
         filters,
         esIndex,
-        isSelectAll,
+        isSelectAll: isAllRowsSelected,
         contactIds: rows.map(row => row._id),
+        contactIdKey: '_id',
         datasets: {
           exportContacts: exportContacts,
           exportContactsPurchase: exportContacts,
@@ -151,7 +152,7 @@ const ExportContacts = ({
                 Contact Data (Basic & Purchased Info)
               </label>
             </div>
-            <label className={classes.value}>{isSelectAll ? total: rows.length} selected</label>
+            <label className={classes.value}>{isAllRowsSelected ? total : rows.length} selected</label>
           </div>
         </div>
       </DialogContent>

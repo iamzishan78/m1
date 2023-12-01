@@ -1,8 +1,9 @@
 import React, { memo } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import { useMutation, useLazyQuery } from '@apollo/client';
-import ExportContacts from 'components/Shared/ExportContacts';
-import { tableController, tableGlobalController } from 'hookstate/tableController';
+import { useMutation } from '@apollo/client';
+import ExportContactsAndPurchase from 'components/MRTTable/Common/Dialog/ExportContactsAndPurchase';
+import ExportOwnerAndContacts from 'components/MRTTable/Common/Dialog/ExportOwnerAndContacts';
+import { tableGlobalController } from 'hookstate/tableController';
 import { AssignOwnerToContactDrawerContainer } from 'store/containers';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import BuyContactsInfoDialogContent from 'components/Shared/M1nTable/components/SubComponents/BuyContactsInfoDialogContent';
@@ -12,6 +13,7 @@ import Loader from 'components/Loaders';
 import CommentDialog from './CommentDialog';
 import TagDialog from './TagDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmation';
+import { globalStateController } from 'hookstate/globalStateController';
 
 function AllDialogs() {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
@@ -30,7 +32,7 @@ function AllDialogs() {
 
 	const updateRows = rows => {
 		tableGlobalController.updateState({
-			contactDialog: {
+			dialog: {
 				type,
 				selectedRows: rows,
 			},
@@ -39,8 +41,9 @@ function AllDialogs() {
 
 	const deleteFunc = async dataToDelete => {
 		Loader.createToast('deletion', 'Deletion in Progress');
+		const user = globalStateController.getValue('user')
 		removeCommonDelete({
-			variables: { tableKey, deletedData: dataToDelete, userId: rest?.userId }
+			variables: { tableKey, deletedData: dataToDelete, userId: user?.mongoId }
 		}).then(
 			res => {
 				if (res?.data?.gridGenericRemove) {
@@ -59,13 +62,20 @@ function AllDialogs() {
 
 	return (
 		<>
-			<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={type === 'comment'}>
-				{type === 'tags' && <TagDialog {...rest} />}
+			{type === "tags" && (
+				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={false}>
+					<TagDialog {...rest} />
+				</Dialog>
+			)}
+			{type === "comments" && (
+				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
+					<CommentDialog {...rest} />
+				</Dialog>
+			)}
 
-				{type === 'comments' && <CommentDialog {...rest} />}
-			</Dialog>
+			{type === 'exportContacts' && <ExportContactsAndPurchase {...rest} onClose={handleCloseDialog} />}
 
-			{type === 'exportContacts' && <ExportContacts {...rest} onClose={handleCloseDialog} />}
+			{type === 'exportOwnersAndContact' && <ExportOwnerAndContacts {...rest} onClose={handleCloseDialog} />}
 
 			{type === 'asign' && (
 				<AssignOwnerToContactDrawerContainer

@@ -10,7 +10,7 @@ import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { getFilters } from "components/Table/Contact/CampaignsTable";
 import { AppContext } from "AppContext";
 import { CUSTOM_DATES } from "utils/data";
-import { handleCustomDateTypeChange } from "utils/helper";
+import { copy, handleCustomDateTypeChange } from "utils/helper";
 
 const useStyles = makeStyles((theme) => ({
   actionBar: {
@@ -73,7 +73,7 @@ export default function CustomDatesActivities({
   };
 
   const handleDateTypeChange = (date) => {
-    handleCustomDateTypeChange(date, null, CUSTOM_DATES, setFromDate, setToDate, minDate);
+    handleCustomDateTypeChange(date, null, CUSTOM_DATES, setFromDate, setToDate, minDate, true);
   };
 
   return (
@@ -229,11 +229,18 @@ const CampaignStatusFilter = ({ esIndex, tableFilters, appliedFilters, searchFie
     <Autocomplete
       size="small"
       onChange={(e, selectedValue, reason) => {
-        if (reason === "clear" || !selectedValue?.key) {
-          setAppliedFilters({ ...appliedFilters, status: "" });
-        } else {
-          setAppliedFilters({ ...appliedFilters, status: selectedValue.key });
-        }
+        let filters = copy(appliedFilters) ?? [];
+
+        filters = filters.filter(
+          (filter) =>
+            filter.field !== "status.keyword"
+        );
+
+        if (reason === "clear" || !selectedValue?.key) return setAppliedFilters(filters);
+
+        filters.push({ field: "status.keyword", value: selectedValue.key });
+
+        setAppliedFilters(filters);
       }}
       value={appliedFilters.status}
       // inputValue={search?.toString()}
@@ -301,11 +308,18 @@ const SupervisorFilter = ({ esIndex, tableFilters, appliedFilters, searchFields,
     <Autocomplete
       size="small"
       onChange={(e, selectedValue, reason) => {
-        if (reason === "clear" || !selectedValue?.key) {
-          setAppliedFilters({ ...appliedFilters, owner: "" });
-        } else {
-          setAppliedFilters({ ...appliedFilters, owner: selectedValue.key });
-        }
+        let filters = copy(appliedFilters) ?? [];
+
+        filters = filters.filter(
+          (filter) =>
+            filter.field !== "owner.name.keyword"
+        );
+
+        if (reason === "clear" || !selectedValue?.key) return setAppliedFilters(filters);
+
+        filters.push({ field: "owner.name.keyword", value: selectedValue.key });
+
+        setAppliedFilters(filters);
       }}
       value={appliedFilters.status}
       // inputValue={search?.toString()}

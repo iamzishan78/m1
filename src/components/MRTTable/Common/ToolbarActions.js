@@ -4,39 +4,22 @@ import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import GridView from 'components/MRTTable/Common/GridView';
-import { globalStateController } from 'hookstate/globalStateController';
-import _ from 'lodash';
 import TabHeader from 'components/MRSimpleTable/Common/TabHeader';
+import { globalStateController } from 'hookstate/globalStateController';
 
 function ToolbarActions({ table, tableKey, children }) {
-	const isAllRowsSelected = table.getIsAllRowsSelected();
-	const isSomeRowsSelected = table.getIsSomeRowsSelected();
-	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
-	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
-
+	const tableState = tableController(tableKey).useCompleteState();
+	const tableStateValues = tableState?.get({ noproxy: true });
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
 
-	const tableState = tableController(tableKey).useState([
-		'TableSchema',
-		'datasets',
-		'globalFilter',
-		'searchFields',
-		'defaultSort',
-		'data',
-		'gridViewSettings',
-		'sorting',
-		'columnVisibility',
-		'filters',
-		'defaultFilters',
-		'isDeleteDisabled',
-		'deletedKeys',
-		'isSelectAllAllowed',
-		'tabLabels',
-	]);
-	const tableStateValues = tableState.stateValues;
-	if (tableStateValues?.isSelectAllAllowed)
-		tableController(tableKey).setSelectAll(isAllRowsSelected);
+	const isAllRowsSelected = table.getIsAllRowsSelected();
+	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
+	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
+	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
+
+	if (tableStateValues?.isSelectAllAllowed && isAllRowsSelected)
+		tableController(tableKey).setIsAllRowsSelected(isAllRowsSelected);
 
 	const handleExport = () => {
 		tableGlobalController.updateState({
@@ -49,6 +32,7 @@ function ToolbarActions({ table, tableKey, children }) {
 			},
 		});
 	};
+
 
 	const handleDelete = () => {
 		const deletedKeys = tableStateValues?.deletedKeys || {
@@ -116,7 +100,7 @@ function ToolbarActions({ table, tableKey, children }) {
 
 				{isSomethingSelected && !!!tableStateValues.isDeleteDisabled && (
 					<IconButton aria-label="delete" onClick={() => handleDelete()}>
-						<Tooltip title="Delete">
+						<Tooltip title="Delete asd">
 							<DeleteIcon />
 						</Tooltip>
 					</IconButton>

@@ -6,18 +6,18 @@ import MergeContactDrawer from 'components/Shared/M1nTable/components/SubCompone
 import SendMailersDialogContent from 'components/Shared/M1nTable/components/SubComponents/SendMailersDialogContent';
 
 function ContactTableDialogs() {
-	const { stateValues } = tableGlobalController.useState(['contactDialog']);
-	const { type, ...rest } = stateValues.contactDialog || {};
+	const { stateValues } = tableGlobalController.useState(['dialog']);
+	const { type, ...rest } = stateValues.dialog || {};
 
 	const handleCloseDialog = () => {
 		tableGlobalController.updateState({
-			contactDialog: {},
+			dialog: {},
 		});
 	};
 
 	const updateRows = rows => {
 		tableGlobalController.updateState({
-			contactDialog: {
+			dialog: {
 				type,
 				selectedRows: rows,
 			},

@@ -9,6 +9,8 @@ import { addTrailingZeros } from 'components/Shared/functions';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TractIcon from 'components/Shared/svgIcons/tract';
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
 const esIndex = 'shapeowners_flat';
 
@@ -16,7 +18,7 @@ const onClickedRow = selectedRow => {
 	const Controller = tableController('TractPerUnitTable');
 	const { customLayer } = Controller.getValue('customProps');
 	tableGlobalController.updateState({
-		tractInterestDialog: {
+		dialog: {
 			type: 'addTractInterest',
 			customLayerId: customLayer?._id,
 			customLayer,
@@ -47,7 +49,7 @@ const TractPerUnitMeta = {
 			return view;
 		},
 		cssOverride: {
-			top: '331px',
+			top: '300px',
 			left: '300px',
 		},
 	},
@@ -150,31 +152,41 @@ const TractPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: "nonExecRightsOnly.keyword",
+			accessorKey: 'nonExecRightsOnly',
+			header: 'Non-Exec Rights Only',
+			id: "nonExecRightsOnly",
+			size: 200,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'royalty_interest',
 			accessorKey: 'royalty_interest',
-			header: 'Royalty Interest',
+			header: 'Royalty Interest (Lease)',
 			isSearchField: false,
 			type: 'number',
-			Aggregation: {
-				sumRoyaltyInterest: {
-					sum: { field: 'royalty_interest' },
-				},
-			},
-			Cell: ({ row }) => {
-				const royaltyInterest = row.getValue('royalty_interest');
-				if (royaltyInterest) {
-					return <>{addTrailingZeros(parseFloat(royaltyInterest).toFixed(8))}</>;
-				}
-			},
-			Footer: () => {
-				const Controller = tableController('TractPerUnitTable');
-				const { sumRoyaltyInterest } = Controller.getValue('footerProps') || {};
-				return (
-					<div>
-						{sumRoyaltyInterest?.value ? addTrailingZeros(parseFloat(sumRoyaltyInterest?.value).toFixed(8)) : 0}
-					</div>
-				);
-			},
+			size: 275,
+			// Aggregation: {
+			// 	sumRoyaltyInterest: {
+			// 		sum: { field: 'royalty_interest' },
+			// 	},
+			// },
+			// Cell: ({ row }) => {
+			// 	const royaltyInterest = row.getValue('royalty_interest');
+			// 	if (royaltyInterest) {
+			// 		return <>{addTrailingZeros(parseFloat(royaltyInterest).toFixed(8))}</>;
+			// 	}
+			// },
+			// Footer: () => {
+			// 	const Controller = tableController('TractPerUnitTable');
+			// 	const { sumRoyaltyInterest } = Controller.getValue('footerProps') || {};
+			// 	return (
+			// 		<div>
+			// 			{sumRoyaltyInterest?.value ? addTrailingZeros(parseFloat(sumRoyaltyInterest?.value).toFixed(8)) : 0}
+			// 		</div>
+			// 	);
+			// },
 		},
 
 		{
@@ -284,8 +296,7 @@ const TractPerUnitMeta = {
 			},
 		},
 
-
-
+		
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'nra',
@@ -313,27 +324,122 @@ const TractPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'offer_price_nma',
+			accessorKey: 'offer_price_nma',
+			header: 'Target Offer (per NMA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price_nma)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'max_offer_price_nma',
+			accessorKey: 'max_offer_price_nma',
+			header: 'Max Offer (per NMA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price_nma)}</>,
+		},
+
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'offer_price',
+			accessorKey: 'offer_price',
+			header: 'Target Offer (per NRA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'max_offer_price',
+			accessorKey: 'max_offer_price',
+			header: 'Max Offer (per NRA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'company_net_acres',
 			accessorKey: 'company_net_acres',
 			header: 'Co Net Acres',
 			isSearchField: false,
 			type: 'number',
+			Aggregation: {
+				sumCoNetAcres: {
+					sum: { field: 'company_net_acres' },
+				},
+			},
+			Cell: ({ row }) => {
+				const company_net_acres = row.getValue('company_net_acres');
+				if (company_net_acres) {
+					return <>{addTrailingZeros(parseFloat(company_net_acres).toFixed(8))}</>;
+				}
+			},
+			Footer: () => {
+				const Controller = tableController('TractPerUnitTable');
+				const { sumCoNetAcres } = Controller.getValue('footerProps') || {};
+				return <div>{sumCoNetAcres?.value ? addTrailingZeros(parseFloat(sumCoNetAcres?.value).toFixed(8)) : 0}</div>;
+			},
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'seller_asking_price',
+			accessorKey: 'seller_asking_price',
+			header: 'Seller Asking Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.seller_asking_price)}</>,
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'depthFrom.keyword',
-			accessorKey: 'depthFrom',
-			header: 'Depth From',
-			isSearchField: true,
+			name: 'competitor_offer_price',
+			accessorKey: 'competitor_offer_price',
+			header: 'Competitor Offer Price',
+			isSearchField: false,
+			type: 'number',
+			size: 300,
+			Cell: ({ row }) => <>{vf_currency(row?.original?.competitor_offer_price)}</>,
+		},
+
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'actual_offer_price',
+			accessorKey: 'actual_offer_price',
+			header: 'Actual Offer Price',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.actual_offer_price)}</>,
 		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'depthTo.keyword',
-			accessorKey: 'depthTo',
-			header: 'Depth To',
-			isExternalFilter: false,
+			name: 'campaignName.keyword',
+			accessorFn: row => row?.campaignName,
+			id: 'campaignName',
+			header: 'Campaign Name',
+			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'campaignPriority.keyword',
+			accessorKey: 'campaignPriority',
+			header: 'Campaign Priority',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'leaseStatus.keyword',
+			accessorKey: 'leaseStatus',
+			header: 'Lease Status',
 		},
 
 		{
@@ -361,6 +467,21 @@ const TractPerUnitMeta = {
 					</div>
 				);
 			},
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'depthFrom.keyword',
+			accessorKey: 'depthFrom',
+			header: 'Depth From',
+			isSearchField: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'depthTo.keyword',
+			accessorKey: 'depthTo',
+			header: 'Depth To',
+			isExternalFilter: false,
 		},
 
 		{
@@ -397,7 +518,7 @@ const TractPerUnitMeta = {
 				const id = row.getValue('_id');
 				const name = row.getValue('name');
 
-				return <ContactActionMenu id={id} name={name} esIndex={esIndex} dialogType="tractInterestDialog" />;
+				return <ContactActionMenu id={id} name={name} esIndex={esIndex} dialogType="dialog" />;
 			},
 		},
 
