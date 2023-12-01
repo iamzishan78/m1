@@ -28,7 +28,9 @@ const TractInterestsHeadCells = [
         },
     },
     {
-        name: "tractName", label: "Tract Name", esKey: 'shape.shapeJson.properties.shapeLabel.keyword',
+        name: 'name',
+        label: 'Contact Name',
+        esKey: 'contact.entityDetail.name.keyword',
         options: {
             ...GlobalStickyStyles({
                 setCellProps: {
@@ -40,23 +42,69 @@ const TractInterestsHeadCells = [
                     paddingLeft: '0px'
                 }
             }),
-            dbName: "shape.shapeJson.properties.shapeLabel",
             sort: true,
             filter: true,
+            isMultiFilter: true,
             customRender: (value, tableMeta, updateValue) => {
                 return (
                     <ColumnWithLink
                         onClick={(e) => {
                             e.stopPropagation();
-                            history.push(`/map/parcels/${tableMeta.rowData[2]}`, { showTractsBreadcrumb: true });
+                            history.push(`/contact/details/${tableMeta.rowData[1]}`, { showTractsBreadcrumb: true });
                         }}
                         value={value}
-                        link={`/map/parcels/${tableMeta.rowData[2]}`}
+                        link={`/contact/details/${tableMeta.rowData[1]}`}
                     />
                 );
             },
-        }
+        },
     },
+    // {
+    //     name: "tractName", label: "Tract Name", esKey: 'shape.shapeJson.properties.shapeLabel.keyword',
+    //     options: {
+    //         ...GlobalStickyStyles({
+    //             setCellProps: {
+    //                 left: '124.5px',
+    //                 minWidth: "450px",
+    //                 paddingLeft: '0px !important'
+    //             },
+    //             setCellHeaderProps: {
+    //                 paddingLeft: '0px'
+    //             }
+    //         }),
+    //         dbName: "shape.shapeJson.properties.shapeLabel",
+    //         sort: true,
+    //         filter: true,
+    //         customRender: (value, tableMeta, updateValue) => {
+    //             return (
+    //                 <ColumnWithLink
+    //                     onClick={(e) => {
+    //                         e.stopPropagation();
+    //                         history.push(`/map/parcels/${tableMeta.rowData[2]}`, { showTractsBreadcrumb: true });
+    //                     }}
+    //                     value={value}
+    //                     link={`/map/parcels/${tableMeta.rowData[2]}`}
+    //                 />
+    //             );
+    //         },
+    //     }
+    // },
+    {
+        name: "tractName",
+        label: "Tract Name",
+        esKey: [
+            "shape.shapeJson.properties.shapeLabel.keyword",
+        ],
+        options: {
+            dbName: "shape.shapeJson.properties.shapeLabel?",
+            sort: true,
+            filter: true,
+        },
+        custom: {
+            multi_filter_keys: true,
+        },
+    },
+
     {
         name: "State",
         label: "State",
