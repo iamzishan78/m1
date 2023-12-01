@@ -150,11 +150,13 @@ const tableData = [
     },
     {
         label: "Exec Net Acres",
+        type: "comma-number",
         key: "execNetAcres",
         nonEditable: true,
     },
     {
         label: "Non-Exec Net Acres",
+        type: "comma-number",
         key: "nonExecNetAcres",
         nonEditable: true,
     },
