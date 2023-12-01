@@ -9,5 +9,5 @@ export const campaignInitialData = [
   { index: 1, value: "units", Icon: UnitIcon, label: "Units" },
   { index: 2, value: "unitInterests", Icon: UnitInterestsIcon, label: "Unit Interests" },
   { index: 3, value: "tracts", Icon: TractIcon, label: "Tracts" },
-  { index: 4, value: "tractInterests", Icon: TractInterestsIcon, label: "Tract Interests" },
+  { index: 4, value: "tractInterests", Icon: UnitInterestsIcon, label: "Tract Interests" },
 ];
