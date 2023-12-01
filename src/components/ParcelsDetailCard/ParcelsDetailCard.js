@@ -26,6 +26,7 @@ import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
 import { jobController } from "hookstate/jobStateController";
 import { showSuccessMessage, showErrorMessage, setMapGridCardState } from 'actions';
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -361,6 +362,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
       variables: {
         customLayerId: data._id,
         customLayer,
+        userId: globalStateController.getValue('user')?._id
       },
     }).then(() => {
       jobController.toggleBulkUpload()
@@ -381,6 +383,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
       variables: {
         customLayerId: parcelObj._id,
         customLayer,
+        userId: globalStateController.getValue('user')?._id
       },
     }).then(() => {
       jobController.toggleBulkUpload()

@@ -1,8 +1,12 @@
 import { spatialDataAttributes } from "./constants";
 import { area, convertArea, length } from "@turf/turf";
-import polylabel from "polylabel";
 import * as turf from "@turf/turf";
 import { SRCenter } from 'mapbox-gl-draw-scale-rotate-mode';
+
+export const calculateShapeCenter = (geo) => {
+  const center = turf.center(geo);
+  return center.geometry.coordinates;
+}
 
 export const addCustomShapeProperties = (feature, Draw) => {
   try {
@@ -13,7 +17,7 @@ export const addCustomShapeProperties = (feature, Draw) => {
           data = calculateLandArea(feature);
           break;
         case "shapeCenter":
-          data = calculateShapeCenter(feature.geometry.coordinates);
+          data = calculateShapeCenter(feature.geometry);
           break;
         default:
       }
@@ -34,9 +38,6 @@ const calculateLandArea = feature => {
     const distanceInMiles = length(feature, { units: "miles" });
     return `${Math.round(distanceInMiles * 100) / 100} miles`;
   }
-};
-const calculateShapeCenter = shapeCoordinates => {
-  return polylabel(shapeCoordinates);
 };
 
 export const createShapeLabelLayer = feature => {
