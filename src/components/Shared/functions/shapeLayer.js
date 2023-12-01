@@ -1,6 +1,6 @@
 import { area, convertArea, length } from "@turf/turf";
-import polylabel from "polylabel";
 import * as turf from "@turf/turf";
+import { calculateShapeCenter } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 
 export const showIfUserDefinedLayer = (stateApp) => {
     return stateApp.selectedUserDefinedLayer !== null &&
@@ -154,7 +154,7 @@ export const parseUserDefinedLayerFeature = (feature, layer) => {
         layer.layerGeometry === 'Polygon' &&
         feature.geometry.type === 'Polygon'
     ) {
-        shapeCenter = polylabel(feature.geometry.coordinates);
+        shapeCenter = calculateShapeCenter(feature.geometry);
     } else {
         shapeCenter = turf.centroid(feature.geometry)?.geometry?.coordinates;
     }
