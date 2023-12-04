@@ -167,6 +167,25 @@ const CampaignHeader = ({ campaign, updateCampaignInformation }) => {
                   component="div"
                   className={classes.cardHeaderTypography}
                 >
+                  Tracts
+                </Typography>
+                <Typography
+                  id="unitCounts"
+                  variant="h6"
+                  component="div"
+                  className={classes.cardNumberTypography}
+                >
+                  {get(campaign, 'tractCount', 0)}
+                </Typography>
+              </CardContent>
+            </Card>
+            <Card variant="outlined" className={classes.card}>
+              <CardContent className={classes.cardContent}>
+                <Typography
+                  variant="h6"
+                  component="div"
+                  className={classes.cardHeaderTypography}
+                >
                   Contacts
                 </Typography>
                 <Typography
