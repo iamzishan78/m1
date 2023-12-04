@@ -20,7 +20,7 @@ const excludeFilters = (tableKey) => {
 	}
 	return excludedIds
 }
-export const openSideExportDialog = ({ _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) => {
+export const openSideExportDialog = ({ _selectedRows, search, filters, sort, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) => {
 	let excludedIds = []
 	const includedIds = []
 	if (isAllRowsSelected) {
@@ -30,9 +30,11 @@ export const openSideExportDialog = ({ _selectedRows, search, filters, total, is
 		isAllRowsSelected = excludedIds.length ? false : isAllRowsSelected
 	} else {
 		total = _selectedRows.length
+		const value = []
 		for (let i = 0; i < _selectedRows.length; i++) {
-			includedIds.push({ field: '_id', value: _selectedRows[i]._id, type: "advanced", searchType: "equals", isKeyword: true },)
+			value.push(_selectedRows[i]._id)
 		}
+		includedIds.push({ field: '_id', value })
 	}
 
 	const allFilters = [...filters, ...excludedIds, ...includedIds]
@@ -41,6 +43,7 @@ export const openSideExportDialog = ({ _selectedRows, search, filters, total, is
 			type,
 			search,
 			filters: allFilters,
+			sort,
 			total,
 			isAllRowsSelected,
 			esIndex,
@@ -141,13 +144,13 @@ export function BulkUpdate({
 	);
 }
 
-export function ExportData({ classes, _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) {
+export function ExportData({ classes, _selectedRows, search, filters, sort, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) {
 	return (
 		<Button
 			color="secondary"
 			startIcon={<CloudDownloadIcon color="white" />}
 			className={classes.selectTopBarButtons}
-			onClick={() => openSideExportDialog({ search, _selectedRows, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType })}
+			onClick={() => openSideExportDialog({ search, _selectedRows, filters, sort, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType })}
 		>
 			Export
 		</Button>
