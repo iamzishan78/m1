@@ -43,6 +43,7 @@ import { CommonCommentText } from "components/Shared/CommentComponent";
 import { ARCHIVE_ALL_MUTATIONS } from "graphQL/useMutationArchiverAllMentions";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { globalStateController } from "hookstate/globalStateController";
+import Loader from 'components/Loaders';
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -381,9 +382,11 @@ const Notifications = () => {
   };
 
   const archiveAllAndClose = async () => {
+    Loader.createToast('archived', 'Archive All Mentions in Progress');
     await archiveAllMentions({
       awaitRefetchQueries: false,
     })
+    Loader.successToast('archived', "Archive All Mentions Complete");
     refetchAllNotifications()
   };
   const classes = useStyles();
