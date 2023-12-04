@@ -147,7 +147,7 @@ const ExportContactsAndPurchase = ({
       <DialogContent>
         <label className={classes.bold}>Available Data Elements</label>
 
-        <div className={classes.field}>
+        {shapeType && <div className={classes.field}>
           <div className={classes.checkbox}>
             <div>
               <Controller
@@ -168,7 +168,7 @@ const ExportContactsAndPurchase = ({
             </div>
             <label className={classes.value}>{total} selected</label>
           </div>
-        </div>
+        </div>}
 
         <div className={classes.field}>
           <div className={classes.checkbox}>
