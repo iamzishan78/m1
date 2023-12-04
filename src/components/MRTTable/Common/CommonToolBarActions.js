@@ -8,30 +8,34 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import { getAllData } from 'components/MRTTable/utils/GetAllData';
 import _ from 'lodash';
 
-const ExcludeFilters = (tableKey) => {
+const excludeFilters = (tableKey) => {
+	const rowSelection = tableController(tableKey).getValue('rowSelection');
+	const { rows, total: rangeTotal } = tableController(tableKey).getValue('data');
+	const allNumbers = _.range(0, rangeTotal);
+	const missingNumbers = _.difference(allNumbers, _.keys(rowSelection).map(Number));
 
-}
-export const openSideExportDialog = ({ _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) => {
 	const excludedIds = []
+	for (let i = 0; i < missingNumbers.length; i++) {
+		excludedIds.push({ field: '_id', value: rows[missingNumbers[i]]._id, type: "advanced", searchType: "notEquals", isKeyword: true },)
+	}
+	return excludedIds
+}
+
+export const openSideExportDialog = ({ _selectedRows, search, filters, sort, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) => {
+	let excludedIds = []
 	const includedIds = []
 	if (isAllRowsSelected) {
-		const rowSelection = tableController(tableKey).getValue('rowSelection');
-		const { rows, total: rangeTotal } = tableController(tableKey).getValue('data');
+		excludedIds = excludeFilters(tableKey)
 
-		const allNumbers = _.range(0, rangeTotal);
-
-		const missingNumbers = _.difference(allNumbers, _.keys(rowSelection).map(Number));
-
-		for (let i = 0; i < missingNumbers.length; i++) {
-			excludedIds.push({ field: '_id', value: rows[missingNumbers[i]]._id, type: "advanced", searchType: "notEquals", isKeyword: true },)
-		}
-		total = total - missingNumbers.length
-		isAllRowsSelected = missingNumbers.length ? false : isAllRowsSelected
+		total = total - excludedIds.length
+		isAllRowsSelected = excludedIds.length ? false : isAllRowsSelected
 	} else {
 		total = _selectedRows.length
+		const value = []
 		for (let i = 0; i < _selectedRows.length; i++) {
-			includedIds.push({ field: '_id', value: _selectedRows[i]._id, type: "advanced", searchType: "equals", isKeyword: true },)
+			value.push(_selectedRows[i]._id)
 		}
+		includedIds.push({ field: '_id', value })
 	}
 
 	const allFilters = [...filters, ...excludedIds, ...includedIds]
@@ -40,6 +44,7 @@ export const openSideExportDialog = ({ _selectedRows, search, filters, total, is
 			type,
 			search,
 			filters: allFilters,
+			sort,
 			total,
 			isAllRowsSelected,
 			esIndex,
@@ -70,8 +75,7 @@ export const openSideDialog = async (
 ) => {
 	let showRows = selectedRows;
 	if (isAllRowsSelected && !type.toLowerCase().includes('delete')) {
-		const rowSelection = tableController(tableKey).getValue('rowSelection');
-		const { rows, total: rangeTotal } = tableController(tableKey).getValue('data');
+
 		tableGlobalController.updateState({
 			dialog: {
 				type,
@@ -79,14 +83,7 @@ export const openSideDialog = async (
 				...props
 			},
 		});
-		const allNumbers = _.range(0, rangeTotal);
-
-		const missingNumbers = _.difference(allNumbers, _.keys(rowSelection).map(Number));
-
-		const excludedIds = []
-		for (let i = 0; i < missingNumbers.length; i++) {
-			excludedIds.push({ field: '_id', value: rows[missingNumbers[i]]._id, type: "advanced", searchType: "notEquals", isKeyword: true },)
-		}
+		const excludedIds = excludeFilters(tableKey)
 		const allFilters = [...filters, ...excludedIds]
 		showRows = await getAllData(search, sorting, defaultSort, esIndex, allFilters, total, client);
 	}
@@ -149,13 +146,13 @@ export function BulkUpdate({
 	);
 }
 
-export function ExportData({ classes, _selectedRows, search, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) {
+export function ExportData({ classes, _selectedRows, search, filters, sort, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) {
 	return (
 		<Button
 			color="secondary"
 			startIcon={<CloudDownloadIcon color="white" />}
 			className={classes.selectTopBarButtons}
-			onClick={() => openSideExportDialog({ search, _selectedRows, filters, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType })}
+			onClick={() => openSideExportDialog({ search, _selectedRows, filters, sort, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType })}
 		>
 			Export
 		</Button>

@@ -1,6 +1,7 @@
 import TractRelatedUnitsToolbar from "components/MRTTable/TablesOverride/TractRelatedUnitsTable/TractRelatedUnitsToolbar";
 import { CommonSchema } from "./common_schema";
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 const esIndex = "shapetracts_flat";
 
@@ -127,6 +128,7 @@ const TractUnitsMeta = {
       id: "shape.shapeJson.properties.campaignName",
       header: "Campaign Name",
       size: 270,
+      Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
     },
   ],
 };

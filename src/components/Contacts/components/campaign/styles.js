@@ -158,7 +158,7 @@ export const headerStyles = makeStyles((theme) => ({
   },
   cardsWrapper: {
     display: "flex",
-    marginLeft: "15%",
+    marginLeft: "8%",
   },
   card: {
     width: "25%",
