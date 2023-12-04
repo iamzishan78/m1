@@ -55,7 +55,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 			esKey: isExport || accessorKey || id,
 		}));
 
-		let sortOrder;
+		let sortOrder = {};
 		if (tableStateValues.sorting.length > 0) {
 			sortOrder = { field: tableStateValues.sorting[0]?.id, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
 		}
