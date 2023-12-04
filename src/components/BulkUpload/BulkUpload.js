@@ -93,9 +93,11 @@ export default function BulkUpload(props) {
   if (initialJob.type === 'SHAPE_TO_M1_LAYER' && jobStateValues.transferData) {
     initialJob.m1neralHeaders = jobStateValues.transferData.selectedSourceCategory.m1neralHeaders
     initialJob.mappedHeadersFromCSV = jobStateValues.transferData.selectedSourceCategory.mappedHeadersFromCSV
-  } else {
-    rawJobs = rawJobs.filter((rawJob) => rawJob.type !== 'SHAPE_TO_M1_LAYER')
   }
+
+  // else {
+  //   rawJobs = rawJobs.filter((rawJob) => rawJob.type !== 'SHAPE_TO_M1_LAYER')
+  // }
 
   const [selectedJob, setSelectedJob] = useState(initialJob);
   const [showIcon, setShowIcon] = useState(false);
@@ -124,8 +126,10 @@ export default function BulkUpload(props) {
   }, [selectedJob]);
 
   const reset_state = () => {
-    jobController.setState({
+    jobController.updateState({
+      csvDataToSend: [],
       activeStepNumber: selectedJob.initialActiveStepNumber || 0,
+      csvDataList: [],
       mappedHeadersFromCSV: selectedJob.mappedHeadersFromCSV || [],
       m1neralHeaders: selectedJob.m1neralHeaders || M1neral_headers[selectedJob.type] || [],
       jobType: selectedJob.type,
@@ -247,7 +251,7 @@ export default function BulkUpload(props) {
                 anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
                 transformOrigin={{ vertical: "top", horizontal: "center" }}
               >
-                {jobs.map((job) => (
+                {jobs.filter((rawJob) => rawJob.type !== 'SHAPE_TO_M1_LAYER').map((job) => (
                   <FeatureFlag feature={FEATURES[job.featureFlag]} noCheck={!FEATURES[job.featureFlag]}>
                     <MenuItem
                       onClick={(e) => {
