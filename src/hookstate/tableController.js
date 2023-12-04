@@ -12,6 +12,10 @@ import { globalStateController } from 'hookstate/globalStateController';
 import ReactSelectField from "components/MRTTable/Common/MetaData/ReactSelectField";
 import CustomFieldText from "components/MRTTable/Common/MetaData/CustomFieldText";
 import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaData/MetaDataColumnsController'
+import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
+import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController'
+import { formatGridViewToMRT } from "components/MRTTable/utils/helper"
+
 
 const initialState = {
 	defaultFilters: [],
@@ -171,6 +175,24 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 	return newTableSchema
 }
 
+async function fetchGridViews(client, module, tableKey) {
+	const user = globalStateController.getValue('user')
+	const result = await client.query({
+		variables: {
+			module,
+			userId: user._id,
+		},
+		query: GET_GRID_VIEWS,
+	});
+	const allGridViews = result?.data?.getGridViews?.gridViews
+	const gridViewController = gridViewStateController(tableKey)
+	gridViewController?.initialize(tableKey, allGridViews);
+
+	const defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(user?._id));
+	return defaultDisplay
+}
+
+
 const tableESStateControllerHandler = state => ({
 	initialize: async (
 		tableKey,
@@ -189,6 +211,7 @@ const tableESStateControllerHandler = state => ({
 			search,
 			fetchMetaData,
 			onCustomKeyChange,
+			gridViewSettings,
 			...rest
 		},
 		client,
@@ -199,6 +222,21 @@ const tableESStateControllerHandler = state => ({
 
 		if (fetchMetaData) {
 			_Schema = await fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey)
+		}
+
+		let defaultDisplay = []
+		let formatGridView = {}
+		let gridView = {}
+
+		if (gridViewSettings) {
+			defaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey)
+
+			formatGridView = formatGridViewToMRT(defaultDisplay)
+			gridView = {
+				selectedGridView: !!defaultDisplay ? defaultDisplay : gridViewSettings.defaultView,
+				showViewModal: false,
+				showSaveAsNew: false,
+			}
 		}
 
 		const _TableSchema = _Schema.map(schemaColumn => {
@@ -350,18 +388,20 @@ const tableESStateControllerHandler = state => ({
 			tableKey,
 			esIndex,
 			fetchMetaData,
+			gridViewSettings,
+			gridView,
 			pageSize,
 			isSelectall: false,
 			isSelectAllAllowed,
-			showColumnFilters: false,
+			showColumnFilters: formatGridView?.filters ? true : false,
 			data: { rows: [], total: 0 },
 			isLoading: false,
 			isFetching: false,
 			isError: false,
 			defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }),
 			customProps: isEmpty(state?.customProps?.get({ noproxy: true })) ? customProps : state?.customProps?.get({ noproxy: true }),
-			filters: [],
-			sorting: [],
+			filters: formatGridView?.filters ? formatGridView.filters : [],
+			sorting: formatGridView?.sorting ? formatGridView.sorting : [],
 			rowSelection: {},
 			searchFields,
 			isInFiniteScroll,
@@ -372,11 +412,11 @@ const tableESStateControllerHandler = state => ({
 			grouping: groupedField ? [groupedField] : [],
 			footerProps: [],
 			ExternalFilter,
-			columnVisibility,
+			columnVisibility: formatGridView?.columnVisibility ? formatGridView.columnVisibility : columnVisibility,
 			defaultSort,
 			filterModes,
-			columnOrdering: ['mrt-row-select', 'mrt-row-numbers', ...columnOrder],
-			columnPinning: {
+			columnOrdering: formatGridView?.columnOrdering ? formatGridView.columnOrdering : ['mrt-row-select', 'mrt-row-numbers', ...columnOrder],
+			columnPinning: formatGridView?.columnPinning ? formatGridView.columnPinning : {
 				left: [
 					...(pinnedFields.length > 0
 						? ['mrt-row-select', 'mrt-row-numbers', ...pinnedFields]
@@ -542,6 +582,24 @@ const tableESStateControllerHandler = state => ({
 		if (!isEqual(value, state.isAllRowsSelected.get()))
 			state.isAllRowsSelected.set(value);
 	},
+
+	setShowColumnFilters: value => {
+		if (!isEqual(value, state.showColumnFilters.get()))
+			state.showColumnFilters.set(value);
+	},
+
+	setSorting: sorting => {
+		state.sorting?.set(sorting);
+	},
+
+	setColumnOrdering: columnOrdering => {
+		state.columnOrdering?.set(columnOrdering);
+	},
+
+	setFilters: filters => {
+		state.filters.set(filters)
+	}
+
 });
 
 export const tableController = TableKey => {

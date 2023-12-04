@@ -3,7 +3,6 @@ import { hookstate } from '@hookstate/core';
 import union from '@turf/union';
 import hat from 'hat';
 import * as turf from '@turf/turf';
-import polylabel from 'polylabel';
 
 import { layerRefs } from 'hookstate';
 import { hookStateController } from 'hookstate/hookStateController';
@@ -11,6 +10,7 @@ import { setMapGridCardState, toggleMapGridCardAtived } from 'actions';
 import { copy, getPolygonString } from 'components/Shared/functions';
 import {
 	addCustomShapeProperties,
+	calculateShapeCenter,
 	drawBoundary,
 	getDrawAdustedShape,
 } from 'components/MapControls/components/DrawShapes/drawShapesHelpers';
@@ -596,8 +596,6 @@ const drawStateControllerHandler = state => {
 		drawController.setShowDataCard(!drawController.getValue('showDataCard'));
 	};
 
-	const calculateShapeCenter = shapeCoordinates => polylabel(shapeCoordinates);
-
 	const getAbstractGeoSource = (abstractData, abstractShape) => {
 		const abstractGeo = abstractData?.abstractGeo;
 		if (!abstractGeo) return abstractShape;
@@ -665,7 +663,7 @@ const drawStateControllerHandler = state => {
 				sdNotes: '',
 				sdGrossAcres: '',
 				shapeArea: calculateLandArea(abstractShape),
-				shapeCenter: calculateShapeCenter(abstractShape.geometry.coordinates),
+				shapeCenter: calculateShapeCenter(abstractShape.geometry),
 				shapeLabelLayer: '',
 				id: featureId,
 			},
@@ -732,7 +730,7 @@ const drawStateControllerHandler = state => {
 				shapeLabel: shapeName,
 				...properties,
 				shapeArea: calculateLandArea(abstractShape),
-				shapeCenter: calculateShapeCenter(abstractShape.geometry.coordinates),
+				shapeCenter: calculateShapeCenter(abstractShape.geometry),
 				id: featureId,
 			},
 		};
@@ -765,7 +763,7 @@ const drawStateControllerHandler = state => {
 			...layerData.shapeJson.properties,
 			originalProperties: abstractShape?.properties,
 			shapeArea: calculateLandArea(abstractShape),
-			shapeCenter: calculateShapeCenter(abstractShape?.geometry.coordinates),
+			shapeCenter: calculateShapeCenter(abstractShape?.geometry),
 		};
 		const customLayerData = {
 			shapeJson: layerData.shapeJson,
@@ -810,7 +808,7 @@ const drawStateControllerHandler = state => {
 		const shapeJson = {
 			...currentFeature,
 			shapeArea: calculateLandArea(currentFeature),
-			shapeCenter: calculateShapeCenter(currentFeature?.geometry.coordinates),
+			shapeCenter: calculateShapeCenter(currentFeature?.geometry),
 		};
 		const customLayerData = {
 			shapeJson,
@@ -884,7 +882,7 @@ const drawStateControllerHandler = state => {
 			properties: {
 				...featureToEdit.properties,
 				shapeArea: calculateLandArea(currentFeature),
-				shapeCenter: calculateShapeCenter(currentFeature?.geometry.coordinates),
+				shapeCenter: calculateShapeCenter(currentFeature?.geometry),
 			},
 		};
 

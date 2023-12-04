@@ -20,14 +20,15 @@ const excludeFilters = (tableKey) => {
 	}
 	return excludedIds
 }
+
 export const openSideExportDialog = ({ _selectedRows, search, filters, sort, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) => {
 	let excludedIds = []
 	const includedIds = []
 	if (isAllRowsSelected) {
 		excludedIds = excludeFilters(tableKey)
 
-		total = total - excludedIds.length
-		isAllRowsSelected = excludedIds.length ? false : isAllRowsSelected
+		total = total - missingNumbers.length
+		isAllRowsSelected = missingNumbers.length ? false : isAllRowsSelected
 	} else {
 		total = _selectedRows.length
 		const value = []
@@ -74,6 +75,7 @@ export const openSideDialog = async (
 ) => {
 	let showRows = selectedRows;
 	if (isAllRowsSelected && !type.toLowerCase().includes('delete')) {
+
 		tableGlobalController.updateState({
 			dialog: {
 				type,

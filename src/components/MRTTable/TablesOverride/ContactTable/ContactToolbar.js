@@ -169,7 +169,7 @@ function ContactToolbar({ table, tableKey }) {
 					disabled={!isSomethingSelected}
 					onClick={() => openSideDialog(
 						{
-							type: 'merge',
+							type: 'sendMailers',
 							selectedRows,
 							isAllRowsSelected: sidePropsPass.isAllRowsSelected,
 							search: sidePropsPass.search,

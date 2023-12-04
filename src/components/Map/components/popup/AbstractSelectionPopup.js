@@ -6,8 +6,7 @@ import LayerIcon from "@material-ui/icons/Layers";
 import CloseIcon from "@material-ui/icons/Close";
 import Typography from "@material-ui/core/Typography";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { area, convertArea, length } from "@turf/turf";
-import polylabel from "polylabel";
+import { area, convertArea } from "@turf/turf";
 import hat from 'hat';
 import { AppContext } from "../../../../AppContext";
 import { UPSERTCUSTOMLAYER } from "../../../../graphQL/useMutationUpsertCustomLayer";
@@ -15,6 +14,7 @@ import { USERBYEMAIL } from "../../../../graphQL/useQueryUserByEmail";
 import Tooltip from "@material-ui/core/Tooltip";
 
 import { gql } from "@apollo/client";
+import { calculateShapeCenter } from "components/MapControls/components/DrawShapes/drawShapesHelpers";
 
 const useStyles = makeStyles((theme) => ({
   mapOverlay: {
@@ -164,8 +164,6 @@ export default (props) => {
     }
   };
 
-  const calculateShapeCenter = shapeCoordinates => polylabel(shapeCoordinates);
-
   const saveAndOpenParcelDetail = function () {
     if (!user._id) {
       return;
@@ -201,7 +199,7 @@ export default (props) => {
         "sdNotes": "",
         "sdGrossAcres": "",
         "shapeArea": calculateLandArea(abstractShape),
-        "shapeCenter": calculateShapeCenter(abstractShape.geometry.coordinates),
+        "shapeCenter": calculateShapeCenter(abstractShape.geometry),
         "shapeLabelLayer": "",
         "id": featureId
       }
@@ -233,7 +231,7 @@ export default (props) => {
         "sdGrossAcres": "",
         "shapeArea": calculateLandArea(abstractShape),
         // needs to be a string to be consistent with queried data
-        "shapeCenter": JSON.stringify(calculateShapeCenter(abstractShape.geometry.coordinates)),
+        "shapeCenter": JSON.stringify(calculateShapeCenter(abstractShape.geometry)),
         "shapeLabelLayer": "",
         "id": featureId
       },
