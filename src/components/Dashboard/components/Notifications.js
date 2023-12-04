@@ -176,7 +176,7 @@ const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) 
   }, [tab])
 
   useEffect(() => {
-    if (search && copyData?.length) {
+    if (search?.length && copyData?.length) {
       setDefaultData(copyData)
       const showNotification = copyData.filter(notification => {
         const parentName = notification?.parent?.name;
@@ -187,6 +187,8 @@ const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) 
         }
       });
       setNotifications(showNotification)
+    } else if (search?.length === 0 && copyData?.length) {
+      setNotifications(defaultData)
     }
   }, [search])
 
