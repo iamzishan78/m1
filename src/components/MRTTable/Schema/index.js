@@ -8,6 +8,8 @@ import UnitInterestMeta from './unit_interest_schema';
 import TractUnitsMeta from './tract_units_schema';
 import TractPotentialUnitsMeta from './tract_potential_units_schema';
 import CampaignMeta from './campaign_schema';
+import TractMeta from './tract_schema';
+import TractInterestsMeta from './tract_interest_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -23,4 +25,6 @@ export const SCHEMA = {
 	TractUnitsTable: TractUnitsMeta,
 	TractPotentialUnitsTable: TractPotentialUnitsMeta,
 	CampaignTable: CampaignMeta,
+	CampaignTractTable: TractMeta,
+	CampaignTractInterestTable: TractInterestsMeta
 };
