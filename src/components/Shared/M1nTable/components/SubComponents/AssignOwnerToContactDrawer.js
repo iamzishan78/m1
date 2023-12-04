@@ -24,6 +24,7 @@ import { PUBLICTAGSQUERY } from "graphQL/useQueryPublicTags";
 import { BULKUPSERTTAG } from "graphQL/useMutationBulkUpsertTagOnContacts";
 import { UPSERT_CONTACT_CAMPAIGNS } from "graphQL/useMutationCampaign";
 import { UPDATE_SHAPE_OWNERS } from "graphQL/useMutationUpdateShapeOwners";
+import { UPDATE_PARCEL_OWNERS } from 'graphQL/useMutationUpdateParcelOwners';
 import EntityType from "components/ContactDetailCard/components/FieldContent/EntityType";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 import { resetESTableToggle } from "hookstate";
@@ -118,6 +119,10 @@ export default function AssignOwnerToContactDrawer({
   };
 
   const [updateShapeOwners] = useMutation(UPDATE_SHAPE_OWNERS, {
+    ...options,
+    refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+  });
+  const [updateParcelOwners] = useMutation(UPDATE_PARCEL_OWNERS, {
     ...options,
     refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
   });
@@ -239,67 +244,109 @@ export default function AssignOwnerToContactDrawer({
     else {
       const fieldToUpdate = { [fieldsToUpdate.find(fieldtoUpdate => fieldtoUpdate.title === field).value]: fieldKey }
       if (field === "Campaign Name") {
-        if (rest.header === 'ContactTable') {
-          const variables = {
-            campaigns,
-            contactIds: rows.map(row => row._id)
-          }
-
-          upsertContactCampaigns({
-            variables,
-            refetchQueries: ["getESContacts"],
-          }).then(res => {
-            if (res.data && res.data.upsertContactCampaigns) {
-              resetESTableToggle.set(!resetESTableToggle.get())
-              const success = res.data.upsertContactCampaigns.success
-              if (success) {
-                Loader.successToast('contact-creation', "Updated")
-                showSuccessMessage(`${field} Bulk Updated Successfully`)
-                if (rest.onBulkUpdateComplete)
-                  rest.onBulkUpdateComplete()
-              } else {
-                Loader.errorToast('contact-creation', "Updated")
-              }
-            } else {
-              Loader.errorToast('contact-creation', "Failed")
+        switch (rest.header) {
+          case 'ContactTable':
+            const variables = {
+              campaigns,
+              contactIds: rows.map(row => row._id)
             }
-          },
-            err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });;
-        } else {
-          const shapeOwnersToUpdate = rows.map(row => ({
-            _id: row._id,
-            shapeId: row.customLayerId,
-            campaignName: campaigns.map(campaign => campaign.campaignName),
-            relatedObject: row.ownerEntity,
-            createBy: stateApp.user.mongoId,
-            lastUpdateBy: stateApp.user.mongoId,
-          }));
 
-          updateShapeOwners({
-            variables: {
-              shapeType: 'Unit',
-              shapeOwners: shapeOwnersToUpdate,
-              userId: stateApp.user.mongoId,
+            upsertContactCampaigns({
+              variables,
+              refetchQueries: ["getESContacts"],
+            }).then(res => {
+              if (res.data && res.data.upsertContactCampaigns) {
+                resetESTableToggle.set(!resetESTableToggle.get())
+                const success = res.data.upsertContactCampaigns.success
+                if (success) {
+                  Loader.successToast('contact-creation', "Updated")
+                  showSuccessMessage(`${field} Bulk Updated Successfully`)
+                  if (rest.onBulkUpdateComplete)
+                    rest.onBulkUpdateComplete()
+                } else {
+                  Loader.errorToast('contact-creation', "Updated")
+                }
+              } else {
+                Loader.errorToast('contact-creation', "Failed")
+              }
             },
-            refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"],
-            awaitRefetchQueries: true,
-          }).then(res => {
-            resetESTableToggle.set(!resetESTableToggle.get())
-            if (res.data && res.data.updateShapeOwners) {
-              const success = res.data.updateShapeOwners.success
-              if (success) {
-                Loader.successToast('contact-creation', "Updated")
-                showSuccessMessage(`${field} Bulk Updated Successfully`)
-                if (rest.onBulkUpdateComplete)
-                  rest.onBulkUpdateComplete()
+              err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });;
+
+            break;
+
+          case 'TractPerUnitTable':
+            const parcelOwnersToUpdate = rows.map(row => ({
+              _id: row._id,
+              shapeId: row.customLayerId,
+              campaignName: campaigns.map(campaign => campaign.campaignName),
+              relatedObject: row.ownerEntity,
+              createBy: stateApp.user.mongoId,
+              lastUpdateBy: stateApp.user.mongoId,
+            }));
+
+            updateParcelOwners({
+              variables: {
+                parcelOwners: parcelOwnersToUpdate,
+              },
+              refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"],
+              awaitRefetchQueries: true,
+            }).then(res => {
+              resetESTableToggle.set(!resetESTableToggle.get())
+              if (res.data && res.data.updateParcelOwners) {
+                const success = res.data.updateParcelOwners.success
+                if (success) {
+                  Loader.successToast('contact-creation', "Updated")
+                  showSuccessMessage(`${field} Bulk Updated Successfully`)
+                  if (rest.onBulkUpdateComplete)
+                    rest.onBulkUpdateComplete()
+                } else {
+                  Loader.errorToast('contact-creation', "Updated")
+                }
               } else {
-                Loader.errorToast('contact-creation', "Updated")
+                Loader.errorToast('contact-creation', "Failed")
               }
-            } else {
-              Loader.errorToast('contact-creation', "Failed")
-            }
-          },
-            err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });
+            },
+              err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });
+
+            break;
+
+          default:
+            const shapeOwnersToUpdate = rows.map(row => ({
+              _id: row._id,
+              shapeId: row.customLayerId,
+              campaignName: campaigns.map(campaign => campaign.campaignName),
+              relatedObject: row.ownerEntity,
+              createBy: stateApp.user.mongoId,
+              lastUpdateBy: stateApp.user.mongoId,
+            }));
+
+            updateShapeOwners({
+              variables: {
+                shapeType: 'Unit',
+                shapeOwners: shapeOwnersToUpdate,
+                userId: stateApp.user.mongoId,
+              },
+              refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"],
+              awaitRefetchQueries: true,
+            }).then(res => {
+              resetESTableToggle.set(!resetESTableToggle.get())
+              if (res.data && res.data.updateShapeOwners) {
+                const success = res.data.updateShapeOwners.success
+                if (success) {
+                  Loader.successToast('contact-creation', "Updated")
+                  showSuccessMessage(`${field} Bulk Updated Successfully`)
+                  if (rest.onBulkUpdateComplete)
+                    rest.onBulkUpdateComplete()
+                } else {
+                  Loader.errorToast('contact-creation', "Updated")
+                }
+              } else {
+                Loader.errorToast('contact-creation', "Failed")
+              }
+            },
+              err => { console.log(err); Loader.errorToast('contact-creation', errorMsg) });
+
+            break;
         }
 
         delete fieldToUpdate.campaignName

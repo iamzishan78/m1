@@ -2,6 +2,7 @@ import { history } from "store";
 import { GlobalStickyStyles } from "GlobalSettings";
 
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
+import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 
 const TractsHeadCells = (isSnapGrid = false) => [
   {
@@ -118,6 +119,103 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.shapeArea.keyword",
     options: {
       dbName: "shapeJson.properties.shapeArea",
+    },
+  },
+  {
+    label: "Exec Net Acres",
+    name: "execNetAcres",
+    esKey: "shapeJson.properties.execNetAcres.keyword",
+    options: {
+      dbName: "shapeJson.properties.execNetAcres.keyword",
+    },
+  },
+  {
+    label: "Non-Exec Net Acres",
+    name: "nonExecNetAcres",
+    esKey: "shapeJson.properties.nonExecNetAcres.keyword",
+    options: {
+      dbName: "shapeJson.properties.nonExecNetAcres.keyword",
+    },
+  },
+  {
+    label: "Target Pricing (per NMA)",
+    name: "uUnitPricingNMA",
+    esKey: 'shapeJson.properties.uUnitPricingNMA',
+    options: {
+      dbName: "shapeJson.properties.uUnitPricingNMA",
+      sort: true,
+      filter: true,
+      customRender: (value) => {
+        return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+      },
+    },
+  },
+
+  {
+    label: "Max Pricing (per NMA)",
+    name: "uMaxUnitPricingNMA",
+    esKey: 'shapeJson.properties.uMaxUnitPricingNMA',
+    options: {
+      dbName: "shapeJson.properties.uMaxUnitPricingNMA",
+      sort: true,
+      filter: true,
+      customRender: (value) => {
+        return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+      },
+    },
+  },
+  {
+    label: "Target Pricing (per NRA)",
+    name: "uUnitPricing",
+    esKey: 'shapeJson.properties.uUnitPricing',
+    options: {
+      dbName: "shapeJson.properties.uUnitPricing",
+      sort: true,
+      filter: true,
+      customRender: (value) => {
+        return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+      },
+    },
+  },
+
+  {
+    label: "Max Pricing (per NRA)",
+    name: "uMaxUnitPricing",
+    esKey: 'shapeJson.properties.uMaxUnitPricing',
+    options: {
+      dbName: "shapeJson.properties.uMaxUnitPricing",
+      sort: true,
+      filter: true,
+      customRender: (value) => {
+        return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+      },
+    },
+  },
+  // {
+  //   name: "campaignName",
+  //   label: "Campaign Name",
+  //   esKey: "shapeJson.properties.campaignName.keyword",
+  //   options: {
+  //     customRender: (value) => {
+  //       return <CampaignNameField value={value} fullWidth disabled />;
+  //     },
+  //     setCellProps: () => ({ style: { minWidth: "200px" } }),
+  //     sort: true,
+  //     filter: true,
+  //     isMultiFilter: true,
+  //   },
+  // },
+  {
+    name: "campaignName",
+    label: "Campaign Name",
+    esKey: "shapeJson.properties.campaignName.keyword",
+    options: {
+      customRender: (value) => {
+        return (typeof (value !== "string")) && value ? value?.join(", ") : value;
+      },
+      setCellProps: () => ({ style: { minWidth: "200px" } }),
+      sort: true,
+      filter: true,
     },
   },
   {
