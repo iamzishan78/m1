@@ -324,6 +324,47 @@ const TractPerUnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'offer_price_nma',
+			accessorKey: 'offer_price_nma',
+			header: 'Target Offer (per NMA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price_nma)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'max_offer_price_nma',
+			accessorKey: 'max_offer_price_nma',
+			header: 'Max Offer (per NMA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price_nma)}</>,
+		},
+
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'offer_price',
+			accessorKey: 'offer_price',
+			header: 'Target Offer (per NRA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'max_offer_price',
+			accessorKey: 'max_offer_price',
+			header: 'Max Offer (per NRA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'company_net_acres',
 			accessorKey: 'company_net_acres',
 			header: 'Co Net Acres',
