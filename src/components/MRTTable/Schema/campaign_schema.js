@@ -129,6 +129,10 @@ const CampaignMeta = {
       header: 'Total Unit NRA',
       isSearchField: false,
       type: 'number',
+      Cell: ({ row }) => {
+        const totalNra = row.getValue('totalNra');
+        return <>{totalNra ? totalNra.toFixed(2) : ''}</>
+      },
     },
     {
       ...CommonSchema.COMMON_COLUMN,
