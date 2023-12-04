@@ -192,6 +192,11 @@ const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) 
     }
   }, [search])
 
+  const archiveAll = () => {
+    archiveAllAndClose()
+    handleClose()
+  };
+
   return (
 
     <Grid container className={classes.gridStyle}>
@@ -263,7 +268,7 @@ const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) 
             transformOrigin={{ vertical: 'top', horizontal: 'center' }}
           >
             <MenuItem >
-              <IconButton className={classes.menuItem} onClick={archiveAllAndClose}>
+              <IconButton className={classes.menuItem} onClick={archiveAll}>
                 <Inventory2OutlinedIcon /> {"Archive All"}
               </IconButton>
             </MenuItem>
@@ -359,27 +364,6 @@ const Notifications = () => {
     }
   }, [profilesData]);
 
-  const refetchNotifications = async () => {
-    const filters = [{ field: "receiverId", value: getUser?._id }]
-    if (tab === 0) {
-      filters.push({ field: 'state', value: 'ARCHIVED', type: "advanced", searchType: "notEquals", isKeyword: true })
-    } else {
-      filters.push({ field: "state", value: "ARCHIVED" })
-    }
-
-    getNotifications({
-      variables: {
-        index: "notification_flat",
-        filters,
-        sort: { field: 'dateTimeAdded', order: 'desc' },
-        pagination: {
-          first: 10000,
-          after: null,
-        }
-      }
-    })
-  }
-
   const handleScroll = () => {
     // const list = document.getElementById("noifications-list");
     // if (list) {
@@ -460,7 +444,7 @@ const Notifications = () => {
                         state: "READ",
                       },
                     });
-                    refetchNotifications()
+                    refetchAllNotifications()
                     if (parentType === "DEAL") {
                       history.push(
                         `/flow/${pipelineId}/lane/${stageId}/card/${parent._id}/`
@@ -637,7 +621,7 @@ const Notifications = () => {
                               state: "UNREAD",
                             },
                           });
-                          refetchNotifications()
+                          refetchAllNotifications()
                         }}
                       >
                         <MarkUnreadIcon />
@@ -655,7 +639,7 @@ const Notifications = () => {
                                 state: "ARCHIVED",
                               },
                             });
-                            refetchNotifications()
+                            refetchAllNotifications()
                           }}
                         >
                           <ArchiveIcon />
