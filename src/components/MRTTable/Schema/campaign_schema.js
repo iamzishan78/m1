@@ -137,6 +137,14 @@ const CampaignMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
+      name: 'tractCount',
+      accessorKey: 'tractCount',
+      header: 'Tracts',
+      isSearchField: false,
+      type: 'number',
+    },
+    {
+      ...CommonSchema.COMMON_COLUMN,
       name: 'owner.name.keyword',
       accessorFn: row => row?.owner?.name,
       id: 'owner.name',

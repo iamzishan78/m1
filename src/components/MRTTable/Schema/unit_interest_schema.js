@@ -4,6 +4,7 @@ import ListChips from 'components/Common/ListChips';
 import { CommonSchema } from './common_schema';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 
 const esIndex = 'shapeowners_flat';
 
@@ -223,6 +224,7 @@ const UnitInterestMeta = {
 			name: 'campaignName.keyword',
 			accessorKey: 'campaignName',
 			header: 'Campaign Name',
+			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
 		},
 
 		{

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import { copy } from "utils/helper";
+import vf_number from "components/Shared/valueformatters/vf_number";
 
 // Revenue Chart
 export default function PieChart({ chartData = [], type = "" }) {
@@ -77,7 +78,7 @@ export default function PieChart({ chartData = [], type = "" }) {
     const grossRevenue = chartData.find((d) => d.name === "Gross Revenue" || d.name === "Total Adjustments");
     if (grossRevenue) {
       let label = pieSeries.createChild(am4core.Label);
-      label.text = `${Number(grossRevenue.value).toFixed(2)}`;
+      label.text = `${vf_number(Number(grossRevenue.value).toFixed(0))}`;
       label.horizontalCenter = "middle";
       label.verticalCenter = "middle";
       label.fontSize = 30;

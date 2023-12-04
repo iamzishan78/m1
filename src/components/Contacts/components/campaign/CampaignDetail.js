@@ -318,7 +318,7 @@ const CampaignDetail = ({ viewDoc }) => {
                 <div
                   id="detail-div"
                   className={classes.tabDetailSection}
-                  style={{ height: "calc(100vh - 453px)" }}
+                  style={{ height: "calc(100vh - 585px)" }}
                   ref={tab === 1 ? selectedTabRef : null}
                 >
                   <CampaignRelatedGrids campaign={campaign.current} />
