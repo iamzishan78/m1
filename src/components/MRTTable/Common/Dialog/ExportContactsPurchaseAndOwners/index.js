@@ -147,7 +147,7 @@ const ExportContactsAndPurchase = ({
       <DialogContent>
         <label className={classes.bold}>Available Data Elements</label>
 
-        {shapeType === 'Unit' && <div className={classes.field}>
+        <div className={classes.field}>
           <div className={classes.checkbox}>
             <div>
               <Controller
@@ -164,34 +164,11 @@ const ExportContactsAndPurchase = ({
                   />
                 )}
               />
-              <label className={classes.bold}>Unit Ownership Interest</label>
+              <label className={classes.bold}>{`${shapeType} Ownership Interest`}</label>
             </div>
             <label className={classes.value}>{total} selected</label>
           </div>
-        </div>}
-
-        {shapeType === 'Tract' && <div className={classes.field}>
-          <div className={classes.checkbox}>
-            <div>
-              <Controller
-                control={control}
-                name="exportInterestOwners"
-                defaultValue={false}
-                render={(props) => (
-                  <Checkbox
-                    {...props}
-                    disabled={total === 0}
-                    onChange={(e) => {
-                      props.onChange(e.target.checked);
-                    }}
-                  />
-                )}
-              />
-              <label className={classes.bold}>Tract Ownership Interest</label>
-            </div>
-            <label className={classes.value}>{total} selected</label>
-          </div>
-        </div>}
+        </div>
 
         <div className={classes.field}>
           <div className={classes.checkbox}>
