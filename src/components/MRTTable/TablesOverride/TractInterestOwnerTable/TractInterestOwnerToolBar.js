@@ -124,16 +124,22 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 		const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
 		const search = { fields: tableStateValues?.searchFields, query };
 
+		let sort = tableStateValues.defaultSort
+		if (tableStateValues?.sorting?.length) {
+			sort = { field: tableStateValues?.sorting?.[0].id, order: tableStateValues.sorting?.[0].desc ? 'desc' : 'asc', }
+		}
+
 		return {
 			_selectedRows: selectedRows,
 			search,
 			filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
+			sort,
 			total: tableStateValues?.data.total,
 			isAllRowsSelected: tableStateValues.isAllRowsSelected,
 			esIndex: tableStateValues.esIndex,
 			table,
 			tableKey,
-			type: 'exportOwnersAndContact',
+			type: 'exportContacts',
 			contactIdKey: 'contactId',
 			shapeType: 'Tract',
 		};

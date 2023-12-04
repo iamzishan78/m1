@@ -5,6 +5,7 @@ import { formatDate } from 'components/Shared/functions';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 
 const esIndex = 'shapes_flat';
 
@@ -177,6 +178,7 @@ const UnitMeta = {
 			id: 'shapeJson.properties.campaignName',
 			header: 'Campaign Name',
 			size: 270,
+			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
 		},
 
 		{

@@ -1,6 +1,5 @@
-import { Box, Button, ClickAwayListener, Grid, Typography } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import CardHeader from "@material-ui/core/CardHeader";
-import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import Paper from "@material-ui/core/Paper";
 import { useLazyQuery, useMutation } from "@apollo/client";
@@ -13,7 +12,18 @@ import Avatar from "react-avatar";
 import Tooltip from "@material-ui/core/Tooltip";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import { CircularProgress } from "@material-ui/core";
+import {
+  CircularProgress,
+  Menu,
+  MenuItem,
+  TextField,
+  InputAdornment,
+  IconButton
+} from "@material-ui/core";
+import SearchIcon from "@material-ui/icons/Search";
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import ClearIcon from "@material-ui/icons/Clear";
 import TractIcon from "components/Shared/svgIcons/tract";
 import UnitIcon from "components/Shared/svgIcons/unit";
 import NotificationsIcon from "@material-ui/icons/Notifications";
@@ -22,8 +32,6 @@ import ContactIcon from "@material-ui/icons/Group";
 import FlowIcon from "@material-ui/icons/Repeat";
 import { LocalAtm } from "@material-ui/icons";
 import { DescriptionOutlined } from "@material-ui/icons";
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import { GET_NOTIFICATIONS } from "graphQL/useQueryGetNotifications";
 import { UPDATE_NOTIFICATION_STATUS } from "graphQL/useMutationUpdateNotificationStatus";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
@@ -33,6 +41,9 @@ import ReactTimeAgo from "react-time-ago";
 import { dateIsValid } from "utils/helper";
 import { CommonCommentText } from "components/Shared/CommentComponent";
 import { ARCHIVE_ALL_MUTATIONS } from "graphQL/useMutationArchiverAllMentions";
+import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
+import { globalStateController } from "hookstate/globalStateController";
+import Loader from 'components/Loaders';
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -114,6 +125,8 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 0,
   },
   customTabs: {
+    display: 'flex',
+    alignItems: 'center ',
     float: "right",
     paddingRight: "30px",
     "& .MuiTab-root": {
@@ -134,44 +147,155 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
     backgroundColor: 'white',
   },
-  menuBtn: ({ isArchiving, showArchiveOption }) => ({
-    position: 'relative',
-    width: '218px',
-
-    '& button': {
-      width: 'inherit',
-      justifyContent: 'flex-start'
-    },
-
-    '&:hover #menu-icon': {
-      display: 'block',
-      transform: 'rotateX(180deg)'
-    },
-
-    '& #menu-icon': {
-      display: showArchiveOption && 'block'
+  menuItem: {
+    fontSize: '14px',
+    padding: 0,
+    '& > span': {
+      display: 'flex',
+      gap: '4px',
     }
-  })
+  },
 }));
+
+const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) => {
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [search, setSearch] = useState('');
+  const [defaultData, setDefaultData] = useState([])
+  const classes = useStyles();
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  useEffect(() => {
+    setSearch("")
+  }, [tab])
+
+  useEffect(() => {
+    if (search?.length && copyData?.length) {
+      setDefaultData(copyData)
+      const showNotification = copyData.filter(notification => {
+        const parentName = notification?.parent?.name;
+        if (Array.isArray(parentName)) {
+          return parentName.some(name => name.toLowerCase().includes(search?.toLowerCase()));
+        } else {
+          return parentName?.toLowerCase()?.includes(search?.toLowerCase());
+        }
+      });
+      setNotifications(showNotification)
+    } else if (search?.length === 0 && copyData?.length) {
+      setNotifications(defaultData)
+    }
+  }, [search])
+
+  const archiveAll = () => {
+    archiveAllAndClose()
+    handleClose()
+  };
+
+  return (
+
+    <Grid container className={classes.gridStyle}>
+
+      <Grid item xs={6} container alignItems="center" style={{ gap: '1rem' }}>
+
+        <Typography variant="h5" style={{ fontWeight: '700' }}>Notifications</Typography>
+
+        <TextField
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          style={{
+            margin: 0,
+          }}
+          margin="dense"
+          variant="outlined"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment>
+                <IconButton size="small">
+                  <SearchIcon htmlColor="grey" />
+                </IconButton>
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <>
+                <Tooltip title="Clear">
+                  <IconButton
+                    id="crossButton"
+                    size="small"
+                    htmlColor="#fff"
+                    onClick={() => {
+                      setNotifications(defaultData)
+                      setSearch("")
+                    }}
+                  >
+                    <ClearIcon />
+                  </IconButton>
+                </Tooltip>
+              </>
+            ),
+          }}
+        />
+
+      </Grid>
+
+      <Grid item xs={6}>
+        <div className={classes.customTabs}>
+          <Tabs
+            value={tab}
+            textColor="primary"
+            onChange={(e, newValue) => {
+              setTab(newValue);
+            }}
+          >
+            <Tab label="Active" />
+            <Tab label="Archive" />
+          </Tabs>
+          <MoreHorizIcon onClick={handleClick} />
+
+          <Menu
+            id="menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            getContentAnchorEl={null}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <MenuItem >
+              <IconButton className={classes.menuItem} onClick={archiveAll}>
+                <Inventory2OutlinedIcon /> {"Archive All"}
+              </IconButton>
+            </MenuItem>
+          </Menu>
+        </div>
+      </Grid>
+    </Grid>
+  );
+};
 
 const Notifications = () => {
   let history = useHistory();
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const [_, setStateApp] = useContext(AppContext);
   const [notifications, setNotifications] = useState([]);
   const [profilesInfo, setProfilesInfo] = useState({});
-  const [page, setPage] = useState(1);
-  const [isFetching, setIsFetching] = useState(false);
   const [users, setUsers] = useState([]);
   const [tab, setTab] = useState(0);
-  const [showArchiveOption, setShowArchiveOption] = useState(false)
+  const [copyData, setCopyData] = useState([])
+  const { user } = globalStateController.useState(['user']);
+  const getUser = user.get({ noproxy: true });
 
-  const [archiveAllMentions, { loading: isArchiving }] = useMutation(ARCHIVE_ALL_MUTATIONS);
+  const [archiveAllMentions] = useMutation(ARCHIVE_ALL_MUTATIONS);
   const [updateNotificationStatus] = useMutation(UPDATE_NOTIFICATION_STATUS);
 
-  const [getNotifications, { data: notificationsData, loading }] =
-    useLazyQuery(GET_NOTIFICATIONS, {
-      fetchPolicy: 'cache-and-network'
-    });
+  const [getNotifications, { data: allNotifications, loading, refetch: refetchAllNotifications }] = useLazyQuery(GET_ES_SIMPLE_SEARCH, { fetchPolicy: "no-cache" });;
+
 
   const [getProfilesImages, profilesData] = useLazyQuery(GET_PROFILES_IMAGES, {
     fetchPolicy: "cache-first",
@@ -181,14 +305,38 @@ const Notifications = () => {
   });
 
   useEffect(() => {
+
+    const filters = [{ field: "receiverId", value: getUser?._id }]
+    if (tab === 0) {
+      filters.push({ field: 'state', value: 'ARCHIVED', type: "advanced", searchType: "notEquals", isKeyword: true })
+    } else {
+      filters.push({ field: "state", value: "ARCHIVED" })
+    }
+
     getNotifications({
       variables: {
-        userId: stateApp.user.mongoId,
-        state: "Active",
-        page,
-      },
-    });
-  }, [getNotifications, stateApp.user]);
+        index: "notification_flat",
+        filters,
+        sort: { field: 'dateTimeAdded', order: 'desc' },
+        pagination: {
+          first: 10000,
+          after: null,
+        }
+      }
+    })
+  }, [tab])
+
+  useEffect(() => {
+    if (allNotifications) {
+      // if notificationType is MENTION then comment key must exist in array 
+      // {notificationType: "MENTION", comment: { $exists: true }}
+      const showNotifications = allNotifications?.getESSimpleSearch?.hits?.filter(notificationObj => {
+        return notificationObj.notificationType !== "MENTION" || (notificationObj.notificationType === "MENTION" && notificationObj.comment !== undefined);
+      });
+      setNotifications(showNotifications)
+      setCopyData(showNotifications)
+    }
+  }, [allNotifications])
 
   useEffect(() => {
     getAllMongoUsers();
@@ -212,117 +360,37 @@ const Notifications = () => {
   }, [userLists]);
 
   useEffect(() => {
-    if (notificationsData?.getNotifications?.notifications) {
-      if (page === 1) {
-        setNotifications(notificationsData?.getNotifications?.notifications);
-        return;
-      }
-      setNotifications((prevNotifications) => [...prevNotifications, ...notificationsData?.getNotifications?.notifications]);
-    }
-  }, [notificationsData]);
-
-  useEffect(() => {
     if (profilesData?.data?.profileByEmail?.profiles) {
       setProfilesInfo(profilesData.data.profileByEmail.profiles);
     }
   }, [profilesData]);
 
-  const refetchNotifications = async () => {
-    setPage(1);
-    await getNotifications({
-      variables: {
-        userId: stateApp.user.mongoId,
-        state: tab === 0 ? "Active" : "Archived",
-        page: 1
-      },
-    });
-  }
-
-  const fetchNotifications = async () => {
-    setIsFetching(true)
-    await getNotifications({
-      variables: {
-        userId: stateApp.user.mongoId,
-        state: tab === 0 ? "Active" : "Archived",
-        page
-      },
-    });
-    setPage(page + 1);
-    setIsFetching(false)
-  }
-
   const handleScroll = () => {
-    const list = document.getElementById("noifications-list");
-    if (list) {
-      const scrollTop = list.scrollTop;
-      const scrollHeight = list.scrollHeight;
-      const clientHeight = list.clientHeight;
+    // const list = document.getElementById("noifications-list");
+    // if (list) {
+    //   const scrollTop = list.scrollTop;
+    //   const scrollHeight = list.scrollHeight;
+    //   const clientHeight = list.clientHeight;
 
-      // Calculate the position where the user reaches the end of the list's content
-      const isAtEndOfList = scrollTop + clientHeight >= scrollHeight - 20;
-      if (notificationsData?.getNotifications?.notifications?.length === 0) return;
-      if (isAtEndOfList && !isFetching) {
-        fetchNotifications();
-      }
-    }
+    //   // Calculate the position where the user reaches the end of the list's content
+    //   const isAtEndOfList = scrollTop + clientHeight >= scrollHeight - 20;
+    //   if (allNotifications?.getESSimpleSearch?.hits?.length === 0) return;
+    //   if (isAtEndOfList && !isFetching) {
+
+    //   }
+    // }
   };
 
   const archiveAllAndClose = async () => {
+    Loader.createToast('archived', 'Archive All Mentions in Progress');
     await archiveAllMentions({
-      refetchQueries: ["getNotifications"],
       awaitRefetchQueries: false,
     })
+    Loader.successToast('archived', "Archive All Mentions Complete");
+    refetchAllNotifications()
   };
-  const classes = useStyles({ isArchiving, showArchiveOption });
+  const classes = useStyles();
 
-  const archiveAllOption = () => {
-    setShowArchiveOption(!showArchiveOption);
-  }
-  const Title = () => {
-    return (
-
-      <Grid container className={classes.gridStyle}>
-        <ClickAwayListener onClickAway={() => { setShowArchiveOption(false) }}>
-          <Grid item xs={6} className={classes.menuBtn}>
-            <Button aria-controls="simple-menu" aria-haspopup="true" onClick={archiveAllOption}>
-              <Box display={"flex"} gridGap={2} alignItems={'center'}>
-                <Typography variant="h5" style={{ fontWeight: '700' }}>Notifications</Typography>
-                <ExpandLessIcon id="menu-icon" className={classes.menuIcon} style={{ transform: showArchiveOption && 'rotate(180deg)' }} />
-              </Box>
-            </Button>
-            {showArchiveOption && (<Button className={classes.archiveBtn} onClick={archiveAllAndClose} disabled={isArchiving}>
-              <Box display={"flex"} gridGap={3} alignItems={'center'}>
-                {isArchiving && <CircularProgress size={15} />}
-                <Typography>Archive all</Typography>
-              </Box>
-            </Button>)}
-          </Grid>
-        </ClickAwayListener>
-        <Grid item xs={6}>
-          <div className={classes.customTabs}>
-            <Tabs
-              value={tab}
-              textColor="primary"
-              onChange={(e, newValue) => {
-                setTab(newValue);
-                setPage(1);
-                getNotifications({
-                  variables: {
-                    userId: stateApp.user.mongoId,
-                    state: newValue === 0 ? "Active" : "Archived",
-                    page: 1
-                  },
-                });
-              }}
-            >
-              <Tab label="Active" />
-              <Tab label="Archive" />
-            </Tabs>
-          </div>
-        </Grid>
-      </Grid>
-    );
-  };
   const getNotificationIcon = (type) => {
     switch (type) {
       case "PARCEL":
@@ -344,19 +412,20 @@ const Notifications = () => {
         return;
     }
   };
+
   return (
     <Fragment>
       <CardHeader
-        title={<Title />}
+        title={<Title tab={tab} setTab={setTab} setNotifications={setNotifications} copyData={copyData} archiveAllAndClose={archiveAllAndClose} />}
         className={classes.header}
       />
 
-      {(loading && !isFetching) ? (
+      {(loading) ? (
         <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
       ) : (
         <List onScroll={handleScroll} id="noifications-list" style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
-          {notifications.map(({ _id, state, source, parent, senderId, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
-            const user = users.find((user) => source.user === user._id);
+          {notifications.map(({ _id, state, comment, parent, sender, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
+            const user = users.find((user) => comment?.user === user?._id);
             return (
               <Paper key={i} className={classes.paper}>
                 <Grid
@@ -378,7 +447,7 @@ const Notifications = () => {
                         state: "READ",
                       },
                     });
-                    refetchNotifications()
+                    refetchAllNotifications()
                     if (parentType === "DEAL") {
                       history.push(
                         `/flow/${pipelineId}/lane/${stageId}/card/${parent._id}/`
@@ -456,25 +525,25 @@ const Notifications = () => {
                           <IconButton
                             style={{ marginTop: "0px", marginLeft: "14px" }}
                           >
-                            {profilesInfo[senderId?.email]?.profileImage ? (
+                            {profilesInfo[sender?.email]?.profileImage ? (
                               <Avatar
-                                src={profilesInfo[senderId?.email].profileImage}
+                                src={profilesInfo[sender?.email].profileImage}
                                 size="38"
                                 round
                               />
                             ) : (
-                              <Avatar name={senderId?.name} size="38" round />
+                              <Avatar name={sender?.name} size="38" round />
                             )}
                           </IconButton>
                         </Grid>
                         <Grid item xs={11} className={classes.paddingLeft10}>
                           <div>
-                            <span className={classes.bold}>{senderId?.name}</span>
+                            <span className={classes.bold}>{sender?.name}</span>
                             {
                               notificationType === "TASK_COMPLETED" ? "  has completed the Task" : "  has assigned you a Task"
                             }
                           </div>
-                          <div>{parent.name}</div>
+                          <div>{parent?.name}</div>
                         </Grid>
                       </Grid>
                     }
@@ -533,15 +602,13 @@ const Notifications = () => {
                         <Grid item xs={11} className={classes.paddingLeft10}>
                           <div>
                             <span className={classes.bold}>{user?.name}</span>
-                            {
-                              <ReactTimeAgo
-                                className={classes.commentTime}
-                                date={new Date(!isNaN(Number(source.ts)) ? Number(source.ts) : source.ts)}
-                                locale="en-US"
-                              />
-                            }
+                            {comment?.ts && <ReactTimeAgo
+                              className={classes.commentTime}
+                              date={new Date(comment?.ts)}
+                              locale="en-US"
+                            />}
                           </div>
-                          <CommonCommentText users={users} eachComment={source} />
+                          <CommonCommentText users={users} eachComment={comment} />
                         </Grid>
                       </Grid>
                     )}
@@ -557,7 +624,7 @@ const Notifications = () => {
                               state: "UNREAD",
                             },
                           });
-                          refetchNotifications()
+                          refetchAllNotifications()
                         }}
                       >
                         <MarkUnreadIcon />
@@ -575,7 +642,7 @@ const Notifications = () => {
                                 state: "ARCHIVED",
                               },
                             });
-                            refetchNotifications()
+                            refetchAllNotifications()
                           }}
                         >
                           <ArchiveIcon />
@@ -587,7 +654,7 @@ const Notifications = () => {
               </Paper>
             );
           })}
-          {isFetching && <CircularProgress className={classes.progress} size={40} disableShrink color="secondary"></CircularProgress>}
+          {loading && <CircularProgress className={classes.progress} size={40} disableShrink color="secondary"></CircularProgress>}
         </List>
       )}
     </Fragment>

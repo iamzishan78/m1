@@ -296,7 +296,7 @@ const TractPerUnitMeta = {
 			},
 		},
 
-		
+
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'nra',
@@ -417,6 +417,31 @@ const TractPerUnitMeta = {
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ row }) => <>{vf_currency(row?.original?.actual_offer_price)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.contactStatus.keyword',
+			accessorFn: row => row?.contact?.contactStatus,
+			id: 'contact.contactStatus',
+			header: 'Contact Status',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.status.keyword',
+			accessorFn: row => row?.contact?.status,
+			id: 'contact.status',
+			header: 'Contact Stage',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contactOwners.keyword',
+			accessorKey: 'contactOwners',
+			header: 'Contact Owner',
+			Cell: ({ row }) => {
+				return <div>{row?.original?.contactOwners[0]}</div>
+			}
 		},
 
 		{
