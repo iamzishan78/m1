@@ -1,6 +1,7 @@
 import TractPotentialUnitsToolbar from "components/MRTTable/TablesOverride/TractPotentialUnitsTable/TractPotentialUnitsToolbar";
 import { CommonSchema } from "./common_schema";
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
 
 const esIndex = "shapes_flat";
 
@@ -128,6 +129,7 @@ const TractPotentialUnitsMeta = {
             id: "shapeJson.properties.campaignName",
             header: "Campaign Name",
             size: 270,
+            Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
         },
     ],
 };
