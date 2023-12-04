@@ -511,7 +511,6 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	setColumnOrdering: order => {
-		console.log(order)
 		if (!deepEqual(state.columnOrdering?.get({ noproxy: true }), order)) state.columnOrdering?.set(order);
 	},
 
@@ -590,10 +589,6 @@ const tableESStateControllerHandler = state => ({
 
 	setSorting: sorting => {
 		state.sorting?.set(sorting);
-	},
-
-	setColumnOrdering: columnOrdering => {
-		state.columnOrdering?.set(columnOrdering);
 	},
 
 	setFilters: filters => {
