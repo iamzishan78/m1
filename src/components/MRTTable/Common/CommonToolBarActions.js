@@ -27,8 +27,8 @@ export const openSideExportDialog = ({ _selectedRows, search, filters, sort, tot
 	if (isAllRowsSelected) {
 		excludedIds = excludeFilters(tableKey)
 
-		total = total - missingNumbers.length
-		isAllRowsSelected = missingNumbers.length ? false : isAllRowsSelected
+		total = total - excludedIds.length
+		isAllRowsSelected = excludedIds.length ? false : isAllRowsSelected
 	} else {
 		total = _selectedRows.length
 		const value = []
