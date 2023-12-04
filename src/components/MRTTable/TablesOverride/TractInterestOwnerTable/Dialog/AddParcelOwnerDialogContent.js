@@ -498,6 +498,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             'getContactParcelInterests',
             'getContactParcelInterest',
             'getESSimpleSearch',
+            'getCustomLayer'
           ],
           awaitRefetchQueries: true,
         });

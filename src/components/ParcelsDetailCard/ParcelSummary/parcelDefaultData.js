@@ -62,7 +62,7 @@ const tableData = [
         filterField: filterConsts.sectiontx.filterField,
         dependencyArray: filterConsts.sectiontx.dependencyArray,
     },
-    
+
     {
         label: "Abstract",
         type: "autocompletelandgrid",
@@ -142,6 +142,25 @@ const tableData = [
         key: "shapeArea",
         nonEditable: true,
     },
+    {
+        label: "Net Royalty Acres (NRA)",
+        type: "calculation",
+        key: "netRoyalityAcres",
+        nonEditable: true,
+    },
+    {
+        label: "Exec Net Acres",
+        type: "comma-number",
+        key: "execNetAcres",
+        nonEditable: true,
+    },
+    {
+        label: "Non-Exec Net Acres",
+        type: "comma-number",
+        key: "nonExecNetAcres",
+        nonEditable: true,
+    },
+
     {
         label: "Target Pricing (per NMA)",
         type: "currency",
