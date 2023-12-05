@@ -3,6 +3,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import vf_currency from 'components/Shared/valueformatters/vf_currency';
 
 const esIndex = 'shapes_flat';
 
@@ -95,15 +96,6 @@ const TractMeta = {
 			header: 'Abstract/ Section',
 		},
 
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'shapeJson.properties.campaignName.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.campaignName,
-			id: 'shapeJson.properties.campaignName',
-			header: 'Campaign Name',
-			size: 270,
-			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
-		},
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -121,10 +113,69 @@ const TractMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'shapeJson.properties.department.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.department,
-			id: 'shapeJson.properties.department',
-			header: 'Department',
+			name: 'shapeJson.properties.execNetAcres.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.execNetAcres,
+			id: 'shapeJson.properties.execNetAcres',
+			header: 'Exec Net Acres',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.nonExecNetAcres.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.nonExecNetAcres,
+			id: 'shapeJson.properties.nonExecNetAcres',
+			header: 'Non-Exec Net Acres',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'uUnitPricingNMA',
+			accessorKey: 'uUnitPricingNMA',
+			header: 'Target Pricing (per NMA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.uUnitPricingNMA)}</>,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'uMaxUnitPricingNMA',
+			accessorKey: 'uMaxUnitPricingNMA',
+			header: 'Max Pricing (per NMA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.uMaxUnitPricingNMA)}</>,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'uUnitPricing',
+			accessorKey: 'uUnitPricing',
+			header: 'Target Pricing (per NRA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.uUnitPricing)}</>,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'uMaxUnitPricing',
+			accessorKey: 'uMaxUnitPricing',
+			header: 'Max Pricing (per NRA)',
+			isSearchField: false,
+			type: 'number',
+			Cell: ({ row }) => <>{vf_currency(row?.original?.uMaxUnitPricing)}</>,
+		},
+		// {
+		// 	...CommonSchema.COMMON_COLUMN,
+		// 	name: 'shapeJson.properties.department.keyword',
+		// 	accessorFn: row => row?.shapeJson?.properties?.department,
+		// 	id: 'shapeJson.properties.department',
+		// 	header: 'Department',
+		// },
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.campaignName.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.campaignName,
+			id: 'shapeJson.properties.campaignName',
+			header: 'Campaign Name',
+			size: 270,
+			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
 		},
 		{
 			...CommonSchema.TAGS,
