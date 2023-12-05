@@ -532,7 +532,7 @@ export default function AddContactDialogContent(props) {
           className={classes.fieldWidth}
           options={users.filter(u => u.text)}
           onChange={(e, user) => {
-            setNewContact({ ...newContact, contactOwner: user.value });
+            setNewContact({ ...newContact, contactOwner: user?.value });
           }}
           value={users.find(user => user?.value === newContact.contactOwner) || null}
           getOptionLabel={option => option.text}

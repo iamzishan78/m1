@@ -187,6 +187,51 @@ function CamapignRelatedGrids({ campaign }) {
     maxTableHeight: '35vh'
   }), [campaign?.name]);
 
+  const campaignTractOverrideMeta = useMemo(() => ({
+    defaultFilters: [
+      { field: 'layer.keyword', value: 'parcel' },
+      { field: 'shapeJson.properties.campaignName.keyword', value: campaign?.name || '' },
+    ],
+    deletedKeys: {
+      mainRecord: { key: '_id' },
+      parentRecord: { key: '', func: () => campaign?._id },
+      customlayers: {
+        key: 'shapeJson',
+        func: (shapeJson) => {
+          return {
+            shapeJson: {
+              ...shapeJson,
+              properties: {
+                ...shapeJson.properties,
+                campaignName: shapeJson?.properties?.campaignName?.filter?.(name => name !== campaign?.name) || []
+              }
+            }
+          }
+        }
+      },
+    },
+    isCampaignRefetch: true,
+    maxTableHeight: '35vh',
+  }), [campaign?.name]);
+
+  const campaignTractInterestOverrideMeta = useMemo(() => ({
+    defaultFilters: [
+      { field: 'shape.layer.keyword', value: 'parcel' },
+      { field: 'contact.IsDeleted', value: 'false' },
+      { field: 'shape.IsDeleted', value: 'false' },
+      { field: 'campaignName.keyword', value: campaign?.name || '' },
+    ],
+    deletedKeys: {
+      mainRecord: { key: '_id' },
+      campaignName: {
+        key: 'campaignName',
+        func: (campaignName) => campaignName.filter(c => c !== campaign?.name)
+      },
+    },
+    isCampaignRefetch: true,
+    maxTableHeight: '35vh',
+  }), [campaign?.name]);
+
   return (
     <div className={classes.card}>
       <Card className={classes.dockMenu}>
@@ -220,16 +265,19 @@ function CamapignRelatedGrids({ campaign }) {
             <Grid item md={10} style={{ padding: '0px 0px', overflow: 'overlay' }}>
               <div style={{ position: 'relative' }} classes={classes.gridTables}>
                 {(globalSelectedTabKey.tabKey === 0 && campaign?.name) && (
-                  // <CampaignContactsTable campaign={campaign} />
                   <MRTTable name="CampaignContactTable" overrideMeta={campaignContactoverrideMeta} />
                 )}
                 {(globalSelectedTabKey.tabKey === 1 && campaign?.name) && (
-                  // <CampaignUnitsTable campaign={campaign} header="Units" />
                   <MRTTable name="CampaignUnitTable" overrideMeta={campaignUnitoverrideMeta} />
                 )}
                 {(globalSelectedTabKey.tabKey === 2 && campaign?.name) && (
-                  // <UnitInterestOwnersTable esIndex="shapeowners_flat" campaignName={campaign?.name} />
                   <MRTTable name="CampaignUnitInterestTable" overrideMeta={campaignUnitInterestoverrideMeta} />
+                )}
+                {(globalSelectedTabKey.tabKey === 3 && campaign?.name) && (
+                  <MRTTable name="CampaignTractTable" overrideMeta={campaignTractOverrideMeta} />
+                )}
+                {(globalSelectedTabKey.tabKey === 4 && campaign?.name) && (
+                  <MRTTable name="CampaignTractInterestTable" overrideMeta={campaignTractInterestOverrideMeta} />
                 )}
               </div>
             </Grid>

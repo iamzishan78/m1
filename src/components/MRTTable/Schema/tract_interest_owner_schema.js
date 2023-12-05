@@ -295,8 +295,31 @@ const TractPerUnitMeta = {
 				return <div>{sumNetAcres?.value ? addTrailingZeros(parseFloat(sumNetAcres?.value).toFixed(8)) : 0}</div>;
 			},
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'company_net_acres',
+			accessorKey: 'company_net_acres',
+			header: 'Co Net Acres',
+			isSearchField: false,
+			type: 'number',
+			Aggregation: {
+				sumCoNetAcres: {
+					sum: { field: 'company_net_acres' },
+				},
+			},
+			Cell: ({ row }) => {
+				const company_net_acres = row.getValue('company_net_acres');
+				if (company_net_acres) {
+					return <>{addTrailingZeros(parseFloat(company_net_acres).toFixed(8))}</>;
+				}
+			},
+			Footer: () => {
+				const Controller = tableController('TractPerUnitTable');
+				const { sumCoNetAcres } = Controller.getValue('footerProps') || {};
+				return <div>{sumCoNetAcres?.value ? addTrailingZeros(parseFloat(sumCoNetAcres?.value).toFixed(8)) : 0}</div>;
+			},
+		},
 
-		
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'nra',
@@ -326,7 +349,7 @@ const TractPerUnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'offer_price_nma',
 			accessorKey: 'offer_price_nma',
-			header: 'Target Offer (per NMA)',
+			header: 'Target Offer (NMA)',
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price_nma)}</>,
@@ -336,7 +359,7 @@ const TractPerUnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'max_offer_price_nma',
 			accessorKey: 'max_offer_price_nma',
-			header: 'Max Offer (per NMA)',
+			header: 'Max Offer (NMA)',
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price_nma)}</>,
@@ -347,7 +370,7 @@ const TractPerUnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'offer_price',
 			accessorKey: 'offer_price',
-			header: 'Target Offer (per NRA)',
+			header: 'Target Offer (NRA)',
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price)}</>,
@@ -357,36 +380,13 @@ const TractPerUnitMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'max_offer_price',
 			accessorKey: 'max_offer_price',
-			header: 'Max Offer (per NRA)',
+			header: 'Max Offer (NRA)',
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price)}</>,
 		},
 
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'company_net_acres',
-			accessorKey: 'company_net_acres',
-			header: 'Co Net Acres',
-			isSearchField: false,
-			type: 'number',
-			Aggregation: {
-				sumCoNetAcres: {
-					sum: { field: 'company_net_acres' },
-				},
-			},
-			Cell: ({ row }) => {
-				const company_net_acres = row.getValue('company_net_acres');
-				if (company_net_acres) {
-					return <>{addTrailingZeros(parseFloat(company_net_acres).toFixed(8))}</>;
-				}
-			},
-			Footer: () => {
-				const Controller = tableController('TractPerUnitTable');
-				const { sumCoNetAcres } = Controller.getValue('footerProps') || {};
-				return <div>{sumCoNetAcres?.value ? addTrailingZeros(parseFloat(sumCoNetAcres?.value).toFixed(8)) : 0}</div>;
-			},
-		},
+
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'seller_asking_price',
@@ -417,6 +417,31 @@ const TractPerUnitMeta = {
 			isSearchField: false,
 			type: 'number',
 			Cell: ({ row }) => <>{vf_currency(row?.original?.actual_offer_price)}</>,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.contactStatus.keyword',
+			accessorFn: row => row?.contact?.contactStatus,
+			id: 'contact.contactStatus',
+			header: 'Contact Status',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.status.keyword',
+			accessorFn: row => row?.contact?.status,
+			id: 'contact.status',
+			header: 'Contact Stage',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contactOwners.keyword',
+			accessorKey: 'contactOwners',
+			header: 'Contact Owner',
+			Cell: ({ row }) => {
+				return <div>{row?.original?.contactOwners[0]}</div>
+			}
 		},
 
 		{

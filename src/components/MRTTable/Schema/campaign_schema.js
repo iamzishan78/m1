@@ -5,6 +5,7 @@ import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
 import CampaignIcon from 'components/Shared/svgIcons/campaign';
+import vf_number from 'components/Shared/valueformatters/vf_number';
 import { UPDATE_CAMPAIGN } from 'graphQL/useMutationCampaign';
 import { tableGlobalController } from 'hookstate/tableController';
 import { isEmpty, pickBy } from 'lodash';
@@ -127,6 +128,18 @@ const CampaignMeta = {
       name: 'totalNra',
       accessorKey: 'totalNra',
       header: 'Total Unit NRA',
+      isSearchField: false,
+      type: 'number',
+      Cell: ({ row }) => {
+        const totalNra = row.getValue('totalNra');
+        return <>{totalNra ? vf_number(totalNra.toFixed(2)) : ''}</>
+      },
+    },
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'tractCount',
+      accessorKey: 'tractCount',
+      header: 'Tracts',
       isSearchField: false,
       type: 'number',
     },

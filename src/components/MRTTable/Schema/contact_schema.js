@@ -11,6 +11,7 @@ import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 
 const esIndex = 'contacts_flat';
 
@@ -462,6 +463,7 @@ const ContactMeta = {
 			accessorKey: 'campaignName',
 			header: 'Campaign Name',
 			hidden: true,
+			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
 		},
 
 		{

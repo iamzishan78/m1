@@ -149,7 +149,9 @@ function MapGridLayersTable(props) {
       }],
       searchFields: ['*'],
       TableHeader: [],
-      filters: [{ field: "file._id", value: stateApp.selectedLayer?.file }],
+      filters: [
+        { field: "file._id", value: [stateApp.selectedLayer?.file, stateApp.selectedLayer?.originalFile].filter(Boolean) },
+      ],
       esIndex: "shapefile_flat",
       startPaginationAt: 25,
       formatColumns,

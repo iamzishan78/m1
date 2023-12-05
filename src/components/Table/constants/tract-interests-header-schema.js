@@ -1,6 +1,7 @@
 import { history } from "store";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import { GlobalStickyStyles } from "GlobalSettings";
+import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 
 const TractInterestsHeadCells = [
     {
@@ -27,7 +28,9 @@ const TractInterestsHeadCells = [
         },
     },
     {
-        name: "tractName", label: "Tract Name", esKey: 'shape.shapeJson.properties.shapeLabel.keyword',
+        name: 'name',
+        label: 'Contact Name',
+        esKey: 'contact.entityDetail.name.keyword',
         options: {
             ...GlobalStickyStyles({
                 setCellProps: {
@@ -39,23 +42,69 @@ const TractInterestsHeadCells = [
                     paddingLeft: '0px'
                 }
             }),
-            dbName: "shape.shapeJson.properties.shapeLabel",
             sort: true,
             filter: true,
+            isMultiFilter: true,
             customRender: (value, tableMeta, updateValue) => {
                 return (
                     <ColumnWithLink
                         onClick={(e) => {
                             e.stopPropagation();
-                            history.push(`/map/parcels/${tableMeta.rowData[2]}`, { showTractsBreadcrumb: true });
+                            history.push(`/contact/details/${tableMeta.rowData[1]}`, { showTractsBreadcrumb: true });
                         }}
                         value={value}
-                        link={`/map/parcels/${tableMeta.rowData[2]}`}
+                        link={`/contact/details/${tableMeta.rowData[1]}`}
                     />
                 );
             },
-        }
+        },
     },
+    // {
+    //     name: "tractName", label: "Tract Name", esKey: 'shape.shapeJson.properties.shapeLabel.keyword',
+    //     options: {
+    //         ...GlobalStickyStyles({
+    //             setCellProps: {
+    //                 left: '124.5px',
+    //                 minWidth: "450px",
+    //                 paddingLeft: '0px !important'
+    //             },
+    //             setCellHeaderProps: {
+    //                 paddingLeft: '0px'
+    //             }
+    //         }),
+    //         dbName: "shape.shapeJson.properties.shapeLabel",
+    //         sort: true,
+    //         filter: true,
+    //         customRender: (value, tableMeta, updateValue) => {
+    //             return (
+    //                 <ColumnWithLink
+    //                     onClick={(e) => {
+    //                         e.stopPropagation();
+    //                         history.push(`/map/parcels/${tableMeta.rowData[2]}`, { showTractsBreadcrumb: true });
+    //                     }}
+    //                     value={value}
+    //                     link={`/map/parcels/${tableMeta.rowData[2]}`}
+    //                 />
+    //             );
+    //         },
+    //     }
+    // },
+    {
+        name: "tractName",
+        label: "Tract Name",
+        esKey: [
+            "shape.shapeJson.properties.shapeLabel.keyword",
+        ],
+        options: {
+            dbName: "shape.shapeJson.properties.shapeLabel?",
+            sort: true,
+            filter: true,
+        },
+        custom: {
+            multi_filter_keys: true,
+        },
+    },
+
     {
         name: "State",
         label: "State",
@@ -207,23 +256,33 @@ const TractInterestsHeadCells = [
             filter: true,
         },
     },
-    {
-        name: "name",
-        label: "Owner Name",
-        esKey: "contact.entityDetail.name.keyword",
-        options: {
-            dbName: "contact.entityDetail.name",
-            sort: true,
-            filter: true,
-            setCellProps: () => ({ style: { minWidth: "225px" } }),
-        },
-    },
+    // {
+    //     name: "name",
+    //     label: "Owner Name",
+    //     esKey: "contact.entityDetail.name.keyword",
+    //     options: {
+    //         dbName: "contact.entityDetail.name",
+    //         sort: true,
+    //         filter: true,
+    //         setCellProps: () => ({ style: { minWidth: "225px" } }),
+    //     },
+    // },
     {
         name: "mineral_interest",
         label: "Mineral Interest",
         esKey: "mineral_interest",
         options: {
             dbName: "mineral_interest",
+            sort: true,
+            filter: true,
+        },
+    },
+    {
+        esKey: "nonExecRightsOnly.keyword",
+        name: 'nonExecRightsOnly',
+        label: 'Non-Exec Rights Only',
+        options: {
+            dbName: "nonExecRightsOnly",
             sort: true,
             filter: true,
         },
@@ -258,6 +317,7 @@ const TractInterestsHeadCells = [
             filter: true,
         },
     },
+
     {
         name: "net_acres",
         label: "Net Acres",
@@ -274,6 +334,140 @@ const TractInterestsHeadCells = [
         esKey: "nra",
         options: {
             dbName: "nra",
+            sort: true,
+            filter: true,
+        },
+    },
+
+  
+
+
+    {
+        esKey: 'offer_price_nma',
+        name: 'offer_price_nma',
+        label: 'Target Offer (NMA)',
+        options: {
+            dbName: "offer_price_nma",
+            sort: true,
+            filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
+        },
+    },
+
+    {
+        esKey: 'max_offer_price_nma',
+        name: 'max_offer_price_nma',
+        label: 'Max Offer (NMA)',
+        options: {
+            dbName: "max_offer_price_nma",
+            sort: true,
+            filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
+        },
+    },
+
+    {
+        esKey: 'offer_price',
+        name: 'offer_price',
+        label: 'Target Offer Price (NRA)',
+        options: {
+            dbName: "offer_price",
+            sort: true,
+            filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
+        },
+    },
+
+    {
+        esKey: 'max_offer_price',
+        name: 'max_offer_price',
+        label: 'Max Offer Price (NRA)',
+        options: {
+            dbName: "max_offer_price",
+            sort: true,
+            filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
+        },
+    },
+    {
+        esKey: 'seller_asking_price',
+        name: 'seller_asking_price',
+        label: 'Seller Asking Price',
+        options: {
+            dbName: "seller_asking_price",
+            sort: true,
+            filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
+        },
+    },
+
+    {
+        esKey: 'competitor_offer_price',
+        name: 'competitor_offer_price',
+        label: 'Competitor Offer Price',
+        options: {
+            dbName: "competitor_offer_price",
+            sort: true,
+            filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
+        },
+    },
+
+
+    {
+        esKey: 'actual_offer_price',
+        name: 'actual_offer_price',
+        label: 'Actual Offer Price',
+        options: {
+            dbName: "actual_offer_price",
+            sort: true,
+            filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
+        },
+    },
+    {
+        esKey: 'leaseStatus.keyword',
+        name: 'leaseStatus',
+        label: 'Lease Status',
+        options: {
+            dbName: "leaseStatus",
+            sort: true,
+            filter: true,
+        },
+    },
+    {
+        name: "campaignName",
+        label: "Campaign Name",
+        esKey: "shapeJson.properties.campaignName.keyword",
+        options: {
+            customRender: (value) => {
+                return (typeof (value !== "string")) && value ? value?.join(", ") : value;
+            },
+            setCellProps: () => ({ style: { minWidth: "200px" } }),
+            sort: true,
+            filter: true,
+        },
+    },
+    {
+        esKey: 'campaignPriority.keyword',
+        name: 'campaignPriority',
+        label: 'Campaign Priority',
+        options: {
+            dbName: "campaignPriority",
             sort: true,
             filter: true,
         },

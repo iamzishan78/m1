@@ -21,7 +21,7 @@ import ParcelSummary from './ParcelSummary';
 import { copy } from 'utils/helper';
 import { popupController, popupState } from 'hookstate/popupStateController';
 import MRTTable from "components/MRTTable";
-import { tableController } from "hookstate/tableController";
+import { tableController, tableGlobalController } from "hookstate/tableController";
 import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
 import { jobController } from "hookstate/jobStateController";
 import { showSuccessMessage, showErrorMessage, setMapGridCardState } from 'actions';
@@ -227,7 +227,10 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
   const contactsAdded = useSelector(state => state?.common?.contactsAdded);
   const [updateCustomLayer, { data: updatedParcel }] = useMutation(UPDATECUSTOMLAYER);
 
-  const [getCustomLayer, { data: dataCustomLayer }] = useLazyQuery(CUSTOMLAYER);
+  const [getCustomLayer, { data: dataCustomLayer, refetch: refetchCustomLayer }] = useLazyQuery(CUSTOMLAYER);
+
+  const globalState = tableGlobalController.useState(['refetch'])
+  const globalStateValues = globalState.stateValues;
 
   useEffect(() => {
     dispatch(
@@ -240,6 +243,10 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
   useEffect(() => {
     if (contactsAdded) setSelectedTab(0);
   }, [contactsAdded]);
+
+  useEffect(() => {
+    refetchCustomLayer()
+  }, [globalStateValues?.refetch]);
 
   useEffect(() => {
     if (id) {

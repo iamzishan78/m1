@@ -382,7 +382,7 @@ export default function CustomizedSteppers(props) {
   };
 
   const handleBack = () => {
-    if (jobStateValues.activeStepNumber === 0) {
+    if (jobStateValues.activeStepNumber === 0 || (jobStateValues.activeStepNumber === 1 && jobStateValues?.jobType === "SHAPE_TO_M1_LAYER")) {
       handleReset();
       routeChange(previousRoute[0]?.match?.url);
     } else {
@@ -399,16 +399,18 @@ export default function CustomizedSteppers(props) {
   };
 
   const isDisabled = useMemo(() => {
-    if (jobStateValues.jobType === "SHAPE_TO_M1_LAYER") {
-      return !(jobStateValues.selectedShapeLayerOption && jobStateValues.transferData);
-    } else if (jobStateValues.jobType === "AGREEMENT_HEADER") {
+
+    const _jobStateValues = jobController.getValues(['selectedShapeLayerOption', 'activeStepNumber', 'csvDataToSend', 'transferData', 'jobType'])
+    if (_jobStateValues.jobType === "SHAPE_TO_M1_LAYER") {
+      return !(_jobStateValues.selectedShapeLayerOption && _jobStateValues.transferData);
+    } else if (_jobStateValues.jobType === "AGREEMENT_HEADER") {
       return (
-        (jobStateValues.activeStepNumber === 1 && !jobStateValues.csvDataToSend) ||
-        jobStateValues.csvDataToSend.length === 0 ||
-        !jobStateValues.selectedShapeLayerOption
+        (_jobStateValues.activeStepNumber === 1 && !_jobStateValues.csvDataToSend) ||
+        _jobStateValues.csvDataToSend.length === 0 ||
+        !_jobStateValues.selectedShapeLayerOption
       );
     } else {
-      return (jobStateValues.activeStepNumber === 1 && !jobStateValues.csvDataToSend) || jobStateValues.csvDataToSend.length === 0;
+      return (_jobStateValues.activeStepNumber === 1 && !_jobStateValues.csvDataToSend) || _jobStateValues.csvDataToSend.length === 0;
     }
   }, [selectedShapeLayerOption, activeStepNumber, csvDataToSend, transferData, jobType]);
 

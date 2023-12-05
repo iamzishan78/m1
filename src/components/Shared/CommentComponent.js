@@ -174,7 +174,7 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
   let formatComment = (eachComment?.comment || "").split(" ");
 
   return (
-    <div id={eachComment._id} className={`${classes.whiteSpace}`}>
+    <div id={eachComment?._id} className={`${classes.whiteSpace}`}>
       {get(eachComment, "commentType") &&
         !isPinned &&
         get(
@@ -209,7 +209,7 @@ export const CommonCommentText = ({ eachComment, users, isPinned }) => {
                         {" "}
                         <span className={`${classes.commentWords} blue`}>
                           {firstPart}@
-                          {users.find((user) => user._id === id)?.name}
+                          {users?.find((user) => user._id === id)?.name}
                           {secondPart}{" "}
                         </span>
                         {splittedWord.length > 1 && <br />}{" "}
@@ -793,16 +793,16 @@ export default function CommentComponent(props) {
                         }
                         onMouseLeave={() => setShowCommentActionId(null)}
                       >
-                        {eachComment.pin && (
+                        {eachComment?.pin && (
                           <div className={classes.pinnedCommentBar}></div>
                         )}
                         <Grid item style={{ maxWidth: "55px", padding: "0px" }}>
                           <IconButton>
                             {profilesInfo[eachComment?.user?.email]
-                              ?.profileImage || eachComment.isNew ? (
+                              ?.profileImage || eachComment?.isNew ? (
                               <Avatar
                                 src={
-                                  eachComment.isNew
+                                  eachComment?.isNew
                                     ? profileImage
                                     : profilesInfo[eachComment?.user?.email]
                                       .profileImage
@@ -835,25 +835,25 @@ export default function CommentComponent(props) {
                             </span>
                             {eachComment?.commentType?.commentType ===
                               "unitCreation" && (
-                                <span style={{ display: 'inline-block', marginLeft: "8px" }}>{eachComment.comment}</span>
+                                <span style={{ display: 'inline-block', marginLeft: "8px" }}>{eachComment?.comment}</span>
                               )}
 
-                            {!isNaN(eachComment.ts) && (
+                            {!isNaN(eachComment?.ts) && (
                               <ReactTimeAgo
                                 className={classes.commentTime}
                                 style={{ whiteSpace: "nowrap" }}
-                                date={new Date(Number(eachComment.ts))}
+                                date={new Date(Number(eachComment?.ts))}
                                 locale="en-US"
                               />
                             )}
-                            {eachComment.isEdited && (
+                            {eachComment?.isEdited && (
                               <span className={classes.commentTime}>
                                 (Edited)
                               </span>
                             )}
                             {eachComment?.user?.email === stateApp.user.email &&
-                              showCommentActionId === eachComment._id &&
-                              editCommentId !== eachComment._id &&
+                              showCommentActionId === eachComment?._id &&
+                              editCommentId !== eachComment?._id &&
                               eachComment?.commentType?.commentType !==
                               "unitCreation" && (
                                 <div
@@ -861,8 +861,8 @@ export default function CommentComponent(props) {
                                     } ${classes.inlineFlex} ${!(
                                       eachComment?.user?.email ===
                                       stateApp.user.email &&
-                                      showCommentActionId === eachComment._id &&
-                                      editCommentId !== eachComment._id
+                                      showCommentActionId === eachComment?._id &&
+                                      editCommentId !== eachComment?._id
                                     ) && classes.hideMenuIcon
                                     }`}
                                 >
@@ -879,36 +879,36 @@ export default function CommentComponent(props) {
                                 </div>
                               )}
                           </div>
-                          {eachComment.isActivity === true && (
+                          {eachComment?.isActivity === true && (
                             <>
                               <div className={`${classes.whiteSpace}`}>
-                                {eachComment.activityData.type
+                                {eachComment?.activityData.type
                                   .replace(/_/g, " ")
                                   .toUpperCase()}{" "}
-                                - {eachComment.activityData.name}
+                                - {eachComment?.activityData.name}
                               </div>
                               <div className={`${classes.whiteSpace}`}>
                                 START DATE:{" "}
                                 {moment(
-                                  eachComment.activityData.dateTime
+                                  eachComment?.activityData.dateTime
                                 ).format("MM/DD/YYYY hh:mm A")}
                               </div>
                               <div className={`${classes.whiteSpace}`}>
                                 END DATE:{" "}
                                 {moment(
-                                  eachComment.activityData.endDateTime
+                                  eachComment?.activityData.endDateTime
                                 ).format("MM/DD/YYYY hh:mm A")}
                               </div>
-                              {eachComment.activityData.outcome && (
+                              {eachComment?.activityData.outcome && (
                                 <div className={`${classes.whiteSpace}`}>
-                                  OUTCOME: {eachComment.activityData.outcome}
+                                  OUTCOME: {eachComment?.activityData.outcome}
                                 </div>
                               )}
                             </>
                           )}
                           {eachComment?.commentType?.commentType !==
                             "unitCreation" &&
-                            (editCommentId !== eachComment._id ? (
+                            (editCommentId !== eachComment?._id ? (
                               <CommonCommentText
                                 users={users}
                                 eachComment={eachComment}
@@ -1051,7 +1051,7 @@ export const CommentText = ({ eachComment, users }) => {
   let formatComment = (eachComment?.comment || "").split(" ");
 
   return (
-    <div id={eachComment._id} className={`${classes.whiteSpace}`}>
+    <div id={eachComment?._id} className={`${classes.whiteSpace}`}>
       {formatComment.map((word, index) => {
         if (word.includes("{{") && word.includes("}}")) {
           const splittedWord = word.split(/\r?\n/);
@@ -1069,7 +1069,7 @@ export const CommentText = ({ eachComment, users }) => {
                     return (
                       <p className={`${classes.commentWords} blue`}>
                         {firstPart}@
-                        {users.find((user) => user._id === id)?.name}
+                        {users?.find((user) => user._id === id)?.name}
                         {secondPart}{" "}
                       </p>
                     );
@@ -1116,13 +1116,13 @@ const ActionMenu = ({
     setAnchorEl(null);
   };
 
-  const pinnedComment = eachComment.pin;
+  const pinnedComment = eachComment?.pin;
 
   return (
     <>
       <ExpandMoreIcon
         id="expandCommentActionIcon"
-        aria-controls={eachComment._id}
+        aria-controls={eachComment?._id}
         aria-haspopup="true"
         onClick={handleClick}
         showActions={showActions}
@@ -1130,7 +1130,7 @@ const ActionMenu = ({
 
       <Menu
         style={{ zIndex: "1305" }}
-        id={eachComment._id}
+        id={eachComment?._id}
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
@@ -1142,8 +1142,8 @@ const ActionMenu = ({
         <MenuItem
           id="editComment"
           onClick={(event) => {
-            setEditCommentId(eachComment._id);
-            setEditComment(eachComment.comment);
+            setEditCommentId(eachComment?._id);
+            setEditComment(eachComment?.comment);
             setShowActions(true);
             setIsEdit(true);
             handleClose();
@@ -1153,7 +1153,7 @@ const ActionMenu = ({
         </MenuItem>
         <MenuItem
           textcolor="red"
-          onClick={() => deleteComment(eachComment._id)}
+          onClick={() => deleteComment(eachComment?._id)}
           id="deleteComment"
         >
           Delete Comment
@@ -1161,7 +1161,7 @@ const ActionMenu = ({
         {pinnedComment ? (
           <MenuItem
             textcolor="red"
-            onClick={() => unpinFromTop(eachComment._id)}
+            onClick={() => unpinFromTop(eachComment?._id)}
             id="unpin"
           >
             Unpin
@@ -1169,7 +1169,7 @@ const ActionMenu = ({
         ) : (
           <MenuItem
             textcolor="red"
-            onClick={() => pinToTop(eachComment._id)}
+            onClick={() => pinToTop(eachComment?._id)}
             id="pintotop"
           >
             Pin To Top

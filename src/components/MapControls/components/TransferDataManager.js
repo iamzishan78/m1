@@ -20,6 +20,7 @@ import { history } from "store";
 import { useApolloClient } from "@apollo/client";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import M1neral_headers from "components/BulkUpload/jobHeaders";
+import { jobController } from "hookstate/jobStateController";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -114,7 +115,7 @@ export default function TransferDataManager(props) {
         search: {
           query: "",
           fields: ['*'],
-          advanceSearch: selectedSourceCategory.layerGeometry === 'Polygon' ? [{
+          advanceSearch: selectedSourceCategory?.layerGeometry === 'Polygon' ? [{
             "bool": {
               "should": [
                 {
@@ -135,7 +136,7 @@ export default function TransferDataManager(props) {
             }
           }],
         },
-        filters: [{ field: "file._id", value: selectedSourceCategory?.file }],
+        filters: [{ field: "file._id", value: [selectedSourceCategory?.file, selectedSourceCategory?.originalFile].filter(Boolean) }],
         pagination: {
           first: 5,
           after: null,
@@ -169,10 +170,10 @@ export default function TransferDataManager(props) {
     selectedSourceCategory.m1neralHeaders = matchedKeys
     selectedSourceCategory.mappedHeadersFromCSV = columns
 
-    setStateApp({
-      ...stateApp,
+    jobController.updateState({
       transferData: { selectedSourceCategory, selectedPlatformCategory }
     })
+
     history.push(`/bulkupload/shape_to_m1_layer`)
   }
 
