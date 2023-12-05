@@ -95,6 +95,7 @@ function CamapignRelatedGrids({ campaign }) {
         func: (campaignName) => campaignName.filter(c => c !== campaign?.name)
       },
     },
+    customValue: { campaign: campaign },
     maxTableHeight: '35vh',
   }), [campaign?.name]);
 
@@ -126,7 +127,7 @@ function CamapignRelatedGrids({ campaign }) {
     },
     deletedKeys: {
       mainRecord: { key: '_id' },
-      parentRecord: { key: '', func: () => campaign?._id },
+      parentRecord: { value: campaign?._id },
       customlayers: {
         key: 'shapeJson',
         func: (shapeJson) => {
@@ -142,6 +143,7 @@ function CamapignRelatedGrids({ campaign }) {
         }
       },
     },
+    customValue: { parentRecord: campaign?._id, campaign: campaign },
     isCampaignRefetch: true,
     maxTableHeight: '35vh',
   }), [campaign?.name]);
@@ -177,8 +179,9 @@ function CamapignRelatedGrids({ campaign }) {
     },
     deletedKeys: {
       mainRecord: { key: '_id' },
-      parentRecord: { key: '', func: () => campaign?._id },
+      parentRecord: { value: campaign?._id },
     },
+    customValue: { parentRecord: campaign?._id },
     isCampaignRefetch: true,
     showAddContactButton: false,
     maxTableHeight: '35vh'

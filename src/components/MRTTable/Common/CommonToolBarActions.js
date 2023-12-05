@@ -8,7 +8,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import { getAllData } from 'components/MRTTable/utils/GetAllData';
 import _ from 'lodash';
 
-const excludeFilters = (tableKey) => {
+export const excludeFilters = (tableKey) => {
 	const rowSelection = tableController(tableKey).getValue('rowSelection');
 	const { rows, total: rangeTotal } = tableController(tableKey).getValue('data');
 	const allNumbers = _.range(0, rangeTotal);
@@ -74,7 +74,7 @@ export const openSideDialog = async (
 	}
 ) => {
 	let showRows = selectedRows;
-	if (isAllRowsSelected && !type.toLowerCase().includes('delete')) {
+	if (isAllRowsSelected) {
 
 		tableGlobalController.updateState({
 			dialog: {
