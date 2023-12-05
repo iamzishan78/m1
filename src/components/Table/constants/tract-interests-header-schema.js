@@ -256,23 +256,33 @@ const TractInterestsHeadCells = [
             filter: true,
         },
     },
-    {
-        name: "name",
-        label: "Owner Name",
-        esKey: "contact.entityDetail.name.keyword",
-        options: {
-            dbName: "contact.entityDetail.name",
-            sort: true,
-            filter: true,
-            setCellProps: () => ({ style: { minWidth: "225px" } }),
-        },
-    },
+    // {
+    //     name: "name",
+    //     label: "Owner Name",
+    //     esKey: "contact.entityDetail.name.keyword",
+    //     options: {
+    //         dbName: "contact.entityDetail.name",
+    //         sort: true,
+    //         filter: true,
+    //         setCellProps: () => ({ style: { minWidth: "225px" } }),
+    //     },
+    // },
     {
         name: "mineral_interest",
         label: "Mineral Interest",
         esKey: "mineral_interest",
         options: {
             dbName: "mineral_interest",
+            sort: true,
+            filter: true,
+        },
+    },
+    {
+        esKey: "nonExecRightsOnly.keyword",
+        name: 'nonExecRightsOnly',
+        label: 'Non-Exec Rights Only',
+        options: {
+            dbName: "nonExecRightsOnly",
             sort: true,
             filter: true,
         },
@@ -307,6 +317,7 @@ const TractInterestsHeadCells = [
             filter: true,
         },
     },
+
     {
         name: "net_acres",
         label: "Net Acres",
@@ -327,14 +338,63 @@ const TractInterestsHeadCells = [
             filter: true,
         },
     },
+
+  
+
+
     {
-        esKey: "nonExecRightsOnly.keyword",
-        name: 'nonExecRightsOnly',
-        label: 'Non-Exec Rights Only',
+        esKey: 'offer_price_nma',
+        name: 'offer_price_nma',
+        label: 'Target Offer (NMA)',
         options: {
-            dbName: "nonExecRightsOnly",
+            dbName: "offer_price_nma",
             sort: true,
             filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
+        },
+    },
+
+    {
+        esKey: 'max_offer_price_nma',
+        name: 'max_offer_price_nma',
+        label: 'Max Offer (NMA)',
+        options: {
+            dbName: "max_offer_price_nma",
+            sort: true,
+            filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
+        },
+    },
+
+    {
+        esKey: 'offer_price',
+        name: 'offer_price',
+        label: 'Target Offer Price (NRA)',
+        options: {
+            dbName: "offer_price",
+            sort: true,
+            filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
+        },
+    },
+
+    {
+        esKey: 'max_offer_price',
+        name: 'max_offer_price',
+        label: 'Max Offer Price (NRA)',
+        options: {
+            dbName: "max_offer_price",
+            sort: true,
+            filter: true,
+            customRender: (value) => {
+                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+            },
         },
     },
     {
@@ -379,7 +439,6 @@ const TractInterestsHeadCells = [
             },
         },
     },
-
     {
         esKey: 'leaseStatus.keyword',
         name: 'leaseStatus',
@@ -390,63 +449,6 @@ const TractInterestsHeadCells = [
             filter: true,
         },
     },
-
-    {
-        esKey: 'offer_price_nma',
-        name: 'offer_price_nma',
-        label: 'Target Offer (per NMA)',
-        options: {
-            dbName: "offer_price_nma",
-            sort: true,
-            filter: true,
-            customRender: (value) => {
-                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
-            },
-        },
-    },
-
-    {
-        esKey: 'max_offer_price_nma',
-        name: 'max_offer_price_nma',
-        label: 'Max Offer (per NMA)',
-        options: {
-            dbName: "max_offer_price_nma",
-            sort: true,
-            filter: true,
-            customRender: (value) => {
-                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
-            },
-        },
-    },
-
-    {
-        esKey: 'offer_price',
-        name: 'offer_price',
-        label: 'Target Offer Price (per NRA)',
-        options: {
-            dbName: "offer_price",
-            sort: true,
-            filter: true,
-            customRender: (value) => {
-                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
-            },
-        },
-    },
-
-    {
-        esKey: 'max_offer_price',
-        name: 'max_offer_price',
-        label: 'Max Offer Price (per NRA)',
-        options: {
-            dbName: "max_offer_price",
-            sort: true,
-            filter: true,
-            customRender: (value) => {
-                return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
-            },
-        },
-    },
-
     {
         name: "campaignName",
         label: "Campaign Name",

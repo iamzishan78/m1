@@ -1065,7 +1065,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             </Grid>
 
             <Grid item xs={12}>
-              <h3>Target Offer Price (per NMA)</h3>
+              <h3>Target Offer Price (NMA)</h3>
 
               <Controller
                 control={control}
@@ -1116,7 +1116,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             </Grid>
 
             <Grid item xs={12}>
-              <h3>Max Offer Price (per NMA)</h3>
+              <h3>Max Offer Price (NMA)</h3>
 
               <Controller
                 control={control}
