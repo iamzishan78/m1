@@ -12,6 +12,7 @@ import { tableController } from 'hookstate/tableController';
 import { execCommonAsyncExportJobAction } from 'store/actions/commonActions';
 import { globalStateController } from 'hookstate/globalStateController';
 import { Modals } from '../../../../../styles/Modal';
+import { excludeFilters } from 'components/MRTTable/Common/CommonToolBarActions';
 
 export default function ExportConfirmationDialog({ table, tableKey, header, onClose, children }) {
 	const dispatch = useDispatch();
@@ -33,14 +34,18 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		'columnVisibility',
 		'filters',
 		'defaultFilters',
+		'isAllRowsSelected'
 	]);
 	const tableStateValues = tableState.stateValues;
 
 	const handleExport = () => {
 		const rows = table.getSelectedRowModel().flatRows.map(row => row.original);
 		let isSelectAll = true;
-		if (rows.length !== 0) {
+		let excludedIds = []
+		if (rows.length !== 0 && !(!!tableStateValues?.isAllRowsSelected)) {
 			isSelectAll = false;
+		} else if (!!tableStateValues?.isAllRowsSelected) {
+			excludedIds = excludeFilters(tableKey)
 		}
 		const filteredColumns = _.pickBy(tableStateValues.columnVisibility, _.identity);
 
@@ -74,7 +79,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 				requestPayload: {
 					total: tableStateValues?.data.total,
 					search,
-					filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
+					filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters, ...excludedIds],
 					esIndex: tableStateValues.esIndex,
 					columns: filteredTableSchema,
 					sortOrder,

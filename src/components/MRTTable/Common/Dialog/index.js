@@ -42,7 +42,7 @@ function AllDialogs() {
 		Loader.createToast('deletion', 'Deletion in Progress');
 		const user = globalStateController.getValue('user')
 		removeCommonDelete({
-			variables: { tableKey, deletedData: dataToDelete, userId: user?.mongoId }
+			variables: { tableKey, deletedData: dataToDelete, userId: user?.mongoId, ESVariables: rest?.ESVariables, isSelectAll: rest?.isSelectAll }
 		}).then(
 			res => {
 				if (res?.data?.gridGenericRemove) {

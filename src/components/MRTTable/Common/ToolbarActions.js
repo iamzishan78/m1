@@ -6,6 +6,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import GridView from 'components/MRTTable/Common/GridView';
 import TabHeader from 'components/MRSimpleTable/Common/TabHeader';
 import { globalStateController } from 'hookstate/globalStateController';
+import { excludeFilters } from './CommonToolBarActions';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const tableState = tableController(tableKey).useCompleteState();
@@ -35,27 +36,55 @@ function ToolbarActions({ table, tableKey, children }) {
 
 
 	const handleDelete = () => {
+		let excludedIds = []
+		let deletedData = {}
+		let ESVariables = {};
 		const deletedKeys = tableStateValues?.deletedKeys || {
 			mainRecord: { key: '_id' },
 		};
-		const deletedData = Object.keys(deletedKeys).reduce((acc, key) => {
-			const { key: originalKey, func } = deletedKeys[key];
-			acc[key] =
-				selectedRows?.length > 0
-					? selectedRows.map(item => {
-						let val = _.get(item, originalKey);
-						if (func) val = func(val);
-						return val;
-					})
-					: null;
-			return acc;
-		}, {});
+
+		if (!!tableStateValues?.isAllRowsSelected) {
+			let sortOrder = {};
+			if (tableStateValues.sorting.length > 0) {
+				sortOrder = { field: tableStateValues.sorting[0]?.id, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
+			}
+			const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
+			const search = { fields: tableStateValues?.searchFields, query };
+
+			excludedIds = excludeFilters(tableKey)
+			ESVariables = {
+				index: tableStateValues.esIndex,
+				search,
+				sort: Object.keys(sortOrder).length ? sortOrder : tableStateValues.defaultSort,
+				filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters, ...excludedIds],
+				total: tableStateValues?.data?.total - excludedIds?.length,
+				customValue: tableStateValues?.customValue,
+			}
+		} else {
+			deletedData = Object.keys(deletedKeys).reduce((acc, key) => {
+				const { key: originalKey, func, value } = deletedKeys[key];
+				acc[key] =
+					selectedRows?.length > 0
+						? selectedRows.map(item => {
+							let val;
+							if (originalKey) val = _.get(item, originalKey);
+							if (func) val = func(val);
+							if (value) val = value
+							return val;
+						})
+						: null;
+				return acc;
+			}, {});
+		}
+
 		tableGlobalController.updateState({
 			dialog: {
 				type: 'deleteGrid',
 				deletedData,
 				tableKey,
 				userId: getUser?._id,
+				ESVariables,
+				isSelectAll: !!tableStateValues?.isAllRowsSelected,
 			},
 		});
 
@@ -90,17 +119,15 @@ function ToolbarActions({ table, tableKey, children }) {
 			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
 				{children || <div />}
 
-				{!isAllRowsSelected && (
-					<IconButton onClick={handleExport}>
-						<Tooltip title="Download CSV" aria-label="add">
-							<CloudDownloadIcon />
-						</Tooltip>
-					</IconButton>
-				)}
+				<IconButton onClick={handleExport}>
+					<Tooltip title="Download CSV" aria-label="add">
+						<CloudDownloadIcon />
+					</Tooltip>
+				</IconButton>
 
 				{isSomethingSelected && !!!tableStateValues.isDeleteDisabled && (
 					<IconButton aria-label="delete" onClick={() => handleDelete()}>
-						<Tooltip title="Delete asd">
+						<Tooltip title="Delete">
 							<DeleteIcon />
 						</Tooltip>
 					</IconButton>

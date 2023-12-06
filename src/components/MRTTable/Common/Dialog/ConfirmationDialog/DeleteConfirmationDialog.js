@@ -8,21 +8,21 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import _ from "lodash";
 import { Modals } from "../../../../../styles/Modal";
 
-export default function DeleteConfirmationDialogContent(props) {
+export default function DeleteConfirmationDialogContent({ header, children, onClose, deleteFunc, deletedData }) {
   const modalClass = Modals();
   return (
     <Dialog style={{ zIndex: 9999999999 }} open={true}>
       <DialogTitle className={modalClass.title} id="customized-dialog-title">
-        {props.header}
-        <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={props.onClose} />
+        {header}
+        <HighlightOffIcon fontSize="large" className={modalClass.titleClose} onClick={onClose} />
       </DialogTitle>
       <DialogContent>
-        <h3 className={modalClass.inputLabel}>{props.children}</h3>
+        <h3 className={modalClass.inputLabel}>{children}</h3>
       </DialogContent>
       <DialogActions>
         <Button
           onClick={() => {
-            props.onClose();
+            onClose();
           }}
           color="primary"
         >
@@ -31,8 +31,8 @@ export default function DeleteConfirmationDialogContent(props) {
         <Button
           id="deleteButton"
           onClick={() => {
-            props.deleteFunc(props.deletedData);
-            props.onClose();
+            deleteFunc(deletedData);
+            onClose();
           }}
           color="secondary"
         >
