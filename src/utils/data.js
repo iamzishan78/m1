@@ -92,7 +92,7 @@ export const wellsKeys = [
 export const contactManagementRoutes = {
   ALLENTITIES: {
     featureFlag: "CONTACTSUBMENU",
-    title: "All Entities",
+    title: "Contacts",
     link: "/contacts",
     linkPrefix: "/contacts",
     component: "ContactsTable",
