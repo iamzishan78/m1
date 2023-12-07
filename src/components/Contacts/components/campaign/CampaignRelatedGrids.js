@@ -10,6 +10,8 @@ import { campaignInitialData } from './data';
 import MRTTable from 'components/MRTTable';
 import moment from 'moment';
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import TractInterestsIcon from "@material-ui/icons/ListAlt";
+import TractIcon from "components/Shared/svgIcons/tract";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -82,8 +84,8 @@ function CamapignRelatedGrids({ campaign }) {
         return view;
       },
       cssOverride: {
-        top: '532px',
-        left: '274px',
+        top: '656px',
+        left: '300px',
         maxHeight: '40%',
         marginLeft: '-9px',
       },
@@ -119,8 +121,8 @@ function CamapignRelatedGrids({ campaign }) {
         return view;
       },
       cssOverride: {
-        top: '532px',
-        left: '274px',
+        top: '656px',
+        left: '300px',
         maxHeight: '40%',
         marginLeft: '-9px',
       },
@@ -171,8 +173,8 @@ function CamapignRelatedGrids({ campaign }) {
         return view;
       },
       cssOverride: {
-        top: '532px',
-        left: '274px',
+        top: '656px',
+        left: '300px',
         maxHeight: '40%',
         marginLeft: '-9px',
       },
@@ -212,6 +214,27 @@ function CamapignRelatedGrids({ campaign }) {
     },
     isCampaignRefetch: true,
     maxTableHeight: '35vh',
+    gridViewSettings: {
+      label: 'Tract',
+      module: 'Tracts',
+      Icon: TractIcon,
+      defaultView: {
+        name: 'All Tract',
+        type: 'Default',
+      },
+      handleDefaultView: (view, user) => {
+        if (view?.name === 'My Tracts') {
+          view.filters[0].value = user._id;
+        }
+        return view;
+      },
+      cssOverride: {
+        top: '656px',
+        left: '300px',
+        maxHeight: '40%',
+        marginLeft: '-9px',
+      },
+    },
   }), [campaign?.name]);
 
   const campaignTractInterestOverrideMeta = useMemo(() => ({
@@ -230,6 +253,27 @@ function CamapignRelatedGrids({ campaign }) {
     },
     isCampaignRefetch: true,
     maxTableHeight: '35vh',
+    gridViewSettings: {
+      label: 'Tract Interest',
+      module: 'TractInterest',
+      Icon: TractInterestsIcon,
+      defaultView: {
+        name: 'All Tract Interest',
+        type: 'Default',
+      },
+      handleDefaultView: (view, user) => {
+        if (view?.name === 'My TractInterest') {
+          view.filters[0].value = user._id;
+        }
+        return view;
+      },
+      cssOverride: {
+        top: '656px',
+        left: '300px',
+        maxHeight: '40%',
+        marginLeft: '-9px',
+      },
+    },
   }), [campaign?.name]);
 
   return (
