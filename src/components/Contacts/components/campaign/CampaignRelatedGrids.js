@@ -107,7 +107,7 @@ function CamapignRelatedGrids({ campaign }) {
       { field: 'shapeJson.properties.campaignName.keyword', value: campaign?.name || '' },
     ],
     gridViewSettings: {
-      label: 'Unit Management',
+      label: 'Units',
       module: 'Units',
       Icon: UnitIcon,
       defaultView: {
@@ -215,11 +215,11 @@ function CamapignRelatedGrids({ campaign }) {
     isCampaignRefetch: true,
     maxTableHeight: '35vh',
     gridViewSettings: {
-      label: 'Tract',
+      label: 'Tracts',
       module: 'Tracts',
       Icon: TractIcon,
       defaultView: {
-        name: 'All Tract',
+        name: 'All Tracts',
         type: 'Default',
       },
       handleDefaultView: (view, user) => {
@@ -229,8 +229,8 @@ function CamapignRelatedGrids({ campaign }) {
         return view;
       },
       cssOverride: {
-        top: '532px',
-        left: '274px',
+        top: '656px',
+        left: '425px',
         maxHeight: '40%',
         marginLeft: '-9px',
       },
@@ -254,11 +254,11 @@ function CamapignRelatedGrids({ campaign }) {
     isCampaignRefetch: true,
     maxTableHeight: '35vh',
     gridViewSettings: {
-      label: 'Tract Interest',
+      label: 'Tract Interests',
       module: 'TractInterest',
       Icon: TractInterestsIcon,
       defaultView: {
-        name: 'All Tract Interest',
+        name: 'All Tract Interests',
         type: 'Default',
       },
       handleDefaultView: (view, user) => {
@@ -269,7 +269,7 @@ function CamapignRelatedGrids({ campaign }) {
       },
       cssOverride: {
         top: '656px',
-        left: '300px',
+        left: '425px',
         maxHeight: '40%',
         marginLeft: '-9px',
       },
