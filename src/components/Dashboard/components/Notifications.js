@@ -155,6 +155,10 @@ const useStyles = makeStyles((theme) => ({
       gap: '4px',
     }
   },
+  searchStyle: {
+    gap: '1rem',
+    flexWrap: 'nowrap'
+  },
 }));
 
 const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) => {
@@ -202,7 +206,7 @@ const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) 
 
     <Grid container className={classes.gridStyle}>
 
-      <Grid item xs={6} container alignItems="center" style={{ gap: '1rem' }}>
+      <Grid item xs={6} container alignItems="center" className={classes.searchStyle}>
 
         <Typography variant="h5" style={{ fontWeight: '700' }}>Notifications</Typography>
 
