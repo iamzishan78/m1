@@ -53,7 +53,6 @@ const ActivitiesDashboardFilter = ({
     setFromDate(`${moment(minDate).startOf("month").format("yyyy-MM-DD")}`);
   }, [minDate]);
   useEffect(()=>{
-    console.log("fromDate++++++++++++++++++++++++++++++++++++++",fromDate);
     if(fromDate=="Invalid date"||toDate=="Invalid date")return
     setAppliedFilters({ fromDate, toDate, campaignName, qualifier });
     setFilterToggle(prev=>!prev);
