@@ -84,7 +84,7 @@ function CamapignRelatedGrids({ campaign }) {
         return view;
       },
       cssOverride: {
-        top: '532px',
+        top: '659px',
         left: '274px',
         maxHeight: '40%',
         marginLeft: '-9px',
@@ -121,7 +121,7 @@ function CamapignRelatedGrids({ campaign }) {
         return view;
       },
       cssOverride: {
-        top: '532px',
+        top: '659px',
         left: '274px',
         maxHeight: '40%',
         marginLeft: '-9px',
@@ -173,7 +173,7 @@ function CamapignRelatedGrids({ campaign }) {
         return view;
       },
       cssOverride: {
-        top: '532px',
+        top: '659px',
         left: '274px',
         maxHeight: '40%',
         marginLeft: '-9px',
@@ -229,7 +229,7 @@ function CamapignRelatedGrids({ campaign }) {
         return view;
       },
       cssOverride: {
-        top: '532px',
+        top: '659px',
         left: '274px',
         maxHeight: '40%',
         marginLeft: '-9px',
@@ -268,8 +268,8 @@ function CamapignRelatedGrids({ campaign }) {
         return view;
       },
       cssOverride: {
-        top: '532px',
-        left: '274px',
+        top: '656px',
+        left: '300px',
         maxHeight: '40%',
         marginLeft: '-9px',
       },
