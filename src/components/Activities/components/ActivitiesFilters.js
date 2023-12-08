@@ -129,7 +129,7 @@ export default function CustomDatesActivities({
             id="custom-date-dropdown"
           />
         </Grid>
-        <Grid item xs={2} sm={2} md={2} lg={2} xl={2}>
+        <Grid item xs={2.4} sm={2.4} md={2.4} lg={2.4} xl={2.4}>
           <TextField
             size="small"
             margin="dense"
@@ -165,7 +165,7 @@ export default function CustomDatesActivities({
         <Grid>
           <label>to</label>
         </Grid>
-        <Grid item xs={2} sm={2} md={2} lg={2} xl={2}>
+        <Grid item xs={2.4} sm={2.4} md={2.4} lg={2.4} xl={2.4}>
           <TextField
             size="small"
             margin="dense"
@@ -198,7 +198,7 @@ export default function CustomDatesActivities({
             }}
           />
         </Grid>
-        <Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: "4px" }}>
+        <Grid item xs={2.4} md={2.4} lg={2.4} xl={2.4} style={{ marginTop: "4px" }}>
           <CampaignFilter
             value={campaignName}
             setValue={setCampaignName}
@@ -208,7 +208,7 @@ export default function CustomDatesActivities({
             appliedFilters={appliedFilters}
           />
         </Grid>
-        <Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: "4px" }}>
+        <Grid item xs={2.4} md={2.4} lg={2.4} xl={2.4} style={{ marginTop: "4px" }}>
           <QualifierFilter
             value={qualifier}
             setValue={setQualifier}
@@ -219,29 +219,7 @@ export default function CustomDatesActivities({
           />
         </Grid>
       </Grid>
-      <Grid item xs={1} md={1} lg={1} xl={1}>
-        <Grid
-          container
-          display="flex"
-          justify="flex-end"
-          direction="row"
-          spacing={2}
-          className={classes.actionsGrid}
-        >
-          <Grid item>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => {
-                setAppliedFilters({ fromDate, toDate, campaignName, qualifier });
-                setFilterToggle(!filterToggle);
-              }}
-            >
-              Filter
-            </Button>
-          </Grid>
-        </Grid>
-      </Grid>
+      
     </div>
   );
 }
