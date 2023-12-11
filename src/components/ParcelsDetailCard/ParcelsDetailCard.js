@@ -463,7 +463,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
               value={selectedTab}
               panels={[
                 <div>
-                  <MRTTable name="TractPerUnitTable" overrideMeta={overrideMeta} />
+                  <MRTTable name="TractPerUnitTable" overrideMeta={overrideMeta} hideSharedCommentCheck/>
                 </div>,
                 <div className={classes.subContent}>
                   <SuggestedTaxOwnersTable
