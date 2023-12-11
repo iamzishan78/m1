@@ -225,7 +225,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
   } = simpleTableGlobalController.useState(['tabKey']);
 
   const contactsAdded = useSelector(state => state?.common?.contactsAdded);
-  const [updateCustomLayer, { data: updatedParcel }] = useMutation(UPDATECUSTOMLAYER);
+  const [updateCustomLayer, { data: updatedParcel,loading: updatingParcel }] = useMutation(UPDATECUSTOMLAYER);
 
   const [getCustomLayer, { data: dataCustomLayer, refetch: refetchCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
@@ -456,6 +456,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                 setProperties={setProperties}
                 updateProperties={updateProperties}
                 updateCustomProperties={updateCustomProperties}
+                updating={updatingParcel}
               />
             </div>,
             <TabPanels
