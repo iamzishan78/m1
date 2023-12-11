@@ -440,7 +440,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
     <Grid item sm={12} container className={classes.gridWidthScroll}>
       <Grid item xs={12} style={{ padding: '10px 15px 0px 15px' }} className={classes.border}>
         <div className={classes.tags}>
-          <Tags width="100%" targetSourceId={id} targetLabel="parcel" publicLeftBottom />
+          <Tags width="100%" targetSourceId={id} targetLabel="parcel" publicLeftBottom  hideCheckBox/>
         </div>
       </Grid>
       <Grid item sm={12}>
