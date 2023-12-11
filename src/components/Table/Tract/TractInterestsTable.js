@@ -21,7 +21,7 @@ function TractInterestTable(props) {
   const userGridViewSettings = useSelector(({ session }) => session.userGridViewSettings);
   const GridViewModule = userGridViewSettings?.TractInterest
   const defaultView = {
-    name: `All Tracts Interest`,
+    name: `All Tracts Interests`,
     type: "Default",
   };
 

@@ -10,6 +10,8 @@ import { campaignInitialData } from './data';
 import MRTTable from 'components/MRTTable';
 import moment from 'moment';
 import { simpleTableGlobalController } from 'hookstate/simpleTableController';
+import TractInterestsIcon from "@material-ui/icons/ListAlt";
+import TractIcon from "components/Shared/svgIcons/tract";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -105,7 +107,7 @@ function CamapignRelatedGrids({ campaign }) {
       { field: 'shapeJson.properties.campaignName.keyword', value: campaign?.name || '' },
     ],
     gridViewSettings: {
-      label: 'Unit Management',
+      label: 'Units',
       module: 'Units',
       Icon: UnitIcon,
       defaultView: {
@@ -212,6 +214,27 @@ function CamapignRelatedGrids({ campaign }) {
     },
     isCampaignRefetch: true,
     maxTableHeight: '35vh',
+    gridViewSettings: {
+      label: 'Tracts',
+      module: 'Tracts',
+      Icon: TractIcon,
+      defaultView: {
+        name: 'All Tracts',
+        type: 'Default',
+      },
+      handleDefaultView: (view, user) => {
+        if (view?.name === 'My Tracts') {
+          view.filters[0].value = user._id;
+        }
+        return view;
+      },
+      cssOverride: {
+        top: '656px',
+        left: '425px',
+        maxHeight: '40%',
+        marginLeft: '-9px',
+      },
+    },
   }), [campaign?.name]);
 
   const campaignTractInterestOverrideMeta = useMemo(() => ({
@@ -230,6 +253,27 @@ function CamapignRelatedGrids({ campaign }) {
     },
     isCampaignRefetch: true,
     maxTableHeight: '35vh',
+    gridViewSettings: {
+      label: 'Tract Interests',
+      module: 'TractInterest',
+      Icon: TractInterestsIcon,
+      defaultView: {
+        name: 'All Tract Interests',
+        type: 'Default',
+      },
+      handleDefaultView: (view, user) => {
+        if (view?.name === 'My TractInterest') {
+          view.filters[0].value = user._id;
+        }
+        return view;
+      },
+      cssOverride: {
+        top: '656px',
+        left: '425px',
+        maxHeight: '40%',
+        marginLeft: '-9px',
+      },
+    },
   }), [campaign?.name]);
 
   return (
