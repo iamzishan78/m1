@@ -257,7 +257,7 @@ export default function UnitDetailCard(props) {
                   value={selectedTab}
                   panels={[
                     <div>
-                      <MRTTable name="OwnersPerUnitTable" overrideMeta={overrideMeta} />
+                      <MRTTable name="OwnersPerUnitTable" overrideMeta={overrideMeta} hideSharedCommentCheck/>
                     </div>,
                     <div>
                       <MRSimpleTable
