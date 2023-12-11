@@ -6,7 +6,7 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import { SCHEMA } from './Schema';
 import { useApolloClient } from '@apollo/client';
 
-function Table({ tableKey }) {
+function Table({ tableKey,hideSharedCommentCheck }) {
 	const { tableProps, tablePropsState, classes } = useTableESSimple(tableKey);
 	return (
 		<div className={classes.table}>
@@ -16,12 +16,12 @@ function Table({ tableKey }) {
 					...tablePropsState,
 				}}
 			/>
-			<AllDialogs />
+			<AllDialogs hideSharedCommentCheck={hideSharedCommentCheck}/>
 		</div>
 	);
 }
 
-function MRTTable({ tableKey, name, overrideMeta = {} }) {
+function MRTTable({ tableKey, name, overrideMeta = {},hideSharedCommentCheck=false }) {
 	const client = useApolloClient();
 	const meta = SCHEMA[name];
 	const extendedMeta = { ...meta, ...overrideMeta }
@@ -60,7 +60,7 @@ function MRTTable({ tableKey, name, overrideMeta = {} }) {
 			/>
 		);
 
-	return <Table tableKey={tableKey} />;
+	return <Table tableKey={tableKey} hideSharedCommentCheck={hideSharedCommentCheck}/>;
 }
 
 export default memo(MRTTable);
