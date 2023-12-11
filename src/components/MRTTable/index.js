@@ -21,7 +21,7 @@ function Table({ tableKey,hideSharedCommentCheck }) {
 	);
 }
 
-function MRTTable({ tableKey, name, overrideMeta = {},hideSharedCommentCheck=false }) {
+function MRTTable({ tableKey, name, overrideMeta = {},hideSharedCommentCheck=true }) {
 	const client = useApolloClient();
 	const meta = SCHEMA[name];
 	const extendedMeta = { ...meta, ...overrideMeta }
