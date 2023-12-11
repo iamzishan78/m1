@@ -159,6 +159,7 @@ const CampaignMeta = {
       header: 'Created Date',
       type: 'date',
       isExternalFilter: true,
+      isSearchField: false,
       Cell: ({ row }) => {
         const createdAt = row.getValue('createdAt');
         return <>{formatDate(createdAt, false)}</>
