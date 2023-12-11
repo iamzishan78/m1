@@ -465,15 +465,18 @@ export default function Tags(props) {
             control={
               <React.Fragment>
                 {props.publicLeftBottom && <h4 className="h4Before">Tags</h4>}
-                <AntSwitch
-                  checked={publicTag}
-                  onChange={() => {
-                    setPublicTag(!publicTag);
-                  }}
-                  name="checkedC"
-                />
+                {
+                  !props.hideCheckBox &&
+                    <AntSwitch
+                      checked={publicTag}
+                      onChange={() => {
+                        setPublicTag(!publicTag);
+                      }}
+                      name="checkedC"
+                    />
+                }
 
-                {props.publicLeftBottom && <h4 className="h4After">Shared</h4>}
+                {props.publicLeftBottom && !props.hideCheckBox && <h4 className="h4After">Shared</h4>}
               </React.Fragment>
             }
             label="Shared"

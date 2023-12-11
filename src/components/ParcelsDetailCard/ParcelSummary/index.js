@@ -381,6 +381,7 @@ export default function ParcelSummary(props) {
                                 updateCustomProperties={props.updateCustomProperties}
                                 search={search}
                                 metaData={metaDataRes}
+                                updating={props.updating}
                             />
                         </Grid>
                         <Grid item>

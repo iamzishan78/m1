@@ -485,6 +485,8 @@ export default function Comments(props) {
 							)}
 						</Grid>
 					)}
+					{
+					props.hideSharedCommentCheck ? null :
 					<Grid item xs={12} style={{ marginBottom: '8px' }}>
 						<FormGroup style={{ display: 'block' }}>
 							{(props.detailCard || props.handleRightDialogClose) && (
@@ -506,6 +508,7 @@ export default function Comments(props) {
 							/>
 						</FormGroup>
 					</Grid>
+					}
 					<Grid item xs={12}>
 						<TextField
 							className={`${classes.textInput} ${emptyInput ? classes.emptyInput : ''}`}
