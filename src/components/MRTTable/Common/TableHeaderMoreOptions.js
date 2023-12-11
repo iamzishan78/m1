@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Menu, MenuItem } from "@material-ui/core";
 
 function TableHeaderMoreOptions() {
@@ -15,7 +15,7 @@ function TableHeaderMoreOptions() {
 
   return (
     <div>
-      <MoreHorizIcon onClick={handleClick} />
+      <ExpandMoreIcon onClick={handleClick} />
       <Menu
         id="menu"
         anchorEl={anchorEl}
