@@ -19,7 +19,7 @@ function ToolbarActions({ table, tableKey, children }) {
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
 	const selectedRows = table.getSelectedRowModel().flatRows.map(row => row.original);
 
-	if (tableStateValues?.isSelectAllAllowed && isAllRowsSelected)
+	if (tableStateValues?.isSelectAllAllowed && isAllRowsSelected && (Object.keys(tableStateValues?.rowSelection)?.length === tableStateValues.data?.total))
 		tableController(tableKey).setIsAllRowsSelected(isAllRowsSelected);
 
 	useEffect(() => {

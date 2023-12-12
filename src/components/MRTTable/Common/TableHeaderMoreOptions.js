@@ -4,6 +4,8 @@ import { Menu, MenuItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import { tableController } from 'hookstate/tableController';
+import { getAllData } from 'components/MRTTable/utils/GetAllData';
+import { useApolloClient } from '@apollo/client';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,7 +18,19 @@ const useStyles = makeStyles((theme) => ({
 function TableHeaderMoreOptions({ tableKey }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const classes = useStyles();
-  const tableState = tableController(tableKey).useState(['mrtTableRef', 'data']);
+  const client = useApolloClient();
+
+  const tableState = tableController(tableKey).useState([
+    'mrtTableRef',
+    'data',
+    'globalFilter',
+    'searchFields',
+    'sorting',
+    'defaultSort',
+    'esIndex',
+    'filters',
+    'defaultFilters',
+  ]);
   const tableStateValues = tableState.stateValues;
 
   const handleClose = () => {
@@ -27,13 +41,26 @@ function TableHeaderMoreOptions({ tableKey }) {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleSelect = (number) => {
+  const handleSelect = async (number) => {
     number = number > tableStateValues?.data?.total ? tableStateValues?.data?.total : number
+
+    const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*'
+    const search = { fields: tableStateValues?.searchFields, query }
+    const allFilters = [...tableStateValues?.filters, ...tableStateValues?.defaultFilters]
+    const showRows = await getAllData(search, tableStateValues?.sorting, tableStateValues?.defaultSort, tableStateValues?.esIndex, allFilters, number, client);
+
     let newstate = {}
     for (let i = 0; i < number; i++) {
       newstate[i] = true
     }
     tableController(tableKey).setColumnCheck(newstate)
+
+    tableController(tableKey).updateState({
+      data: {
+        rows: showRows,
+        total: tableStateValues?.data?.total,
+      },
+    });
     handleClose()
   }
 
