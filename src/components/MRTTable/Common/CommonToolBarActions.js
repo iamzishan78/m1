@@ -24,11 +24,15 @@ export const excludeFilters = (tableKey) => {
 export const openSideExportDialog = ({ _selectedRows, search, filters, sort, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType }) => {
 	let excludedIds = []
 	const includedIds = []
+	const isSubSetSelect = tableController(tableKey).getValue('isSubSetSelect');
+
 	if (isAllRowsSelected) {
 		excludedIds = excludeFilters(tableKey)
 
 		total = total - excludedIds.length
 		isAllRowsSelected = excludedIds.length ? false : isAllRowsSelected
+	} else if (!!isSubSetSelect) {
+		total = isSubSetSelect?.total
 	} else {
 		total = _selectedRows.length
 		const value = []
@@ -74,18 +78,21 @@ export const openSideDialog = async (
 	}
 ) => {
 	let showRows = selectedRows;
-	if (isAllRowsSelected) {
+	const isSubSetSelect = tableController(tableKey).getValue('isSubSetSelect');
+	tableGlobalController.updateState({
+		dialog: {
+			type,
+			selectedRows: [],
+			...props
+		},
+	});
 
-		tableGlobalController.updateState({
-			dialog: {
-				type,
-				selectedRows: [],
-				...props
-			},
-		});
+	if (isAllRowsSelected) {
 		const excludedIds = excludeFilters(tableKey)
 		const allFilters = [...filters, ...excludedIds]
 		showRows = await getAllData(search, sorting, defaultSort, esIndex, allFilters, total, client);
+	} else if (!!isSubSetSelect) {
+		showRows = await getAllData(search, sorting, defaultSort, esIndex, filters, isSubSetSelect?.total, client);
 	}
 	tableGlobalController.updateState({
 		dialog: {

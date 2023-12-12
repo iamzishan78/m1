@@ -5,6 +5,7 @@ import { tableController } from 'hookstate/tableController';
 import useHandleQuery from './useHandleQuery';
 import ToolbarActions from '../Common/ToolbarActions';
 import { tableESSimpleFilterModeOtions } from '../utils/data';
+import _ from 'lodash';
 
 const useTableESSimple = tableKey => {
 	const tableContainerRef = useRef(null); // access the MUI TableContainer element
@@ -125,7 +126,9 @@ const useTableESSimple = tableKey => {
 				}
 
 				let newstate = checkFunc(tableStateValues?.rowSelection)
-				const selectAll = tableStateValues.data?.rows?.length === Object.keys(newstate)?.length;
+				const allNumbers = _.range(0, tableStateValues?.pageSize);
+				const missingNumbers = _.difference(allNumbers, _.keys(newstate).map(Number));
+				const selectAll = (tableStateValues.data?.rows?.length === Object.keys(newstate)?.length) && !missingNumbers.length;
 				if (selectAll) {
 					for (let i = 0; i < tableStateValues.data?.total; i++) {
 						newstate[i] = true

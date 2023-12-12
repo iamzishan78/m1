@@ -15,7 +15,8 @@ import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaDa
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController'
 import { formatGridViewToMRT } from "components/MRTTable/utils/helper"
-
+import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
+import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 
 const initialState = {
 	defaultFilters: [],
@@ -219,6 +220,15 @@ const tableESStateControllerHandler = state => ({
 		if (state.TableSchema.get()) return;
 
 		let _Schema = TableSchema;
+		_Schema.unshift({
+			...CommonSchema.SELECT_SOME,
+			header: <TableHeaderMoreOptions tableKey={tableKey} />,
+			Cell: ({ row }) => {
+				const tableState = tableController(tableKey).useState(['mrtTableRef']);
+				const tableStateValues = tableState.stateValues;
+				return <MRT_SelectCheckbox_OverRide row={row} selectAll={false} table={tableStateValues?.mrtTableRef} tableKey={tableKey} />
+			},
+		});
 
 		if (fetchMetaData) {
 			_Schema = await fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey)
@@ -238,6 +248,8 @@ const tableESStateControllerHandler = state => ({
 				showSaveAsNew: false,
 			}
 		}
+
+		_Schema = _.uniqBy(_Schema, (item) => item.accessorKey || item.id);
 
 		const _TableSchema = _Schema.map(schemaColumn => {
 			if (schemaColumn.filter && !schemaColumn.Filter) {
@@ -362,7 +374,7 @@ const tableESStateControllerHandler = state => ({
 		handleColumnMenuClick();
 
 		if (pinnedColumns.length > 0 && columnVirtualization) {
-			let size = 120;
+			let size = 60;
 			pinnedColumns.forEach(column => {
 				size += column.size;
 			});
@@ -415,12 +427,12 @@ const tableESStateControllerHandler = state => ({
 			columnVisibility: formatGridView?.columnVisibility ? formatGridView.columnVisibility : columnVisibility,
 			defaultSort,
 			filterModes,
-			columnOrdering: formatGridView?.columnOrdering ? formatGridView.columnOrdering : ['mrt-row-select', 'mrt-row-numbers', ...columnOrder],
+			columnOrdering: formatGridView?.columnOrdering ? formatGridView.columnOrdering : ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder],
 			columnPinning: formatGridView?.columnPinning ? formatGridView.columnPinning : {
 				left: [
 					...(pinnedFields.length > 0
-						? ['mrt-row-select', 'mrt-row-numbers', ...pinnedFields]
-						: ['mrt-row-select', 'mrt-row-numbers']),
+						? _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(pinnedFields, 1))
+						: ['over-ride-checkbox', 'mrt-row-numbers']),
 				],
 			},
 		});
@@ -465,11 +477,14 @@ const tableESStateControllerHandler = state => ({
 		if (!deepEqual(state.columnPinning?.get({ noproxy: true }), columnPinning)) {
 			let size = 0;
 			columnPinning.left.forEach(pin => {
-				if (pin === 'mrt-row-select' || pin === 'mrt-row-numbers') size += 60;
-				else {
+				if (pin === 'mrt-row-numbers') {
+					size += 60
+				} else if (pin === 'mrt-row-select') {
+					size += 0;
+				} else {
 					size += state.TableSchema.get({ noproxy: true }).find(
 						column => column.id === pin || column.accessorKey === pin
-					).size;
+					)?.size;
 				}
 			});
 			const tableCss = {
@@ -593,6 +608,10 @@ const tableESStateControllerHandler = state => ({
 
 	setFilters: filters => {
 		state.filters.set(filters)
+	},
+
+	setMrtTableRef: mrtTableRef => {
+		!deepEqual(state.mrtTableRef?.get({ noproxy: true }), mrtTableRef) && state.mrtTableRef?.set(mrtTableRef)
 	}
 
 });
