@@ -249,6 +249,8 @@ const tableESStateControllerHandler = state => ({
 			}
 		}
 
+		_Schema = _.uniqBy(_Schema, (item) => item.accessorKey || item.id);
+
 		const _TableSchema = _Schema.map(schemaColumn => {
 			if (schemaColumn.filter && !schemaColumn.Filter) {
 				schemaColumn.SingleSelect = function Comp({ column }) {
