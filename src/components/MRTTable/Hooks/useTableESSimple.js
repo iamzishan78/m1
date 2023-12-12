@@ -5,6 +5,7 @@ import { tableController } from 'hookstate/tableController';
 import useHandleQuery from './useHandleQuery';
 import ToolbarActions from '../Common/ToolbarActions';
 import { tableESSimpleFilterModeOtions } from '../utils/data';
+import _ from 'lodash';
 
 const useTableESSimple = tableKey => {
 	const tableContainerRef = useRef(null); // access the MUI TableContainer element
@@ -28,8 +29,8 @@ const useTableESSimple = tableKey => {
 	const localizationOptions = {
 		filterCustomFilterFn: 'AutoComplete',
 	};
-	if(tableStateValues.rowSelection)
-	localizationOptions.selectedCountOfRowCountRowsSelected = `${Object.keys(tableStateValues?.rowSelection)?.length} of ${tableStateValues?.data.total} row(s) selected`;
+	if (tableStateValues.rowSelection)
+		localizationOptions.selectedCountOfRowCountRowsSelected = `${Object.keys(tableStateValues?.rowSelection)?.length} of ${tableStateValues?.data.total} row(s) selected`;
 
 	const { CustomToolBar } = tableStateValues;
 	return {
@@ -125,7 +126,9 @@ const useTableESSimple = tableKey => {
 				}
 
 				let newstate = checkFunc(tableStateValues?.rowSelection)
-				const selectAll = tableStateValues.data?.rows?.length === Object.keys(newstate)?.length;
+				const allNumbers = _.range(0, tableStateValues?.pageSize);
+				const missingNumbers = _.difference(allNumbers, _.keys(newstate).map(Number));
+				const selectAll = (tableStateValues.data?.rows?.length === Object.keys(newstate)?.length) && !missingNumbers.length;
 				if (selectAll) {
 					for (let i = 0; i < tableStateValues.data?.total; i++) {
 						newstate[i] = true
@@ -133,7 +136,7 @@ const useTableESSimple = tableKey => {
 				}
 				let unselectAll = true;
 
-				for (let i = 0; i < tableStateValues?.pageSize; i++) {
+				for (let i = 0; i < tableStateValues.data?.rows?.length; i++) {
 					if (!!newstate[i]) {
 						unselectAll = false;
 						break;
