@@ -155,6 +155,10 @@ const useStyles = makeStyles((theme) => ({
       gap: '4px',
     }
   },
+  searchStyle: {
+    gap: '1rem',
+    flexWrap: 'nowrap'
+  },
 }));
 
 const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) => {
@@ -202,7 +206,7 @@ const Title = ({ tab, setTab, setNotifications, copyData, archiveAllAndClose }) 
 
     <Grid container className={classes.gridStyle}>
 
-      <Grid item xs={6} container alignItems="center" style={{ gap: '1rem' }}>
+      <Grid item xs={6} container alignItems="center" className={classes.searchStyle}>
 
         <Typography variant="h5" style={{ fontWeight: '700' }}>Notifications</Typography>
 
@@ -344,15 +348,14 @@ const Notifications = () => {
 
   useEffect(() => {
     if (userLists && userLists.allMongoUsers) {
-      const data = userLists.allMongoUsers
-        .map((user) => ({
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-        }))
+      const data = userLists.allMongoUsers?.map((user) => ({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      }))
         .filter((user) => user._id && user.name);
       setUsers(data);
-      const emails = userLists.allMongoUsers.map((user) => user.email);
+      const emails = userLists.allMongoUsers?.map((user) => user.email);
       getProfilesImages({
         variables: { emails },
       });
@@ -424,7 +427,7 @@ const Notifications = () => {
         <CircularProgress className={classes.progress} size={80} disableShrink color="secondary"></CircularProgress>
       ) : (
         <List onScroll={handleScroll} id="noifications-list" style={{ maxHeight: "calc(100% - 48px)", overflow: "auto" }}>
-          {notifications.map(({ _id, state, comment, parent, sender, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
+          {notifications?.map(({ _id, state, comment, parent, sender, notificationType, parentType, dateTimeAdded, message, pipelineId, stageId }, i) => {
             const user = users.find((user) => comment?.user === user?._id);
             return (
               <Paper key={i} className={classes.paper}>

@@ -28,8 +28,8 @@ const useTableESSimple = tableKey => {
 	const localizationOptions = {
 		filterCustomFilterFn: 'AutoComplete',
 	};
-	if(tableStateValues.rowSelection)
-	localizationOptions.selectedCountOfRowCountRowsSelected = `${Object.keys(tableStateValues?.rowSelection)?.length} of ${tableStateValues?.data.total} row(s) selected`;
+	if (tableStateValues.rowSelection)
+		localizationOptions.selectedCountOfRowCountRowsSelected = `${Object.keys(tableStateValues?.rowSelection)?.length} of ${tableStateValues?.data.total} row(s) selected`;
 
 	const { CustomToolBar } = tableStateValues;
 	return {
@@ -133,7 +133,7 @@ const useTableESSimple = tableKey => {
 				}
 				let unselectAll = true;
 
-				for (let i = 0; i < tableStateValues?.pageSize; i++) {
+				for (let i = 0; i < tableStateValues?.data?.rows?.length; i++) {
 					if (!!newstate[i]) {
 						unselectAll = false;
 						break;
