@@ -29,7 +29,6 @@ export const CommonSchema = {
 		isSearchField: true,
 		enableSorting: true,
 		type: 'string',
-		enableColumnFilter: false,
 		enableColumnActions: false,
 		enableColumnOrdering: false,
 		enableResizing: false,

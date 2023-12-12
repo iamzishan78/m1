@@ -50,11 +50,13 @@ const ActivitiesDashboardFilter = ({
   const [qualifier, setQualifier] = useState("");
 
   useEffect(() => {
-    setFromDate(
-      `${moment(minDate).startOf("month").format("yyyy-MM-DD")}`
-    );
+    setFromDate(`${moment(minDate).startOf("month").format("yyyy-MM-DD")}`);
   }, [minDate]);
-
+  useEffect(()=>{
+    if(fromDate=="Invalid date"||toDate=="Invalid date")return
+    setAppliedFilters({ fromDate, toDate, campaignName, qualifier });
+    setFilterToggle(prev=>!prev);
+  },[fromDate, toDate, campaignName, qualifier])
   return (
     <div className={classes.actionBar}>
       <Grid

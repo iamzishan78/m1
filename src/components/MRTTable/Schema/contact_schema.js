@@ -463,7 +463,9 @@ const ContactMeta = {
 			accessorKey: 'campaignName',
 			header: 'Campaign Name',
 			hidden: true,
-			Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
+			Cell: ({ row }) => {
+				return <CampaignNameField value={row?.original?.campaignName?.[0]} fullWidth disabled />
+			},
 		},
 
 		{

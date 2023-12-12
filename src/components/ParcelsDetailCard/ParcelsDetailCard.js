@@ -225,7 +225,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
   } = simpleTableGlobalController.useState(['tabKey']);
 
   const contactsAdded = useSelector(state => state?.common?.contactsAdded);
-  const [updateCustomLayer, { data: updatedParcel }] = useMutation(UPDATECUSTOMLAYER);
+  const [updateCustomLayer, { data: updatedParcel,loading: updatingParcel }] = useMutation(UPDATECUSTOMLAYER);
 
   const [getCustomLayer, { data: dataCustomLayer, refetch: refetchCustomLayer }] = useLazyQuery(CUSTOMLAYER);
 
@@ -440,7 +440,7 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
     <Grid item sm={12} container className={classes.gridWidthScroll}>
       <Grid item xs={12} style={{ padding: '10px 15px 0px 15px' }} className={classes.border}>
         <div className={classes.tags}>
-          <Tags width="100%" targetSourceId={id} targetLabel="parcel" publicLeftBottom />
+          <Tags width="100%" targetSourceId={id} targetLabel="parcel" publicLeftBottom  hideCheckBox/>
         </div>
       </Grid>
       <Grid item sm={12}>
@@ -456,13 +456,14 @@ export default function ParcelsDetailCard({ id, selectTabIndex }) {
                 setProperties={setProperties}
                 updateProperties={updateProperties}
                 updateCustomProperties={updateCustomProperties}
+                updating={updatingParcel}
               />
             </div>,
             <TabPanels
               value={selectedTab}
               panels={[
                 <div>
-                  <MRTTable name="TractPerUnitTable" overrideMeta={overrideMeta} />
+                  <MRTTable name="TractPerUnitTable" overrideMeta={overrideMeta} hideSharedCommentCheck/>
                 </div>,
                 <div className={classes.subContent}>
                   <SuggestedTaxOwnersTable
