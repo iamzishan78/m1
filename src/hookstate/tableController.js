@@ -372,7 +372,7 @@ const tableESStateControllerHandler = state => ({
 		handleColumnMenuClick();
 
 		if (pinnedColumns.length > 0 && columnVirtualization) {
-			let size = 120;
+			let size = 60;
 			pinnedColumns.forEach(column => {
 				size += column.size;
 			});
@@ -425,12 +425,12 @@ const tableESStateControllerHandler = state => ({
 			columnVisibility: formatGridView?.columnVisibility ? formatGridView.columnVisibility : columnVisibility,
 			defaultSort,
 			filterModes,
-			columnOrdering: formatGridView?.columnOrdering ? formatGridView.columnOrdering : ['mrt-row-numbers', ...columnOrder],
+			columnOrdering: formatGridView?.columnOrdering ? formatGridView.columnOrdering : [pinnedFields[0], 'mrt-row-numbers', ...columnOrder],
 			columnPinning: formatGridView?.columnPinning ? formatGridView.columnPinning : {
 				left: [
 					...(pinnedFields.length > 0
-						? ['mrt-row-numbers', ...pinnedFields]
-						: ['mrt-row-numbers']),
+						? _.concat([pinnedFields[0], 'mrt-row-numbers'], _.slice(pinnedFields, 1))
+						: [pinnedFields[0], 'mrt-row-numbers']),
 				],
 			},
 		});
@@ -475,11 +475,14 @@ const tableESStateControllerHandler = state => ({
 		if (!deepEqual(state.columnPinning?.get({ noproxy: true }), columnPinning)) {
 			let size = 0;
 			columnPinning.left.forEach(pin => {
-				if (pin === 'mrt-row-select' || pin === 'mrt-row-numbers') size += 60;
-				else {
+				if (pin === 'mrt-row-numbers') {
+					size += 60
+				} else if (pin === 'mrt-row-select') {
+					size += 0;
+				} else {
 					size += state.TableSchema.get({ noproxy: true }).find(
 						column => column.id === pin || column.accessorKey === pin
-					).size;
+					)?.size;
 				}
 			});
 			const tableCss = {

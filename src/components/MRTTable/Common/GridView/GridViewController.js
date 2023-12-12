@@ -1,6 +1,7 @@
 import { hookstate, useHookstate } from '@hookstate/core';
 import { hookStateController } from 'hookstate/hookStateController';
 import { tableController } from 'hookstate/tableController';
+import _ from 'lodash';
 
 export const gridViewStates = hookstate({});
 
@@ -57,8 +58,12 @@ const gridViewStatesControllerHandler = state => ({
 			Controller.setSorting([]);
 		}
 		if (selectedGridView?.columnPinning) {
+			let filterLeftPinning = selectedGridView?.columnPinning?.left?.map(element => (element === "mrt-row-select" ? "over-ride-checkbox" : element));
+			const newColumnPinning = {
+				left: filterLeftPinning
+			}
 			Controller.setColumnPinning(
-				selectedGridView?.columnPinning,
+				newColumnPinning,
 				columnPinning,
 				TableSchema
 			);
@@ -68,10 +73,11 @@ const gridViewStatesControllerHandler = state => ({
 			Controller.setColumnPinning(columnPinning, pinnedFields, TableSchema);
 		}
 		if (selectedGridView?.columnOrdering) {
-			Controller.setColumnOrdering(selectedGridView?.columnOrdering);
+			const newColumnOrder = selectedGridView?.columnOrdering?.map(element => (element === "mrt-row-select" ? "over-ride-checkbox" : element));
+			Controller.setColumnOrdering(newColumnOrder);
 		} else {
 			const columnOrder = TableSchema.map(column => column.accessorKey || column.id);
-			const defaultColumnOrder = ['mrt-row-select', 'mrt-row-numbers', ...columnOrder]
+			const defaultColumnOrder = _.concat([columnOrder[0], 'mrt-row-numbers'], _.slice(columnOrder, 1))
 			Controller.setColumnOrdering(defaultColumnOrder);
 		}
 	}

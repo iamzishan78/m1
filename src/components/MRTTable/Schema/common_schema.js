@@ -80,8 +80,8 @@ export const CommonSchema = {
 		showInLast: true,
 	},
 	SELECT_SOME: {
-		name: 'dropdown',
-		accessorKey: 'dropdown',
+		name: 'over-ride-checkbox',
+		accessorKey: 'over-ride-checkbox',
 		isPinned: true,
 		hidden: false,
 		isSearchField: false,
@@ -93,6 +93,6 @@ export const CommonSchema = {
 		enableColumnOrdering: false,
 		enableColumnFilter: false,
 		enableResizing: false,
-		size: 100,
+		size: 80,
 	},
 };

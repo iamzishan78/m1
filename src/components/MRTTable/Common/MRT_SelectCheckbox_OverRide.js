@@ -63,8 +63,6 @@ function MRT_SelectCheckbox_OverRide({ row, selectAll, table, tableKey }) {
     title: undefined,
   };
 
-  console.log('enableMultiRowSelection', enableMultiRowSelection)
-
   return (
     <Tooltip
       arrow
