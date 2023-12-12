@@ -28,7 +28,7 @@ function TableHeaderMoreOptions({ tableKey }) {
   };
 
   const handleSelect = (number) => {
-    console.log(number)
+    number = number > tableStateValues?.data?.total ? tableStateValues?.data?.total : number
     let newstate = {}
     for (let i = 0; i < number; i++) {
       newstate[i] = true
