@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 function TableHeaderMoreOptions({ tableKey }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const classes = useStyles();
-  const tableState = tableController(tableKey).useState(['table', 'data']);
+  const tableState = tableController(tableKey).useState(['mrtTableRef', 'data']);
   const tableStateValues = tableState.stateValues;
 
   const handleClose = () => {
@@ -37,11 +37,18 @@ function TableHeaderMoreOptions({ tableKey }) {
     handleClose()
   }
 
-  if (!(!!tableStateValues?.table)) return (<ExpandMoreIcon onClick={handleClick} />)
+  if (!tableStateValues?.mrtTableRef) return null
+
+  const menuItems = [
+    { label: 'All', value: tableStateValues?.data?.total },
+    { label: 'First 100', value: 100 },
+    { label: 'First 250', value: 250 },
+  ];
+
 
   return (
     <div className={classes.root}>
-      <MRT_SelectCheckbox_OverRide row={undefined} selectAll={true} table={tableStateValues?.table} tableKey={tableKey} />
+      <MRT_SelectCheckbox_OverRide row={undefined} selectAll={true} table={tableStateValues?.mrtTableRef} tableKey={tableKey} />
       <ExpandMoreIcon onClick={handleClick} />
       <Menu
         id="menu"
@@ -53,26 +60,11 @@ function TableHeaderMoreOptions({ tableKey }) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <MenuItem
-          onClick={() => {
-            handleSelect(tableStateValues.data?.total);
-          }}>
-          All
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleSelect(100);
-          }}
-        >
-          First 100
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleSelect(250);
-          }}
-        >
-          First 250
-        </MenuItem>
+        {menuItems.map((item, index) => (
+          <MenuItem key={index} onClick={() => handleSelect(item.value)}>
+            {item.label}
+          </MenuItem>
+        ))}
       </Menu>
     </div>
   );

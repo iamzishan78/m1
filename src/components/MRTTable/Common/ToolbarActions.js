@@ -23,7 +23,7 @@ function ToolbarActions({ table, tableKey, children }) {
 		tableController(tableKey).setIsAllRowsSelected(isAllRowsSelected);
 
 	useEffect(() => {
-		tableController(tableKey).setTableVariable(table);
+		tableController(tableKey).setMrtTableRef(table);
 	}, [])
 
 	const handleExport = () => {

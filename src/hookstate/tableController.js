@@ -224,9 +224,9 @@ const tableESStateControllerHandler = state => ({
 			...CommonSchema.SELECT_SOME,
 			header: <TableHeaderMoreOptions tableKey={tableKey} />,
 			Cell: ({ row }) => {
-				const tableState = tableController(tableKey).useState(['table']);
+				const tableState = tableController(tableKey).useState(['mrtTableRef']);
 				const tableStateValues = tableState.stateValues;
-				return <MRT_SelectCheckbox_OverRide row={row} selectAll={false} table={tableStateValues?.table} tableKey={tableKey} />
+				return <MRT_SelectCheckbox_OverRide row={row} selectAll={false} table={tableStateValues?.mrtTableRef} tableKey={tableKey} />
 			},
 		});
 
@@ -425,12 +425,12 @@ const tableESStateControllerHandler = state => ({
 			columnVisibility: formatGridView?.columnVisibility ? formatGridView.columnVisibility : columnVisibility,
 			defaultSort,
 			filterModes,
-			columnOrdering: formatGridView?.columnOrdering ? formatGridView.columnOrdering : [pinnedFields[0], 'mrt-row-numbers', ...columnOrder],
+			columnOrdering: formatGridView?.columnOrdering ? formatGridView.columnOrdering : ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder],
 			columnPinning: formatGridView?.columnPinning ? formatGridView.columnPinning : {
 				left: [
 					...(pinnedFields.length > 0
-						? _.concat([pinnedFields[0], 'mrt-row-numbers'], _.slice(pinnedFields, 1))
-						: [pinnedFields[0], 'mrt-row-numbers']),
+						? _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(pinnedFields, 1))
+						: ['over-ride-checkbox', 'mrt-row-numbers']),
 				],
 			},
 		});
@@ -608,8 +608,8 @@ const tableESStateControllerHandler = state => ({
 		state.filters.set(filters)
 	},
 
-	setTableVariable: table => {
-		!deepEqual(state.table?.get({ noproxy: true }), table) && state.table?.set(table)
+	setMrtTableRef: mrtTableRef => {
+		!deepEqual(state.mrtTableRef?.get({ noproxy: true }), mrtTableRef) && state.mrtTableRef?.set(mrtTableRef)
 	}
 
 });

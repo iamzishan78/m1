@@ -77,7 +77,7 @@ const gridViewStatesControllerHandler = state => ({
 			Controller.setColumnOrdering(newColumnOrder);
 		} else {
 			const columnOrder = TableSchema.map(column => column.accessorKey || column.id);
-			const defaultColumnOrder = _.concat([columnOrder[0], 'mrt-row-numbers'], _.slice(columnOrder, 1))
+			const defaultColumnOrder = _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(columnOrder, 1))
 			Controller.setColumnOrdering(defaultColumnOrder);
 		}
 	}
