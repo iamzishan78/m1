@@ -136,7 +136,7 @@ const useTableESSimple = tableKey => {
 				}
 				let unselectAll = true;
 
-				for (let i = 0; i < tableStateValues.data?.rows?.length; i++) {
+				for (let i = 0; i < tableStateValues?.data?.rows?.length; i++) {
 					if (!!newstate[i]) {
 						unselectAll = false;
 						break;

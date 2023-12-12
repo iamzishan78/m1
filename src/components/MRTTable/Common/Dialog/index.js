@@ -14,7 +14,7 @@ import TagDialog from './TagDialog';
 import ExportConfirmationDialog from './ConfirmationDialog/ExportConfirmation';
 import { globalStateController } from 'hookstate/globalStateController';
 
-function AllDialogs() {
+function AllDialogs(props) {
 	const { stateValues } = tableGlobalController.useState(['dialog']);
 	const { type, ...rest } = stateValues.dialog || {};
 	const tableKey = rest?.tableKey
@@ -68,7 +68,7 @@ function AllDialogs() {
 			)}
 			{type === "comments" && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
-					<CommentDialog {...rest} />
+					<CommentDialog {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck}/>
 				</Dialog>
 			)}
 
