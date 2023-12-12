@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { IconButton, Tooltip } from '@mui/material';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -21,6 +21,10 @@ function ToolbarActions({ table, tableKey, children }) {
 
 	if (tableStateValues?.isSelectAllAllowed && isAllRowsSelected)
 		tableController(tableKey).setIsAllRowsSelected(isAllRowsSelected);
+
+	useEffect(() => {
+		tableController(tableKey).setTableVariable(table);
+	}, [])
 
 	const handleExport = () => {
 		tableGlobalController.updateState({

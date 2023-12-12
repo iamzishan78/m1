@@ -1,9 +1,23 @@
 import React, { useState } from 'react';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Menu, MenuItem } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
+import { tableController } from 'hookstate/tableController';
 
-function TableHeaderMoreOptions() {
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    '& > .MuiButtonBase-root': {
+      padding: '0px'
+    }
+  },
+}));
+function TableHeaderMoreOptions({ tableKey }) {
   const [anchorEl, setAnchorEl] = useState(null);
+  const classes = useStyles();
+  const tableState = tableController(tableKey).useState(['table']);
+  const tableStateValues = tableState.stateValues;
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -13,8 +27,11 @@ function TableHeaderMoreOptions() {
     setAnchorEl(event.currentTarget);
   };
 
+  if (!(!!tableStateValues?.table)) return (<ExpandMoreIcon onClick={handleClick} />)
+
   return (
-    <div>
+    <div className={classes.root}>
+      <MRT_SelectCheckbox_OverRide row={undefined} selectAll={true} table={tableStateValues?.table} tableKey={tableKey} />
       <ExpandMoreIcon onClick={handleClick} />
       <Menu
         id="menu"

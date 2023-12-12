@@ -15,7 +15,8 @@ import { metaDataColumnStateController } from 'components/MRTTable/Common/MetaDa
 import { GET_GRID_VIEWS } from 'graphQL/useQueryGetGridViews';
 import { gridViewStateController } from 'components/MRTTable/Common/GridView/GridViewController'
 import { formatGridViewToMRT } from "components/MRTTable/utils/helper"
-
+import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
+import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 
 const initialState = {
 	defaultFilters: [],
@@ -219,6 +220,15 @@ const tableESStateControllerHandler = state => ({
 		if (state.TableSchema.get()) return;
 
 		let _Schema = TableSchema;
+		_Schema.unshift({
+			...CommonSchema.SELECT_SOME,
+			header: <TableHeaderMoreOptions tableKey={tableKey} />,
+			Cell: ({ row }) => {
+				const tableState = tableController(tableKey).useState(['table']);
+				const tableStateValues = tableState.stateValues;
+				return <MRT_SelectCheckbox_OverRide row={row} selectAll={false} table={tableStateValues?.table} tableKey={tableKey} />
+			},
+		});
 
 		if (fetchMetaData) {
 			_Schema = await fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey)
@@ -415,12 +425,12 @@ const tableESStateControllerHandler = state => ({
 			columnVisibility: formatGridView?.columnVisibility ? formatGridView.columnVisibility : columnVisibility,
 			defaultSort,
 			filterModes,
-			columnOrdering: formatGridView?.columnOrdering ? formatGridView.columnOrdering : ['mrt-row-select', 'mrt-row-numbers', ...columnOrder],
+			columnOrdering: formatGridView?.columnOrdering ? formatGridView.columnOrdering : ['mrt-row-numbers', ...columnOrder],
 			columnPinning: formatGridView?.columnPinning ? formatGridView.columnPinning : {
 				left: [
 					...(pinnedFields.length > 0
-						? ['mrt-row-select', 'mrt-row-numbers', ...pinnedFields]
-						: ['mrt-row-select', 'mrt-row-numbers']),
+						? ['mrt-row-numbers', ...pinnedFields]
+						: ['mrt-row-numbers']),
 				],
 			},
 		});
@@ -593,6 +603,10 @@ const tableESStateControllerHandler = state => ({
 
 	setFilters: filters => {
 		state.filters.set(filters)
+	},
+
+	setTableVariable: table => {
+		!deepEqual(state.table?.get({ noproxy: true }), table) && state.table?.set(table)
 	}
 
 });
