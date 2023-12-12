@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 function TableHeaderMoreOptions({ tableKey }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const classes = useStyles();
-  const tableState = tableController(tableKey).useState(['table']);
+  const tableState = tableController(tableKey).useState(['table', 'data']);
   const tableStateValues = tableState.stateValues;
 
   const handleClose = () => {
@@ -26,6 +26,16 @@ function TableHeaderMoreOptions({ tableKey }) {
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
+
+  const handleSelect = (number) => {
+    console.log(number)
+    let newstate = {}
+    for (let i = 0; i < number; i++) {
+      newstate[i] = true
+    }
+    tableController(tableKey).setColumnCheck(newstate)
+    handleClose()
+  }
 
   if (!(!!tableStateValues?.table)) return (<ExpandMoreIcon onClick={handleClick} />)
 
@@ -43,13 +53,24 @@ function TableHeaderMoreOptions({ tableKey }) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <MenuItem >
+        <MenuItem
+          onClick={() => {
+            handleSelect(tableStateValues.data?.total);
+          }}>
           All
         </MenuItem>
-        <MenuItem >
+        <MenuItem
+          onClick={() => {
+            handleSelect(100);
+          }}
+        >
           First 100
         </MenuItem>
-        <MenuItem >
+        <MenuItem
+          onClick={() => {
+            handleSelect(250);
+          }}
+        >
           First 250
         </MenuItem>
       </Menu>
