@@ -55,7 +55,7 @@ function ToolbarActions({ table, tableKey, children }) {
 			const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
 			const search = { fields: tableStateValues?.searchFields, query };
 
-			excludedIds = excludeFilters(tableKey, tableStateValues?.isSubSetSelect)
+			excludedIds = excludeFilters(tableKey, tableStateValues?.isSubSetSelect?.total)
 			ESVariables = {
 				index: tableStateValues.esIndex,
 				search,
