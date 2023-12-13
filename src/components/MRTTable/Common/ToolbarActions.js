@@ -47,7 +47,7 @@ function ToolbarActions({ table, tableKey, children }) {
 			mainRecord: { key: '_id' },
 		};
 
-		if (!!tableStateValues?.isAllRowsSelected) {
+		if (!!tableStateValues?.isAllRowsSelected || tableStateValues?.isSubSetSelect) {
 			let sortOrder = {};
 			if (tableStateValues.sorting.length > 0) {
 				sortOrder = { field: tableStateValues.sorting[0]?.id, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
@@ -55,13 +55,13 @@ function ToolbarActions({ table, tableKey, children }) {
 			const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
 			const search = { fields: tableStateValues?.searchFields, query };
 
-			excludedIds = excludeFilters(tableKey)
+			excludedIds = excludeFilters(tableKey, tableStateValues?.isSubSetSelect?.total)
 			ESVariables = {
 				index: tableStateValues.esIndex,
 				search,
 				sort: Object.keys(sortOrder).length ? sortOrder : tableStateValues.defaultSort,
 				filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters, ...excludedIds],
-				total: tableStateValues?.data?.total - excludedIds?.length,
+				total: tableStateValues?.isSubSetSelect ? tableStateValues?.isSubSetSelect?.total : (tableStateValues?.data?.total - excludedIds?.length),
 				customValue: tableStateValues?.customValue,
 			}
 		} else {
@@ -88,7 +88,7 @@ function ToolbarActions({ table, tableKey, children }) {
 				tableKey,
 				userId: getUser?._id,
 				ESVariables,
-				isSelectAll: !!tableStateValues?.isAllRowsSelected,
+				isSelectAll: !!tableStateValues?.isAllRowsSelected || (tableStateValues?.isSubSetSelect ? true : false),
 			},
 		});
 

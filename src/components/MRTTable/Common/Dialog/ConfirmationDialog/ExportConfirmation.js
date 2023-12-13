@@ -34,7 +34,8 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		'columnVisibility',
 		'filters',
 		'defaultFilters',
-		'isAllRowsSelected'
+		'isAllRowsSelected',
+		'isSubSetSelect'
 	]);
 	const tableStateValues = tableState.stateValues;
 
@@ -42,10 +43,13 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		const rows = table.getSelectedRowModel().flatRows.map(row => row.original);
 		let isSelectAll = true;
 		let excludedIds = []
-		if (rows.length !== 0 && !(!!tableStateValues?.isAllRowsSelected)) {
+		let total = tableStateValues?.data.total
+		if (rows.length !== 0 && !(!!tableStateValues?.isAllRowsSelected) && !(tableStateValues?.isSubSetSelect)) {
 			isSelectAll = false;
-		} else if (!!tableStateValues?.isAllRowsSelected) {
-			excludedIds = excludeFilters(tableKey)
+		} else if (!!tableStateValues?.isAllRowsSelected || tableStateValues?.isSubSetSelect) {
+			excludedIds = excludeFilters(tableKey, tableStateValues?.isSubSetSelect?.total)
+			total = tableStateValues?.isSubSetSelect?.total ? tableStateValues?.isSubSetSelect?.total : total
+			total = total - excludedIds.length
 		}
 		const filteredColumns = _.pickBy(tableStateValues.columnVisibility, _.identity);
 
@@ -77,7 +81,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 				setStateApp: window.setStateApp,
 				userId: getUser?._id,
 				requestPayload: {
-					total: tableStateValues?.data.total,
+					total,
 					search,
 					filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters, ...excludedIds],
 					esIndex: tableStateValues.esIndex,

@@ -14,6 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import DeleteOutlinedIcon from '@material-ui/icons/DeleteOutlined';
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 import { showSuccessMessage, showErrorMessage } from 'actions';
 import { UPLOADRECIPIENTS } from 'graphQL/useMutationUploadStorefrontRecipientsList';
@@ -67,6 +68,8 @@ export default function SendMailersDialogContent(props) {
 	const modalClass = Modals();
 
 	const [campaign, setCampaign] = useState('');
+	const [rowsLoading, setRowsLoading] = useState(false);
+
 
 	//const [uploadRecipients] = useMutation(UPLOADRECIPIENTS);
 	const [uploadRecipients, { data: dataUploadRecipients }] = useMutation(
@@ -79,7 +82,11 @@ export default function SendMailersDialogContent(props) {
 	);
 
 	useEffect(() => {
-		if (!props.rows || props.rows.length === 0) props.onClose();
+		if (!props.rows || props.rows.length === 0) {
+			setRowsLoading(true)
+		} else {
+			setRowsLoading(false)
+		}
 	}, [props.rows]);
 
 	const { user } = globalStateController.useState(['user']);
@@ -108,77 +115,85 @@ export default function SendMailersDialogContent(props) {
 
 	return (
 		<React.Fragment>
-			<DialogTitle styles={{ backgroundColor: "#fff" }} id="customized-dialog-title" onClose={props.onClose}>
-				New Mailer Campaign
-			</DialogTitle>
-			<DialogContent>
-				<Grid container spacing={1}>
-					<Grid item xs={12}>
-						<h3 style={{ padding: 0, marginTop: '40px', marginBottom: 0, marginLeft: 15, }}>
-							Campaign Name
-						</h3>
-					</Grid>
-					<Grid item xs={12}>
-						<TextField
-							margin="none"
-							placeholder="Enter a campaign name"
-							style={{ width: '96%', marginBottom: '10px', marginLeft: 15, }}
-							value={campaign}
-							onChange={(e) => {
-								setCampaign(e.target.value);
-							}}
-						/>
-					</Grid>
-					<Grid item xs={12} style={{ marginTop: '40px' }}>
-						<h3 style={{ margin: '0', marginLeft: 15, }}>Mailing List</h3>
-					</Grid>
-					<Grid item xs={12} style={{ margin: 0, paddingTop: 0, marginLeft: 15, }}>
-						<FormLabel>
-							{props.rows && props.rows.length ? props.rows.length : ''}{' '}
-							selected
-						</FormLabel>
-					</Grid>
-					{props.rows &&
-						props.rows.map((row, index) => (
-							<Grid item xs={12} className={modalClass.inputContainer}>
-								<FormLabel className={modalClass.inputLabel}>
-									{row.name}
-								</FormLabel>
-								<FormLabel className={modalClass.inputLabel}>
-									{joinAddress(row)}
-								</FormLabel>
-								<FormLabel className={modalClass.inputContent}>
-									<DeleteOutlinedIcon
-										fontSize="small"
-										style={{ cursor: 'pointer', float: 'right' }}
-										onClick={() => {
-											let reducedRows = [...props.rows];
-											reducedRows.splice(index, 1);
-											props.setRows(reducedRows);
-										}}
-									/>
+			{rowsLoading ? (
+				<div className={modalClass.loaderWrapper}>
+					<CircularProgress color="secondary" className={modalClass.loader} size={80} disableShrink />
+				</div>
+			) : (
+				<>
+					<DialogTitle styles={{ backgroundColor: "#fff" }} id="customized-dialog-title" onClose={props.onClose}>
+						New Mailer Campaign
+					</DialogTitle>
+					<DialogContent>
+						<Grid container spacing={1}>
+							<Grid item xs={12}>
+								<h3 style={{ padding: 0, marginTop: '40px', marginBottom: 0, marginLeft: 15, }}>
+									Campaign Name
+								</h3>
+							</Grid>
+							<Grid item xs={12}>
+								<TextField
+									margin="none"
+									placeholder="Enter a campaign name"
+									style={{ width: '96%', marginBottom: '10px', marginLeft: 15, }}
+									value={campaign}
+									onChange={(e) => {
+										setCampaign(e.target.value);
+									}}
+								/>
+							</Grid>
+							<Grid item xs={12} style={{ marginTop: '40px' }}>
+								<h3 style={{ margin: '0', marginLeft: 15, }}>Mailing List</h3>
+							</Grid>
+							<Grid item xs={12} style={{ margin: 0, paddingTop: 0, marginLeft: 15, }}>
+								<FormLabel>
+									{props.rows && props.rows.length ? props.rows.length : ''}{' '}
+									selected
 								</FormLabel>
 							</Grid>
-						))}
-				</Grid>
-			</DialogContent>
-			<DialogActions className={modalClass.actionButtons}>
-				<Button
-					onClick={() => {
-						props.onClose();
-					}}
-					color="primary"
-				>
-					Cancel
-				</Button>
-				<Button
-					onClick={() => runStorefront()}
-					color="secondary"
-					variant="contained"
-				>
-					Continue to Send Mailers
-				</Button>
-			</DialogActions>
+							{props.rows &&
+								props.rows.map((row, index) => (
+									<Grid item xs={12} className={modalClass.inputContainer}>
+										<FormLabel className={modalClass.inputLabel}>
+											{row.name}
+										</FormLabel>
+										<FormLabel className={modalClass.inputLabel}>
+											{joinAddress(row)}
+										</FormLabel>
+										<FormLabel className={modalClass.inputContent}>
+											<DeleteOutlinedIcon
+												fontSize="small"
+												style={{ cursor: 'pointer', float: 'right' }}
+												onClick={() => {
+													let reducedRows = [...props.rows];
+													reducedRows.splice(index, 1);
+													props.setRows(reducedRows);
+												}}
+											/>
+										</FormLabel>
+									</Grid>
+								))}
+						</Grid>
+					</DialogContent>
+					<DialogActions className={modalClass.actionButtons}>
+						<Button
+							onClick={() => {
+								props.onClose();
+							}}
+							color="primary"
+						>
+							Cancel
+						</Button>
+						<Button
+							onClick={() => runStorefront()}
+							color="secondary"
+							variant="contained"
+						>
+							Continue to Send Mailers
+						</Button>
+					</DialogActions>
+				</>
+			)}
 		</React.Fragment>
 	);
 }

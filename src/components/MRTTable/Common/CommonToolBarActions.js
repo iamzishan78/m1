@@ -8,10 +8,11 @@ import { tableController, tableGlobalController } from 'hookstate/tableControlle
 import { getAllData } from 'components/MRTTable/utils/GetAllData';
 import _ from 'lodash';
 
-export const excludeFilters = (tableKey) => {
+export const excludeFilters = (tableKey, total) => {
 	const rowSelection = tableController(tableKey).getValue('rowSelection');
 	const { rows, total: rangeTotal } = tableController(tableKey).getValue('data');
-	const allNumbers = _.range(0, rangeTotal);
+	total = total ? total : rangeTotal
+	const allNumbers = _.range(0, total);
 	const missingNumbers = _.difference(allNumbers, _.keys(rowSelection).map(Number));
 
 	const excludedIds = []
@@ -32,7 +33,8 @@ export const openSideExportDialog = ({ _selectedRows, search, filters, sort, tot
 		total = total - excludedIds.length
 		isAllRowsSelected = excludedIds.length ? false : isAllRowsSelected
 	} else if (!!isSubSetSelect) {
-		total = isSubSetSelect?.total
+		excludedIds = excludeFilters(tableKey, isSubSetSelect?.total)
+		total = isSubSetSelect?.total - excludedIds?.length
 	} else {
 		total = _selectedRows.length
 		const value = []
@@ -90,9 +92,13 @@ export const openSideDialog = async (
 	if (isAllRowsSelected) {
 		const excludedIds = excludeFilters(tableKey)
 		const allFilters = [...filters, ...excludedIds]
-		showRows = await getAllData(search, sorting, defaultSort, esIndex, allFilters, total, client);
+		const newTotaltotal = total - excludedIds?.length
+		showRows = await getAllData(search, sorting, defaultSort, esIndex, allFilters, newTotaltotal, client);
 	} else if (!!isSubSetSelect) {
-		showRows = await getAllData(search, sorting, defaultSort, esIndex, filters, isSubSetSelect?.total, client);
+		const excludedIds = excludeFilters(tableKey, isSubSetSelect?.total)
+		const allFilters = [...filters, ...excludedIds]
+		const total = isSubSetSelect?.total - excludedIds?.length
+		showRows = await getAllData(search, sorting, defaultSort, esIndex, allFilters, total, client);
 	}
 	tableGlobalController.updateState({
 		dialog: {
