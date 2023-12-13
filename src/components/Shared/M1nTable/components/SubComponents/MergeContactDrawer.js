@@ -99,6 +99,7 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
     }
   }, [rows]);
 
+  console.log('rows', rows)
   return (
     <RightDialog open width="700px">
       {rowsLoading ? (
@@ -133,7 +134,6 @@ export default function MergeContactDrawer({ onClose, rows, setRows }) {
               <List
                 width={650}
                 height={750}
-                autoHeight={true}
                 rowCount={rows.length}
                 rowHeight={60}
                 // eslint-disable-next-line react/no-unstable-nested-components
