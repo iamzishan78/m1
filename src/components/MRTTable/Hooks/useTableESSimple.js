@@ -146,6 +146,11 @@ const useTableESSimple = tableKey => {
 				if (unselectAll) {
 					Controller.setIsAllRowsSelected(false)
 					newstate = {}
+					if (tableStateValues?.isSubSetSelect) {
+						Controller.updateState({
+							isSubSetSelect: null
+						});
+					}
 				}
 				Controller.setColumnCheck(newstate)
 			},
