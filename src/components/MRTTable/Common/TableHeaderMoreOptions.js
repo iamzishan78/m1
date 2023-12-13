@@ -4,6 +4,7 @@ import { Menu, MenuItem } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 import { tableController } from 'hookstate/tableController';
+import Tooltip from '@mui/material/Tooltip';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -68,7 +69,12 @@ function TableHeaderMoreOptions({ tableKey }) {
   return (
     <div className={classes.root}>
       <MRT_SelectCheckbox_OverRide row={undefined} selectAll={true} table={tableStateValues?.mrtTableRef} tableKey={tableKey} />
-      <ExpandMoreIcon onClick={handleClick} />
+      <Tooltip
+        title={"Options"}
+      >
+        <ExpandMoreIcon onClick={handleClick} />
+      </Tooltip>
+
       <Menu
         id="menu"
         anchorEl={anchorEl}
