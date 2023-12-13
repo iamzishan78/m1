@@ -44,10 +44,11 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		let isSelectAll = true;
 		let excludedIds = []
 		let total = tableStateValues?.data.total
-		if (rows.length !== 0 && !(!!tableStateValues?.isAllRowsSelected)) {
+		if (rows.length !== 0 && !(!!tableStateValues?.isAllRowsSelected) && !(tableStateValues?.isSubSetSelect)) {
 			isSelectAll = false;
 		} else if (!!tableStateValues?.isAllRowsSelected || tableStateValues?.isSubSetSelect) {
 			excludedIds = excludeFilters(tableKey, tableStateValues?.isSubSetSelect?.total)
+			total = tableStateValues?.isSubSetSelect?.total ? tableStateValues?.isSubSetSelect?.total : total
 			total = total - excludedIds.length
 		}
 		const filteredColumns = _.pickBy(tableStateValues.columnVisibility, _.identity);
