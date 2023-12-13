@@ -33,7 +33,7 @@ export const openSideExportDialog = ({ _selectedRows, search, filters, sort, tot
 		total = total - excludedIds.length
 		isAllRowsSelected = excludedIds.length ? false : isAllRowsSelected
 	} else if (!!isSubSetSelect) {
-		const excludedIds = excludeFilters(tableKey, isSubSetSelect?.total)
+		excludedIds = excludeFilters(tableKey, isSubSetSelect?.total)
 		total = isSubSetSelect?.total - excludedIds?.length
 	} else {
 		total = _selectedRows.length
