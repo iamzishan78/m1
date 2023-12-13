@@ -222,7 +222,7 @@ const tableESStateControllerHandler = state => ({
 		let _Schema = TableSchema;
 		_Schema.unshift({
 			...CommonSchema.SELECT_SOME,
-			header: <TableHeaderMoreOptions tableKey={tableKey} />,
+			Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
 			Cell: ({ row }) => {
 				const tableState = tableController(tableKey).useState(['mrtTableRef']);
 				const tableStateValues = tableState.stateValues;
