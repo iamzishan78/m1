@@ -174,7 +174,7 @@ export default function AddLayer(props) {
   const dispatch = useDispatch();
   const classes = useStyles();
   let history = useHistory();
-  const layer_limit = 20;
+  const layer_limit = 50;
 
   const [stateApp] = useContext(AppContext);
   const hookState = useHookstate(hookStateApp);

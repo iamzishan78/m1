@@ -234,7 +234,7 @@ function SourceManager(props) {
   let history = useHistory();
 
   const dispatch = useDispatch();
-  const source_limit = 20;
+  const source_limit = 50;
 
   const [stateMapControls, setStateMapControls] = useContext(MapControlsContext);
   const { stateApp, setStateApp } = props;
