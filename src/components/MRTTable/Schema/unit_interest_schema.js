@@ -260,6 +260,7 @@ const UnitInterestMeta = {
 			type: 'number',
 			accessorKey: 'taxYear',
 			header: 'Tax Year',
+			isSearchField: false
 		},
 
 

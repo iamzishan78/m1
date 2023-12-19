@@ -410,6 +410,7 @@ const OwnersPerUnitMeta = {
 			accessorFn: row => row?.taxYear,
 			id: 'taxYear',
 			header: 'Tax Year',
+			isSearchField: false
 		},
 
 		{
