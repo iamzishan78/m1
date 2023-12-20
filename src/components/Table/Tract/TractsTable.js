@@ -49,7 +49,6 @@ function TractsTable(props) {
           ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
           : [[], 0];
       hit.commentsCounter = hit.comments ? hit.comments.length : 0;
-      hit = props.setGenricData(hit, hit.id, genericDataActions, genericDataActions);
       return hit;
     });
     return hits
