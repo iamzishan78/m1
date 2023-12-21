@@ -137,6 +137,7 @@ const UnitInterestMeta = {
 			name: 'net_acres',
 			accessorKey: 'net_acres',
 			header: 'Net Acres',
+			isSearchField: false
 		},
 
 		{
@@ -158,6 +159,7 @@ const UnitInterestMeta = {
 			name: 'tractAcres',
 			accessorKey: 'tractAcres',
 			header: 'Unit Tract Acres',
+			isSearchField: false
 		},
 
 		// {
