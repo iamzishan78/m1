@@ -101,13 +101,15 @@ function MapGridLayersTable(props) {
           should: [
             {
               wildcard: {
-                "properties": `*${searchInput}*`
+                "properties": {
+                  value: `*${searchInput.toLowerCase()}*`,
+                  case_insensitive: true
+                }
               }
             }
           ]
         }
-      }
-      ];
+      }];
     }
 
     props.setTableMeta({
