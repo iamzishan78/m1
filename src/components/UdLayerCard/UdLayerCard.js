@@ -102,12 +102,14 @@ function UdLayerCard(props) {
     setStateApp((state) => ({
       ...state,
       editDraw: false,
-      currentFeature: undefined,
+      // currentFeature: undefined,
       isAbstractedLayersPolygon: false,
       multiSelectLandGrids: false,
       selectedAbstracts: [],
       showShapeActionsPopup: false,
       showDrawShapesPopup: false,
+      selectedShape: null,
+      selectedParcel: null
     }));
 
     // unselecting the grids
@@ -133,7 +135,7 @@ function UdLayerCard(props) {
       handleCloseLeftSidePanel();
       handleCloseShapeDrawer();
     }
-  
+
     if (e && action) {
       if (action === "draw") {
         setStateMapControls({
@@ -141,7 +143,7 @@ function UdLayerCard(props) {
           selectedMapControl: action,
           // selectedControl: 'layer',
         });
-  
+
         if (!stateApp.editDraw) {
           setStateApp((state) => ({
             ...state,
@@ -155,13 +157,13 @@ function UdLayerCard(props) {
         }
       }
     }
-  
+
     setStateApp((stateApp) => ({
       ...stateApp,
       toggle3d: action === "threed" ? !stateApp.toggle3d : stateApp.toggle3d,
       toggleZoomOut: action === "zoomout" ? !stateApp.toggleZoomOut : stateApp.toggleZoomOut,
     }));
-  
+
     if (stateApp.draw && stateApp.draw.getMode() !== "simple_select") {
       setStateApp({ ...stateApp, editDraw: false });
       stateApp.draw.changeMode("simple_select");
@@ -223,7 +225,7 @@ function UdLayerCard(props) {
     <React.Fragment>
       <Card className={classes.card}>
         <CardHeader
-        id='gggggggg'
+          id='gggggggg'
           classes={{ title: classes.title, subheader: classes.subheader }}
           className={classes.headerContainer}
           action={
