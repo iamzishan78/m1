@@ -1,21 +1,52 @@
-# Node.js
-# Build a general Node.js project with npm.
+# Node.js with React
+# Build a Node.js project that uses React.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- master
+  - master
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: "ubuntu-latest"
+
+variables:
+  NODE_OPTIONS: --max_old_space_size=32768
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.x'
-  displayName: 'Install Node.js'
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "16.15.0"
+    displayName: "Install Node.js"
 
-- script: |
-    npm install
-    npm run build
-  displayName: 'npm install and build'
+  - task: Npm@1
+    inputs:
+      command: "install"
+    displayName: "Npm Install"
+
+  - script: |
+      echo $NODE_OPTIONS
+       npm install material-react-table  # Add this line to install 'material-react-table'
+      npm run build
+    failOnStderr: true
+    displayName: "Prepare binaries"
+
+  ## Copy the client to the staging directory
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: "build"
+      contents: "**/*"
+      targetFolder: "$(Build.ArtifactStagingDirectory)"
+      cleanTargetFolder: true
+
+  ## Archive the files into a zip file for publishing
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: $(Build.ArtifactStagingDirectory)
+      archiveType: "zip"
+      archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+      includeRootFolder: false
+
+  ## Publish the zip file
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
