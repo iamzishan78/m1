@@ -595,3 +595,5 @@ export const AdminManagementRoutes = {
   //   isDefault: true,
   // },
 };
+
+export const BYPASS_LOGIN = ['true', true].includes(process.env.REACT_APP_BYPASS_LOGIN);

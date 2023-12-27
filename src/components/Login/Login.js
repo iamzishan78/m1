@@ -4,11 +4,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import SignInCard from "./SignInCard";
-import { Button, Typography } from "@material-ui/core";
-import Paper from "@material-ui/core/Paper";
 import styled from "styled-components";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import RenderSignUpControls from "./RenderSignUpControls";
 import queryString from "query-string";
 
 import { tenantsCredentials, b2cPolicies, msalConfig, loginRequest, authGraphQLRequest } from "./AADAuthConfig";
@@ -18,9 +15,14 @@ import { USER_MAP_SETTINGS } from "graphQL/useQueryUserMapSettings";
 import { setUserAction } from "store/actions/appActions";
 import { currentUserGridViewSettingsAction } from "store/actions/sessionActions"
 import { saveUserSession } from "utils/user";
+import Api from "api";
 
 // import rock from '../../DFJ.PNG'
 import rock from "../../rock.png";
+import BypassSignInCard from "./BypassSignInCard";
+import { BYPASS_LOGIN } from "utils/data";
+import { BYPASS_LOGIN_MUTATION } from "graphQL/useMutationBypassLogin";
+import { apolloClientEndpointDev } from "utils/helper";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -144,7 +146,7 @@ const Login = (props) => {
   let history = props.history;
 
   useEffect(() => {
-    if (stateApp.myMSALObj && !signingIn) {
+    if (stateApp.myMSALObj && !signingIn && !BYPASS_LOGIN) {
       stateApp.myMSALObj
         .handleRedirectPromise()
         .then((tokenResponse) => {
@@ -301,6 +303,110 @@ const Login = (props) => {
     } else {
       updateTenantFlags("Not a valid workspace");
     }
+  };
+
+  const handleBypassAADSignIn = async (tenantName, updateTenantFlags, email) => {
+    let tenant = tenantsCredentials(tenantName);
+
+    if (!tenant) return updateTenantFlags('Not a valid workspace or email');
+
+    setSigningIn(true);
+    setLoadingSigInButton(true);
+    setLoading(true);
+
+    let myMSALObj = stateApp.myMSALObj;
+
+    if (!stateApp.myMSALObj) {
+      myMSALObj = new msal.PublicClientApplication(msalConfig(tenant));
+      setStateApp({
+        ...stateApp,
+        myMSALObj,
+        apolloClientEndpoint: tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint,
+        graphqlScope: tenant.graphqlScope,
+      });
+    }
+
+    window.sessionStorage.setItem("tenantName", tenant.name);
+
+    setTimeout(async () => {
+      try {
+        const { data: { bypassLogin: loginResp } } = await Api.mutate(BYPASS_LOGIN_MUTATION, {
+          email
+        })
+
+        let mongoUser,
+          sessionData,
+          mapVars = stateApp.mapVars,
+          defaultMapVars = stateApp.defaultMapVars;
+        if (loginResp?.user) {
+          mongoUser = loginResp.user;
+          sessionData = loginResp.sessionData;
+        }
+        if (!mongoUser) {
+          //do some error stuff
+          return;
+        }
+
+        const { userMapSettings } = await Api.query(USER_MAP_SETTINGS, {
+          user: mongoUser._id,
+          type: 'baseMap'
+        })
+
+        if (userMapSettings?.settings?.settings) {
+          const { activeBaseMap, mapDefaultPosition } = userMapSettings.settings.settings;
+          mapVars = { ...mapVars, ...mapDefaultPosition };
+          defaultMapVars = { ...defaultMapVars, ...mapDefaultPosition };
+          if (activeBaseMap) {
+            mapVars.styleId = activeBaseMap;
+            defaultMapVars.styleId = activeBaseMap;
+          }
+        }
+
+        const user = {
+          ...mongoUser,
+          id: mongoUser.adUserId,
+          features: sessionData.features,
+          tenantId: sessionData.tenantId,
+          mongoId: mongoUser._id,
+          roles: mongoUser.roles,
+          authToken: sessionData.authenticationToken,
+          accessToken: sessionData.authenticationToken,
+          authTokenExpires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+          // authTokenExpires: new Date(authGraphQLToken.expiresOn.setDate(authGraphQLToken.expiresOn.getDate() + 14)),
+          tenant: {
+            id: sessionData.tenantId,
+            tenant: "M1neral",
+            graphQL: {
+              endpoint: "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
+            },
+          },
+        };
+
+        setStateApp((state) => ({
+          ...state,
+          user,
+          mapVars,
+          defaultMapVars: defaultMapVars,
+        }));
+        dispatch(setUserAction(user));
+        dispatch(currentUserGridViewSettingsAction.STARTED(user._id))
+        saveUserSession(user);
+        setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
+
+        setLoadingSigInButton(false);
+
+        history.replace({
+          parhname: window.location.pathname,
+          search: window.location?.search,
+        });
+      } catch (err) {
+        console.log("🚀 ~ file: Login.js:396 ~ setTimeout ~ err:", err)
+        updateTenantFlags("Log in Failed");
+      }
+      setSigningIn(false);
+      setLoadingSigInButton(false);
+      setLoading(false);
+    }, 1000);
   };
 
   async function finishAADAuth(accountObj) {
@@ -574,11 +680,18 @@ const Login = (props) => {
       </div> */}
 
       <div className={localClass.cardContainer}>
-        <SignInCard
-          ready={loadingSigInButton}
-          handleAADSignIn={handleAADSignIn}
-          tenant={!stateApp.myMSALObj ? queryString.parse(props.location.search).tenant : undefined}
-        />
+        {BYPASS_LOGIN ?
+          <BypassSignInCard
+            ready={loadingSigInButton}
+            handleAADSignIn={handleBypassAADSignIn}
+            tenant={!stateApp.myMSALObj ? queryString.parse(props.location.search).tenant : undefined}
+          /> :
+          <SignInCard
+            ready={loadingSigInButton}
+            handleAADSignIn={handleAADSignIn}
+            tenant={!stateApp.myMSALObj ? queryString.parse(props.location.search).tenant : undefined}
+          />
+        }
 
         {/* <div
   style={{
