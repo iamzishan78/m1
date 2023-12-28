@@ -137,13 +137,13 @@ const BypassSignInCard = props => {
     }
   }, [props.tenant]);
 
-  const updateTenantFlags = errorText => {
+  const updateTenantFlags = (errorText, t = '') => {
     setTenantFlags({
       error: true,
       placeholder: 'i.e. M1neral',
       autoFocus: true,
     });
-    setTenant('');
+    setTenant(t);
     errorText ? setError(errorText) : setError(null);
   };
 
@@ -157,7 +157,7 @@ const BypassSignInCard = props => {
 
   const signInAAD = async () => {
     if (tenant.trim() === '' || !email) {
-      updateTenantFlags('Not a valid workspace or email');
+      updateTenantFlags('Not a valid workspace or email', tenant.trim());
     } else {
       setError(null);
       await handleAADSignIn(tenant, updateTenantFlags, email);

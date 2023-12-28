@@ -9,6 +9,7 @@ import { useHookStateApp } from "hookstate";
 import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from "hookstate/popupStateController";
 import { BYPASS_LOGIN } from "utils/data";
+import queryString from 'query-string';
 
 const AppContext = createContext([{}, () => { }]);
 
@@ -205,10 +206,14 @@ const AppProvider = (props) => {
 
   useEffect(() => {
     async function wait() {
-      let tenantName = window.sessionStorage.getItem("tenantName");
+      const query = queryString.parse(window.location.search);
 
-      if (tenantName) {
-        let tenant = tenantsCredentials(tenantName);
+      let tenantName = query.tenant || window.sessionStorage.getItem('tenantName');
+
+      let tenant = tenantsCredentials(tenantName);
+      if (tenant) {
+        window.sessionStorage.setItem('tenantName', tenantName);
+
         tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
         tenant.apolloClientEndpoint = isDev && tenantName === "localhost" ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
         let myMSALObjInt = MSALObj(tenant);
