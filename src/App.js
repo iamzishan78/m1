@@ -62,6 +62,8 @@ import { ConnectedRouter } from "connected-react-router";
 import configureStore, { history } from "./store";
 import AnalyticsProvider from "components/Analytics/AnalyticsProvider";
 import AdminProvider from "components/Admin/AdminProvider";
+import { BYPASS_LOGIN } from "utils/data";
+import { getSession } from "utils/user";
 // user management
 const store = configureStore(/ provide initial state if any /);
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
@@ -240,6 +242,13 @@ function App() {
   };
 
   const updateApolloClient = (endpoint, token, idToken) => {
+    const session = getSession();
+
+    if (BYPASS_LOGIN && !token) {
+      idToken = session.accessToken;
+      token = session.accessToken;
+    }
+
     let fetchOptions = {};
     if (apolloClient && token) {
       fetchOptions = setApolloHeaders(apolloClient.link.options, token, idToken);
@@ -254,7 +263,6 @@ function App() {
       const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions });
       const httpBatchLink = new BatchHttpLink({
         uri: endpoint,
-        headers: {},
         ...fetchOptions,
         headers: { ...fetchOptions.headers, batch: "true" },
       });

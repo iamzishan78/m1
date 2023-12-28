@@ -145,8 +145,101 @@ const Login = (props) => {
 
   let history = props.history;
 
+  const handleLogin = (loginResp, userMapSettings) => {
+    let mongoUser,
+      sessionData,
+      mapVars = stateApp.mapVars,
+      defaultMapVars = stateApp.defaultMapVars;
+    if (loginResp?.user) {
+      mongoUser = loginResp.user;
+      sessionData = loginResp.sessionData;
+    }
+    if (!mongoUser) {
+      //do some error stuff
+      return;
+    }
+
+    if (userMapSettings) {
+      const { activeBaseMap, mapDefaultPosition } = userMapSettings;
+      mapVars = { ...mapVars, ...mapDefaultPosition };
+      defaultMapVars = { ...defaultMapVars, ...mapDefaultPosition };
+      if (activeBaseMap) {
+        mapVars.styleId = activeBaseMap;
+        defaultMapVars.styleId = activeBaseMap;
+      }
+    }
+
+    const user = {
+      ...mongoUser,
+      id: mongoUser.adUserId,
+      features: sessionData.features,
+      tenantId: sessionData.tenantId,
+      mongoId: mongoUser._id,
+      roles: mongoUser.roles,
+      authToken: sessionData.authenticationToken,
+      accessToken: sessionData.authenticationToken,
+      authTokenExpires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      // authTokenExpires: new Date(authGraphQLToken.expiresOn.setDate(authGraphQLToken.expiresOn.getDate() + 14)),
+      tenant: {
+        id: sessionData.tenantId,
+        tenant: 'M1neral',
+        graphQL: {
+          endpoint:
+            'https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==',
+        },
+      },
+    };
+
+    setStateApp(state => ({
+      ...state,
+      user,
+      mapVars,
+      defaultMapVars: defaultMapVars,
+    }));
+    dispatch(setUserAction(user));
+    dispatch(currentUserGridViewSettingsAction.STARTED(user._id));
+    saveUserSession(user);
+    setStateNav(stateNav => ({ ...stateNav, defaultOn: true }));
+
+    setLoadingSigInButton(false);
+
+    history.replace({
+      parhname: window.location.pathname,
+      search: window.location?.search,
+    });
+  };
+
   useEffect(() => {
-    if (stateApp.myMSALObj && !signingIn && !BYPASS_LOGIN) {
+    if (stateApp.myMSALObj && !signingIn && BYPASS_LOGIN) {
+      setTimeout(async () => {
+        try {
+          const {
+            data: { login: loginResp },
+          } = await Api.mutate(GET_LOGGED_IN_USER);
+
+          let mongoUser;
+          if (loginResp?.user) {
+            mongoUser = loginResp.user;
+          }
+          if (!mongoUser) {
+            //do some error stuff
+            return;
+          }
+
+          const { userMapSettings } = await Api.query(USER_MAP_SETTINGS, {
+            user: mongoUser._id,
+            type: 'baseMap',
+          });
+
+          handleLogin(loginResp, userMapSettings?.settings?.settings);
+        } catch (err) {
+          console.log('🚀 ~ file: Login.js:396 ~ setTimeout ~ err:', err);
+        }
+        setSigningIn(false);
+        setLoadingSigInButton(false);
+        setLoading(false);
+      }, 1000);
+    } else if (stateApp.myMSALObj && !signingIn) {
       stateApp.myMSALObj
         .handleRedirectPromise()
         .then((tokenResponse) => {
@@ -334,13 +427,9 @@ const Login = (props) => {
           email
         })
 
-        let mongoUser,
-          sessionData,
-          mapVars = stateApp.mapVars,
-          defaultMapVars = stateApp.defaultMapVars;
+        let mongoUser;
         if (loginResp?.user) {
           mongoUser = loginResp.user;
-          sessionData = loginResp.sessionData;
         }
         if (!mongoUser) {
           //do some error stuff
@@ -352,53 +441,7 @@ const Login = (props) => {
           type: 'baseMap'
         })
 
-        if (userMapSettings?.settings?.settings) {
-          const { activeBaseMap, mapDefaultPosition } = userMapSettings.settings.settings;
-          mapVars = { ...mapVars, ...mapDefaultPosition };
-          defaultMapVars = { ...defaultMapVars, ...mapDefaultPosition };
-          if (activeBaseMap) {
-            mapVars.styleId = activeBaseMap;
-            defaultMapVars.styleId = activeBaseMap;
-          }
-        }
-
-        const user = {
-          ...mongoUser,
-          id: mongoUser.adUserId,
-          features: sessionData.features,
-          tenantId: sessionData.tenantId,
-          mongoId: mongoUser._id,
-          roles: mongoUser.roles,
-          authToken: sessionData.authenticationToken,
-          accessToken: sessionData.authenticationToken,
-          authTokenExpires: new Date(Date.now() + 1000 * 60 * 60 * 24),
-          // authTokenExpires: new Date(authGraphQLToken.expiresOn.setDate(authGraphQLToken.expiresOn.getDate() + 14)),
-          tenant: {
-            id: sessionData.tenantId,
-            tenant: "M1neral",
-            graphQL: {
-              endpoint: "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
-            },
-          },
-        };
-
-        setStateApp((state) => ({
-          ...state,
-          user,
-          mapVars,
-          defaultMapVars: defaultMapVars,
-        }));
-        dispatch(setUserAction(user));
-        dispatch(currentUserGridViewSettingsAction.STARTED(user._id))
-        saveUserSession(user);
-        setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
-
-        setLoadingSigInButton(false);
-
-        history.replace({
-          parhname: window.location.pathname,
-          search: window.location?.search,
-        });
+        handleLogin(loginResp, userMapSettings?.settings?.settings)
       } catch (err) {
         console.log("🚀 ~ file: Login.js:396 ~ setTimeout ~ err:", err)
         updateTenantFlags("Log in Failed");
@@ -504,67 +547,17 @@ const Login = (props) => {
       authGraphQLResponse.authenticationToken,
       authGraphQLToken.idToken
     );
-    let mongoUser,
-      sessionData,
-      mapVars = stateApp.mapVars,
-      defaultMapVars = stateApp.defaultMapVars;
+    let mongoUser;
     if (loginResp?.user) {
       mongoUser = loginResp.user;
-      sessionData = loginResp.sessionData;
     }
     if (!mongoUser) {
       //do some error stuff
       return;
     }
     const userSettingsResp = await userSettings(mongoUser._id, authGraphQLResponse.authenticationToken, authGraphQLToken.idToken, 'baseMap');
-    if (userSettingsResp) {
-      const { activeBaseMap, mapDefaultPosition } = userSettingsResp;
-      mapVars = { ...mapVars, ...mapDefaultPosition };
-      defaultMapVars = { ...defaultMapVars, ...mapDefaultPosition };
-      if (activeBaseMap) {
-        mapVars.styleId = activeBaseMap;
-        defaultMapVars.styleId = activeBaseMap;
-      }
-    }
 
-    const user = {
-      ...mongoUser,
-      id: accountObj.sub,
-      features: sessionData.features,
-      tenantId: sessionData.tenantId,
-      mongoId: mongoUser._id,
-      roles: authUser.roles,
-      authToken: authGraphQLResponse.authenticationToken,
-      accessToken: authGraphQLToken.idToken,
-      authTokenExpires: new Date(authGraphQLToken.expiresOn.setDate(authGraphQLToken.expiresOn.getDate() + 14)),
-      tenant: {
-        id: request.tenantId,
-        tenant: "M1neral",
-        graphQL: {
-          endpoint: "https://m1graphql.azurewebsites.net/api/m1neral?code=kNAzP9HYSsEwdWhlLa55AIGeKj2iiFFOpXaTMRh9IuTODWpNobIX3g==",
-        },
-      },
-    };
-
-    setStateApp((state) => ({
-      ...state,
-      user,
-      mapVars,
-      defaultMapVars: defaultMapVars,
-    }));
-    dispatch(setUserAction(user));
-    dispatch(currentUserGridViewSettingsAction.STARTED(user._id))
-    saveUserSession(user);
-    setStateNav((stateNav) => ({ ...stateNav, defaultOn: true }));
-
-    setLoadingSigInButton(false);
-
-    history.replace({
-      parhname: window.location.pathname,
-      search: window.location?.search,
-    });
-
-    //setLoading(false);
+    handleLogin(loginResp, userSettingsResp)
   }
 
   async function loginUser(user, authToken, idToken) {
@@ -780,7 +773,7 @@ const Login = (props) => {
     </>
   );
 
-  return loading ? (
+  return loading || stateApp.user ? (
     <div style={{ marginTop: "20%", marginLeft: "47%" }}>
       <CircularProgress size={80} disableShrink color="secondary" />
     </div>

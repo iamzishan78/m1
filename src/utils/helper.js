@@ -1,7 +1,7 @@
 import moment from "moment";
 
 import { getSession } from "utils/user";
-import { wellsKeys } from "utils/data";
+import { BYPASS_LOGIN, wellsKeys } from "utils/data";
 import { tenantsCredentials } from "components/Login/AADAuthConfig";
 
 export const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
@@ -63,7 +63,7 @@ export const getURL = () => {
 export const getHeaders = () => {
   const session = getSession();
   const headers = { "X-ZUMO-AUTH": session.authToken };
-  if (isDev) {
+  if (isDev || BYPASS_LOGIN) {
     headers["X-MS-TOKEN-AAD-ID-TOKEN"] = session.accessToken;
   }
   return headers;
