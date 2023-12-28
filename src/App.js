@@ -244,7 +244,7 @@ function App() {
   const updateApolloClient = (endpoint, token, idToken) => {
     const session = getSession();
 
-    if (BYPASS_LOGIN && !token) {
+    if (BYPASS_LOGIN && session && !token) {
       idToken = session.accessToken;
       token = session.accessToken;
     }

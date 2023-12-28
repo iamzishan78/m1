@@ -102,7 +102,7 @@ const Login = (props) => {
 
   let history = props.history;
 
-  const handleLogin = (loginResp, userMapSettings) => {
+  const handleLogin = (loginResp, userMapSettings, authGraphQLToken) => {
     let mongoUser,
       sessionData,
       mapVars = stateApp.mapVars,
@@ -126,6 +126,13 @@ const Login = (props) => {
       }
     }
 
+    let authTokenExpires;
+    if (BYPASS_LOGIN) authTokenExpires = sessionData.authenticationToken.expiresOn;
+    else if (authGraphQLToken?.expiresOn)
+      authTokenExpires = new Date(
+        authGraphQLToken.expiresOn.setDate(authGraphQLToken.expiresOn.getDate() + 14)
+      );
+
     const user = {
       ...mongoUser,
       id: mongoUser.adUserId,
@@ -133,10 +140,9 @@ const Login = (props) => {
       tenantId: sessionData.tenantId,
       mongoId: mongoUser._id,
       roles: mongoUser.roles,
-      authToken: sessionData.authenticationToken,
-      accessToken: sessionData.authenticationToken,
-      authTokenExpires: new Date(Date.now() + 1000 * 60 * 60 * 24),
-      // authTokenExpires: new Date(authGraphQLToken.expiresOn.setDate(authGraphQLToken.expiresOn.getDate() + 14)),
+      authToken: BYPASS_LOGIN ? sessionData.token : sessionData.authenticationToken,
+      accessToken: BYPASS_LOGIN ? sessionData.token : sessionData.authenticationToken,
+      authTokenExpires,
       tenant: {
         id: sessionData.tenantId,
         tenant: 'M1neral',
@@ -514,7 +520,7 @@ const Login = (props) => {
     }
     const userSettingsResp = await userSettings(mongoUser._id, authGraphQLResponse.authenticationToken, authGraphQLToken.idToken, 'baseMap');
 
-    handleLogin(loginResp, userSettingsResp)
+    handleLogin(loginResp, userSettingsResp, authGraphQLResponse);
   }
 
   async function loginUser(user, authToken, idToken) {
