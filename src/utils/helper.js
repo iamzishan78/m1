@@ -5,7 +5,7 @@ import { BYPASS_LOGIN, wellsKeys } from "utils/data";
 import { tenantsCredentials } from "components/Login/AADAuthConfig";
 
 export const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
-const isDev = process.env.REACT_APP_NODE_ENV === "development";
+export const isDev = process.env.REACT_APP_NODE_ENV === "development";
 const decimalForamtter = new Intl.NumberFormat('en-US', {
   style: 'decimal',
   useGrouping: true,

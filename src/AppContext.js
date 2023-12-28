@@ -10,6 +10,7 @@ import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from "hookstate/popupStateController";
 import { BYPASS_LOGIN } from "utils/data";
 import queryString from 'query-string';
+import { apolloClientEndpointDev, isDev } from "utils/helper";
 
 const AppContext = createContext([{}, () => { }]);
 
@@ -301,9 +302,6 @@ const AppProvider = (props) => {
     </AppContext.Provider>
   );
 };
-
-const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
-const isDev = process.env.NODE_ENV === "development";
 
 const setApolloHeaders = (config, authToken, idToken) => {
   if (!config) config = {};

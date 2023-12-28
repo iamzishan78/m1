@@ -20,7 +20,7 @@ import rock from "../../rock.png";
 import BypassSignInCard from "./BypassSignInCard";
 import { BYPASS_LOGIN } from "utils/data";
 import { BYPASS_LOGIN_MUTATION } from "graphQL/useMutationBypassLogin";
-import { apolloClientEndpointDev } from "utils/helper";
+import { apolloClientEndpointDev, isDev } from "utils/helper";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -377,7 +377,7 @@ const Login = (props) => {
       setStateApp({
         ...stateApp,
         myMSALObj,
-        apolloClientEndpoint: tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint,
+        apolloClientEndpoint: isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint,
         graphqlScope: tenant.graphqlScope,
       });
     }
