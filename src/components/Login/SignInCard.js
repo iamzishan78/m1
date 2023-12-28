@@ -1,8 +1,7 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import InputBase from "@material-ui/core/InputBase";
 import { Card, Button } from "@material-ui/core";
-import { AppContext } from "../../AppContext";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import styled from "styled-components";
 import Grid from '@material-ui/core/Grid';
@@ -17,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     width: "400px",
     height: "425px",
     alignItems: 'center',
-    backgroundColor: theme.palette.secondary.dark,
+    // backgroundColor: theme.palette.secondary.dark,
     backgroundColor: "#0e111a",
     fontFamily: theme.typography.fontFamily,
   },
@@ -147,7 +146,6 @@ const BootstrapInput = withStyles((theme) => ({
 const SignInCard = (props) => {
   const { handleAADSignIn } = props;
 
-  const [, setStateApp] = useContext(AppContext);
   const classes = useStyles();
 
   const history = useHistory()
@@ -309,18 +307,7 @@ const SignInCard = (props) => {
           Privacy Policy
         </a>
       </div>
-
-      <div
-        style={{
-          marginBottom: "30px",
-        }}
-      >
-      </div>
-
     </div>
-
-
-
   );
 };
 

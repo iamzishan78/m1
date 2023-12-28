@@ -35,6 +35,7 @@ const useStyles = makeStyles(theme => ({
     width: '125px',
     lineHeight: '1.4',
     marginTop: '65px',
+    marginBottom: '40px',
     paddingTop: '12px',
     paddingBottom: '12px',
     color: '#fff',
@@ -147,15 +148,11 @@ const BypassSignInCard = props => {
   };
 
   const onEnterKey = e => {
-    // if (tenant.trim() === '' || !email) {
-    //   updateTenantFlags('Not a valid workspace or email');
-    // } else {
     if (e.keyCode === 13) {
       e.preventDefault();
       setError(null);
       handleAADSignIn(tenant, updateTenantFlags, email);
     }
-    // }
   };
 
   const signInAAD = async () => {
