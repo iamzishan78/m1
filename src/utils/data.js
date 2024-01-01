@@ -596,4 +596,28 @@ export const AdminManagementRoutes = {
   // },
 };
 
-export const BYPASS_LOGIN = !['false', false].includes(process.env.REACT_APP_BYPASS_LOGIN);
+export const bypassTenants = [
+  'ghr',
+  'quality',
+  'foss',
+  'm1stage',
+  'santafe',
+  'republic',
+  'venator',
+  'frontier',
+  'ellymay',
+  'vector',
+  'demo',
+  'm1dev',
+  'enerx',
+  'tablerock',
+  'minadv',
+  'beta1',
+  'avant',
+  'probus',
+  'providence',
+  'm1neral',
+  'localhost',
+  'pheasant',
+  'm1neralb2b',
+];

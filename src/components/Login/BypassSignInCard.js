@@ -120,8 +120,10 @@ const BypassSignInCard = props => {
   const history = useHistory();
   const query = queryString.parse(history.location.search);
 
+  const sessionTenant = window.sessionStorage.getItem('tenantName');
+
   const [tenant, setTenant] = useState(
-    props.tenant || query.tenant ? props.tenant || query.tenant : ''
+    props.tenant || query.tenant || sessionTenant ? props.tenant || query.tenant || sessionTenant : ''
   );
   const [email, setEmail] = useState('');
   const [error, setError] = useState(null);

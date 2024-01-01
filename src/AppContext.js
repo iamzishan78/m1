@@ -8,7 +8,6 @@ import { heatLayers, baseMapLayers } from "./LayerConfig";
 import { useHookStateApp } from "hookstate";
 import { globalStateController } from 'hookstate/globalStateController';
 import { popupController } from "hookstate/popupStateController";
-import { BYPASS_LOGIN } from "utils/data";
 import queryString from 'query-string';
 import { apolloClientEndpointDev, isDev } from "utils/helper";
 
@@ -307,7 +306,7 @@ const setApolloHeaders = (config, authToken, idToken) => {
   if (!config) config = {};
   if (!config.headers) config.headers = {};
   config.headers["X-ZUMO-AUTH"] = authToken;
-  if (isDev || BYPASS_LOGIN) config.headers["X-MS-TOKEN-AAD-ID-TOKEN"] = idToken;
+  if (isDev || globalStateController.getValue('bypassLogin')) config.headers["X-MS-TOKEN-AAD-ID-TOKEN"] = idToken;
   return config;
 };
 

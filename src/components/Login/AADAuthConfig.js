@@ -1,4 +1,5 @@
 import * as msal from "@azure/msal-browser";
+import { globalStateController } from "hookstate/globalStateController";
 import { copy } from 'utils/helper';
 
 const tenants = JSON.parse(process.env.REACT_APP_TENANS_CREDENTIALS);
@@ -11,6 +12,9 @@ export const tenantsCredentials = (tenantName) => {
     if (tenants[i].name.toUpperCase() === tenantName.toUpperCase())
       found = tenants[i];
   }
+
+  if (found?.name) globalStateController.setBypassLogin(found?.name);
+
   return copy(found);
 };
 

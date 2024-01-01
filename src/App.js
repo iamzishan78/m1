@@ -40,10 +40,6 @@ import AgreementProvider from "./components/Land/components/Agreements/Agreement
 // pick a date util library
 import MomentUtils from "@date-io/moment";
 import { CircularProgress } from "@material-ui/core";
-import { UsersnapProvider } from "./UsersnapContext";
-
-import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
-import { FEATURES } from "components/Shared/FeatureFlag/common";
 
 //graphQL - queries in ./graphQL example usage in ./components/Maps.js
 import { ApolloProvider, ApolloClient, InMemoryCache, useApolloClient } from "@apollo/client";
@@ -62,8 +58,8 @@ import { ConnectedRouter } from "connected-react-router";
 import configureStore, { history } from "./store";
 import AnalyticsProvider from "components/Analytics/AnalyticsProvider";
 import AdminProvider from "components/Admin/AdminProvider";
-import { BYPASS_LOGIN } from "utils/data";
 import { getSession } from "utils/user";
+import { globalStateController } from "hookstate/globalStateController";
 // user management
 const store = configureStore(/ provide initial state if any /);
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
@@ -224,8 +220,6 @@ function App() {
   const [apolloClientIdToken, setApolloIdClientToken] = useState(null);
   const [apolloClientEndpoint, setApolloClientEndpoint] = useState(null);
   const [apolloClientFetchOptions, setApolloClientFetchOptions] = useState(null);
-  const [apolloClientHTTPLink, setApolloClientHTTPLink] = useState(null);
-  const [apolloClientHTTPBatchLink, setApolloClientHTTPBatchLink] = useState(null);
   //const apolloDevEndpoint = "https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA==";
   //set default to core until login is complete and we can get the tenant's endpoint
   //const apolloEndpoint = "https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA==";
@@ -244,7 +238,7 @@ function App() {
   const updateApolloClient = (endpoint, token, idToken) => {
     const session = getSession();
 
-    if (BYPASS_LOGIN && session && !token) {
+    if (globalStateController.getValue('bypassLogin') && session && !token) {
       idToken = session.accessToken;
       token = session.accessToken;
     }
@@ -300,7 +294,6 @@ function App() {
         const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions });
         const httpBatchLink = new BatchHttpLink({
           uri: endpoint,
-          headers: {},
           ...fetchOptions,
           headers: { ...fetchOptions.headers, batch: "true" },
         });
@@ -315,8 +308,6 @@ function App() {
       });
     }
   };
-
-  const userSessionIsLoaded = store.getState().session.isLoaded;
 
   return (
     <ReduxProvider store={store}>

@@ -1,8 +1,9 @@
 import moment from "moment";
 
 import { getSession } from "utils/user";
-import { BYPASS_LOGIN, wellsKeys } from "utils/data";
+import { wellsKeys } from "utils/data";
 import { tenantsCredentials } from "components/Login/AADAuthConfig";
+import { globalStateController } from "hookstate/globalStateController";
 
 export const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
 export const isDev = process.env.REACT_APP_NODE_ENV === "development";
@@ -63,7 +64,7 @@ export const getURL = () => {
 export const getHeaders = () => {
   const session = getSession();
   const headers = { "X-ZUMO-AUTH": session.authToken };
-  if (isDev || BYPASS_LOGIN) {
+  if (isDev || globalStateController.getValue('bypassLogin')) {
     headers["X-MS-TOKEN-AAD-ID-TOKEN"] = session.accessToken;
   }
   return headers;

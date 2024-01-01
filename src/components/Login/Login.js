@@ -18,9 +18,9 @@ import Api from "api";
 
 import rock from "../../rock.png";
 import BypassSignInCard from "./BypassSignInCard";
-import { BYPASS_LOGIN } from "utils/data";
 import { BYPASS_LOGIN_MUTATION } from "graphQL/useMutationBypassLogin";
 import { apolloClientEndpointDev, isDev } from "utils/helper";
+import { globalStateController } from "hookstate/globalStateController";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -95,6 +95,8 @@ const Login = (props) => {
   const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateNav] = useContext(NavigationContext);
 
+  const { globalStateValues } = globalStateController.useState(['bypassLogin'], 'globalStateValues');
+
   const localClass = localStyles();
   const [signingIn, setSigningIn] = useState(false);
   const [loadingSigInButton, setLoadingSigInButton] = useState(false);
@@ -127,7 +129,7 @@ const Login = (props) => {
     }
 
     let authTokenExpires;
-    if (BYPASS_LOGIN) authTokenExpires = sessionData.authenticationToken.expiresOn;
+    if (globalStateValues.bypassLogin) authTokenExpires = sessionData.authenticationToken.expiresOn;
     else if (authGraphQLToken?.expiresOn)
       authTokenExpires = new Date(
         authGraphQLToken.expiresOn.setDate(authGraphQLToken.expiresOn.getDate() + 14)
@@ -140,8 +142,8 @@ const Login = (props) => {
       tenantId: sessionData.tenantId,
       mongoId: mongoUser._id,
       roles: mongoUser.roles,
-      authToken: BYPASS_LOGIN ? sessionData.token : sessionData.authenticationToken,
-      accessToken: BYPASS_LOGIN ? sessionData.token : sessionData.authenticationToken,
+      authToken: globalStateValues.bypassLogin ? sessionData.token : sessionData.authenticationToken,
+      accessToken: globalStateValues.bypassLogin ? sessionData.token : sessionData.authenticationToken,
       authTokenExpires,
       tenant: {
         id: sessionData.tenantId,
@@ -173,7 +175,7 @@ const Login = (props) => {
   };
 
   useEffect(() => {
-    if (stateApp.myMSALObj && !signingIn && BYPASS_LOGIN) {
+    if (stateApp.myMSALObj && !signingIn && globalStateValues.bypassLogin) {
       setTimeout(async () => {
         try {
           const {
@@ -185,7 +187,9 @@ const Login = (props) => {
             mongoUser = loginResp.user;
           }
           if (!mongoUser) {
-            //do some error stuff
+            setSigningIn(false);
+            setLoadingSigInButton(false);
+            setLoading(false);
             return;
           }
 
@@ -196,7 +200,7 @@ const Login = (props) => {
 
           handleLogin(loginResp, userMapSettings?.settings?.settings);
         } catch (err) {
-          console.log('🚀 ~ file: Login.js:396 ~ setTimeout ~ err:', err);
+          console.log('🚀 ~ file: Login.js:203 ~ setTimeout ~ err:', err);
         }
         setSigningIn(false);
         setLoadingSigInButton(false);
@@ -297,6 +301,13 @@ const Login = (props) => {
 
   const handleAADSignIn = async (tenantName, updateTenantFlags) => {
     let tenant = tenantsCredentials(tenantName);
+
+    if (globalStateController.getValue('bypassLogin')) {
+      window.sessionStorage.setItem("tenantName", tenant.name);
+
+      return;
+    }
+
     if (tenant) {
       setSigningIn(true);
       setLoadingSigInButton(true);
@@ -395,7 +406,9 @@ const Login = (props) => {
           mongoUser = loginResp.user;
         }
         if (!mongoUser) {
-          //do some error stuff
+          setSigningIn(false);
+          setLoadingSigInButton(false);
+          setLoading(false);
           return;
         }
 
@@ -406,7 +419,7 @@ const Login = (props) => {
 
         handleLogin(loginResp, userMapSettings?.settings?.settings)
       } catch (err) {
-        console.log("🚀 ~ file: Login.js:396 ~ setTimeout ~ err:", err)
+        console.log("🚀 ~ file: Login.js:422 ~ setTimeout ~ err:", err)
         updateTenantFlags("Log in Failed");
       }
       setSigningIn(false);
@@ -630,7 +643,7 @@ const Login = (props) => {
   const renderBody = (
     <>
       <div className={localClass.cardContainer}>
-        {BYPASS_LOGIN ?
+        {globalStateValues.bypassLogin ?
           <BypassSignInCard
             ready={loadingSigInButton}
             handleAADSignIn={handleBypassAADSignIn}
