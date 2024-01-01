@@ -217,7 +217,6 @@ const BypassSignInCard = props => {
 
               <TextField
                 id="workspace-name-text"
-                label="Workspace"
                 sx={{
                   '& input': {
                     backgroundColor: '#fff',
@@ -228,7 +227,7 @@ const BypassSignInCard = props => {
                 }}
                 error={tenantFlags.error}
                 helperText={error}
-                placeholder={tenantFlags.placeholder}
+                placeholder={tenantFlags.placeholder || 'Workspace'}
                 autoFocus={tenantFlags.autoFocus}
                 onKeyDown={e => onEnterKey(e)}
                 onChange={e => setTenant(e.target.value)}
@@ -247,7 +246,6 @@ const BypassSignInCard = props => {
               />
               <TextField
                 id="email-text"
-                label="Email"
                 type="email"
                 sx={{
                   '& input': {
@@ -259,7 +257,7 @@ const BypassSignInCard = props => {
                 }}
                 error={tenantFlags.error}
                 helperText={error}
-                placeholder={tenantFlags.placeholder && 'username@m1neral.com'}
+                placeholder={(tenantFlags.placeholder && 'username@m1neral.com') || 'Email'}
                 onKeyDown={e => onEnterKey(e)}
                 onChange={e => setEmail(e.target.value)}
                 value={email}
