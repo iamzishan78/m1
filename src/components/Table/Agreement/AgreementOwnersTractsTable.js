@@ -108,7 +108,7 @@ function AgreementOwnersTractsTable(props) {
     const { metaData } = metaDataRes.getMetaData
     const interestMetaData = metaData.filter(data => data.esKey === 'custom_data.interest_type')[0]
 
-    return interestMetaData.mapping.reduce((acc, val) => ({ ...acc, [val.from]: val.to }), {})
+    return interestMetaData?.mapping?.reduce((acc, val) => ({ ...acc, [val.from]: val.to }), {})
   }, [metaDataRes])
 
   useEffect(() => {
