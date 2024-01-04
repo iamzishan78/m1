@@ -507,8 +507,7 @@ const ContactMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'notes.keyword',
 			accessorKey: 'notes',
-			header: 'Thread Notes',
-			isExportAllowed: true,
+			header: 'Comments',
 			hidden: true,
 		},
 
