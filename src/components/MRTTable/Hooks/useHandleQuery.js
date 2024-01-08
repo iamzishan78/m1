@@ -82,6 +82,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			isLoading: false,
 			isFetching: false,
 			isError: false,
+			...Controller.getGenericState(rows),
 		});
 	};
 

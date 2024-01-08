@@ -213,6 +213,7 @@ const tableESStateControllerHandler = state => ({
 			fetchMetaData,
 			onCustomKeyChange,
 			gridViewSettings,
+			density = 'comfortable',
 			...rest
 		},
 		client,
@@ -427,6 +428,7 @@ const tableESStateControllerHandler = state => ({
 			columnVisibility: formatGridView?.columnVisibility ? formatGridView.columnVisibility : columnVisibility,
 			defaultSort,
 			filterModes,
+			density,
 			columnOrdering: formatGridView?.columnOrdering ? formatGridView.columnOrdering : ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder],
 			columnPinning: formatGridView?.columnPinning ? formatGridView.columnPinning : {
 				left: [
@@ -612,7 +614,81 @@ const tableESStateControllerHandler = state => ({
 
 	setMrtTableRef: mrtTableRef => {
 		!deepEqual(state.mrtTableRef?.get({ noproxy: true }), mrtTableRef) && state.mrtTableRef?.set(mrtTableRef)
-	}
+	},
+
+	getGenericState: rows => {
+		const genericState = {};
+
+		if (!state.isGeneric.get() || rows?.length === 0) return genericState;
+
+		let keys = [];
+
+		const orderKeys = ['_id', 'id', 'name', 'flatSyncAt', '_ts'];
+		const excludedKeys = ['isDeleted', 'IsDeleted', 'sort'];
+
+		rows.forEach(row => {
+			keys = [
+				...new Set([
+					...keys,
+					...Object.keys(row).filter(key => !excludedKeys.includes(key)),
+				]),
+			];
+		});
+
+		keys = keys.sort((a, b) => {
+			const aIndex = orderKeys.indexOf(a);
+			const bIndex = orderKeys.indexOf(b);
+
+			// If both keys are in the orderKeys array, sort based on their order in orderKeys.
+			if (aIndex !== -1 && bIndex !== -1) {
+				return aIndex - bIndex;
+			}
+
+			// If only one key is in the orderKeys array, prioritize it.
+			if (aIndex !== -1) {
+				return -1;
+			}
+
+			if (bIndex !== -1) {
+				return 1;
+			}
+
+			// If neither key is in the orderKeys array, maintain the original order.
+			return 0;
+		});
+
+		const TableSchema = state.TableSchema.get({ noproxy: true });
+
+		genericState.TableSchema = [
+			...(TableSchema[0] ? [TableSchema[0]] : []),
+			...keys.map(key => ({
+				...CommonSchema.COMMON_COLUMN,
+				isSearchField: false,
+				name: key,
+				accessorKey: key,
+				header: key,
+				Cell: ({ row }) => {
+					let value = row.getValue(key);
+
+					switch (typeof value) {
+						case 'object':
+							value = JSON.stringify(value);
+							break;
+
+						case 'string':
+							break;
+
+						default:
+							break;
+					}
+
+					return <>{value}</>;
+				},
+			})),
+		];
+
+		return genericState;
+	},
 
 });
 

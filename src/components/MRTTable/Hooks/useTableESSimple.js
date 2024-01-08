@@ -53,6 +53,7 @@ const useTableESSimple = tableKey => {
 			showAlertBanner: tableStateValues?.isError,
 			showProgressBars: tableStateValues?.isFetching,
 			rowSelection: tableStateValues?.rowSelection,
+			density: tableStateValues?.density,
 		},
 		tableProps: {
 			initialState: {
