@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, TextField } from '@mui/material';
 // import JSONInput from 'react-json-editor-ajrm';
 // import locale from 'react-json-editor-ajrm/locale/en';
 
 import IndexAutoCompleteFilter from './IndexAutoCompleteFilter';
 import Result from './Result';
+import { tableGlobalController } from 'hookstate/tableController';
 
 // const placeholderJSON = {
 //   query: {
@@ -19,6 +20,10 @@ import Result from './Result';
 
 const AdvancedSearch = () => {
   const [indices, setIndices] = useState([]);
+
+  useEffect(() => {
+    tableGlobalController.reInitialized();
+  }, [indices])
 
   return (
     <Box

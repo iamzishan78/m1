@@ -221,15 +221,16 @@ const tableESStateControllerHandler = state => ({
 		if (state.TableSchema.get()) return;
 
 		let _Schema = TableSchema;
-		_Schema.unshift({
-			...CommonSchema.SELECT_SOME,
-			Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
-			Cell: ({ row }) => {
-				const tableState = tableController(tableKey).useState(['mrtTableRef']);
-				const tableStateValues = tableState.stateValues;
-				return <MRT_SelectCheckbox_OverRide row={row} selectAll={false} table={tableStateValues?.mrtTableRef} tableKey={tableKey} />
-			},
-		});
+		if (!rest.isGeneric)
+			_Schema.unshift({
+				...CommonSchema.SELECT_SOME,
+				Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
+				Cell: ({ row }) => {
+					const tableState = tableController(tableKey).useState(['mrtTableRef']);
+					const tableStateValues = tableState.stateValues;
+					return <MRT_SelectCheckbox_OverRide row={row} selectAll={false} table={tableStateValues?.mrtTableRef} tableKey={tableKey} />
+				},
+			});
 
 		if (fetchMetaData) {
 			_Schema = await fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey)
