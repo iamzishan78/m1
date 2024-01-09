@@ -438,8 +438,8 @@ const drawStateControllerHandler = state => {
 		feature.properties.id = customLayer._id;
 		feature.layer = { id: customLayer.layer };
 		let key;
-		if (customLayer.layer === 'parcel') key = 'selectedParcel';
-		if (shapeTypeLayers.includes(customLayer.layer)) key = 'selectedShape';
+		if (feature?.properties?.sdType === 'parcel') key = 'selectedParcel';
+		else key = 'selectedShape';
 		feature = { ...feature.properties, feature };
 
 		findBoundsMap([feature], window.mapRef);
@@ -477,7 +477,7 @@ const drawStateControllerHandler = state => {
 		} = drawController.getValues(['shapeEdit', 'selectedAoi', 'featureToEdit', 'currentFeature']);
 		const selectedFeature = drawController.getValue('currentFeature');
 
-		const enableEditOnly = featureToEdit?.layer?.id === 'parcel' || shapeTypeLayers.includes(featureToEdit?.layer?.id);
+		const enableEditOnly = shapeTypeLayers.includes(featureToEdit?.properties?.layerType || featureToEdit?.properties?.sdType);
 
 		const shapeEdit = _shapeEdit ?? shapeEditVal;
 		// If shape doesn't exist! AOI case
@@ -840,8 +840,7 @@ const drawStateControllerHandler = state => {
 			'currentFeature',
 		]);
 
-		const isShapeResizeMode =
-			featureToEdit?.layer?.id === 'parcel' || shapeTypeLayers.includes(featureToEdit?.layer?.id);
+		const isShapeResizeMode = shapeTypeLayers.includes(featureToEdit?.properties?.layerType || featureToEdit?.properties?.sdType);
 
 		let drawFeature = null;
 		if (isShapeResizeMode && shapeEditMode === 'rotate') {

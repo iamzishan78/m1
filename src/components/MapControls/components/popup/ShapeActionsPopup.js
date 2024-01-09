@@ -693,10 +693,12 @@ const ShapeActionsPopup = (props) => {
     }
   };
 
-  const enableEditOnly = stateApp.featureToEdit?.layer?.id === "parcel" || shapeTypeLayers.includes(stateApp.featureToEdit?.layer?.id);
+  const layerType = stateApp.featureToEdit?.properties?.layerType || stateApp.featureToEdit?.properties?.sdType;
+
+  const enableEditOnly = shapeTypeLayers.includes(layerType);
   const isAoi = stateApp.selectedAoi?.layer?.id === "interest";
   const isCreateParcelMenu = Boolean(anchorEl);
-  const isShapeResizeMode = stateApp.featureToEdit?.layer?.id === "parcel" || shapeTypeLayers.includes(stateApp.featureToEdit?.layer?.id);
+  const isShapeResizeMode = shapeTypeLayers.includes(layerType);
 
   const confirmShapeEditing = () => {
     let { featureToEdit, currentFeature } = stateApp;
