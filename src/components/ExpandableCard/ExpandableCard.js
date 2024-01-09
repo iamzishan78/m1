@@ -544,7 +544,7 @@ function ExpandableCard(props) {
           ?.shapeJson || selectedFeature;
 
       if (updatedFeature) {
-        updatedFeature = copy(updatedFeature);
+        updatedFeature = copy({ ...selectedFeature, ...updatedFeature });
         updatedFeature.id = selectedFeature.id;
       }
 
