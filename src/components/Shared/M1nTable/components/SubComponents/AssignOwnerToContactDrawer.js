@@ -93,6 +93,7 @@ export default function AssignOwnerToContactDrawer({
   showSuccessMessage,
   getContactCampaignAction,
   campaignList,
+  selectedCampaign,
   ...rest
 }) {
   const [stateApp] = React.useContext(AppContext);
@@ -164,13 +165,23 @@ export default function AssignOwnerToContactDrawer({
     }
   }, [rows]);
 
+  useEffect(() => {
+    if (selectedCampaign) {
+      setCampaigns([{ _id: selectedCampaign?._id, campaignName: selectedCampaign?.name }]);
+    }
+  }, [selectedCampaign]);
+
   const onDelete = row => {
     setRows(rows.filter(r => r._id !== row._id));
   };
 
   const onFieldToUpdateChange = field => {
     setField(field);
-    setFieldKey('');
+    if (field === "Campaign Name" && selectedCampaign) {
+      setFieldKey(selectedCampaign.name)
+    } else {
+      setFieldKey('');
+    }
   };
 
   const onAssign = () => {
@@ -246,6 +257,7 @@ export default function AssignOwnerToContactDrawer({
       if (field === "Campaign Name") {
         switch (rest.header) {
           case 'ContactTable':
+          case 'CampaignContactTable':
             const variables = {
               campaigns,
               contactIds: rows.map(row => row._id)
@@ -414,7 +426,6 @@ export default function AssignOwnerToContactDrawer({
             className={classes.maxWidth}
             onChange={(values, id) => {
               setFieldKey(values);
-              // setCampaigns(values)
               setCampaigns([...campaigns, { _id: id, campaignName: values[values.length - 1] }])
             }}
             fullWidth

@@ -186,7 +186,8 @@ function CamapignRelatedGrids({ campaign }) {
     customValue: { parentRecord: campaign?._id },
     isCampaignRefetch: true,
     showAddContactButton: false,
-    maxTableHeight: '35vh'
+    maxTableHeight: '35vh',
+    selectedCampaign: campaign,
   }), [campaign?.name]);
 
   const campaignTractOverrideMeta = useMemo(() => ({
