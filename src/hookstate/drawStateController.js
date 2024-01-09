@@ -601,9 +601,16 @@ const drawStateControllerHandler = state => {
 		if (!abstractGeo) return abstractShape;
 		const featuresList = makeGeoJSONFromStrings(abstractGeo).features;
 		if (!featuresList) return abstractShape;
-
+		const foundFeatures = featuresList.filter((feature) => {
+			try {
+				var intersection = turf.intersect(abstractShape, feature);
+				return !!intersection;
+			} catch (err) {
+				return false;
+			}
+		});
 		if (!abstractShape.properties.State && !abstractShape.properties.StateAbbreviation) {
-			const result = featuresList.reduce(
+			const result = foundFeatures.reduce(
 				(result, currentFeature) => {
 					const intersection = turf.intersect(abstractShape, currentFeature);
 					const area = turf.area(intersection);
@@ -611,7 +618,8 @@ const drawStateControllerHandler = state => {
 				},
 				{ area: 0, feature: null }
 			);
-			if (result?.feature?.properties) abstractShape.properties = result.feature.properties;
+			if (result?.feature?.properties)
+				abstractShape.properties = result.feature.properties;
 		}
 		return abstractShape;
 	};

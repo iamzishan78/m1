@@ -391,8 +391,12 @@ const ShapeActionsPopup = (props) => {
     if (!abstractShape.properties.State && !abstractShape.properties.StateAbbreviation) {
       const featuresList = stateApp.map?.getSource("abstract_geo_source")._data.features;
       const foundFeatures = featuresList.filter((feature) => {
-        var intersection = turf.intersect(abstractShape, feature);
-        return !!intersection;
+        try {
+          var intersection = turf.intersect(abstractShape, feature);
+          return !!intersection;
+        } catch (err) {
+          return false;
+        }
       });
       const result = foundFeatures.reduce(
         function (result, currentFeature) {
