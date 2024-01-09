@@ -60,6 +60,8 @@ const ContactMeta = {
 			...CommonSchema.HIDDEN,
 			name: '_id',
 			accessorKey: '_id',
+			header: "M1neral Contact System ID",
+			isExportAllowed: true,
 		},
 
 		{
@@ -142,6 +144,7 @@ const ContactMeta = {
 			name: 'firstName.keyword',
 			accessorKey: 'firstName',
 			header: 'First Name',
+			isExportAllowed: true,
 			hidden: true,
 		},
 
@@ -150,6 +153,7 @@ const ContactMeta = {
 			name: 'middleName.keyword',
 			accessorKey: 'middleName',
 			header: 'Middle Name',
+			isExportAllowed: true,
 			hidden: true,
 		},
 
@@ -158,6 +162,7 @@ const ContactMeta = {
 			name: 'lastName.keyword',
 			accessorKey: 'lastName',
 			header: 'Last Name',
+			isExportAllowed: true,
 			hidden: true,
 		},
 
@@ -221,6 +226,7 @@ const ContactMeta = {
 			name: 'city.keyword',
 			accessorKey: 'city',
 			header: 'City',
+			isExportAllowed: true,
 			hidden: true,
 		},
 
@@ -229,6 +235,7 @@ const ContactMeta = {
 			name: 'state.keyword',
 			accessorKey: 'state',
 			header: 'State',
+			isExportAllowed: true,
 			hidden: true,
 		},
 
@@ -237,6 +244,7 @@ const ContactMeta = {
 			name: 'zip.keyword',
 			accessorKey: 'zip',
 			header: 'Zip',
+			isExportAllowed: true,
 			hidden: true,
 		},
 
@@ -408,6 +416,31 @@ const ContactMeta = {
 			name: 'age.keyword',
 			accessorKey: 'age',
 			header: 'Age',
+			isExportAllowed: true,
+			hidden: true,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'bankruptcy.keyword',
+			accessorKey: 'bankruptcy',
+			header: 'Bankruptcy Flag ',
+			isExportAllowed: true,
+			hidden: true,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'deceased.keyword',
+			accessorKey: 'deceased',
+			header: 'Deceased Flag',
+			isExportAllowed: true,
+			hidden: true,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'lien.keyword',
+			accessorKey: 'lien',
+			header: 'Lien Flag',
+			isExportAllowed: true,
 			hidden: true,
 		},
 
@@ -454,6 +487,7 @@ const ContactMeta = {
 			name: 'territory.keyword',
 			accessorKey: 'territory',
 			header: 'Territory',
+			isExportAllowed: true,
 			hidden: true,
 		},
 
@@ -462,6 +496,7 @@ const ContactMeta = {
 			name: 'campaignName.keyword',
 			accessorKey: 'campaignName',
 			header: 'Campaign Name',
+			isExportAllowed: true,
 			hidden: true,
 			Cell: ({ row }) => {
 				return <CampaignNameField value={row?.original?.campaignName?.[0]} fullWidth disabled />
@@ -497,6 +532,7 @@ const ContactMeta = {
 			name: 'leadSource.keyword',
 			accessorKey: 'leadSource',
 			header: 'Lead Source',
+			isExportAllowed: true,
 			hidden: true,
 		},
 
@@ -506,6 +542,7 @@ const ContactMeta = {
 			accessorFn: row => row?.interestSummary?.wellInterestCount,
 			id: 'interestSummary.wellInterestCount',
 			header: 'Well Interest Count',
+			isExportAllowed: true,
 			hidden: true,
 			isSearchField: false,
 		},
