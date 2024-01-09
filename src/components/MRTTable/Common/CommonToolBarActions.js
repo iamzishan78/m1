@@ -76,7 +76,8 @@ export const openSideDialog = async (
 		client,
 		table,
 		tableKey,
-		props = {}
+		props = {},
+		selectedCampaign,
 	}
 ) => {
 	let showRows = selectedRows;
@@ -105,7 +106,8 @@ export const openSideDialog = async (
 			type,
 			selectedRows: showRows,
 			tableKey,
-			...props
+			...props,
+			selectedCampaign,
 		},
 	});
 
@@ -127,7 +129,8 @@ export function BulkUpdate({
 	total,
 	client,
 	table,
-	tableKey
+	tableKey,
+	selectedCampaign,
 }) {
 	return (
 		<Button
@@ -149,7 +152,8 @@ export function BulkUpdate({
 						total,
 						client,
 						table,
-						tableKey
+						tableKey,
+						selectedCampaign
 					}
 				)
 			}
