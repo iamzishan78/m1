@@ -12,7 +12,6 @@ import CloseSharp from '@material-ui/icons/CloseSharp';
 import KeyboardTabIcon from '@material-ui/icons/KeyboardTab';
 import Typography from "@material-ui/core/Typography";
 import RightDialog from "../../../../ContactDetailCard/components/RightDialog";
-import { AppContext } from "AppContext";
 import { ASSIGN_OWNER_TO_CONTACT } from "graphQL/useMutationAssignOwnerToContact";
 import ContactAutoComplete from "components/Shared/ContactAutoComplete";
 import FieldBulkAutoComplete from "components/Shared/FieldBulkAutoComplete";
@@ -30,6 +29,7 @@ import CampaignNameField from "components/ContactDetailCard/components/FieldCont
 import { resetESTableToggle } from "hookstate";
 import { Modals } from 'styles/Modal';
 import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'hookstate/globalStateController';
 
 const styles = () => ({
   topHeading: { fontWeight: 'bold' },
@@ -96,7 +96,10 @@ export default function AssignOwnerToContactDrawer({
   selectedCampaign,
   ...rest
 }) {
-  const [stateApp] = React.useContext(AppContext);
+
+  const { user } = globalStateController.useState(['user']);
+  const getUser = user.get({ noproxy: true });
+
   const classes = useStyles();
   const modalClass = Modals();
   const [contactOwner, setContactOwner] = useState('');
@@ -192,7 +195,7 @@ export default function AssignOwnerToContactDrawer({
 
     if (field === 'Contact Owner') {
       assignOwnerToContact({
-        variables: { contactIds, contactOwner, userId: stateApp.user.mongoId },
+        variables: { contactIds, contactOwner, userId: getUser?._id },
         refetchQueries: ["getESContacts"],
         awaitRefetchQueries: true
       }).then(
@@ -223,7 +226,7 @@ export default function AssignOwnerToContactDrawer({
       updateBulkTags({
         variables: {
           tags: fieldKey,
-          user: stateApp.user.mongoId,
+          user: getUser?._id,
           contactIds,
           objectType: 'contact',
         },
@@ -292,8 +295,8 @@ export default function AssignOwnerToContactDrawer({
               shapeId: row.customLayerId,
               campaignName: campaigns.map(campaign => campaign.campaignName),
               relatedObject: row.ownerEntity,
-              createBy: stateApp.user.mongoId,
-              lastUpdateBy: stateApp.user.mongoId,
+              createBy: getUser?._id,
+              lastUpdateBy: getUser?._id,
             }));
 
             updateParcelOwners({
@@ -328,15 +331,15 @@ export default function AssignOwnerToContactDrawer({
               shapeId: row.customLayerId,
               campaignName: campaigns.map(campaign => campaign.campaignName),
               relatedObject: row.ownerEntity,
-              createBy: stateApp.user.mongoId,
-              lastUpdateBy: stateApp.user.mongoId,
+              createBy: getUser?._id,
+              lastUpdateBy: getUser?._id,
             }));
 
             updateShapeOwners({
               variables: {
                 shapeType: 'Unit',
                 shapeOwners: shapeOwnersToUpdate,
-                userId: stateApp.user.mongoId,
+                userId: getUser?._id,
               },
               refetchQueries: ["getESPaginatedList", "getESFilterList", "getCustomLayer"],
               awaitRefetchQueries: true,
@@ -368,7 +371,7 @@ export default function AssignOwnerToContactDrawer({
             variables: {
               contactIds: contactIds,
               keysToUpdate: fieldToUpdate,
-              lastUpdateBy: stateApp.user.mongoId,
+              lastUpdateBy: getUser?._id,
               ignoreResponse: false,
             },
             refetchQueries: ["getESContacts"],
