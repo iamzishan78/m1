@@ -68,7 +68,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     },
   });
 
-  const [getESAggsGrossAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsGrossAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
@@ -85,7 +85,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     },
   });
 
-  const [getESAggsNetAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsNetAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
@@ -102,7 +102,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     },
   });
 
-  const [getESAggsNetRoyaltyAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsNetRoyaltyAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
@@ -163,7 +163,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : "",
-        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters.slice(1)],
+        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters],
         aggs: {
           grossAcresSum: {
             scripted_metric: {
@@ -198,7 +198,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : "",
-        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters.slice(1)],
+        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters],
         aggs: {
           netAcresSum: {
             sum: {
@@ -212,7 +212,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : "",
-        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters.slice(1)],
+        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters],
         aggs: {
           netRoyaltyAcresSum: {
             sum: {
