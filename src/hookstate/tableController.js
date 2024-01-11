@@ -658,35 +658,35 @@ const tableESStateControllerHandler = state => ({
 			return 0;
 		});
 
-		const TableSchema = state.TableSchema.get({ noproxy: true });
+		genericState.TableSchema = keys.map(key => ({
+			size: 250,
+			isPinned: false,
+			hidden: false,
+			filter: false,
+			isSearchField: false,
+			enableSorting: false,
+			type: 'string',
+			name: key,
+			accessorKey: key,
+			header: key,
+			Cell: ({ row }) => {
+				let value = row.getValue(key);
 
-		genericState.TableSchema = [
-			...(TableSchema[0] ? [TableSchema[0]] : []),
-			...keys.map(key => ({
-				...CommonSchema.COMMON_COLUMN,
-				isSearchField: false,
-				name: key,
-				accessorKey: key,
-				header: key,
-				Cell: ({ row }) => {
-					let value = row.getValue(key);
+				switch (typeof value) {
+					case 'object':
+						value = JSON.stringify(value);
+						break;
 
-					switch (typeof value) {
-						case 'object':
-							value = JSON.stringify(value);
-							break;
+					case 'string':
+						break;
 
-						case 'string':
-							break;
+					default:
+						break;
+				}
 
-						default:
-							break;
-					}
-
-					return <>{value}</>;
-				},
-			})),
-		];
+				return <>{value}</>;
+			},
+		}));
 
 		return genericState;
 	},
