@@ -33,12 +33,18 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			}
 			: tableState?.defaultSort?.get({ noproxy: true });
 
+		let globalFilter = tableStateValues.globalFilter;
+
+		if (tableStateValues.isGeneric)
+			globalFilter = null;
+
 		const variables = {
 			index: tableStateValues.esIndex,
 			pagination: { ...pagination, pageIndex: undefined, pageSize: undefined },
 			search: {
-				query: tableStateValues.globalFilter ? `*${tableStateValues.globalFilter}*` : '*',
+				query: globalFilter ? `*${globalFilter}*` : '*',
 				fields: tableMeta.searchFields,
+				advanceSearch: tableStateValues.advanceSearch,
 			},
 			sort,
 			filters: [...tableMeta.defaultFilters, ...tableMeta.filters],
@@ -165,6 +171,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		tableState.grouping,
 		tableState.globalFilter,
 		tableState.defaultFilters,
+		tableState.advanceSearch,
 		refetch,
 	]);
 

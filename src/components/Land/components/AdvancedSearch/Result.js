@@ -1,8 +1,48 @@
 import { Typography } from '@mui/material';
 import MRTTable from 'components/MRTTable';
-import React from 'react';
+import { tableController } from 'hookstate/tableController';
+import { debounce } from 'lodash';
+import React, { useEffect } from 'react';
 
-const Result = ({ indices }) => {
+const tableKey = 'GenericTable';
+
+const handleChange = debounce(value => {
+  if (!value || value === '') {
+    tableController(tableKey).setAdvanceSearch([], { globalFilter: '' });
+    return;
+  }
+
+  tableController(tableKey).setAdvanceSearch(
+    [
+      {
+        bool: {
+          should: [
+            {
+              match: {
+                _all: value,
+              },
+            },
+          ],
+        },
+      },
+    ],
+    { globalFilter: value }
+  );
+}, 1000);
+
+const Result = ({ indices, search, setSearch }) => {
+  const { globalFilter, stateValues } = tableController(tableKey).useState([
+    'globalFilter',
+  ]);
+
+  useEffect(() => {
+    handleChange(search);
+  }, [search]);
+
+  useEffect(() => {
+    setSearch(stateValues.globalFilter);
+  }, [globalFilter]);
+
   if (!indices || indices.length === 0)
     return (
       <Typography align="center" variant="h5">
@@ -12,7 +52,7 @@ const Result = ({ indices }) => {
 
   return (
     <MRTTable
-      name="GenericTable"
+      name={'GenericTable'}
       overrideMeta={{
         esIndex: indices.join(','),
       }}

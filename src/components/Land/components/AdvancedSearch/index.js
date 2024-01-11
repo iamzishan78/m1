@@ -1,29 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Box, TextField } from '@mui/material';
-// import JSONInput from 'react-json-editor-ajrm';
-// import locale from 'react-json-editor-ajrm/locale/en';
 
 import IndexAutoCompleteFilter from './IndexAutoCompleteFilter';
 import Result from './Result';
 import { tableGlobalController } from 'hookstate/tableController';
 
-// const placeholderJSON = {
-//   query: {
-//     query_string: {
-//       query: '*',
-//     },
-//   },
-//   size: 10,
-//   from: 0,
-//   sort: [],
-// };
-
 const AdvancedSearch = () => {
   const [indices, setIndices] = useState([]);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     tableGlobalController.reInitialized();
-  }, [indices])
+  }, [indices]);
 
   return (
     <Box
@@ -43,7 +31,8 @@ const AdvancedSearch = () => {
             id="search"
             label="Search"
             variant="standard"
-            defaultValue="*"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
           />
 
           <IndexAutoCompleteFilter
@@ -53,22 +42,14 @@ const AdvancedSearch = () => {
             setValue={setIndices}
           />
         </Box>
-
-        <Box>
-          {/* <JSONInput
-            id="a_unique_id"
-            placeholder={placeholderJSON}
-            // colors={darktheme}
-            locale={locale}
-            height="550px"
-          /> */}
-        </Box>
       </Box>
 
-      <Box sx={{
-        margin: '5rem'
-      }}>
-        <Result indices={indices} />
+      <Box
+        sx={{
+          margin: '5rem',
+        }}
+      >
+        <Result indices={indices} search={search} setSearch={setSearch} />
       </Box>
     </Box>
   );

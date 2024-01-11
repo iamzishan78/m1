@@ -214,6 +214,7 @@ const tableESStateControllerHandler = state => ({
 			onCustomKeyChange,
 			gridViewSettings,
 			density = 'comfortable',
+			advanceSearch = [],
 			...rest
 		},
 		client,
@@ -430,6 +431,7 @@ const tableESStateControllerHandler = state => ({
 			defaultSort,
 			filterModes,
 			density,
+			advanceSearch,
 			columnOrdering: formatGridView?.columnOrdering ? formatGridView.columnOrdering : ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder],
 			columnPinning: formatGridView?.columnPinning ? formatGridView.columnPinning : {
 				left: [
@@ -617,6 +619,15 @@ const tableESStateControllerHandler = state => ({
 		!deepEqual(state.mrtTableRef?.get({ noproxy: true }), mrtTableRef) && state.mrtTableRef?.set(mrtTableRef)
 	},
 
+	setAdvanceSearch: (value, otherState) => {
+		if (!isEqual(value, state.advanceSearch.get({ noproxy: true }))) {
+			state.merge({
+				advanceSearch: value,
+				...(otherState && { globalFilter: otherState.globalFilter || '' }),
+			})
+		}
+	},
+
 	getGenericState: rows => {
 		const genericState = {};
 
@@ -669,7 +680,7 @@ const tableESStateControllerHandler = state => ({
 			name: key,
 			accessorKey: key,
 			header: key,
-			Cell: ({ row }) => {
+			Cell: ({ row, renderedCellValue }) => {
 				let value = row.getValue(key);
 
 				switch (typeof value) {
@@ -678,6 +689,7 @@ const tableESStateControllerHandler = state => ({
 						break;
 
 					case 'string':
+						value = renderedCellValue
 						break;
 
 					default:
