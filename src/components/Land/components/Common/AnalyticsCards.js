@@ -228,9 +228,10 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     if (totalCount > 0) {
       if (parent === "Agreements") {
         agreementAnalytics();
-      } else if (parent === "Tracts") {
-        tractsAnalytics();
       }
+    }
+    if (parent === "Tracts") {
+      tractsAnalytics();
     }
   };
 
