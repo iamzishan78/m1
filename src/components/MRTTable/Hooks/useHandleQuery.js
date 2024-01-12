@@ -28,7 +28,18 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 
 		const sort = tableStateValues.sorting[0]
 			? {
-				field: TableSchema.find(val => (val.accessorKey || val.id) === tableStateValues.sorting[0].id)?.name,
+				field: (() => {
+					const sortingId = tableStateValues.sorting[0].id;
+					const matchingSchema = TableSchema.find(
+						val => (val.accessorKey || val.id) === sortingId
+					);
+
+					if (matchingSchema?.isComposite) {
+						return matchingSchema.name.split(',')[0];
+					}
+
+					return matchingSchema?.name;
+				})(),
 				order: tableStateValues.sorting[0].desc ? 'desc' : 'asc',
 			}
 			: tableState?.defaultSort?.get({ noproxy: true });
