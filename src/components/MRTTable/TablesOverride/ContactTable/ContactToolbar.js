@@ -49,6 +49,7 @@ function ContactToolbar({ table, tableKey }) {
 		'rowSelection',
 		'tableStateValues',
 		'defaultFilters',
+		'selectedCampaign',
 	]);
 	const tableStateValues = tableState.stateValues;
 	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
@@ -120,7 +121,8 @@ function ContactToolbar({ table, tableKey }) {
 			total: tableStateValues?.data.total,
 			client,
 			table,
-			tableKey
+			tableKey,
+			selectedCampaign: tableStateValues?.selectedCampaign
 		};
 	};
 
