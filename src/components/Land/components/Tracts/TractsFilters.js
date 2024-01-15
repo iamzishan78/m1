@@ -107,7 +107,7 @@ const TractsFilters = ({ selectedTractTab }) => {
 
             dispatch(updateUserGridViewSettingAction.STARTED({
                 userGridViewSetting: {
-                    module: GridViewModule?.module,
+                    module: moduleName,
                     gridView: GridViewModule._id,
                     gridViewPatch: {
                         filters: filters,
