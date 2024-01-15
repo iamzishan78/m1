@@ -47,8 +47,7 @@ const fieldsList = (activeUser) => {
     },
     {
       label: "Agreement Status",
-      type: "select",
-      options: agreementStatusOptions,
+      type: "autocomplete",
       key: "agreementStatus",
     },
     {
