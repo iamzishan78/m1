@@ -438,8 +438,8 @@ const drawStateControllerHandler = state => {
 		feature.properties.id = customLayer._id;
 		feature.layer = { id: customLayer.layer };
 		let key;
-		if (customLayer.layer === 'parcel') key = 'selectedParcel';
-		if (shapeTypeLayers.includes(customLayer.layer)) key = 'selectedShape';
+		if (feature?.properties?.sdType === 'parcel') key = 'selectedParcel';
+		else key = 'selectedShape';
 		feature = { ...feature.properties, feature };
 
 		findBoundsMap([feature], window.mapRef);
@@ -477,7 +477,7 @@ const drawStateControllerHandler = state => {
 		} = drawController.getValues(['shapeEdit', 'selectedAoi', 'featureToEdit', 'currentFeature']);
 		const selectedFeature = drawController.getValue('currentFeature');
 
-		const enableEditOnly = featureToEdit?.layer?.id === 'parcel' || shapeTypeLayers.includes(featureToEdit?.layer?.id);
+		const enableEditOnly = shapeTypeLayers.includes(featureToEdit?.properties?.layerType || featureToEdit?.properties?.sdType);
 
 		const shapeEdit = _shapeEdit ?? shapeEditVal;
 		// If shape doesn't exist! AOI case
@@ -601,9 +601,16 @@ const drawStateControllerHandler = state => {
 		if (!abstractGeo) return abstractShape;
 		const featuresList = makeGeoJSONFromStrings(abstractGeo).features;
 		if (!featuresList) return abstractShape;
-
+		const foundFeatures = featuresList.filter((feature) => {
+			try {
+				var intersection = turf.intersect(abstractShape, feature);
+				return !!intersection;
+			} catch (err) {
+				return false;
+			}
+		});
 		if (!abstractShape.properties.State && !abstractShape.properties.StateAbbreviation) {
-			const result = featuresList.reduce(
+			const result = foundFeatures.reduce(
 				(result, currentFeature) => {
 					const intersection = turf.intersect(abstractShape, currentFeature);
 					const area = turf.area(intersection);
@@ -611,7 +618,8 @@ const drawStateControllerHandler = state => {
 				},
 				{ area: 0, feature: null }
 			);
-			if (result?.feature?.properties) abstractShape.properties = result.feature.properties;
+			if (result?.feature?.properties)
+				abstractShape.properties = result.feature.properties;
 		}
 		return abstractShape;
 	};
@@ -840,8 +848,7 @@ const drawStateControllerHandler = state => {
 			'currentFeature',
 		]);
 
-		const isShapeResizeMode =
-			featureToEdit?.layer?.id === 'parcel' || shapeTypeLayers.includes(featureToEdit?.layer?.id);
+		const isShapeResizeMode = shapeTypeLayers.includes(featureToEdit?.properties?.layerType || featureToEdit?.properties?.sdType);
 
 		let drawFeature = null;
 		if (isShapeResizeMode && shapeEditMode === 'rotate') {

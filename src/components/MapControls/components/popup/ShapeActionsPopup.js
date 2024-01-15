@@ -391,8 +391,12 @@ const ShapeActionsPopup = (props) => {
     if (!abstractShape.properties.State && !abstractShape.properties.StateAbbreviation) {
       const featuresList = stateApp.map?.getSource("abstract_geo_source")._data.features;
       const foundFeatures = featuresList.filter((feature) => {
-        var intersection = turf.intersect(abstractShape, feature);
-        return !!intersection;
+        try {
+          var intersection = turf.intersect(abstractShape, feature);
+          return !!intersection;
+        } catch (err) {
+          return false;
+        }
       });
       const result = foundFeatures.reduce(
         function (result, currentFeature) {
@@ -693,10 +697,12 @@ const ShapeActionsPopup = (props) => {
     }
   };
 
-  const enableEditOnly = stateApp.featureToEdit?.layer?.id === "parcel" || shapeTypeLayers.includes(stateApp.featureToEdit?.layer?.id);
+  const layerType = stateApp.featureToEdit?.properties?.layerType || stateApp.featureToEdit?.properties?.sdType;
+
+  const enableEditOnly = shapeTypeLayers.includes(layerType);
   const isAoi = stateApp.selectedAoi?.layer?.id === "interest";
   const isCreateParcelMenu = Boolean(anchorEl);
-  const isShapeResizeMode = stateApp.featureToEdit?.layer?.id === "parcel" || shapeTypeLayers.includes(stateApp.featureToEdit?.layer?.id);
+  const isShapeResizeMode = shapeTypeLayers.includes(layerType);
 
   const confirmShapeEditing = () => {
     let { featureToEdit, currentFeature } = stateApp;
