@@ -68,7 +68,7 @@ function AllDialogs(props) {
 			)}
 			{type === "comments" && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
-					<CommentDialog {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck}/>
+					<CommentDialog {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck} />
 				</Dialog>
 			)}
 
@@ -81,6 +81,7 @@ function AllDialogs(props) {
 					rows={rest?.selectedRows}
 					setSelectedRow={updateRows}
 					setRows={updateRows}
+					selectedCampaign={rest?.selectedCampaign}
 				/>
 			)}
 
