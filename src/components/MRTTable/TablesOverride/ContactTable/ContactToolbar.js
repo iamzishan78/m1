@@ -50,7 +50,6 @@ function ContactToolbar({ table, tableKey }) {
 		'tableStateValues',
 		'defaultFilters',
 		'customProps',
-		'selectedCampaign',
 	]);
 	const tableStateValues = tableState.stateValues;
 	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
@@ -123,7 +122,7 @@ function ContactToolbar({ table, tableKey }) {
 			client,
 			table,
 			tableKey,
-			selectedCampaign: tableStateValues?.selectedCampaign
+			selectedCampaign: tableStateValues.customProps?.campaign,
 		};
 	};
 
@@ -135,7 +134,7 @@ function ContactToolbar({ table, tableKey }) {
 			<>
 				{(!isSomethingSelected && tableStateValues?.showAddContactButton) && <ButtonDropDown options={options} />}
 
-				<ViewContactData isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} gg={sidePropsPass} />
+				<ViewContactData isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 
 				<BulkUpdate isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 
