@@ -81,6 +81,24 @@ const UnitInterestMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.entityDetail.currentAddress.keyword',
+			accessorKey: 'contact.entityDetail.currentAddress',
+			header: 'Current Address',
+			isExportAllowed: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.entityDetail.primaryAddress.keyword',
+			accessorKey: 'contact.entityDetail.primaryAddress',
+			header: 'Primary Address',
+			isExportAllowed: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.uName.keyword',
 			accessorKey: 'shape.shapeJson.properties.uName',
 			header: 'Unit Name',

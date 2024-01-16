@@ -185,6 +185,10 @@ function CamapignRelatedGrids({ campaign }) {
     },
     customProps: {
       campaign,
+      exportValues: {
+        "Campaign  System ID": campaign?._id,
+        "Campaign Name": campaign?.name,
+      }
     },
     customValue: { parentRecord: campaign?._id },
     isCampaignRefetch: true,
