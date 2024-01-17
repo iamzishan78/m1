@@ -4,7 +4,7 @@ import _, { get, isEqual, isEmpty } from 'lodash';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
 import { copy, deepEqual } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
-import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRTTable/utils/data';
+import { stringFilterOptions, numberFilterOptions, dateFilterOptions, customFilterOptions } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
@@ -226,6 +226,7 @@ const tableESStateControllerHandler = state => ({
 			Cell: ({ row }) => {
 				const tableState = tableController(tableKey).useState(['mrtTableRef']);
 				const tableStateValues = tableState.stateValues;
+				// eslint-disable-next-line react/jsx-pascal-case
 				return <MRT_SelectCheckbox_OverRide row={row} selectAll={false} table={tableStateValues?.mrtTableRef} tableKey={tableKey} />
 			},
 		});
@@ -304,13 +305,24 @@ const tableESStateControllerHandler = state => ({
 			}
 			if (schemaColumn.filter) {
 				let options;
-				if (schemaColumn.type === 'string') {
-					options = stringFilterOptions;
-				} else if (schemaColumn.type === 'number') {
-					options = numberFilterOptions;
-				} else if (schemaColumn.type === 'date') {
-					options = dateFilterOptions;
+				switch (schemaColumn.type) {
+					case 'string':
+						options = stringFilterOptions;
+						break;
+
+					case 'number':
+						options = numberFilterOptions;
+						break;
+
+					case 'date':
+						options = dateFilterOptions;
+						break;
+
+					default:
+						options = customFilterOptions;
+						break;
 				}
+
 				if (schemaColumn.isComposite)
 					options = options.filter((option) => option !== 'multiselect')
 

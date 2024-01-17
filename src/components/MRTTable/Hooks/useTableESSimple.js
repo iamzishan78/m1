@@ -173,6 +173,7 @@ const useTableESSimple = tableKey => {
 							id: idValue,
 							value: item.value,
 							type: item?.type,
+							columnType: column.type,
 						};
 						result.push(newItem);
 					});
@@ -184,9 +185,9 @@ const useTableESSimple = tableKey => {
 					const { mode, isKeyword } = tableState?.filterModes?.get({ noproxy: true })?.[filter.id] || {};
 
 					let { value } = filter;
-					const { type } = filter;
-					const { oRFilter } = filter;
-					if (mode && typeof filter.value === 'string') value = isKeyword ? filter.value : +filter.value || 0;
+					const { type, oRFilter, columnType } = filter;
+					if (mode && typeof filter.value === 'string' && columnType !== 'date')
+						value = isKeyword ? filter.value : +filter.value || 0;
 					if (mode && tableESSimpleFilterModeOtions.inclusive.includes(mode))
 						value = filter.value.map(value => +value || 0);
 
@@ -200,6 +201,7 @@ const useTableESSimple = tableKey => {
 							type: 'advanced',
 							searchType: mode,
 							isKeyword,
+							columnType,
 						}),
 					});
 				});

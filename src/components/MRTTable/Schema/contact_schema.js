@@ -608,10 +608,9 @@ const ContactMeta = {
 			name: 'lastUpdateAt',
 			accessorKey: 'lastUpdateAt',
 			header: 'Last Updated',
-			filter: false,
-			enableColumnActions: false,
 			isSearchField: false,
-			Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue, false)}</>,
+			type: 'date',
+			Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue)}</>,
 		},
 
 		{
