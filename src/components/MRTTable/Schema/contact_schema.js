@@ -103,7 +103,7 @@ const ContactMeta = {
 						>
 							<ColumnWithLink
 								value={renderedCellValue}
-								link={`/contact/details/${row.getValue('_id')}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
+								link={`/contact/details/${row.getValue('_id')}`}
 								onClick={e => {
 									e.stopPropagation();
 								}}
@@ -608,10 +608,9 @@ const ContactMeta = {
 			name: 'lastUpdateAt',
 			accessorKey: 'lastUpdateAt',
 			header: 'Last Updated',
-			filter: false,
-			enableColumnActions: false,
 			isSearchField: false,
-			Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue, false)}</>,
+			type: 'date',
+			Cell: ({ row }) => <>{formatDate(row.getValue('lastUpdateAt'))}</>,
 		},
 
 		{
