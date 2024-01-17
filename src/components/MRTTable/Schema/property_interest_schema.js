@@ -90,7 +90,7 @@ const PropertyIntrestMeta = {
 			accessorKey: 'effectiveDate',
 			header: 'Effective Date',
 			type: 'date',
-			Cell: ({ row }) => <>{formatDate(row.getValue('effectiveDate'), false)}</>,
+			Cell: ({ row }) => <>{formatDate(row.getValue('effectiveDate'))}</>,
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,

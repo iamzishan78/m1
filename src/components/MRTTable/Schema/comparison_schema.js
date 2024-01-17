@@ -143,7 +143,7 @@ const ComparisonMeta = {
 			header: 'Effective Date',
 			type: 'date',
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.property?.interest?.effectiveDate, false)}</>
+				return <>{formatDate(row?.original?.property?.interest?.effectiveDate)}</>
 			},
 		},
 
@@ -155,7 +155,7 @@ const ComparisonMeta = {
 			header: 'End Date',
 			type: 'date',
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.property?.interest?.endDate, false)}</>
+				return <>{formatDate(row?.original?.property?.interest?.endDate)}</>
 			},
 		},
 
@@ -207,7 +207,7 @@ const ComparisonMeta = {
 			header: 'Check Date',
 			type: 'date',
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.check?.checkDate, false)}</>
+				return <>{formatDate(row?.original?.check?.checkDate)}</>
 			},
 		},
 
@@ -235,7 +235,7 @@ const ComparisonMeta = {
 			header: 'Deposit Date',
 			type: 'date',
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.check?.depositDate, false)}</>
+				return <>{formatDate(row?.original?.check?.depositDate)}</>
 			},
 		},
 
@@ -296,7 +296,7 @@ const ComparisonMeta = {
 			type: 'date',
 			isExternalFilter: true,
 			Cell: ({ row }) => {
-				return <>{formatDate(row?.original?.date, false)}</>
+				return <>{formatDate(row?.original?.date)}</>
 			},
 		},
 

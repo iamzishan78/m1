@@ -162,7 +162,7 @@ const CampaignMeta = {
       isSearchField: false,
       Cell: ({ row }) => {
         const createdAt = row.getValue('createdAt');
-        return <>{formatDate(createdAt, false)}</>
+        return <>{formatDate(createdAt)}</>
       },
     },
     {

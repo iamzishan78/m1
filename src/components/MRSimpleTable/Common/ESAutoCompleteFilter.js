@@ -83,7 +83,7 @@ function ESAutoCompleteFilter({
 
 		if (type === 'date') {
 			options = hits.map(({ key_as_string }) => ({
-				label: formatDate(key_as_string, false),
+				label: formatDate(key_as_string),
 				value: key_as_string,
 			}));
 
@@ -122,13 +122,13 @@ function ESAutoCompleteFilter({
 		(typeof filterValue === 'string' ? filterValue : filterValue.length)
 	) {
 		if (typeof filterValue === 'string') {
-			filterValue = formatDate(filterValue, false);
+			filterValue = formatDate(filterValue);
 		} else if (typeof filterValue === 'object' && !Array.isArray(filterValue)) {
-			const formattedGte = formatDate(filterValue?.gte, false);
-			const formattedLte = formatDate(filterValue?.lte, false);
+			const formattedGte = formatDate(filterValue?.gte);
+			const formattedLte = formatDate(filterValue?.lte);
 			filterValue = `${formattedGte} to ${formattedLte}`;
 		} else if (Array.isArray(filterValue)) {
-			filterValue = filterValue.map(val => formatDate(val, false));
+			filterValue = filterValue.map(val => formatDate(val));
 		}
 	}
 	const id = Array.isArray(field) ? field.join(' ') : field;
