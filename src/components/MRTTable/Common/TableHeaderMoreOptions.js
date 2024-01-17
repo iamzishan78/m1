@@ -48,12 +48,14 @@ function TableHeaderMoreOptions({ tableKey }) {
     }
     tableController(tableKey).setColumnCheck(newstate)
 
-    if (number !== tableStateValues?.data?.total)
+    if (number !== tableStateValues?.data?.total) {
       tableController(tableKey).updateState({
         isSubSetSelect: {
           total: number
         }
       });
+      tableController(tableKey).setIsAllRowsSelected(false);
+    }
     handleClose()
   }
 
