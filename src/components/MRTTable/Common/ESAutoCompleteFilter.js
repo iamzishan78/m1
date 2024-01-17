@@ -131,7 +131,7 @@ function ESAutoCompleteFilter({
 					inputProps={{
 						...params.inputProps,
 						value: filterSelectOptions
-							? filterSelectOptions.find(op => op.value === params.inputProps.value)?.label
+							? filterSelectOptions.find(op => op.value === params.inputProps.value)?.label || ''
 							: params?.inputProps?.value,
 					}}
 					placeholder={`Filter by ${label}`}
