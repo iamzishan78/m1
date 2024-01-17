@@ -103,7 +103,7 @@ const ContactMeta = {
 						>
 							<ColumnWithLink
 								value={renderedCellValue}
-								link={`/contact/details/${row.getValue('_id')}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
+								link={`/contact/details/${row.getValue('_id')}`}
 								onClick={e => {
 									e.stopPropagation();
 								}}
