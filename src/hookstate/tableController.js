@@ -2,9 +2,9 @@ import React from 'react';
 import { hookstate } from '@hookstate/core';
 import _, { get, isEqual, isEmpty } from 'lodash';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
-import { copy, deepEqual } from 'components/Shared/functions';
+import { copy, deepEqual, formatDate, getStartAndEndOfDay } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
-import { stringFilterOptions, numberFilterOptions, dateFilterOptions } from 'components/MRTTable/utils/data';
+import { stringFilterOptions, numberFilterOptions, dateFilterOptions, customFilterOptions } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
@@ -17,6 +17,17 @@ import { gridViewStateController } from 'components/MRTTable/Common/GridView/Gri
 import { formatGridViewToMRT } from "components/MRTTable/utils/helper"
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
+
+
+function isDateFormat(inputString) {
+	// Regular expression for MM/DD/YYYY format
+	const mmddyyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d\d$/;
+	const mmddyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d\d$/;
+
+	// Check if the inputString matches the date format
+	return mmddyyy.test(inputString) || mmddyy.test(inputString);
+}
+
 
 const initialState = {
 	defaultFilters: [],
@@ -226,6 +237,7 @@ const tableESStateControllerHandler = state => ({
 			Cell: ({ row }) => {
 				const tableState = tableController(tableKey).useState(['mrtTableRef']);
 				const tableStateValues = tableState.stateValues;
+				// eslint-disable-next-line react/jsx-pascal-case
 				return <MRT_SelectCheckbox_OverRide row={row} selectAll={false} table={tableStateValues?.mrtTableRef} tableKey={tableKey} />
 			},
 		});
@@ -304,13 +316,24 @@ const tableESStateControllerHandler = state => ({
 			}
 			if (schemaColumn.filter) {
 				let options;
-				if (schemaColumn.type === 'string') {
-					options = stringFilterOptions;
-				} else if (schemaColumn.type === 'number') {
-					options = numberFilterOptions;
-				} else if (schemaColumn.type === 'date') {
-					options = dateFilterOptions;
+				switch (schemaColumn.type) {
+					case 'string':
+						options = stringFilterOptions;
+						break;
+
+					case 'number':
+						options = numberFilterOptions;
+						break;
+
+					case 'date':
+						options = dateFilterOptions;
+						break;
+
+					default:
+						options = customFilterOptions;
+						break;
 				}
+
 				if (schemaColumn.isComposite)
 					options = options.filter((option) => option !== 'multiselect')
 
@@ -540,6 +563,26 @@ const tableESStateControllerHandler = state => ({
 		!deepEqual(state.globalFilter?.get({ noproxy: true }), globalFilter) && state.globalFilter?.set(globalFilter),
 
 	setFilter: filter => {
+		const column = state.TableSchema.get({ noproxy: true }).find(
+			column => column.id === filter.field || column.accessorKey === filter.field
+		);
+
+		if (column.type === 'date') {
+			if (filter.type !== 'advanced') {
+				filter.type = 'advanced'
+				filter.searchType = 'betweenInclusive'
+				filter.columnType = 'date'
+				// filter.isKeyword = 'date'
+
+				const { startOfDay, endOfDay } = getStartAndEndOfDay(filter.value)
+				filter.value = [startOfDay.toISOString(), endOfDay.toISOString()]
+			} else {
+				if (!isDateFormat(filter.value)) return
+				const date = new Date(filter.value)
+				filter.value = formatDate(date.toISOString())
+			}
+		}
+
 		const filtersState = state.filters?.get({ noproxy: true });
 
 		if (

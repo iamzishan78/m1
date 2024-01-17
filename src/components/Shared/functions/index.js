@@ -159,3 +159,27 @@ export const formatDate = (date, simple = true) => {
   if (!date) return '--'
   return moment.parseZone(new Date(date)).format(simple ? 'MM/DD/YY' : 'MMMM D, YYYY');
 }
+
+export const isValidDate = (dateString) => {
+  // Attempt to create a new Date object
+  const date = new Date(dateString);
+
+  // Check if the date is a valid date and the input format is recognized
+  return !isNaN(date.getTime());
+}
+
+export const getStartAndEndOfDay = (dateString) => {
+  // Create a Date object from the input string
+  const inputDate = new Date(dateString);
+
+  // Set the time to the start of the day (00:00:00)
+  const startOfDay = new Date(inputDate.getFullYear(), inputDate.getMonth(), inputDate.getDate(), 0, 0, 0, 0);
+
+  // Set the time to the end of the day (23:59:59)
+  const endOfDay = new Date(inputDate.getFullYear(), inputDate.getMonth(), inputDate.getDate(), 23, 59, 59, 999);
+
+  return {
+    startOfDay,
+    endOfDay,
+  };
+}
