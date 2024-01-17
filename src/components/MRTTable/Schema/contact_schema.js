@@ -610,7 +610,7 @@ const ContactMeta = {
 			header: 'Last Updated',
 			isSearchField: false,
 			type: 'date',
-			Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue)}</>,
+			Cell: ({ row }) => <>{formatDate(row.getValue('lastUpdateAt'))}</>,
 		},
 
 		{
