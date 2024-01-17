@@ -147,6 +147,7 @@ export const numberFilterOptions = [
 export const customFilterOptions = [...tableESSimpleFilterModeOtions.custom];
 
 export const dateFilterOptions = [
-	...tableESSimpleFilterModeOtions.comparison,
-	...tableESSimpleFilterModeOtions.custom,
+	// 'betweenInclusive',
+	'greaterThanOrEqualTo', 'lessThanOrEqualTo',
+	'singleselect',
 ];

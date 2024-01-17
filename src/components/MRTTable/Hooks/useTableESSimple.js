@@ -190,6 +190,8 @@ const useTableESSimple = tableKey => {
 						value = isKeyword ? filter.value : +filter.value || 0;
 					if (mode && tableESSimpleFilterModeOtions.inclusive.includes(mode))
 						value = filter.value.map(value => +value || 0);
+					if (columnType === 'date')
+						value = filter.value
 
 					Controller.setFilter({
 						field: filter.id,
