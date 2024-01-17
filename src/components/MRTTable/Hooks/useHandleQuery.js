@@ -5,6 +5,7 @@ import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
 import { tableController, tableGlobalController } from 'hookstate/tableController';
 import { GET_ES_AGGS_LIST } from 'graphQL/useQueryESAggsList';
 import { copy } from 'utils/helper';
+import { formatDate } from 'components/Shared/functions';
 
 const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) => {
 	const Controller = tableController(tableKey);
@@ -43,6 +44,15 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			sort,
 			filters: [...tableMeta.defaultFilters, ...tableMeta.filters],
 		};
+
+		variables.filters = variables.filters.map((filter) => {
+			if (filter.searchType === 'lessThanOrEqualTo') {
+				const day = new Date(filter.value)
+				day.setDate(day.getDate() + 1)
+				return { ...filter, value: formatDate(day.toISOString()) }
+			}
+			return filter
+		})
 
 		const allSelectedRows = await client.query({
 			variables,

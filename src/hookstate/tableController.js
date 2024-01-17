@@ -18,6 +18,17 @@ import { formatGridViewToMRT } from "components/MRTTable/utils/helper"
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
 
+
+function isDateFormat(inputString) {
+	// Regular expression for MM/DD/YYYY format
+	const mmddyyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d\d$/;
+	const mmddyy = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d\d$/;
+
+	// Check if the inputString matches the date format
+	return mmddyyy.test(inputString) || mmddyy.test(inputString);
+}
+
+
 const initialState = {
 	defaultFilters: [],
 	customProps: [],
@@ -565,10 +576,10 @@ const tableESStateControllerHandler = state => ({
 
 				const { startOfDay, endOfDay } = getStartAndEndOfDay(filter.value)
 				filter.value = [startOfDay.toISOString(), endOfDay.toISOString()]
-			} else if (filter.searchType === 'lessThanOrEqualTo') {
-				const day = new Date(filter.value)
-				day.setDate(day.getDate() + 1)
-				filter.value = formatDate(day.toISOString())
+			} else {
+				if (!isDateFormat(filter.value)) return
+				const date = new Date(filter.value)
+				filter.value = formatDate(date.toISOString())
 			}
 		}
 
