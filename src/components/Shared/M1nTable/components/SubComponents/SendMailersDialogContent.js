@@ -168,6 +168,9 @@ export default function SendMailersDialogContent(props) {
 													let reducedRows = [...props.rows];
 													reducedRows.splice(index, 1);
 													props.setRows(reducedRows);
+
+													if (reducedRows.length === 0)
+														props.onClose();
 												}}
 											/>
 										</FormLabel>

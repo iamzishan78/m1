@@ -184,6 +184,7 @@ function CamapignRelatedGrids({ campaign }) {
       parentRecord: { value: campaign?._id },
     },
     customProps: {
+      campaign,
       exportValues: {
         "Campaign  System ID": campaign?._id,
         "Campaign Name": campaign?.name,
@@ -193,7 +194,6 @@ function CamapignRelatedGrids({ campaign }) {
     isCampaignRefetch: true,
     showAddContactButton: false,
     maxTableHeight: '35vh',
-    selectedCampaign: campaign,
   }), [campaign?.name]);
 
   const campaignTractOverrideMeta = useMemo(() => ({
