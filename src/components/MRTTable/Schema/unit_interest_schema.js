@@ -3,8 +3,12 @@ import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_curre
 import ListChips from 'components/Common/ListChips';
 import { CommonSchema } from './common_schema';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import Avatar from 'react-avatar';
+import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
+import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import FeatureFlag from '../Common/TableCells/FeatureFlagComponent';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
 
 const esIndex = 'shapeowners_flat';
 
@@ -61,22 +65,57 @@ const UnitInterestMeta = {
 			name: 'contact.entityDetail.name.keyword',
 			accessorKey: 'contact.entityDetail.name',
 			header: 'Contact Name',
-			Cell: ({ renderedCellValue, row }) => (
-				<div
+			size: 500,
+			Cell: ({ renderedCellValue, row }) => {
+				const isPurchased = [true, 'true', 'True'].includes(row?.original?.contact?.isPurchased);
+				return (<div
 					style={{
 						display: 'flex',
+						flexDirection: 'row',
 						alignItems: 'center',
 					}}
 				>
-					<ColumnWithLink
-						value={renderedCellValue}
-						link={`/contact/details/${row?.original?.contactId}`}
-						onClick={e => {
-							e.stopPropagation();
+					{typeof row?.original?.contact?.entityDetail?.name === 'string' && (
+						<Avatar
+							color={Avatar.getRandomColor(row?.original?.contact?.entityDetail?.name, ['#b5d2f6', '#ade2e9', '#eaeaea', '#f2c1e2', '#d7d6fb'])}
+							fgColor="#000"
+							name={row?.original?.contact?.entityDetail?.name.split(' ').splice(0, 2).join(' ')}
+							size="35"
+							round
+
+						/>
+					)}
+
+					<p
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							alignItems: 'center',
+							minWidth: '300px',
+							marginLeft: '10px',
 						}}
-					/>
-				</div>
-			),
+					>
+						<ColumnWithLink
+							value={row?.original?.contact?.entityDetail?.name}
+							link={`/contact/details/${row?.original?.contact?._id}`}
+							onClick={e => {
+								e.stopPropagation();
+							}}
+						/>
+						{isPurchased && (
+							<FeatureFlag feature={FEATURES.IDICORE}>
+								<MonetizationOnIcon
+									style={{
+										marginLeft: '10px',
+										color: "gray"
+									}}
+
+								/>
+							</FeatureFlag>
+						)}
+					</p>
+				</div>)
+			}
 		},
 
 		{
