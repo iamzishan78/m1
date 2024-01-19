@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useContext } from "react";
+import React, { Fragment, useState, useContext, useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppContext } from "../../AppContext";
 import Card from "@material-ui/core/Card";
@@ -24,10 +24,11 @@ import TractsTable from "components/Table/Tract/TractsTable";
 
 import SearchPanel from "./components/SearchPanel";
 import { platformDataInitialData, platformDataWellsInitialData, snapGridSideBarData } from "./components/data";
-import MapGridLayersTable from "components/Table/Layer/MapGridLayersTable";
 import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@material-ui/core";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import MRTTable from "components/MRTTable";
+import { tableController } from "hookstate/tableController";
 
 
 const useStyles = makeStyles((theme) => {
@@ -242,7 +243,91 @@ function MapGridCard(props) {
 
   const dispatch = useDispatch();
 
+  const shapeFileTableOverride = useMemo(() => {
+    let mustQuery = [];
+    let searchQuery = [];
+    if (stateApp.selectedLayer?.layerShapeName) {
+      mustQuery = [
+        {
+          term: { 'properties.layerShapeName': stateApp.selectedLayer?.layerShapeName },
+        },
+      ];
+    }
+    // if (searchInput) {
+    //   searchQuery = [{
+    //     bool: {
+    //       should: [
+    //         {
+    //           wildcard: {
+    //             "properties": {
+    //               value: `*${searchInput.toLowerCase()}*`,
+    //               case_insensitive: true
+    //             }
+    //           }
+    //         }
+    //       ]
+    //     }
+    //   }];
+    // }
 
+    return {
+      defaultFilters: [
+        {
+          field: 'file._id',
+          value: [
+            stateApp.selectedLayer?.file,
+            stateApp.selectedLayer?.originalFile,
+          ].filter(Boolean),
+        },
+      ],
+      advanceSearch:
+        stateApp.selectedLayer?.layerGeometry === 'Polygon'
+          ? [
+            {
+              bool: {
+                must: [
+                  ...mustQuery,
+                  {
+                    bool: {
+                      should: [
+                        {
+                          term: { 'properties.layerGeometry': 'Polygon' },
+                        },
+                        {
+                          term: { 'properties.layerGeometry': 'MultiPolygon' },
+                        },
+                      ],
+                    },
+                  },
+                  ...searchQuery,
+                ],
+              },
+            },
+          ]
+          : [
+            {
+              bool: {
+                must: [
+                  ...mustQuery,
+                  {
+                    bool: {
+                      should: [
+                        {
+                          term: {
+                            'properties.layerGeometry':
+                              stateApp.selectedLayer?.layerGeometry,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  ...searchQuery,
+                ],
+              },
+            },
+          ],
+    };
+  }, [stateApp.selectedLayer]);
 
   React.useEffect(() => {
     if (!stateApp.layerGridCard) {
@@ -447,7 +532,10 @@ function MapGridCard(props) {
                           key={row.name}
                           button
                           selected={row.name === stateApp.selectedLayer.name}
-                          onClick={() => setStateApp((state) => ({ ...state, selectedLayer: { ...row } }))}
+                          onClick={() => {
+                            setStateApp((state) => ({ ...state, selectedLayer: { ...row } }))
+                            tableController('shapefile_flat').reset();
+                          }}
                         >
                           <ListItemIcon>
                             <Icon />
@@ -513,13 +601,9 @@ function MapGridCard(props) {
                         />
                       )}
                       {searchTapValue.value === "layer" && (
-                        <MapGridLayersTable
-                          id="layerSnapGrid"
-                          dense
-                          parent="search"
-                          customOptions={options}
-                          targetLabel={"operator"}
-                          header={<SearchPanel {...commonProps} />}
+                        <MRTTable
+                          name={'ShapesFilesGenericTable'}
+                          overrideMeta={shapeFileTableOverride}
                         />
                       )}
                       {searchTapValue.value === "contacts" && (

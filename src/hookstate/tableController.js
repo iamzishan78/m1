@@ -629,76 +629,60 @@ const tableESStateControllerHandler = state => ({
 	},
 
 	getGenericState: rows => {
-		const genericState = {};
+		const getGenericKeys = (orderKeys, excludedKeys, nestedKey) => {
+			orderKeys = orderKeys || ['_id', 'id', 'name', 'flatSyncAt', '_ts'];
+			excludedKeys = excludedKeys || ['isDeleted', 'IsDeleted', 'sort'];
 
-		if (!state.isGeneric.get() || rows?.length === 0) return genericState;
+			if (nestedKey) excludedKeys.push(nestedKey);
 
-		let keys = [];
+			let keys = [];
 
-		const orderKeys = ['_id', 'id', 'name', 'flatSyncAt', '_ts'];
-		const excludedKeys = ['isDeleted', 'IsDeleted', 'sort'];
+			rows.forEach(row => {
+				keys = [
+					...new Set([
+						...keys,
+						...Object.keys(row).filter(key => !excludedKeys.includes(key)),
+						...(nestedKey ? Object.keys(row[nestedKey] || {}) : []),
+					]),
+				];
+			});
 
-		rows.forEach(row => {
-			keys = [
-				...new Set([
-					...keys,
-					...Object.keys(row).filter(key => !excludedKeys.includes(key)),
-				]),
-			];
-		});
+			keys = keys.sort((a, b) => {
+				const aIndex = orderKeys.indexOf(a);
+				const bIndex = orderKeys.indexOf(b);
 
-		keys = keys.sort((a, b) => {
-			const aIndex = orderKeys.indexOf(a);
-			const bIndex = orderKeys.indexOf(b);
-
-			// If both keys are in the orderKeys array, sort based on their order in orderKeys.
-			if (aIndex !== -1 && bIndex !== -1) {
-				return aIndex - bIndex;
-			}
-
-			// If only one key is in the orderKeys array, prioritize it.
-			if (aIndex !== -1) {
-				return -1;
-			}
-
-			if (bIndex !== -1) {
-				return 1;
-			}
-
-			// If neither key is in the orderKeys array, maintain the original order.
-			return 0;
-		});
-
-		genericState.TableSchema = keys.map(key => ({
-			size: 250,
-			isPinned: false,
-			hidden: false,
-			filter: false,
-			isSearchField: false,
-			enableSorting: false,
-			type: 'string',
-			name: key,
-			accessorKey: key,
-			header: key,
-			Cell: ({ row, renderedCellValue }) => {
-				let value = row.getValue(key);
-
-				switch (typeof value) {
-					case 'object':
-						value = JSON.stringify(value);
-						break;
-
-					case 'string':
-						value = renderedCellValue
-						break;
-
-					default:
-						break;
+				// If both keys are in the orderKeys array, sort based on their order in orderKeys.
+				if (aIndex !== -1 && bIndex !== -1) {
+					return aIndex - bIndex;
 				}
 
-				return <>{value}</>;
-			},
-		}));
+				// If only one key is in the orderKeys array, prioritize it.
+				if (aIndex !== -1) {
+					return -1;
+				}
+
+				if (bIndex !== -1) {
+					return 1;
+				}
+
+				// If neither key is in the orderKeys array, maintain the original order.
+				return 0;
+			});
+
+			return keys;
+		};
+
+		const genericState = {};
+
+		const { isGeneric, orderKeys, excludedKeys, nestedKey, generateSchema } = state.get({
+			noproxy: true,
+		});
+
+		if (!isGeneric || rows?.length === 0) return genericState;
+
+		const keys = getGenericKeys(orderKeys, excludedKeys, nestedKey);
+
+		genericState.TableSchema = generateSchema(keys, rows);
 
 		return genericState;
 	},
