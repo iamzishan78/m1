@@ -4,11 +4,7 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import ListChips from 'components/Common/ListChips';
-import Avatar from 'react-avatar';
-import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
-import FeatureFlag from '../Common/TableCells/FeatureFlagComponent';
-import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import ContactNameLink from '../Common/TableCells/ContactNameLink';
 
 const esIndex = 'shapeowners_flat';
 
@@ -62,55 +58,8 @@ const TractInterestsMeta = {
       accessorKey: 'contact.entityDetail.name',
       header: 'Contact Name',
       size: 500,
-      Cell: ({ renderedCellValue, row }) => {
-        const isPurchased = [true, 'true', 'True'].includes(row?.original?.contact?.isPurchased);
-        return (<div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-        >
-          {typeof row?.original?.contact?.entityDetail?.name === 'string' && (
-            <Avatar
-              color={Avatar.getRandomColor(row?.original?.contact?.entityDetail?.name, ['#b5d2f6', '#ade2e9', '#eaeaea', '#f2c1e2', '#d7d6fb'])}
-              fgColor="#000"
-              name={row?.original?.contact?.entityDetail?.name.split(' ').splice(0, 2).join(' ')}
-              size="35"
-              round
-
-            />
-          )}
-
-          <p
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              minWidth: '300px',
-              marginLeft: '10px',
-            }}
-          >
-            <ColumnWithLink
-              value={row?.original?.contact?.entityDetail?.name}
-              link={`/contact/details/${row?.original?.contact?._id}`}
-              onClick={e => {
-                e.stopPropagation();
-              }}
-            />
-            {isPurchased && (
-              <FeatureFlag feature={FEATURES.IDICORE}>
-                <MonetizationOnIcon
-                  style={{
-                    marginLeft: '10px',
-                    color: "gray"
-                  }}
-
-                />
-              </FeatureFlag>
-            )}
-          </p>
-        </div>)
+      Cell: ({ row }) => {
+        return <ContactNameLink contact={row?.original?.contact} />
       }
     },
 
