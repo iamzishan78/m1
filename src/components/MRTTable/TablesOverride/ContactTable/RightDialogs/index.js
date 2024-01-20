@@ -38,7 +38,7 @@ function ContactTableDialogs() {
 						onClose={handleCloseDialog}
 						rows={rest?.selectedRows}
 						setRows={updateRows}
-						campaign=""
+						campaign={rest.campaign}
 					/>
 				</RightDialog>
 			)}
