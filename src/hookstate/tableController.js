@@ -2,7 +2,7 @@ import React from 'react';
 import { hookstate } from '@hookstate/core';
 import _, { get, isEqual, isEmpty } from 'lodash';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
-import { copy, deepEqual, formatDate, getStartAndEndOfDay } from 'components/Shared/functions';
+import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
 import { stringFilterOptions, numberFilterOptions, dateFilterOptions, customFilterOptions } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
@@ -572,10 +572,6 @@ const tableESStateControllerHandler = state => ({
 				filter.type = 'advanced'
 				filter.searchType = 'betweenInclusive'
 				filter.columnType = 'date'
-				// filter.isKeyword = 'date'
-
-				const { startOfDay, endOfDay } = getStartAndEndOfDay(filter.value)
-				filter.value = [startOfDay.toISOString(), endOfDay.toISOString()]
 			} else {
 				if (!isDateFormat(filter.value)) return
 				const date = new Date(filter.value)
