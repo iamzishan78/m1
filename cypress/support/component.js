@@ -21,7 +21,27 @@ import './commands'
 
 import { mount } from 'cypress/react'
 
-Cypress.Commands.add('mount', mount)
+import Providers from 'Providers';
+import { apolloClientEndpointDev } from 'AppContext';
+import { globalStateController } from 'hookstate/globalStateController';
+import { userData } from '../data';
+import { ConnectedRouter } from "connected-react-router";
+import { history } from "store";
+
+Cypress.Commands.add('mount', component => {
+  globalStateController.updateState({
+    apolloClientEndpoint: apolloClientEndpointDev,
+    user: userData,
+  });
+
+  const wrapped = <Providers>
+    <ConnectedRouter history={history}>
+      {component}
+    </ConnectedRouter>
+  </Providers>;
+
+  return mount(wrapped);
+});
 
 // Example use:
 // cy.mount(<MyComponent />)

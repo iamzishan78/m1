@@ -355,6 +355,7 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
               </TableCell>
               <TableCell
                 className={classes.cell2}
+                data-testid={`data-cell-${data.label}`}
                 onMouseEnter={() => {
                   setEditIconState({ [data.key]: true });
                 }}
@@ -627,6 +628,7 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
                                 onClick={() => {
                                   setTableDataState({ [data.key]: true });
                                 }}
+                                data-testid={`edit-${data.label}`}
                               >
                                 <CreateTwoToneIcon id="contPencilIcon" className={classes.pencilIcon} />
                               </IconButton>

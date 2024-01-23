@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useSelector } from "react-redux";
 import { copy } from "utils/helper";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -22,9 +21,11 @@ import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import QtrQtrSelectorNew from "components/ShapeDetailCard/Common/QtrQtrSelectorNew";
 import { AppContext } from "AppContext";
 import MetaField from "components/Table/helpers/MetaField";
+import { globalStateController } from "hookstate/globalStateController";
 
 export default function UnitSummary(props) {
-    const user = useSelector(({ app }) => app.user);
+    const { stateValues: { user } } = globalStateController.useState(['user']);
+
     const [search, setSearch] = useState("");
     const [unitProperties, setProperties] = useState(props.properties);
     const [tableDataState, setTableDataState] = useState({});
