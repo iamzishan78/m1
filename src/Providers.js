@@ -92,7 +92,7 @@ const theme = createTheme({
   },
 });
 
-function Providers({ children }) {
+function Providers({ children, headersData }) {
   const [apolloClient, setApolloClient] = useState(null);
   useEffect(() => {
     new GlobalApolloClientProvider(apolloClient);
@@ -102,7 +102,8 @@ function Providers({ children }) {
 
   useEffect(() => {
     if (stateValues.apolloClientEndpoint) {
-      updateApolloClient(stateValues.apolloClientEndpoint, stateValues?.user?.authToken, stateValues?.user?.accessToken);
+      const authToken = globalStateController.getValue('x_zumo_auth') || stateValues?.user?.authToken
+      updateApolloClient(stateValues.apolloClientEndpoint, authToken, stateValues?.user?.accessToken);
     } else {
       updateApolloClient()
     }
@@ -118,7 +119,8 @@ function Providers({ children }) {
   // }, [stateApp]);
 
   const updateApolloClient = (endpoint, token, idToken) => {
-    let fetchOptions = { headers: {} };
+    let fetchOptions = { headers: [] };
+    if (token) fetchOptions.headers['X-ZUMO-AUTH'] = token
     if (apolloClient && token) {
       fetchOptions = setApolloHeaders(apolloClient.link.options, token, idToken);
       fetchOptions.headers.batch = "true"

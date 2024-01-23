@@ -31,7 +31,7 @@ import { baseUrls, basic_timeouts, loginCredential } from "../cypressUtils/data"
 import { camelize, findInObject, isSearchStringMatched } from "../cypressUtils/helper";
 
 // Constants
-const workSpace = Cypress.env('WORK_SPACE') || "m1dev"
+const workSpace = Cypress.env('TENENT') || "localhost"
 const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
 
 // Common Commands

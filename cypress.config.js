@@ -9,6 +9,10 @@ module.exports = defineConfig({
   videoUploadOnPasses: false,
   retries: 5,
 
+  env: {
+    TENENT: 'm1production'
+  },
+
   e2e: {
     setupNodeEvents(on, config) {
       // implement node event listeners here

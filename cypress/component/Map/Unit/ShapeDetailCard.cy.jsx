@@ -1,6 +1,7 @@
 import ExpandableCardProvider from 'components/ExpandableCard/ExpandableCardProvider';
 import ShapeDetailCard from 'components/ShapeDetailCard';
 import { popupController } from 'hookstate/popupStateController';
+import ldata from '../../../fixtures/ldata.json'
 
 const selectedShape = {
   id: '65af6207f9389596f71f5051',
@@ -30,18 +31,18 @@ describe('ShapeDetailCard.cy.jsx', () => {
         cardHeightExpanded="calc(100vh - 64px)"
         targetSourceId={selectedShape?.id}
         targetLabel={selectedShape.type}
-        // deleteCustomLayer={deleteCustomLayer}
+      // deleteCustomLayer={deleteCustomLayer}
       ></ExpandableCardProvider>
     );
 
-    cy.intercept('POST', 'http://localhost:7071/api/m1graph', req => {
+    cy.intercept('POST', ldata.url, req => {
       if (req.body && req.body.operationName === 'updateCustomLayer') {
         req.alias = 'updateCustomLayerMutation';
       }
     });
   });
 
-  it('mounts', () => {});
+  it('mounts', () => { });
 
   it('displays editable county field', () => {
     cy.get('[data-testid="data-cell-County"]').trigger('mouseover');

@@ -22,17 +22,19 @@ import './commands'
 import { mount } from 'cypress/react'
 
 import Providers from 'Providers';
-import { apolloClientEndpointDev } from 'AppContext';
 import { globalStateController } from 'hookstate/globalStateController';
 import { userData } from '../data';
+import ldata from '../fixtures/ldata.json';
 import { ConnectedRouter } from "connected-react-router";
 import { history } from "store";
 
 Cypress.Commands.add('mount', component => {
   globalStateController.updateState({
-    apolloClientEndpoint: apolloClientEndpointDev,
+    apolloClientEndpoint: ldata.url,
+    x_zumo_auth: ldata.x_zumo_auth,
     user: userData,
   });
+
 
   const wrapped = <Providers>
     <ConnectedRouter history={history}>
