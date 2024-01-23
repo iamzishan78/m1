@@ -211,6 +211,7 @@ const AppProvider = (props) => {
         tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
         tenant.apolloClientEndpoint = isDev && tenantName === "localhost" ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
         let myMSALObjInt = MSALObj(tenant);
+        globalStateController.updateState({ apolloClientEndpoint: tenant.apolloClientEndpoint })
         setStateApp((state, props) => {
           return {
             ...state,

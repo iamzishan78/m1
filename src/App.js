@@ -62,6 +62,7 @@ import { ConnectedRouter } from "connected-react-router";
 import configureStore, { history } from "./store";
 import AnalyticsProvider from "components/Analytics/AnalyticsProvider";
 import AdminProvider from "components/Admin/AdminProvider";
+import { globalStateController } from "hookstate/globalStateController";
 // user management
 const store = configureStore(/ provide initial state if any /);
 //app theme overrides to the default material-ui theme found here https://material-ui.com/customization/default-theme/#explore
@@ -129,69 +130,13 @@ const theme = createTheme({
   },
 });
 
-const SetApolloClient = (props) => {
-  const [stateApp] = useContext(AppContext);
-
-  useEffect(() => {
-    props.setApolloClient();
-  }, []);
-
-  useEffect(() => {
-    if (stateApp.apolloClientEndpoint) {
-      props.setApolloClientEndpoint(stateApp.apolloClientEndpoint);
-    }
-  }, [stateApp.apolloClientEndpoint]);
-
-  useEffect(() => {
-    if (stateApp.user) {
-      props.setApolloClientToken(stateApp.user.authToken, stateApp.user.accessToken);
-    }
-  }, [stateApp.user]);
-
-  useEffect(() => {
-    let draggableArea = document.getElementById("root");
-    if (window.location.pathname === "/" || window.location.pathname.startsWith("/map/")) {
-      draggableArea.style.overflow = "hidden";
-    } else {
-      draggableArea.style.overflow = "visible";
-    }
-  }, [stateApp]);
-
-  // useEffect(() => {
-  //   if (stateApp.userSnap === true) {
-  //     var script = document.createElement("script");
-  //     script.type = "text/javascript";
-  //     script.src =
-  //       "//api.usersnap.com/load/64ab8ea7-9417-41a0-b565-eb7ad69da871.js";
-  //     script.async = true;
-  //     script.setAttribute("id", "feedback-script");
-  //     var x = document.getElementsByTagName("script")[0];
-  //     x.parentNode.insertBefore(script, x);
-  //     document.body.appendChild(script);
-  //     return () => {
-  //       document.body.removeChild(script);
-  //     };
-  //   } else if (stateApp.userSnap === false) {
-  //     const feedbackScript = document.querySelector("#feedback-script");
-  //     feedbackScript && feedbackScript.remove();
-  //     const element = document.getElementsByName("us-entrypoint-button");
-  //     element && element[0] && element[0].remove();
-  //   }
-  // }, [stateApp.userSnap]);
-  /*  useEffect( () => {
-      if(stateApp.user && stateApp.apolloClientEndpoint){
-        props.setApolloClient(stateApp.user.authToken,stateApp.apolloClientEndpoint)
-      }
-    },[stateApp.user,stateApp.apolloClientEndpoint]) */
-  return null;
-};
-
 const PrivateRoute = ({ component, ...options }) => {
-  const [stateApp] = useContext(AppContext);
+  const user = globalStateController.getValue('user')
+
   const userSessionIsLoaded = useSelector(({ session }) => session.isLoaded);
   const apolloClient = useApolloClient();
 
-  if (stateApp.user && Date.parse(stateApp.user.authTokenExpires) < Date.now()) {
+  if (user && Date.parse(user.authTokenExpires) < Date.now()) {
     sessionStorage.clear();
     window.location.replace(window.location.origin);
     // setStateApp((stateApp) => ({ ...stateApp, user: null }));
@@ -199,7 +144,7 @@ const PrivateRoute = ({ component, ...options }) => {
   }
 
   const finalComponent =
-    stateApp.user && Date.parse(stateApp.user.authTokenExpires) > Date.now() && apolloClient && userSessionIsLoaded
+    user && Date.parse(user.authTokenExpires) > Date.now() && apolloClient && userSessionIsLoaded
       ? component
       : (() => {
         return Login;
@@ -213,59 +158,46 @@ const PrivateRoute = ({ component, ...options }) => {
 };
 
 function App() {
-  const [stateApp, setStateApp] = useContext(AppContext);
   const [apolloClient, setApolloClient] = useState(null);
   useEffect(() => {
     new GlobalApolloClientProvider(apolloClient);
   }, [apolloClient]);
-  const [apolloClientToken, setApolloClientToken] = useState(null);
-  const [apolloClientIdToken, setApolloIdClientToken] = useState(null);
-  const [apolloClientEndpoint, setApolloClientEndpoint] = useState(null);
-  const [apolloClientFetchOptions, setApolloClientFetchOptions] = useState(null);
-  const [apolloClientHTTPLink, setApolloClientHTTPLink] = useState(null);
-  const [apolloClientHTTPBatchLink, setApolloClientHTTPBatchLink] = useState(null);
-  //const apolloDevEndpoint = "https://m1graph.azurewebsites.net/api/m1graph?code=MHYChoSzLKszMTCsH9gRhPyCWGLDaU6qNFHB2YYrXHs9YXNV0BO5zA==";
-  //set default to core until login is complete and we can get the tenant's endpoint
-  //const apolloEndpoint = "https://m1gql.azurewebsites.net/api/m1graph?code=u2MVayEXvQefTpUXaydX4JtA7nQG4fFJEkHGJEaFyYuZwgYaENcdqA==";
-  const updateApolloClientEndpoint = (endpoint) => {
-    setApolloClientEndpoint(endpoint);
-    updateApolloClient(endpoint, apolloClientToken, apolloClientIdToken);
-  };
 
-  const updateApolloClientToken = (token, idToken) => {
-    setApolloClientToken(token);
-    setApolloIdClientToken(idToken);
-    setApolloClientFetchOptions(setApolloHeaders(apolloClient.link.options, token, idToken));
-    updateApolloClient(apolloClientEndpoint, token, idToken);
-  };
+  const { stateValues } = globalStateController.useState(['apolloClientEndpoint', 'user'])
+
+  useEffect(() => {
+    if (stateValues.apolloClientEndpoint) {
+      updateApolloClient(stateValues.apolloClientEndpoint, stateValues?.user?.authToken, stateValues?.user?.accessToken);
+    } else {
+      updateApolloClient()
+    }
+  }, [stateValues.apolloClientEndpoint, stateValues?.user]);
+
+  // useEffect(() => {
+  //   let draggableArea = document.getElementById("root");
+  //   if (window.location.pathname === "/" || window.location.pathname.startsWith("/map/")) {
+  //     draggableArea.style.overflow = "hidden";
+  //   } else {
+  //     draggableArea.style.overflow = "visible";
+  //   }
+  // }, [stateApp]);
 
   const updateApolloClient = (endpoint, token, idToken) => {
-    let fetchOptions = {};
+    let fetchOptions = { headers: {} };
     if (apolloClient && token) {
       fetchOptions = setApolloHeaders(apolloClient.link.options, token, idToken);
-
-      setStateApp((stateApp) => ({
-        ...stateApp,
-        apolloClientFetchOptions: fetchOptions,
-      }));
+      fetchOptions.headers.batch = "true"
     }
 
     if (!apolloClient) {
       const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions });
       const httpBatchLink = new BatchHttpLink({
         uri: endpoint,
-        headers: {},
         ...fetchOptions,
-        headers: { ...fetchOptions.headers, batch: "true" },
       });
 
       let client = new ApolloClient({
-        // uri: endpoint,
         link: split((operation) => operation.getContext().batch !== true, httpLink, httpBatchLink),
-        // fetchOptions: {
-        //   mode: 'no-cors',
-        // },
-        // headers: {},
         cache: new InMemoryCache({
           typePolicies: {
             Query: {
@@ -292,14 +224,10 @@ function App() {
         const httpLink = new HttpLink({ uri: endpoint, headers: {}, ...fetchOptions });
         const httpBatchLink = new BatchHttpLink({
           uri: endpoint,
-          headers: {},
           ...fetchOptions,
-          headers: { ...fetchOptions.headers, batch: "true" },
         });
 
         return new ApolloClient({
-          // ...state.link.options,
-          // uri: endpoint,
           link: split((operation) => operation.getContext().batch !== true, httpLink, httpBatchLink),
           cache: state.cache,
           defaultOptions: state.defaultOptions,
@@ -308,18 +236,11 @@ function App() {
     }
   };
 
-  const userSessionIsLoaded = store.getState().session.isLoaded;
-
   return (
     <ReduxProvider store={store}>
       <Notifications />
       <ToastContainer position={toast.POSITION.BOTTOM_LEFT} />
       <AppProvider>
-        <SetApolloClient
-          setApolloClient={updateApolloClient}
-          setApolloClientEndpoint={updateApolloClientEndpoint}
-          setApolloClientToken={updateApolloClientToken}
-        />
         {apolloClient ? (
           <ApolloProvider client={apolloClient}>
             {/* <FeatureFlag feature={FEATURES.USERSNAP}>

@@ -1,10 +1,9 @@
 const { defineConfig } = require("cypress");
 
-let globalData = { agreementData: {}, relatedTractData: {} }
+let globalData = { agreementData: {}, relatedTractData: {} };
 module.exports = defineConfig({
-  projectId: 'hzhfd6',
+  projectId: "hzhfd6",
   chromeWebSecurity: false,
-
   video: true,
   videoCompression: 32,
   videoUploadOnPasses: false,
@@ -13,7 +12,7 @@ module.exports = defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
       // implement node event listeners here
-      on('task', {
+      on("task", {
         setAgreementData: (data) => {
           globalData = { ...globalData, agreementData: data };
           return null;
@@ -23,9 +22,16 @@ module.exports = defineConfig({
           return null;
         },
         getGlobalData: () => {
-          return globalData
+          return globalData;
         },
       });
+    },
+  },
+
+  component: {
+    devServer: {
+      framework: "create-react-app",
+      bundler: "webpack",
     },
   },
 });

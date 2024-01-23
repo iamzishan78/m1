@@ -21,6 +21,7 @@ import { saveUserSession } from "utils/user";
 
 // import rock from '../../DFJ.PNG'
 import rock from "../../rock.png";
+import { globalStateController } from "hookstate/globalStateController";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -247,6 +248,7 @@ const Login = (props) => {
 
       if (!stateApp.myMSALObj) {
         myMSALObj = new msal.PublicClientApplication(msalConfig(tenant));
+        globalStateController.updateState({ apolloClientEndpoint: tenant.apolloClientEndpoint })
         setStateApp({
           ...stateApp,
           myMSALObj,
