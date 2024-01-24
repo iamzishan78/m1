@@ -156,8 +156,9 @@
     "yarn": "^1.22.19"
   },
   "scripts": {
-    "cypress:open": "cypress open",
+    "cy:open": "cypress open",
     "cy:login": "TENENT=m1production cypress run --spec 'cypress/e2e/login.cy.js' --browser chrome",
+    "cy:component": "cypress run --component --browser chrome",
     "cy:run": "cypress run --headless --browser chrome",
     "cy:report": "cypress run --headless --browser chrome --spec 'cypress/e2e/Activities/verifyActivityCompleted.cy.js'  --browser chrome",
     "legacy-start": "react-scripts start",

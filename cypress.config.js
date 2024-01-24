@@ -7,7 +7,8 @@ module.exports = defineConfig({
   video: true,
   videoCompression: 32,
   videoUploadOnPasses: false,
-  retries: 5,
+  retries: 2,
+  numTestsKeptInMemory: 2,  // Number of tests to keep in memory for debugging purposes
 
   env: {
     TENENT: 'm1production'
@@ -37,5 +38,6 @@ module.exports = defineConfig({
       framework: "create-react-app",
       bundler: "webpack",
     },
+    specPattern: 'cypress/component/**/*.cy.*'
   },
 });
