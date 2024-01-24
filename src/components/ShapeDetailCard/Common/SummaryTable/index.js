@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { set, get, upperFirst } from "lodash";
+import { set, get, upperFirst, capitalize } from "lodash";
 import TextField from "@material-ui/core/TextField";
 import moment from "moment";
 import { IconButton, Grid, Table, TableCell, TableBody, FormControl, CircularProgress } from "@material-ui/core";
@@ -15,7 +15,7 @@ import AutoCompleteTypeComponent from "components/Shared/Forms/Fields/AutoComple
 import { summaryTableStyles } from "components/ShapeDetailCard/style";
 import UserList from "components/Shared/UserList";
 import CampaignNameField from "components/ContactDetailCard/components/FieldContent/CampaignNameField";
-import vf_currency, { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
+import vf_currency from "components/Shared/valueformatters/vf_currency";
 import vf_number from "components/Shared/valueformatters/vf_number";
 import { getCustomMetaFields } from "components/Shared/Agreement/helpers";
 import { getRoundedNra } from "utils/helper";
@@ -100,7 +100,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
   );
 }
 
-export default function SummaryTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [], id, updating }) {
+export default function SummaryTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [], id, updating, isCustomLayerAutoComplete }) {
   const classes = summaryTableStyles();
   const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
@@ -263,13 +263,22 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
   );
 
   const newOptionFilters = useCallback(
-    (data) => {
+    data => {
       return data.dependencyArray.reduce((acc, val) => {
         if (val === 'townshipRange') {
-          return ({ ...acc, township: get(properties, 'originalProperties.Township'), range: get(properties, 'originalProperties.Range') })
+          return {
+            ...acc,
+            [isCustomLayerAutoComplete ? 'originalProperties.Township' : 'township']: get(properties, 'originalProperties.Township'),
+            [isCustomLayerAutoComplete ? 'originalProperties.Range' : 'range']: get(properties, 'originalProperties.Range'),
+          };
         }
-        return ({ ...acc, [val]: get(properties, filterConsts[val].key) })
-
+        return {
+          ...acc,
+          [isCustomLayerAutoComplete ? `originalProperties.${capitalize(val)}` : val]: get(
+            properties,
+            filterConsts[val].key
+          ),
+        };
       }, {});
     },
     [properties]
@@ -523,6 +532,7 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
                         autoFocus={false}
                         newOptions={data.newOptions !== false}
                         newOptionFilters={newOptionFilters(data)}
+                        autoCompleteType={true ? 'CustomLayer' : 'AgreementShapeOwner'}
                       />
 
                     )}

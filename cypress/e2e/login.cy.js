@@ -6,9 +6,7 @@ import { baseUrls } from "../cypressUtils/data";
 const tenant = Cypress.env('TENENT') || "localhost"
 
 describe('Save Login for Component Testing', () => {
-    it('passes', () => {
-
-
+    it('Login', () => {
         cy.viewport(1400, 900);
         cy.log(tenant, baseUrls, Cypress.env('TENENT'))
         cy.intercept(baseUrls[tenant]).as('getSettings')

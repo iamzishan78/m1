@@ -9,9 +9,10 @@ export const baseUrls = {
 }
 
 export const basic_timeouts = {
-    shorTimeout: 5000,
-    longTimeout: 100000,
-    extraTimeout: 1500000
+    shorTimeout: 5 * 1000,
+    midTimeout: 10 * 1000,
+    longTimeout: 100 * 1000,
+    extraTimeout: 1500 * 1000
 }
 
 export const documentObj = {
