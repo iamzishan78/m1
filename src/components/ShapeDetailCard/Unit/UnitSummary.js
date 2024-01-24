@@ -130,6 +130,7 @@ export default function UnitSummary(props) {
                                 metaData={metaDataRes}
                                 id={props.id}
                                 updating={props.updating}
+                                isCustomLayerAutoComplete={['unit'].includes(props.properties.type)}
                             />
                         </Grid>
                         <Grid item>
