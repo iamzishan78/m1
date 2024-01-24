@@ -13,7 +13,7 @@ describe('Save Login for Component Testing', () => {
         cy.log(tenant, baseUrls, Cypress.env('TENENT'))
         cy.intercept(baseUrls[tenant]).as('getSettings')
 
-        cy.visit('https://m1neral-preview.azurewebsites.net/admin/map', { timeout: 100000 });
+        cy.visit('http://localhost:3000', { timeout: 100000 });
 
         cy.checkAndLogin();
 

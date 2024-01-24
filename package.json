@@ -162,6 +162,7 @@
     "cy:report": "cypress run --headless --browser chrome --spec 'cypress/e2e/Activities/verifyActivityCompleted.cy.js'  --browser chrome",
     "legacy-start": "react-scripts start",
     "start": "craco start",
+    "cypress:start": "CYPRESS=true craco start",
     "legacy-build": "react-scripts build",
     "build": "craco build",
     "legacy-test": "react-scripts test",
@@ -169,7 +170,7 @@
     "eject": "react-scripts eject",
     "ci:start-server": "http-server -p 3000",
     "ci:cy-run": "start-server-and-test start http://localhost:3000 cy:run",
-    "cy:ci": "START_SERVER_AND_TEST_INSECURE=1 start-server-and-test start https-get://localhost:3000 cy:run"
+    "cy:ci": "START_SERVER_AND_TEST_INSECURE=1 start-server-and-test cypress:start http://localhost:3000 'cy:login'"
   },
   "eslintConfig": {
     "extends": "react-app"

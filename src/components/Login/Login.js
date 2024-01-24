@@ -579,7 +579,7 @@ const Login = (props) => {
         <SignInCard
           ready={loadingSigInButton}
           handleAADSignIn={handleAADSignIn}
-          tenant={!stateApp.myMSALObj ? queryString.parse(props.location.search).tenant : undefined}
+          tenant={!stateApp.myMSALObj ? queryString.parse(props?.location?.search).tenant : undefined}
         />
 
         {/* <div
