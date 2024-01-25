@@ -90,14 +90,14 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems,
       case "layer":
         setTab(0);
         break;
-      case "heatMaps":
+      // case "heatMaps":
+      //   setTab(1);
+      //   break;
+      case "base":
         setTab(1);
         break;
-      case "base":
-        setTab(2);
-        break;
       case "filter":
-        setTab(3);
+        setTab(2);
         break;
       default:
     }
