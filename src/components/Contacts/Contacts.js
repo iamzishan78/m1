@@ -105,7 +105,7 @@ export default function Contacts() {
     <>
       <FeatureFlag feature={FEATURES.CONTACTSUBMENU}>
         <QuickActionPanel
-          title="Contact Management"
+          title="CRM"
           handlePanelStateChange={handlePanelStateChange}
           quickActionsPanelState={quickActionsPanelState}
           activeModule={activeModule}
