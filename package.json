@@ -171,10 +171,7 @@
     "ci:cy-run": "start-server-and-test start http://localhost:3000 cy:run",
     "cy:component": "cypress run --component --browser chrome",
     "cy:ci-login": "START_SERVER_AND_TEST_INSECURE=1 start-server-and-test cypress:start http://localhost:3000 'TENENT=m1production cypress run --spec 'cypress/e2e/login.cy.js' --browser chrome'",
-    "ci:ci-login-component": "npm run cy:ci-login && npm run cy:component",
-    "ci:ci-login-component2": "npm run cy:ci-login && npm run cy:component",
-    "ci:ci-login-component3": "npm run cy:ci-login && npm run cy:component",
-    "ci:ci-global": "npm run ci:ci-login-component && npm run ci:ci-login-component2"
+    "ci:ci-login-component": "npm run cy:ci-login && npm run cy:component"
   },
   "eslintConfig": {
     "extends": "react-app"
