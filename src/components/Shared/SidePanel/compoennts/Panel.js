@@ -212,10 +212,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems,
         action: "layer",
         icon: <LayersIcon fontSize="medium" />,
       },
-      {
-        action: "heatMaps",
-        icon: <HeatmapIcon fontSize="medium" />,
-      },
+      // {
+      //   action: "heatMaps",
+      //   icon: <HeatmapIcon fontSize="medium" />,
+      // },
       {
         action: "base",
         icon: <BasemapIcon fontSize="medium" />,
