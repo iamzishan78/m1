@@ -98,7 +98,7 @@ function Providers({ children, headersData }) {
     new GlobalApolloClientProvider(apolloClient);
   }, [apolloClient]);
 
-  const { stateValues } = globalStateController.useState(['apolloClientEndpoint', 'user'])
+  const { stateValues } = globalStateController.useState(['apolloClientEndpoint', 'user', 'cypress'])
 
   useEffect(() => {
     if (stateValues.apolloClientEndpoint) {
@@ -173,6 +173,7 @@ function Providers({ children, headersData }) {
     }
   };
 
+  console.log(stateValues?.cypress)
   return (
     <ReduxProvider store={store}>
       <Notifications />
@@ -185,7 +186,7 @@ function Providers({ children, headersData }) {
             </FeatureFlag> */}
             <MuiThemeProvider theme={theme}>
               <MuiPickersUtilsProvider utils={MomentUtils}>
-                <ContactBulkProgress />
+                {!stateValues?.cypress?.disableContactBulkProgress && <ContactBulkProgress />}
                 {children}
               </MuiPickersUtilsProvider>
             </MuiThemeProvider>
