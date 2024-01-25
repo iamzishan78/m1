@@ -374,7 +374,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems,
                   </Tabs>
                 </Grid>
               )}
-              <Grid item xs={searchState ? 12 : 1}>
+              {/* <Grid item xs={searchState ? 12 : 1}>
                 <div className={classes.search}>
                   {
                     type === "layer" &&
@@ -406,7 +406,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems,
                     </>
                   }
                 </div>
-              </Grid>
+              </Grid> */}
             </Grid>
           </StyledMenuHActionHeader>
 
