@@ -45,9 +45,13 @@ const UnitInterestMeta = {
 	},
 	TableSchema: [
 		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.COMMON_COLUMN,
 			name: '_id',
 			accessorKey: '_id',
+			header: "M1neral System ID",
+			hidden: true,
+			size: 300,
+			isHiddenFieldExport: true,
 		},
 
 		{
@@ -84,7 +88,7 @@ const UnitInterestMeta = {
 			name: 'contact.entityDetail.currentAddress.keyword',
 			accessorKey: 'contact.entityDetail.currentAddress',
 			header: 'Current Address',
-			isExportAllowed: true,
+			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
@@ -93,7 +97,7 @@ const UnitInterestMeta = {
 			name: 'contact.entityDetail.primaryAddress.keyword',
 			accessorKey: 'contact.entityDetail.primaryAddress',
 			header: 'Primary Address',
-			isExportAllowed: true,
+			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
@@ -109,6 +113,22 @@ const UnitInterestMeta = {
 			name: 'shape.shapeJson.properties.uNumber.keyword',
 			accessorKey: 'shape.shapeJson.properties.uNumber',
 			header: 'Unit #',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword',
+			id: 'shape.shapeJson.properties.originalProperties.StateAbbreviation',
+			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.StateAbbreviation,
+			header: 'State',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shape.shapeJson.properties.originalProperties.County.keyword',
+			id: 'shape.shapeJson.properties.originalProperties.County',
+			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.County,
+			header: 'County',
 		},
 
 		{
