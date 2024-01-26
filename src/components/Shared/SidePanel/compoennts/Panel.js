@@ -90,14 +90,14 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems,
       case "layer":
         setTab(0);
         break;
-      case "heatMaps":
+      // case "heatMaps":
+      //   setTab(1);
+      //   break;
+      case "base":
         setTab(1);
         break;
-      case "base":
-        setTab(2);
-        break;
       case "filter":
-        setTab(3);
+        setTab(2);
         break;
       default:
     }
@@ -212,10 +212,10 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems,
         action: "layer",
         icon: <LayersIcon fontSize="medium" />,
       },
-      {
-        action: "heatMaps",
-        icon: <HeatmapIcon fontSize="medium" />,
-      },
+      // {
+      //   action: "heatMaps",
+      //   icon: <HeatmapIcon fontSize="medium" />,
+      // },
       {
         action: "base",
         icon: <BasemapIcon fontSize="medium" />,
@@ -374,7 +374,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems,
                   </Tabs>
                 </Grid>
               )}
-              <Grid item xs={searchState ? 12 : 1}>
+              {/* <Grid item xs={searchState ? 12 : 1}>
                 <div className={classes.search}>
                   {
                     type === "layer" &&
@@ -406,7 +406,7 @@ function Panel({ type, title, headerButton, handleToggle, onDragEnd, panelItems,
                     </>
                   }
                 </div>
-              </Grid>
+              </Grid> */}
             </Grid>
           </StyledMenuHActionHeader>
 

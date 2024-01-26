@@ -269,18 +269,18 @@ export default function MapControls(props) {
 
   const createSpeedDialActions = () => {
     const actions = [
-      {
-        icon: mapGridCardActiveTap === 1 && mapGridCardActivated ? <GpsFixedIcon /> : <GpsNotFixedIcon />,
-        name: "Tracked",
-        action: "track",
-      },
+      // {
+      //   icon: mapGridCardActiveTap === 1 && mapGridCardActivated ? <GpsFixedIcon /> : <GpsNotFixedIcon />,
+      //   name: "Tracked",
+      //   action: "track",
+      // },
       { icon: <LanguageIcon id="base" />, name: "Base Map", action: "base" },
       { icon: <LayersIcon id="layer" />, name: "Layers", action: "layer" },
-      {
-        icon: <GradientIcon id="heatMaps" />,
-        name: "Heatmaps",
-        action: "heatMaps",
-      },
+      // {
+      //   icon: <GradientIcon id="heatMaps" />,
+      //   name: "Heatmaps",
+      //   action: "heatMaps",
+      // },
       {
         icon: !stateApp.editDraw ? <EditIcon id="mapEditIcon" /> : <CancelIcon />,
         name: "Draw",
