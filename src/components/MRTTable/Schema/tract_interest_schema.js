@@ -31,7 +31,7 @@ const TractInterestsMeta = {
       accessorKey: 'id',
     },
     {
-      ...CommonSchema.HIDDEN,
+      ...CommonSchema.MONGO_ID,
       name: '_id',
       accessorKey: '_id',
     },
@@ -53,27 +53,27 @@ const TractInterestsMeta = {
     },
 
     {
-			...CommonSchema.INITAIL_PINNED,
-			name: 'contact.entityDetail.name.keyword',
-			accessorKey: 'contact.entityDetail.name',
-			header: 'Contact Name',
-			Cell: ({ renderedCellValue, row }) => (
-				<div
-					style={{
-						display: 'flex',
-						alignItems: 'center',
-					}}
-				>
-					<ColumnWithLink
-						value={renderedCellValue}
-						link={`/contact/details/${row?.original?.contactId}`}
-						onClick={e => {
-							e.stopPropagation();
-						}}
-					/>
-				</div>
-			),
-		},
+      ...CommonSchema.INITAIL_PINNED,
+      name: 'contact.entityDetail.name.keyword',
+      accessorKey: 'contact.entityDetail.name',
+      header: 'Contact Name',
+      Cell: ({ renderedCellValue, row }) => (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <ColumnWithLink
+            value={renderedCellValue}
+            link={`/contact/details/${row?.original?.contactId}`}
+            onClick={e => {
+              e.stopPropagation();
+            }}
+          />
+        </div>
+      ),
+    },
 
 
     {
@@ -83,7 +83,7 @@ const TractInterestsMeta = {
       id: 'contact.entityDetail.name',
       header: 'Owner Name',
     },
-    
+
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'shape.shapeJson.properties.shapeLabel.keyword',
@@ -224,109 +224,109 @@ const TractInterestsMeta = {
       isSearchField: false,
     },
 
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'offer_price_nma',
-			accessorKey: 'offer_price_nma',
-			header: 'Target Offer (NMA)',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price_nma)}</>,
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'max_offer_price_nma',
-			accessorKey: 'max_offer_price_nma',
-			header: 'Max Offer (NMA)',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price_nma)}</>,
-		},
-
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'offer_price',
-			accessorKey: 'offer_price',
-			header: 'Target Offer (NRA)',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price)}</>,
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'max_offer_price',
-			accessorKey: 'max_offer_price',
-			header: 'Max Offer (NRA)',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price)}</>,
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'seller_asking_price',
-			accessorKey: 'seller_asking_price',
-			header: 'Seller Asking Price',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => <>{vf_currency(row?.original?.seller_asking_price)}</>,
-		},
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'competitor_offer_price',
-			accessorKey: 'competitor_offer_price',
-			header: 'Competitor Offer Price',
-			isSearchField: false,
-			type: 'number',
-			size: 300,
-			Cell: ({ row }) => <>{vf_currency(row?.original?.competitor_offer_price)}</>,
-		},
-
-
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'actual_offer_price',
-			accessorKey: 'actual_offer_price',
-			header: 'Actual Offer Price',
-			isSearchField: false,
-			type: 'number',
-			Cell: ({ row }) => <>{vf_currency(row?.original?.actual_offer_price)}</>,
-		},
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'offer_price_nma',
+      accessorKey: 'offer_price_nma',
+      header: 'Target Offer (NMA)',
+      isSearchField: false,
+      type: 'number',
+      Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price_nma)}</>,
+    },
 
     {
-			...CommonSchema.COMMON_COLUMN,
-			name: 'contact.contactStatus.keyword',
-			accessorFn: row => row?.contact?.contactStatus,
-			id: 'contact.contactStatus',
-			header: 'Contact Status',
-		},
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'max_offer_price_nma',
+      accessorKey: 'max_offer_price_nma',
+      header: 'Max Offer (NMA)',
+      isSearchField: false,
+      type: 'number',
+      Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price_nma)}</>,
+    },
 
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'contact.status.keyword',
-			accessorFn: row => row?.contact?.status,
-			id: 'contact.status',
-			header: 'Contact Stage',
-		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'contactOwners.keyword',
-			accessorKey: 'contactOwners',
-			header: 'Contact Owner',
-			Cell: ({ row }) => {
-				return <div>{row?.original?.contactOwners[0]}</div>
-			}
-		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'leaseStatus.keyword',
-			accessorKey: 'leaseStatus',
-			header: 'Lease Status',
-		},
+
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'offer_price',
+      accessorKey: 'offer_price',
+      header: 'Target Offer (NRA)',
+      isSearchField: false,
+      type: 'number',
+      Cell: ({ row }) => <>{vf_currency(row?.original?.offer_price)}</>,
+    },
+
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'max_offer_price',
+      accessorKey: 'max_offer_price',
+      header: 'Max Offer (NRA)',
+      isSearchField: false,
+      type: 'number',
+      Cell: ({ row }) => <>{vf_currency(row?.original?.max_offer_price)}</>,
+    },
+
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'seller_asking_price',
+      accessorKey: 'seller_asking_price',
+      header: 'Seller Asking Price',
+      isSearchField: false,
+      type: 'number',
+      Cell: ({ row }) => <>{vf_currency(row?.original?.seller_asking_price)}</>,
+    },
+
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'competitor_offer_price',
+      accessorKey: 'competitor_offer_price',
+      header: 'Competitor Offer Price',
+      isSearchField: false,
+      type: 'number',
+      size: 300,
+      Cell: ({ row }) => <>{vf_currency(row?.original?.competitor_offer_price)}</>,
+    },
+
+
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'actual_offer_price',
+      accessorKey: 'actual_offer_price',
+      header: 'Actual Offer Price',
+      isSearchField: false,
+      type: 'number',
+      Cell: ({ row }) => <>{vf_currency(row?.original?.actual_offer_price)}</>,
+    },
+
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'contact.contactStatus.keyword',
+      accessorFn: row => row?.contact?.contactStatus,
+      id: 'contact.contactStatus',
+      header: 'Contact Status',
+    },
+
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'contact.status.keyword',
+      accessorFn: row => row?.contact?.status,
+      id: 'contact.status',
+      header: 'Contact Stage',
+    },
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'contactOwners.keyword',
+      accessorKey: 'contactOwners',
+      header: 'Contact Owner',
+      Cell: ({ row }) => {
+        return <div>{row?.original?.contactOwners[0]}</div>
+      }
+    },
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'leaseStatus.keyword',
+      accessorKey: 'leaseStatus',
+      header: 'Lease Status',
+    },
 
 
     // {
@@ -344,37 +344,37 @@ const TractInterestsMeta = {
       Cell: ({ renderedCellValue }) => <CampaignNameField value={renderedCellValue} fullWidth disabled />,
     },
     {
-			...CommonSchema.COMMON_COLUMN,
-			name: 'campaignPriority.keyword',
-			accessorKey: 'campaignPriority',
-			header: 'Campaign Priority',
-		},
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'campaignPriority.keyword',
+      accessorKey: 'campaignPriority',
+      header: 'Campaign Priority',
+    },
     {
-			...CommonSchema.COMMON_COLUMN,
-			name: 'deals.name.keyword',
-			accessorKey: 'deals.name',
-			isExport: 'dealsName',
-			header: 'Associated Deals',
-			isSearchField: true,
-			Cell: ({ row }) => {
-				return (
-					<div>
-						{(row?.original?.deals && Array.isArray(row?.original?.deals)) ? (
-							<div
-								style={{
-									display: 'flex',
-									flexWrap: 'wrap',
-								}}
-							>
-								<ListChips list={row?.original?.deals} />
-							</div>
-						) : (
-							<div />
-						)}
-					</div>
-				);
-			},
-		},
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'deals.name.keyword',
+      accessorKey: 'deals.name',
+      isExport: 'dealsName',
+      header: 'Associated Deals',
+      isSearchField: true,
+      Cell: ({ row }) => {
+        return (
+          <div>
+            {(row?.original?.deals && Array.isArray(row?.original?.deals)) ? (
+              <div
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <ListChips list={row?.original?.deals} />
+              </div>
+            ) : (
+              <div />
+            )}
+          </div>
+        );
+      },
+    },
     {
       ...CommonSchema.TAGS,
       Cell: ({ row }) => {

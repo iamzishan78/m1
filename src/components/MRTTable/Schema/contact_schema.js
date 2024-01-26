@@ -57,7 +57,7 @@ const ContactMeta = {
 	showAddContactButton: true,
 	TableSchema: [
 		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
 			header: "M1neral Contact System ID",
