@@ -113,6 +113,22 @@ const UnitInterestMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword',
+			id: 'shape.shapeJson.properties.originalProperties.StateAbbreviation',
+			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.StateAbbreviation,
+			header: 'State',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shape.shapeJson.properties.originalProperties.County.keyword',
+			id: 'shape.shapeJson.properties.originalProperties.County',
+			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.County,
+			header: 'County',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'shape.shapeJson.properties.uAcres.keyword',
 			accessorKey: 'shape.shapeJson.properties.uAcres',
 			header: 'Unit Acres',
