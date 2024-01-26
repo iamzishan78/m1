@@ -151,7 +151,7 @@ const getHeaders = ({ interestMapping, layerType }) => {
       options: { sort: true, filter: true },
     },
     ...(interestMapping?.['Mineral Interest']?.includes(layerType) ? [{ name: "mineral_interest", esKey: "mineral_interest", type: "number", label: "MI", options: { filter: true } }] : []),
-    ...(interestMapping?.['Lease Royalty Interest']?.includes(layerType) ? [{ name: "lease_royalty_interest", esKey: "lease_royalty_interest", type: "number", label: "Lease RI", options: { filter: true } }] : []),
+    // ...(interestMapping?.['Lease Royalty Interest']?.includes(layerType) ? [{ name: "lease_royalty_interest", esKey: "lease_royalty_interest", type: "number", label: "Lease RI", options: { filter: true } }] : []),
     ...(interestMapping?.['Royalty Interest']?.includes(layerType) ? [{ name: "royalty_interest", esKey: "royalty_interest", type: "number", label: "Actual RI", options: { filter: true } }] : []),
     ...(interestMapping?.['Overriding Royalty Interest (ORRI)']?.includes(layerType) ? [{
       name: "orri",
