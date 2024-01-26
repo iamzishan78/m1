@@ -45,13 +45,9 @@ const UnitInterestMeta = {
 	},
 	TableSchema: [
 		{
-			...CommonSchema.COMMON_COLUMN,
+			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
-			header: "M1neral System ID",
-			hidden: true,
-			size: 300,
-			isHiddenFieldExport: true,
 		},
 
 		{
