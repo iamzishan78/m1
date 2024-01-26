@@ -1,0 +1,30 @@
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+  - ahmadfaraz/cypress-component-testing
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  NODE_OPTIONS: --max_old_space_size=32768
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "16.15.0"
+    displayName: "Install Node.js"
+
+  - task: Npm@1
+    inputs:
+      command: "install"
+    displayName: "Npm Install"
+
+  - task: geeklearningio.gl-vsts-tasks-yarn.yarn-task.Yarn@3
+    displayName: 'Yarn Run CI'
+    inputs:
+      projectDirectory: src
+      arguments: 'ci:ci-login-component'

@@ -4,11 +4,12 @@ let globalData = { agreementData: {}, relatedTractData: {} };
 module.exports = defineConfig({
   projectId: "hzhfd6",
   chromeWebSecurity: false,
-  video: true,
+  video: false,
   videoCompression: 32,
   videoUploadOnPasses: false,
   retries: 2,
-  numTestsKeptInMemory: 2,  // Number of tests to keep in memory for debugging purposes
+  numTestsKeptInMemory: 3,
+  experimentalMemoryManagement: true,
 
   env: {
     TENENT: 'm1production'
@@ -38,6 +39,6 @@ module.exports = defineConfig({
       framework: "create-react-app",
       bundler: "webpack",
     },
-    specPattern: 'cypress/component/**/*.cy.*'
+    specPattern: 'cypress/component/**/*.cy*'
   },
 });

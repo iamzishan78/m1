@@ -11,7 +11,7 @@ import Providers from 'Providers';
 import { ConnectedRouter } from 'connected-react-router';
 import { history } from 'store';
 
-ReactDOM.render(<Providers>   <ConnectedRouter history={history}> <Login history={history} /></ConnectedRouter></Providers>, document.getElementById('root'));
+ReactDOM.render(<Providers> <ConnectedRouter history={history}> <Login history={history} /></ConnectedRouter></Providers>, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
