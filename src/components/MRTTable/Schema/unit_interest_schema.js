@@ -45,9 +45,12 @@ const UnitInterestMeta = {
 	},
 	TableSchema: [
 		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.COMMON_COLUMN,
 			name: '_id',
 			accessorKey: '_id',
+			header: "M1neral System ID",
+			hidden: true,
+			size: 300
 		},
 
 		{
@@ -84,7 +87,7 @@ const UnitInterestMeta = {
 			name: 'contact.entityDetail.currentAddress.keyword',
 			accessorKey: 'contact.entityDetail.currentAddress',
 			header: 'Current Address',
-			isExportAllowed: true,
+			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
@@ -93,7 +96,7 @@ const UnitInterestMeta = {
 			name: 'contact.entityDetail.primaryAddress.keyword',
 			accessorKey: 'contact.entityDetail.primaryAddress',
 			header: 'Primary Address',
-			isExportAllowed: true,
+			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
