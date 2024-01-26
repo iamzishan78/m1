@@ -54,7 +54,7 @@ export const CommonSchema = {
 		enableColumnOrdering: false,
 		enableSorting: false,
 		size: 250,
-		isExportAllowed: true,
+		isHiddenFieldExport: true,
 	},
 	INITAIL_PINNED: {
 		isPinned: true,
