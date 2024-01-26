@@ -6,12 +6,7 @@ describe('Contact.cy.jsx', () => {
   beforeEach(() => {
     cy.interceptApiByIndex('getESSimpleSearch', 'contacts_flat');
 
-    cy.viewport(1600, 1200).mount(
-      <MRTTable
-        name="ContactTable"
-        overrideMeta={{ isDefaultGridView: true, columnVirtualization: false }}
-      />
-    );
+    cy.viewport(1600, 1200).mount(<MRTTable name="ContactTable" />);
   });
 
   it('sorts by Name & Last Updated', () => {

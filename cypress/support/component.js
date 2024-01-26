@@ -36,9 +36,10 @@ Cypress.Commands.add('mount', (component, { disableContactBulkProgress, testCase
     x_zumo_auth: ldata.x_zumo_auth,
     user: userData,
     cypress: {
-      disableContactBulkProgress: disableContactBulkProgress || true
+      disableContactBulkProgress: disableContactBulkProgress || true,
+      mrtOverrideMeta: { isDefaultGridView: true, columnVirtualization: false },
     },
-    testCase
+    testCase,
   });
 
 
