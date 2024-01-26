@@ -50,7 +50,8 @@ const UnitInterestMeta = {
 			accessorKey: '_id',
 			header: "M1neral System ID",
 			hidden: true,
-			size: 300
+			size: 300,
+			isHiddenFieldExport: true,
 		},
 
 		{
