@@ -7,6 +7,7 @@ import GridView from 'components/MRTTable/Common/GridView';
 import TabHeader from 'components/MRSimpleTable/Common/TabHeader';
 import { globalStateController } from 'hookstate/globalStateController';
 import { excludeFilters } from './CommonToolBarActions';
+import _ from 'lodash';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const tableState = tableController(tableKey).useCompleteState();
@@ -123,7 +124,7 @@ function ToolbarActions({ table, tableKey, children }) {
 			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
 				{children || <div />}
 
-				<IconButton onClick={handleExport}>
+				<IconButton onClick={handleExport} data-testid="download-csv">
 					<Tooltip title="Download CSV" aria-label="add">
 						<CloudDownloadIcon />
 					</Tooltip>

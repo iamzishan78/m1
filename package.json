@@ -156,11 +156,12 @@
     "yarn": "^1.22.19"
   },
   "scripts": {
-    "cypress:open": "cypress open",
+    "cy:open": "cypress open",
     "cy:run": "cypress run --headless --browser chrome",
     "cy:report": "cypress run --headless --browser chrome --spec 'cypress/e2e/Activities/verifyActivityCompleted.cy.js'  --browser chrome",
     "legacy-start": "react-scripts start",
     "start": "craco start",
+    "cypress:start": "cross-env CYPRESS=true craco start",
     "legacy-build": "react-scripts build",
     "build": "craco build",
     "legacy-test": "react-scripts test",
@@ -168,7 +169,9 @@
     "eject": "react-scripts eject",
     "ci:start-server": "http-server -p 3000",
     "ci:cy-run": "start-server-and-test start http://localhost:3000 cy:run",
-    "cy:ci": "START_SERVER_AND_TEST_INSECURE=1 start-server-and-test start https-get://localhost:3000 cy:run"
+    "cy:component": "cypress run --component --browser chrome",
+    "cy:ci-login": "cross-env START_SERVER_AND_TEST_INSECURE=1 start-server-and-test cypress:start http://localhost:3000 \"cross-env TENENT=m1production cypress run --spec 'cypress/e2e/login.cy.js' --browser chrome\"",
+    "ci:ci-login-component": "npm run cy:ci-login && npm run cy:component"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -200,7 +203,8 @@
   "license": "ISC",
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
-    "cypress": "^11.2.0",
+    "cross-env": "^7.0.3",
+    "cypress": "^13.6.3",
     "start-server-and-test": "^1.14.0"
   }
 }
