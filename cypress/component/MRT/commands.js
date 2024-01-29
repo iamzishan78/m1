@@ -60,7 +60,7 @@ Cypress.Commands.add(
       responseTimeout: basic_timeouts.midTimeout,
     });
 
-    cy.wait(500);
+    cy.wait(100);
 
     let ariaLabel = `Sort by ${column.name} ascending`;
     if (sorting === 'ascending') ariaLabel = `Sorted by ${column.name} ascending`;
@@ -71,10 +71,19 @@ Cypress.Commands.add(
       .get(`[aria-label="${ariaLabel}"]`);
 
     if (!!sorting)
-      cy.mrtCompareSort({
-        sorting,
-        ...column,
-      });
+      cy.get('table > thead > tr > th.MuiTableCell-root.MuiTableCell-head')
+        .filter((index, element) => {
+          // Use a filter function to find the correct column header by text content
+          return Cypress.$(element).text().includes(column.name);
+        })
+        .invoke('index') // Get the index of the matching column header
+        .then(index => {
+          cy.mrtCompareSort({
+            sorting,
+            index,
+            ...column,
+          });
+        });
   }
 );
 

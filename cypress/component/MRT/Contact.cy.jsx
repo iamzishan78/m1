@@ -12,13 +12,11 @@ describe('Contact.cy.jsx', () => {
   it('sorts by Name & Last Updated', () => {
     const columns = [
       {
-        index: 2,
         name: 'Name',
         type: 'string',
         selector: 'div > p > div > div > a',
       },
       {
-        index: 18,
         name: 'Last Updated',
         type: 'date',
       },
@@ -28,7 +26,7 @@ describe('Contact.cy.jsx', () => {
       responseTimeout: basic_timeouts.midTimeout,
     });
 
-    cy.wait(500);
+    cy.wait(100);
 
     cy.mrtSortColumns({ columns });
   });
