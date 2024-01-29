@@ -45,7 +45,7 @@ export const CommonSchema = {
 		enableSorting: false,
 	},
 	MONGO_ID: {
-		header: 'M1 Syestem ID',
+		header: 'M1neral System ID',
 		isSearchField: false,
 		hidden: true,
 		enableColumnFilter: false,
