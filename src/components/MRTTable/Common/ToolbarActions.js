@@ -7,6 +7,7 @@ import GridView from 'components/MRTTable/Common/GridView';
 import TabHeader from 'components/MRSimpleTable/Common/TabHeader';
 import { globalStateController } from 'hookstate/globalStateController';
 import { excludeFilters } from './CommonToolBarActions';
+import _ from 'lodash';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const tableState = tableController(tableKey).useCompleteState();
