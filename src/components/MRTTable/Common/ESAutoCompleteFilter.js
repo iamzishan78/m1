@@ -133,6 +133,7 @@ function ESAutoCompleteFilter({
 						value: filterSelectOptions
 							? filterSelectOptions.find(op => op.value === params.inputProps.value)?.label || ''
 							: params?.inputProps?.value,
+						'data-testid': `${multiple ? 'multi' : 'single'}-filter-${label}`,
 					}}
 					placeholder={`Filter by ${label}`}
 					variant="standard"
