@@ -122,7 +122,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 				>
 					Cancel
 				</Button>
-				<Button id="deleteButton" onClick={handleExport} color="secondary">
+				<Button id="deleteButton" data-testid="export-confirm" onClick={handleExport} color="secondary">
 					Export
 				</Button>
 			</DialogActions>

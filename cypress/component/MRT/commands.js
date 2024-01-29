@@ -1,4 +1,6 @@
+/* eslint-disable no-undef */
 import { basic_timeouts } from '../../cypressUtils/data';
+import ldata from '../../fixtures/ldata.json';
 
 Cypress.Commands.add('mrtInvokeText', ({ selector, as, index = 0, rowIndex = 0 }) => {
   if (selector) {
@@ -135,4 +137,35 @@ Cypress.Commands.add('mrtSingleSelect', ({ column }) => {
           // });
         });
     });
+});
+
+Cypress.Commands.add('mrtExport', ({ columns }) => {
+  cy.interceptApi('initializeExportJob', null, null, ldata.url);
+
+  if (columns[0].name === 'M1neral System ID') {
+    cy.get('.MuiButtonBase-root[aria-label="Show/Hide columns"]').click();
+
+    cy.get('ul.MuiList-root > li.MuiButtonBase-root').contains(columns[0].name).click();
+    cy.get('body').click();
+  }
+
+  cy.get('input.PrivateSwitchBase-input[aria-label="Toggle select row"]').first().click();
+  cy.get('input.PrivateSwitchBase-input[aria-label="Toggle select row"]').eq(1).click();
+
+  cy.get('.MuiButtonBase-root[data-testid="download-csv"]').click();
+
+  cy.get('.MuiButtonBase-root[data-testid="export-confirm"]').click();
+
+  cy.verifyApiResponse('@initializeExportJobApi', {
+    responseTimeout: basic_timeouts.longTimeout,
+  }).then(response => {
+    const responseColumns =
+      response.response.body.data.initializeExportJob.job.requestPayload.columns;
+
+    cy.expect(
+      columns.every(column =>
+        responseColumns.some(responseColumn => responseColumn.label === column.name)
+      )
+    ).to.be.equal(true);
+  });
 });

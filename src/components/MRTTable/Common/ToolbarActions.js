@@ -124,7 +124,7 @@ function ToolbarActions({ table, tableKey, children }) {
 			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
 				{children || <div />}
 
-				<IconButton onClick={handleExport}>
+				<IconButton onClick={handleExport} data-testid="download-csv">
 					<Tooltip title="Download CSV" aria-label="add">
 						<CloudDownloadIcon />
 					</Tooltip>
