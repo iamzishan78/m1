@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 import { basic_timeouts } from '../../cypressUtils/data';
-import ldata from '../../fixtures/ldata.json';
 
 Cypress.Commands.add('mrtInvokeText', ({ selector, as, index = 0, rowIndex = 0 }) => {
   if (selector) {
@@ -140,7 +139,7 @@ Cypress.Commands.add('mrtSingleSelect', ({ column }) => {
 });
 
 Cypress.Commands.add('mrtExport', ({ columns }) => {
-  cy.interceptApi('initializeExportJob', null, null, ldata.url);
+  cy.interceptApi('initializeExportJob');
 
   if (columns[0].name === 'M1neral System ID') {
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide columns"]').click();

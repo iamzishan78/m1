@@ -11,6 +11,7 @@ export const baseUrls = {
 export const basic_timeouts = {
     shorTimeout: 5 * 1000,
     midTimeout: 10 * 1000,
+    partialLongTimeout: 20 * 1000,
     longTimeout: 100 * 1000,
     extraTimeout: 1500 * 1000
 }

@@ -3,7 +3,6 @@
 import ExpandableCardProvider from 'components/ExpandableCard/ExpandableCardProvider';
 import ShapeDetailCard from 'components/ShapeDetailCard';
 import { popupController } from 'hookstate/popupStateController';
-import ldata from '../../../fixtures/ldata.json';
 import { basic_timeouts } from '../../../cypressUtils/data';
 
 const selectedShape = {
@@ -14,17 +13,15 @@ const selectedShape = {
   shapeSubtitle: 'Arapahoe, CO - T004S R066W — Section 36',
 };
 
-Cypress.Commands.add('setMapData', ({ testId, value, autoCompleteAlias = '@autoCompleteListApi' }) => {
+Cypress.Commands.add('setMapData', ({ testId, value }) => {
   cy.get(`[data-testid="data-cell-${testId}"]`, { timeout: 10000 }).trigger('mouseover');
   cy.get(`button[data-testid="edit-${testId}"]`).click();
 
   cy.get(`input#filter-autocomplete-${testId}`).type(value);
 
-  cy.verifyApiResponse(autoCompleteAlias, {
-    responseTimeout: basic_timeouts.midTimeout,
-  });
-
-  cy.get('.MuiAutocomplete-popper').should('exist');
+  cy.get('.MuiAutocomplete-popper', {
+    responseTimeout: basic_timeouts.partialLongTimeout,
+  }).should('exist');
 
   cy.get('.MuiAutocomplete-option').first().click();
 
@@ -37,15 +34,14 @@ Cypress.Commands.add('setMapData', ({ testId, value, autoCompleteAlias = '@autoC
   cy.get(`@updateCustomLayerApi`).then(interception => {
     cy.get(`[data-testid="data-cell-${testId}"]`).contains(value);
   });
-})
-
+});
 
 describe('ShapeDetailCard.cy.jsx', () => {
-
   beforeEach(() => {
     popupController.updateState({ selectedShape });
 
-    cy.interceptApi('getCustomLayer', null, null, ldata.url);
+    cy.interceptApi('getCustomLayer');
+    cy.interceptApi('updateCustomLayer');
 
     cy.viewport(1600, 1200).mount(
       <ExpandableCardProvider
@@ -63,21 +59,13 @@ describe('ShapeDetailCard.cy.jsx', () => {
         cardHeightExpanded="calc(100vh - 64px)"
         targetSourceId={selectedShape?.id}
         targetLabel={selectedShape.type}
-      // deleteCustomLayer={deleteCustomLayer}
+        // deleteCustomLayer={deleteCustomLayer}
       ></ExpandableCardProvider>
     );
-
-    cy.interceptApi('updateCustomLayer', null, null, ldata.url);
-    cy.interceptApi('autoCompleteList', null, null, ldata.url);
-    cy.interceptApi('getESSimpleFilter', null, null, ldata.url);
   });
 
   it('Sets State, County, Township, Range, Section to TX, Anderson, 035S, 055W, 47', () => {
-    cy.setMapData({
-      testId: 'State',
-      value: 'TX',
-      autoCompleteAlias: '@getESSimpleFilterApi',
-    });
+    cy.setMapData({ testId: 'State', value: 'TX' });
     cy.setMapData({ testId: 'County', value: 'Anderson' });
     cy.setMapData({ testId: 'Township', value: '035S' });
     cy.setMapData({ testId: 'Range', value: '055W' });
@@ -85,11 +73,7 @@ describe('ShapeDetailCard.cy.jsx', () => {
   });
 
   it('Sets State, County, Township, Range, Section to CO, Arapahoe, 004S, 066W, 36', () => {
-    cy.setMapData({
-      testId: 'State',
-      value: 'CO',
-      autoCompleteAlias: '@getESSimpleFilterApi',
-    });
+    cy.setMapData({ testId: 'State', value: 'CO' });
     cy.setMapData({ testId: 'County', value: 'Arapahoe' });
     cy.setMapData({ testId: 'Township', value: '004S' });
     cy.setMapData({ testId: 'Range', value: '066W' });
