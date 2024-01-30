@@ -173,7 +173,6 @@ function Providers({ children, headersData }) {
     }
   };
 
-  console.log(stateValues?.cypress)
   return (
     <ReduxProvider store={store}>
       <Notifications />
