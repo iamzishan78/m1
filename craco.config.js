@@ -34,13 +34,18 @@ module.exports = {
     enable: false
   },
   webpack: {
+    configure: (webpackConfig, { env, paths, ...rest }) => {
+      webpackConfig.entry = process.env.CYPRESS === 'true' ? './src/cypress.js' : './src/index.js';
+      return webpackConfig;
+    },
+
     plugins: [
       new ProvidePlugin({
         React: 'react',
       }),
     ],
   },
-  plugins: [{ 
+  plugins: [{
     plugin: CracoEsbuildPlugin,
     options: {
       esbuildLoaderOptions: {

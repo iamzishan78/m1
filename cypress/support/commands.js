@@ -31,7 +31,7 @@ import { baseUrls, basic_timeouts, loginCredential } from "../cypressUtils/data"
 import { camelize, findInObject, isSearchStringMatched } from "../cypressUtils/helper";
 
 // Constants
-const workSpace = Cypress.env('WORK_SPACE') || "m1dev"
+const workSpace = Cypress.env('TENENT') || "localhost"
 const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
 
 // Common Commands
@@ -68,9 +68,9 @@ Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId = null) 
 
 /*This command is to intercept graphql api by operation name and if searchString is passed it will only
 intercept if api payload has that string in search */
-Cypress.Commands.add('interceptApi', (operationName, payloadKey = null, alias = null) => {
+Cypress.Commands.add('interceptApi', (operationName, payloadKey = null, alias = null, url = baseUrls[workSpace]) => {
 
-    cy.intercept('POST', baseUrls[workSpace], req => {
+    cy.intercept('POST', url, req => {
         if (req.body.operationName === operationName) {
             if (payloadKey) {
                 const { variables } = req.body
