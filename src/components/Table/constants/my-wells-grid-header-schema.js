@@ -4,6 +4,7 @@ import moment from "moment";
 import vf_number from "components/Shared/valueformatters/vf_number";
 import { statusData } from "components/Table/Revenue/RevenuePropertiesTable";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
+import { globalStateController } from "hookstate/globalStateController";
 
 const dateCustomRender = (value) =>
   value ? (moment(new Date(value)).format("MM/DD/YYYY") === "Invalid date" ? "" : moment(new Date(value)).format("MM/DD/YYYY")) : "";
@@ -30,8 +31,15 @@ const wellsColumnHeaders = [
       filter: true,
       customRender: (value, tableMeta) => {
         const globalWellId = tableMeta.rowData[0];
-
-        return <ColumnWithLink value={value} link={`/land/well/details/${globalWellId}`} />;
+        const onClick = () => {
+          globalStateController.updateState({
+            testCase: {
+              name: "MyWellsNameUpdate",
+              globalWellId
+            }
+          });
+        }
+        return <ColumnWithLink value={value} link={`/land/well/details/${globalWellId}`} onClickForTestCase={onClick} />;
       },
     },
   },

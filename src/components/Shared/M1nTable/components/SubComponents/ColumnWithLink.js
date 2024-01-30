@@ -40,14 +40,18 @@ const ColumnWithLink = ({ value, link, ...rest }) => {
   return (
     <Box
       {...rest}
-      onClick={
-        rest.onClick
-          ? rest.onClick
-          : (e) => {
-            e.stopPropagation();
-            history.push(link);
-          }
-      }
+      onClick={(e) => {
+        e.stopPropagation();
+        if (rest.onClickForTestCase) {
+          rest.onClickForTestCase();
+        }
+        if (rest.onClick) {
+          rest.onClick();
+        } else {
+          history.push(link);
+        }
+
+      }}
     >
       {!rest.disabled ? (
         <div className={classes.root}>
@@ -64,7 +68,7 @@ const ColumnWithLink = ({ value, link, ...rest }) => {
       ) : (
         value
       )}
-    </Box>
+    </Box >
   );
 };
 
