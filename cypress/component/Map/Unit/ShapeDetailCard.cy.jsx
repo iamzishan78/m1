@@ -4,6 +4,7 @@ import ExpandableCardProvider from 'components/ExpandableCard/ExpandableCardProv
 import ShapeDetailCard from 'components/ShapeDetailCard';
 import { popupController } from 'hookstate/popupStateController';
 import { basic_timeouts } from '../../../cypressUtils/data';
+import ldata from '../../../fixtures/ldata.json';
 
 const selectedShape = {
   id: '65b0c87166115215f9155bc4',
@@ -36,6 +37,31 @@ Cypress.Commands.add('setMapData', ({ testId, value }) => {
   });
 });
 
+describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
+
+  it('Restoring Unit 65b0c87166115215f9155bc4', () => {
+
+    // Define your headers
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-ZUMO-AUTH': ldata.x_zumo_auth,
+    };
+
+    // Define your request payload
+    const payload = { "operationName": "updateCustomLayer", "variables": { "customLayerId": "65b0c87166115215f9155bc4", "customLayer": { "IsDeleted": false } }, "query": "mutation updateCustomLayer($customLayerId: ID, $customLayer: CustomLayerInput, $userId: JSON) {\n  updateCustomLayer(\n    customLayerId: $customLayerId\n    customLayer: $customLayer\n    userId: $userId\n  ) {\n    success\n    message\n    error\n    customLayer {\n      _id\n      shape\n      shapeJson\n      qtrQtrSelection\n      name\n      layer\n      user {\n        _id\n        name\n        email\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n" };
+
+    cy.request({
+      method: 'POST',
+      url: `https://m1productiongraphql.azurewebsites.net/api/m1graph?code=8bcIQeGYGoL2XgLZ-O2sWhN7qKU3iMPpw_qboLviLIZWAzFuTQgpgQ==`,
+      headers: headers,
+      body: payload,
+    }).then((response) => {
+      expect(response.status).to.eq(200);
+    });
+  });
+
+});
+
 describe('ShapeDetailCard.cy.jsx', () => {
   beforeEach(() => {
     popupController.updateState({ selectedShape });
@@ -59,9 +85,13 @@ describe('ShapeDetailCard.cy.jsx', () => {
         cardHeightExpanded="calc(100vh - 64px)"
         targetSourceId={selectedShape?.id}
         targetLabel={selectedShape.type}
-        // deleteCustomLayer={deleteCustomLayer}
+      // deleteCustomLayer={deleteCustomLayer}
       ></ExpandableCardProvider>
     );
+
+    cy.verifyApiResponse('@getCustomLayerApi', {
+      responseTimeout: basic_timeouts.midTimeout,
+    });
   });
 
   it('Sets State, County, Township, Range, Section to TX, Anderson, 035S, 055W, 47', () => {
