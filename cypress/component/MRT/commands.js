@@ -93,9 +93,15 @@ Cypress.Commands.add('mrtSortColumns', ({ columns }) => {
 });
 
 Cypress.Commands.add('mrtSingleSelect', ({ column }) => {
+  cy.interceptApi('getESSimpleFilter');
+
   cy.get(`[data-testid="single-filter-${column.name}"]`)
     .as(`single-filter-${column.name}`)
     .click();
+
+  cy.verifyApiResponse('@getESSimpleFilterApi', {
+    responseTimeout: basic_timeouts.midTimeout,
+  });
 
   cy.get('.MuiAutocomplete-popper').should('exist');
 
