@@ -88,6 +88,10 @@ describe('ShapeDetailCard.cy.jsx', () => {
       // deleteCustomLayer={deleteCustomLayer}
       ></ExpandableCardProvider>
     );
+
+    cy.verifyApiResponse('@getCustomLayerApi', {
+      responseTimeout: basic_timeouts.midTimeout,
+    });
   });
 
   it('Sets State, County, Township, Range, Section to TX, Anderson, 035S, 055W, 47', () => {
