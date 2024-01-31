@@ -40,8 +40,8 @@ describe('Contact.cy.jsx', () => {
 
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
 
-    columns.forEach(column => {
-      cy.mrtSingleSelect({ column });
-    });
+    cy.mrtSingleSelect({ column: columns[0] });
+    cy.mrtSingleSelect({ column: columns[1] });
+
   });
 });
