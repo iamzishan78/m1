@@ -43,5 +43,7 @@ describe('Contact.cy.jsx', () => {
     columns.forEach(column => {
       cy.mrtSingleSelect({ column });
     });
+    cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+    cy.mrtMultiSelect({ column: columns[0] });
   });
 });

@@ -28,8 +28,8 @@ function Wells() {
   const [showDialog, setDialog] = useState(false);
   const loadMore = { type: "infiniteScroll", height: "calc(100vh - 166px)" };
   useEffect(() => {
-    if (globalWellId || stateValues?.testCase.globalWellId) setDialog(true);
-  }, [globalWellId, testCase.globalWellId]);
+    if (globalWellId || stateValues.testCase?.globalWellId) setDialog(true);
+  }, [globalWellId, testCase?.globalWellId]);
 
   const Header = () => {
     return (
