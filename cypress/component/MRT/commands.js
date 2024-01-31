@@ -103,6 +103,8 @@ Cypress.Commands.add('mrtSingleSelect', ({ column }) => {
     responseTimeout: basic_timeouts.midTimeout,
   });
 
+  cy.wait(100);
+
   cy.get('.MuiAutocomplete-popper').should('exist');
 
   cy.get('.MuiAutocomplete-option', {
