@@ -6,6 +6,16 @@ export const REMOVECOMMONGRIDFUNCTIONALITY = gql`
 			success
 			message
 			error
+			data
+		}
+	}
+`;
+
+export const REVERTCYPRESSDELETE = gql`
+	mutation revertCypressDelete($data: JSON) {
+		gridGenericRemove(data: $data) {
+			success
+			message
 		}
 	}
 `;

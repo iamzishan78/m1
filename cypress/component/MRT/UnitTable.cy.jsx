@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import MRTTable from "components/MRTTable";
 import { basic_timeouts } from "../../cypressUtils/data";
-import { tableGlobalController } from "hookstate/tableController";
+import { globalStateController } from "hookstate/tableController";
 import ldata from "../../fixtures/ldata.json";
 
 const columns = [{ name: "M1neral System ID" }];
@@ -18,13 +18,13 @@ describe("UnitInterest Table", () => {
     cy.viewport(1600, 1200).mount(<MRTTable name="UnitTable" />);
   });
 
-  // it("exports with M1neral System ID", () => {
-  //   cy.verifyApiResponse("@getESSimpleSearchApiByIndex", {
-  //     responseTimeout: basic_timeouts.midTimeout,
-  //   });
+  it("exports with M1neral System ID", () => {
+    cy.verifyApiResponse("@getESSimpleSearchApiByIndex", {
+      responseTimeout: basic_timeouts.midTimeout,
+    });
 
-  //   cy.mrtExport({ columns });
-  // });
+    cy.mrtExport({ columns });
+  });
 
   it("should delete selected rows", () => {
     cy.verifyApiResponse("@getESSimpleSearchApiByIndex", {
@@ -46,10 +46,8 @@ describe("UnitInterest Table", () => {
         ];
       const deletedIdsArray = response.hits.map((item) => item._id);
 
-      console.log("1st ", deletedIdsArray);
-
-      tableGlobalController.updateState({
-        cypress: {
+      globalStateController.updateState({
+        testCase: {
           cypressDelete: true,
         },
       });
@@ -61,12 +59,13 @@ describe("UnitInterest Table", () => {
         "http://localhost:7071/api/m1graph"
       );
 
-      cy.interceptApi(
-        "getESSimpleSearch",
-        null,
-        null,
-        "http://localhost:7071/api/m1graph"
-      );
+      cy.interceptApiByIndex("getESSimpleSearch", "shapes_flat");
+
+      cy.verifyApiResponse("@getESSimpleSearchApiByIndex", {
+        responseTimeout: basic_timeouts.midTimeout,
+      });
+
+      cy.interceptApiByIndex("getESSimpleSearch", "shapes_flat");
 
       cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
 
@@ -77,9 +76,7 @@ describe("UnitInterest Table", () => {
       cy.verifyApiResponse("@gridGenericRemoveApi", {
         responseTimeout: basic_timeouts.midTimeout,
       }).then((response) => {
-        // cy.interceptApiByIndex("getESSimpleSearch", "shapes_flat");
-
-        cy.verifyApiResponse("@getESSimpleSearchApi", {
+        cy.verifyApiResponse("@getESSimpleSearchApiByIndex", {
           responseTimeout: basic_timeouts.midTimeout,
         }).then((interception) => {
           const response =
@@ -89,13 +86,14 @@ describe("UnitInterest Table", () => {
 
           const reInitializeIdsArray = response.hits.map((item) => item._id);
 
-          console.log("reInitializeIdsArray", reInitializeIdsArray);
-
           const missingIds = deletedIdsArray.filter((id) =>
             reInitializeIdsArray.some((_id) => _id === id)
           );
 
+          console.log("1st ", deletedIdsArray);
+          console.log("reInitializeIdsArray", reInitializeIdsArray);
           console.log("missingIds", missingIds);
+
           cy.wrap(missingIds).should("be.empty");
         });
       });
