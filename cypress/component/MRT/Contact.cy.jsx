@@ -39,6 +39,7 @@ describe('Contact.cy.jsx', () => {
     cy.wait(100);
 
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+    cy.interceptApi('getESSimpleFilter');
 
     cy.mrtSingleSelect({ column: columns[0] });
     cy.mrtSingleSelect({ column: columns[1] });
