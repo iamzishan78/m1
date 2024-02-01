@@ -28,7 +28,7 @@ import CountyField from "components/Revenue/components/Properties/DetailComponen
 import { AutoCompleteLandgrid } from "components/Shared/Forms/Fields/AutoCompleteLandgrid";
 import { US_STATES_CODES } from "utils/data";
 import filterConsts from "components/Table/TableAddDialog/Common/filterConsts";
-
+import { hookstate, useHookstate } from "@hookstate/core";
 
 function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, showMessage, type, InputProps, loading }) {
   const dispatch = useDispatch();
@@ -99,13 +99,29 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
 
   );
 }
+const editIconState = hookstate({});
+
+function EditIconComponent({ data, dataKey, classes, onClick }) {
+  const state = useHookstate(editIconState[dataKey]);
+
+  return <>{state.get() && (
+    <Tooltip title={"Edit"} placement="top">
+      <IconButton
+        size="small"
+        onClick={onClick}
+        data-testid={`edit-${data.label}`}
+      >
+        <CreateTwoToneIcon id="contPencilIcon" className={classes.pencilIcon} />
+      </IconButton>
+    </Tooltip>
+  )}</>
+}
 
 export default function SummaryTableInfo({ tableData, properties, updateProperties, updateCustomProperties, search, metaData = [], id, updating, isCustomLayerAutoComplete }) {
   const classes = summaryTableStyles();
   const dispatch = useDispatch();
   const [, setStateApp] = useContext(AppContext);
   const [tableDataState, setTableDataState] = useState({});
-  const [editIconState, setEditIconState] = useState({});
   const [state, setState] = useState();
   const [county, setCounty] = useState();
 
@@ -301,10 +317,10 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
                 className={classes.cell1}
                 align="left"
                 onMouseEnter={() => {
-                  setEditIconState({ [`${data.key}key`]: true });
+                  editIconState.set({ [`${data.key}key`]: true });
                 }}
                 onMouseLeave={() => {
-                  setEditIconState({ [`${data.key}key`]: false });
+                  editIconState.set({ [`${data.key}key`]: false });
                 }}
               >
                 {(data.isCustom || data.isCustomData) ? (
@@ -333,26 +349,19 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
                             {data.label || "-"}
                           </Grid>
                           <Grid item md={2}>
-                            {editIconState[`${data.key}key`] && (
-                              <Tooltip title={"Edit"} placement="top">
-                                <IconButton
-                                  size="small"
-                                  onClick={() => {
-                                    if (data.isCustom) {
-                                      setTableDataState({ [`${data.key}key`]: true });
-                                    } else {
-                                      setStateApp((stateApp) => ({
-                                        ...stateApp,
-                                        selectedMeta: data,
-                                        showFieldModal: true,
-                                      }));
-                                    }
-                                  }}
-                                >
-                                  <CreateTwoToneIcon id="contPencilIcon" className={classes.pencilIcon} />
-                                </IconButton>
-                              </Tooltip>
-                            )}
+                            {
+                              <EditIconComponent data={data} dataKey={`${data.key}key`} onClick={() => {
+                                if (data.isCustom) {
+                                  setTableDataState({ [`${data.key}key`]: true });
+                                } else {
+                                  setStateApp((stateApp) => ({
+                                    ...stateApp,
+                                    selectedMeta: data,
+                                    showFieldModal: true,
+                                  }));
+                                }
+                              }} classes={classes} />
+                            }
                           </Grid>
                         </Grid>
                       </div>
@@ -366,10 +375,10 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
                 className={classes.cell2}
                 data-testid={`data-cell-${data.label}`}
                 onMouseEnter={() => {
-                  setEditIconState({ [data.key]: true });
+                  editIconState.set({ [data.key]: true });
                 }}
                 onMouseLeave={() => {
-                  setEditIconState({ [data.key]: false });
+                  editIconState.set({ [data.key]: false });
                 }}
               >
                 {tableDataState[data.key] ? (
@@ -631,19 +640,13 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
                       )}
                       {!data.nonEditable && data.key !== "campaignName" && (
                         <Grid item>
-                          {editIconState[data.key] && (
-                            <Tooltip title={"Edit"} placement="top">
-                              <IconButton
-                                size="small"
-                                onClick={() => {
-                                  setTableDataState({ [data.key]: true });
-                                }}
-                                data-testid={`edit-${data.label}`}
-                              >
-                                <CreateTwoToneIcon id="contPencilIcon" className={classes.pencilIcon} />
-                              </IconButton>
-                            </Tooltip>
-                          )}
+                          {
+                            <EditIconComponent data={data} dataKey={data.key} classes={classes}
+                              onClick={() => {
+                                setTableDataState({ [data.key]: true });
+                              }}
+                            />
+                          }
                         </Grid>
                       )}
                     </Grid>

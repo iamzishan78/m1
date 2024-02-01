@@ -8,11 +8,11 @@ module.exports = defineConfig({
   videoCompression: 32,
   videoUploadOnPasses: false,
   retries: 2,
-  numTestsKeptInMemory: 3,
+  numTestsKeptInMemory: 2,
   experimentalMemoryManagement: true,
 
   env: {
-    TENENT: 'm1production'
+    TENENT: 'm1staging'
   },
 
   e2e: {

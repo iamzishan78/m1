@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 import { basic_timeouts } from '../../cypressUtils/data';
-import ldata from '../../fixtures/ldata.json';
 
 Cypress.Commands.add('mrtInvokeText', ({ selector, as, index = 0, rowIndex = 0 }) => {
   if (selector) {
@@ -10,6 +9,7 @@ Cypress.Commands.add('mrtInvokeText', ({ selector, as, index = 0, rowIndex = 0 }
       .invoke('text')
       .as(as);
   } else {
+    cy.log(index)
     cy.get(`tr.MuiTableRow-root[data-index="${rowIndex}"] > td.MuiTableCell-root`)
       .eq(index)
       .invoke('text')
@@ -85,18 +85,22 @@ Cypress.Commands.add(
   }
 );
 
-Cypress.Commands.add('mrtSortColumns', ({ columns }) => {
-  columns.forEach(column => {
-    cy.mrtSort({ column, sorting: 'ascending' });
-    cy.mrtSort({ column, sorting: 'descending' });
-    cy.mrtSort({ column });
-  });
+Cypress.Commands.add('mrtSortColumn', ({ column }) => {
+  cy.mrtSort({ column, sorting: 'ascending' });
+  cy.mrtSort({ column, sorting: 'descending' });
+  cy.mrtSort({ column });
 });
 
 Cypress.Commands.add('mrtSingleSelect', ({ column }) => {
   cy.get(`[data-testid="single-filter-${column.name}"]`)
     .as(`single-filter-${column.name}`)
     .click();
+
+  cy.verifyApiResponse('@getESSimpleFilterApi', {
+    responseTimeout: basic_timeouts.midTimeout,
+  });
+
+  cy.wait(100);
 
   cy.get('.MuiAutocomplete-popper').should('exist');
 
@@ -140,7 +144,7 @@ Cypress.Commands.add('mrtSingleSelect', ({ column }) => {
 });
 
 Cypress.Commands.add('mrtExport', ({ columns }) => {
-  cy.interceptApi('initializeExportJob', null, null, ldata.url);
+  cy.interceptApi('initializeExportJob');
 
   if (columns[0].name === 'M1neral System ID') {
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide columns"]').click();
@@ -169,3 +173,59 @@ Cypress.Commands.add('mrtExport', ({ columns }) => {
     ).to.be.equal(true);
   });
 });
+
+Cypress.Commands.add('mrtMultiSelect', ({ column }) => {
+  function selectAndVerifyOption(index) {
+    cy.get(`[data-testid="multi-filter-${column.name}"]`)
+      .as(`multi-filter-${column.name}`)
+      .click();
+
+    cy.get('.MuiAutocomplete-popper').should('exist');
+
+    cy.get('.MuiAutocomplete-option', { timeout: basic_timeouts.midTimeout })
+      .eq(index)
+      .as(`${column.name}-option`)
+      .invoke('text')
+      .then(columnOption => {
+        cy.get(`@${column.name}-option`).click();
+        cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: basic_timeouts.midTimeout });
+        cy.wait(5000);
+
+        let optionFound = false;
+
+        cy.get('table > thead > tr > th.MuiTableCell-root.MuiTableCell-head')
+          .filter((index, element) => {
+            return Cypress.$(element).text().includes(column.name);
+          })
+          .invoke('index')
+          .then(index => {
+            cy.get('table > tbody > tr').each(($row) => {
+              cy.wrap($row)
+                .find(`td.MuiTableCell-root.MuiTableCell-body:eq(${index})`)
+                .invoke('text')
+                .then((columnValue) => {
+                  if (columnValue.includes(columnOption)) {
+                    optionFound = true;
+                  }
+                });
+            }).then(() => {
+              // eslint-disable-next-line no-unused-expressions
+              expect(optionFound).to.be.true;
+            });
+          });
+      });
+  }
+
+  cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+  cy.wait(5000);
+  cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
+  cy.wait(5000);
+  cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(10):eq(1)').click();
+
+  // Select and verify the first option
+  selectAndVerifyOption(0);
+
+  // Select and verify the second option
+  selectAndVerifyOption(1);
+});
+

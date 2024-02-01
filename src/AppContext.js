@@ -305,6 +305,11 @@ const isDev = process.env.NODE_ENV === "development";
 const setApolloHeaders = (config, authToken, idToken) => {
   if (!config) config = {};
   if (!config.headers) config.headers = {};
+  const cypress = globalStateController.getValue('cypress')
+  if (cypress) {
+    config.headers["CYPRESS"] = 'true';
+    config.headers["SPEC"] = cypress.spec || '';
+  }
   config.headers["X-ZUMO-AUTH"] = authToken;
   if (isDev) config.headers["X-MS-TOKEN-AAD-ID-TOKEN"] = idToken;
   return config;
