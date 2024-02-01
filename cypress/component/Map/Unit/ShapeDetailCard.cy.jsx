@@ -106,7 +106,8 @@ describe('ShapeDetailCard.cy.jsx', () => {
         targetSourceId={selectedShape?.id}
         targetLabel={selectedShape.type}
       // deleteCustomLayer={deleteCustomLayer}
-      ></ExpandableCardProvider>
+      ></ExpandableCardProvider>,
+      { spec: "ShapeDetailCard" }
     );
 
   });

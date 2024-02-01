@@ -103,7 +103,8 @@ function Providers({ children, headersData }) {
   useEffect(() => {
     if (stateValues.apolloClientEndpoint) {
       const authToken = globalStateController.getValue('x_zumo_auth') || stateValues?.user?.authToken
-      updateApolloClient(stateValues.apolloClientEndpoint, authToken, stateValues?.user?.accessToken);
+      const accessToken = globalStateController.getValue('access_token') || stateValues?.user?.accessToken
+      updateApolloClient(stateValues.apolloClientEndpoint, authToken, accessToken);
     } else {
       updateApolloClient()
     }
