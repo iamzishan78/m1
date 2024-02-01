@@ -117,6 +117,8 @@ Cypress.Commands.add('mrtSingleSelect', ({ column }) => {
         responseTimeout: basic_timeouts.midTimeout,
       });
 
+      cy.wait(4000);
+
       cy.get('table > thead > tr > th.MuiTableCell-root.MuiTableCell-head')
         .filter((index, element) => {
           // Use a filter function to find the correct column header by text content

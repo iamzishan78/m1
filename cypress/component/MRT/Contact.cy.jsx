@@ -4,14 +4,14 @@ import { basic_timeouts } from '../../cypressUtils/data';
 
 const columns = [
   {
-    name: 'Name',
-    type: 'string',
-    selector: 'div > p > div > div > a',
-  },
-  {
     name: 'Last Updated',
     type: 'date',
   },
+  {
+    name: 'Name',
+    type: 'string',
+    selector: 'div > p > div > div > a',
+  }
 ];
 
 describe('Contact.cy.jsx', () => {
@@ -52,6 +52,6 @@ describe('Contact.cy.jsx', () => {
     });
 
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
-    cy.mrtMultiSelect({ column: columns[0] });
+    cy.mrtMultiSelect({ column: columns[1] });
   });
 });
