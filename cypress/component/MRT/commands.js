@@ -117,6 +117,8 @@ Cypress.Commands.add('mrtSingleSelect', ({ column }) => {
         responseTimeout: basic_timeouts.midTimeout,
       });
 
+      cy.wait(4000);
+
       cy.get('table > thead > tr > th.MuiTableCell-root.MuiTableCell-head')
         .filter((index, element) => {
           // Use a filter function to find the correct column header by text content
@@ -189,7 +191,7 @@ Cypress.Commands.add('mrtMultiSelect', ({ column }) => {
       .then(columnOption => {
         cy.get(`@${column.name}-option`).click();
         cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: basic_timeouts.midTimeout });
-        cy.wait(5000);
+        cy.wait(basic_timeouts.shorTimeout);
 
         let optionFound = false;
 
@@ -217,9 +219,9 @@ Cypress.Commands.add('mrtMultiSelect', ({ column }) => {
   }
 
   cy.get(`[data-testid="MoreVertIcon"]`).first().click();
-  cy.wait(5000);
+  cy.wait(basic_timeouts.shorTimeout);
   cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
-  cy.wait(5000);
+  cy.wait(basic_timeouts.shorTimeout);
   cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(10):eq(1)').click();
 
   // Select and verify the first option

@@ -29,10 +29,11 @@ import { userData } from '../data';
 import ldata from '../fixtures/ldata.json';
 import { ConnectedRouter } from "connected-react-router";
 import { history } from "store";
+import { baseUrls } from '../cypressUtils/data';
 
 Cypress.Commands.add('mount', (component, { disableContactBulkProgress, testCase, spec } = {}) => {
   globalStateController.updateState({
-    apolloClientEndpoint: ldata.url,
+    apolloClientEndpoint: Cypress.env('TENENT') === 'localhost' ? baseUrls.localhost : ldata.url,
     x_zumo_auth: ldata.x_zumo_auth,
     access_token: ldata.access_token,
     user: userData,

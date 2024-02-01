@@ -122,6 +122,12 @@ function Providers({ children, headersData }) {
   const updateApolloClient = (endpoint, token, idToken) => {
     let fetchOptions = { headers: [] };
     if (token) fetchOptions.headers['X-ZUMO-AUTH'] = token
+    if (idToken) fetchOptions.headers['X-MS-TOKEN-AAD-ID-TOKEN'] = idToken
+    const cypress = globalStateController.getValue('cypress')
+    if (cypress) {
+      fetchOptions.headers["CYPRESS"] = 'true';
+      fetchOptions.headers["SPEC"] = cypress.spec || '';
+    }
     if (apolloClient && token) {
       fetchOptions = setApolloHeaders(apolloClient.link.options, token, idToken);
       fetchOptions.headers.batch = "true"
