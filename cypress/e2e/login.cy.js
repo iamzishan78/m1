@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { baseUrls } from "../cypressUtils/data";
+import { authMe, baseUrls } from "../cypressUtils/data";
 
 
 const tenant = Cypress.env('TENENT') || "localhost"
@@ -9,7 +9,7 @@ describe('Save Login for Component Testing', () => {
     it('Login', () => {
         cy.viewport(1400, 900);
         cy.log(tenant, baseUrls, Cypress.env('TENENT'))
-        cy.intercept('https://m1productiongraphql.azurewebsites.net/.auth/me').as('me')
+        cy.intercept(authMe[tenant]).as('me')
         cy.intercept(baseUrls[tenant]).as('getSettings')
 
         cy.visit('http://localhost:3000', { timeout: 100000 });

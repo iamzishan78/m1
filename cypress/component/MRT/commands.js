@@ -9,6 +9,7 @@ Cypress.Commands.add('mrtInvokeText', ({ selector, as, index = 0, rowIndex = 0 }
       .invoke('text')
       .as(as);
   } else {
+    cy.log(index)
     cy.get(`tr.MuiTableRow-root[data-index="${rowIndex}"] > td.MuiTableCell-root`)
       .eq(index)
       .invoke('text')
