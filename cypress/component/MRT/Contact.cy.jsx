@@ -44,5 +44,13 @@ describe('Contact.cy.jsx', () => {
     cy.mrtSingleSelect({ column: columns[0] });
     cy.mrtSingleSelect({ column: columns[1] });
 
+    cy.interceptApiByIndex('getESSimpleSearch', 'contacts_flat');
+    cy.viewport(1600, 1200).mount(<MRTTable name="ContactTable" />);
+    cy.verifyApiResponse('@getESSimpleSearchApiByIndex', {
+      responseTimeout: basic_timeouts.midTimeout,
+    });
+
+    cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+    cy.mrtMultiSelect({ column: columns[0] });
   });
 });

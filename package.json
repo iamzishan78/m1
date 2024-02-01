@@ -170,8 +170,8 @@
     "ci:start-server": "http-server -p 3000",
     "ci:cy-run": "start-server-and-test start http://localhost:3000 cy:run",
     "cy:component": "cypress run --component --browser chrome",
-    "cy:ci-login": "cross-env START_SERVER_AND_TEST_INSECURE=1 start-server-and-test cypress:start http://localhost:3000 \"cross-env TENENT=m1production cypress run --spec 'cypress/e2e/login.cy.js' --browser chrome\"",
-    "ci:ci-login-component": "npm run cy:ci-login && npm run cy:component"
+    "ci:cy-login": "cross-env START_SERVER_AND_TEST_INSECURE=1 start-server-and-test cypress:start http://localhost:3000 \"cross-env TENENT=m1production cypress run --spec 'cypress/e2e/login.cy.js' --browser chrome\"",
+    "ci:cy-login-component": "npm run ci:cy-login && npm run cy:component"
   },
   "eslintConfig": {
     "extends": "react-app"
