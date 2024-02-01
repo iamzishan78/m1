@@ -5,6 +5,7 @@ export const loginCredential = {
 
 export const baseUrls = {
     m1production: "https://m1productiongraphql.azurewebsites.net/api/m1graph?code=8bcIQeGYGoL2XgLZ-O2sWhN7qKU3iMPpw_qboLviLIZWAzFuTQgpgQ==",
+    m1Staging: "https://m1staginggraphql.azurewebsites.net/api/m1graph?code=n2edloVOIkMy6q4v_Lk8HM9p--sbgpxu1B6nfbc1CUHsAzFuwKCm0w==",
     localhost: "http://localhost:7071/api/m1graph"
 }
 
