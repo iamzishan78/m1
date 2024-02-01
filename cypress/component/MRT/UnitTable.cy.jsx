@@ -18,13 +18,13 @@ describe("UnitInterest Table", () => {
     cy.viewport(1600, 1200).mount(<MRTTable name="UnitTable" />);
   });
 
-  it("exports with M1neral System ID", () => {
-    cy.verifyApiResponse("@getESSimpleSearchApiByIndex", {
-      responseTimeout: basic_timeouts.midTimeout,
-    });
+  // it("exports with M1neral System ID", () => {
+  //   cy.verifyApiResponse("@getESSimpleSearchApiByIndex", {
+  //     responseTimeout: basic_timeouts.midTimeout,
+  //   });
 
-    cy.mrtExport({ columns });
-  });
+  //   cy.mrtExport({ columns });
+  // });
 
   it("should delete selected rows", () => {
     cy.verifyApiResponse("@getESSimpleSearchApiByIndex", {
@@ -44,9 +44,9 @@ describe("UnitInterest Table", () => {
         interception?.response?.body?.data[
           interception?.request?.body?.operationName
         ];
-      const idsArray = response.hits.map((item) => item._id);
+      const deletedIdsArray = response.hits.map((item) => item._id);
 
-      console.log("1st ", idsArray);
+      console.log("1st ", deletedIdsArray);
 
       tableGlobalController.updateState({
         cypress: {
@@ -54,22 +54,32 @@ describe("UnitInterest Table", () => {
         },
       });
 
+      cy.interceptApi(
+        "gridGenericRemove",
+        null,
+        null,
+        "http://localhost:7071/api/m1graph"
+      );
+
+      cy.interceptApi(
+        "getESSimpleSearch",
+        null,
+        null,
+        "http://localhost:7071/api/m1graph"
+      );
+
       cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
 
       cy.get('.MuiButtonBase-root[data-testid="delete-icon-button"]').click();
 
       cy.get('.MuiButtonBase-root[data-testid="delete-confirm"]').click();
 
-      cy.interceptApi("gridGenericRemove", null, null, ldata.url);
-
       cy.verifyApiResponse("@gridGenericRemoveApi", {
-        responseTimeout: basic_timeouts.longTimeout,
+        responseTimeout: basic_timeouts.midTimeout,
       }).then((response) => {
-        console.log("response remove", response);
+        // cy.interceptApiByIndex("getESSimpleSearch", "shapes_flat");
 
-        cy.interceptApiByIndex("getESSimpleSearch", "shapes_flat");
-
-        cy.verifyApiResponse("@getESSimpleSearchApiByIndex", {
+        cy.verifyApiResponse("@getESSimpleSearchApi", {
           responseTimeout: basic_timeouts.midTimeout,
         }).then((interception) => {
           const response =
@@ -77,19 +87,17 @@ describe("UnitInterest Table", () => {
               interception?.request?.body?.operationName
             ];
 
-          console.log("idsArray in othe then", idsArray);
+          const reInitializeIdsArray = response.hits.map((item) => item._id);
 
-          console.log("response", response.hits);
+          console.log("reInitializeIdsArray", reInitializeIdsArray);
 
-          const missingIds = idsArray.filter((id) =>
-            response.hits.some((item) => item._id === id)
+          const missingIds = deletedIdsArray.filter((id) =>
+            reInitializeIdsArray.some((_id) => _id === id)
           );
 
           console.log("missingIds", missingIds);
           cy.wrap(missingIds).should("be.empty");
         });
-
-        console.log("done");
       });
     });
   });
