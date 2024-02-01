@@ -85,12 +85,10 @@ Cypress.Commands.add(
   }
 );
 
-Cypress.Commands.add('mrtSortColumns', ({ columns }) => {
-  columns.forEach(column => {
-    cy.mrtSort({ column, sorting: 'ascending' });
-    cy.mrtSort({ column, sorting: 'descending' });
-    cy.mrtSort({ column });
-  });
+Cypress.Commands.add('mrtSortColumn', ({ column }) => {
+  cy.mrtSort({ column, sorting: 'ascending' });
+  cy.mrtSort({ column, sorting: 'descending' });
+  cy.mrtSort({ column });
 });
 
 Cypress.Commands.add('mrtSingleSelect', ({ column }) => {

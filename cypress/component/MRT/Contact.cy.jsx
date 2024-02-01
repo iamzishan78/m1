@@ -28,7 +28,8 @@ describe('Contact.cy.jsx', () => {
 
     cy.wait(100);
 
-    cy.mrtSortColumns({ columns });
+    cy.mrtSortColumn({ column: columns[0] });
+    cy.mrtSortColumn({ column: columns[1] });
   });
 
   it('filters by Name & Last Updated', () => {
