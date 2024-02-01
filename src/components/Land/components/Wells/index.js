@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Wells() {
   const classes = useStyles();
-  const { testCase, stateValues } = globalStateController.useState(['testCase']);
+  const { testCaseValues, stateValues } = globalStateController.useState(['testCase', 'testCaseValues']);
   const { id: globalWellId } = useParams();
 
   const [filters, setFilters] = useState([]);
@@ -28,8 +28,8 @@ function Wells() {
   const [showDialog, setDialog] = useState(false);
   const loadMore = { type: "infiniteScroll", height: "calc(100vh - 166px)" };
   useEffect(() => {
-    if (globalWellId || stateValues.testCase?.globalWellId) setDialog(true);
-  }, [globalWellId, testCase?.globalWellId]);
+    if (globalWellId || (stateValues?.testCaseValues?.globalWellId && stateValues?.testCase)) setDialog(true);
+  }, [globalWellId, testCaseValues?.globalWellId]);
 
   const Header = () => {
     return (

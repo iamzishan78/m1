@@ -33,7 +33,7 @@ const wellsColumnHeaders = [
         const globalWellId = tableMeta.rowData[0];
         const onClick = () => {
           globalStateController.updateState({
-            testCase: {
+            testCaseValues: {
               name: "MyWellsNameUpdate",
               globalWellId
             }

@@ -160,9 +160,8 @@ export default function MyWellDialog(props) {
   const [myWellData, setMyWellData] = useState();
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
-  const { stateValues } = globalStateController.useState(['testCase']);
-
-  const globalWellId = stateValues?.testCase?.globalWellId ?? useParams().id;
+  const { stateValues } = globalStateController.useState(['testCase', 'testCaseValues']);
+  const globalWellId = stateValues?.testCase ? stateValues?.testCaseValues?.globalWellId : useParams().id;
   const history = useHistory();
   const client = useApolloClient();
 
