@@ -24,7 +24,7 @@ steps:
   #   displayName: 'Npm Install'
 
   - script: |
-      sed -i "s/m1staging/${{ variables.tenant }}/" ./package.json
+      sed -i "s/m1staging/%TENENT%/" ./package.json
     displayName: 'Replace Tenant Value'
 
   - script: |
