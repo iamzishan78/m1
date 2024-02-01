@@ -210,6 +210,7 @@ Cypress.Commands.add('mrtMultiSelect', ({ column }) => {
                   }
                 });
             }).then(() => {
+              // eslint-disable-next-line no-unused-expressions
               expect(optionFound).to.be.true;
             });
           });
