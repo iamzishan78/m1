@@ -170,7 +170,7 @@
     "ci:start-server": "http-server -p 3000",
     "ci:cy-run": "start-server-and-test start http://localhost:3000 cy:run",
     "cy:component": "cypress run --component --browser chrome",
-    "ci:cy-login": "cross-env START_SERVER_AND_TEST_INSECURE=1 start-server-and-test cypress:start http://localhost:3000 \"cross-env TENENT=m1Staging cypress run --spec 'cypress/e2e/login.cy.js' --browser chrome\"",
+    "ci:cy-login": "cross-env START_SERVER_AND_TEST_INSECURE=1 start-server-and-test cypress:start http://localhost:3000 \"cross-env TENENT=m1staging cypress run --spec 'cypress/e2e/login.cy.js' --browser chrome\"",
     "ci:cy-login-component": "npm run ci:cy-login && npm run cy:component"
   },
   "eslintConfig": {

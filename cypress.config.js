@@ -12,7 +12,7 @@ module.exports = defineConfig({
   experimentalMemoryManagement: true,
 
   env: {
-    TENENT: 'm1Staging'
+    TENENT: 'm1staging'
   },
 
   e2e: {
