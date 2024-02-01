@@ -189,7 +189,7 @@ Cypress.Commands.add('mrtMultiSelect', ({ column }) => {
       .then(columnOption => {
         cy.get(`@${column.name}-option`).click();
         cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: basic_timeouts.midTimeout });
-        cy.wait(5000);
+        cy.wait(basic_timeouts.shorTimeout);
 
         let optionFound = false;
 
@@ -217,9 +217,9 @@ Cypress.Commands.add('mrtMultiSelect', ({ column }) => {
   }
 
   cy.get(`[data-testid="MoreVertIcon"]`).first().click();
-  cy.wait(5000);
+  cy.wait(basic_timeouts.shorTimeout);
   cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
-  cy.wait(5000);
+  cy.wait(basic_timeouts.shorTimeout);
   cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(10):eq(1)').click();
 
   // Select and verify the first option

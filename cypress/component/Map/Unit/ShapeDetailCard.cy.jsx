@@ -34,7 +34,7 @@ Cypress.Commands.add('setMapData', ({ testId, value }) => {
     responseTimeout: basic_timeouts.partialLongTimeout,
   }).should('exist');
 
-  cy.wait(4000);
+  cy.wait(basic_timeouts.shorTimeout);
 
   cy.get('.MuiAutocomplete-option').first().click();
 
@@ -45,8 +45,6 @@ Cypress.Commands.add('setMapData', ({ testId, value }) => {
   }).then(() => {
     cy.get(`[data-testid="data-cell-${testId}"]`).contains(value);
   });
-
-  cy.wait(basic_timeouts.midTimeout);
 });
 
 describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
@@ -115,9 +113,9 @@ describe('ShapeDetailCard.cy.jsx', () => {
         cardHeightExpanded="calc(100vh - 64px)"
         targetSourceId={selectedShape?.id}
         targetLabel={selectedShape.type}
-      // deleteCustomLayer={deleteCustomLayer}
+        // deleteCustomLayer={deleteCustomLayer}
       ></ExpandableCardProvider>,
-      { spec: "ShapeDetailCard" }
+      { spec: 'ShapeDetailCard' }
     );
   });
 
