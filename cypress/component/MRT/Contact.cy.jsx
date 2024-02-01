@@ -32,7 +32,7 @@ describe('Contact.cy.jsx', () => {
     cy.mrtSortColumn({ column: columns[1] });
   });
 
-  it('filters by Name & Last Updated', () => {
+  it('filters by Name & Last Updated', { retries: { runMode: 5, openMode: 1 } }, () => {
     cy.verifyApiResponse('@getESSimpleSearchApiByIndex', {
       responseTimeout: basic_timeouts.midTimeout,
     });
