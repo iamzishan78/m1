@@ -23,6 +23,7 @@ import AddMyWell from "./AddMyWell";
 import RevenueProperties from "./RevenueProperties";
 import Agreements from "./Agreements";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles({
   drawer: {
@@ -159,8 +160,8 @@ export default function MyWellDialog(props) {
   const [myWellData, setMyWellData] = useState();
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
-
-  const { id: globalWellId } = useParams();
+  const { stateValues } = globalStateController.useState(['testCase', 'testCaseValues']);
+  const globalWellId = stateValues?.testCase ? stateValues?.testCaseValues?.globalWellId : useParams().id;
   const history = useHistory();
   const client = useApolloClient();
 
@@ -315,7 +316,7 @@ export default function MyWellDialog(props) {
                   >
                     <MoreHorizIcon size="medium" />
                   </IconButton>
-                  <IconButton size="small" onClick={handleCloseDialog}>
+                  <IconButton data-testid="close-dialog" size="small" onClick={handleCloseDialog}>
                     <CloseIcon />
                   </IconButton>
                 </div>

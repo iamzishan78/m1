@@ -174,3 +174,58 @@ Cypress.Commands.add('mrtExport', ({ columns }) => {
     ).to.be.equal(true);
   });
 });
+
+Cypress.Commands.add('mrtMultiSelect', ({ column }) => {
+  function selectAndVerifyOption(index) {
+    cy.get(`[data-testid="multi-filter-${column.name}"]`)
+      .as(`multi-filter-${column.name}`)
+      .click();
+
+    cy.get('.MuiAutocomplete-popper').should('exist');
+
+    cy.get('.MuiAutocomplete-option', { timeout: basic_timeouts.midTimeout })
+      .eq(index)
+      .as(`${column.name}-option`)
+      .invoke('text')
+      .then(columnOption => {
+        cy.get(`@${column.name}-option`).click();
+        cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: basic_timeouts.midTimeout });
+        cy.wait(5000);
+
+        let optionFound = false;
+
+        cy.get('table > thead > tr > th.MuiTableCell-root.MuiTableCell-head')
+          .filter((index, element) => {
+            return Cypress.$(element).text().includes(column.name);
+          })
+          .invoke('index')
+          .then(index => {
+            cy.get('table > tbody > tr').each(($row) => {
+              cy.wrap($row)
+                .find(`td.MuiTableCell-root.MuiTableCell-body:eq(${index})`)
+                .invoke('text')
+                .then((columnValue) => {
+                  if (columnValue.includes(columnOption)) {
+                    optionFound = true;
+                  }
+                });
+            }).then(() => {
+              expect(optionFound).to.be.true;
+            });
+          });
+      });
+  }
+
+  cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+  cy.wait(5000);
+  cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
+  cy.wait(5000);
+  cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(10):eq(1)').click();
+
+  // Select and verify the first option
+  selectAndVerifyOption(0);
+
+  // Select and verify the second option
+  selectAndVerifyOption(1);
+});
+
