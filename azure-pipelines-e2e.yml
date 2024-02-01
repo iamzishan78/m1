@@ -18,21 +18,18 @@ steps:
       versionSpec: '16.15.0'
     displayName: 'Install Node.js'
 
-  # - task: Npm@1
-  #   inputs:
-  #     command: 'install'
-  #   displayName: 'Npm Install'
+  - task: Npm@1
+    inputs:
+      command: 'install'
+    displayName: 'Npm Install'
 
   - script: |
-      sed -i "s/m1staging/${{ variables.tenant }}/" ./package.json
+      sed -i "s/m1staging/$(TENENT)/" ./package.json
+      sed -i "s/m1production/$(TENENT)/" ./package.json
     displayName: 'Replace Tenant Value'
 
-  - script: |
-      cat package.json
-    displayName: 'Replace Tenant Value'
-
-  # - task: geeklearningio.gl-vsts-tasks-yarn.yarn-task.Yarn@3
-  #   displayName: 'Yarn Run CI'
-  #   inputs:
-  #     projectDirectory: src
-  #     arguments: 'ci:cy-login-component'
+  - task: geeklearningio.gl-vsts-tasks-yarn.yarn-task.Yarn@3
+    displayName: 'Yarn Run CI'
+    inputs:
+      projectDirectory: src
+      arguments: 'ci:cy-login-component'
