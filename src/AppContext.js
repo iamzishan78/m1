@@ -21,7 +21,7 @@ const AppProvider = (props) => {
     apolloClientEndpoint: "",
     apolloClientFetchOptions: null,
     graphqlScope: null, /// potentially login context?
-    user: null, /// potenitally login context or maybe a specific user context??
+    user: globalStateController.getValue('user') || null, /// potenitally login context or maybe a specific user context??
     signUpUserType: null, /// potenitally login context or maybe a specific user context??
     wellDetailCardOpen: null, // move to map data card context
     wellDetailCardTabIndex: null,
@@ -194,6 +194,8 @@ const AppProvider = (props) => {
         return res;
       }
     },
+
+    selectedShape: popupController.getValue('selectedShape'),
   });
 
   window.setStateApp = setStateApp;
@@ -211,6 +213,7 @@ const AppProvider = (props) => {
         tenant.apolloOriginalClientEndpoint = tenant.apolloClientEndpoint;
         tenant.apolloClientEndpoint = isDev && tenantName === "localhost" ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
         let myMSALObjInt = MSALObj(tenant);
+        globalStateController.updateState({ apolloClientEndpoint: tenant.apolloClientEndpoint })
         setStateApp((state, props) => {
           return {
             ...state,
@@ -307,4 +310,4 @@ const setApolloHeaders = (config, authToken, idToken) => {
   return config;
 };
 
-export { AppContext, AppProvider, setApolloHeaders };
+export { AppContext, AppProvider, setApolloHeaders, apolloClientEndpointDev };

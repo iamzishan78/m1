@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 // context
-import { useHistory } from "react-router-dom";
 import { Container, IconButton } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
@@ -28,18 +27,9 @@ const genericDataActions = ['tags', 'comments', 'tracks'];
 const startPaginationAt = 25;
 
 function ShapeGridWellsTable(props) {
-    let history = useHistory();
     const classes = usetableStyles();
-    const [resetSelectedRow, setResetSelectedRow] = useState(false);
-    const [isSelectAll, setIsSelectAll] = useState(false);
     const [stateApp, setStateApp] = useContext(AppContext);
-    const [count, setCount] = useState(0)
-    // function states 
-    const [columns, Columns] = useState([]);
-    const setColumns = (newState) => { setStateIfDeepEqual(Columns, newState); };
-    const [selectedYear, setSelectedYear] = useState(2023)  // production selected year state 
-    const [stateNav, setStateNav] = useContext(NavigationContext);
-    const { customLayer, clickedRow } = props;
+    const [stateNav] = useContext(NavigationContext);
     const searchInput = useSelector(
         (state) => state.MapGridCard.searchInputValue
     );
@@ -122,7 +112,6 @@ function ShapeGridWellsTable(props) {
                 orderByTracks={false}
                 startPaginationAt={null}
                 onTableChange={props.onTableChange}
-                resetSelectedRow={resetSelectedRow}
                 options={{
                     ...props.options
                 }}
@@ -133,9 +122,9 @@ function ShapeGridWellsTable(props) {
                         allRowsSelected.length === startPaginationAt ||
                         allRowsSelected.length === props.options.count
                     ) {
-                        setIsSelectAll(true);
+                        // setIsSelectAll(true);
                     } else {
-                        setIsSelectAll(false);
+                        // setIsSelectAll(false);
                     }
                 }}
                 parent={props.parent}

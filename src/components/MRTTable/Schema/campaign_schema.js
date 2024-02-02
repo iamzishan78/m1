@@ -84,7 +84,7 @@ const CampaignMeta = {
   },
   TableSchema: [
     {
-      ...CommonSchema.HIDDEN,
+      ...CommonSchema.MONGO_ID,
       name: '_id',
       accessorKey: '_id',
     },

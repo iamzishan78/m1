@@ -1,0 +1,231 @@
+/* eslint-disable no-undef */
+import SummaryTable from 'components/ShapeDetailCard/Common/SummaryTable';
+import unitDefaultData from 'components/ShapeDetailCard/Common/SummaryTable/unitDefaultData';
+
+const metaDataRes = {
+  getMetaData: {
+    success: true,
+    message: 'Fetched',
+    metaData: [],
+  },
+};
+
+export const UnitSummaryData = {
+  properties: {
+    originalProperties: {
+      PLSSFirstDivisionId: 310765,
+      Id: '394B597C-68A1-4260-ABB9-802E9A825E18',
+      SourceRecordId: 'CO060040S0660W0SN360',
+      PLSSId: 'CO060040S0660W0',
+      Name: '36',
+      ShortName: '36',
+      Type: 'SN',
+      StateAbbreviation: 'CO',
+      County: 'Arapahoe',
+      SourceObjectId: 310765,
+      ShapeLength: 8383.8752119021,
+      ShapeArea: 4393139.26451868,
+      SRID: 4326,
+      DataSource: 'https://navigator.blm.gov/data?keyword=PLSS%20CadNSDI&',
+      Township: '004S',
+      Range: '066W',
+      PrincipalMeridian: '06',
+      PrincipalMeridianName: '6th Meridian',
+      id: '2db7bea72e4e5b66dd738c4bd7c82bad',
+      State: 'CO',
+      Section: '36',
+      Meridian: '06',
+    },
+    shapeSubtitle: 'Arapahoe, CO - T004S R066W — Section 36',
+    type: 'unit',
+    layerType: 'unit',
+    shapeLabel: 'T004S R066W — Section 36',
+    uName: 'T004S R066W — Section 36',
+    uNumber: '',
+    uType: '',
+    uOperator: '',
+    uStatus: '',
+    shapeArea: '643.37',
+    shapeCenter: [-104.72558233400065, 39.66025603050964],
+    id: 'fce510ecaf6cad7c3ba92fad4c7c9569',
+  },
+  id: '65b0c87166115215f9155bc4',
+  customLayer: {
+    __typename: 'CustomLayer',
+    _id: '65b0c87166115215f9155bc4',
+    shapeJson: {
+      id: 'fce510ecaf6cad7c3ba92fad4c7c9569',
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [-104.73500209906182, 39.65298733906231],
+            [-104.73029377443451, 39.65299310313961],
+            [-104.7255854489089, 39.65299889419019],
+            [-104.7208815143484, 39.65300226867169],
+            [-104.71617757799127, 39.65300567081844],
+            [-104.71617175600991, 39.6566361500789],
+            [-104.71616596187634, 39.660266628838926],
+            [-104.71616425238234, 39.66389510717411],
+            [-104.7161625689395, 39.66752358584133],
+            [-104.72084908875992, 39.66752415424492],
+            [-104.72553563463144, 39.66752472195697],
+            [-104.73022368158784, 39.66752390116012],
+            [-104.73491173034085, 39.66752305270372],
+            [-104.73493335728132, 39.66389018697473],
+            [-104.73495498422177, 39.660257348779304],
+            [-104.73497855511653, 39.65662234371723],
+            [-104.73500209906182, 39.65298733906231],
+          ],
+        ],
+      },
+      properties: {
+        originalProperties: {
+          PLSSFirstDivisionId: 310765,
+          Id: '394B597C-68A1-4260-ABB9-802E9A825E18',
+          SourceRecordId: 'CO060040S0660W0SN360',
+          PLSSId: 'CO060040S0660W0',
+          Name: '36',
+          ShortName: '36',
+          Type: 'SN',
+          StateAbbreviation: 'CO',
+          County: 'Arapahoe',
+          SourceObjectId: 310765,
+          ShapeLength: 8383.8752119021,
+          ShapeArea: 4393139.26451868,
+          SRID: 4326,
+          DataSource: 'https://navigator.blm.gov/data?keyword=PLSS%20CadNSDI&',
+          Township: '004S',
+          Range: '066W',
+          PrincipalMeridian: '06',
+          PrincipalMeridianName: '6th Meridian',
+          id: '2db7bea72e4e5b66dd738c4bd7c82bad',
+        },
+        shapeSubtitle: 'Arapahoe, CO - T004S R066W — Section 36',
+        type: 'unit',
+        layerType: 'unit',
+        shapeLabel: 'T004S R066W — Section 36',
+        uName: 'T004S R066W — Section 36',
+        uNumber: '',
+        uType: '',
+        uOperator: '',
+        uStatus: '',
+        shapeArea: '643.37',
+        shapeCenter: [-104.72558233400065, 39.66025603050964],
+        id: 'fce510ecaf6cad7c3ba92fad4c7c9569',
+      },
+    },
+    qtrQtrSelection: null,
+    shape: {
+      id: 'fce510ecaf6cad7c3ba92fad4c7c9569',
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [-104.73500209906182, 39.65298733906231],
+            [-104.73029377443451, 39.65299310313961],
+            [-104.7255854489089, 39.65299889419019],
+            [-104.7208815143484, 39.65300226867169],
+            [-104.71617757799127, 39.65300567081844],
+            [-104.71617175600991, 39.6566361500789],
+            [-104.71616596187634, 39.660266628838926],
+            [-104.71616425238234, 39.66389510717411],
+            [-104.7161625689395, 39.66752358584133],
+            [-104.72084908875992, 39.66752415424492],
+            [-104.72553563463144, 39.66752472195697],
+            [-104.73022368158784, 39.66752390116012],
+            [-104.73491173034085, 39.66752305270372],
+            [-104.73493335728132, 39.66389018697473],
+            [-104.73495498422177, 39.660257348779304],
+            [-104.73497855511653, 39.65662234371723],
+            [-104.73500209906182, 39.65298733906231],
+          ],
+        ],
+      },
+      properties: {
+        originalProperties: {
+          PLSSFirstDivisionId: 310765,
+          Id: '394B597C-68A1-4260-ABB9-802E9A825E18',
+          SourceRecordId: 'CO060040S0660W0SN360',
+          PLSSId: 'CO060040S0660W0',
+          Name: '36',
+          ShortName: '36',
+          Type: 'SN',
+          StateAbbreviation: 'CO',
+          County: 'Arapahoe',
+          SourceObjectId: 310765,
+          ShapeLength: 8383.8752119021,
+          ShapeArea: 4393139.26451868,
+          SRID: 4326,
+          DataSource: 'https://navigator.blm.gov/data?keyword=PLSS%20CadNSDI&',
+          Township: '004S',
+          Range: '066W',
+          PrincipalMeridian: '06',
+          PrincipalMeridianName: '6th Meridian',
+          id: '2db7bea72e4e5b66dd738c4bd7c82bad',
+          State: 'CO',
+          Section: '36',
+          Meridian: '06',
+        },
+        shapeSubtitle: 'Arapahoe, CO - T004S R066W — Section 36',
+        type: 'unit',
+        layerType: 'unit',
+        shapeLabel: 'T004S R066W — Section 36',
+        uName: 'T004S R066W — Section 36',
+        uNumber: '',
+        uType: '',
+        uOperator: '',
+        uStatus: '',
+        shapeArea: '643.37',
+        shapeCenter: [-104.72558233400065, 39.66025603050964],
+        id: 'fce510ecaf6cad7c3ba92fad4c7c9569',
+      },
+    },
+    name: 'T004S R066W — Section 36',
+    layer: 'unit',
+    state: '',
+    user: {
+      __typename: 'User',
+      _id: '659ce7cf97935e0ffa857858',
+    },
+    ownerCount: 0,
+  },
+  updating: false,
+};
+
+describe('SummaryTable.cy.jsx', () => {
+  beforeEach(() => {
+    cy.viewport(800, 1200).mount(
+      <SummaryTable
+        tableData={unitDefaultData}
+        properties={UnitSummaryData.properties}
+        updateProperties={() => { }}
+        updateCustomProperties={() => { }}
+        search={''}
+        metaData={metaDataRes}
+        id={UnitSummaryData.id}
+        updating={UnitSummaryData.updating}
+      />
+    );
+  });
+
+  it('Displays editable county field', () => {
+    cy.get('[data-testid="data-cell-County"]').trigger('mouseover');
+    cy.get('button[data-testid="edit-County"]').click();
+  });
+
+  it('shows one option on searching tx in state field', () => {
+    cy.get('[data-testid="data-cell-State"]').trigger('mouseover');
+    cy.get('button[data-testid="edit-State"]').click();
+
+    cy.get('input#filter-autocomplete-State').type('TX');
+
+    // Assert that the Autocomplete options are displayed
+    cy.get('.MuiAutocomplete-popper').should('exist');
+
+    // Optionally, you can assert the specific options displayed
+    cy.get('.MuiAutocomplete-option', { timeout: 10000 }).should('have.length', 1);
+  });
+});

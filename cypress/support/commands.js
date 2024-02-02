@@ -29,9 +29,10 @@
 import { deepEqualObjects } from "../../src/components/Shared/functions";
 import { baseUrls, basic_timeouts, loginCredential } from "../cypressUtils/data";
 import { camelize, findInObject, isSearchStringMatched } from "../cypressUtils/helper";
+import { v4 as uuid } from "uuid";
 
 // Constants
-const workSpace = Cypress.env('WORK_SPACE') || "m1dev"
+const workSpace = Cypress.env('TENENT') || "localhost"
 const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
 
 // Common Commands
@@ -68,9 +69,9 @@ Cypress.Commands.add('typeAndSelect', (searchId, stringToType, optionId = null) 
 
 /*This command is to intercept graphql api by operation name and if searchString is passed it will only
 intercept if api payload has that string in search */
-Cypress.Commands.add('interceptApi', (operationName, payloadKey = null, alias = null) => {
+Cypress.Commands.add('interceptApi', (operationName, payloadKey = null, alias = null, url = baseUrls[workSpace]) => {
 
-    cy.intercept('POST', baseUrls[workSpace], req => {
+    cy.intercept('POST', url, req => {
         if (req.body.operationName === operationName) {
             if (payloadKey) {
                 const { variables } = req.body
@@ -90,6 +91,42 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null, alias = 
             }
         }
     });
+})
+
+Cypress.Commands.add('interceptAndWait', (dataKeys, interceptionFunction, options = { wait: true }, url = baseUrls[workSpace]) => {
+
+    const alias = uuid() + dataKeys[0]
+    cy.log(alias)
+
+    cy.intercept('POST', url, req => {
+
+        if (req?.body?.operationName === dataKeys[0]) {
+            if (dataKeys.length > 0) {
+                let allPresent = true
+                const body = JSON.stringify(req.body)
+                dataKeys.forEach((dataKey) => {
+                    console.log(body.includes(dataKey), body, dataKey)
+                    if (!body.includes(dataKey)) {
+                        allPresent = false
+                    }
+                })
+                if (allPresent) req.alias = alias;
+                else req.continue()
+            } else {
+                req.alias = alias;
+            }
+
+        } else req.continue()
+    });
+
+    interceptionFunction('@' + alias)
+
+    if (options.wait) {
+        cy.wait('@' + alias, { timeout: longTimeout });
+        cy.wait(4000);
+    }
+
+    else return '@' + alias
 })
 
 Cypress.Commands.add('interceptApiByIndex', (operationName, esIndex) => {
