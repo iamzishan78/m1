@@ -20,13 +20,11 @@ Cypress.Commands.add('setMapData', ({ testId, value }) => {
   cy.get(`[data-testid="data-cell-${testId}"]`, {
     timeout: basic_timeouts.midTimeout,
   }).trigger('mouseover');
-  cy.interceptApi('getESSimpleFilter');
 
-  cy.get(`button[data-testid="edit-${testId}"]`).click();
-
-  cy.verifyApiResponse('@getESSimpleFilterApi', {
-    responseTimeout: basic_timeouts.midTimeout,
+  cy.interceptAndWait(['getESSimpleFilter'], () => {
+    cy.get(`button[data-testid="edit-${testId}"]`).click();
   });
+
 
   cy.get(`input#filter-autocomplete-${testId}`).type(value);
 
@@ -36,15 +34,13 @@ Cypress.Commands.add('setMapData', ({ testId, value }) => {
 
   cy.wait(basic_timeouts.shorTimeout);
 
-  cy.get('.MuiAutocomplete-option').first().click();
+  cy.interceptAndWait(['updateCustomLayer'], () => {
+    cy.get('.MuiAutocomplete-option').first().click();
+  });
 
   cy.get('body').click();
 
-  cy.verifyApiResponse('@updateCustomLayerApi', {
-    responseTimeout: basic_timeouts.midTimeout,
-  }).then(() => {
-    cy.get(`[data-testid="data-cell-${testId}"]`).contains(value);
-  });
+  cy.get(`[data-testid="data-cell-${testId}"]`).contains(value);
 });
 
 describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
@@ -91,52 +87,50 @@ describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
 });
 
 describe('ShapeDetailCard.cy.jsx', () => {
-  beforeEach(() => {
-    popupController.updateState({ selectedShape });
-
-    cy.interceptApi('getCustomLayer');
-    cy.interceptApi('updateCustomLayer');
-
-    cy.viewport(1600, 1200).mount(
-      <ExpandableCardProvider
-        expanded={true}
-        // handleCloseExpandableCard={handleCloseExpandableCard}
-        component={<ShapeDetailCard type={selectedShape.type}></ShapeDetailCard>}
-        title={selectedShape?.shapeLabel}
-        subTitle={selectedShape?.shapeSubtitle || selectedShape?.unitInfo}
-        parent="map"
-        position="relative"
-        cardTop={0}
-        cardLeft={0}
-        zIndex={99}
-        cardWidthExpanded="50vw"
-        cardHeightExpanded="calc(100vh - 64px)"
-        targetSourceId={selectedShape?.id}
-        targetLabel={selectedShape.type}
-        // deleteCustomLayer={deleteCustomLayer}
-      ></ExpandableCardProvider>,
-      { spec: 'ShapeDetailCard' }
-    );
-  });
 
   it('IF TX ( State=CO,County=Andrews,Township=004S,Range=066W,Section=36 ) ELSE ( State=TX,County=Anderson,Township=035S,Range=055W,Section=47 )', () => {
-    cy.verifyApiResponse('@getCustomLayerApi', {
-      responseTimeout: basic_timeouts.longTimeout,
-    }).then(response => {
-      const state = response?.body?.data?.customLayer?.shapeJson?.properties?.State;
-      if (state === 'TX') {
-        cy.setMapData({ testId: 'State', value: 'CO' });
-        cy.setMapData({ testId: 'County', value: 'Andrews' });
-        cy.setMapData({ testId: 'Township', value: '004S' });
-        cy.setMapData({ testId: 'Range', value: '066W' });
-        cy.setMapData({ testId: 'Section', value: '36' });
-      } else {
-        cy.setMapData({ testId: 'State', value: 'TX' });
-        cy.setMapData({ testId: 'County', value: 'Anderson' });
-        cy.setMapData({ testId: 'Township', value: '035S' });
-        cy.setMapData({ testId: 'Range', value: '055W' });
-        cy.setMapData({ testId: 'Section', value: '47' });
-      }
+
+    popupController.updateState({ selectedShape });
+
+    cy.interceptAndWait(['getCustomLayer'], (alias) => {
+      cy.viewport(1600, 1200).mount(
+        <ExpandableCardProvider
+          expanded={true}
+          // handleCloseExpandableCard={handleCloseExpandableCard}
+          component={<ShapeDetailCard type={selectedShape.type}></ShapeDetailCard>}
+          title={selectedShape?.shapeLabel}
+          subTitle={selectedShape?.shapeSubtitle || selectedShape?.unitInfo}
+          parent="map"
+          position="relative"
+          cardTop={0}
+          cardLeft={0}
+          zIndex={99}
+          cardWidthExpanded="50vw"
+          cardHeightExpanded="calc(100vh - 64px)"
+          targetSourceId={selectedShape?.id}
+          targetLabel={selectedShape.type}
+        // deleteCustomLayer={deleteCustomLayer}
+        ></ExpandableCardProvider>,
+        { spec: 'ShapeDetailCard' }
+      );
+
+      cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((response) => {
+        const state = response?.body?.data?.customLayer?.shapeJson?.properties?.State;
+        if (state === 'TX') {
+          cy.setMapData({ testId: 'State', value: 'CO' });
+          cy.setMapData({ testId: 'County', value: 'Andrews' });
+          cy.setMapData({ testId: 'Township', value: '004S' });
+          cy.setMapData({ testId: 'Range', value: '066W' });
+          cy.setMapData({ testId: 'Section', value: '36' });
+        } else {
+          cy.setMapData({ testId: 'State', value: 'TX' });
+          cy.setMapData({ testId: 'County', value: 'Anderson' });
+          cy.setMapData({ testId: 'Township', value: '035S' });
+          cy.setMapData({ testId: 'Range', value: '055W' });
+          cy.setMapData({ testId: 'Section', value: '47' });
+        }
+      });
+
     });
   });
 });

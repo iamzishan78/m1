@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 import MRTTable from 'components/MRTTable';
-import { basic_timeouts } from '../../cypressUtils/data';
 
 const columns = [
   {
@@ -16,41 +15,28 @@ const columns = [
 
 describe('Contact.cy.jsx', () => {
   beforeEach(() => {
-    cy.interceptApiByIndex('getESSimpleSearch', 'contacts_flat');
-
-    cy.viewport(1600, 1200).mount(<MRTTable name="ContactTable" />);
+    cy.interceptAndWait(['getESSimpleSearch', 'contacts_flat'], () => {
+      cy.viewport(1600, 1200).mount(<MRTTable name="ContactTable" />);
+    });
   });
 
   it('sorts by Name & Last Updated', () => {
-    cy.verifyApiResponse('@getESSimpleSearchApiByIndex', {
-      responseTimeout: basic_timeouts.midTimeout,
-    });
-
     cy.wait(100);
 
     cy.mrtSortColumn({ column: columns[0] });
     cy.mrtSortColumn({ column: columns[1] });
   });
 
-  it('filters by Name & Last Updated', { retries: { runMode: 5, openMode: 2 } }, () => {
-    cy.verifyApiResponse('@getESSimpleSearchApiByIndex', {
-      responseTimeout: basic_timeouts.midTimeout,
-    });
-
-    cy.wait(100);
+  it('Filters by Name & Last Updated Single Select', { retries: { runMode: 5, openMode: 2 } }, () => {
 
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
-    cy.interceptApi('getESSimpleFilter');
 
     cy.mrtSingleSelect({ column: columns[0] });
     cy.mrtSingleSelect({ column: columns[1] });
 
-    cy.interceptApiByIndex('getESSimpleSearch', 'contacts_flat');
-    cy.viewport(1600, 1200).mount(<MRTTable name="ContactTable" />);
-    cy.verifyApiResponse('@getESSimpleSearchApiByIndex', {
-      responseTimeout: basic_timeouts.midTimeout,
-    });
+  });
 
+  it('Filters by Name Multi Select', { retries: { runMode: 5, openMode: 2 } }, () => {
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
     cy.mrtMultiSelect({ column: columns[1] });
   });

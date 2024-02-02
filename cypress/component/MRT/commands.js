@@ -50,12 +50,13 @@ Cypress.Commands.add(
 Cypress.Commands.add(
   'mrtSort',
   ({ column, apiAlias = '@getESSimpleSearchApiByIndex', sorting = false }) => {
-    cy.get('table > thead > tr > th.MuiTableCell-root.MuiTableCell-head')
-      .contains(column.name)
-      .click();
 
-    cy.verifyApiResponse(apiAlias, {
-      responseTimeout: basic_timeouts.midTimeout,
+    cy.interceptAndWait(['getESSimpleSearch'], () => {
+
+      cy.get('table > thead > tr > th.MuiTableCell-root.MuiTableCell-head')
+        .contains(column.name)
+        .click();
+
     });
 
     cy.wait(100);
@@ -92,12 +93,8 @@ Cypress.Commands.add('mrtSortColumn', ({ column }) => {
 });
 
 Cypress.Commands.add('mrtSingleSelect', ({ column }) => {
-  cy.get(`[data-testid="single-filter-${column.name}"]`)
-    .as(`single-filter-${column.name}`)
-    .click();
-
-  cy.verifyApiResponse('@getESSimpleFilterApi', {
-    responseTimeout: basic_timeouts.midTimeout,
+  cy.interceptAndWait(['getESSimpleFilter'], () => {
+    cy.get(`[data-testid="single-filter-${column.name}"]`).as(`single-filter-${column.name}`).click();
   });
 
   cy.wait(100);
@@ -111,13 +108,10 @@ Cypress.Commands.add('mrtSingleSelect', ({ column }) => {
     .as(`${column.name}-option`)
     .invoke('text')
     .then(columOpton => {
-      cy.get(`@${column.name}-option`).click();
 
-      cy.verifyApiResponse('@getESSimpleSearchApiByIndex', {
-        responseTimeout: basic_timeouts.midTimeout,
+      cy.interceptAndWait(['getESSimpleSearch'], () => {
+        cy.get(`@${column.name}-option`).click();
       });
-
-      cy.wait(4000);
 
       cy.get('table > thead > tr > th.MuiTableCell-root.MuiTableCell-head')
         .filter((index, element) => {
@@ -135,18 +129,11 @@ Cypress.Commands.add('mrtSingleSelect', ({ column }) => {
           cy.get(`@${column.name}-value`).then(columValue => {
             expect(columValue).to.be.equal(columOpton);
           });
-
-          // cy.get(`@single-filter-${column.name}`).next().find('.MuiButtonBase-root[aria-label="Clear"]').click();
-
-          // cy.verifyApiResponse('@getESSimpleSearchApiByIndex', {
-          //   responseTimeout: basic_timeouts.midTimeout,
-          // });
         });
     });
 });
 
 Cypress.Commands.add('mrtExport', ({ columns }) => {
-  cy.interceptApi('initializeExportJob');
 
   if (columns[0].name === 'M1neral System ID') {
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide columns"]').click();
@@ -160,27 +147,31 @@ Cypress.Commands.add('mrtExport', ({ columns }) => {
 
   cy.get('.MuiButtonBase-root[data-testid="download-csv"]').click();
 
-  cy.get('.MuiButtonBase-root[data-testid="export-confirm"]').click();
+  cy.interceptAndWait(['initializeExportJob'], (alias) => {
 
-  cy.verifyApiResponse('@initializeExportJobApi', {
-    responseTimeout: basic_timeouts.longTimeout,
-  }).then(response => {
-    const responseColumns =
-      response.response.body.data.initializeExportJob.job.requestPayload.columns;
+    cy.get('.MuiButtonBase-root[data-testid="export-confirm"]').click();
 
-    cy.expect(
-      columns.every(column =>
-        responseColumns.some(responseColumn => responseColumn.label === column.name)
-      )
-    ).to.be.equal(true);
-  });
+
+    cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((response) => {
+      const responseColumns =
+        response.response.body.data.initializeExportJob.job.requestPayload.columns;
+
+      cy.expect(
+        columns.every(column =>
+          responseColumns.some(responseColumn => responseColumn.label === column.name)
+        )
+      ).to.be.equal(true);
+    });
+
+  }, { wait: false });
 });
 
 Cypress.Commands.add('mrtMultiSelect', ({ column }) => {
-  function selectAndVerifyOption(index) {
-    cy.get(`[data-testid="multi-filter-${column.name}"]`)
-      .as(`multi-filter-${column.name}`)
-      .click();
+  function selectAndVerifyOption(index, wait) {
+
+    cy.interceptAndWait(['getESSimpleFilter'], () => {
+      cy.get(`[data-testid="multi-filter-${column.name}"]`).as(`multi-filter-${column.name}`).click();
+    }, { wait });
 
     cy.get('.MuiAutocomplete-popper').should('exist');
 
@@ -189,9 +180,9 @@ Cypress.Commands.add('mrtMultiSelect', ({ column }) => {
       .as(`${column.name}-option`)
       .invoke('text')
       .then(columnOption => {
-        cy.get(`@${column.name}-option`).click();
-        cy.verifyApiResponse('@getESSimpleSearchApiByIndex', { responseTimeout: basic_timeouts.midTimeout });
-        cy.wait(basic_timeouts.shorTimeout);
+        cy.interceptAndWait(['getESSimpleSearch'], () => {
+          cy.get(`@${column.name}-option`).click();
+        });
 
         let optionFound = false;
 
@@ -225,9 +216,9 @@ Cypress.Commands.add('mrtMultiSelect', ({ column }) => {
   cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(10):eq(1)').click();
 
   // Select and verify the first option
-  selectAndVerifyOption(0);
+  selectAndVerifyOption(0, true);
 
   // Select and verify the second option
-  selectAndVerifyOption(1);
+  selectAndVerifyOption(1, false);
 });
 

@@ -52,20 +52,17 @@ describe("UnitInterest Table", () => {
         },
       });
 
-      cy.interceptApi(
-        "gridGenericRemove",
-        null,
-        null,
-        "http://localhost:7071/api/m1graph"
-      );
+      cy.interceptApi("gridGenericRemove");
 
-      cy.interceptApiByIndex("getESSimpleSearch", "shapes_flat");
+      cy.interceptApi("getESSimpleSearch");
 
-      cy.verifyApiResponse("@getESSimpleSearchApiByIndex", {
+      cy.verifyApiResponse("@getESSimpleSearchApi", {
         responseTimeout: basic_timeouts.midTimeout,
       });
 
-      cy.interceptApiByIndex("getESSimpleSearch", "shapes_flat");
+      cy.wait(3000);
+
+      cy.interceptApi("getESSimpleSearch");
 
       cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
 
@@ -75,8 +72,8 @@ describe("UnitInterest Table", () => {
 
       cy.verifyApiResponse("@gridGenericRemoveApi", {
         responseTimeout: basic_timeouts.midTimeout,
-      }).then((response) => {
-        cy.verifyApiResponse("@getESSimpleSearchApiByIndex", {
+      }).then((deleteResponse) => {
+        cy.verifyApiResponse("@getESSimpleSearchApi", {
           responseTimeout: basic_timeouts.midTimeout,
         }).then((interception) => {
           const response =
@@ -95,6 +92,25 @@ describe("UnitInterest Table", () => {
           console.log("missingIds", missingIds);
 
           cy.wrap(missingIds).should("be.empty");
+
+          const headers = {
+            "Content-Type": "application/json",
+            "X-ZUMO-AUTH": ldata.x_zumo_auth,
+          };
+
+          const data = deleteResponse.response.body.data.gridGenericRemove.data;
+          const getLayerPayload = {
+            operationName: "revertCypressDelete",
+            variables: { data },
+            query: REVERTCYPRESSDELETE.loc.source.body,
+          };
+
+          cy.request({
+            method: "POST",
+            url: ldata.url,
+            headers: headers,
+            body: getLayerPayload,
+          });
         });
       });
     });

@@ -1,17 +1,16 @@
+/* eslint-disable no-undef */
 import Wells from 'components/Land/components/Wells';
-import { basic_timeouts } from '../../cypressUtils/data';
 
 describe('MyWellsNameUpdate.cy.jsx', () => {
   beforeEach(() => {
-    cy.interceptApiByIndex('getESSimpleSearch', 'mywells_flat');
-    cy.viewport(1600, 1200).mount(<Wells />, { testCase: "MyWellsNameUpdate" });
+
+    cy.interceptAndWait(['getESSimpleSearch', 'mywells_flat'], () => {
+      cy.viewport(1600, 1200).mount(<Wells />, { testCase: "MyWellsNameUpdate" });
+    });
+
   });
 
   it('checks well name is updating correctly', () => {
-    cy.verifyApiResponse('@getESSimpleSearchApiByIndex', {
-      responseTimeout: basic_timeouts.midTimeout,
-    });
-
     // Generate a random number between 1 and 1000 (adjust range as needed)
     const randomNumber = Math.floor(Math.random() * 1000) + 1;
     const wellName = `Testing well name ${randomNumber}`;
