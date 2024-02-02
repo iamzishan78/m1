@@ -42,40 +42,42 @@ describe("UnitInterest Table", () => {
           },
         });
 
-        cy.interceptAndWait(["gridGenericRemove"], (alias) => {
-          cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
+        cy.interceptAndWait(
+          ["gridGenericRemove"],
+          (alias) => {
+            cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
 
-          cy.get(
-            '.MuiButtonBase-root[data-testid="delete-icon-button"]'
-          ).click();
+            cy.get(
+              '.MuiButtonBase-root[data-testid="delete-icon-button"]'
+            ).click();
 
-          cy.get('.MuiButtonBase-root[data-testid="delete-confirm"]').click();
+            cy.get('.MuiButtonBase-root[data-testid="delete-confirm"]').click();
 
-          cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(
-            (deleteResponse) => {
-              const data =
-                deleteResponse?.response?.body?.data?.gridGenericRemove.data;
+            cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(
+              (deleteResponse) => {
+                const data =
+                  deleteResponse?.response?.body?.data?.gridGenericRemove.data;
 
-              console.log("deleteResponse", deleteResponse);
-              expect(deleteResponse?.response?.status).to.eq(200);
-              const getLayerPayload = {
-                operationName: "revertCypressDelete",
-                variables: { data },
-                query: REVERTCYPRESSDELETE.loc.source.body,
-              };
+                expect(deleteResponse?.response?.statusCode).to.eq(200);
+                const getLayerPayload = {
+                  operationName: "revertCypressDelete",
+                  variables: { data },
+                  query: REVERTCYPRESSDELETE.loc.source.body,
+                };
 
-              cy.request({
-                method: "POST",
-                url: ldata.url,
-                headers: headers,
-                body: getLayerPayload,
-              }).then((r) => {
-                console.log("r => ", r);
-                expect(r.status).to.eq(200);
-              });
-            }
-          );
-        });
+                cy.request({
+                  method: "POST",
+                  url: ldata.url,
+                  headers: headers,
+                  body: getLayerPayload,
+                }).then((r) => {
+                  expect(r.status).to.eq(200);
+                });
+              }
+            );
+          },
+          { wait: false }
+        );
       },
     });
   });

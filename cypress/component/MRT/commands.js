@@ -119,7 +119,7 @@ Cypress.Commands.add('mrtApplyFilter', ({ column, callback }) => {
           }
         );
 
-      });
+      }, { wait: false });
     });
 });
 
