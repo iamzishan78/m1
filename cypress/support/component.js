@@ -43,7 +43,6 @@ Cypress.Commands.add('mount', (component, { disableContactBulkProgress, testCase
       mrtOverrideMeta: { isDefaultGridView: true, columnVirtualization: false },
     },
     testCase,
-    testCaseValues: null,
   });
 
 
