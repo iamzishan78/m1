@@ -10,12 +10,3 @@ export const REMOVECOMMONGRIDFUNCTIONALITY = gql`
 		}
 	}
 `;
-
-export const REVERTCYPRESSDELETE = gql`
-	mutation revertCypressDelete($data: JSON) {
-		gridGenericRemove(data: $data) {
-			success
-			message
-		}
-	}
-`;
