@@ -105,7 +105,6 @@ Cypress.Commands.add('interceptAndWait', (dataKeys, interceptionFunction, option
                 let allPresent = true
                 const body = JSON.stringify(req.body)
                 dataKeys.forEach((dataKey) => {
-                    console.log(body.includes(dataKey), body, dataKey)
                     if (!body.includes(dataKey)) {
                         allPresent = false
                     }

@@ -221,3 +221,47 @@ Cypress.Commands.add('mrtMultiSelect', ({ column }) => {
   // Select and verify the second option
   selectAndVerifyOption(1, false);
 });
+
+
+Cypress.Commands.add('mrtComparisonFilterCheck', ({ column, type, value, filter, placeholder }) => {
+  cy.get(`input[placeholder="${placeholder}"]`).clear().type(value);
+  cy.wait(10000)
+
+  cy.get('table > thead > tr > th.MuiTableCell-root.MuiTableCell-head')
+    .filter((index, element) => {
+      return Cypress.$(element).text().includes(column.name);
+    })
+    .invoke('index')
+    .then(index => {
+      cy.mrtInvokeText({
+        selector: column.selector,
+        as: `${column.name}-value`,
+        index,
+      });
+      cy.get(`@${column.name}-value`).then(columValue => {
+        switch (filter) {
+          case "greaterThanEqualTo":
+            if (type === "date") {
+              expect(new Date(columValue)).to.be.at.least(new Date(value));
+            } else {
+              expect(parseFloat(columValue)).to.be.at.least(parseFloat(value));
+            }
+            break;
+
+          case "lessThanEqualTo":
+            if (type === "date") {
+              expect(new Date(columValue)).to.be.at.most(new Date(value));
+            } else {
+              expect(parseFloat(columValue)).to.be.at.most(parseFloat(value));
+            }
+            break;
+
+          default:
+            break;
+        }
+      });
+    });
+});
+
+
+
