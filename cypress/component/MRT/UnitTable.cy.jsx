@@ -24,9 +24,9 @@ describe("UnitInterest Table", () => {
     });
   });
 
-  // it("exports with M1neral System ID", () => {
-  //   cy.mrtExport({ columns });
-  // });
+  it("exports with M1neral System ID", () => {
+    cy.mrtExport({ columns });
+  });
 
   it("should delete selected rows", () => {
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
