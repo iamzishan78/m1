@@ -10,10 +10,10 @@ const columns = [
     name: 'Name',
     type: 'string',
     selector: 'div > p > div > div > a',
-  }
+  },
 ];
 
-describe('Contact.cy.jsx', () => {
+describe('Contact Table', () => {
   beforeEach(() => {
     cy.interceptAndWait(['getESSimpleSearch', 'contacts_flat'], () => {
       cy.viewport(1600, 1200).mount(<MRTTable name="ContactTable" />);
@@ -27,14 +27,16 @@ describe('Contact.cy.jsx', () => {
     cy.mrtSortColumn({ column: columns[1] });
   });
 
-  it('Filters by Name & Last Updated Single Select', { retries: { runMode: 5, openMode: 2 } }, () => {
+  it(
+    'Filters by Name & Last Updated Single Select',
+    { retries: { runMode: 5, openMode: 2 } },
+    () => {
+      cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
 
-    cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
-
-    cy.mrtSingleSelect({ column: columns[0] });
-    cy.mrtSingleSelect({ column: columns[1] });
-
-  });
+      cy.mrtSingleSelect({ column: columns[0] });
+      cy.mrtSingleSelect({ column: columns[1] });
+    }
+  );
 
   it('Filters by Name Multi Select', { retries: { runMode: 5, openMode: 2 } }, () => {
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();

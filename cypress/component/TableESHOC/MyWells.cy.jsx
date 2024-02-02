@@ -1,13 +1,11 @@
 /* eslint-disable no-undef */
 import Wells from 'components/Land/components/Wells';
 
-describe('MyWellsNameUpdate.cy.jsx', () => {
+describe('MyWells ESHOC Table', () => {
   beforeEach(() => {
-
     cy.interceptAndWait(['getESSimpleSearch', 'mywells_flat'], () => {
-      cy.viewport(1600, 1200).mount(<Wells />, { testCase: "MyWellsNameUpdate" });
+      cy.viewport(1600, 1200).mount(<Wells />, { testCase: 'MyWellsNameUpdate' });
     });
-
   });
 
   it('checks well name is updating correctly', () => {
@@ -15,7 +13,9 @@ describe('MyWellsNameUpdate.cy.jsx', () => {
     const randomNumber = Math.floor(Math.random() * 1000) + 1;
     const wellName = `Testing well name ${randomNumber}`;
 
-    cy.get('#MUIDataTableBodyRow-0 > td:nth-child(2) > div:nth-child(2) > div > div > a').click();
+    cy.get(
+      '#MUIDataTableBodyRow-0 > td:nth-child(2) > div:nth-child(2) > div > div > a'
+    ).click();
     cy.wait(15000);
 
     cy.get('[data-testid="Well Name"]').clear().type(wellName);
@@ -23,7 +23,8 @@ describe('MyWellsNameUpdate.cy.jsx', () => {
 
     cy.get('[data-testid="close-dialog"]').click();
 
-    cy.get('#MUIDataTableBodyRow-0 > td:nth-child(2) > div:nth-child(2) > div > div > a')
-      .should('have.text', wellName);
+    cy.get(
+      '#MUIDataTableBodyRow-0 > td:nth-child(2) > div:nth-child(2) > div > div > a'
+    ).should('have.text', wellName);
   });
 });
