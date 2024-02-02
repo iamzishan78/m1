@@ -3,7 +3,12 @@ import MRTTable from "components/MRTTable";
 import { basic_timeouts } from "../../../cypress/cypressUtils/data";
 import { globalStateController } from "hookstate/globalStateController";
 import ldata from "../../fixtures/ldata.json";
-import { REVERTCYPRESSDELETE } from "graphQL/useMutationCommonGridRemove";
+import { REVERTCYPRESSDELETE } from "graphQL/useMutationCommonCypressRevert";
+
+const headers = {
+  "Content-Type": "application/json",
+  "X-ZUMO-AUTH": ldata.x_zumo_auth,
+};
 
 const columns = [{ name: "M1neral System ID" }];
 
@@ -30,7 +35,6 @@ describe("UnitInterest Table", () => {
       column: countyColumn,
       callback: (response) => {
         const deletedIdsArray = response.map((item) => item._id);
-        console.log("deletedIdsArray", deletedIdsArray);
 
         globalStateController.updateState({
           testCase: {
@@ -52,38 +56,26 @@ describe("UnitInterest Table", () => {
               const data =
                 deleteResponse?.response?.body?.data?.gridGenericRemove.data;
 
-              console.log("data", data);
+              console.log("deleteResponse", deleteResponse);
+              expect(deleteResponse?.response?.status).to.eq(200);
+              const getLayerPayload = {
+                operationName: "revertCypressDelete",
+                variables: { data },
+                query: REVERTCYPRESSDELETE.loc.source.body,
+              };
 
-              // const headers = {
-              //   "Content-Type": "application/json",
-              //   "X-ZUMO-AUTH": ldata.x_zumo_auth,
-              // };
-
-              // const getLayerPayload = {
-              //   operationName: "revertCypressDelete",
-              //   variables: { data },
-              //   query: REVERTCYPRESSDELETE.loc.source.body,
-              // };
-
-              // cy.request({
-              //   method: "POST",
-              //   url: "http://localhost:7071/api/m1graph",
-              //   headers: headers,
-              //   body: getLayerPayload,
-              // });
+              cy.request({
+                method: "POST",
+                url: ldata.url,
+                headers: headers,
+                body: getLayerPayload,
+              }).then((r) => {
+                console.log("r => ", r);
+                expect(r.status).to.eq(200);
+              });
             }
           );
-
-          // cy.interceptAndWait(["getESSimpleSearch", "shapes_flat"], (alias) => {
-          //   cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(
-          //     (afterdeleteESResponse) => {
-          //       console.log("afterdeleteESResponse", afterdeleteESResponse);
-          //     }
-          //   );
-          // });
         });
-
-        console.log("==========");
       },
     });
   });
