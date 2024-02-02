@@ -195,14 +195,14 @@ export const UnitSummaryData = {
   updating: false,
 };
 
-describe('SummaryTable.cy.jsx', () => {
+describe('SummaryTable Component', () => {
   beforeEach(() => {
     cy.viewport(800, 1200).mount(
       <SummaryTable
         tableData={unitDefaultData}
         properties={UnitSummaryData.properties}
-        updateProperties={() => { }}
-        updateCustomProperties={() => { }}
+        updateProperties={() => {}}
+        updateCustomProperties={() => {}}
         search={''}
         metaData={metaDataRes}
         id={UnitSummaryData.id}

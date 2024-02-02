@@ -25,7 +25,6 @@ Cypress.Commands.add('setMapData', ({ testId, value }) => {
     cy.get(`button[data-testid="edit-${testId}"]`).click();
   });
 
-
   cy.get(`input#filter-autocomplete-${testId}`).type(value);
 
   cy.get('.MuiAutocomplete-popper', {
@@ -44,7 +43,7 @@ Cypress.Commands.add('setMapData', ({ testId, value }) => {
 });
 
 describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
-  it('Restoring Unit 65b0c87166115215f9155bc4', () => {
+  it('Restores Unit 65b0c87166115215f9155bc4', () => {
     // Define your headers
     const headers = {
       'Content-Type': 'application/json',
@@ -86,13 +85,11 @@ describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
   });
 });
 
-describe('ShapeDetailCard.cy.jsx', () => {
-
+describe('ShapeDetailCard Component', () => {
   it('IF TX ( State=CO,County=Andrews,Township=004S,Range=066W,Section=36 ) ELSE ( State=TX,County=Anderson,Township=035S,Range=055W,Section=47 )', () => {
-
     popupController.updateState({ selectedShape });
 
-    cy.interceptAndWait(['getCustomLayer'], (alias) => {
+    cy.interceptAndWait(['getCustomLayer'], alias => {
       cy.viewport(1600, 1200).mount(
         <ExpandableCardProvider
           expanded={true}
@@ -109,12 +106,12 @@ describe('ShapeDetailCard.cy.jsx', () => {
           cardHeightExpanded="calc(100vh - 64px)"
           targetSourceId={selectedShape?.id}
           targetLabel={selectedShape.type}
-        // deleteCustomLayer={deleteCustomLayer}
+          // deleteCustomLayer={deleteCustomLayer}
         ></ExpandableCardProvider>,
         { spec: 'ShapeDetailCard' }
       );
 
-      cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((response) => {
+      cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
         const state = response?.body?.data?.customLayer?.shapeJson?.properties?.State;
         if (state === 'TX') {
           cy.setMapData({ testId: 'State', value: 'CO' });
@@ -130,7 +127,6 @@ describe('ShapeDetailCard.cy.jsx', () => {
           cy.setMapData({ testId: 'Section', value: '47' });
         }
       });
-
     });
   });
 });

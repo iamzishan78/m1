@@ -17,7 +17,7 @@ const countyColumn = {
   type: "string",
 };
 
-describe("UnitInterest Table", () => {
+describe("Unit Table", () => {
   beforeEach(() => {
     cy.interceptAndWait(["getESSimpleSearch", "shapes_flat"], () => {
       cy.viewport(1600, 1200).mount(<MRTTable name="UnitTable" />);
