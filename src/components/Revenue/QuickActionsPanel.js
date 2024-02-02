@@ -22,7 +22,7 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
   };
   return (
     <>
-      <Drawer
+      {/* <Drawer
         className={classes.drawer}
         variant="persistent"
         anchor="left"
@@ -65,18 +65,19 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
               ))}
           </StyledMenu>
         </div>
-      </Drawer>
+      </Drawer> */}
       <div
-        className={clsx({
-          [classes.revenueRootExpanded]: expandedPanel,
-          [classes.revenueRootCollapsed]: !expandedPanel,
+        className={
+          clsx({
+          // [classes.revenueRootExpanded]: expandedPanel,
+          // [classes.revenueRootCollapsed]: !expandedPanel,
         })}
       >
         {children}
       </div>
-      <div className={classes.pulloutBox} onClick={handlePanelStateChange}>
+      {/* <div className={classes.pulloutBox} onClick={handlePanelStateChange}>
         {expandedPanel ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
-      </div>
+      </div> */}
     </>
   );
 }
