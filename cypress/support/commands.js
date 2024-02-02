@@ -33,7 +33,7 @@ import { v4 as uuid } from "uuid";
 
 // Constants
 const workSpace = Cypress.env('TENENT') || "localhost"
-const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
+const { longTimeout, extraTimeout } = basic_timeouts
 
 // Common Commands
 Cypress.Commands.add("checkAndLogin", () => {

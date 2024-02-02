@@ -221,4 +221,3 @@ Cypress.Commands.add('mrtMultiSelect', ({ column }) => {
   // Select and verify the second option
   selectAndVerifyOption(1, false);
 });
-
