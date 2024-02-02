@@ -3,7 +3,7 @@ import MRTTable from 'components/MRTTable';
 
 const columns = [{ name: 'M1neral System ID' }];
 
-describe('UnitInterest Table', () => {
+describe('Unit Table', () => {
   beforeEach(() => {
     cy.interceptAndWait(['getESSimpleSearch', 'shapes_flat'], () => {
       cy.viewport(1600, 1200).mount(<MRTTable name="UnitTable" />);
