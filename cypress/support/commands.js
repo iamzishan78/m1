@@ -33,7 +33,7 @@ import { v4 as uuid } from "uuid";
 
 // Constants
 const workSpace = Cypress.env('TENENT') || "localhost"
-const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
+const { longTimeout, extraTimeout } = basic_timeouts
 
 // Common Commands
 Cypress.Commands.add("checkAndLogin", () => {
@@ -105,7 +105,6 @@ Cypress.Commands.add('interceptAndWait', (dataKeys, interceptionFunction, option
                 let allPresent = true
                 const body = JSON.stringify(req.body)
                 dataKeys.forEach((dataKey) => {
-                    // console.log(body.includes(dataKey), body, dataKey)
                     if (!body.includes(dataKey)) {
                         allPresent = false
                     }

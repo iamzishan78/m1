@@ -156,9 +156,6 @@
     "yarn": "^1.22.19"
   },
   "scripts": {
-    "cy:open": "cypress open",
-    "cy:run": "cypress run --headless --browser chrome",
-    "cy:report": "cypress run --headless --browser chrome --spec 'cypress/e2e/Activities/verifyActivityCompleted.cy.js'  --browser chrome",
     "legacy-start": "react-scripts start",
     "start": "craco start",
     "cypress:start": "cross-env CYPRESS=true craco start",
@@ -167,10 +164,9 @@
     "legacy-test": "react-scripts test",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "ci:start-server": "http-server -p 3000",
-    "ci:cy-run": "start-server-and-test start http://localhost:3000 cy:run",
     "cy:component": "cypress run --component --browser chrome",
-    "ci:cy-login": "cross-env START_SERVER_AND_TEST_INSECURE=1 start-server-and-test cypress:start http://localhost:3000 \"cross-env TENENT=m1staging cypress run --spec 'cypress/e2e/login.cy.js' --browser chrome\"",
+    "ci:cy-login": "cross-env START_SERVER_AND_TEST_INSECURE=1 start-server-and-test cypress:start http://localhost:3000 \"cypress run --spec 'cypress/e2e/login.cy.js' --browser chrome\"",
+    "cy:open": "npm run ci:cy-login && cypress open",
     "ci:cy-login-component": "npm run ci:cy-login && npm run cy:component"
   },
   "eslintConfig": {
