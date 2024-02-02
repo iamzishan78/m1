@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const REMOVE_WELLS = gql`
-  mutation removeWells($wellIds: [ID], $userId: String) {
-    removeWells(wellIds: $wellIds, userId: $userId) {
+  mutation removeWells($wellIds: [ID], $userId: String, $isDeleted: Boolean) {
+    removeWells(wellIds: $wellIds, userId: $userId, isDeleted: $isDeleted) {
       success
       message
       error

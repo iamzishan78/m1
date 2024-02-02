@@ -18,12 +18,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Wells() {
+function Wells({ defaultFilters = [] }) {
   const classes = useStyles();
   const { testCaseValues, stateValues } = globalStateController.useState(['testCase', 'testCaseValues']);
   const { id: globalWellId } = useParams();
 
-  const [filters, setFilters] = useState([]);
+  const [filters, setFilters] = useState(defaultFilters);
   const [selectedWell, setSelectedWell] = useState();
   const [showDialog, setDialog] = useState(false);
   const loadMore = { type: "infiniteScroll", height: "calc(100vh - 166px)" };
