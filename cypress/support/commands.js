@@ -29,10 +29,11 @@
 import { deepEqualObjects } from "../../src/components/Shared/functions";
 import { baseUrls, basic_timeouts, loginCredential } from "../cypressUtils/data";
 import { camelize, findInObject, isSearchStringMatched } from "../cypressUtils/helper";
+import { v4 as uuid } from "uuid";
 
 // Constants
 const workSpace = Cypress.env('TENENT') || "localhost"
-const { shorTimeout, longTimeout, extraTimeout } = basic_timeouts
+const { longTimeout, extraTimeout } = basic_timeouts
 
 // Common Commands
 Cypress.Commands.add("checkAndLogin", () => {
@@ -90,6 +91,41 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null, alias = 
             }
         }
     });
+})
+
+Cypress.Commands.add('interceptAndWait', (dataKeys, interceptionFunction, options = { wait: true }, url = baseUrls[workSpace]) => {
+
+    const alias = uuid() + dataKeys[0]
+    cy.log(alias)
+
+    cy.intercept('POST', url, req => {
+
+        if (req?.body?.operationName === dataKeys[0]) {
+            if (dataKeys.length > 0) {
+                let allPresent = true
+                const body = JSON.stringify(req.body)
+                dataKeys.forEach((dataKey) => {
+                    if (!body.includes(dataKey)) {
+                        allPresent = false
+                    }
+                })
+                if (allPresent) req.alias = alias;
+                else req.continue()
+            } else {
+                req.alias = alias;
+            }
+
+        } else req.continue()
+    });
+
+    interceptionFunction('@' + alias)
+
+    if (options.wait) {
+        cy.wait('@' + alias, { timeout: longTimeout });
+        cy.wait(4000);
+    }
+
+    else return '@' + alias
 })
 
 Cypress.Commands.add('interceptApiByIndex', (operationName, esIndex) => {

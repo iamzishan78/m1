@@ -5,6 +5,8 @@ import ShapeDetailCard from 'components/ShapeDetailCard';
 import { popupController } from 'hookstate/popupStateController';
 import { basic_timeouts } from '../../../cypressUtils/data';
 import ldata from '../../../fixtures/ldata.json';
+import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 
 const selectedShape = {
   id: '65b0c87166115215f9155bc4',
@@ -15,8 +17,13 @@ const selectedShape = {
 };
 
 Cypress.Commands.add('setMapData', ({ testId, value }) => {
-  cy.get(`[data-testid="data-cell-${testId}"]`, { timeout: 10000 }).trigger('mouseover');
-  cy.get(`button[data-testid="edit-${testId}"]`).click();
+  cy.get(`[data-testid="data-cell-${testId}"]`, {
+    timeout: basic_timeouts.midTimeout,
+  }).trigger('mouseover');
+
+  cy.interceptAndWait(['getESSimpleFilter'], () => {
+    cy.get(`button[data-testid="edit-${testId}"]`).click();
+  });
 
   cy.get(`input#filter-autocomplete-${testId}`).type(value);
 
@@ -24,23 +31,19 @@ Cypress.Commands.add('setMapData', ({ testId, value }) => {
     responseTimeout: basic_timeouts.partialLongTimeout,
   }).should('exist');
 
-  cy.get('.MuiAutocomplete-option').first().click();
+  cy.wait(basic_timeouts.shorTimeout);
+
+  cy.interceptAndWait(['updateCustomLayer'], () => {
+    cy.get('.MuiAutocomplete-option').first().click();
+  });
 
   cy.get('body').click();
 
-  cy.verifyApiResponse('@updateCustomLayerApi', {
-    responseTimeout: basic_timeouts.midTimeout,
-  });
-
-  cy.get(`@updateCustomLayerApi`).then(interception => {
-    cy.get(`[data-testid="data-cell-${testId}"]`).contains(value);
-  });
+  cy.get(`[data-testid="data-cell-${testId}"]`).contains(value);
 });
 
 describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
-
-  it('Restoring Unit 65b0c87166115215f9155bc4', () => {
-
+  it('Restores Unit 65b0c87166115215f9155bc4', () => {
     // Define your headers
     const headers = {
       'Content-Type': 'application/json',
@@ -48,65 +51,82 @@ describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
     };
 
     // Define your request payload
-    const payload = { "operationName": "updateCustomLayer", "variables": { "customLayerId": "65b0c87166115215f9155bc4", "customLayer": { "IsDeleted": false } }, "query": "mutation updateCustomLayer($customLayerId: ID, $customLayer: CustomLayerInput, $userId: JSON) {\n  updateCustomLayer(\n    customLayerId: $customLayerId\n    customLayer: $customLayer\n    userId: $userId\n  ) {\n    success\n    message\n    error\n    customLayer {\n      _id\n      shape\n      shapeJson\n      qtrQtrSelection\n      name\n      layer\n      user {\n        _id\n        name\n        email\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n" };
+    const payload = {
+      operationName: 'updateCustomLayer',
+      variables: {
+        customLayerId: '65b0c87166115215f9155bc4',
+        customLayer: { IsDeleted: false },
+      },
+      query: UPDATECUSTOMLAYER.loc.source.body,
+    };
 
+    const getLayerPayload = {
+      operationName: 'getCustomLayer',
+      variables: { id: '65b0c87166115215f9155bc4' },
+      query: CUSTOMLAYER.loc.source.body,
+    };
     cy.request({
       method: 'POST',
-      url: `https://m1productiongraphql.azurewebsites.net/api/m1graph?code=8bcIQeGYGoL2XgLZ-O2sWhN7qKU3iMPpw_qboLviLIZWAzFuTQgpgQ==`,
+      url: ldata.url,
       headers: headers,
-      body: payload,
-    }).then((response) => {
-      expect(response.status).to.eq(200);
+      body: getLayerPayload,
+    }).then(response => {
+      if (!response?.body?.data?.customLayer)
+        cy.request({
+          method: 'POST',
+          url: ldata.url,
+          headers: headers,
+          body: payload,
+        }).then(response => {
+          expect(response.status).to.eq(200);
+        });
+      else expect(response.status).to.eq(200);
     });
   });
-
 });
 
-describe('ShapeDetailCard.cy.jsx', () => {
-  beforeEach(() => {
+describe('ShapeDetailCard Component', () => {
+  it('IF TX ( State=CO,County=Andrews,Township=004S,Range=066W,Section=36 ) ELSE ( State=TX,County=Anderson,Township=035S,Range=055W,Section=47 )', () => {
     popupController.updateState({ selectedShape });
 
-    cy.interceptApi('getCustomLayer');
-    cy.interceptApi('updateCustomLayer');
+    cy.interceptAndWait(['getCustomLayer'], alias => {
+      cy.viewport(1600, 1200).mount(
+        <ExpandableCardProvider
+          expanded={true}
+          // handleCloseExpandableCard={handleCloseExpandableCard}
+          component={<ShapeDetailCard type={selectedShape.type}></ShapeDetailCard>}
+          title={selectedShape?.shapeLabel}
+          subTitle={selectedShape?.shapeSubtitle || selectedShape?.unitInfo}
+          parent="map"
+          position="relative"
+          cardTop={0}
+          cardLeft={0}
+          zIndex={99}
+          cardWidthExpanded="50vw"
+          cardHeightExpanded="calc(100vh - 64px)"
+          targetSourceId={selectedShape?.id}
+          targetLabel={selectedShape.type}
+          // deleteCustomLayer={deleteCustomLayer}
+        ></ExpandableCardProvider>,
+        { spec: 'ShapeDetailCard' }
+      );
 
-    cy.viewport(1600, 1200).mount(
-      <ExpandableCardProvider
-        expanded={true}
-        // handleCloseExpandableCard={handleCloseExpandableCard}
-        component={<ShapeDetailCard type={selectedShape.type}></ShapeDetailCard>}
-        title={selectedShape?.shapeLabel}
-        subTitle={selectedShape?.shapeSubtitle || selectedShape?.unitInfo}
-        parent="map"
-        position="relative"
-        cardTop={0}
-        cardLeft={0}
-        zIndex={99}
-        cardWidthExpanded="50vw"
-        cardHeightExpanded="calc(100vh - 64px)"
-        targetSourceId={selectedShape?.id}
-        targetLabel={selectedShape.type}
-      // deleteCustomLayer={deleteCustomLayer}
-      ></ExpandableCardProvider>
-    );
-
-    cy.verifyApiResponse('@getCustomLayerApi', {
-      responseTimeout: basic_timeouts.midTimeout,
+      cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
+        const state = response?.body?.data?.customLayer?.shapeJson?.properties?.State;
+        if (state === 'TX') {
+          cy.setMapData({ testId: 'State', value: 'CO' });
+          cy.setMapData({ testId: 'County', value: 'Andrews' });
+          cy.setMapData({ testId: 'Township', value: '004S' });
+          cy.setMapData({ testId: 'Range', value: '066W' });
+          cy.setMapData({ testId: 'Section', value: '36' });
+        } else {
+          cy.setMapData({ testId: 'State', value: 'TX' });
+          cy.setMapData({ testId: 'County', value: 'Anderson' });
+          cy.setMapData({ testId: 'Township', value: '035S' });
+          cy.setMapData({ testId: 'Range', value: '055W' });
+          cy.setMapData({ testId: 'Section', value: '47' });
+        }
+      });
     });
-  });
-
-  it('Sets State, County, Township, Range, Section to TX, Anderson, 035S, 055W, 47', () => {
-    cy.setMapData({ testId: 'State', value: 'TX' });
-    cy.setMapData({ testId: 'County', value: 'Anderson' });
-    cy.setMapData({ testId: 'Township', value: '035S' });
-    cy.setMapData({ testId: 'Range', value: '055W' });
-    cy.setMapData({ testId: 'Section', value: '47' });
-  });
-
-  it('Sets State, County, Township, Range, Section to CO, Arapahoe, 004S, 066W, 36', () => {
-    cy.setMapData({ testId: 'State', value: 'CO' });
-    cy.setMapData({ testId: 'County', value: 'Arapahoe' });
-    cy.setMapData({ testId: 'Township', value: '004S' });
-    cy.setMapData({ testId: 'Range', value: '066W' });
-    cy.setMapData({ testId: 'Section', value: '36' });
   });
 });
