@@ -77,7 +77,7 @@ export default function Revenue() {
   };
 
   return (
-    <RevenueActionsPanel handlePanelStateChange={handlePanelStateChange} expandedPanel={quickActionsPanelState} activeModule={activeModule}>
+    <RevenueActionsPanel handlePanelStateChange={handlePanelStateChange} expandedPanel={false} activeModule={activeModule}>
       <Switch>
         {Object.keys(SIDE_PANEL_MENU_ITEMS_LIST).map((option) => {
           const Component = Components[SIDE_PANEL_MENU_ITEMS_LIST[option].component];
