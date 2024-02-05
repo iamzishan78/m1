@@ -132,7 +132,7 @@ describe('ShapeDetailCard Component', () => {
 
   });
 
-  it('IF TX ( State=CO,County=Andrews,Township=004S,Range=066W,Section=36 ) ELSE ( State=TX,County=Anderson,Survey=ABBOTT, L,Section=37 T1N,Section=47 )', () => {
+  it('IF TX ( State=CO,County=Denver,Meridian=06,Township=035S,Range=055W,Section=43 ) ELSE ( State=TX,County=Austin,Survey=ABBOTT, L,Section=37 T1N,Section=47 )', () => {
 
     const state = selectedShape.state;
     if (state === 'TX') {
@@ -152,7 +152,7 @@ describe('ShapeDetailCard Component', () => {
 
   });
 
-  it('IF TX ( Austin, TX - BLK 37 T1N, SEC 47 ) ELSE ( State=TX,County=Anderson,Survey=ABBOTT, L,Section=37 T1N,Section=47 )', () => {
+  it('IF TX ( Description=Austin, TX - BLK 37 T1N, SEC 47 ) ELSE ( Description=Denver, CO - T035S R055W — Section 43 )', () => {
     const state = selectedShape.state;
     if (state === 'TX') {
       cy.get('.description').should('contain', 'Austin, TX - BLK 37 T1N, SEC 47')
