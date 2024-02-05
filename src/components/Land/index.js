@@ -92,7 +92,7 @@ export default function Land() {
     <QuickActionPanel
       title="Asset Management"
       handlePanelStateChange={handlePanelStateChange}
-      quickActionsPanelState={quickActionsPanelState}
+      quickActionsPanelState={ false}
       activeModule={activeModule}
       actions={SIDE_PANEL_MENU_ITEMS_LIST}
     >

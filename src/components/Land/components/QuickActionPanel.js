@@ -85,9 +85,9 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
         >
           {children}
         </div>
-        <div className={classes.pulloutBox} onClick={() => handlePanelStateChange(!quickActionsPanelState)}>
+        {/* <div className={classes.pulloutBox} onClick={() => handlePanelStateChange(!quickActionsPanelState)}>
           {quickActionsPanelState ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
-        </div>
+        </div> */}
       </FeatureFlag>
     </>
   );
