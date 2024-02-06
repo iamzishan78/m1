@@ -243,6 +243,18 @@ function MapGridCard(props) {
 
   const dispatch = useDispatch();
 
+  const onClose = (e) => {
+    e.stopPropagation();
+    setStateApp((state) => ({ ...state, selectedDataset: null }))
+    dispatch(
+      setMapGridCardState({
+        mapGridCardActivated: false,
+        selectedOwner: null,
+        selectedOwnerWellIntsSummary: null,
+      })
+    );
+  }
+
   const shapeFileTableOverride = useMemo(() => {
     let mustQuery = [];
     let searchQuery = [];
@@ -271,6 +283,12 @@ function MapGridCard(props) {
     // }
 
     return {
+      toolbarInternalActions: {
+        onClose,
+        style: {
+          marginRight: '0.5rem',
+        },
+      },
       defaultFilters: [
         {
           field: 'file._id',
@@ -444,17 +462,7 @@ function MapGridCard(props) {
 
           <IconButton
             className="cancelDraggableEffect"
-            onClick={(e) => {
-              e.stopPropagation();
-              setStateApp((state) => ({ ...state, selectedDataset: null }))
-              dispatch(
-                setMapGridCardState({
-                  mapGridCardActivated: false,
-                  selectedOwner: null,
-                  selectedOwnerWellIntsSummary: null,
-                })
-              );
-            }}
+            onClick={onClose}
           >
             <CloseIcon color="secondary" />
           </IconButton>

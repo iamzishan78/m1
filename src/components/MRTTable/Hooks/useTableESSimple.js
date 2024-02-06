@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { tableController } from 'hookstate/tableController';
 import useHandleQuery from './useHandleQuery';
 import ToolbarActions from '../Common/ToolbarActions';
+import ToolbarInternalActions from '../Common/ToolbarInternalActions';
 import { tableESSimpleFilterModeOtions } from '../utils/data';
 import _ from 'lodash';
 
@@ -279,6 +280,14 @@ const useTableESSimple = tableKey => {
 				) : (
 					<ToolbarActions {...props} tableKey={tableKey} />
 				),
+			renderToolbarInternalActions: tableStateValues.toolbarInternalActions
+				? ({ table }) => (
+					<ToolbarInternalActions
+						table={table}
+						toolbarInternalActions={tableStateValues.toolbarInternalActions}
+					/>
+				)
+				: undefined,
 		},
 	};
 };
