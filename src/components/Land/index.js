@@ -55,13 +55,13 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     component: "Wells",
     isExcluded: true,
   },
-  ADVANCED_SEARCH: {
-    featureFlag: "LANDMODULE",
-    title: "Advanced Search",
-    link: "/land/search",
-    component: "AdvancedSearch",
-    hideSearch: true,
-  },
+  // ADVANCED_SEARCH: {
+  //   featureFlag: "LANDMODULE",
+  //   title: "Advanced Search",
+  //   link: "/land/search",
+  //   component: "AdvancedSearch",
+  //   hideSearch: true,
+  // },
   // REPORTING_GROUPS: {
   //   featureFlag: "LANDREPORTINGGROUPS",
   //   title: "Reporting Groups",
