@@ -1,4 +1,5 @@
 import { GlobalStickyStyles } from "GlobalSettings";
+import { formatDate } from 'components/Shared/functions';
 
 //value formatters
 import vf_currency from "components/Shared/valueformatters/vf_currency";
@@ -200,7 +201,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.bounusPayment.keyword",
     options: {
       dbName: "shapeJson.properties.bounusPayment",
-      filter: true, customRender: (value) => vf_currency(value) ,
+      filter: true, customRender: (value) => vf_currency(value),
     },
   },
   {
@@ -393,6 +394,55 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       viewColumns: false,
     },
   },
+
+  {
+    name: "createBy",
+    label: "Create By",
+    esKey: "createBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "createAt",
+    label: "Create Date",
+    esKey: "createAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+  },
+
+  {
+    name: "lastUpdateBy",
+    label: "Last Update By",
+    esKey: "lastUpdateBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "lastUpdateAt",
+    label: "Last Update Date",
+    esKey: "lastUpdateAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+  },
+
   {
     name: "tags",
     label: "Tags",
