@@ -373,6 +373,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         expandedCard: false,
         viewDoc: null,
       }));
+      popupController.reset();
     }
   }, []);
 
@@ -1219,6 +1220,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         ...state,
         selectedParcel: null,
         selectedShape: null,
+        selectedUserDefinedLayer: null,
         expandedCard: false,
         popupOpen: false,
         showAddShapePopup: false,
@@ -1307,16 +1309,18 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         selectedUserDefinedLayer = parseUserDefinedLayerFeature(feature, featureLayer)
         feature = selectedUserDefinedLayer;
 
-        setStateApp((state) => {
-          if (state.showDrawShapesPopup) return state;
-          drawBoundary(map, selectedUserDefinedLayer);
-          state = {
-            ...state,
-            selectedUserDefinedLayer,
-            selectedParcel: null,
-          };
-          return state;
-        });
+        setTimeout(() => {
+          setStateApp((state) => {
+            if (state.showDrawShapesPopup) return state;
+            drawBoundary(map, selectedUserDefinedLayer);
+            state = {
+              ...state,
+              selectedUserDefinedLayer,
+              selectedParcel: null,
+            };
+            return state;
+          });
+        }, 0);
       }
       setStateApp((state) => {
         if ((!state.showDrawShapesPopup || ifDefaultSources(feature.source)) && state.shapeEditMode !== 'redraw' && state.shapeEditMode !== 'fullEdit') createUDPopUp(feature.properties);
@@ -1353,6 +1357,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       let clusterUDLayers = [];
       let udLayers = [];
       let clusterLayers = [];
+
+      popupController.reset();
 
       setStateApp((state) => ({
         ...state, popupOpen: false, layerSelectionPopup: false,
@@ -1507,7 +1513,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                   [bbox[0], bbox[1]], // southwestern corner of the bounds
                   [bbox[2], bbox[3]] // northeastern corner of the bounds
                 ],
-                { padding: { top: 40, bottom: 40, left: 40, right: 40 }, easing: () => 1, }
+                { padding: { top: 40, bottom: 700, left: 400, right: 40 }, easing: () => 1, }
               )
             }
           }
@@ -4638,6 +4644,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
   useEffect(() => {
     if (!map || !popupStateValues.selectedShapeFile || !udLayerClickHandlerRef) return;
 
+    setStateApp((state) => ({
+      ...state, popupOpen: false,
+    }));
+
     const combined = turf.combine(turf.featureCollection([popupStateValues.selectedShapeFile]))
     const bbox = turf.bbox(combined)
     map.fitBounds(
@@ -4645,11 +4655,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         [bbox[0], bbox[1]], // southwestern corner of the bounds
         [bbox[2], bbox[3]] // northeastern corner of the bounds
       ],
-      { padding: { top: 40, bottom: 40, left: 40, right: 40 }, easing: () => 1, }
+      { padding: { top: 40, bottom: 700, left: 400, right: 40 }, easing: () => 1, }
     )
 
     udLayerClickHandlerRef(popupStateValues.selectedShapeFile)
-  }, [map, selectedShapeFile])
+  }, [selectedShapeFile])
 
 
   const fetchStyles = async (abortController) => {

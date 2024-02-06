@@ -602,7 +602,7 @@ function MapGridCard(props) {
                       )}
                       {searchTapValue.value === "layer" && (
                         <MRTTable
-                          name={'ShapesFilesGenericTable'}
+                          name='ShapesFilesGenericTable'
                           overrideMeta={shapeFileTableOverride}
                         />
                       )}
