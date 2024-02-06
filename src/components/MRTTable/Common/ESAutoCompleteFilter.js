@@ -133,6 +133,7 @@ function ESAutoCompleteFilter({
 						value: filterSelectOptions
 							? filterSelectOptions.find(op => op.value === params.inputProps.value)?.label || ''
 							: params?.inputProps?.value,
+						'data-testid': `${multiple ? 'multi' : 'single'}-filter-${label}`,
 					}}
 					placeholder={`Filter by ${label}`}
 					variant="standard"
@@ -153,7 +154,7 @@ function ESAutoCompleteFilter({
 					return;
 				}
 
-				const value = multiple
+				let value = multiple
 					? option.map(option => {
 						if (typeof option === 'object') {
 							return option.value
@@ -163,6 +164,10 @@ function ESAutoCompleteFilter({
 						}
 					})
 					: option.value;
+
+				if (type === 'date') {
+					value = formatDate(value)
+				}
 				setFilterValue(value);
 
 				if (Array.isArray(field)) {

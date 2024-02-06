@@ -176,16 +176,9 @@ const UnitInterestsHeadCells = [
     //     }
     // },
     // {
-        {
-            name: "taxYear", label: "Tax Year", esKey: 'taxYear.keyword',
-            options: {
-                dbName: "taxYear.keyword",
-                sort: true,
-                filter: true
-            }
-        },
+
     {
-        name: "working_interest", label: "Working Interest", esKey: 'working_interest',
+        name: "working_interest", label: "WI", esKey: 'working_interest',
         options: {
             dbName: "working_interest",
             sort: true,
@@ -201,7 +194,7 @@ const UnitInterestsHeadCells = [
     //     }
     // },
     {
-        name: "royalty_interest", label: "Royalty Interest", esKey: 'royalty_interest',
+        name: "royalty_interest", label: "RI", esKey: 'royalty_interest',
         options: {
             dbName: "royalty_interest",
             sort: true,
@@ -225,14 +218,15 @@ const UnitInterestsHeadCells = [
             filter: true
         }
     },
-    // {
-    //     name: "net_acres", label: "Net Acres", esKey: 'net_acres', 
-    //     options: { 
-    //         dbName: "net_acres",
-    //         sort: true, 
-    //         filter: true 
-    //     }
-    // },
+    {
+        name: "net_acres", label: "Net Acres", esKey: 'net_acres', 
+        options: { 
+            dbName: "net_acres",
+            sort: true, 
+            filter: true 
+        }
+    },
+
     {
         name: "nra", label: "NRA", esKey: 'nra',
         options: {
@@ -241,7 +235,22 @@ const UnitInterestsHeadCells = [
             filter: true
         }
     },
-
+    {
+        name: "unitTractId", label: "Unit Tract ID", esKey: 'unitTractId', 
+        options: { 
+            dbName: "unitTractId",
+            sort: true, 
+            filter: true 
+        }
+    },
+    {
+        name: "tractAcres", label: "Unit Tract Acres", esKey: 'tractAcres', 
+        options: { 
+            dbName: "tractAcres",
+            sort: true, 
+            filter: true 
+        }
+    },
     {
         name: "offer_price", label: "Target Offer Price", esKey: 'offer_price',
         options: {
@@ -402,6 +411,23 @@ const UnitInterestsHeadCells = [
             filter: true
         }
     },
+    {
+        name: "dataSource", label: "Data Source", esKey: 'dataSource.keyword',
+        options: {
+            dbName: "dataSource.keyword",
+            sort: true,
+            filter: true
+        }
+    },
+    {
+        name: "taxYear", label: "Tax Year", esKey: 'taxYear.keyword',
+        options: {
+            dbName: "taxYear.keyword",
+            sort: true,
+            filter: true
+        }
+    },
+
     {
         name: 'offer_price',
         label: 'Target Offer Price',

@@ -15,6 +15,9 @@ function ToolbarActions({ table, tableKey, children }) {
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
 
+	const globalState = tableGlobalController.useState(['cypress']);
+	const globalStateValues = globalState.stateValues;
+
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
 	const isSomethingSelected = isSomeRowsSelected || isAllRowsSelected;
@@ -124,14 +127,14 @@ function ToolbarActions({ table, tableKey, children }) {
 			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
 				{children || <div />}
 
-				{!tableStateValues.isGeneric && <IconButton onClick={handleExport}>
+				{!tableStateValues.isGeneric && <IconButton onClick={handleExport} data-testid="download-csv">
 					<Tooltip title="Download CSV" aria-label="add">
 						<CloudDownloadIcon />
 					</Tooltip>
 				</IconButton>}
 
 				{isSomethingSelected && !!!tableStateValues.isDeleteDisabled && (
-					<IconButton aria-label="delete" onClick={() => handleDelete()}>
+					<IconButton aria-label="delete" data-testid="delete-icon-button" onClick={() => handleDelete()}>
 						<Tooltip title="Delete">
 							<DeleteIcon />
 						</Tooltip>

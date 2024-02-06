@@ -2,7 +2,7 @@ import React from 'react';
 import { hookstate } from '@hookstate/core';
 import _, { get, isEqual, isEmpty } from 'lodash';
 import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
-import { copy, deepEqual, formatDate, getStartAndEndOfDay } from 'components/Shared/functions';
+import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
 import { stringFilterOptions, numberFilterOptions, dateFilterOptions, customFilterOptions } from 'components/MRTTable/utils/data';
 import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
@@ -226,6 +226,7 @@ const tableESStateControllerHandler = state => ({
 			gridViewSettings,
 			density = 'comfortable',
 			advanceSearch = [],
+			isDefaultGridView,
 			...rest
 		},
 		client,
@@ -249,16 +250,15 @@ const tableESStateControllerHandler = state => ({
 			_Schema = await fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey)
 		}
 
-		let defaultDisplay = []
-		let formatGridView = {}
-		let gridView = {}
+		let formatedGridView = null;
+		let gridView = {};
 
 		if (gridViewSettings) {
-			defaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey)
+			const userDefaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey)
 
-			formatGridView = formatGridViewToMRT(defaultDisplay)
+			formatedGridView = formatGridViewToMRT(userDefaultDisplay)
 			gridView = {
-				selectedGridView: !!defaultDisplay ? defaultDisplay : gridViewSettings.defaultView,
+				selectedGridView: isDefaultGridView || !userDefaultDisplay ? gridViewSettings.defaultView : userDefaultDisplay,
 				showViewModal: false,
 				showSaveAsNew: false,
 			}
@@ -431,15 +431,15 @@ const tableESStateControllerHandler = state => ({
 			pageSize,
 			isSelectall: false,
 			isSelectAllAllowed,
-			showColumnFilters: formatGridView?.filters ? true : false,
+			showColumnFilters: formatedGridView?.filters ? true : false,
 			data: { rows: [], total: 0 },
 			isLoading: false,
 			isFetching: false,
 			isError: false,
 			defaultFilters: defaultFilters || state?.defaultFilters?.get({ noproxy: true }),
 			customProps: isEmpty(state?.customProps?.get({ noproxy: true })) ? customProps : state?.customProps?.get({ noproxy: true }),
-			filters: formatGridView?.filters ? formatGridView.filters : [],
-			sorting: formatGridView?.sorting ? formatGridView.sorting : [],
+			filters: formatedGridView?.filters ? formatedGridView.filters : [],
+			sorting: formatedGridView?.sorting ? formatedGridView.sorting : [],
 			rowSelection: {},
 			searchFields,
 			isInFiniteScroll,
@@ -450,13 +450,13 @@ const tableESStateControllerHandler = state => ({
 			grouping: groupedField ? [groupedField] : [],
 			footerProps: [],
 			ExternalFilter,
-			columnVisibility: formatGridView?.columnVisibility ? formatGridView.columnVisibility : columnVisibility,
+			columnVisibility: formatedGridView?.columnVisibility ? formatedGridView.columnVisibility : columnVisibility,
 			defaultSort,
 			filterModes,
 			density,
 			advanceSearch,
-			columnOrdering: formatGridView?.columnOrdering ? formatGridView.columnOrdering : ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder],
-			columnPinning: formatGridView?.columnPinning ? formatGridView.columnPinning : {
+			columnOrdering: formatedGridView?.columnOrdering ? formatedGridView.columnOrdering : ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder],
+			columnPinning: formatedGridView?.columnPinning ? formatedGridView.columnPinning : {
 				left: [
 					...(pinnedFields.length > 0
 						? _.concat(['over-ride-checkbox', 'mrt-row-numbers'], _.slice(pinnedFields, 1))
@@ -577,10 +577,6 @@ const tableESStateControllerHandler = state => ({
 				filter.type = 'advanced'
 				filter.searchType = 'betweenInclusive'
 				filter.columnType = 'date'
-				// filter.isKeyword = 'date'
-
-				const { startOfDay, endOfDay } = getStartAndEndOfDay(filter.value)
-				filter.value = [startOfDay.toISOString(), endOfDay.toISOString()]
 			} else {
 				if (!isDateFormat(filter.value)) return
 				const date = new Date(filter.value)

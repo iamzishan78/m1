@@ -51,14 +51,6 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			filters: [...tableMeta.defaultFilters, ...tableMeta.filters],
 		};
 
-		variables.filters = variables.filters.map((filter) => {
-			if (filter?.searchType === 'lessThanOrEqualTo') {
-				const day = new Date(filter.value)
-				day.setDate(day.getDate() + 1)
-				return { ...filter, value: formatDate(day.toISOString()) }
-			}
-			return filter
-		})
 
 		const allSelectedRows = await client.query({
 			variables,
