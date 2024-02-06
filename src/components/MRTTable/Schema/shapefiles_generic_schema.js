@@ -16,6 +16,7 @@ const ShapesFilesGenericMeta = {
 	// columnVirtualization: true,
 	defaultFlterMode: 'multiselect',
 	isGeneric: true,
+	enableHiding: false,
 	density: 'compact',
 	TableSchema: [],
 

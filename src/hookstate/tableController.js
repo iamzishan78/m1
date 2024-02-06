@@ -157,6 +157,7 @@ const tableESStateControllerHandler = state => ({
 			density = 'comfortable',
 			advanceSearch = [],
 			isDefaultGridView,
+			enableHiding = true,
 			...rest
 		},
 		client,
@@ -250,6 +251,7 @@ const tableESStateControllerHandler = state => ({
 			filterModes,
 			density,
 			advanceSearch,
+			enableHiding,
 			columnOrdering: formatedGridView?.columnOrdering ? formatedGridView.columnOrdering : ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder],
 			columnPinning: formatedGridView?.columnPinning ? formatedGridView.columnPinning : {
 				left: [

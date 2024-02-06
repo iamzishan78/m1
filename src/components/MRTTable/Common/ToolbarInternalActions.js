@@ -7,14 +7,14 @@ import {
   MRT_ToggleGlobalFilterButton as MRTToggleGlobalFilterButton,
 } from 'material-react-table';
 
-const ToolbarInternalActions = ({ table, toolbarInternalActions }) => {
+const ToolbarInternalActions = ({ table, toolbarInternalActions, enableHiding }) => {
   if (!table || !toolbarInternalActions) return null;
 
   return (
     <div style={toolbarInternalActions.style}>
       <MRTToggleGlobalFilterButton table={table} />
       <MRTToggleFiltersButton table={table} />
-      <MRTShowHideColumnsButton table={table} />
+      {enableHiding && <MRTShowHideColumnsButton table={table} />}
 
       {toolbarInternalActions.children}
 

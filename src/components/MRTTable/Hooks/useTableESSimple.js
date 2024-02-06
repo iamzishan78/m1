@@ -110,6 +110,7 @@ const useTableESSimple = tableKey => {
 			enableStickyFooter: true,
 			enableSorting: tableStateValues?.grouping.length === 0,
 			manualSorting: true,
+			enableHiding: tableStateValues?.enableHiding,
 			manualFiltering: true,
 			onGlobalFilterChange: globalFilter => {
 				Controller.setGlobalFilter(globalFilter);
@@ -285,6 +286,7 @@ const useTableESSimple = tableKey => {
 					<ToolbarInternalActions
 						table={table}
 						toolbarInternalActions={tableStateValues.toolbarInternalActions}
+						enableHiding={tableStateValues.enableHiding}
 					/>
 				)
 				: undefined,
