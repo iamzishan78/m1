@@ -52,15 +52,20 @@ const ShapesFilesGenericMeta = {
 
 			let filter = false;
 			let isSearchField = false;
-			let enableSorting = false;
-			let type = 'string';
+			let enableSorting = true;
+			let enableHiding = false;
+			let enableColumnFilter = true;
+			let type = 'custom';
 
 			if (typeof value !== 'object') {
-				const isNumberKey = isNaN(value);
+				const isNumberKey = !isNaN(value);
 
 				filter = true;
-				if (isNumberKey) type = 'number';
+				// if (isNumberKey) type = 'number';
 				if (!isNumberKey) isSearchField = true;
+			} else {
+				enableSorting = false;
+				enableColumnFilter = false;
 			}
 
 			return {
@@ -70,6 +75,8 @@ const ShapesFilesGenericMeta = {
 				filter,
 				isSearchField,
 				enableSorting,
+				enableColumnFilter,
+				enableHiding,
 				type,
 				name: accessorKey,
 				id: accessorKey,
@@ -78,7 +85,7 @@ const ShapesFilesGenericMeta = {
 
 					switch (typeof value) {
 						case 'object':
-							value = JSON.stringify(value);
+							value = value ? JSON.stringify(value) : value;
 							break;
 
 						case 'string':

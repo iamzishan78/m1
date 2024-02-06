@@ -21,10 +21,11 @@ function ESAutoCompleteFilter({
 	const [options, setOptions] = useState([]);
 	const filtersRef = useRef(null);
 
-	const { searchFields, filters, defaultFilters } = tableController(tableKey).getValues([
+	const { searchFields, filters, defaultFilters, advanceSearch } = tableController(tableKey).getValues([
 		'searchFields',
 		'filters',
 		'defaultFilters',
+		'advanceSearch',
 	]);
 
 	const getFiltersAction = search => {
@@ -44,7 +45,7 @@ function ESAutoCompleteFilter({
 					) : filtersArray,
 					filterKeys: typeof field !== 'string' ? field : undefined,
 					filterKey: typeof field === 'string' ? field : undefined,
-					search: { query: extendSearchQuery, fields: searchFields },
+					search: { query: extendSearchQuery, fields: searchFields, advanceSearch },
 					extendSearchQuery,
 					size: 10,
 					key_as_string: custom?.key_as_string,
