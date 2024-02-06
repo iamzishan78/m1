@@ -1,3 +1,4 @@
+import { formatDate } from 'components/Shared/functions';
 
 export const CommonSchema = {
 	COMMENTS: {
@@ -105,5 +106,69 @@ export const CommonSchema = {
 		enableColumnFilter: false,
 		enableResizing: false,
 		size: 80,
+	},
+	CREATED_BY: {
+		name: 'createBy',
+		accessorKey: 'createBy',
+		header: 'Create By',
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: false,
+		enableColumnFilter: false,
+		isSearchField: false,
+		enableSorting: false,
+		type: 'string',
+		Cell: ({ row }) => {
+			return <>{row.original?.createBy?.name}</>
+		},
+	},
+	CREATED_DATE: {
+		name: 'createAt',
+		accessorKey: 'createAt',
+		header: 'Create Date',
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: false,
+		enableColumnFilter: false,
+		isSearchField: false,
+		enableSorting: false,
+		type: 'date',
+		Cell: ({ row }) => {
+			return <>{formatDate(row.original?.createAt)}</>
+		},
+	},
+	LAST_UPDATED_BY: {
+		name: 'lastUpdateBy',
+		accessorKey: 'lastUpdateBy',
+		header: 'Last Update By',
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: false,
+		enableColumnFilter: false,
+		isSearchField: false,
+		enableSorting: false,
+		type: 'string',
+		Cell: ({ row }) => {
+			return <>{row.original?.lastUpdateBy?.name}</>
+		},
+	},
+	LAST_UPDATED_DATE: {
+		name: 'lastUpdateAt',
+		accessorKey: 'lastUpdateAt',
+		header: 'Last Update Date',
+		size: 250,
+		isPinned: false,
+		hidden: false,
+		filter: false,
+		enableColumnFilter: false,
+		isSearchField: false,
+		enableSorting: false,
+		type: 'date',
+		Cell: ({ row }) => {
+			return <>{formatDate(row.original?.lastUpdateAt)}</>
+		},
 	},
 };
