@@ -138,7 +138,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			tableRef?.current?.scrollToIndex?.(0);
 
 			const tableMeta = tableState.get({ noproxy: true });
-			if (tableMeta.pagination?.pageIndex !== previousPagination.current.pageIndex) {
+			if (tableMeta.pagination?.pageIndex !== previousPagination.current?.pageIndex) {
 				const pagination = {
 					pit: tableMeta.data?.pit,
 					...tableMeta.pagination,

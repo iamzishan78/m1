@@ -11,7 +11,7 @@ const ShapesFilesGenericMeta = {
 		pageSize: 25,
 	},
 	onClickedRow,
-	maxTableHeight: 'calc(100vh - 489px)',
+	maxTableHeight: 'calc(100vh - 719px)',
 	// isInFiniteScroll: true,
 	// columnVirtualization: true,
 	defaultFlterMode: 'multiselect',
@@ -40,7 +40,7 @@ const ShapesFilesGenericMeta = {
 					Cell: ({ row }) => {
 						const id = row.getValue('_id');
 
-						return <FlyToMap id={id} />;
+						return <FlyToMap id={id} row={row.original} type='shapefile' />;
 					},
 				};
 

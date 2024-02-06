@@ -28,7 +28,7 @@ import { Grid, List, ListItem, ListItemIcon, ListItemText, Typography } from "@m
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import MRTTable from "components/MRTTable";
-import { tableController } from "hookstate/tableController";
+import { tableGlobalController } from "hookstate/tableController";
 
 
 const useStyles = makeStyles((theme) => {
@@ -534,7 +534,7 @@ function MapGridCard(props) {
                           selected={row.name === stateApp.selectedLayer.name}
                           onClick={() => {
                             setStateApp((state) => ({ ...state, selectedLayer: { ...row } }))
-                            tableController('shapefile_flat').reset();
+                            tableGlobalController.reInitialized()
                           }}
                         >
                           <ListItemIcon>
