@@ -417,6 +417,10 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
         return <>{formatDate(value)}</>
       }
     },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
   },
 
   {
@@ -440,6 +444,10 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       customRender: (value) => {
         return <>{formatDate(value)}</>
       }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
     },
   },
 

@@ -252,6 +252,10 @@ const TractsHeadCells = (isSnapGrid = false) => [
         return <>{formatDate(value)}</>
       }
     },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
   },
 
   {
@@ -275,6 +279,10 @@ const TractsHeadCells = (isSnapGrid = false) => [
       customRender: (value) => {
         return <>{formatDate(value)}</>
       }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
     },
   },
 
