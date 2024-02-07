@@ -63,7 +63,7 @@ const ShapesFilesGenericMeta = {
 
 				filter = true;
 				// if (isNumberKey) type = 'number';
-				if (!isNumberKey) isSearchField = true;
+				if ((!isNumberKey || typeof value === 'string') && accessorKey === key) isSearchField = true;
 			} else {
 				enableSorting = false;
 				enableColumnFilter = false;
@@ -79,7 +79,7 @@ const ShapesFilesGenericMeta = {
 				enableColumnFilter,
 				enableHiding,
 				type,
-				name: accessorKey,
+				name: `${accessorKey}${isSearchField ? '.keyword' : ''}`,
 				id: accessorKey,
 				accessorFn: row => {
 					let value = get(row, accessorKey);
