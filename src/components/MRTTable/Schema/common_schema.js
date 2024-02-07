@@ -110,7 +110,7 @@ export const CommonSchema = {
 	CREATED_BY: {
 		name: 'createBy.name.keyword',
 		accessorKey: 'createBy.name',
-		header: 'Create By',
+		header: 'Created By',
 		size: 250,
 		filter: true,
 		isSearchField: false,
@@ -122,7 +122,7 @@ export const CommonSchema = {
 	CREATED_DATE: {
 		name: 'createAt',
 		accessorKey: 'createAt',
-		header: 'Create Date',
+		header: 'Created Date',
 		size: 250,
 		filter: true,
 		isSearchField: false,
@@ -134,7 +134,7 @@ export const CommonSchema = {
 	LAST_UPDATED_BY: {
 		name: 'lastUpdateBy.name.keyword',
 		accessorKey: 'lastUpdateBy.name',
-		header: 'Last Update By',
+		header: 'Last Updated By',
 		size: 250,
 		filter: true,
 		isSearchField: false,
@@ -146,7 +146,7 @@ export const CommonSchema = {
 	LAST_UPDATED_DATE: {
 		name: 'lastUpdateAt',
 		accessorKey: 'lastUpdateAt',
-		header: 'Last Update Date',
+		header: 'Last Updated Date',
 		size: 250,
 		filter: true,
 		isSearchField: false,

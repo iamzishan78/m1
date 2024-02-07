@@ -373,7 +373,7 @@ const wellsColumnHeaders = [
 
   {
     name: "createBy",
-    label: "Create By",
+    label: "Created By",
     esKey: "createBy",
     options: {
       display: true,
@@ -385,7 +385,7 @@ const wellsColumnHeaders = [
 
   {
     name: "createAt",
-    label: "Create Date",
+    label: "Created Date",
     esKey: "createAt",
     options: {
       display: true,
@@ -401,7 +401,7 @@ const wellsColumnHeaders = [
 
   {
     name: "lastUpdateBy",
-    label: "Last Update By",
+    label: "Last Updated By",
     esKey: "lastUpdateBy",
     options: {
       display: true,
@@ -413,7 +413,7 @@ const wellsColumnHeaders = [
 
   {
     name: "lastUpdateAt",
-    label: "Last Update Date",
+    label: "Last Updated Date",
     esKey: "lastUpdateAt",
     options: {
       display: true,

@@ -397,7 +397,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
 
   {
     name: "createBy",
-    label: "Create By",
+    label: "Created By",
     esKey: "createBy",
     options: {
       display: true,
@@ -409,7 +409,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
 
   {
     name: "createAt",
-    label: "Create Date",
+    label: "Created Date",
     esKey: "createAt",
     options: {
       display: true,
@@ -425,7 +425,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
 
   {
     name: "lastUpdateBy",
-    label: "Last Update By",
+    label: "Last Updated By",
     esKey: "lastUpdateBy",
     options: {
       display: true,
@@ -437,7 +437,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
 
   {
     name: "lastUpdateAt",
-    label: "Last Update Date",
+    label: "Last Updated Date",
     esKey: "lastUpdateAt",
     options: {
       display: true,
