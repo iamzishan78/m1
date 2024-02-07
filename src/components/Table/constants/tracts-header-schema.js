@@ -236,8 +236,6 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: "createBy",
     options: {
       display: true,
-      sort: false,
-      filter: false,
       customRender: (value) => {
         return <>{value?.name}</>
       }
@@ -250,8 +248,6 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: "createAt",
     options: {
       display: true,
-      sort: false,
-      filter: false,
       customRender: (value) => {
         return <>{formatDate(value)}</>
       }
@@ -264,8 +260,6 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: "lastUpdateBy",
     options: {
       display: true,
-      sort: false,
-      filter: false,
       customRender: (value) => {
         return <>{value?.name}</>
       }
@@ -278,8 +272,6 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: "lastUpdateAt",
     options: {
       display: true,
-      sort: false,
-      filter: false,
       customRender: (value) => {
         return <>{formatDate(value)}</>
       }
