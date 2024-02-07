@@ -89,7 +89,6 @@ export const handleMRTSchema = ({
   search,
   columnVirtualization,
 }) => {
-  console.log('🚀 ~ _Schema:', _Schema);
   _Schema = _.uniqBy(_Schema, item => item.accessorKey || item.id);
 
   const _TableSchema = _Schema.map(schemaColumn => {

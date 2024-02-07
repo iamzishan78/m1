@@ -188,7 +188,7 @@ Cypress.Commands.add('mrtExport', ({ columns }) => {
       const responseColumns =
         response.response.body.data.initializeExportJob.job.requestPayload.columns;
 
-      cy.expect(
+      expect(
         columns.every(column =>
           responseColumns.some(responseColumn => responseColumn.label === column.name)
         )
