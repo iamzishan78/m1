@@ -112,12 +112,7 @@ export const CommonSchema = {
 		accessorKey: 'createBy',
 		header: 'Create By',
 		size: 250,
-		isPinned: false,
-		hidden: false,
-		filter: false,
-		enableColumnFilter: false,
 		isSearchField: false,
-		enableSorting: false,
 		type: 'string',
 		Cell: ({ row }) => {
 			return <>{row.original?.createBy?.name}</>
@@ -128,12 +123,7 @@ export const CommonSchema = {
 		accessorKey: 'createAt',
 		header: 'Create Date',
 		size: 250,
-		isPinned: false,
-		hidden: false,
-		filter: false,
-		enableColumnFilter: false,
 		isSearchField: false,
-		enableSorting: false,
 		type: 'date',
 		Cell: ({ row }) => {
 			return <>{formatDate(row.original?.createAt)}</>
@@ -144,12 +134,7 @@ export const CommonSchema = {
 		accessorKey: 'lastUpdateBy',
 		header: 'Last Update By',
 		size: 250,
-		isPinned: false,
-		hidden: false,
-		filter: false,
-		enableColumnFilter: false,
 		isSearchField: false,
-		enableSorting: false,
 		type: 'string',
 		Cell: ({ row }) => {
 			return <>{row.original?.lastUpdateBy?.name}</>
@@ -160,12 +145,7 @@ export const CommonSchema = {
 		accessorKey: 'lastUpdateAt',
 		header: 'Last Update Date',
 		size: 250,
-		isPinned: false,
-		hidden: false,
-		filter: false,
-		enableColumnFilter: false,
 		isSearchField: false,
-		enableSorting: false,
 		type: 'date',
 		Cell: ({ row }) => {
 			return <>{formatDate(row.original?.lastUpdateAt)}</>
