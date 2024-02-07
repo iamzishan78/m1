@@ -7,7 +7,7 @@ let responseHits = [];
 
 const columns = [
   {
-    name: 'Last Updated',
+    name: 'Last Updated Date',
     type: 'date',
   },
   {
@@ -53,7 +53,7 @@ describe('Contact Table', () => {
   it('Filters by last updated Comparison Check', { retries: { runMode: 5, openMode: 2 } }, () => {
     console.log(responseHits)
     if (responseHits?.length) {
-      const placeholder = "Filter by Last Updated";
+      const placeholder = "Filter by Last Updated By";
       cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
 
       const lastUpdateAt = responseHits[0].lastUpdateAt;
