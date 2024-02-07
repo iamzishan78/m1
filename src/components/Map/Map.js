@@ -92,6 +92,7 @@ import { hookStateApp } from "hookstate";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { jobController } from "hookstate/jobStateController";
 import { popupController } from "hookstate/popupStateController";
+import { globalStateController } from "hookstate/globalStateController";
 
 let udLayerClickHandlerRef;
 
@@ -1318,6 +1319,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
               selectedUserDefinedLayer,
               selectedParcel: null,
             };
+            popupController.updateState({
+              selectedUserDefinedLayer
+            });
             return state;
           });
         }, 0);
@@ -5021,7 +5025,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       stateNavRef.current?.filterBasin ||
       stateNavRef.current?.filterAOI ||
       stateNavRef.current?.filterParcel ||
-      stateNavRef.current?.filterDrawing[1]
+      stateNavRef.current?.filterDrawing?.[1]
     ) {
       // console.time(`querySourceFeatures`);
       let features = [];
@@ -5264,6 +5268,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       }
 
       newMap.on("load", function (e) {
+        if (globalStateController.getValue('cypress'))
+          window.mapRef = newMap;
+
         const tilesetEndpoint = "https://m1neraldata.z22.web.core.windows.net/latest.json";
         fetch(tilesetEndpoint)
           .then((response) => response.json())

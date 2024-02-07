@@ -81,6 +81,15 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+export const getUdLayerCardTitle = ({ layer, properties }) => {
+  let { layerName, groupName, id } = layer;
+  layerName = layerName || properties.Unit_Name || id
+  if (!layerName && !groupName) {
+    return "--";
+  }
+  return groupName || layerName;
+};
+
 function UdLayerCard(props) {
   const classes = useStyles(props);
   // contexts
@@ -201,11 +210,6 @@ function UdLayerCard(props) {
   };
 
   const getTitle = () => {
-    let { layerName, groupName, id } = layer;
-    layerName = layerName || properties.Unit_Name || id
-    if (!layerName && !groupName) {
-      return "--";
-    }
     return (
       <div
         style={{
@@ -216,7 +220,7 @@ function UdLayerCard(props) {
           marginRight: "48px",
         }}
       >
-        {!groupName ? <div>{layerName}</div> : <div>{groupName}</div>}
+        {getUdLayerCardTitle({ layer, properties })}
       </div>
     );
   };
@@ -225,11 +229,11 @@ function UdLayerCard(props) {
     <React.Fragment>
       <Card className={classes.card}>
         <CardHeader
-          id='gggggggg'
+          data-testid='ud-layer-card-header'
           classes={{ title: classes.title, subheader: classes.subheader }}
           className={classes.headerContainer}
           action={
-            <div id='hhhhhhhh' className={classes.headerIcons}>
+            <div className={classes.headerIcons}>
               <Tooltip title={"Add Shape to Layer"} placement="top">
                 <IconButton size={"small"} onClick={(e) => handleAddShapeClick(e, 'draw')} aria-label="close" className={classes.icons}>
                   <LayerIcon color="secondary" />

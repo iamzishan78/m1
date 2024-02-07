@@ -57,6 +57,7 @@ const FlyToMap = ({ id, type, row }) => {
     <Tooltip title="Fly To Map" placement="top" style={{ marginRight: '10px' }}>
       <IconButton
         id={`map-fly-to-${id}`}
+        data-testid='mrt-fly-to-map'
         size={'medium'}
         color="secondary"
         className={`${classes.icons}`}
