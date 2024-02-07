@@ -112,6 +112,7 @@ export const CommonSchema = {
 		accessorKey: 'createBy',
 		header: 'Create By',
 		size: 250,
+		filter: true,
 		isSearchField: false,
 		type: 'string',
 		Cell: ({ row }) => {
@@ -123,6 +124,7 @@ export const CommonSchema = {
 		accessorKey: 'createAt',
 		header: 'Create Date',
 		size: 250,
+		filter: true,
 		isSearchField: false,
 		type: 'date',
 		Cell: ({ row }) => {
@@ -134,6 +136,7 @@ export const CommonSchema = {
 		accessorKey: 'lastUpdateBy',
 		header: 'Last Update By',
 		size: 250,
+		filter: true,
 		isSearchField: false,
 		type: 'string',
 		Cell: ({ row }) => {
@@ -145,6 +148,7 @@ export const CommonSchema = {
 		accessorKey: 'lastUpdateAt',
 		header: 'Last Update Date',
 		size: 250,
+		filter: true,
 		isSearchField: false,
 		type: 'date',
 		Cell: ({ row }) => {
