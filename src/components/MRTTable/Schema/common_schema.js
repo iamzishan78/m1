@@ -108,8 +108,8 @@ export const CommonSchema = {
 		size: 80,
 	},
 	CREATED_BY: {
-		name: 'createBy',
-		accessorKey: 'createBy',
+		name: 'createBy.name.keyword',
+		accessorKey: 'createBy.name',
 		header: 'Create By',
 		size: 250,
 		filter: true,
@@ -132,8 +132,8 @@ export const CommonSchema = {
 		},
 	},
 	LAST_UPDATED_BY: {
-		name: 'lastUpdateBy',
-		accessorKey: 'lastUpdateBy',
+		name: 'lastUpdateBy.name.keyword',
+		accessorKey: 'lastUpdateBy.name',
 		header: 'Last Update By',
 		size: 250,
 		filter: true,
