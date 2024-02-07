@@ -3,6 +3,7 @@ import { GlobalStickyStyles } from "GlobalSettings";
 
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
+import { formatDate } from 'components/Shared/functions';
 
 const TractsHeadCells = (isSnapGrid = false) => [
   {
@@ -228,6 +229,63 @@ const TractsHeadCells = (isSnapGrid = false) => [
       filter: true,
     },
   },
+
+  {
+    name: "createBy",
+    label: "Create By",
+    esKey: "createBy",
+    options: {
+      display: true,
+      sort: false,
+      filter: false,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "createAt",
+    label: "Create Date",
+    esKey: "createAt",
+    options: {
+      display: true,
+      sort: false,
+      filter: false,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+  },
+
+  {
+    name: "lastUpdateBy",
+    label: "Last Update By",
+    esKey: "lastUpdateBy",
+    options: {
+      display: true,
+      sort: false,
+      filter: false,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "lastUpdateAt",
+    label: "Last Update Date",
+    esKey: "lastUpdateAt",
+    options: {
+      display: true,
+      sort: false,
+      filter: false,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+  },
+
   {
     name: "tags",
     label: "Tags",
