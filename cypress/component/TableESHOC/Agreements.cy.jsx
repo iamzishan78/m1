@@ -24,16 +24,16 @@ describe('Agreements ESHOC Table', () => {
 
   it('checks created at/by and updated at/by fields in agreement grid', () => {
     cy.get('table thead th span.MuiButton-label')
-      .contains('Create By')
+      .contains('Created By')
       .should('exist');
     cy.get('table thead th span.MuiButton-label')
-      .contains('Create Date')
+      .contains('Created Date')
       .should('exist');
     cy.get('table thead th span.MuiButton-label')
-      .contains('Last Update By')
+      .contains('Last Updated By')
       .should('exist');
     cy.get('table thead th span.MuiButton-label')
-      .contains('Last Update Date')
+      .contains('Last Updated Date')
       .should('exist');
   });
 });
