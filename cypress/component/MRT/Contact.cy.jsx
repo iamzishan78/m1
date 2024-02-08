@@ -7,7 +7,7 @@ let responseHits = [];
 
 const columns = [
   {
-    name: 'Last Updated',
+    name: 'Last Updated Date',
     type: 'date',
   },
   {
@@ -53,14 +53,14 @@ describe('Contact Table', () => {
   it('Filters by last updated Comparison Check', { retries: { runMode: 5, openMode: 2 } }, () => {
     console.log(responseHits)
     if (responseHits?.length) {
-      const placeholder = "Filter by Last Updated";
+      const placeholder = "Filter by Last Updated Date";
       cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
 
       const lastUpdateAt = responseHits[0].lastUpdateAt;
       const currentDateForPreviousDay = new Date(lastUpdateAt);
       currentDateForPreviousDay.setDate(currentDateForPreviousDay.getDate() - 1)
       const oneDayPriorDate = currentDateForPreviousDay.toISOString().split('T')[0];
-      cy.get(`[data-testid="MoreVertIcon"]`).eq(16).click();
+      cy.get(`[data-testid="MoreVertIcon"]`).eq(19).click();
       cy.wait(500);
       cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
       cy.wait(500);
@@ -70,7 +70,7 @@ describe('Contact Table', () => {
       const currentDateForNextDay = new Date(lastUpdateAt);
       currentDateForNextDay.setDate(currentDateForNextDay.getDate() + 1)
       const nextDayDate = currentDateForNextDay.toISOString().split('T')[0];
-      cy.get('[data-testid="MoreVertIcon"]').eq(16).scrollIntoView().click({ force: true });
+      cy.get('[data-testid="MoreVertIcon"]').eq(19).scrollIntoView().click({ force: true });
       cy.wait(500);
       cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
       cy.wait(500);
