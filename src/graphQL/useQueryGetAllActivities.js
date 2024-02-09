@@ -16,7 +16,8 @@ export const GETALLACTIVITIES = gql`
       contactName
       name
       isClosed
-      createdBy
+      createBy
+      lastUpdateBy
       outcome
     }
   }
