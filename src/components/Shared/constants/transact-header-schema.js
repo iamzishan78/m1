@@ -52,8 +52,8 @@ const TransactDealsHeadCells = (flowLineType = 'deal') => {
     // },
   ];
 
-  if(flowLineType === "general"){
-    TableHeads.splice(2, 0, { name: "dueDate", label: "Due Date"})
+  if (flowLineType === "general") {
+    TableHeads.splice(2, 0, { name: "dueDate", label: "Due Date" })
   } else {
     const dealFLowLineCols = [
       // {
@@ -80,6 +80,27 @@ const TransactDealsHeadCells = (flowLineType = 'deal') => {
         name: "closedPrice",
         label: "Closed Price",
       },
+
+      {
+        name: "createBy",
+        label: "Created By",
+      },
+
+      {
+        name: "createAt",
+        label: "Created Date",
+      },
+
+      {
+        name: "lastUpdateBy",
+        label: "Last Updated By",
+      },
+
+      {
+        name: "lastUpdateAt",
+        label: "Last Updated Date",
+      }
+
     ];
     TableHeads.splice(2, 0, ...dealFLowLineCols);
   }
@@ -87,5 +108,5 @@ const TransactDealsHeadCells = (flowLineType = 'deal') => {
   return TableHeads
 };
 
-  
-  export default TransactDealsHeadCells;
+
+export default TransactDealsHeadCells;
