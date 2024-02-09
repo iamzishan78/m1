@@ -7,6 +7,7 @@ import WellIcon from "components/Shared/svgIcons/well";
 import MyWellsGridTable from "components/Table/Wells/MyWellsGridTable";
 import WellsFilters from "components/Land/components/Wells/WellsFilters";
 import MyWellDialog from "components/Land/components/Wells/MyWellDialog";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,18 +18,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Wells() {
+function Wells({ defaultFilters = [] }) {
   const classes = useStyles();
+  const { testCase, stateValues } = globalStateController.useState(['testCase']);
   const { id: globalWellId } = useParams();
 
-  const [filters, setFilters] = useState([]);
+  const [filters, setFilters] = useState(defaultFilters);
   const [selectedWell, setSelectedWell] = useState();
   const [showDialog, setDialog] = useState(false);
   const loadMore = { type: "infiniteScroll", height: "calc(100vh - 166px)" };
-
   useEffect(() => {
-    if (globalWellId) setDialog(true);
-  }, [globalWellId]);
+    if (globalWellId || (stateValues?.testCase?.globalWellId && stateValues?.testCase)) setDialog(true);
+  }, [globalWellId, testCase?.globalWellId]);
 
   const Header = () => {
     return (

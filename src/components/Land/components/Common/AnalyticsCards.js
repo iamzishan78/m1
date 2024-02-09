@@ -75,7 +75,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       if (aggsData?.getESAggsList?.aggregations?.grossAcresSum) {
         const grossAcresSum = aggsData.getESAggsList.aggregations.grossAcresSum.value.sum;
         setCardPoint(
-          (Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
+          (Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + "K",
           1
         );
         // props.onGrossAcresSum(
@@ -92,7 +92,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       if (aggsData?.getESAggsList?.aggregations?.netAcresSum) {
         const netAcresSum = aggsData.getESAggsList.aggregations.netAcresSum.value;
         setCardPoint(
-          (Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
+          (Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + "K",
           2
         );
         // props.onNetAcresSum(
@@ -109,7 +109,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       if (aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum) {
         const netRoyaltyAcresSum = aggsData.getESAggsList.aggregations.netRoyaltyAcresSum.value;
         setCardPoint(
-          (Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
+          (Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + "K",
           3
         );
         // props.onNetRoyaltyAcresSum(

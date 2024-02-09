@@ -44,6 +44,18 @@ export const CommonSchema = {
 		enableColumnOrdering: false,
 		enableSorting: false,
 	},
+	MONGO_ID: {
+		header: 'M1neral System ID',
+		isSearchField: false,
+		hidden: true,
+		enableColumnFilter: false,
+		enablePinning: false,
+		enableColumnActions: false,
+		enableColumnOrdering: false,
+		enableSorting: false,
+		size: 250,
+		isHiddenFieldExport: true,
+	},
 	INITAIL_PINNED: {
 		isPinned: true,
 		enableHiding: false,

@@ -31,7 +31,7 @@ const TractInterestsMeta = {
       accessorKey: 'id',
     },
     {
-      ...CommonSchema.HIDDEN,
+      ...CommonSchema.MONGO_ID,
       name: '_id',
       accessorKey: '_id',
     },
@@ -57,10 +57,22 @@ const TractInterestsMeta = {
       name: 'contact.entityDetail.name.keyword',
       accessorKey: 'contact.entityDetail.name',
       header: 'Contact Name',
-      size: 500,
-      Cell: ({ row }) => {
-        return <ContactNameLink contact={row?.original?.contact} />
-      }
+      Cell: ({ renderedCellValue, row }) => (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <ColumnWithLink
+            value={renderedCellValue}
+            link={`/contact/details/${row?.original?.contactId}`}
+            onClick={e => {
+              e.stopPropagation();
+            }}
+          />
+        </div>
+      ),
     },
 
 
@@ -71,6 +83,10 @@ const TractInterestsMeta = {
       id: 'contact.entityDetail.name',
       header: 'Owner Name',
     },
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4b175ba8a55fe7f0a6f274dda91ab14c7737e154
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'shape.shapeJson.properties.shapeLabel.keyword',
