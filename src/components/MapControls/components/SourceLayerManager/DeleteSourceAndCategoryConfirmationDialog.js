@@ -67,7 +67,7 @@ export default function DeleteSourceAndCategoryConfirmationDialog(props) {
     }
     updateDataset({ variables: { dataset: props.actionItem.dataset } })
     if (layers.length > 0) {
-      if (layers[0].groupId) {
+      if (layers[0].groupId && !props?.actionItem?.dataset?.categories?.length > 2) {
         removeLayerGroup({
           variables: {
             userId: stateApp.user.mongoId,
