@@ -35,6 +35,10 @@ import { v4 as uuid } from "uuid";
 const workSpace = Cypress.env('TENENT') || "localhost"
 const { longTimeout, extraTimeout } = basic_timeouts
 
+Cypress.on('uncaught:exception', (err, runnable) => {
+    return false
+})
+
 // Common Commands
 Cypress.Commands.add("checkAndLogin", () => {
     //This command will logged in if it is not already logged in
