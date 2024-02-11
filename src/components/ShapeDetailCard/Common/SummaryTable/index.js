@@ -174,7 +174,7 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
     } else {
       setFilteredTableData(tableData.concat(properties?.custom_data_arr || []));
     }
-  }, [search]);
+  }, [search, tableData]);
 
   const getKey = (data, type, e) => {
     const appendValue = type === "key" ? type : "";
