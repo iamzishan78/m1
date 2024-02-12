@@ -889,7 +889,7 @@ function SourceManager(props) {
                     )?.map((dataset, index) => (
                       <Fragment key={index}>
                         {
-                          dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 className={openDataSets[dataset.sourceName] ? 'isOpen' : ''} style={{ paddingLeft: '0px' }} button onClick={() => setOpenDataSets({ ...openDataSets, [dataset.sourceName]: !openDataSets[dataset.sourceName] })}>
+                          dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 data-testid={`source-${dataset.sourceName}`} className={openDataSets[dataset.sourceName] ? 'isOpen' : ''} style={{ paddingLeft: '0px' }} button onClick={() => setOpenDataSets({ ...openDataSets, [dataset.sourceName]: !openDataSets[dataset.sourceName] })}>
                             <Checkbox
                               id={"source-checkbox-" + dataset.sourceName}
                               checked={dataset.visibility}
@@ -904,7 +904,7 @@ function SourceManager(props) {
                             {openDataSets[dataset.sourceName] ? <ExpandLess /> : <ExpandMore />}
                           </StyledListItem2>
                             <Collapse in={openDataSets[dataset.sourceName]} timeout="auto" unmountOnExit>
-                              <List className={classes.list}>
+                              <List className={classes.list} data-testid={`source-ul-${dataset.sourceName}`}>
                                 {dataset.categories?.map((layer, index) => {
                                   // const labelId = `m1layer-list-label-${index}`;
                                   return (
