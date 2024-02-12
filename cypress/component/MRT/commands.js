@@ -296,4 +296,24 @@ Cypress.Commands.add('mrtComparisonFilterCheck', ({ column, type, value, filter,
 });
 
 
+Cypress.Commands.add('VerifyAuthInfoMRT', () => {
+  cy.get('table thead th div.Mui-TableHeadCell-Content-Wrapper')
+    .contains('Created By')
+    .should('exist');
+
+  cy.get('table thead th div.Mui-TableHeadCell-Content-Wrapper')
+    .contains('Created By')
+    .should('exist');
+  cy.get('table thead th div.Mui-TableHeadCell-Content-Wrapper')
+    .contains('Created Date')
+    .should('exist');
+  cy.get('table thead th div.Mui-TableHeadCell-Content-Wrapper')
+    .contains('Last Updated By')
+    .should('exist');
+  cy.get('table thead th div.Mui-TableHeadCell-Content-Wrapper')
+    .contains('Last Updated Date')
+    .should('exist');
+});
+
+
 
