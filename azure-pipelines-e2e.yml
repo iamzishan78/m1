@@ -33,3 +33,30 @@ steps:
     inputs:
       projectDirectory: src
       arguments: 'ci:cy-login-component'
+
+  ## Copy the client to the staging directory
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: "cypress/screenshots"
+      contents: "**/*"
+      targetFolder: "$(Build.ArtifactStagingDirectory)"
+      cleanTargetFolder: true
+    displayName: 'Copy Screenshots'
+    condition: failed()  # Only run if the Yarn Run CI task fails
+
+  ## Archive the files into a zip file for publishing
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: $(Build.ArtifactStagingDirectory)
+      archiveType: "zip"
+      archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+      includeRootFolder: false
+    displayName: 'Archive Files'
+    condition: failed()  # Only run if the Yarn Run CI task fails
+
+  ## Publish the zip file
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+    displayName: 'Publish Artifacts'
+    condition: failed()  # Only run if the Yarn Run CI task fails
