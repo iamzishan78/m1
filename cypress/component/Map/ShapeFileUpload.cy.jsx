@@ -7,7 +7,7 @@ const { midTimeout, longTimeout, partialLongTimeout } = basic_timeouts;
 
 const fileName = 'surv025.zip';
 
-const name = 'surv025' + uuid();
+const sourceName = 'surv025' + uuid();
 
 describe('Map Component Shape File Upload', () => {
   beforeEach(() => {
@@ -27,7 +27,7 @@ describe('Map Component Shape File Upload', () => {
         force: true,
       });
 
-    cy.get(`input#groupName`, { timeout: longTimeout }).clear().type(name);
+    cy.get(`input#groupName`, { timeout: longTimeout }).clear().type(sourceName);
 
     cy.interceptAndWait(
       ['getDatasets'],
@@ -36,30 +36,32 @@ describe('Map Component Shape File Upload', () => {
         cy.get('#createSourceButton', { timeout: longTimeout }).should('not.be.visible');
 
         cy.wait(alias, { timeout: longTimeout }).then(result => {
-          const filesNames = result.response?.body?.data?.getDatasets.map(
-            hit => hit.fileName
+          const sourceNames = result.response?.body?.data?.getDatasets.map(
+            hit => hit.sourceName
           );
 
-          expect(filesNames).to.include(fileName);
-
-          cy.wait(partialLongTimeout);
-
-          cy.interceptAndWait(['getESSimpleSearch'], () => {
-            cy.get(`[id='grid-icon-${name}']`, { timeout: longTimeout })
-              .scrollIntoView()
-              .click({ force: true });
-          });
-
-          cy.get('tbody').should('not.contain', 'No results found');
-          cy.get('tbody').should('not.contain', 'No records to display');
-
-          cy.get('.MuiButtonBase-root[aria-label="Close"]').click();
-
-          cy.wait(1000);
+          expect(sourceNames).to.include(sourceName);
         });
       },
       { wait: false }
     );
+  });
+
+  it('Data exits in dataset grid', () => {
+    cy.wait(partialLongTimeout);
+
+    cy.interceptAndWait(['getESSimpleSearch'], () => {
+      cy.get(`[id='grid-icon-${sourceName}']`, { timeout: longTimeout })
+        .scrollIntoView()
+        .click({ force: true });
+    });
+
+    cy.get('tbody').should('not.contain', 'No results found');
+    cy.get('tbody').should('not.contain', 'No records to display');
+
+    cy.get('.MuiButtonBase-root[aria-label="Close"]').click();
+
+    cy.wait(1000);
   });
 
   it('Does not delete the group when a sub dataset is deleted', () => {
@@ -67,14 +69,14 @@ describe('Map Component Shape File Upload', () => {
 
     cy.get('#sourceManagerDiv', { timeout: longTimeout }).should('be.visible');
 
-    cy.get(`[data-testid='source-${name}']`, { timeout: longTimeout })
+    cy.get(`[data-testid='source-${sourceName}']`, { timeout: longTimeout })
       .scrollIntoView()
       .click();
 
-    cy.get(`[data-testid='source-ul-${name}']`, {
+    cy.get(`[data-testid='source-ul-${sourceName}']`, {
       timeout: longTimeout,
     }).scrollIntoView();
-    cy.get(`[data-testid='source-ul-${name}']`)
+    cy.get(`[data-testid='source-ul-${sourceName}']`)
       .find('[aria-controls="more-source-menu"]')
       .eq(0)
       .invoke('show')
@@ -86,7 +88,7 @@ describe('Map Component Shape File Upload', () => {
       cy.get('#deleteConfirmation', { timeout: longTimeout }).click();
     });
 
-    cy.get(`[data-testid="group-${name}"]`);
+    cy.get(`[data-testid="group-${sourceName}"]`);
   });
 
   it('Shapefile delete works', () => {
@@ -94,10 +96,10 @@ describe('Map Component Shape File Upload', () => {
 
     cy.get('#sourceManagerDiv', { timeout: longTimeout }).should('be.visible');
 
-    cy.get(`[id='source-checkbox-${name}']`, { timeout: longTimeout })
+    cy.get(`[id='source-checkbox-${sourceName}']`, { timeout: longTimeout })
       .scrollIntoView()
       .trigger('mouseover');
-    cy.get(`[id='more-horiz-${name}']`, { timeout: longTimeout })
+    cy.get(`[id='more-horiz-${sourceName}']`, { timeout: longTimeout })
       .scrollIntoView()
       .invoke('show')
       .click({ force: true });
@@ -110,11 +112,11 @@ describe('Map Component Shape File Upload', () => {
         cy.get('#deleteConfirmation', { timeout: longTimeout }).click();
 
         cy.wait(alias, { timeout: longTimeout }).then(result => {
-          const filesNames = result.response?.body?.data?.getDatasets.map(
-            hit => hit.fileName
+          const sourceNames = result.response?.body?.data?.getDatasets.map(
+            hit => hit.sourceName
           );
 
-          expect(filesNames).to.not.include(fileName);
+          expect(sourceNames).to.not.include(sourceName);
         });
       },
       { wait: false }
