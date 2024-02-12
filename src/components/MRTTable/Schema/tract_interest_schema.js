@@ -57,22 +57,10 @@ const TractInterestsMeta = {
       name: 'contact.entityDetail.name.keyword',
       accessorKey: 'contact.entityDetail.name',
       header: 'Contact Name',
-      Cell: ({ renderedCellValue, row }) => (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <ColumnWithLink
-            value={renderedCellValue}
-            link={`/contact/details/${row?.original?.contactId}`}
-            onClick={e => {
-              e.stopPropagation();
-            }}
-          />
-        </div>
-      ),
+      size: 500,
+      Cell: ({ row }) => {
+        return <ContactNameLink contact={row?.original?.contact} />
+      }
     },
 
 
