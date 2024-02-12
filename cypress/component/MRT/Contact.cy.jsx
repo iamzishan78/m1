@@ -19,12 +19,16 @@ const columns = [
 
 describe('Contact Table', () => {
   beforeEach(() => {
-    cy.interceptAndWait(['getESSimpleSearch'], (alias) => {
-      cy.viewport(1600, 1200).mount(<MRTTable name="ContactTable" />);
-      cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((response) => {
-        responseHits = response.response.body.data.getESSimpleSearch.hits;
-      });
-    }, { wait: false });
+    cy.interceptAndWait(
+      ['getESSimpleSearch'],
+      alias => {
+        cy.viewport(1600, 1200).mount(<MRTTable name="ContactTable" />);
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
+          responseHits = response.response.body.data.getESSimpleSearch.hits;
+        });
+      },
+      { wait: false }
+    );
   });
 
   it('sorts by Name & Last Updated', () => {
@@ -34,16 +38,12 @@ describe('Contact Table', () => {
     cy.mrtSortColumn({ column: columns[1] });
   });
 
-  it(
-    'Filters by Name & Last Updated Single Select',
-    retries.fiveTries,
-    () => {
-      cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+  it('Filters by Name & Last Updated Single Select', retries.fiveTries, () => {
+    cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
 
-      cy.mrtSingleSelect({ column: columns[0] });
-      cy.mrtSingleSelect({ column: columns[1] });
-    }
-  );
+    cy.mrtSingleSelect({ column: columns[0] });
+    cy.mrtSingleSelect({ column: columns[1] });
+  });
 
   it('Filters by Name Multi Select', retries.fiveTries, () => {
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
@@ -51,32 +51,46 @@ describe('Contact Table', () => {
   });
 
   it('Filters by last updated Comparison Check', retries.fiveTries, () => {
-    console.log(responseHits)
+    console.log(responseHits);
     if (responseHits?.length) {
-      const placeholder = "Filter by Last Updated";
+      const placeholder = 'Filter by Last Updated';
       cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
 
       const lastUpdateAt = responseHits[0].lastUpdateAt;
       const currentDateForPreviousDay = new Date(lastUpdateAt);
-      currentDateForPreviousDay.setDate(currentDateForPreviousDay.getDate() - 1)
+      currentDateForPreviousDay.setDate(currentDateForPreviousDay.getDate() - 1);
       const oneDayPriorDate = currentDateForPreviousDay.toISOString().split('T')[0];
       cy.get(`[data-testid="MoreVertIcon"]`).eq(16).click();
       cy.wait(500);
       cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
       cy.wait(500);
       cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(1):eq(1)').click();
-      cy.mrtComparisonFilterCheck({ column: columns[0], type: "date", value: moment.parseZone(new Date(oneDayPriorDate)).format('MM/DD/YY'), filter: "greaterThanEqualTo", placeholder });
+      cy.mrtComparisonFilterCheck({
+        column: columns[0],
+        type: 'date',
+        value: moment.parseZone(new Date(oneDayPriorDate)).format('MM/DD/YY'),
+        filter: 'greaterThanEqualTo',
+        placeholder,
+      });
 
       const currentDateForNextDay = new Date(lastUpdateAt);
-      currentDateForNextDay.setDate(currentDateForNextDay.getDate() + 1)
+      currentDateForNextDay.setDate(currentDateForNextDay.getDate() + 1);
       const nextDayDate = currentDateForNextDay.toISOString().split('T')[0];
-      cy.get('[data-testid="MoreVertIcon"]').eq(16).scrollIntoView().click({ force: true });
+      cy.get('[data-testid="MoreVertIcon"]')
+        .eq(16)
+        .scrollIntoView()
+        .click({ force: true });
       cy.wait(500);
       cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
       cy.wait(500);
       cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(2):eq(1)').click();
-      cy.mrtComparisonFilterCheck({ column: columns[0], type: "date", value: moment.parseZone(new Date(nextDayDate)).format('MM/DD/YY'), filter: "lessThanEqualTo", placeholder });
+      cy.mrtComparisonFilterCheck({
+        column: columns[0],
+        type: 'date',
+        value: moment.parseZone(new Date(nextDayDate)).format('MM/DD/YY'),
+        filter: 'lessThanEqualTo',
+        placeholder,
+      });
     }
   });
-
 });

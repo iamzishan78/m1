@@ -52,7 +52,6 @@ Cypress.Commands.add('setMapData', ({ testId, value }) => {
   cy.get(`[data-testid="data-cell-${testId}"]`).contains(value);
 });
 
-
 describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
   it(`Restores Unit ${selectedShape.id}`, () => {
     const updateLayerPayload = {
@@ -85,7 +84,6 @@ describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
 });
 
 describe('ShapeDetailCard Component', () => {
-
   beforeEach(() => {
     cy.request({
       method: 'POST',
@@ -94,7 +92,7 @@ describe('ShapeDetailCard Component', () => {
       body: getLayerPayload,
     }).then(response => {
       selectedShape = response?.body?.data?.customLayer;
-      let jsonLayer
+      let jsonLayer;
       if (selectedShape.shapeJson) jsonLayer = copy(selectedShape.shapeJson);
 
       jsonLayer.layer = { id: selectedShape.layer };
@@ -104,7 +102,7 @@ describe('ShapeDetailCard Component', () => {
         ...jsonLayer.properties,
         feature: jsonLayer,
         id: selectedShape._id,
-      }
+      };
 
       cy.interceptAndWait(['getCustomLayer'], alias => {
         popupController.updateState({ selectedShape });
@@ -124,18 +122,18 @@ describe('ShapeDetailCard Component', () => {
             cardHeightExpanded="calc(100vh - 64px)"
             targetSourceId={selectedShape?.id}
             targetLabel={selectedShape.type}
-          // deleteCustomLayer={deleteCustomLayer}
+            // deleteCustomLayer={deleteCustomLayer}
           ></ExpandableCardProvider>,
           { spec: 'ShapeDetailCard' }
         );
       });
     });
-
   });
 
-  it('IF TX ( State=CO,County=Denver,Meridian=06,Township=035S,Range=055W,Section=43 ) ELSE ( State=TX,County=Austin,Survey=ABBOTT, L,Section=37 T1N,Section=47 )', retries.fiveTries,
+  it(
+    'IF TX ( State=CO,County=Denver,Meridian=06,Township=035S,Range=055W,Section=43 ) ELSE ( State=TX,County=Austin,Survey=ABBOTT, L,Section=37 T1N,Section=47 )',
+    retries.fiveTries,
     () => {
-
       const state = selectedShape.state;
       if (state === 'TX') {
         cy.setMapData({ testId: 'State', value: 'CO' });
@@ -151,15 +149,15 @@ describe('ShapeDetailCard Component', () => {
         cy.setMapData({ testId: 'Block', value: '37 T1N' });
         cy.setMapData({ testId: 'Section', value: '47' });
       }
-
-    });
+    }
+  );
 
   it('IF TX ( Description=Austin, TX - BLK 37 T1N, SEC 47 ) ELSE ( Description=Denver, CO - T035S R055W — Section 43 )', () => {
     const state = selectedShape.state;
     if (state === 'TX') {
-      cy.get('.description').should('contain', 'Austin, TX - BLK 37 T1N, SEC 47')
+      cy.get('.description').should('contain', 'Austin, TX - BLK 37 T1N, SEC 47');
     } else {
-      cy.get('.description').should('contain', 'Denver, CO - T035S R055W — Section 43')
+      cy.get('.description').should('contain', 'Denver, CO - T035S R055W — Section 43');
     }
   });
 });

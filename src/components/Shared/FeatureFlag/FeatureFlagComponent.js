@@ -1,9 +1,10 @@
-import { AppContext } from "AppContext";
-import React, { useContext } from "react";
+import React from "react";
+import { globalStateController } from "hookstate/globalStateController";
 
 export function FeatureFlag({ children, feature, noAccess, noCheck }) {
-    const [stateApp] = useContext(AppContext);
-    const allowedFeature = stateApp?.user?.features?.find(f => f.name === feature)
+    const { stateValues: { user } } = globalStateController.useState(['user']);
+
+    const allowedFeature = user?.features?.find(f => f.name === feature)
     return (
         <>
             {((allowedFeature && !noAccess) || (!allowedFeature && noAccess) || noCheck) && <> {children}</>}
