@@ -83,10 +83,7 @@ const TractInterestsMeta = {
       id: 'contact.entityDetail.name',
       header: 'Owner Name',
     },
-<<<<<<< HEAD
-=======
 
->>>>>>> 4b175ba8a55fe7f0a6f274dda91ab14c7737e154
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'shape.shapeJson.properties.shapeLabel.keyword',
