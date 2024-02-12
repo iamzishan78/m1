@@ -7,5 +7,5 @@ build
 # lock files
 yarn.lock
 
-# cypress/screenshots
+cypress/screenshots
 cypress/videos
