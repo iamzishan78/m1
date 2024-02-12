@@ -81,4 +81,8 @@ describe("Unit Table", () => {
       },
     });
   });
+
+  it("checks created at/by and updated at/by fields in unit grid", () => {
+    cy.VerifyAuthInfoMRT();
+  });
 });
