@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import MRTTable from 'components/MRTTable';
-import { basic_timeouts } from '../../cypressUtils/data';
+import { basic_timeouts, retries } from '../../cypressUtils/data';
 import moment from 'moment';
 
 let responseHits = [];
@@ -36,7 +36,7 @@ describe('Contact Table', () => {
 
   it(
     'Filters by Name & Last Updated Single Select',
-    { retries: { runMode: 5, openMode: 2 } },
+    retries.fiveTries,
     () => {
       cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
 
@@ -45,12 +45,12 @@ describe('Contact Table', () => {
     }
   );
 
-  it('Filters by Name Multi Select', { retries: { runMode: 5, openMode: 2 } }, () => {
+  it('Filters by Name Multi Select', retries.fiveTries, () => {
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
     cy.mrtMultiSelect({ column: columns[1] });
   });
 
-  it('Filters by last updated Comparison Check', { retries: { runMode: 5, openMode: 2 } }, () => {
+  it('Filters by last updated Comparison Check', retries.fiveTries, () => {
     console.log(responseHits)
     if (responseHits?.length) {
       const placeholder = "Filter by Last Updated";

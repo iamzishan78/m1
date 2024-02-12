@@ -30,6 +30,7 @@ import ParcelAgreementTable from "components/Table/Parcel/ParcelAgreementTable";
 import { simpleTableGlobalController } from "hookstate/simpleTableController";
 import { jobController } from "hookstate/jobStateController";
 import MRSimpleTable from "components/MRSimpleTable";
+import { getShapeSubtitle } from '../helper';
 
 const setSelectedTab = simpleTableGlobalController.setSelectedTab
 
@@ -39,7 +40,7 @@ export default function UnitDetailCard(props) {
   const [selectedTractTab, setTractSelectedTab] = useState(0);
   const [uniObj, setUniObj] = useState();
   const [properties, setProperties] = useState();
-  const [stateApp] = useContext(AppContext);
+  const [stateApp, setStateApp] = useContext(AppContext);
   const OwnersPerUnitGridState = tableController('OwnersPerUnitTable').useState(['data']).stateValue;
   const [updateCustomLayer, { data: updatedUnit, loading: updatingLayer }] = useMutation(UPDATECUSTOMLAYER);
 
@@ -114,7 +115,6 @@ export default function UnitDetailCard(props) {
 
         if (feature?.properties?.netRoyalityAcres && !feature?.properties?.netRoyalityAcres?.unitNra)
           feature.properties.netRoyalityAcres.unitNra = feature.properties?.netRoyalityAcres?.calculatedNra;
-        setProperties({ ...feature.properties });
 
         feature.id = customLayer._id;
         feature.properties.id = customLayer._id;
@@ -122,6 +122,11 @@ export default function UnitDetailCard(props) {
         popupController.updateState({
           selectedShape: { ...feature.properties, feature },
         });
+        setStateApp((state) => ({
+          ...state,
+          selectedShape: { ...feature.properties, feature },
+        }));
+        setProperties({ ...feature.properties });
       } else {
         dispatch(showErrorMessage('Failed to update unit'));
       }
@@ -132,8 +137,12 @@ export default function UnitDetailCard(props) {
     e?.preventDefault();
     e?.stopPropagation();
     const { shape } = uniObj;
+    /* -------------------------------- Data Fix -------------------------------- */
+    if (field.includes('originalProperties.')) delete shape.properties[field]
+    if (field.includes('originalProperties.State')) set(shape.properties, 'originalProperties.StateAbbreviation', value);
+    if (field.includes('originalProperties.Section')) set(shape.properties, 'originalProperties.ShortName', value);
+    /* -------------------------------- Data Fix -------------------------------- */
     set(shape.properties, field, value);
-    shape.properties[field] = value;
 
     const customLayer = {};
 
@@ -143,6 +152,16 @@ export default function UnitDetailCard(props) {
       });
       shape.properties.shapeLabel = value;
       customLayer.name = value;
+    }
+
+    if (field.includes('originalProperties')) {
+      set(shape.properties, field.replace('originalProperties.', '').toLowerCase(), value);
+      const shapeSubtitle = getShapeSubtitle(shape?.properties?.originalProperties, shape.properties.uName || shape.properties.shapeLabel)
+      shape.properties.shapeSubtitle = shapeSubtitle
+      shape.shapeSubtitle = shapeSubtitle
+      popupController.updateState({
+        selectedShape: { ...popupState.selectedShape.get({ noproxy: true }), shapeSubtitle },
+      });
     }
     customLayer.shape = JSON.stringify(shape);
     customLayer.shapeJson = shape;
@@ -257,7 +276,7 @@ export default function UnitDetailCard(props) {
                   value={selectedTab}
                   panels={[
                     <div>
-                      <MRTTable name="OwnersPerUnitTable" overrideMeta={overrideMeta} hideSharedCommentCheck/>
+                      <MRTTable name="OwnersPerUnitTable" overrideMeta={overrideMeta} hideSharedCommentCheck />
                     </div>,
                     <div>
                       <MRSimpleTable
