@@ -19,6 +19,8 @@ export const GETALLACTIVITIES = gql`
       createBy
       lastUpdateBy
       outcome
+      createAt
+      lastUpdateAt
     }
   }
 `;
