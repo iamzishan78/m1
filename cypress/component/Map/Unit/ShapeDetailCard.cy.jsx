@@ -146,7 +146,7 @@ describe('ShapeDetailCard Component', () => {
       }
     });
 
-  it('IF TX ( Survey=ABBOTT, L,Section=37 ) ELSE ( Township=035S,Range=055W )', retries.fiveTries,
+  it('IF TX ( Survey=ABBOTT, L, Block=37 T1N ) ELSE ( Township=035S,Range=055W )', retries.fiveTries,
     () => {
       const state = selectedShape.state;
       if (state === 'TX') {
