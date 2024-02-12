@@ -25,6 +25,10 @@ export const basic_timeouts = {
     extraTimeout: 1500 * 1000
 }
 
+export const retries = {
+    fiveTries: { retries: { runMode: 5, openMode: 2 } }
+}
+
 export const documentObj = {
     fileNumber: "99934034",
     fileName: "Cydoc et el",
