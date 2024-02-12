@@ -1,11 +1,9 @@
-
-
 /* eslint-disable no-undef */
-import AgreementsTable from 'components/Table/Agreement/AgreementsTable';
+import AgreementsTable from "components/Table/Agreement/AgreementsTable";
 
-describe('Agreements ESHOC Table', () => {
+describe("Agreements ESHOC Table", () => {
   beforeEach(() => {
-    cy.interceptAndWait(['getESSimpleSearch', 'shapes_flat'], () => {
+    cy.interceptAndWait(["getESSimpleSearch", "shapes_flat"], () => {
       cy.viewport(1600, 1200).mount(
         <AgreementsTable
           esIndex={"shapes_flat"}
@@ -22,18 +20,7 @@ describe('Agreements ESHOC Table', () => {
     });
   });
 
-  it('checks created at/by and updated at/by fields in agreement grid', () => {
-    cy.get('table thead th span.MuiButton-label')
-      .contains('Created By')
-      .should('exist');
-    cy.get('table thead th span.MuiButton-label')
-      .contains('Created Date')
-      .should('exist');
-    cy.get('table thead th span.MuiButton-label')
-      .contains('Last Updated By')
-      .should('exist');
-    cy.get('table thead th span.MuiButton-label')
-      .contains('Last Updated Date')
-      .should('exist');
+  it("checks created at/by and updated at/by fields in agreement grid", () => {
+    cy.VerifyAuthInfoECHOC();
   });
 });
