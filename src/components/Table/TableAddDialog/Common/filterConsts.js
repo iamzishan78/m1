@@ -60,6 +60,12 @@ const filterConsts = {
     filterField: 'level6Type.keyword',
     dependencyArray: ['state', 'county', 'survey', 'block', 'section'],
     key: "originalProperties.AbstractName",
+  },
+  altSurvey: {
+    filterKey: 'level6Name.keyword',
+    filterField: 'level6Type.keyword',
+    dependencyArray: ['state', 'county', 'survey', 'block', 'section'],
+    key: "originalProperties.Grantee",
   }
 }
 

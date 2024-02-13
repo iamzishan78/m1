@@ -75,6 +75,13 @@ export default function UnitSummary(props) {
         props.updateProperties(null, "custom_data", customData);
     };
 
+
+    const filteredUnitDefaultData = React.useMemo(() => {
+        return (props.properties?.state === "TX" || props.properties?.originalProperties?.State === "TX") ?
+            unitDefaultData.filter((data) => data.showStateTX !== false) :
+            unitDefaultData.filter((data) => data.showStateTX !== true)
+    }, [props.properties]);
+
     return (
         <>
             <Grid container direction="row" className={classes.summaryCard}>
@@ -122,7 +129,7 @@ export default function UnitSummary(props) {
                         </Grid>
                         <Grid item>
                             <SummaryTable
-                                tableData={unitDefaultData}
+                                tableData={filteredUnitDefaultData}
                                 properties={props.properties}
                                 updateProperties={props.updateProperties}
                                 updateCustomProperties={props.updateCustomProperties}
