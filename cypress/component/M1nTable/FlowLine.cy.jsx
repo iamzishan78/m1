@@ -10,7 +10,7 @@ const headers = {
 };
 
 describe("Flow Line M1nTable", () => {
-  it("checks created at/by and updated at/by fields in agreement grid", () => {
+  it("checks created at/by and updated at/by fields in flow grid", () => {
     const getPipeLinePayload = {
       operationName: "getPipeline",
       variables: { id: "65a15844bce604464fc1f0ad" },
