@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTable";
 
-describe("Tract ESHOC Table", () => {
+describe("Revenue Properties ESHOC Table", () => {
   beforeEach(() => {
     cy.interceptAndWait(["getESSimpleSearch", "properties_flat"], () => {
       cy.viewport(1600, 1200).mount(
