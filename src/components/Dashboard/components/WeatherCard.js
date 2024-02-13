@@ -169,7 +169,7 @@ const WeatherCard = () => {
           </Box>
         </Grid> */}
 
-        <Grid
+        {/* <Grid
           styles={{ width: "100%" }}
           item
           xs={6}
@@ -177,8 +177,8 @@ const WeatherCard = () => {
           md={4}
           lg={3}
           xl={3}
-        >
-          <Paper elevation={1} className={classes.wpaper}>
+        > */}
+          {/* <Paper elevation={1} className={classes.wpaper}>
             <Grid item container direction="column">
               <Grid item container direction="row">
                 {/* <Grid item sm={2} className={classes.wicon}>
@@ -186,10 +186,10 @@ const WeatherCard = () => {
                     <Avatar alt="Weather" src={getIconUrl(currWeather.icon)} />
                   )) || <WbSunnyOutlinedIcon fontSize="large" />}
                 </Grid> */}
-                <Grid item sm={8}>
+                {/* <Grid item sm={8}>
                   <Typography variant="h5">{`${
                     currWeather?.name || "N/A"
-                  }, ${currWeather?.country || "N/A"}`}</Typography>
+                  }, ${currWeather?.country || "N/A"}`}</Typography> */}
                   {/* <Typography
                     className={classes.wdescription}
                     variant="body2"
@@ -203,14 +203,14 @@ const WeatherCard = () => {
                       OpenWeatherMap
                     </Typography>
                   </Typography> */}
-                </Grid>
+                {/* </Grid>
                 <Grid item sm={4}>
                   <Typography variant="h5" className={classes.temp}>
                     {`${toFahr(currWeather.temp) || 0}`}&deg;
                   </Typography>
                 </Grid>
-              </Grid>
-              <Grid container direction="row" className={classes.weather}>
+              </Grid> */}
+              {/* <Grid container direction="row" className={classes.weather}>
                 {forecast.map((day, index) => (
                   <Typography component={"span"} key={index}>
                     <Grid item container direction="column">
@@ -226,8 +226,8 @@ const WeatherCard = () => {
                 ))}
               </Grid>
             </Grid>
-          </Paper>
-        </Grid>
+          </Paper> */}
+        {/* </Grid> */}
       </Grid>
     </Fragment>
   );
