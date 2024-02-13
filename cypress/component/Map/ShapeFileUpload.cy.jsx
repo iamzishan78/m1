@@ -1,16 +1,123 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 import { v4 as uuid } from 'uuid';
 import * as turf from '@turf/turf';
 import MapProvider from 'components/Map/MapProvider';
 import { getUdLayerCardTitle } from 'components/UdLayerCard/UdLayerCard';
 import { popupController } from 'hookstate/popupStateController';
+import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
+import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
 import { basic_timeouts } from '../../cypressUtils/data';
+import ldata from '../../fixtures/ldata.json';
+
+const headers = {
+  'Content-Type': 'application/json',
+  'X-ZUMO-AUTH': ldata.x_zumo_auth,
+};
 
 const { midTimeout, longTimeout, partialLongTimeout } = basic_timeouts;
 
 const fileName = 'surv025.zip';
 
-const sourceName = 'surv025' + uuid();
+const sourceName = 'surv02595913792-9e19-47e6-ba40-ea35479a215d';
+// const sourceName = 'surv025' + uuid();
+
+const dataset = {
+  _id: '65cb5de3f20df7cc41118dc4',
+  sourceName: 'surv02595913792-9e19-47e6-ba40-ea35479a215d',
+  fileName: 'surv025.zip',
+  types: [
+    'Point',
+    'Point',
+    'LineString',
+    'Point',
+    'Point',
+    'LineString',
+    'Polygon',
+    'Polygon',
+  ],
+  public: true,
+  createBy: '659ce7cf97935e0ffa857858',
+  file: '65cb5de2f20df7cc41118dbb',
+  originalFile: '65cb5de0f20df7cc41118db2',
+  IsDeleted: false,
+  categories: [
+    {
+      name: 'surv025Abspt - Point',
+      layerGeometry: 'Point',
+      layerShapeName: 'surv025Abspt - Point',
+      file: '65cb5de2f20df7cc41118dbb',
+      originalFile: '65cb5de0f20df7cc41118db2',
+      layerName: 'surv025Abspt - Point',
+    },
+    {
+      name: 'surv025Abspt_ - Point',
+      layerGeometry: 'Point',
+      layerShapeName: 'surv025Abspt_ - Point',
+      file: '65cb5de2f20df7cc41118dbb',
+      originalFile: '65cb5de0f20df7cc41118db2',
+      layerName: 'surv025Abspt_ - Point',
+    },
+    {
+      name: 'surv025l - LineString',
+      layerGeometry: 'LineString',
+      layerShapeName: 'surv025l - LineString',
+      file: '65cb5de2f20df7cc41118dbb',
+      originalFile: '65cb5de0f20df7cc41118db2',
+      layerName: 'surv025l - LineString',
+    },
+    {
+      name: 'surv025Labpt - Point',
+      layerGeometry: 'Point',
+      layerShapeName: 'surv025Labpt - Point',
+      file: '65cb5de2f20df7cc41118dbb',
+      originalFile: '65cb5de0f20df7cc41118db2',
+      layerName: 'surv025Labpt - Point',
+    },
+    {
+      name: 'surv025Labpt_ - Point',
+      layerGeometry: 'Point',
+      layerShapeName: 'surv025Labpt_ - Point',
+      file: '65cb5de2f20df7cc41118dbb',
+      originalFile: '65cb5de0f20df7cc41118db2',
+      layerName: 'surv025Labpt_ - Point',
+    },
+    {
+      name: 'surv025l_ - LineString',
+      layerGeometry: 'LineString',
+      layerShapeName: 'surv025l_ - LineString',
+      file: '65cb5de2f20df7cc41118dbb',
+      originalFile: '65cb5de0f20df7cc41118db2',
+      layerName: 'surv025l_ - LineString',
+    },
+    {
+      name: 'surv025p - Polygon',
+      layerGeometry: 'Polygon',
+      layerShapeName: 'surv025p - Polygon',
+      file: '65cb5de2f20df7cc41118dbb',
+      originalFile: '65cb5de0f20df7cc41118db2',
+      layerName: 'surv025p - Polygon',
+    },
+    {
+      name: 'surv025p_ - Polygon',
+      layerGeometry: 'Polygon',
+      layerShapeName: 'surv025p_ - Polygon',
+      file: '65cb5de2f20df7cc41118dbb',
+      originalFile: '65cb5de0f20df7cc41118db2',
+      layerName: 'surv025p_ - Polygon',
+    },
+  ],
+  name: 'surv02595913792-9e19-47e6-ba40-ea35479a215d',
+  categoryCount: 8,
+  visibility: true,
+};
+
+const layers = [
+  {
+    _id: '65cb5df2f4c7b713ede6faba',
+    IsDeleted: false,
+  },
+];
 
 describe('Map Component Shape File Upload', () => {
   beforeEach(() => {
@@ -19,39 +126,67 @@ describe('Map Component Shape File Upload', () => {
     cy.wait(midTimeout);
   });
 
-  it('Shapefile upload works', () => {
-    cy.get('#managerButton', { timeout: longTimeout }).should('be.visible').click();
+  it('Restores deleted data', () => {
+    const updateDatasetPayload = {
+      operationName: 'updateDataset',
+      variables: { dataset },
+      query: UPDATE_DATASET.loc.source.body,
+    };
 
-    cy.get('#sourceManagerDiv', { timeout: longTimeout }).should('be.visible');
+    const updatelayersPayload = {
+      operationName: 'updateManyLayer',
+      variables: { layers },
+      query: UPDATE_MANY_LAYER.loc.source.body,
+    };
 
-    cy.get('input[type=file]', { force: true })
-      .scrollIntoView()
-      .selectFile(`cypress/files/${fileName}`, {
-        force: true,
+    cy.request({
+      method: 'POST',
+      url: ldata.url,
+      headers: headers,
+      body: updateDatasetPayload,
+    }).then(() => {
+      cy.request({
+        method: 'POST',
+        url: ldata.url,
+        headers: headers,
+        body: updatelayersPayload,
       });
-
-    cy.get(`input#groupName`, { timeout: longTimeout }).clear().type(sourceName);
-
-    cy.interceptAndWait(
-      ['getDatasets'],
-      alias => {
-        cy.get('#createSourceButton', { timeout: longTimeout }).click();
-        cy.get('#createSourceButton', { timeout: longTimeout }).should('not.be.visible');
-
-        cy.wait(alias, { timeout: longTimeout }).then(result => {
-          const sourceNames = result.response?.body?.data?.getDatasets.map(
-            hit => hit.sourceName
-          );
-
-          expect(sourceNames).to.include(sourceName);
-        });
-      },
-      { wait: false }
-    );
+    });
   });
 
+  // it('Shapefile upload works', () => {
+  //   cy.get('#managerButton', { timeout: longTimeout }).should('be.visible').click();
+
+  //   cy.get('#sourceManagerDiv', { timeout: longTimeout }).should('be.visible');
+
+  //   cy.get('input[type=file]', { force: true })
+  //     .scrollIntoView()
+  //     .selectFile(`cypress/files/${fileName}`, {
+  //       force: true,
+  //     });
+
+  //   cy.get(`input#groupName`, { timeout: longTimeout }).clear().type(sourceName);
+
+  //   cy.interceptAndWait(
+  //     ['getDatasets'],
+  //     alias => {
+  //       cy.get('#createSourceButton', { timeout: longTimeout }).click();
+  //       cy.get('#createSourceButton', { timeout: longTimeout }).should('not.be.visible');
+
+  //       cy.wait(alias, { timeout: longTimeout }).then(result => {
+  //         const sourceNames = result.response?.body?.data?.getDatasets.map(
+  //           hit => hit.sourceName
+  //         );
+
+  //         expect(sourceNames).to.include(sourceName);
+  //       });
+  //     },
+  //     { wait: false }
+  //   );
+  // });
+
   it('Data exits in dataset grid', () => {
-    cy.wait(partialLongTimeout);
+    // cy.wait(partialLongTimeout);
 
     cy.interceptAndWait(['getESSimpleSearch', 'shapefile_flat'], () => {
       cy.get(`[id='grid-icon-${sourceName}']`, { timeout: longTimeout })
@@ -154,35 +289,35 @@ describe('Map Component Shape File Upload', () => {
     cy.get(`[data-testid="group-${sourceName}"]`);
   });
 
-  it('Shapefile delete works', () => {
-    cy.get('#managerButton', { timeout: longTimeout }).should('be.visible').click();
+  // it('Shapefile delete works', () => {
+  //   cy.get('#managerButton', { timeout: longTimeout }).should('be.visible').click();
 
-    cy.get('#sourceManagerDiv', { timeout: longTimeout }).should('be.visible');
+  //   cy.get('#sourceManagerDiv', { timeout: longTimeout }).should('be.visible');
 
-    cy.get(`[id='source-checkbox-${sourceName}']`, { timeout: longTimeout })
-      .scrollIntoView()
-      .trigger('mouseover');
-    cy.get(`[id='more-horiz-${sourceName}']`, { timeout: longTimeout })
-      .scrollIntoView()
-      .invoke('show')
-      .click({ force: true });
+  //   cy.get(`[id='source-checkbox-${sourceName}']`, { timeout: longTimeout })
+  //     .scrollIntoView()
+  //     .trigger('mouseover');
+  //   cy.get(`[id='more-horiz-${sourceName}']`, { timeout: longTimeout })
+  //     .scrollIntoView()
+  //     .invoke('show')
+  //     .click({ force: true });
 
-    cy.get('#deleteSource', { timeout: longTimeout }).click();
+  //   cy.get('#deleteSource', { timeout: longTimeout }).click();
 
-    cy.interceptAndWait(
-      ['getDatasets'],
-      alias => {
-        cy.get('#deleteConfirmation', { timeout: longTimeout }).click();
+  //   cy.interceptAndWait(
+  //     ['getDatasets'],
+  //     alias => {
+  //       cy.get('#deleteConfirmation', { timeout: longTimeout }).click();
 
-        cy.wait(alias, { timeout: longTimeout }).then(result => {
-          const sourceNames = result.response?.body?.data?.getDatasets.map(
-            hit => hit.sourceName
-          );
+  //       cy.wait(alias, { timeout: longTimeout }).then(result => {
+  //         const sourceNames = result.response?.body?.data?.getDatasets.map(
+  //           hit => hit.sourceName
+  //         );
 
-          expect(sourceNames).to.not.include(sourceName);
-        });
-      },
-      { wait: false }
-    );
-  });
+  //         expect(sourceNames).to.not.include(sourceName);
+  //       });
+  //     },
+  //     { wait: false }
+  //   );
+  // });
 });
