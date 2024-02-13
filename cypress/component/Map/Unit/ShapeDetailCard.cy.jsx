@@ -3,20 +3,37 @@
 import ExpandableCardProvider from 'components/ExpandableCard/ExpandableCardProvider';
 import ShapeDetailCard from 'components/ShapeDetailCard';
 import { popupController } from 'hookstate/popupStateController';
-import { basic_timeouts } from '../../../cypressUtils/data';
+import { basic_timeouts, retries } from '../../../cypressUtils/data';
 import ldata from '../../../fixtures/ldata.json';
-
-const selectedShape = {
+import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
+import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
+import { copy } from 'components/Shared/functions';
+/* ---------------------------------- Data ---------------------------------- */
+let selectedShape = {
   id: '65b0c87166115215f9155bc4',
-  type: 'unit',
-  layerType: 'unit',
-  shapeLabel: 'T004S R066W — Section 36',
-  shapeSubtitle: 'Arapahoe, CO - T004S R066W — Section 36',
 };
 
+const getLayerPayload = {
+  operationName: 'getCustomLayer',
+  variables: { id: selectedShape.id },
+  query: CUSTOMLAYER.loc.source.body,
+};
+
+const headers = {
+  'Content-Type': 'application/json',
+  'X-ZUMO-AUTH': ldata.x_zumo_auth,
+};
+/* ---------------------------------- Data ---------------------------------- */
+
 Cypress.Commands.add('setMapData', ({ testId, value }) => {
-  cy.get(`[data-testid="data-cell-${testId}"]`, { timeout: 10000 }).trigger('mouseover');
-  cy.get(`button[data-testid="edit-${testId}"]`).click();
+  cy.get(`[data-testid="data-cell-${testId}"]`, {
+    timeout: basic_timeouts.midTimeout,
+  }).trigger('mouseover');
+
+  cy.interceptAndWait(['getESSimpleFilter'], () => {
+    cy.wait(basic_timeouts.shorTimeout);
+    cy.get(`button[data-testid="edit-${testId}"]`).click();
+  });
 
   cy.get(`input#filter-autocomplete-${testId}`).type(value);
 
@@ -24,89 +41,139 @@ Cypress.Commands.add('setMapData', ({ testId, value }) => {
     responseTimeout: basic_timeouts.partialLongTimeout,
   }).should('exist');
 
-  cy.get('.MuiAutocomplete-option').first().click();
+  cy.wait(basic_timeouts.shorTimeout);
+
+  cy.interceptAndWait(['updateCustomLayer'], () => {
+    cy.get('.MuiAutocomplete-option').first().click();
+  });
 
   cy.get('body').click();
 
-  cy.verifyApiResponse('@updateCustomLayerApi', {
-    responseTimeout: basic_timeouts.midTimeout,
-  });
-
-  cy.get(`@updateCustomLayerApi`).then(interception => {
-    cy.get(`[data-testid="data-cell-${testId}"]`).contains(value);
-  });
+  cy.get(`[data-testid="data-cell-${testId}"]`).contains(value);
 });
 
+
 describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
-
-  it('Restoring Unit 65b0c87166115215f9155bc4', () => {
-
-    // Define your headers
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-ZUMO-AUTH': ldata.x_zumo_auth,
+  it(`Restores Unit ${selectedShape.id}`, () => {
+    const updateLayerPayload = {
+      operationName: 'updateCustomLayer',
+      variables: {
+        customLayerId: selectedShape.id,
+        customLayer: { IsDeleted: false },
+      },
+      query: UPDATECUSTOMLAYER.loc.source.body,
     };
-
-    // Define your request payload
-    const payload = { "operationName": "updateCustomLayer", "variables": { "customLayerId": "65b0c87166115215f9155bc4", "customLayer": { "IsDeleted": false } }, "query": "mutation updateCustomLayer($customLayerId: ID, $customLayer: CustomLayerInput, $userId: JSON) {\n  updateCustomLayer(\n    customLayerId: $customLayerId\n    customLayer: $customLayer\n    userId: $userId\n  ) {\n    success\n    message\n    error\n    customLayer {\n      _id\n      shape\n      shapeJson\n      qtrQtrSelection\n      name\n      layer\n      user {\n        _id\n        name\n        email\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n" };
 
     cy.request({
       method: 'POST',
-      url: `https://m1productiongraphql.azurewebsites.net/api/m1graph?code=8bcIQeGYGoL2XgLZ-O2sWhN7qKU3iMPpw_qboLviLIZWAzFuTQgpgQ==`,
+      url: ldata.url,
       headers: headers,
-      body: payload,
-    }).then((response) => {
-      expect(response.status).to.eq(200);
+      body: getLayerPayload,
+    }).then(response => {
+      if (!response?.body?.data?.customLayer)
+        cy.request({
+          method: 'POST',
+          url: ldata.url,
+          headers: headers,
+          body: updateLayerPayload,
+        }).then(response => {
+          expect(response.status).to.eq(200);
+        });
+      else expect(response.status).to.eq(200);
     });
   });
-
 });
 
-describe('ShapeDetailCard.cy.jsx', () => {
+describe('ShapeDetailCard Component', () => {
+
   beforeEach(() => {
-    popupController.updateState({ selectedShape });
+    cy.request({
+      method: 'POST',
+      url: ldata.url,
+      headers: headers,
+      body: getLayerPayload,
+    }).then(response => {
+      selectedShape = response?.body?.data?.customLayer;
+      let jsonLayer
+      if (selectedShape.shapeJson) jsonLayer = copy(selectedShape.shapeJson);
 
-    cy.interceptApi('getCustomLayer');
-    cy.interceptApi('updateCustomLayer');
+      jsonLayer.layer = { id: selectedShape.layer };
+      jsonLayer.id = selectedShape._id;
 
-    cy.viewport(1600, 1200).mount(
-      <ExpandableCardProvider
-        expanded={true}
-        // handleCloseExpandableCard={handleCloseExpandableCard}
-        component={<ShapeDetailCard type={selectedShape.type}></ShapeDetailCard>}
-        title={selectedShape?.shapeLabel}
-        subTitle={selectedShape?.shapeSubtitle || selectedShape?.unitInfo}
-        parent="map"
-        position="relative"
-        cardTop={0}
-        cardLeft={0}
-        zIndex={99}
-        cardWidthExpanded="50vw"
-        cardHeightExpanded="calc(100vh - 64px)"
-        targetSourceId={selectedShape?.id}
-        targetLabel={selectedShape.type}
-      // deleteCustomLayer={deleteCustomLayer}
-      ></ExpandableCardProvider>
-    );
+      selectedShape = {
+        ...jsonLayer.properties,
+        feature: jsonLayer,
+        id: selectedShape._id,
+      }
 
-    cy.verifyApiResponse('@getCustomLayerApi', {
-      responseTimeout: basic_timeouts.midTimeout,
+      cy.interceptAndWait(['getCustomLayer'], alias => {
+        popupController.updateState({ selectedShape });
+        cy.viewport(1600, 1200).mount(
+          <ExpandableCardProvider
+            expanded={true}
+            // handleCloseExpandableCard={handleCloseExpandableCard}
+            component={<ShapeDetailCard type={selectedShape.type}></ShapeDetailCard>}
+            title={selectedShape?.shapeLabel}
+            subTitle={selectedShape?.shapeSubtitle || selectedShape?.unitInfo}
+            parent="map"
+            position="relative"
+            cardTop={0}
+            cardLeft={0}
+            zIndex={99}
+            cardWidthExpanded="50vw"
+            cardHeightExpanded="calc(100vh - 64px)"
+            targetSourceId={selectedShape?.id}
+            targetLabel={selectedShape.type}
+          // deleteCustomLayer={deleteCustomLayer}
+          ></ExpandableCardProvider>,
+          { spec: 'ShapeDetailCard' }
+        );
+      });
     });
+
   });
 
-  it('Sets State, County, Township, Range, Section to TX, Anderson, 035S, 055W, 47', () => {
-    cy.setMapData({ testId: 'State', value: 'TX' });
-    cy.setMapData({ testId: 'County', value: 'Anderson' });
-    cy.setMapData({ testId: 'Township', value: '035S' });
-    cy.setMapData({ testId: 'Range', value: '055W' });
-    cy.setMapData({ testId: 'Section', value: '47' });
-  });
+  it('IF TX ( State=CO,County=Denver ) ELSE ( State=TX,County=Austin )', retries.fiveTries,
+    () => {
+      const state = selectedShape.state;
+      if (state === 'TX') {
+        cy.setMapData({ testId: 'State', value: 'CO' });
+        cy.setMapData({ testId: 'County', value: 'Denver' });
+      } else {
+        cy.setMapData({ testId: 'State', value: 'TX' });
+        cy.setMapData({ testId: 'County', value: 'Austin' });
 
-  it('Sets State, County, Township, Range, Section to CO, Arapahoe, 004S, 066W, 36', () => {
-    cy.setMapData({ testId: 'State', value: 'CO' });
-    cy.setMapData({ testId: 'County', value: 'Arapahoe' });
-    cy.setMapData({ testId: 'Township', value: '004S' });
-    cy.setMapData({ testId: 'Range', value: '066W' });
-    cy.setMapData({ testId: 'Section', value: '36' });
+      }
+    });
+
+  it('IF TX ( Survey=ABBOTT, L, Block=37 T1N ) ELSE ( Township=035S,Range=055W )', retries.fiveTries,
+    () => {
+      const state = selectedShape.state;
+      if (state === 'TX') {
+        cy.setMapData({ testId: 'Survey', value: 'ABBOTT, L' });
+        cy.setMapData({ testId: 'Block', value: '37 T1N' });
+      } else {
+        cy.setMapData({ testId: 'Township', value: '035S' });
+        cy.setMapData({ testId: 'Range', value: '055W' });
+      }
+    });
+
+  it('IF TX ( Section=47 ) ELSE ( Section=43 )', retries.fiveTries,
+    () => {
+      const state = selectedShape.state;
+      if (state === 'TX') {
+        cy.setMapData({ testId: 'Section', value: '47' });
+      } else {
+        cy.setMapData({ testId: 'Section', value: '43' });
+      }
+    });
+
+  it('IF TX ( Description=Austin, TX - BLK 37 T1N, SEC 47 ) ELSE ( Description=Denver, CO - T035S R055W — Section 43 )', retries.fiveTries, () => {
+    const state = selectedShape.state;
+    if (state === 'TX') {
+      cy.get('.description').should('contain', 'Austin, TX - BLK 37 T1N, SEC 47')
+    } else {
+      cy.get('.description').should('contain', 'Denver, CO - T035S R055W — Section 43')
+    }
   });
 });

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import { AppContext } from "AppContext";
 import { useQuery, useApolloClient } from "@apollo/client";
 import { useMutation } from "@apollo/client";
@@ -10,12 +10,13 @@ import Loader from "components/Loaders/serverLoader";
 import { setReduxKey } from "store/actions/commonActions";
 import useRefetchHelper from "components/Shared/Hooks/useRefetchHelper";
 import { jobController } from "hookstate/jobStateController";
+import { debounce } from "lodash";
 
 const ContactBulkProgress = () => {
   const [stateApp] = useContext(AppContext);
   const bulkUpload = useSelector((state) => state.common.bulkUpload);
   const refetchHelper = useRefetchHelper()
-
+  const refetchHelperDebounced = useMemo(() => debounce((requestPayload) => refetchHelper(requestPayload), 1000), []);
   const jobState = jobController.useState(
     ['bulkUpload'],
     'jobStateValues'
@@ -130,7 +131,7 @@ const ContactBulkProgress = () => {
       }
       else if (status === "Completed" && requestPayload.async) {
         if (requestPayload.refetch)
-          refetchHelper(requestPayload.refetch);
+          refetchHelperDebounced(requestPayload.refetch);
         message = lastMessage;
       }
       else {
