@@ -343,7 +343,8 @@ export default function Comments(props) {
           commentedOn,
           objectType: props.targetLabel,
           commentType: selectedCommentType,
-          pin: false
+          pin: false,
+          tenant: window.sessionStorage.getItem("tenantName")
         },
       },
       refetchQueries: [
@@ -492,7 +493,8 @@ export default function Comments(props) {
           commentedOn: props.targetSourceId,
           objectType: props.targetLabel,
           public: publicComment,
-          pin: false
+          pin: false,
+          tenant: window.sessionStorage.getItem("tenantName")
         },
       },
       refetchQueries: [
