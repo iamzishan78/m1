@@ -44,6 +44,7 @@ function ContactNameLink({ contact }) {
       {isPurchased && (
         <FeatureFlag feature={FEATURES.IDICORE}>
           <MonetizationOnIcon
+            data-testid="monetization-icon"
             style={{
               marginLeft: '10px',
               color: "gray"
