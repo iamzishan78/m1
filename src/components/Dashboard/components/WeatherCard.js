@@ -149,8 +149,8 @@ const WeatherCard = () => {
             <Typography variant="h6" align="left" className={classes.justifyContent}>
               {date?.split(";")[0]},{date?.split(";")[1]}
             </Typography>
-            <Typography variant="h2" align="left">
-             Good evening, { displayName}
+            <Typography variant="h3" align="left">
+              Hello, {displayName}
             </Typography>
           </Box>
         </Grid>
