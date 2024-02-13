@@ -3,9 +3,9 @@ import Avatar from "@material-ui/core/Avatar";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import WbSunnyOutlinedIcon from "@material-ui/icons/WbSunnyOutlined";
+import { ProfileContext } from "components/Profile/ProfileContext";
 import moment from "moment";
-import React, { Fragment, useEffect, useState } from "react";
-import Iframe from "react-iframe";
+import React, { Fragment, useEffect, useState, useContext } from "react";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -24,6 +24,10 @@ const useStyles = makeStyles(() => ({
   dateCard: {
     alignSelf: "center",
     fontWeight: "bold",
+  }, 
+  justifyContent : {
+    display: "flex",
+    justifyContent: "center",
   },
   wpaper: {
     padding: "16px",
@@ -58,6 +62,11 @@ const WeatherCard = () => {
   const [location, setLocation] = useState({ long: -95.3698, lat: 29.7604 });
   const [currWeather, setCurrWeather] = useState({});
   const [forecast, setForecast] = useState([]);
+  const [stateProfile, setStateProfile] = useContext(ProfileContext);
+
+  const {
+    fields: { displayName, }
+  } = stateProfile;
 
   useEffect(() => setDate(moment().format("dddd; MMMM Do, YYYY")), []);
 
@@ -129,19 +138,19 @@ const WeatherCard = () => {
       <Grid item container spacing={2}>
         <Grid
           item
-          xs={6}
-          sm={8}
-          md={8}
-          lg={9}
-          xl={9}
-          className={classes.dateCard}
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          xl={12}
+          className={classes.dateCard +' '+ classes.justifyContent }
         >
-          <Box>
-            <Typography variant="h6" align="left">
-              {date?.split(";")[0]}
+          <Box className={classes.dateCard}>
+            <Typography variant="h6" align="left" className={classes.justifyContent}>
+              {date?.split(";")[0]},{date?.split(";")[1]}
             </Typography>
-            <Typography variant="h4" align="left" className={classes.ldate}>
-              {date?.split(";")[1]}
+            <Typography variant="h3" align="left">
+              Hello, {displayName}
             </Typography>
           </Box>
         </Grid>
