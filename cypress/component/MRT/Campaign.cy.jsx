@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import MRTTable from "components/MRTTable";
 
-describe("UnitInterest Table", () => {
+describe("Campaign Table", () => {
   beforeEach(() => {
     cy.interceptAndWait(["getESSimpleSearch", "campaigns_flat"], () => {
       cy.viewport(1600, 1200).mount(<MRTTable name="CampaignTable" />);

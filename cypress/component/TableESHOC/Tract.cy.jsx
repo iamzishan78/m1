@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import TractsTable from "components/Table/Tract/TractsTable";
 
-describe("Agreements ESHOC Table", () => {
+describe("Tract ESHOC Table", () => {
   beforeEach(() => {
     cy.interceptAndWait(["getESSimpleSearch", "shapes_flat"], () => {
       cy.viewport(1600, 1200).mount(
