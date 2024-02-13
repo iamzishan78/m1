@@ -33,3 +33,41 @@ steps:
     inputs:
       projectDirectory: src
       arguments: 'ci:cy-login-component'
+
+  - script: |
+      if [ "$(ls -A cypress/screenshots)" ]; then
+        echo "Screenshots folder is not empty. Proceeding with the last three steps."
+        echo "$(ls -A cypress/screenshots)"
+        echo "##vso[task.setvariable variable=SCREENSHOTS_NOT_EMPTY]true"
+      else
+        echo "Screenshots folder is empty. Skipping the last three steps."
+        echo "##vso[task.setvariable variable=SCREENSHOTS_NOT_EMPTY]false"
+      fi
+    displayName: 'Check Screenshots Folder'
+
+  ## Copy the client to the staging directory
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: "cypress/screenshots"
+      contents: "**/*"
+      targetFolder: "$(Build.ArtifactStagingDirectory)"
+      cleanTargetFolder: true
+    displayName: 'Copy Screenshots'
+    condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true')  # Only run if the Screenshots folder is not empty
+
+  ## Archive the files into a zip file for publishing
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: $(Build.ArtifactStagingDirectory)
+      archiveType: "zip"
+      archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+      includeRootFolder: false
+    displayName: 'Archive Files'
+    condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true')  # Only run if the Screenshots folder is not empty
+
+  ## Publish the zip file
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+    displayName: 'Publish Artifacts'
+    condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true')  # Only run if the Screenshots folder is not empty
