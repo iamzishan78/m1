@@ -7,6 +7,8 @@ import { getUdLayerCardTitle } from 'components/UdLayerCard/UdLayerCard';
 import { popupController } from 'hookstate/popupStateController';
 import { UPDATE_DATASET } from 'graphQL/useMutationDataset';
 import { UPDATE_MANY_LAYER } from 'graphQL/useMutationUpdateManyLayer';
+import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSettings';
+import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 import { basic_timeouts } from '../../cypressUtils/data';
 import ldata from '../../fixtures/ldata.json';
 
@@ -112,12 +114,46 @@ const dataset = {
   visibility: true,
 };
 
-const layers = [
-  {
-    _id: '65cb5df2f4c7b713ede6faba',
-    IsDeleted: false,
-  },
+const layerIds = [
+  '65cb5df5f4c7b713ede6fac5',
+  '65cb5df3f20df7cc41118dd5',
+  '65cb5e08f4c7b713ede6facd',
+  '65cb5df3f4c7b713ede6fac1',
+  '65cb5dfbf4c7b713ede6fac8',
+  '65cb5df2f4c7b713ede6faba',
+  '65cb5df2f4c7b713ede6fabc',
+  '65cb5df4f4c7b713ede6fac3',
 ];
+const layerSettings = [
+  '65cb5e0df4c7b713ede6fad8',
+  '65cb5e0df4c7b713ede6fad9',
+  '65cb5e0df4c7b713ede6fada',
+  '65cb5e0df4c7b713ede6fadb',
+  '65cb5e0df4c7b713ede6fadc',
+  '65cb5e0df4c7b713ede6fadd',
+  '65cb5e0df4c7b713ede6fade',
+  '65cb5e0df4c7b713ede6fadf',
+];
+
+const layers = layerIds.map(layerId => ({
+  _id: layerId,
+  IsDeleted: false,
+}));
+const manySettings = layerSettings.map(layerSetting => ({
+  _id: layerSetting,
+  layerSettings: {
+    interaction: {
+      interactionAble: true,
+      interactionDetail: {
+        hover: true,
+        click: true,
+      },
+    },
+    colorable: true,
+    showable: true,
+    visiable: true,
+  },
+}));
 
 describe('Map Component Shape File Upload', () => {
   beforeEach(() => {
@@ -139,6 +175,26 @@ describe('Map Component Shape File Upload', () => {
       query: UPDATE_MANY_LAYER.loc.source.body,
     };
 
+    const updateLayerSettingsPayload = {
+      operationName: 'UpdateManyLayerSettings',
+      variables: { manySettings },
+      query: UPDATEMANYLAYERSETTINGS.loc.source.body,
+    };
+
+    const updateMapSettingsPayload = {
+      operationName: 'updateUserMapSettings',
+      variables: {
+        settings: {
+          user: '659ce7cf97935e0ffa857858',
+          type: 'DatasetVisibility',
+          settings: {
+            '65cb5de3f20df7cc41118dc4': true,
+          },
+        },
+      },
+      query: UPDATE_USER_MAP_SETTINGS.loc.source.body,
+    };
+
     cy.request({
       method: 'POST',
       url: ldata.url,
@@ -150,6 +206,18 @@ describe('Map Component Shape File Upload', () => {
         url: ldata.url,
         headers: headers,
         body: updatelayersPayload,
+      });
+      cy.request({
+        method: 'POST',
+        url: ldata.url,
+        headers: headers,
+        body: updateMapSettingsPayload,
+      });
+      cy.request({
+        method: 'POST',
+        url: ldata.url,
+        headers: headers,
+        body: updateLayerSettingsPayload,
       });
     });
   });
