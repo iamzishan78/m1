@@ -13,6 +13,9 @@ import { useMutation } from "@apollo/client";
 import { deepEqual } from "components/Shared/functions";
 import { useStyles } from '../style';
 import { hookStateApp } from "hookstate";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
+
 
 const FileTree = ({ layerMap, panelItems }) => {
   const [stateApp] = useContext(AppContext);
@@ -237,17 +240,30 @@ const FileTree = ({ layerMap, panelItems }) => {
         >
           <Flipper flipKey={items.map(({ id }) => id).join(".")}>
             <Sortly items={items} maxDepth={1} onChange={handleChange}>
-              {(props) => (
-                <LayerItem
-                  {...props}
-                  onToggleCollapse={handleToggleCollapse}
-                  onToggleGroup={handleToggleGroup}
-                  onDragEnd={handleDragEnd}
-                  onDragBegin={handleDragBegin}
-                  updateLayer={updateLayer}
-                  map={stateApp?.map}
-                />
-              )}
+              {(props) =>
+                    props?.data?.layerName === "Recent Submitted Permits" ? (
+                      <FeatureFlag feature={FEATURES.RECENTPERMITLAYER} > 
+                          <LayerItem
+                          {...props}
+                          onToggleCollapse={handleToggleCollapse}
+                          onToggleGroup={handleToggleGroup}
+                          onDragEnd={handleDragEnd}
+                          onDragBegin={handleDragBegin}
+                          updateLayer={updateLayer}
+                          map={stateApp?.map}
+                        />
+                      </FeatureFlag>
+                  ) :
+                   (<LayerItem
+                    {...props}
+                    onToggleCollapse={handleToggleCollapse}
+                    onToggleGroup={handleToggleGroup}
+                    onDragEnd={handleDragEnd}
+                    onDragBegin={handleDragBegin}
+                    updateLayer={updateLayer}
+                    map={stateApp?.map}
+                  />)
+                }
             </Sortly>
           </Flipper>
         </Box>
