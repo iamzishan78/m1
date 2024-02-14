@@ -132,7 +132,7 @@ function ContactToolbar({ table, tableKey }) {
 	return (
 		<>
 			<>
-				{(!isSomethingSelected && tableStateValues?.showAddContactButton) && <ButtonDropDown options={options} />}
+				{(!isSomethingSelected && tableStateValues?.showAddContactButton) && <ButtonDropDown options={options} data_test_id="add-contact-icon-button" />}
 
 				<ViewContactData isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 

@@ -107,4 +107,56 @@ describe("Contact Table", () => {
   it("checks created at/by and updated at/by fields in contact grid", () => {
     cy.VerifyAuthInfoMRT();
   });
+
+  it("add contact and check value of created at/by and updated at/by", () => {
+    cy.get(
+      '.MuiButtonBase-root[data-testid="add-contact-icon-button"]'
+    ).click();
+    cy.get('.MuiFormControl-root[data-testid="contact-firstName-text-field"]')
+      .click()
+      .clear()
+      .type("Cypress Testing Contact");
+    cy.get('.MuiButtonBase-root[data-testid="contact-add-button"]').click();
+
+    cy.wait(basic_timeouts.midTimeout);
+
+    cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+
+    cy.mrtApplySpecificFilter({
+      column: columns[1],
+      optioText: "Cypress Testing Contact",
+      callback: (FilterResponse) => {
+        const response = FilterResponse[0];
+        const createdDate = new Date(response?.createAt);
+        const lastUpdatedDate = new Date(response?.lastUpdateAt);
+        const currentDate = new Date();
+
+        expect(createdDate.toDateString().slice(0, 15)).to.equal(
+          currentDate.toDateString().slice(0, 15)
+        );
+
+        expect(response)
+          .to.have.property("createBy")
+          .that.is.an("object")
+          .and.has.property("name")
+          .that.is.a("string").and.not.be.empty;
+
+        expect(lastUpdatedDate.toDateString().slice(0, 15)).to.equal(
+          currentDate.toDateString().slice(0, 15)
+        );
+
+        expect(response)
+          .to.have.property("lastUpdateBy")
+          .that.is.an("object")
+          .and.has.property("name")
+          .that.is.a("string").and.not.be.empty;
+
+        cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
+
+        cy.get('.MuiButtonBase-root[data-testid="delete-icon-button"]').click();
+
+        cy.get('.MuiButtonBase-root[data-testid="delete-confirm"]').click();
+      },
+    });
+  });
 });

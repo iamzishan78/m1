@@ -135,6 +135,7 @@ function ESAutoCompleteFilter({
 							: params?.inputProps?.value,
 						'data-testid': `${multiple ? 'multi' : 'single'}-filter-${label}`,
 					}}
+					data-testid={`mrt-grid-filter-text-field-${label}`}
 					placeholder={`Filter by ${label}`}
 					variant="standard"
 					onChange={e => getFiltersAction(e.target.value)}
