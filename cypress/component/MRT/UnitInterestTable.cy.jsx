@@ -13,4 +13,9 @@ describe('UnitInterest Table', () => {
   it('exports with M1neral System ID, State & County', () => {
     cy.mrtExport({ columns });
   });
+
+  it('checks purchased icon in contact link', () => {
+    cy.mrtPurchasedIconCheck();
+  });
+
 });

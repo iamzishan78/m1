@@ -1,10 +1,10 @@
-import ColumnWithLink from 'components/Shared/M1nTable/components/SubComponents/ColumnWithLink';
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import ListChips from 'components/Common/ListChips';
+import ContactNameLink from '../Common/TableCells/ContactNameLink';
 
 const esIndex = 'shapeowners_flat';
 
@@ -57,22 +57,10 @@ const TractInterestsMeta = {
       name: 'contact.entityDetail.name.keyword',
       accessorKey: 'contact.entityDetail.name',
       header: 'Contact Name',
-      Cell: ({ renderedCellValue, row }) => (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <ColumnWithLink
-            value={renderedCellValue}
-            link={`/contact/details/${row?.original?.contactId}`}
-            onClick={e => {
-              e.stopPropagation();
-            }}
-          />
-        </div>
-      ),
+      size: 500,
+      Cell: ({ row }) => {
+        return <ContactNameLink contact={row?.original?.contact} />
+      }
     },
 
 
