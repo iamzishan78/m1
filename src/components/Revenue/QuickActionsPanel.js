@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState,  useEffect }  from "react";
+
 import clsx from "clsx";
 import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { IconButton } from "@material-ui/core";
 import ListItemText from "@material-ui/core/ListItemText";
 import { Divider, Grid, Typography, Drawer } from "@material-ui/core";
@@ -16,10 +17,25 @@ import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
 export default function QuickActionsPanel({ children, handlePanelStateChange, expandedPanel, activeModule }) {
   const classes = useStyles();
   const history = useHistory();
+  const location = useLocation();
+  const [sideBarPanel , setSideBarPanel] = useState(false);
+
 
   const handleMenuItemClick = (path) => {
     history.push(path);
   };
+
+  useEffect(() => {
+    if (location.pathname.includes("property/details")) {
+      handlePanelStateChange(false)
+      setSideBarPanel(true);
+    } else {
+      handlePanelStateChange(true)
+      setSideBarPanel(false);
+    }
+  }
+, [location.pathname]);
+
   return (
     <>
       <Drawer
@@ -75,9 +91,9 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
       >
         {children}
       </div>
-      {/* <div className={classes.pulloutBox} onClick={handlePanelStateChange}>
+      <div className={classes.pulloutBox} onClick={handlePanelStateChange} style={{ display: !sideBarPanel ? 'flex' : 'none' }}>
         {expandedPanel ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
-      </div> */}
+      </div>
     </>
   );
 }

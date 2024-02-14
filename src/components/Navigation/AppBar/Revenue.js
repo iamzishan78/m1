@@ -86,7 +86,7 @@ export default function RevenueAppBar(props) {
       display="flex"
       justify="space-between"
       alignItems="center"
-      style={{ marginLeft:  "7px" }}
+      style={{ marginLeft: quickActionsPanelState ? "433px" : "7px" }}
     >
       <Grid item md={8}>
         <Grid container direction="row" display="flex" justify="flex-start" alignItems="center">
