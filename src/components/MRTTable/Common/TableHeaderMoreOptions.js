@@ -69,7 +69,7 @@ function TableHeaderMoreOptions({ tableKey }) {
 
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} data-testid="over-ride-select-all-div">
       <MRT_SelectCheckbox_OverRide row={undefined} selectAll={true} table={tableStateValues?.mrtTableRef} tableKey={tableKey} />
       <Tooltip
         title={"Options"}
