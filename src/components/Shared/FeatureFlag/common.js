@@ -20,4 +20,5 @@ export const FEATURES = {
     SHOWUSERPRIVILEGES: 'showUserPrivileges',
     AGREEMENT_LAYER: 'AgreementLayer',
     ANALYTICS: 'analyticsModule',
+    RECENTPERMITLAYER:'showRecentPermitsLayer'
 }

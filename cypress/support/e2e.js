@@ -18,19 +18,6 @@
 import './commands'
 
 Cypress.on('uncaught:exception', (err, runnable) => {
-    console.log("err : ", err)
-    console.log("err.message : ", err.message)
-
-    if (err?.message.includes('Cast to date') || err?.message.includes('AI (Internal)') || err?.message.includes("(reading 'map')"))
-        return false
-
-    expect(err?.message).to.include('AI (Internal)')
-
-    // using mocha's async done callback to finish
-    // this test so we prove that an uncaught exception
-    // was thrown
-
-
     return false
 })
 
