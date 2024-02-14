@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { IconButton } from "@material-ui/core";
 import ListItemText from "@material-ui/core/ListItemText";
 import { Divider, Grid, Typography, Drawer } from "@material-ui/core";
@@ -18,10 +18,23 @@ import AdvanceSearch from "components/Land/components/AdvanceSearch";
 export default function QuickActionsPanel({ children, title, actions, handlePanelStateChange, quickActionsPanelState, activeModule, PanelAction }) {
   const classes = useStyles();
   const history = useHistory();
-
+  const location = useLocation();
+  const [sideBarPanel , setSideBarPanel] = useState(false)
   const handleMenuItemClick = (path) => {
     history.push(path);
   };
+
+  useEffect(() => {
+      if (location.pathname.includes("agreement/details")) {
+        handlePanelStateChange(false)
+        setSideBarPanel(true);
+      } else {
+        handlePanelStateChange(true)
+        setSideBarPanel(false);
+      }
+    }
+  , [location.pathname]);
+
   return (
     <>
       <Drawer
@@ -84,10 +97,10 @@ export default function QuickActionsPanel({ children, title, actions, handlePane
           })}
         >
           {children}
-        </div>
-        {/* <div className={classes.pulloutBox} onClick={() => handlePanelStateChange(!quickActionsPanelState)}>
+          </div>
+        <div className={classes.pulloutBox} onClick={() => handlePanelStateChange(!quickActionsPanelState)} style={{ display: !sideBarPanel ? 'flex' : 'none' }} >
           {quickActionsPanelState ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
-        </div> */}
+        </div>
       </FeatureFlag>
     </>
   );
