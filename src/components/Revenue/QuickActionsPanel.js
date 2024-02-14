@@ -1,7 +1,7 @@
 import React, { useState,  useEffect }  from "react";
 
 import clsx from "clsx";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import { IconButton } from "@material-ui/core";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -13,11 +13,13 @@ import MenuIcon from "@material-ui/icons/Menu";
 
 import { useStyles, StyledMenu, StyledMenuItem } from "./styles";
 import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
+import { toggleQuickActionsPanel } from "store/actions/commonActions";
 
 export default function QuickActionsPanel({ children, handlePanelStateChange, expandedPanel, activeModule }) {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
+  const dispatch = useDispatch();
   const [sideBarPanel , setSideBarPanel] = useState(false);
 
 
@@ -26,13 +28,16 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
   };
 
   useEffect(() => {
-    if (location.pathname.includes("property/details")) {
-      handlePanelStateChange(false)
+    if (location.pathname.includes("details")) {
+      dispatch(toggleQuickActionsPanel(false));
       setSideBarPanel(true);
     } else {
-      handlePanelStateChange(true)
+      dispatch(toggleQuickActionsPanel(true));
       setSideBarPanel(false);
     }
+    return () => {
+      dispatch(toggleQuickActionsPanel(true)); // Dispatch the action on unmount
+    };
   }
 , [location.pathname]);
 
