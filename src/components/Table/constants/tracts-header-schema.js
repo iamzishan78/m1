@@ -26,7 +26,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
         return (
           <ColumnWithLink
             onClick={(e) => {
-              e.stopPropagation();
+              e?.stopPropagation();
               history.push(`/map/parcels/${tableMeta.rowData[0]}`, { showTractsBreadcrumb: !isSnapGrid });
             }}
             value={splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]}
