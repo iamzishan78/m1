@@ -860,6 +860,7 @@ function SubTable(props) {
               if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
                 multiSelectMouseHoverColor(id, "#efefef");
             }}
+            data-testid={`comment-icon-button-${tableMeta.rowIndex}`}
           >
             {value}
           </Button>

@@ -23,6 +23,6 @@ describe("TractDetail Runsheet  ESHOC Table", () => {
   });
 
   it("add comments ", () => {
-    cy.scrollTo("right", { ensureScrollable: false });
+    cy.get('.MuiButtonBase-root[data-testid="comment-icon-button-0"]').click();
   });
 });
