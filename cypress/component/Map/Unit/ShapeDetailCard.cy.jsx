@@ -131,33 +131,54 @@ describe('ShapeDetailCard Component', () => {
   });
 
   it(
-    'IF TX ( State=CO,County=Denver,Meridian=06,Township=035S,Range=055W,Section=43 ) ELSE ( State=TX,County=Austin,Survey=ABBOTT, L,Section=37 T1N,Section=47 )',
+    'IF TX ( State=CO,County=Denver ) ELSE ( State=TX,County=Austin )',
     retries.fiveTries,
     () => {
       const state = selectedShape.state;
       if (state === 'TX') {
         cy.setMapData({ testId: 'State', value: 'CO' });
         cy.setMapData({ testId: 'County', value: 'Denver' });
-        cy.setMapData({ testId: 'Meridian', value: '06' });
-        cy.setMapData({ testId: 'Township', value: '035S' });
-        cy.setMapData({ testId: 'Range', value: '055W' });
-        cy.setMapData({ testId: 'Section', value: '43' });
       } else {
         cy.setMapData({ testId: 'State', value: 'TX' });
         cy.setMapData({ testId: 'County', value: 'Austin' });
-        cy.setMapData({ testId: 'Survey', value: 'ABBOTT, L' });
-        cy.setMapData({ testId: 'Block', value: '37 T1N' });
-        cy.setMapData({ testId: 'Section', value: '47' });
       }
     }
   );
 
-  it('IF TX ( Description=Austin, TX - BLK 37 T1N, SEC 47 ) ELSE ( Description=Denver, CO - T035S R055W — Section 43 )', () => {
+  it(
+    'IF TX ( Survey=ABBOTT, L, Block=37 T1N ) ELSE ( Township=035S,Range=055W )',
+    retries.fiveTries,
+    () => {
+      const state = selectedShape.state;
+      if (state === 'TX') {
+        cy.setMapData({ testId: 'Survey', value: 'ABBOTT, L' });
+        cy.setMapData({ testId: 'Block', value: '37 T1N' });
+      } else {
+        cy.setMapData({ testId: 'Township', value: '035S' });
+        cy.setMapData({ testId: 'Range', value: '055W' });
+      }
+    }
+  );
+
+  it('IF TX ( Section=47 ) ELSE ( Section=43 )', retries.fiveTries, () => {
     const state = selectedShape.state;
     if (state === 'TX') {
-      cy.get('.description').should('contain', 'Austin, TX - BLK 37 T1N, SEC 47');
+      cy.setMapData({ testId: 'Section', value: '47' });
     } else {
-      cy.get('.description').should('contain', 'Denver, CO - T035S R055W — Section 43');
+      cy.setMapData({ testId: 'Section', value: '43' });
     }
   });
+
+  it(
+    'IF TX ( Description=Austin, TX - BLK 37 T1N, SEC 47 ) ELSE ( Description=Denver, CO - T035S R055W — Section 43 )',
+    retries.fiveTries,
+    () => {
+      const state = selectedShape.state;
+      if (state === 'TX') {
+        cy.get('.description').should('contain', 'Austin, TX - BLK 37 T1N, SEC 47');
+      } else {
+        cy.get('.description').should('contain', 'Denver, CO - T035S R055W — Section 43');
+      }
+    }
+  );
 });

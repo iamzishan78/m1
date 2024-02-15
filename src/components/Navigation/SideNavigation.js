@@ -446,7 +446,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
           {(stateApp.user.roles.includes("Admin") || stateApp.user.roles.includes("Owner")) && (
             <ListItem
               classes={{
-                root: classes.menuListItem,
+                root: classes.menuListItem +' '+ classes.alignBottom ,
                 selected: classes.menuListItemSelected,
               }}
               button
