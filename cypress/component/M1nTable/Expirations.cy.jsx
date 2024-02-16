@@ -3,11 +3,7 @@ import { GETALLACTIVITIES } from "graphQL/useQueryGetAllActivities";
 import ldata from "../../fixtures/ldata.json";
 import M1nTable from "components/Shared/M1nTable/M1nTable";
 import { uniqueId } from "lodash";
-
-const headers = {
-  "Content-Type": "application/json",
-  "X-ZUMO-AUTH": ldata.x_zumo_auth,
-};
+import { headers } from "../../cypressUtils/cypressHeaders";
 
 describe("Expiration M1nTable", () => {
   it("checks created at/by and updated at/by fields in obligation grid", () => {

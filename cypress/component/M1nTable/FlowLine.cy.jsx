@@ -3,11 +3,7 @@
 import { GETPIPELINE } from "graphQL/useQueryPipeline";
 import ldata from "../../fixtures/ldata.json";
 import M1nTable from "components/Shared/M1nTable/M1nTable";
-
-const headers = {
-  "Content-Type": "application/json",
-  "X-ZUMO-AUTH": ldata.x_zumo_auth,
-};
+import { headers } from "../../cypressUtils/cypressHeaders";
 
 describe("Flow Line M1nTable", () => {
   it("checks created at/by and updated at/by fields in flow grid", () => {

@@ -3,11 +3,7 @@ import Wells from "components/Land/components/Wells";
 import { REMOVE_WELLS } from "graphQL/useMutationRemoveWells";
 import { basic_timeouts } from "../../cypressUtils/data";
 import ldata from "../../fixtures/ldata.json";
-
-const headers = {
-  "Content-Type": "application/json",
-  "X-ZUMO-AUTH": ldata.x_zumo_auth,
-};
+import { headers } from "../../cypressUtils/cypressHeaders";
 
 let wellIds;
 let wellName;

@@ -4,11 +4,7 @@ import { basic_timeouts } from "../../../cypress/cypressUtils/data";
 import { globalStateController } from "hookstate/globalStateController";
 import ldata from "../../fixtures/ldata.json";
 import { REVERTCYPRESSDELETE } from "graphQL/useMutationCommonCypressRevert";
-
-const headers = {
-  "Content-Type": "application/json",
-  "X-ZUMO-AUTH": ldata.x_zumo_auth,
-};
+import { headers } from "../../cypressUtils/cypressHeaders";
 
 const columns = [{ name: "M1neral System ID" }];
 
