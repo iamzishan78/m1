@@ -9,7 +9,7 @@ const headers = {
   "X-ZUMO-AUTH": ldata.x_zumo_auth,
 };
 
-describe("Obligation M1nTable", () => {
+describe("Expiration M1nTable", () => {
   it("checks created at/by and updated at/by fields in obligation grid", () => {
     const getAllActivitiesPayload = {
       operationName: "getAllActivities",
