@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { tableController } from 'hookstate/tableController';
 import useHandleQuery from './useHandleQuery';
 import ToolbarActions from '../Common/ToolbarActions';
+import ToolbarInternalActions from '../Common/ToolbarInternalActions';
 import { tableESSimpleFilterModeOtions } from '../utils/data';
 import _ from 'lodash';
 
@@ -53,6 +54,7 @@ const useTableESSimple = tableKey => {
 			showAlertBanner: tableStateValues?.isError,
 			showProgressBars: tableStateValues?.isFetching,
 			rowSelection: tableStateValues?.rowSelection,
+			density: tableStateValues?.density,
 		},
 		tableProps: {
 			initialState: {
@@ -108,6 +110,7 @@ const useTableESSimple = tableKey => {
 			enableStickyFooter: true,
 			enableSorting: tableStateValues?.grouping.length === 0,
 			manualSorting: true,
+			enableHiding: tableStateValues?.enableHiding,
 			manualFiltering: true,
 			onGlobalFilterChange: globalFilter => {
 				Controller.setGlobalFilter(globalFilter);
@@ -278,6 +281,15 @@ const useTableESSimple = tableKey => {
 				) : (
 					<ToolbarActions {...props} tableKey={tableKey} />
 				),
+			renderToolbarInternalActions: tableStateValues.toolbarInternalActions
+				? ({ table }) => (
+					<ToolbarInternalActions
+						table={table}
+						toolbarInternalActions={tableStateValues.toolbarInternalActions}
+						enableHiding={tableStateValues.enableHiding}
+					/>
+				)
+				: undefined,
 		},
 	};
 };

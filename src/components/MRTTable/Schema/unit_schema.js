@@ -232,7 +232,7 @@ const UnitMeta = {
 			Cell: ({ row }) => {
 				const id = row.getValue('_id');
 
-				return <FlyToMap id={id} />;
+				return <FlyToMap id={id} type='unit' />;
 			},
 		},
 	],
