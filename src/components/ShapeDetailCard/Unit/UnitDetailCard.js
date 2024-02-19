@@ -15,7 +15,6 @@ import TabButtons from 'components/Shared/TabPanels/TabButtons';
 import UnitSummary from './UnitSummary';
 import ShapeWellInterestTable from 'components/Table/Shape/ShapeWellInterestTable';
 import AssociatedWellsShapeTable from 'components/Table/Wells/AssociatedWellsShapeTable';
-import UnitTractsTable from 'components/Table/Shape/UnitTractsTable';
 import AssociatedTractsShapeTable from 'components/Table/Wells/AssociatedTractsShapeTable';
 import Tags from 'components/Shared/Tagger';
 import { showSuccessMessage, showErrorMessage } from 'actions';
@@ -40,7 +39,7 @@ const setSelectedTab = simpleTableGlobalController.setSelectedTab;
 export default function UnitDetailCard(props) {
 	const dispatch = useDispatch();
 	const [selectedWellTab, setWellSelectedTab] = useState(0);
-	const [selectedTractTab, setTractSelectedTab] = useState(0);
+	const [, setTractSelectedTab] = useState(0);
 	const [uniObj, setUniObj] = useState();
 	const [properties, setProperties] = useState();
 	const [stateApp, setStateApp] = useContext(AppContext);
@@ -63,6 +62,7 @@ export default function UnitDetailCard(props) {
 
 	useEffect(() => {
 		if (dataCustomLayer) refetchCustomLayer();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [globalStateValues?.refetch]);
 
 	useEffect(() => {
@@ -83,7 +83,7 @@ export default function UnitDetailCard(props) {
 				},
 			});
 		}
-	}, [props.id]);
+	}, [getCustomLayer, props.id]);
 
 	useEffect(() => {
 		if (dataCustomLayer && dataCustomLayer.customLayer) {
@@ -145,7 +145,7 @@ export default function UnitDetailCard(props) {
 				dispatch(showErrorMessage('Failed to update unit'));
 			}
 		}
-	}, [updatedUnit]);
+	}, [dispatch, setStateApp, updatedUnit]);
 
 	const updateProperties = (e, field, value) => {
 		e?.preventDefault();
@@ -300,7 +300,7 @@ export default function UnitDetailCard(props) {
 							value={selectedTab}
 							panels={[
 								<div>
-									<MRTTable name="OwnersPerUnitTable" overrideMeta={overrideMeta} hideSharedCommentCheck />
+									<MRTTable name="OwnersPerUnitTable" overrideMeta={overrideMeta} />
 								</div>,
 								<div>
 									<MRSimpleTable
@@ -370,7 +370,6 @@ export default function UnitDetailCard(props) {
 											customLayer: uniObj,
 										},
 									}}
-									hideSharedCommentCheck
 								/>,
 								<div>
 									<AssociatedTractsShapeTable
