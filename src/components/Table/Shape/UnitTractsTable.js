@@ -57,12 +57,12 @@ function UnitTractsTable(props) {
   const tableData = elasticData?.getESPaginatedList
 
   const addAble = {
-    type: "wellInterest", customLayer: props.customLayer,
-    customLayerId: props.customLayer._id,
+    type: "wellInterest", customLayer: props?.customLayer,
+    customLayerId: props?.customLayer?._id,
   }
 
   const startPaginationAt = 25
-  const extendSearchQuery = `shape._id:${props.customLayer._id}`
+  const extendSearchQuery = `shape._id:${props?.customLayer?._id}`
   const esIndex = 'shapetracts_flat'
 
   ////////////Contact Wells begin///////////////////////////////////////////////
@@ -74,7 +74,7 @@ function UnitTractsTable(props) {
           first: startPaginationAt,
           keep_alive: "1micros"
         },
-        search: `shape._id:${props.customLayer._id}`
+        search: `shape._id:${props?.customLayer?._id}`
       }
     });
   }, [props.parent]);
@@ -225,7 +225,7 @@ function UnitTractsTable(props) {
       {addToTable && <AddUnitTractDialog
         open={addToTable}
         width="450px"
-        shapeId={props.customLayer._id}
+        shapeId={props?.customLayer?._id}
         shapeType={props.shapeType}
         seletedTract={selectedRow}
         onClose={() =>

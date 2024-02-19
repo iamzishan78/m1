@@ -48,12 +48,14 @@ function TableHeaderMoreOptions({ tableKey }) {
     }
     tableController(tableKey).setColumnCheck(newstate)
 
-    if (number !== tableStateValues?.data?.total)
+    if (number !== tableStateValues?.data?.total) {
       tableController(tableKey).updateState({
         isSubSetSelect: {
           total: number
         }
       });
+      tableController(tableKey).setIsAllRowsSelected(false);
+    }
     handleClose()
   }
 
@@ -67,7 +69,7 @@ function TableHeaderMoreOptions({ tableKey }) {
 
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} data-testid="over-ride-select-all-div">
       <MRT_SelectCheckbox_OverRide row={undefined} selectAll={true} table={tableStateValues?.mrtTableRef} tableKey={tableKey} />
       <Tooltip
         title={"Options"}

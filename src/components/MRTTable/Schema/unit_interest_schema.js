@@ -3,8 +3,8 @@ import { vf_currency_to_fixed } from 'components/Shared/valueformatters/vf_curre
 import ListChips from 'components/Common/ListChips';
 import { CommonSchema } from './common_schema';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
-import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import ContactNameLink from '../Common/TableCells/ContactNameLink';
 
 const esIndex = 'shapeowners_flat';
 
@@ -45,7 +45,7 @@ const UnitInterestMeta = {
 	},
 	TableSchema: [
 		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
 		},
@@ -61,22 +61,28 @@ const UnitInterestMeta = {
 			name: 'contact.entityDetail.name.keyword',
 			accessorKey: 'contact.entityDetail.name',
 			header: 'Contact Name',
-			Cell: ({ renderedCellValue, row }) => (
-				<div
-					style={{
-						display: 'flex',
-						alignItems: 'center',
-					}}
-				>
-					<ColumnWithLink
-						value={renderedCellValue}
-						link={`/contact/details/${row?.original?.contactId}`}
-						onClick={e => {
-							e.stopPropagation();
-						}}
-					/>
-				</div>
-			),
+			size: 500,
+			Cell: ({ renderedCellValue, row }) => {
+				return <ContactNameLink contact={row?.original?.contact} />
+			}
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.entityDetail.currentAddress.keyword',
+			accessorKey: 'contact.entityDetail.currentAddress',
+			header: 'Current Address',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.entityDetail.primaryAddress.keyword',
+			accessorKey: 'contact.entityDetail.primaryAddress',
+			header: 'Primary Address',
+			isHiddenFieldExport: true,
+			hidden: true,
 		},
 
 		{
@@ -91,6 +97,22 @@ const UnitInterestMeta = {
 			name: 'shape.shapeJson.properties.uNumber.keyword',
 			accessorKey: 'shape.shapeJson.properties.uNumber',
 			header: 'Unit #',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword',
+			id: 'shape.shapeJson.properties.originalProperties.StateAbbreviation',
+			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.StateAbbreviation,
+			header: 'State',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shape.shapeJson.properties.originalProperties.County.keyword',
+			id: 'shape.shapeJson.properties.originalProperties.County',
+			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.County,
+			header: 'County',
 		},
 
 		{

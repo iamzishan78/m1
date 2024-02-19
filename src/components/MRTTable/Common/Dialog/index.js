@@ -41,8 +41,9 @@ function AllDialogs(props) {
 	const deleteFunc = async dataToDelete => {
 		Loader.createToast('deletion', 'Deletion in Progress');
 		const user = globalStateController.getValue('user')
+		const testCase = globalStateController.getValue('testCase')
 		removeCommonDelete({
-			variables: { tableKey, deletedData: dataToDelete, userId: user?.mongoId, ESVariables: rest?.ESVariables, isSelectAll: rest?.isSelectAll }
+			variables: { tableKey, deletedData: dataToDelete, userId: user?.mongoId, ESVariables: rest?.ESVariables, isSelectAll: rest?.isSelectAll, cypressDelete: testCase?.cypressDelete }
 		}).then(
 			res => {
 				if (res?.data?.gridGenericRemove) {

@@ -21,10 +21,11 @@ function ESAutoCompleteFilter({
 	const [options, setOptions] = useState([]);
 	const filtersRef = useRef(null);
 
-	const { searchFields, filters, defaultFilters } = tableController(tableKey).getValues([
+	const { searchFields, filters, defaultFilters, advanceSearch } = tableController(tableKey).getValues([
 		'searchFields',
 		'filters',
 		'defaultFilters',
+		'advanceSearch',
 	]);
 
 	const getFiltersAction = search => {
@@ -44,7 +45,7 @@ function ESAutoCompleteFilter({
 					) : filtersArray,
 					filterKeys: typeof field !== 'string' ? field : undefined,
 					filterKey: typeof field === 'string' ? field : undefined,
-					search: { query: extendSearchQuery, fields: searchFields },
+					search: { query: extendSearchQuery, fields: searchFields, advanceSearch },
 					extendSearchQuery,
 					size: 10,
 					key_as_string: custom?.key_as_string,
@@ -72,7 +73,7 @@ function ESAutoCompleteFilter({
 
 		if (type === 'date') {
 			options = hits.map(({ key_as_string }) => ({
-				label: formatDate(key_as_string, false),
+				label: formatDate(key_as_string),
 				value: key_as_string,
 			}));
 
@@ -108,13 +109,13 @@ function ESAutoCompleteFilter({
 		tableController(tableKey).clearFilter(field.replace('.keyword', ''))
 	} else if (type === 'date' && (typeof filterValue === 'string' ? filterValue : filterValue.length)) {
 		if (typeof filterValue === 'string') {
-			filterValue = formatDate(filterValue, false);
+			filterValue = formatDate(filterValue);
 		} else if (typeof filterValue === 'object' && !Array.isArray(filterValue)) {
-			const formattedGte = formatDate(filterValue?.gte, false);
-			const formattedLte = formatDate(filterValue?.lte, false);
+			const formattedGte = formatDate(filterValue?.gte);
+			const formattedLte = formatDate(filterValue?.lte);
 			filterValue = `${formattedGte} to ${formattedLte}`;
 		} else if (Array.isArray(filterValue)) {
-			filterValue = filterValue.map(val => formatDate(val, false));
+			filterValue = filterValue.map(val => formatDate(val));
 		}
 	}
 	const id = Array.isArray(field) ? field.join(' ') : field
@@ -131,8 +132,9 @@ function ESAutoCompleteFilter({
 					inputProps={{
 						...params.inputProps,
 						value: filterSelectOptions
-							? filterSelectOptions.find(op => op.value === params.inputProps.value)?.label
+							? filterSelectOptions.find(op => op.value === params.inputProps.value)?.label || ''
 							: params?.inputProps?.value,
+						'data-testid': `${multiple ? 'multi' : 'single'}-filter-${label}`,
 					}}
 					placeholder={`Filter by ${label}`}
 					variant="standard"
@@ -153,7 +155,7 @@ function ESAutoCompleteFilter({
 					return;
 				}
 
-				const value = multiple
+				let value = multiple
 					? option.map(option => {
 						if (typeof option === 'object') {
 							return option.value
@@ -163,6 +165,10 @@ function ESAutoCompleteFilter({
 						}
 					})
 					: option.value;
+
+				if (type === 'date') {
+					value = formatDate(value)
+				}
 				setFilterValue(value);
 
 				if (Array.isArray(field)) {

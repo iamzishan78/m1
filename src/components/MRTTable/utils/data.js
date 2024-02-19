@@ -144,4 +144,10 @@ export const numberFilterOptions = [
 	...tableESSimpleFilterModeOtions.custom,
 ];
 
-export const dateFilterOptions = [...tableESSimpleFilterModeOtions.custom];
+export const customFilterOptions = [...tableESSimpleFilterModeOtions.custom];
+
+export const dateFilterOptions = [
+	// 'betweenInclusive',
+	'greaterThanOrEqualTo', 'lessThanOrEqualTo',
+	'singleselect',
+];

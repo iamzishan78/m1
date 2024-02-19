@@ -48,7 +48,7 @@ const UnitMeta = {
 		},
 
 		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
 		},
@@ -204,7 +204,7 @@ const UnitMeta = {
 			header: 'Last Updated',
 			type: 'date',
 			isSearchField: false,
-			Cell: ({ row }) => <div>{formatDate(row.getValue('_ts'), false)}</div>,
+			Cell: ({ row }) => <div>{formatDate(row.getValue('_ts'))}</div>,
 		},
 
 		{
@@ -232,7 +232,7 @@ const UnitMeta = {
 			Cell: ({ row }) => {
 				const id = row.getValue('_id');
 
-				return <FlyToMap id={id} />;
+				return <FlyToMap id={id} type='unit' />;
 			},
 		},
 	],

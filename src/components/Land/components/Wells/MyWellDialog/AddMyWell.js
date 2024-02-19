@@ -239,6 +239,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                   variant="outlined"
                   margin="dense"
                   InputLabelProps={{ shrink: true }}
+                  InputProps={{ "data-testid": param.label }}
                   fullWidth
                   defaultValue=""
                   value={

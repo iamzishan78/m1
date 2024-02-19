@@ -426,7 +426,22 @@ export default function AddLayer(props) {
                       (layer) => !props.search || layer.layerName?.toLowerCase().includes(props.search)
                     )?.map((layer, index) => {
                       const labelId = `m1layer-list-label-${index}`;
-                      return (
+                      if (layer.layerName === "Recent Submitted Permits") {
+                        return (
+                          <FeatureFlag feature={FEATURES.RECENTPERMITLAYER} >  
+                            <StyledListItem key={index} ContainerComponent="li">
+                              <Checkbox
+                                checked={layer.layerSettings.showable}
+                                color="dark gray"
+                                onChange={() => changeShowAble(layer)}
+                                inputProps={{ "aria-label": "primary checkbox" }}
+                              />
+                              <ListItemText id={labelId} primary={truncate(layer.layerName, 30)} />
+                            </StyledListItem>
+                          </FeatureFlag>
+                        ); 
+                      } else if (layer.layerName !== "Recent Submitted Permits") {
+                        return (
                         <StyledListItem key={index} ContainerComponent="li">
                           <Checkbox
                             checked={layer.layerSettings.showable}
@@ -436,7 +451,8 @@ export default function AddLayer(props) {
                           />
                           <ListItemText id={labelId} primary={truncate(layer.layerName, 30)} />
                         </StyledListItem>
-                      );
+                      ); 
+                      }
                     })}
                   </List>
                 </Collapse>

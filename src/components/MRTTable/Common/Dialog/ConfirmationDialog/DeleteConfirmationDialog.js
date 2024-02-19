@@ -35,6 +35,7 @@ export default function DeleteConfirmationDialogContent({ header, children, onCl
             onClose();
           }}
           color="secondary"
+          data-testid="delete-confirm"
         >
           Delete
         </Button>
