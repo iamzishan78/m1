@@ -39,8 +39,8 @@ function Notepad() {
     setDescription(data?.getUserNotes?.description)
   }, [data]);
   const [createNote] = useMutation(CREATE_NOTE, {
-    variables: { content: { description, userId:  stateProfile.fields._id} },
-    refetchQueries: [{ query: GET_USER_NOTES, variables: { userId: stateProfile.fields._id } }],
+    variables: { content: { description, userId:  stateProfile?.fields?._id} },
+    refetchQueries: [{ query: GET_USER_NOTES, variables: { userId: stateProfile?.fields?._id } }],
   });
   const handleCreateNote = useCallback(async () => {
     await createNote();
@@ -69,6 +69,7 @@ function Notepad() {
       }}
       className={classes.notes}
       onBlur={handleBlur}
+      data-testid="notes-description-text-area"
     />
     </Fragment>
     
