@@ -313,7 +313,7 @@ const ContactBreadcrumbs = () => {
                 history.push("/revenue/statements");
               }}
             >
-              Revenue Statements
+              Statements
             </Link>
           )}
           {checkRevenueStatement() && (

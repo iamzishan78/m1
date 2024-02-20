@@ -241,7 +241,10 @@ const FileTree = ({ layerMap, panelItems }) => {
           <Flipper flipKey={items.map(({ id }) => id).join(".")}>
             <Sortly items={items} maxDepth={1} onChange={handleChange}>
               {(props) => {
-                if (props?.data?.layerName === "Recent Submitted Permits" || props?.data?.layerName === "Tracked Wells" || props?.data?.layerName === "User Tags") {
+                if (props?.data?.layerName === "Recent Submitted Permits" 
+                || props?.data?.layerName === "Tracked Wells"
+                || props?.data?.layerName === "Search"  
+                || props?.data?.layerName === "User Tags") {
                   let layerName = '';
                   if (props?.data?.layerName === "Recent Submitted Permits") {
                     layerName = FEATURES.RECENTPERMITLAYER;
@@ -249,6 +252,8 @@ const FileTree = ({ layerMap, panelItems }) => {
                     layerName = FEATURES.TRACKEDWELLSLAYER;
                   } else if (props?.data?.layerName === "User Tags") {
                     layerName = FEATURES.USERTAGSLAYER;
+                  } else if (props?.data?.layerName === "Search") {
+                    layerName = FEATURES.SEARCHLAYER;
                   }
                   return (
                     <FeatureFlag feature={layerName} > 

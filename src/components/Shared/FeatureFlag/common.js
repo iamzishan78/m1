@@ -23,6 +23,7 @@ export const FEATURES = {
     RECENTPERMITLAYER:'showRecentPermitsLayer',
     TRACKEDWELLSLAYER:'showTrackedWellsLayer',
     USERTAGSLAYER:'showUserTagsLayer',
+    SEARCHLAYER: 'showSearchLayer',
 };
 
 export const ROUTES = {

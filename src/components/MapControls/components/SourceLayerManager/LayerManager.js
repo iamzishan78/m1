@@ -545,12 +545,14 @@ export default function AddLayer(props) {
                       }
                       //// remove the (layer.identifier!="Tracked Owners") if statement to show the tracked owers layer
                       if (layer.identifier !== "Tracked Owners") {
-                        if ( layer.layerName === 'Tracked Wells' || layer.layerName === 'User Tags') {
+                        if ( layer.layerName === 'Tracked Wells' || layer.layerName === 'User Tags' || layer.layerName === "Search") {
                           let layerName = '';
                           if (props?.data?.layerName === "Tracked Wells") {
                             layerName = FEATURES.TRACKEDWELLSLAYER;
                           } else if (props?.data?.layerName === "User Tags") {
                             layerName = FEATURES.USERTAGSLAYER;
+                          } else if (props?.data?.layerName === "Search") {
+                            layerName = FEATURES.SEARCHLAYER;
                           }
                           return (<FeatureFlag feature={layerName}>
                             <StyledListItem key={index} ContainerComponent="li">

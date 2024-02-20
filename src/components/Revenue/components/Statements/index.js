@@ -108,7 +108,7 @@ export default function RevenueStatements() {
           }}
         >
           <RevenueStatementTable
-            header="Revenue Statements"
+            header="Statements"
             targetLabel="check"
             onGettingPotentialIssues={onGettingPotentialIssues}
             onGettingStatements={onGettingStatements}
