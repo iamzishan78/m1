@@ -545,48 +545,70 @@ export default function AddLayer(props) {
                       }
                       //// remove the (layer.identifier!="Tracked Owners") if statement to show the tracked owers layer
                       if (layer.identifier !== "Tracked Owners") {
-                        return (
-                          <StyledListItem key={index} ContainerComponent="li">
+                        if ( layer.layerName === 'Tracked Wells' || layer.layerName === 'User Tags' || layer.layerName === "Search") {
+                          let layerName = '';
+                          if (props?.data?.layerName === "Tracked Wells") {
+                            layerName = FEATURES.TRACKEDWELLSLAYER;
+                          } else if (props?.data?.layerName === "User Tags") {
+                            layerName = FEATURES.USERTAGSLAYER;
+                          } else if (props?.data?.layerName === "Search") {
+                            layerName = FEATURES.SEARCHLAYER;
+                          }
+                          return (<FeatureFlag feature={layerName}>
+                            <StyledListItem key={index} ContainerComponent="li">
                             <Checkbox
                               checked={layer.layerSettings.showable}
                               color="dark gray"
                               onChange={() => changeShowAble(layer)}
                               inputProps={{ "aria-label": "primary checkbox" }}
                             />
-                            {layer.layerType === "file layer" ? (
-                              <>
-                                {/* Layer */}
-                                <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} isEditable={false} openEditField={layer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'} />
+                             <ListItemText id={labelId} primary={layer.layerName} />
+                            </StyledListItem>
+                          </FeatureFlag>)
+                        } else {
+                          return (
+                            <StyledListItem key={index} ContainerComponent="li">
+                              <Checkbox
+                                checked={layer.layerSettings.showable}
+                                color="dark gray"
+                                onChange={() => changeShowAble(layer)}
+                                inputProps={{ "aria-label": "primary checkbox" }}
+                              />
+                              {layer.layerType === "file layer" ? (
+                                <>
+                                  {/* Layer */}
+                                  <EditableTextField onChange={changeLayerName} item={layer} name={layer.layerName} isEditable={false} openEditField={layer?.layerId === actionItem?.layer?.layerId && actionItem?.type === 'editName'} />
 
-                                {checkIfDeleteAllow(layer) && <MoreHorizIcon aria-controls={"source-menu"} className={"moreSourceIcon " + classes.moreSourceIcon} onClick={(e) => { e.stopPropagation(); handleClick(e); setActionItem({ layer }) }} />}
-                              </>
-                            ) : (
-                              <ListItemText id={labelId} primary={layer.layerName === "Parcels" ? "Tracts" : layer.layerName} />
-                            )}
+                                  {checkIfDeleteAllow(layer) && <MoreHorizIcon aria-controls={"source-menu"} className={"moreSourceIcon " + classes.moreSourceIcon} onClick={(e) => { e.stopPropagation(); handleClick(e); setActionItem({ layer }) }} />}
+                                </>
+                              ) : (
+                                <ListItemText id={labelId} primary={layer.layerName === "Parcels" ? "Tracts" : layer.layerName} />
+                              )}
 
-                            {
-                              (layer.layerName === 'Units') &&
-                              <FeatureFlag feature={FEATURES.UNITIMPORT} >
-                                <ListItemSecondaryAction>
-                                  <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/units`); }}>
-                                    <UploadIcon opacity="1.0" small />
-                                  </IconButton>
-                                </ListItemSecondaryAction>
-                              </FeatureFlag>
-                            }
+                              {
+                                (layer.layerName === 'Units') &&
+                                <FeatureFlag feature={FEATURES.UNITIMPORT} >
+                                  <ListItemSecondaryAction>
+                                    <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/units`); }}>
+                                      <UploadIcon opacity="1.0" small />
+                                    </IconButton>
+                                  </ListItemSecondaryAction>
+                                </FeatureFlag>
+                              }
 
-                            {
-                              (layer.layerName === 'Parcels') &&
-                              <FeatureFlag feature={FEATURES.TRACTIMPORT} >
-                                <ListItemSecondaryAction>
-                                  <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/tracts`); }}>
-                                    <UploadIcon opacity="1.0" small />
-                                  </IconButton>
-                                </ListItemSecondaryAction>
-                              </FeatureFlag>
-                            }
-                          </StyledListItem>
-                        );
+                              {
+                                (layer.layerName === 'Parcels') &&
+                                <FeatureFlag feature={FEATURES.TRACTIMPORT} >
+                                  <ListItemSecondaryAction>
+                                    <IconButton edge="end" size="small" onClick={() => { history.push(`/bulkupload/tracts`); }}>
+                                      <UploadIcon opacity="1.0" small />
+                                    </IconButton>
+                                  </ListItemSecondaryAction>
+                                </FeatureFlag>
+                              }
+                            </StyledListItem>
+                          );
+                        }
                       }
                     })}
                   </List>

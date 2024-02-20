@@ -146,13 +146,13 @@ function RevenueStatementTable(props) {
       <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
         {props.openDialog === "delete" && (
           <DeleteConfirmationDialogContent
-            header={`Delete Revenue Statement(s)`}
+            header={`Delete Statement(s)`}
             onClose={() => props.setOpenDialog(null)}
             deleteFunc={deleteFunc}
             m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]?._id)}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
-            {`Do you want to delete the selected revenue statement${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
+            {`Do you want to delete the selected statement${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""
               }?`}
           </DeleteConfirmationDialogContent>
         )}
