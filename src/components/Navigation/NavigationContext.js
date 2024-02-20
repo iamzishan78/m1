@@ -8,17 +8,6 @@ export const DRAWING_MODES = {
 
 const NavigationContext = createContext([{}, () => { }]);
 const initialValue = {
-  selectedMenuIndexFind: 0,
-  selectedMenuIndexTrack: 0,
-  selectedMenuIndexTransact: 0,
-  selectedMenuIndexCalendar: 0,
-  selectedMenuIndexTitle: 0,
-  selectedMenuIndexAlerts: 0,
-  selectedMenuIndexDashboard: 0,
-  selectedMenuIndexContacts: 0,
-  selectedMenuIndexAnalytics: 0,
-  selectedMenuIndexStudio: 0,
-  selectedMenuIndexAdmin: 0,
   totalFilterCount: 0,
   filterTVD: null,
   filterLateralLength: null,

@@ -34,12 +34,18 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			}
 			: tableState?.defaultSort?.get({ noproxy: true });
 
+		let globalFilter = tableStateValues.globalFilter;
+
+		if (tableStateValues.isGeneric)
+			globalFilter = null;
+
 		const variables = {
 			index: tableStateValues.esIndex,
 			pagination: { ...pagination, pageIndex: undefined, pageSize: undefined },
 			search: {
-				query: tableStateValues.globalFilter ? `*${tableStateValues.globalFilter}*` : '*',
+				query: globalFilter ? `*${globalFilter}*` : '*',
 				fields: tableMeta.searchFields,
+				advanceSearch: tableStateValues.advanceSearch,
 			},
 			sort,
 			filters: [...tableMeta.defaultFilters, ...tableMeta.filters],
@@ -84,6 +90,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			isLoading: false,
 			isFetching: false,
 			isError: false,
+			...Controller.getGenericState(rows),
 		});
 	};
 
@@ -131,7 +138,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 			tableRef?.current?.scrollToIndex?.(0);
 
 			const tableMeta = tableState.get({ noproxy: true });
-			if (tableMeta.pagination?.pageIndex !== previousPagination.current.pageIndex) {
+			if (tableMeta.pagination?.pageIndex !== previousPagination.current?.pageIndex) {
 				const pagination = {
 					pit: tableMeta.data?.pit,
 					...tableMeta.pagination,
@@ -166,6 +173,7 @@ const useHandleQuery = ({ tableRef, tableKey, tableState, tableStateValues }) =>
 		tableState.grouping,
 		tableState.globalFilter,
 		tableState.defaultFilters,
+		tableState.advanceSearch,
 		refetch,
 	]);
 

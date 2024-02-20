@@ -14,7 +14,7 @@ export const FEATURES = {
     TRACTIMPORT: 'tractImport',
     UNITIMPORT: 'unitImport',
     SHAPEELASTIC: 'ShapeFileImport',
-    USERSNAP: "userSnap",
+    USERSNAP: 'userSnap',
     CONTACTGRIDEXPORT: 'ContactGridExport',
     EDITABLE_WORKSPACE: 'editableWorkspaceName',
     SHOWUSERPRIVILEGES: 'showUserPrivileges',
@@ -23,4 +23,68 @@ export const FEATURES = {
     RECENTPERMITLAYER:'showRecentPermitsLayer',
     TRACKEDWELLSLAYER:'showTrackedWellsLayer',
     USERTAGSLAYER:'showUserTagsLayer',
-}
+};
+
+export const ROUTES = {
+    LANDMODULE: {
+        module: 'landModule',
+        route: {
+            startsWith: ['/land'],
+        },
+    },
+    REVENUEMODULE: {
+        module: 'revenueModule',
+        route: {
+            startsWith: ['/revenue'],
+        },
+    },
+    ANALYTICS: {
+        module: 'analyticsModule',
+        route: {
+            startsWith: ['/analytics'],
+        },
+    },
+    MAP: {
+        module: 'MapModule',
+        route: {
+            startsWith: ['/map'],
+            equals: ['/'],
+        },
+    },
+    DASHBOARD: {
+        module: 'Dashboard',
+        route: {
+            startsWith: ['/dashboard'],
+        },
+    },
+    CONTACT: {
+        module: 'Contacts',
+        route: {
+            startsWith: ['/contact'],
+        },
+    },
+    CALENDER: {
+        module: 'Calendar',
+        route: {
+            startsWith: ['/calendar'],
+        },
+    },
+    FLOW: {
+        module: 'Flow',
+        route: {
+            startsWith: ['/flow'],
+        },
+    },
+    FILES: {
+        module: 'Documents',
+        route: {
+            startsWith: ['/documents'],
+        },
+    },
+    ADMIN_SETTINGS: {
+        module: 'AdminSettings',
+        route: {
+            startsWith: ['/admin'],
+        },
+    },
+};
