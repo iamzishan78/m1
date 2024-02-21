@@ -172,7 +172,7 @@ export const TableESHOC = (Component) => {
                     client
                         .query({
                             query: GET_META_DATA,
-                            variables: { user: stateApp.user?.mongoId, category: tableMeta?.typeKeyword?.metaModule },
+                            variables: { user: stateApp.user?.mongoId, category: tableMeta?.typeKeyword?.metaModule, isControlled: false },
                         })
                         .then(({ data: metaDataRes }) => {
                             const metaDatas = metaDataRes?.getMetaData?.metaData || [];
