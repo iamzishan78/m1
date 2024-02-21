@@ -117,7 +117,7 @@ export const TableESHOC = (Component) => {
                 // Excluding actionColumns from veiw Columns
                 actionColumns = actionColumns.map(aC => ({ ...aC, options: { ...aC.options, viewColumns: false } }));
 
-                metaDatas = metaDatas.filter(meta => !cols.find(col => col.name === meta.name)).map(meta => ({
+                metaDatas = metaDatas.filter(meta => (!cols.find(col => col.name === meta.name) && meta.isControlled !== true)).map(meta => ({
                     name: meta.name,
                     label: meta.label,
                     esKey: meta.esKey,

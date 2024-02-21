@@ -30,5 +30,11 @@ describe('Agreements ESHOC Table', () => {
     cy.get('table thead th span.MuiButton-label')
       .contains('Description')
       .should('exist');
+    cy.get('table thead th span.MuiButton-label')
+      .contains('INTEREST TYPE')
+      .should('not.exist');
+    cy.get('table thead th span.MuiButton-label')
+      .contains('TRACT STATUS')
+      .should('not.exist');
   });
 });

@@ -93,16 +93,6 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     }
   },
   {
-    name: "agreementSubtype",
-    label: "Subtype",
-    esKey: "shapeJson.properties.agreementSubtype.keyword",
-    options: {
-      display: false,
-      viewColumns: false,
-      dbName: "shapeJson.properties.agreementSubtype",
-    },
-  },
-  {
     name: "rightsType",
     label: "Rights",
     esKey: "shapeJson.properties.rightsType.keyword",
