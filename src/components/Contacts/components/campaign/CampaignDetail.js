@@ -161,12 +161,16 @@ const CampaignDetail = ({ viewDoc }) => {
 
   const updateCampaignInformation = (key, value) => {
     const _id = campaignId !== "new" ? campaign.current?._id : null;
+    const updateCampaign = {
+      _id,
+      [key]: value,
+    }
+    if (key === "name") {
+      updateCampaign.oldCampaignName = campaign.current.name
+    }
     upsertCampaign({
       variables: {
-        campaign: {
-          _id,
-          [key]: value,
-        },
+        campaign: updateCampaign
       },
       refetchQueries: ["getCampaign"],
     }).then(({ data }) => {
