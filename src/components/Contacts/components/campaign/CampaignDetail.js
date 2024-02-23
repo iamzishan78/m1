@@ -39,6 +39,7 @@ import { GET_CAMPAIGN } from "graphQL/useQueryCampaign";
 import { useStyles } from "./styles";
 import { showInfoMessage } from "actions";
 import { tableController, tableGlobalController } from "hookstate/tableController";
+import { globalStateController } from "hookstate/globalStateController";
 
 const StyledTabs = withStyles({
   root: {
@@ -84,7 +85,10 @@ const StyledTab = withStyles((theme) => ({
 }))((props) => <Tab disableRipple {...props} />);
 
 const CampaignDetail = ({ viewDoc }) => {
-  const { campaignId } = useParams();
+  const { stateValues } = globalStateController.useState(['testCase']);
+  let { campaignId } = useParams();
+  if (stateValues?.testCase?.campaignId)
+    campaignId = stateValues?.testCase?.campaignId;
   const history = useHistory();
   const dispatch = useDispatch();
   const [metaCollapse, setMetaCollapse] = useState(true);
@@ -260,6 +264,7 @@ const CampaignDetail = ({ viewDoc }) => {
                           },
                         }}
                         onBlur={({ target }) => updateCampaignInformation("name", target.value.trim())}
+                        data-testid="campaign-name-text-field"
                       />
                     </FormControl>
                   )}
