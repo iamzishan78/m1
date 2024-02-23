@@ -81,7 +81,7 @@ function ContactToolbar({ table, tableKey }) {
 		return {
 			_selectedRows: selectedRows,
 			search,
-			filters: tableStateValues.filters,
+			filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters],
 			sort,
 			total: tableStateValues?.data.total,
 			isAllRowsSelected: tableStateValues.isAllRowsSelected,
