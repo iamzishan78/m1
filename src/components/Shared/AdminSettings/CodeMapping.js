@@ -94,7 +94,7 @@ const mappingTypeOptions = {
   revenue: [
     {
       value: "Interest Type",
-      heading: 'Map distinct values from revenue statements to desired reporting category',
+      heading: 'Map distinct values from statements to desired reporting category',
       esIndex: "checkdetails_flat",
       key: "interestType.keyword",
       name: "Interest type code",
@@ -103,7 +103,7 @@ const mappingTypeOptions = {
     },
     {
       value: "Tax Type",
-      heading: 'Map distinct values from revenue statements to desired reporting category',
+      heading: 'Map distinct values from statements to desired reporting category',
       esIndex: "checkdetails_flat",
       key: "taxType.keyword",
       name: "Tax type code",
@@ -112,7 +112,7 @@ const mappingTypeOptions = {
     },
     {
       value: "Deduction Type",
-      heading: 'Map distinct values from revenue statements to desired reporting category',
+      heading: 'Map distinct values from statements to desired reporting category',
       esIndex: "checkdetails_flat",
       key: "deductType.keyword",
       name: "Deduction type code",
@@ -121,7 +121,7 @@ const mappingTypeOptions = {
     },
     {
       value: "Product Type",
-      heading: 'Map distinct values from revenue statements to desired reporting category',
+      heading: 'Map distinct values from statements to desired reporting category',
       esIndex: "checkdetails_flat",
       key: "product.keyword",
       name: "Product type code",
