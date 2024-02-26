@@ -317,4 +317,24 @@ Cypress.Commands.add('mrtPurchasedIconCheck', () => {
   });
 });
 
+Cypress.Commands.add('mrtFilterBySearch', ({ value, columnlabel, alias }) => {
+  cy.interceptAndWait(['getESSimpleFilter'], () => {
+    cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+    cy.get(`[data-testid="single-filter-${columnlabel}"]`).as(`single-filter-${alias}`).click();
+    cy.get(`@single-filter-${alias}`).type(`${value}{enter}`);
+    cy.get('.MuiAutocomplete-option', {
+      timeout: basic_timeouts.midTimeout,
+    })
+      .first()
+      .as(`${columnlabel}-option`)
+      .invoke('text')
+      .then(() => {
+        cy.interceptAndWait(['getESSimpleSearch'], () => {
+          cy.get(`@${columnlabel}-option`).click();
+          cy.wait(5000);
+        }, { wait: false });
+      });
+  });
+});
+
 
