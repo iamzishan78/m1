@@ -228,7 +228,7 @@ Cypress.Commands.add('mrtExport', ({ columns }) => {
       const responseColumns =
         response.response.body.data.initializeExportJob.job.requestPayload.columns;
 
-      cy.expect(
+      expect(
         columns.every(column =>
           responseColumns.some(responseColumn => responseColumn.label === column.name)
         )
@@ -335,6 +335,27 @@ Cypress.Commands.add('mrtComparisonFilterCheck', ({ column, type, value, filter,
     });
 });
 
+Cypress.Commands.add('mrtPurchasedIconCheck', () => {
+  const contactName = "CLARK (Cypress do not delete)";
+  cy.interceptAndWait(['getESSimpleFilter'], () => {
+    cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+    cy.get(`[data-testid="single-filter-Contact Name"]`).as(`single-filter-Contact-Name`).click();
+    cy.get(`@single-filter-Contact-Name`).type(`${contactName}{enter}`);
+    cy.get('.MuiAutocomplete-option', {
+      timeout: basic_timeouts.midTimeout,
+    })
+      .first()
+      .as(`${"Contact Name"}-option`)
+      .invoke('text')
+      .then(columOpton => {
+        cy.interceptAndWait(['getESSimpleSearch'], (alias) => {
+          cy.get(`@${"Contact Name"}-option`).click();
+          cy.wait(5000);
+          cy.get('[data-testid="monetization-icon"]').should('exist');
+        }, { wait: false });
+      });
+  });
+});
 
 Cypress.Commands.add('VerifyAuthInfoMRT', () => {
   cy.get('table thead th div.Mui-TableHeadCell-Content-Wrapper')

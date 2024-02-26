@@ -141,6 +141,7 @@ export default function UnitDetailCard(props) {
     if (field.includes('originalProperties.')) delete shape.properties[field]
     if (field.includes('originalProperties.State')) set(shape.properties, 'originalProperties.StateAbbreviation', value);
     if (field.includes('originalProperties.Section')) set(shape.properties, 'originalProperties.ShortName', value);
+    if (field.includes('originalProperties.Meridian')) set(shape.properties, 'originalProperties.PrincipalMeridian', value);
     /* -------------------------------- Data Fix -------------------------------- */
     set(shape.properties, field, value);
 
