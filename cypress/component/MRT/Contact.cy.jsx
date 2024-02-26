@@ -117,51 +117,57 @@ describe("Contact Table", () => {
       .clear()
       .type("Cypress Testing Contact");
 
-    cy.interceptAndWait(["getESSimpleSearch", "contacts_flat"], () => {
-      cy.get('.MuiButtonBase-root[data-testid="contact-add-button"]').click();
+    cy.interceptAndWait(
+      ["getESSimpleSearch", "contacts_flat"],
+      (alias) => {
+        cy.get('.MuiButtonBase-root[data-testid="contact-add-button"]').click();
 
-      cy.wait(basic_timeouts.longTimeout);
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((res) => {
+          cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
 
-      cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+          cy.mrtApplySpecificFilter({
+            column: columns[1],
+            optioText: "Cypress Testing Contact",
+            callback: (FilterResponse) => {
+              const response = FilterResponse[0];
+              const createdDate = new Date(response?.createAt);
+              const lastUpdatedDate = new Date(response?.lastUpdateAt);
+              const currentDate = new Date();
 
-      cy.mrtApplySpecificFilter({
-        column: columns[1],
-        optioText: "Cypress Testing Contact",
-        callback: (FilterResponse) => {
-          const response = FilterResponse[0];
-          const createdDate = new Date(response?.createAt);
-          const lastUpdatedDate = new Date(response?.lastUpdateAt);
-          const currentDate = new Date();
+              expect(createdDate.toDateString().slice(0, 15)).to.equal(
+                currentDate.toDateString().slice(0, 15)
+              );
 
-          expect(createdDate.toDateString().slice(0, 15)).to.equal(
-            currentDate.toDateString().slice(0, 15)
-          );
+              expect(response)
+                .to.have.property("createBy")
+                .that.is.an("object")
+                .and.has.property("name")
+                .that.is.a("string").and.not.be.empty;
 
-          expect(response)
-            .to.have.property("createBy")
-            .that.is.an("object")
-            .and.has.property("name")
-            .that.is.a("string").and.not.be.empty;
+              expect(lastUpdatedDate.toDateString().slice(0, 15)).to.equal(
+                currentDate.toDateString().slice(0, 15)
+              );
 
-          expect(lastUpdatedDate.toDateString().slice(0, 15)).to.equal(
-            currentDate.toDateString().slice(0, 15)
-          );
+              expect(response)
+                .to.have.property("lastUpdateBy")
+                .that.is.an("object")
+                .and.has.property("name")
+                .that.is.a("string").and.not.be.empty;
 
-          expect(response)
-            .to.have.property("lastUpdateBy")
-            .that.is.an("object")
-            .and.has.property("name")
-            .that.is.a("string").and.not.be.empty;
+              cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
 
-          cy.get(`[data-testid="over-ride-select-all-div"] input`).click();
+              cy.get(
+                '.MuiButtonBase-root[data-testid="delete-icon-button"]'
+              ).click();
 
-          cy.get(
-            '.MuiButtonBase-root[data-testid="delete-icon-button"]'
-          ).click();
-
-          cy.get('.MuiButtonBase-root[data-testid="delete-confirm"]').click();
-        },
-      });
-    });
+              cy.get(
+                '.MuiButtonBase-root[data-testid="delete-confirm"]'
+              ).click();
+            },
+          });
+        });
+      },
+      { wait: false }
+    );
   });
 });
