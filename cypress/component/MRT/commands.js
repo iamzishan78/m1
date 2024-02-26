@@ -317,6 +317,7 @@ Cypress.Commands.add('mrtPurchasedIconCheck', () => {
   });
 });
 
+// Can be used to search in auto complete and then select firs matched option
 Cypress.Commands.add('mrtFilterBySearch', ({ value, columnlabel, alias }) => {
   cy.interceptAndWait(['getESSimpleFilter'], () => {
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();

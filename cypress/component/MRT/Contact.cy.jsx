@@ -46,11 +46,11 @@ const pollExportJobStatus = (ldata, headers, getJobPayload, jobId, callback) => 
     body: getJobPayload,
   }).then(response => {
     const job = response.body.data.getJobsStatus.jobs.find((job) => (job._id === jobId));
-    if (job.status !== "Completed") {
+    if (job.status === 'Failed') cy.fail('The job has failed.');
+    if (job.status === 'Completed') callback(job);
+    else {
       cy.wait(5000);
       pollExportJobStatus(ldata, headers, getJobPayload, jobId, callback);
-    } else {
-      callback(job);
     }
   });
 }
@@ -144,8 +144,9 @@ describe('Contact Table', () => {
     cy.interceptAndWait(['initializeExportJob'], (alias) => {
       cy.contains('span.MuiButton-label', 'Export').click();
       cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((response) => {
-        const jobId = response.response.body.data.initializeExportJob.job._id
-        const exportJob = pollExportJobStatus(ldata, headers, getJobPayload, jobId, checkPrimaryAddress);
+        const jobId = response.response.body.data.initializeExportJob.job._id;
+        // passed a callback(checkPrimaryAddress) which is called after the job execution 
+        pollExportJobStatus(ldata, headers, getJobPayload, jobId, checkPrimaryAddress);
       });
     }, { wait: false });
   });
