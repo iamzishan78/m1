@@ -46,7 +46,7 @@ const ColumnWithLink = ({ value, link, ...rest }) => {
           rest.onClickForTestCase();
         }
         if (rest.onClick) {
-          rest.onClick();
+          rest.onClick(e);
         } else {
           history.push(link);
         }
