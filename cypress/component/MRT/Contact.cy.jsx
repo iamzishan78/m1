@@ -125,6 +125,16 @@ describe("Contact Table", () => {
         cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((res) => {
           cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
 
+          cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+          cy.wait(basic_timeouts.shorTimeout);
+          cy.get(
+            '[data-testid="sentinelStart"] + div ul li:nth-child(5)'
+          ).click();
+          cy.wait(basic_timeouts.shorTimeout);
+          cy.get(
+            '[data-testid="sentinelStart"] + div ul li:nth-child(9):eq(1)'
+          ).click();
+
           cy.mrtApplySpecificFilter({
             column: columns[1],
             optioText: "Cypress Testing Contact",
