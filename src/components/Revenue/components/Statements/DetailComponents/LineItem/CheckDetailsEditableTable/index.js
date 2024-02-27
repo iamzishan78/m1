@@ -174,7 +174,7 @@ function CheckDetailsEditableTable(props) {
     if (get(row, field) == value && type !== "date") return;
 
     set(row, field, value);
-    if (field === "property.number") {
+    if (field === "property.purchaserNumber") {
       set(row, `property.name`, "");
       set(row, `property.state`, "");
       set(row, `property.county`, "");
@@ -182,7 +182,7 @@ function CheckDetailsEditableTable(props) {
         query: GET_ES_PAGINATED_LIST,
         variables: {
           esIndex: "properties_flat",
-          search: `number:"${value}"`,
+          search: `purchaserNumber:"${value}"`,
           pagination: {
             first: 1,
             keep_alive: "1micros",
