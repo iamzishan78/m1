@@ -174,6 +174,7 @@ function CheckDetailsEditableTable(props) {
     if (get(row, field) == value && type !== "date") return;
 
     set(row, field, value);
+    // made check for purchaser prop instead of simple number to get name, state and county
     if (field === "property.purchaserNumber") {
       set(row, `property.name`, "");
       set(row, `property.state`, "");
