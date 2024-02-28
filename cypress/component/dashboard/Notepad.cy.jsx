@@ -21,7 +21,7 @@ beforeEach(() => {
 });
 
 
-  it('Get notes description from the API and compare with textarea value', () => {
+  it('Successfully retrieved notes description.', () => {
     cy.wait('@getNoteAlias', { timeout: 10000 }).then((interception) => {
       const description = interception.response.body.data.getUserNotes.description;
       cy.get('[data-testid="notes-description-text-area"] textarea').invoke('val').then((textareaText) => {
@@ -30,7 +30,7 @@ beforeEach(() => {
     });
   });
 
-  it('Edit description and call save data API', () => {
+  it('Successfully edited notes description and saved data through API.', () => {
     cy.wait(10000); 
     cy.get('[data-testid="notes-description-text-area"]').type('Edit Notes description');
     cy.get('[data-testid="notes-description-text-area"]').find('textarea').blur();  
@@ -42,7 +42,7 @@ beforeEach(() => {
     });
   });
 
-  it('Revert changes', () => {
+  it('Successfully reverted notes description changes.', () => {
     cy.wait(12000); 
     cy.get('[data-testid="notes-description-text-area"] textarea').type('{selectall}{backspace}');
     cy.get('[data-testid="notes-description-text-area"]').type('Test  Notes description');
