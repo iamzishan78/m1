@@ -147,6 +147,7 @@ const UnitMeta = {
 			header: 'Current Operator',
 		},
 
+		//added Total Unit Interest column from here 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.totalUnitInterest.keyword',

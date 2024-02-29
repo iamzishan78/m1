@@ -82,6 +82,7 @@ describe("Unit Table", () => {
     });
   });
 
+  //test case to verify Total Unit Interest column visible in grid
   it("Total Unit Interest Colummn Must Exist", () => {
     cy.get("table thead th div.Mui-TableHeadCell-Content-Wrapper")
       .contains("Total Unit Interest")
