@@ -149,6 +149,14 @@ const UnitMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.totalUnitInterest.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.totalUnitInterest,
+			id: 'shapeJson.properties.totalUnitInterest',
+			header: 'Total Unit Interest',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uUnitPricing.keyword',
 			accessorFn: row => row?.shapeJson?.properties?.uUnitPricing,
 			id: 'shapeJson.properties.uUnitPricing',

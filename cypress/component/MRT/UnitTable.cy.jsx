@@ -81,4 +81,10 @@ describe("Unit Table", () => {
       },
     });
   });
+
+  it("Total Unit Interest Colummn Must Exist", () => {
+    cy.get("table thead th div.Mui-TableHeadCell-Content-Wrapper")
+      .contains("Total Unit Interest")
+      .should("exist");
+  });
 });
