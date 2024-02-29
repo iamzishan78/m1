@@ -124,7 +124,7 @@ describe('ShapeDetailCard Component', () => {
             targetLabel={selectedShape.type}
             // deleteCustomLayer={deleteCustomLayer}
           ></ExpandableCardProvider>,
-          { spec: 'ShapeDetailCard' }
+          { spec: 'ShapeDetailCard', testCase: { layerId: selectedShape.id } }
         );
       });
     });
@@ -181,4 +181,38 @@ describe('ShapeDetailCard Component', () => {
       }
     }
   );
+
+  it('Shape Owner Recalculate Works', () => {
+    cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+      cy.get('[data-testid="shape-detail-tab-Interest Owners"]').click();
+    });
+
+    cy.get('tbody > tr').contains('Urson Steven Bacle Sr. et al').click();
+    cy.get('[data-testid="nra-field"] input').clear().type(100);
+    cy.get('[data-testid="target-offer-price-field"] input').clear().type(100);
+
+    cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+      cy.get('[data-testid="action-button"]').click();
+    });
+
+    cy.wait(5000);
+
+    cy.get('[aria-label="Toggle select all"]').eq(0).click();
+
+    cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+      cy.get('[data-testid="recalculate"]').click();
+    });
+
+    cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+      cy.get('[data-testid="action-button"]').click();
+    });
+
+    cy.get('tbody > tr').contains('Urson Steven Bacle Sr. et al').click();
+
+    cy.get('[data-testid="target-offer-price-field"]').should(
+      'not.have.class',
+      'overridden'
+    );
+    cy.get('[data-testid="nra-field"]').should('not.have.class', 'overridden');
+  });
 });

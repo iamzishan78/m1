@@ -96,7 +96,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 			action: () => {
 				const { customLayer } = Controller.getValue('customProps');
 				navController.updateState({
-					bulkUploadParcel:null,
+					bulkUploadParcel: null,
 					bulkUploadFromMap: true,
 					bulkUploadShape: {
 						id: customLayer?._id,
@@ -105,9 +105,9 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 					},
 				});
 
-				setStateNav((state)=> ({
+				setStateNav((state) => ({
 					...state,
-					bulkUploadParcel:null,
+					bulkUploadParcel: null,
 					bulkUploadFromMap: true,
 					bulkUploadShape: {
 						id: customLayer?._id,
@@ -200,6 +200,7 @@ function OwnersPerUnitToolBar({ table, tableKey }) {
 							tableKey,
 						}
 					)}
+					data-testid="recalculate"
 				>
 					Recalculate
 				</Button>

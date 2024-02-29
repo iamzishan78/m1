@@ -7,6 +7,7 @@ import { RESET_OWNERS_CALCULATED_VALUES } from 'graphQL/useMutationResetOwnersCa
 import { useLocation } from "react-router-dom";
 import { hookStateApp } from 'hookstate';
 import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'hookstate/globalStateController';
 
 
 const useStyles = makeStyles(theme => ({
@@ -36,11 +37,18 @@ function DialogContent({ rows, setRows, onClose }) {
   };
 
   const onUpdate = (row) => {
-    const slugs = location.pathname.split('/')
+    const slugs = location.pathname.split('/');
+    let layerId = slugs[slugs.length - 1];
+
+    const { testCase, cypress } = globalStateController.getValues(['testCase', 'cypress'])
+    if (cypress.spec === 'ShapeDetailCard') {
+      layerId = testCase.layerId
+    }
+
     resetOwnersCalculatedValues({
       variables: {
-        ownerIds: rows.map(row => row._id),
-        layerId: slugs[slugs.length - 1]
+        ownerIds: rows.map(row => row.contactId),
+        layerId,
       },
       refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
       awaitRefetchQueries: true,
@@ -109,6 +117,7 @@ function DialogContent({ rows, setRows, onClose }) {
           disabled={rows.length === 0}
           style={rows.length === 0 ? { backgroundColor: "grey", color: "white" } : { backgroundColor: "#00abed", color: "white" }}
           onClick={onUpdate}
+          data-testid="action-button"
         >
           Update
         </Button>
