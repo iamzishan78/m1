@@ -236,7 +236,8 @@ export default function MyWellDialog(props) {
     // Delete Document Logic goes here
     deleteMyWell({
       variables: {
-        myWellId: get(myWellData, "myWellByGlobalId.myWell._id")
+        // added proper well id
+        myWellId: platformWell?._id
       },
       refetchQueries: ["getESSimpleSearch"],
       awaitRefetchQueries: true,
