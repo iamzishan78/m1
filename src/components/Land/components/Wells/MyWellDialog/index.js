@@ -237,7 +237,7 @@ export default function MyWellDialog(props) {
     deleteMyWell({
       variables: {
         // added proper well id
-        myWellId: platformWell?._id
+        myWellId: platformWell?._id || platformWell?.tenantWellId
       },
       refetchQueries: ["getESSimpleSearch"],
       awaitRefetchQueries: true,
@@ -275,7 +275,7 @@ export default function MyWellDialog(props) {
           anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
           transformOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          <MenuItem onClick={() => setOpenDeleteConfirmDialog(true)}>
+          <MenuItem data-testid="delete-button" onClick={() => setOpenDeleteConfirmDialog(true)}>
             <ListItemIcon>
               <DeleteIcon size="medium" />
             </ListItemIcon>
@@ -312,6 +312,7 @@ export default function MyWellDialog(props) {
                   <IconButton
                     size="small"
                     component="span"
+                    data-testid="menu-icon"
                     style={{
                       background: "transparent",
                       paddingLeft: "10px",
