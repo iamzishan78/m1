@@ -118,7 +118,7 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 	return newTableSchema
 }
 
-async function fetchGridViews(client, module, tableKey) {
+async function fetchGridViews(client, module, tableKey, gridViewOverride) {
 	const user = globalStateController.getValue('user')
 	const result = await client.query({
 		variables: {
@@ -131,7 +131,10 @@ async function fetchGridViews(client, module, tableKey) {
 	const gridViewController = gridViewStateController(tableKey)
 	gridViewController?.initialize(tableKey, allGridViews);
 
-	const defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(user?._id));
+	let defaultDisplay = allGridViews?.find(obj => obj.name === gridViewOverride);
+	if (!defaultDisplay)
+		defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(user?._id));
+
 	return defaultDisplay
 }
 
@@ -185,7 +188,7 @@ const tableESStateControllerHandler = state => ({
 		let gridView = {};
 
 		if (gridViewSettings) {
-			const userDefaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey)
+			const userDefaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey, rest.gridViewOverride)
 
 			formatedGridView = formatGridViewToMRT(userDefaultDisplay)
 			gridView = {

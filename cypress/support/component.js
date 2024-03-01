@@ -30,7 +30,7 @@ import ldata from '../fixtures/ldata.json';
 import { ConnectedRouter } from "connected-react-router";
 import { history } from "store";
 
-Cypress.Commands.add('mount', (component, { disableContactBulkProgress, testCase, spec } = {}) => {
+Cypress.Commands.add('mount', (component, { disableContactBulkProgress, testCase, spec, mrtOverrideMeta } = {}) => {
   globalStateController.updateState({
     apolloClientEndpoint: ldata.url,
     x_zumo_auth: ldata.x_zumo_auth,
@@ -39,7 +39,7 @@ Cypress.Commands.add('mount', (component, { disableContactBulkProgress, testCase
     cypress: {
       spec,
       disableContactBulkProgress: disableContactBulkProgress ?? true,
-      mrtOverrideMeta: { isDefaultGridView: true, columnVirtualization: false },
+      mrtOverrideMeta: { isDefaultGridView: true, columnVirtualization: false, ...mrtOverrideMeta },
     },
     testCase,
   });
