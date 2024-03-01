@@ -41,8 +41,8 @@ function DialogContent({ rows, setRows, onClose }) {
     let layerId = slugs[slugs.length - 1];
 
     const { testCase, cypress } = globalStateController.getValues(['testCase', 'cypress'])
-    if (cypress.spec === 'ShapeDetailCard') {
-      layerId = testCase.layerId
+    if (cypress?.spec === 'ShapeDetailCard') {
+      layerId = testCase?.layerId
     }
 
     resetOwnersCalculatedValues({
