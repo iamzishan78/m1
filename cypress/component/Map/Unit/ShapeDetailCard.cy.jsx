@@ -187,11 +187,13 @@ describe('ShapeDetailCard Component', () => {
       cy.get('[data-testid="shape-detail-tab-Interest Owners"]').click();
     });
 
-    cy.get('tbody > tr').contains('Urson Steven Bacle Sr. et al').click();
+    cy.get('tbody > tr')
+      .contains('Urson Steven Bacle Sr. et al', { timeout: 5000 })
+      .click({ force: true });
     cy.get('[data-testid="nra-field"] input').clear().type(100);
     cy.get('[data-testid="target-offer-price-field"] input').clear().type(100);
 
-    cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+    cy.interceptAndWait(['updateShapeOwners'], () => {
       cy.get('[data-testid="action-button"]').click();
     });
 
@@ -203,9 +205,11 @@ describe('ShapeDetailCard Component', () => {
       cy.get('[data-testid="recalculate"]').click();
     });
 
-    cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+    cy.interceptAndWait(['resetOwnersCalculatedValues'], () => {
       cy.get('[data-testid="action-button"]').click();
     });
+
+    cy.wait(5000);
 
     cy.get('tbody > tr').contains('Urson Steven Bacle Sr. et al').click();
 
