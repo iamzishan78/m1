@@ -2,8 +2,8 @@ import React, { useState, useContext, useEffect } from "react";
 import { AppContext } from "AppContext";
 import { makeStyles } from "@material-ui/styles";
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
-import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTable";
 import { setStateIfDeepEqual } from "components/Shared/functions";
+import MRTTable from "components/MRTTable";
 
 import LastCheckDateFilter from "components/Revenue/components/Common/LastCheckDateFilter";
 import { useLazyQuery } from "@apollo/client";
@@ -89,20 +89,14 @@ export default function Properties() {
 
   // props to pass in table
   const esIndex = "properties_flat";
-  const startPaginationAt = 50;
 
   const [esFilters, ESFilters] = useState([]);
   const [propertiesCount, setPropertiesCount] = useState(0);
 
   // waypointKey should any key of Table Header which do not have customRender in schema file
-  const loadMore = { type: "infiniteScroll", height: "calc(100vh - 347px)" };
 
   const setESFilters = (newFilter) => {
     setStateIfDeepEqual(ESFilters, newFilter);
-  };
-
-  const onPropertiesCount = (count) => {
-    setPropertiesCount(count);
   };
 
   const [getUnmappedPropertyCount, { data: getUnmappedPropertyCountResult }] = useLazyQuery(GET_UNMAPPED_PROPERTY_COUNT, {
@@ -174,23 +168,7 @@ export default function Properties() {
       />
       {/* use propertyTableContainer class as container if not using infinite scroll */}
       <div className={classes.propertyTableInfContainer}>
-        <RevenuePropertiesTable
-          searchBar={false}
-          esIndex={esIndex}
-          header="Properties"
-          esFilters={esFilters}
-          targetLabel="Revenue Properties"
-          parent="RevenuePropertiesTable"
-          loading={false}
-          filterToggle={filterToggle}
-          setESFilters={setESFilters}
-          isCheckboxSticky={true}
-          onPropertiesCount={onPropertiesCount}
-          startPaginationAt={startPaginationAt}
-          revenueSearchQuery={stateApp.revenueSearchQuery}
-          actionColumns={[" ", "Tags", "Comments"]}
-          loadMore={loadMore}
-        />
+        <MRTTable name="PropertiesTable" />
       </div>
     </div>
   );
