@@ -81,7 +81,7 @@ body {
 #SubtaskAssigneePopover,
 #RevenueSummaryProduct,
 .MuiPopover-root {
-  z-index: 1301 !important;
+  z-index: 9999 !important;
 }
 
 .red {

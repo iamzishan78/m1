@@ -50,8 +50,8 @@ const ColumnWithLink = ({ value, link, ...rest }) => {
         } else {
           history.push(link);
         }
-
       }}
+      data-testid='column-with-link'
     >
       {!rest.disabled ? (
         <div className={classes.root}>
