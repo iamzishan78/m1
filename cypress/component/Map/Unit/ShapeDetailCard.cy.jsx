@@ -130,6 +130,42 @@ describe('ShapeDetailCard Component', () => {
     });
   });
 
+  it('Shape Owner Recalculate Works', () => {
+    cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+      cy.get('[data-testid="shape-detail-tab-Interest Owners"]').click();
+    });
+
+    cy.get('tbody > tr').contains('1', { timeout: 5000 }).click({ force: true });
+    cy.get('[data-testid="nra-field"] input').clear().type(100);
+    cy.get('[data-testid="target-offer-price-field"] input').clear().type(100);
+
+    cy.interceptAndWait(['updateShapeOwners'], () => {
+      cy.get('[data-testid="action-button"]').click();
+    });
+
+    cy.wait(10000);
+
+    cy.get('[aria-label="Toggle select all"]').eq(0).click();
+
+    cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+      cy.get('[data-testid="recalculate"]').click();
+    });
+
+    cy.interceptAndWait(['resetOwnersCalculatedValues'], () => {
+      cy.get('[data-testid="action-button"]').click();
+    });
+
+    cy.wait(10000);
+
+    cy.get('tbody > tr').contains('1').click({ force: true });
+
+    cy.get('[data-testid="target-offer-price-field"]').should(
+      'not.have.class',
+      'overridden'
+    );
+    cy.get('[data-testid="nra-field"]').should('not.have.class', 'overridden');
+  });
+
   it(
     'IF TX ( State=CO,County=Denver ) ELSE ( State=TX,County=Austin )',
     retries.fiveTries,
@@ -181,42 +217,4 @@ describe('ShapeDetailCard Component', () => {
       }
     }
   );
-
-  it('Shape Owner Recalculate Works', () => {
-    cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
-      cy.get('[data-testid="shape-detail-tab-Interest Owners"]').click();
-    });
-
-    cy.get('tbody > tr')
-      .contains('Urson Steven Bacle Sr. et al', { timeout: 5000 })
-      .click({ force: true });
-    cy.get('[data-testid="nra-field"] input').clear().type(100);
-    cy.get('[data-testid="target-offer-price-field"] input').clear().type(100);
-
-    cy.interceptAndWait(['updateShapeOwners'], () => {
-      cy.get('[data-testid="action-button"]').click();
-    });
-
-    cy.wait(10000);
-
-    cy.get('[aria-label="Toggle select all"]').eq(0).click();
-
-    cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
-      cy.get('[data-testid="recalculate"]').click();
-    });
-
-    cy.interceptAndWait(['resetOwnersCalculatedValues'], () => {
-      cy.get('[data-testid="action-button"]').click();
-    });
-
-    cy.wait(10000);
-
-    cy.get('tbody > tr').contains('Urson Steven Bacle Sr. et al').click({ force: true });
-
-    cy.get('[data-testid="target-offer-price-field"]').should(
-      'not.have.class',
-      'overridden'
-    );
-    cy.get('[data-testid="nra-field"]').should('not.have.class', 'overridden');
-  });
 });
