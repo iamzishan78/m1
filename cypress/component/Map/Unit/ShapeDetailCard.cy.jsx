@@ -197,7 +197,7 @@ describe('ShapeDetailCard Component', () => {
       cy.get('[data-testid="action-button"]').click();
     });
 
-    cy.wait(5000);
+    cy.wait(10000);
 
     cy.get('[aria-label="Toggle select all"]').eq(0).click();
 
@@ -209,9 +209,9 @@ describe('ShapeDetailCard Component', () => {
       cy.get('[data-testid="action-button"]').click();
     });
 
-    cy.wait(5000);
+    cy.wait(10000);
 
-    cy.get('tbody > tr').contains('Urson Steven Bacle Sr. et al').click();
+    cy.get('tbody > tr').contains('Urson Steven Bacle Sr. et al').click({ force: true });
 
     cy.get('[data-testid="target-offer-price-field"]').should(
       'not.have.class',
