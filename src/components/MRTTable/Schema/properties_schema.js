@@ -189,6 +189,7 @@ const PropertiesMeta = {
       header: 'Last Check',
       simple: true,
       type: 'date',
+      isSearchField: false,
       Cell: ({ row }) => {
         return <>{formatDate(row?.original?.lastCheck?.checkDate)}</>
       },
