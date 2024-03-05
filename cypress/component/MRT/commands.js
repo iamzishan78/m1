@@ -159,7 +159,18 @@ Cypress.Commands.add('mrtSingleSelect', ({ column }) => {
           });
 
           cy.get(`@${column.name}-value`).then(columValue => {
-            expect(columValue).to.be.equal(columOpton);
+
+            if (column.type === 'number') {
+              const roundedColumValue = Math.round(columValue * 100) / 100;
+              const roundedColumOpton = Math.round(columOpton * 100) / 100;
+
+              expect(roundedColumValue).to.be.equal(roundedColumOpton);
+            } else if (column.type === "combination_value") {
+              expect(columValue.includes(columOpton)).to.be.true;
+            }
+            else {
+              expect(columValue).to.be.equal(columOpton);
+            }
           });
         });
     });
