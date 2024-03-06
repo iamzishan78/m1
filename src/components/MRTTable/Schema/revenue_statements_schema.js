@@ -27,6 +27,7 @@ const RevenueStatementsMeta = {
     pageIndex: 0,
     pageSize: 50,
   },
+  defaultSort: { field: "updatedAt", order: "asc" },
   maxTableHeight: 'calc(100vh - 500px)',
   isInFiniteScroll: true,
   columnVirtualization: true,
