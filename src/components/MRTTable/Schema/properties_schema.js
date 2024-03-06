@@ -35,8 +35,8 @@ const PropertiesMeta = {
     },
     {
       ...CommonSchema.INITAIL_PINNED,
-      name: 'number.keyword',
-      accessorKey: 'number',
+      name: 'purchaserNumber.keyword',
+      accessorKey: 'purchaserNumber',
       header: 'Property',
       Cell: ({ row }) => {
         const history = useHistory();
@@ -124,9 +124,9 @@ const PropertiesMeta = {
     },
     {
       ...CommonSchema.COMMON_COLUMN,
-      name: 'operatorNumber.keyword',
+      name: 'number.keyword',
       accessorFn: row => row?.number,
-      id: 'operatorNumber',
+      id: 'number',
       header: 'Operator Prop #',
     },
     {
