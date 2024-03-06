@@ -738,6 +738,14 @@ export const SUMMARY_FIELDS = (contactData) => {
       type: "text",
       position: "left",
     },
+    {
+      label: "Last Updated",
+      key: "",
+      type: "text",
+      position: "right",
+      value: getLastUpdatedByValue(contactData),
+      disabled: true,
+    },
   ];
 }
 
