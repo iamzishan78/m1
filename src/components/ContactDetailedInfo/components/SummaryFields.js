@@ -14,7 +14,7 @@ import AutoCompleteWithAddNew from 'components/ContactDetailCard/components/Auto
 import { SUMMARY_FIELDS, featureFlagChanges } from "components/ContactDetailedInfo/helper";
 import { UPDATECONTACT } from "graphQL/useMutationUpdateContact";
 import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
-import { contactNewStatusOptions } from "components/ContactDetailedInfo/helper";
+import { contactStatusOptions } from "components/ContactDetailedInfo/helper";
 import { NumberFormatComma } from "components/Shared/Forms/Formatting/NumberFormatComma";
 
 const useStyles = makeStyles(() => ({
@@ -255,7 +255,7 @@ export default function SummaryFields({ contactData }) {
                             updateFieldData(field.key, value.name);
                           }}
                           fieldKey={field.key}
-                          defaultOptions={field.key === "status" ? contactNewStatusOptions : []}
+                          defaultOptions={field.key === "status" ? contactStatusOptions : []}
                           value={contactData[field.key] ?? ""}
                           variant="outlined"
                         />
