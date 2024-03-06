@@ -19,9 +19,9 @@ Cypress.Commands.add('mrtInvokeText', ({ selector, as, index = 0, rowIndex = 0 }
 
 Cypress.Commands.add(
   'mrtCompareSort',
-  ({ selector, index = 0, type = 'string', sorting }) => {
+  ({ selector, index = 0, type = 'string', sorting, responseHits }) => {
     cy.mrtInvokeText({ selector, as: 'firstText', index });
-    cy.mrtInvokeText({ selector, as: 'nthText', index, rowIndex: 10 });
+    cy.mrtInvokeText({ selector, as: 'nthText', index, rowIndex: responseHits.length > 10 ? 10 : responseHits.length - 1 });
 
     cy.get('@firstText').then(firstText => {
       cy.get('@nthText').then(secondText => {
@@ -33,10 +33,19 @@ Cypress.Commands.add(
             break;
 
           case 'date':
-          case 'number':
             if (sorting === 'ascending')
               expect(new Date(firstText)).to.be.at.most(new Date(secondText));
             else expect(new Date(firstText)).to.be.at.least(new Date(secondText));
+            break;
+
+          case 'number':
+            const firstNumber = parseFloat(firstText.replace(/,/g, '')) || 0
+            const lastNumber = parseFloat(secondText.replace(/,/g, '')) || 0
+
+            if (sorting === 'ascending')
+              cy.wrap(lastNumber).should('be.gt', firstNumber);
+            else cy.wrap(firstNumber).should('be.gt', lastNumber);
+
             break;
 
           default:
@@ -49,19 +58,24 @@ Cypress.Commands.add(
 
 Cypress.Commands.add(
   'mrtSort',
-  ({ column, apiAlias = '@getESSimpleSearchApiByIndex', sorting = false }) => {
+  ({ column, apiAlias = '@getESSimpleSearchApiByIndex', sorting = false, sortOrder }) => {
 
-    cy.interceptAndWait(['getESSimpleSearch'], () => {
+    let responseHits;
+    cy.interceptAndWait(['getESSimpleSearch'], (alias) => {
 
       cy.get('table > thead > tr > th.MuiTableCell-root.MuiTableCell-head')
         .contains(column.name)
         .click();
 
-    });
+      cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
+        responseHits = response.response.body.data.getESSimpleSearch.hits;
+      });
+
+    }, { wait: false });
 
     cy.wait(100);
 
-    let ariaLabel = `Sort by ${column.name} ascending`;
+    let ariaLabel = `Sort by ${column.name} ${sortOrder}`;
     if (sorting === 'ascending') ariaLabel = `Sorted by ${column.name} ascending`;
     if (sorting === 'descending') ariaLabel = `Sorted by ${column.name} descending`;
 
@@ -81,15 +95,16 @@ Cypress.Commands.add(
             sorting,
             index,
             ...column,
+            responseHits,
           });
         });
   }
 );
 
-Cypress.Commands.add('mrtSortColumn', ({ column }) => {
-  cy.mrtSort({ column, sorting: 'ascending' });
-  cy.mrtSort({ column, sorting: 'descending' });
-  cy.mrtSort({ column });
+Cypress.Commands.add('mrtSortColumn', ({ column, sortOrder = "ascending" }) => {
+  cy.mrtSort({ column, sorting: sortOrder });
+  cy.mrtSort({ column, sorting: sortOrder === "ascending" ? 'descending' : "ascending" });
+  cy.mrtSort({ column, sortOrder });
 });
 
 Cypress.Commands.add('mrtApplyFilter', ({ column, callback }) => {

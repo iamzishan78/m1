@@ -29,4 +29,11 @@ describe("Properties Table", () => {
     cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
     cy.mrtSingleSelect({ column: columns[1] });
   });
+
+  it("should check sorting is working fine on different columns", () => {
+    cy.wait(100);
+
+    cy.mrtSortColumn({ column: columns[0] });
+    cy.mrtSortColumn({ column: columns[1] });
+  });
 });
