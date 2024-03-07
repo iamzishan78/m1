@@ -36,25 +36,36 @@ function DialogContent({ rows, setRows, onClose }) {
     setRows(rows.filter((r) => r._id !== row._id));
   };
 
+  /**
+ * Function to handle row updates.
+ * @param {Object} row - The updated row data.
+ */
   const onUpdate = (row) => {
+    // Extracting layerId from the URL path
     const slugs = location.pathname.split('/');
     let layerId = slugs[slugs.length - 1];
 
-    const { testCase, cypress } = globalStateController.getValues(['testCase', 'cypress'])
+    // Retrieving testCase and cypress values from global state controller
+    const { testCase, cypress } = globalStateController.getValues(['testCase', 'cypress']);
+
+    // If the spec is 'ShapeDetailCard', use layerId from testCase
     if (cypress?.spec === 'ShapeDetailCard') {
-      layerId = testCase?.layerId
+      layerId = testCase?.layerId;
     }
 
+    // Reset calculated values for owners
     resetOwnersCalculatedValues({
       variables: {
-        ownerIds: rows.map(row => row.contactId),
-        layerId,
+        ownerIds: rows.map(row => row.contactId), // Extracting owner IDs from updated rows
+        layerId, // Layer ID for which the owners' calculated values need to be reset
       },
+      // Refetch queries to update UI after resetting calculated values
       refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
-      awaitRefetchQueries: true,
+      awaitRefetchQueries: true, // Wait for refetch queries to complete before updating UI
     });
 
-    hookStateApp.universalLoader.set(true)
+    // Set universal loader state to true
+    hookStateApp.universalLoader.set(true);
   };
 
   useEffect(() => {
