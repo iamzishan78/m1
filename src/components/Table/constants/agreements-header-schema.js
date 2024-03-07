@@ -312,6 +312,11 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     label: "Description",
     name: "metaDescription",
     esKey: "shapeJson.properties.metaDescription.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      display: true,
+    },
   },
   {
     name: "recordedDate",
