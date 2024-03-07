@@ -2,8 +2,25 @@
 import MRTTable from 'components/MRTTable';
 import { basic_timeouts, retries } from '../../cypressUtils/data';
 import moment from 'moment';
+import ldata from '../../fixtures/ldata.json';
+import { GET_JOBS_STATUS } from 'graphQL/useQueryGetJobStatus';
 
 let responseHits = [];
+
+// headers for job polling
+const getJobPayload = {
+  operationName: 'getJobsStatus',
+  variables: {
+    userId: '659ce7cf97935e0ffa857858',
+    showProgress: true,
+  },
+  query: GET_JOBS_STATUS.loc.source.body,
+};
+
+const headers = {
+  'Content-Type': 'application/json',
+  'X-ZUMO-AUTH': ldata.x_zumo_auth,
+};
 
 const columns = [
   {
@@ -17,12 +34,68 @@ const columns = [
   },
 ];
 
+const checkPrimaryAddress = job => {
+  cy.wrap(job.resultsPayload.datasets[0].exportResponse[0]['Primary Address'])
+    .should('exist')
+    .and('not.be.empty');
+};
+
+const checkPurchasedPhoneNumbers = job => {
+  console.log(job.resultsPayload.datasets);
+  cy.wrap(job.resultsPayload.datasets[0].exportResponse[0]['Phone 1'])
+    .should('exist')
+    .and('not.be.empty');
+  cy.wrap(job.resultsPayload.datasets[0].exportResponse[0]['Phone 2'])
+    .should('exist')
+    .and('not.be.empty');
+  cy.wrap(job.resultsPayload.datasets[0].exportResponse[0]['Phone 3'])
+    .should('exist')
+    .and('not.be.empty');
+  cy.wrap(job.resultsPayload.datasets[0].exportResponse[0]['Phone 4'])
+    .should('exist')
+    .and('not.be.empty');
+  cy.wrap(job.resultsPayload.datasets[0].exportResponse[0]['Phone 5'])
+    .should('exist')
+    .and('not.be.empty');
+};
+
+// Function to poll and check the status of an export job
+const pollExportJobStatus = (ldata, headers, getJobPayload, jobId, callback) => {
+  // Make a POST request to get jobs
+  cy.request({
+    method: 'POST',
+    url: ldata.url,
+    headers: headers,
+    body: getJobPayload,
+  }).then(response => {
+    // Find the job with the specified jobId in the response
+    const job = response.body.data.getJobsStatus.jobs.find(job => job._id === jobId);
+
+    // Check if the job status is 'Failed'
+    if (job.status === 'Failed') {
+      cy.fail('The job has failed.');
+    }
+
+    // Check if the job status is 'Completed'
+    if (job.status === 'Completed') {
+      // If completed, invoke the callback with the job details
+      callback(job);
+    } else {
+      // If the job is still in progress, wait for 5 seconds and then recursively call the function
+      cy.wait(5000);
+      pollExportJobStatus(ldata, headers, getJobPayload, jobId, callback);
+    }
+  });
+};
+
 describe('Contact Table', () => {
   beforeEach(() => {
     cy.interceptAndWait(
       ['getESSimpleSearch'],
       alias => {
-        cy.viewport(1600, 1200).mount(<MRTTable name="ContactTable" />);
+        cy.viewport(1600, 1200).mount(<MRTTable name="ContactTable" />, {
+          spec: 'ContactTableSpec',
+        });
         cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
           responseHits = response.response.body.data.getESSimpleSearch.hits;
         });
@@ -51,7 +124,6 @@ describe('Contact Table', () => {
   });
 
   it('Filters by last updated Comparison Check', retries.fiveTries, () => {
-    console.log(responseHits);
     if (responseHits?.length) {
       const placeholder = 'Filter by Last Updated';
       cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
@@ -138,4 +210,78 @@ describe('Contact Table', () => {
           .should('have.text', campaignName);
       });
   });
+
+  it(
+    'Filters by name and checks is primary address value is exporting',
+    retries.fiveTries,
+    () => {
+      cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+      cy.wait(basic_timeouts.shorTimeout);
+      cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
+      cy.wait(basic_timeouts.shorTimeout);
+      cy.get(`[data-testid="MoreVertIcon"]`).first().click();
+      cy.wait(basic_timeouts.shorTimeout);
+      cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
+      cy.wait(basic_timeouts.shorTimeout);
+      cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(9):eq(1)').click();
+      cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+      cy.mrtFilterBySearch({
+        value: 'CLARK (Cypress do not delete)',
+        columnlabel: 'Name',
+        alias: 'Name',
+      });
+      cy.get('[data-testid="download-csv"]').click();
+
+      cy.interceptAndWait(
+        ['initializeExportJob'],
+        alias => {
+          cy.contains('span.MuiButton-label', 'Export').click();
+          cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
+            const jobId = response.response.body.data.initializeExportJob.job._id;
+            // passed a callback(checkPrimaryAddress) which is called after the job execution
+            pollExportJobStatus(
+              ldata,
+              headers,
+              getJobPayload,
+              jobId,
+              checkPrimaryAddress
+            );
+          });
+        },
+        { wait: false }
+      );
+    }
+  );
+
+  it(
+    'Filters by name and verifies purchased phone 1-5 are exporting',
+    retries.fiveTries,
+    () => {
+      cy.mrtFilterBySearch({
+        value: 'CLARK (Cypress do not delete)',
+        columnlabel: 'Name',
+        alias: 'Name',
+      });
+      cy.get('[data-testid="download-csv"]').click();
+
+      cy.interceptAndWait(
+        ['initializeExportJob'],
+        alias => {
+          cy.contains('span.MuiButton-label', 'Export').click();
+          cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
+            const jobId = response.response.body.data.initializeExportJob.job._id;
+            // passed a callback(checkPurchasedPhoneNumbers) which is called after the job execution
+            pollExportJobStatus(
+              ldata,
+              headers,
+              getJobPayload,
+              jobId,
+              checkPurchasedPhoneNumbers
+            );
+          });
+        },
+        { wait: false }
+      );
+    }
+  );
 });

@@ -170,6 +170,7 @@ export function ExportData({ classes, _selectedRows, search, filters, sort, tota
 			color="secondary"
 			startIcon={<CloudDownloadIcon color="white" />}
 			className={classes.selectTopBarButtons}
+			data-testid="export-contact-and-purchse-icon-button"
 			onClick={() => openSideExportDialog({ search, _selectedRows, filters, sort, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType })}
 		>
 			Export
