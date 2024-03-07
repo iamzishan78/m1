@@ -12,7 +12,7 @@ module.exports = defineConfig({
 
   env: {
     // localhost, m1production, m1staging, frontier
-    TENENT: 'localhost'
+    TENENT: 'm1staging'
   },
 
   e2e: {
