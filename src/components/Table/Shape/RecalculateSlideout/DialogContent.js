@@ -7,6 +7,7 @@ import { RESET_OWNERS_CALCULATED_VALUES } from 'graphQL/useMutationResetOwnersCa
 import { useLocation } from "react-router-dom";
 import { hookStateApp } from 'hookstate';
 import { tableGlobalController } from 'hookstate/tableController';
+import { globalStateController } from 'hookstate/globalStateController';
 
 
 const useStyles = makeStyles(theme => ({
@@ -35,18 +36,36 @@ function DialogContent({ rows, setRows, onClose }) {
     setRows(rows.filter((r) => r._id !== row._id));
   };
 
+  /**
+ * Function to handle row updates.
+ * @param {Object} row - The updated row data.
+ */
   const onUpdate = (row) => {
-    const slugs = location.pathname.split('/')
+    // Extracting layerId from the URL path
+    const slugs = location.pathname.split('/');
+    let layerId = slugs[slugs.length - 1];
+
+    // Retrieving testCase and cypress values from global state controller
+    const { testCase, cypress } = globalStateController.getValues(['testCase', 'cypress']);
+
+    // If the spec is 'ShapeDetailCard', use layerId from testCase
+    if (cypress?.spec === 'ShapeDetailCard') {
+      layerId = testCase?.layerId;
+    }
+
+    // Reset calculated values for owners
     resetOwnersCalculatedValues({
       variables: {
-        ownerIds: rows.map(row => row._id),
-        layerId: slugs[slugs.length - 1]
+        ownerIds: rows.map(row => row.contactId), // Extracting owner IDs from updated rows
+        layerId, // Layer ID for which the owners' calculated values need to be reset
       },
+      // Refetch queries to update UI after resetting calculated values
       refetchQueries: ["getESPaginatedList", "getESSimpleSearch", "getESFilterList", "getCustomLayer"],
-      awaitRefetchQueries: true,
+      awaitRefetchQueries: true, // Wait for refetch queries to complete before updating UI
     });
 
-    hookStateApp.universalLoader.set(true)
+    // Set universal loader state to true
+    hookStateApp.universalLoader.set(true);
   };
 
   useEffect(() => {
@@ -109,6 +128,7 @@ function DialogContent({ rows, setRows, onClose }) {
           disabled={rows.length === 0}
           style={rows.length === 0 ? { backgroundColor: "grey", color: "white" } : { backgroundColor: "#00abed", color: "white" }}
           onClick={onUpdate}
+          data-testid="action-button"
         >
           Update
         </Button>

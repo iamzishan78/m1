@@ -191,6 +191,7 @@ function AddWellInterestDialog({ handleWellDetail, platformWell, showSearch }) {
                   {...params}
                   required
                   variant="outlined"
+                  data-testid={"well-search-field"}
                   label="Search for a well by name or API"
                   InputLabelProps={{ shrink: true }}
                   onChange={(event) => {
