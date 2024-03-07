@@ -119,7 +119,10 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 }
 
 async function fetchGridViews(client, module, tableKey, gridViewOverride) {
-	const user = globalStateController.getValue('user')
+	// Retrieve the current user's information from a global state controller.
+	const user = globalStateController.getValue('user');
+
+	// Execute a GraphQL query to fetch grid views for the specified module and user ID.
 	const result = await client.query({
 		variables: {
 			module,
@@ -127,15 +130,23 @@ async function fetchGridViews(client, module, tableKey, gridViewOverride) {
 		},
 		query: GET_GRID_VIEWS,
 	});
-	const allGridViews = result?.data?.getGridViews?.gridViews
-	const gridViewController = gridViewStateController(tableKey)
+
+	// Extract the grid views from the query result.
+	const allGridViews = result?.data?.getGridViews?.gridViews;
+
+	// Initialize the grid view state controller with the fetched grid views for the specified table.
+	const gridViewController = gridViewStateController(tableKey);
 	gridViewController?.initialize(tableKey, allGridViews);
 
+	// Attempt to find a grid view that matches the override name, if provided.
 	let defaultDisplay = allGridViews?.find(obj => obj.name === gridViewOverride);
+
+	// If no override is found or provided, attempt to find a default grid view for the user.
 	if (!defaultDisplay)
 		defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(user?._id));
 
-	return defaultDisplay
+	// Return the determined default or overridden grid view configuration.
+	return defaultDisplay;
 }
 
 const tableESStateControllerHandler = state => ({
@@ -188,14 +199,21 @@ const tableESStateControllerHandler = state => ({
 		let gridView = {};
 
 		if (gridViewSettings) {
-			const userDefaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey, rest.gridViewOverride)
+			// Fetch user-specific or default grid views based on provided settings and overrides.
+			const userDefaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey, rest.gridViewOverride);
 
-			formatedGridView = formatGridViewToMRT(userDefaultDisplay)
+			// Format the fetched grid view for use with a specific grid view library or framework, assumed to be Material-UI's React Table (MRT).
+			formatedGridView = formatGridViewToMRT(userDefaultDisplay);
+
+			// Setup the gridView object with the selected grid view configuration and some flags for UI control.
 			gridView = {
-				selectedGridView: isDefaultGridView || !userDefaultDisplay ? gridViewSettings.defaultView : userDefaultDisplay,
+				selectedGridView:
+					isDefaultGridView || !userDefaultDisplay
+						? gridViewSettings.defaultView
+						: userDefaultDisplay,
 				showViewModal: false,
 				showSaveAsNew: false,
-			}
+			};
 		}
 
 		const {
