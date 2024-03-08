@@ -15,6 +15,7 @@ import ProdCard from "components/Dashboard/components/ProdCard";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import QuickActionPanel from "components/Land/components/QuickActionPanel";
 import { analyticsManagementRoutes } from "utils/data";
+import { RevenuePropertyDetails } from "components/Revenue/components";
 
 const Components = {
   Land: LandAnalytics,
@@ -23,6 +24,7 @@ const Components = {
   RigsCard: RigsCard,
   PermitsCard: PermitsCard,
   ProdCard: ProdCard,
+  RevenuePropertyDetails 
 };
 
 export default function Analytics() {
@@ -31,13 +33,20 @@ export default function Analytics() {
   const dispatch = useDispatch();
   const [allowedPaths, setAllowablePaths] = useState({});
   const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
+  const [isDetailView, setDetailView] = useState(false)
+  const [propertyDetailRoute,  setpropertyDetailPath] = useState(analyticsManagementRoutes.REVENUE_PROPERTY_DETAILS)
 
   useEffect(() => {
-    const option = Object.values(analyticsManagementRoutes).find((item) => {
+    let option = Object.values(analyticsManagementRoutes).find((item) => {
       return item.link === location.pathname;
     });
+    if (location.pathname.includes('/property/details/')) {
+      dispatch(setActiveModule(propertyDetailRoute)); 
+      setDetailView(true)
+    } 
     if (option) {
       dispatch(setActiveModule(option));
+      setDetailView(false)
     }
   }, [location.pathname]);
 
@@ -82,7 +91,7 @@ export default function Analytics() {
         >
           {Object.keys(allowedPaths).map((option) => (
             <Switch>
-              <Route exact path={allowedPaths[option].link} component={Components[allowedPaths[option].component]} />
+              <Route exact path={isDetailView ? propertyDetailRoute.link : allowedPaths[option].link} component={Components[isDetailView ? propertyDetailRoute.component : allowedPaths[option].component]} />
             </Switch>
           ))}
         </QuickActionPanel>
