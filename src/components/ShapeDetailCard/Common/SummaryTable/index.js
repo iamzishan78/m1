@@ -161,24 +161,43 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
   }, [properties, metaData]);
 
   useEffect(() => {
+    // Check if the search input is not empty
     if (search) {
+      // Retrieve custom meta fields using the provided function
       const customMetaData = getCustomMetaFields(properties, metaData);
+
+      // Concatenate table data with custom data array from properties
       let td = tableData.concat(properties?.custom_data_arr || []);
+
+      // Concatenate table data with custom meta data
       td = tableData.concat(customMetaData);
+
+      // Filter the table data based on the search input
       const newTableData = td.filter(
         (row) =>
+          // Check if row key contains the search input
           (row.key && typeof row.key === 'string' && row.key.toLowerCase().includes(search.toLowerCase())) ||
+          // Check if row label contains the search input
           (row.label && typeof row.label === 'string' && row.label.toLowerCase().includes(search.toLowerCase())) ||
+          // Check if temporary table properties contain the search input
           (tableTempProperties[row.key] &&
             typeof tableTempProperties[row.key] === 'string' &&
             tableTempProperties[row.key].toLowerCase().includes(search.toLowerCase()))
       );
 
+      // Set the filtered table data
       setFilteredTableData(newTableData);
     } else {
+      // If search input is empty, retrieve custom meta fields
       const customMetaData = getCustomMetaFields(properties, metaData);
+
+      // Concatenate table data with custom data array from properties
       let td = tableData.concat(properties?.custom_data_arr || []);
+
+      // Concatenate table data with custom meta data
       td = tableData.concat(customMetaData);
+
+      // Set the filtered table data to the concatenated table data
       setFilteredTableData(td);
     }
   }, [search, tableData]);
