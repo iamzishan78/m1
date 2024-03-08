@@ -150,19 +150,43 @@ const RevenueStatementHeadCells = [
         },
     },
     {
-        name: "ownerTax", label: "Owner Tax Amt", esKey: 'ownerTax', options: { sort: true, filter: true }
+        name: "ownerTax",
+        label: "Owner Tax Amt",
+        esKey: 'ownerTax',
+        options: {
+            sort: true, filter: true,
+            customRender: (value) => {
+                return value ? <p>{value ? vf_number(value, 2) : ""}</p> : <p style={{ color: "#898989b0" }}>--</p>;
+            },
+        },
     },
     {
         name: "taxType", label: "Tax Type", esKey: 'taxType.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "ownerDeducts", label: "Deduct Amt", esKey: 'ownerDeducts', options: { sort: true, filter: true }
+        name: "ownerDeducts",
+        label: "Deduct Amt",
+        esKey: 'ownerDeducts',
+        options: {
+            sort: true, filter: true,
+            customRender: (value) => {
+                return value ? <p>{value ? vf_number(value, 2) : ""}</p> : <p style={{ color: "#898989b0" }}>--</p>;
+            },
+        },
     },
     {
         name: "deductType", label: "Deduct Cd", esKey: 'deductType.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "netOwnerValue", label: "Owner Net Rev", esKey: 'netOwnerValue', options: { sort: true, filter: true }
+        name: "netOwnerValue",
+        label: "Owner Net Rev",
+        esKey: 'netOwnerValue',
+        options: {
+            sort: true, filter: true,
+            customRender: (value) => {
+                return value ? <p>{value ? vf_number(value, 2) : ""}</p> : <p style={{ color: "#898989b0" }}>--</p>;
+            },
+        },
     },
     {
         name: "propertyId", options: { filter: false, display: false, sort: false, viewColumns: false, }
