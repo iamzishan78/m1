@@ -54,6 +54,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
           e.persist();
           onChange(e, data, type);
         }}
+        data-testid={`data-field-${data.label}`}
         onKeyDown={(e) => {
           if (e.keyCode === 13) {
             e.stopPropagation();
@@ -338,6 +339,7 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
       <TableBody>
         {filteredTableData.map((data, index) => (
           <>
+            {console.log('data', data)}
             <TableRow className={index % 2 === 0 ? classes.rowGrey : classes.rowWhite}>
               <TableCell
                 className={classes.cell1}
@@ -573,6 +575,7 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
                     )}
                     {data.type === "custom" && (
                       <>
+                        {console.log('data 2', data)}
                         {["qualifier", "reviewer"].includes(data.key) && (
                           <UserList
                             id={data.key + "Input"}
