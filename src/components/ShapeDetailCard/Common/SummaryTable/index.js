@@ -162,17 +162,24 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
 
   useEffect(() => {
     if (search) {
-      const td = tableData.concat(properties?.custom_data_arr || []);
+      const customMetaData = getCustomMetaFields(properties, metaData);
+      let td = tableData.concat(properties?.custom_data_arr || []);
+      td = tableData.concat(customMetaData);
       const newTableData = td.filter(
         (row) =>
-          row.key?.toLowerCase()?.includes(search.toLowerCase()) ||
-          row.label?.toLowerCase()?.includes(search.toLowerCase()) ||
-          tableTempProperties[row.key]?.toLowerCase()?.includes(search.toLowerCase())
+          (row.key && typeof row.key === 'string' && row.key.toLowerCase().includes(search.toLowerCase())) ||
+          (row.label && typeof row.label === 'string' && row.label.toLowerCase().includes(search.toLowerCase())) ||
+          (tableTempProperties[row.key] &&
+            typeof tableTempProperties[row.key] === 'string' &&
+            tableTempProperties[row.key].toLowerCase().includes(search.toLowerCase()))
       );
 
       setFilteredTableData(newTableData);
     } else {
-      setFilteredTableData(tableData.concat(properties?.custom_data_arr || []));
+      const customMetaData = getCustomMetaFields(properties, metaData);
+      let td = tableData.concat(properties?.custom_data_arr || []);
+      td = tableData.concat(customMetaData);
+      setFilteredTableData(td);
     }
   }, [search, tableData]);
 

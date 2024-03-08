@@ -80,7 +80,7 @@ export default function UnitSummary(props) {
         return (props.properties?.state === "TX" || props.properties?.originalProperties?.State === "TX") ?
             unitDefaultData.filter((data) => data.showStateTX !== false) :
             unitDefaultData.filter((data) => data.showStateTX !== true)
-    }, [props.properties]);
+    }, [props.properties?.state]);
 
     return (
         <>
