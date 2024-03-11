@@ -89,11 +89,11 @@ export default function Analytics() {
           activeModule={activeModule}
           actions={sidePanelOptions}
         >
-          {Object.keys(allowedPaths).map((option) => (
-            <Switch>
-              <Route exact path={isDetailView ? propertyDetailRoute.link : allowedPaths[option].link} component={Components[isDetailView ? propertyDetailRoute.component : allowedPaths[option].component]} />
-            </Switch>
-          ))}
+          {Object.keys(allowedPaths).map((option, index) => {
+          return(<Switch>
+              <Route exact path={(isDetailView && index === 1) ? propertyDetailRoute?.link : allowedPaths[option].link} component={Components[isDetailView ? propertyDetailRoute.component : allowedPaths[option].component]} />
+            </Switch>)
+          })}
         </QuickActionPanel>
       </FeatureFlag>
     </>

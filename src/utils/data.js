@@ -244,6 +244,7 @@ export const analyticsManagementRoutes = {
     search: false,
     isDefault: false,
     hideSearch: false,
+    isExcluded: true 
   },
 };
 
