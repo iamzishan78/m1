@@ -234,6 +234,17 @@ export const analyticsManagementRoutes = {
     isDefault: true,
     hideSearch: true,
   },
+  REVENUE_PROPERTY_DETAILS: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Revenue",
+    link: "/analytics/property/details/:id",
+    component: "RevenuePropertyDetails",
+    filterValue: "Prospect",
+    value: "RevenuePropertyDetails",
+    search: false,
+    isDefault: false,
+    hideSearch: false,
+  },
 };
 
 export const contactsAnalyticsCards = [
