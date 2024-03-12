@@ -21,6 +21,7 @@ describe('AnalyticsSection', () => {
       cy.get(`tr.MuiTableRow-root[data-index="${0}"] > td.MuiTableCell-root`)
       .eq(2)
       .find('div > div > a').click();
+      cy.wait(1000);
       cy.mount(<RevenuePropertyDetails />);
     });
 
