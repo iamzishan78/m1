@@ -386,10 +386,12 @@ const Login = (props) => {
 
     if (!stateApp.myMSALObj) {
       myMSALObj = new msal.PublicClientApplication(msalConfig(tenant));
+      const apolloClientEndpoint = isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint;
+      globalStateController.updateState({ apolloClientEndpoint })
       setStateApp({
         ...stateApp,
         myMSALObj,
-        apolloClientEndpoint: isDev && tenantName === 'localhost' ? apolloClientEndpointDev : tenant.apolloClientEndpoint,
+        apolloClientEndpoint,
         graphqlScope: tenant.graphqlScope,
       });
     }

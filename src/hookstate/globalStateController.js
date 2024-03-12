@@ -25,8 +25,7 @@ const globalStateControllerHandler = () => ({
 				[type]: value,
 			});
 	},
-	setBypassLogin: tenant =>
-		globalState.bypassLogin.set(bypassTenants.includes(tenant?.toLowerCase?.())),
+	setBypassLogin: tenant => globalState.bypassLogin.set(bypassTenants.includes(tenant)),
 });
 
 export const globalStateController = {
