@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { tableController } from 'hookstate/tableController';
 import useHandleQuery from './useHandleQuery';
 import ToolbarActions from '../Common/ToolbarActions';
+import ToolbarInternalActions from '../Common/ToolbarInternalActions';
 import { tableESSimpleFilterModeOtions } from '../utils/data';
 import _ from 'lodash';
 
@@ -53,6 +54,7 @@ const useTableESSimple = tableKey => {
 			showAlertBanner: tableStateValues?.isError,
 			showProgressBars: tableStateValues?.isFetching,
 			rowSelection: tableStateValues?.rowSelection,
+			density: tableStateValues?.density,
 		},
 		tableProps: {
 			initialState: {
@@ -108,6 +110,7 @@ const useTableESSimple = tableKey => {
 			enableStickyFooter: true,
 			enableSorting: tableStateValues?.grouping.length === 0,
 			manualSorting: true,
+			enableHiding: tableStateValues?.enableHiding,
 			manualFiltering: true,
 			onGlobalFilterChange: globalFilter => {
 				Controller.setGlobalFilter(globalFilter);
@@ -173,6 +176,7 @@ const useTableESSimple = tableKey => {
 							id: idValue,
 							value: item.value,
 							type: item?.type,
+							columnType: column.type,
 						};
 						result.push(newItem);
 					});
@@ -184,11 +188,13 @@ const useTableESSimple = tableKey => {
 					const { mode, isKeyword } = tableState?.filterModes?.get({ noproxy: true })?.[filter.id] || {};
 
 					let { value } = filter;
-					const { type } = filter;
-					const { oRFilter } = filter;
-					if (mode && typeof filter.value === 'string') value = isKeyword ? filter.value : +filter.value || 0;
+					const { type, oRFilter, columnType } = filter;
+					if (mode && typeof filter.value === 'string' && columnType !== 'date')
+						value = isKeyword ? filter.value : +filter.value || 0;
 					if (mode && tableESSimpleFilterModeOtions.inclusive.includes(mode))
 						value = filter.value.map(value => +value || 0);
+					if (columnType === 'date')
+						value = filter.value
 
 					Controller.setFilter({
 						field: filter.id,
@@ -200,6 +206,7 @@ const useTableESSimple = tableKey => {
 							type: 'advanced',
 							searchType: mode,
 							isKeyword,
+							columnType,
 						}),
 					});
 				});
@@ -274,6 +281,15 @@ const useTableESSimple = tableKey => {
 				) : (
 					<ToolbarActions {...props} tableKey={tableKey} />
 				),
+			renderToolbarInternalActions: tableStateValues.toolbarInternalActions
+				? ({ table }) => (
+					<ToolbarInternalActions
+						table={table}
+						toolbarInternalActions={tableStateValues.toolbarInternalActions}
+						enableHiding={tableStateValues.enableHiding}
+					/>
+				)
+				: undefined,
 		},
 	};
 };

@@ -76,7 +76,8 @@ export const openSideDialog = async (
 		client,
 		table,
 		tableKey,
-		props = {}
+		props = {},
+		selectedCampaign,
 	}
 ) => {
 	let showRows = selectedRows;
@@ -105,7 +106,8 @@ export const openSideDialog = async (
 			type,
 			selectedRows: showRows,
 			tableKey,
-			...props
+			...props,
+			selectedCampaign,
 		},
 	});
 
@@ -127,7 +129,8 @@ export function BulkUpdate({
 	total,
 	client,
 	table,
-	tableKey
+	tableKey,
+	selectedCampaign,
 }) {
 	return (
 		<Button
@@ -149,10 +152,12 @@ export function BulkUpdate({
 						total,
 						client,
 						table,
-						tableKey
+						tableKey,
+						selectedCampaign
 					}
 				)
 			}
+			data-testid="bulk-update"
 		>
 			Bulk Update
 		</Button>
@@ -165,6 +170,7 @@ export function ExportData({ classes, _selectedRows, search, filters, sort, tota
 			color="secondary"
 			startIcon={<CloudDownloadIcon color="white" />}
 			className={classes.selectTopBarButtons}
+			data-testid="export-contact-and-purchse-icon-button"
 			onClick={() => openSideExportDialog({ search, _selectedRows, filters, sort, total, isAllRowsSelected, esIndex, table, tableKey, type, contactIdKey, shapeType })}
 		>
 			Export

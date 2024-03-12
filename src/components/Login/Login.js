@@ -316,6 +316,7 @@ const Login = (props) => {
 
       if (!stateApp.myMSALObj) {
         myMSALObj = new msal.PublicClientApplication(msalConfig(tenant));
+        globalStateController.updateState({ apolloClientEndpoint: tenant.apolloClientEndpoint })
         setStateApp({
           ...stateApp,
           myMSALObj,
@@ -652,7 +653,7 @@ const Login = (props) => {
           <SignInCard
             ready={loadingSigInButton}
             handleAADSignIn={handleAADSignIn}
-            tenant={!stateApp.myMSALObj ? queryString.parse(props.location.search).tenant : undefined}
+            tenant={!stateApp.myMSALObj ? queryString.parse(props?.location?.search).tenant : undefined}
           />
         }
       </div>

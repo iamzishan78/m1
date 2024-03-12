@@ -41,8 +41,9 @@ function AllDialogs(props) {
 	const deleteFunc = async dataToDelete => {
 		Loader.createToast('deletion', 'Deletion in Progress');
 		const user = globalStateController.getValue('user')
+		const testCase = globalStateController.getValue('testCase')
 		removeCommonDelete({
-			variables: { tableKey, deletedData: dataToDelete, userId: user?.mongoId, ESVariables: rest?.ESVariables, isSelectAll: rest?.isSelectAll }
+			variables: { tableKey, deletedData: dataToDelete, userId: user?.mongoId, ESVariables: rest?.ESVariables, isSelectAll: rest?.isSelectAll, cypressDelete: testCase?.cypressDelete }
 		}).then(
 			res => {
 				if (res?.data?.gridGenericRemove) {
@@ -68,7 +69,7 @@ function AllDialogs(props) {
 			)}
 			{type === "comments" && (
 				<Dialog open={!!type} onClose={handleCloseDialog} fullWidth={true}>
-					<CommentDialog {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck}/>
+					<CommentDialog {...rest} hideSharedCommentCheck={props.hideSharedCommentCheck} />
 				</Dialog>
 			)}
 
@@ -81,6 +82,7 @@ function AllDialogs(props) {
 					rows={rest?.selectedRows}
 					setSelectedRow={updateRows}
 					setRows={updateRows}
+					selectedCampaign={rest?.selectedCampaign}
 				/>
 			)}
 

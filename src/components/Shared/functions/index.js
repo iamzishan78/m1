@@ -159,3 +159,11 @@ export const formatDate = (date, simple = true) => {
   if (!date) return '--'
   return moment.parseZone(new Date(date)).format(simple ? 'MM/DD/YY' : 'MMMM D, YYYY');
 }
+
+export const isValidDate = (dateString) => {
+  // Attempt to create a new Date object
+  const date = new Date(dateString);
+
+  // Check if the date is a valid date and the input format is recognized
+  return !isNaN(date.getTime());
+}

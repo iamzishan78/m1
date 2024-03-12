@@ -20,7 +20,6 @@ import ConvertContact from "components/Shared/svgIcons/convert_contact";
 import LayerIcon from "@material-ui/icons/Layers";
 import FilterAltIcon from "../../../Shared/svgIcons/FilterAltIcon";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/styles";
 
 import { AppContext } from "AppContext";
 import { NavigationContext, DRAWING_MODES } from "components/Navigation/NavigationContext";
@@ -48,39 +47,36 @@ import ShapeTypeMenu from "./ShapeTypeMenu";
 import { jobController } from "hookstate/jobStateController";
 
 
-const useStyles = makeStyles({
-  selectedType: {
-    borderBottom: "4px solid #01B0F0",
-    display: "inline",
-    cursor: "pointer",
-  },
-  unSelectedType: {
-    display: "inline",
-    color: "#827F7F",
-    cursor: "pointer",
-  },
-  inputField: {
-    marginTop: '10px',
-    padding: '10px',
-    '& .MuiInputLabel-outlined': {
-      // transform: 'translate(14px, 20px) scale(1)',
-    }
-  },
-  dialogFooter: {
-    padding: '10px',
-    justifyContent: 'end',
-    display: 'flex'
-  }
-});
+// const useStyles = makeStyles({
+//   selectedType: {
+//     borderBottom: "4px solid #01B0F0",
+//     display: "inline",
+//     cursor: "pointer",
+//   },
+//   unSelectedType: {
+//     display: "inline",
+//     color: "#827F7F",
+//     cursor: "pointer",
+//   },
+//   inputField: {
+//     marginTop: '10px',
+//     padding: '10px',
+//     '& .MuiInputLabel-outlined': {
+//       // transform: 'translate(14px, 20px) scale(1)',
+//     }
+//   },
+//   dialogFooter: {
+//     padding: '10px',
+//     justifyContent: 'end',
+//     display: 'flex'
+//   }
+// });
 
 
 const ShapeActionsPopup = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { classes, children, toggleSpatialDataCard, showSpatialDataCard, popupCloseAction } = props;
-  const [selectedType, setSelectedType] = useState("new");
-  const [selectedShapeType, setSelectedShapeType] = useState();
-  const shapeActionClasses = useStyles();
   const { mapGridCardActivated } = useSelector(({ MapGridCard }) => MapGridCard);
   const [stateApp, setStateApp] = useContext(AppContext);
   const [, setStateNav] = useContext(NavigationContext);
@@ -391,8 +387,12 @@ const ShapeActionsPopup = (props) => {
     if (!abstractShape.properties.State && !abstractShape.properties.StateAbbreviation) {
       const featuresList = stateApp.map?.getSource("abstract_geo_source")._data.features;
       const foundFeatures = featuresList.filter((feature) => {
-        var intersection = turf.intersect(abstractShape, feature);
-        return !!intersection;
+        try {
+          var intersection = turf.intersect(abstractShape, feature);
+          return !!intersection;
+        } catch (err) {
+          return false;
+        }
       });
       const result = foundFeatures.reduce(
         function (result, currentFeature) {
@@ -471,6 +471,13 @@ const ShapeActionsPopup = (props) => {
 
     upsertCustomLayer({
       variables: { customLayer: customLayerData },
+    }).then(result => {
+      const layerId = result.data.upsertCustomLayer.customLayer._id;
+
+      if (layerId) {
+        let newPath = `/map/parcels/${layerId}`
+        history.location.pathname !== newPath && history.replace(newPath)
+      }
     });
 
     let layers = [...stateApp.customLayers];
@@ -478,19 +485,6 @@ const ShapeActionsPopup = (props) => {
 
     setStateApp((state) => ({
       ...state,
-      selectedParcel: {
-        originalProperties: abstractShape.properties.State === "TX" ? abstractShape.properties : [],
-        sdType: "parcel",
-        shapeLabel: parcelName,
-        projectName: "",
-        sdNotes: "",
-        sdGrossAcres: "",
-        shapeArea: calculateLandArea(abstractShape),
-        // needs to be a string to be consistent with queried data
-        shapeCenter: JSON.stringify(calculateShapeCenter(abstractShape.geometry)),
-        shapeLabelLayer: "",
-        id: featureId,
-      },
       customLayers: layers,
     }));
     popupCloseAction();
@@ -693,10 +687,12 @@ const ShapeActionsPopup = (props) => {
     }
   };
 
-  const enableEditOnly = stateApp.featureToEdit?.layer?.id === "parcel" || shapeTypeLayers.includes(stateApp.featureToEdit?.layer?.id);
+  const layerType = stateApp.featureToEdit?.properties?.layerType || stateApp.featureToEdit?.properties?.sdType;
+
+  const enableEditOnly = shapeTypeLayers.includes(layerType);
   const isAoi = stateApp.selectedAoi?.layer?.id === "interest";
   const isCreateParcelMenu = Boolean(anchorEl);
-  const isShapeResizeMode = stateApp.featureToEdit?.layer?.id === "parcel" || shapeTypeLayers.includes(stateApp.featureToEdit?.layer?.id);
+  const isShapeResizeMode = shapeTypeLayers.includes(layerType);
 
   const confirmShapeEditing = () => {
     let { featureToEdit, currentFeature } = stateApp;

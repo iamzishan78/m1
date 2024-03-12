@@ -35,7 +35,8 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		'filters',
 		'defaultFilters',
 		'isAllRowsSelected',
-		'isSubSetSelect'
+		'isSubSetSelect',
+		'customProps'
 	]);
 	const tableStateValues = tableState.stateValues;
 
@@ -55,7 +56,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 
 		let filteredTableSchema = tableStateValues?.TableSchema.filter(obj => {
 			const accessorKey = obj?.accessorKey || obj?.id;
-			return filteredColumns[accessorKey] === true && !obj.hasOwnProperty('enableColumnFilter');
+			return (filteredColumns[accessorKey] === true && !obj.hasOwnProperty('enableColumnFilter')) || obj?.isHiddenFieldExport;
 		});
 
 		filteredTableSchema = filteredTableSchema?.map(({ name, header, accessorKey, id, isExport }) => ({
@@ -85,6 +86,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 					search,
 					filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters, ...excludedIds],
 					esIndex: tableStateValues.esIndex,
+					extraExportValues: tableStateValues?.customProps?.exportValues,
 					columns: filteredTableSchema,
 					sortOrder,
 					defaultSort: tableStateValues?.defaultSort,
@@ -120,7 +122,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 				>
 					Cancel
 				</Button>
-				<Button id="deleteButton" onClick={handleExport} color="secondary">
+				<Button id="deleteButton" data-testid="export-confirm" onClick={handleExport} color="secondary">
 					Export
 				</Button>
 			</DialogActions>

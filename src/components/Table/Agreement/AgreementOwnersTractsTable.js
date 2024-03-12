@@ -87,10 +87,10 @@ function AgreementOwnersTractsTable(props) {
   };
 
   const layerType = useMemo(() => {
-    let layerType = _.upperFirst(props.customLayer.layer)
+    let layerType = _.upperFirst(props?.customLayer?.layer)
     layerType = layerType === 'Surface' ? 'Surface/ROW' : layerType
     return layerType
-  }, [props.customLayer.layer])
+  }, [props?.customLayer?.layer])
 
   const [getMetaData, { data: metaDataRes }] = useLazyQuery(GET_META_DATA);
 
@@ -108,17 +108,17 @@ function AgreementOwnersTractsTable(props) {
     const { metaData } = metaDataRes.getMetaData
     const interestMetaData = metaData.filter(data => data.esKey === 'custom_data.interest_type')[0]
 
-    return interestMetaData.mapping.reduce((acc, val) => ({ ...acc, [val.from]: val.to }), {})
+    return interestMetaData?.mapping?.reduce((acc, val) => ({ ...acc, [val.from]: val.to }), {})
   }, [metaDataRes])
 
   useEffect(() => {
-    if (props.customLayer?._id && interestMapping && layerType)
+    if ((props.customLayer?._id && interestMapping && layerType) || props.isTestcase)
       props.setTableMeta({
         shapeType: props.shapeType,
         addableName: "Tract",
         searchFields: ["contact.entityDetail.name", "_all"],
-        filters: [{ field: "shape._id", value: props.customLayer._id }],
-        TableHeader: getTableHeader({ interestMapping, layerType }),
+        filters: [...(!props.isTestcase ? [{ field: "shape._id", value: props.customLayer._id }] : [])],
+        TableHeader: getTableHeader({ interestMapping, layerType, isTestcase: props.isTestcase }),
         esIndex: "shapeowners_flat",
         startPaginationAt: 25,
         formatHits

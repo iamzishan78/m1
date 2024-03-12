@@ -149,7 +149,7 @@ const SignInCard = (props) => {
   const classes = useStyles();
 
   const history = useHistory()
-  const query = queryString.parse(history.location.search)
+  const query = queryString.parse(history?.location?.search)
 
   const [tenant, setTenant] = useState(props.tenant || query.tenant ? props.tenant || query.tenant : "");
   const [error, setError] = useState(null);

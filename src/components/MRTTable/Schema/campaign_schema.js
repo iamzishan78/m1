@@ -84,7 +84,7 @@ const CampaignMeta = {
   },
   TableSchema: [
     {
-      ...CommonSchema.HIDDEN,
+      ...CommonSchema.MONGO_ID,
       name: '_id',
       accessorKey: '_id',
     },
@@ -162,7 +162,7 @@ const CampaignMeta = {
       isSearchField: false,
       Cell: ({ row }) => {
         const createdAt = row.getValue('createdAt');
-        return <>{formatDate(createdAt, false)}</>
+        return <>{formatDate(createdAt)}</>
       },
     },
     {

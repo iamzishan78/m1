@@ -8,6 +8,10 @@ const initialState = {
 	universalLoader: false,
 	layerLoading: {},
 	user: null,
+	apolloClientEndpoint: null,
+	x_zumo_auth: null,
+	cypress: null,
+	testCase: null,
 	bypassLogin: false,
 };
 

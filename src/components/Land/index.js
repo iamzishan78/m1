@@ -55,6 +55,13 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     component: "Wells",
     isExcluded: true,
   },
+  // ADVANCED_SEARCH: {
+  //   featureFlag: "LANDMODULE",
+  //   title: "Advanced Search",
+  //   link: "/land/search",
+  //   component: "AdvancedSearch",
+  //   hideSearch: true,
+  // },
   // REPORTING_GROUPS: {
   //   featureFlag: "LANDREPORTINGGROUPS",
   //   title: "Reporting Groups",
@@ -92,7 +99,7 @@ export default function Land() {
     <QuickActionPanel
       title="Asset Management"
       handlePanelStateChange={handlePanelStateChange}
-      quickActionsPanelState={quickActionsPanelState}
+      quickActionsPanelState={ quickActionsPanelState }
       activeModule={activeModule}
       actions={SIDE_PANEL_MENU_ITEMS_LIST}
     >

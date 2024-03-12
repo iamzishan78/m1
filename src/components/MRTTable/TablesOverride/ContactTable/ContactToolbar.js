@@ -49,6 +49,7 @@ function ContactToolbar({ table, tableKey }) {
 		'rowSelection',
 		'tableStateValues',
 		'defaultFilters',
+		'customProps',
 	]);
 	const tableStateValues = tableState.stateValues;
 	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
@@ -80,7 +81,7 @@ function ContactToolbar({ table, tableKey }) {
 		return {
 			_selectedRows: selectedRows,
 			search,
-			filters: tableStateValues.filters,
+			filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters], //both filter array send to backend
 			sort,
 			total: tableStateValues?.data.total,
 			isAllRowsSelected: tableStateValues.isAllRowsSelected,
@@ -120,7 +121,8 @@ function ContactToolbar({ table, tableKey }) {
 			total: tableStateValues?.data.total,
 			client,
 			table,
-			tableKey
+			tableKey,
+			selectedCampaign: tableStateValues.customProps?.campaign,
 		};
 	};
 
@@ -132,7 +134,7 @@ function ContactToolbar({ table, tableKey }) {
 			<>
 				{(!isSomethingSelected && tableStateValues?.showAddContactButton) && <ButtonDropDown options={options} />}
 
-				<ViewContactData isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} gg={sidePropsPass} />
+				<ViewContactData isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 
 				<BulkUpdate isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 
@@ -181,6 +183,9 @@ function ContactToolbar({ table, tableKey }) {
 							client,
 							table,
 							tableKey,
+							props: {
+								...(tableStateValues.customProps?.campaign && { campaign: tableStateValues.customProps?.campaign })
+							}
 						}
 					)}
 				>

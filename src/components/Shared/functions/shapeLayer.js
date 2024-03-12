@@ -72,7 +72,7 @@ export const setLayerLabelLayout = (layerId, labelLayout) => {
     return labelLayout
 }
 
-export const shapeTypeLayers = ["unit", "agreement", "contract", "lease", "deed", "surface"]
+export const shapeTypeLayers = ["unit", "agreement", "contract", "lease", "deed", "surface", 'parcel']
 export const defaultLayers = ["interest", "parcel", "unit", "contract", "lease", "deed", "surface"]
 export const agreementLayers = ["agreement", "contract", "lease", "deed", "surface"]
 
