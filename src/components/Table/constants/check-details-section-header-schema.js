@@ -81,7 +81,7 @@ const RevenueStatementHeadCells = [
         name: "sourceId", label: "Source Id", esKey: 'check.sourceId.keyword', options: { sort: true, filter: true }
     },
     {
-        name: "number", label: "Payor Property #", esKey: 'property.number.keyword', options: { display: false, sort: false, filter: true, style: { minWidth: 250 }, }
+        name: "number", label: "Payor Property #", esKey: 'property.number.keyword', options: { sort: true, filter: true }
     },
     {
         name: "state", label: "State", esKey: 'property.state.keyword', options: { sort: true, filter: true }
