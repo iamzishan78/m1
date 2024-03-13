@@ -12,6 +12,8 @@ import TractMeta from './tract_schema';
 import TractInterestsMeta from './tract_interest_schema';
 import GenericMeta from './generic-schema';
 import ShapesFilesGenericMeta from './shapefiles_generic_schema';
+import PropertiesMeta from './properties_schema';
+import RevenueStatementsMeta from './revenue_statements_schema';
 
 export const SCHEMA = {
 	ContactTable: ContactMeta,
@@ -31,4 +33,6 @@ export const SCHEMA = {
 	CampaignTractInterestTable: TractInterestsMeta,
 	GenericTable: GenericMeta,
 	ShapesFilesGenericTable: ShapesFilesGenericMeta,
+	PropertiesTable: PropertiesMeta,  //main property Grid => /revenue/properties
+	RevenueStatementsTable: RevenueStatementsMeta, // Revenue Statement grid => revenue/statements
 };
