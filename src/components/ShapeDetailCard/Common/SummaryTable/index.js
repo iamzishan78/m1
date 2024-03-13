@@ -54,6 +54,7 @@ function TableTextField({ data, value, onChange, onKeyDown, onBlur, onWheel, sho
           e.persist();
           onChange(e, data, type);
         }}
+        data-testid={`data-field-${data.label}`}
         onKeyDown={(e) => {
           if (e.keyCode === 13) {
             e.stopPropagation();
@@ -161,18 +162,44 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
   }, [properties, metaData]);
 
   useEffect(() => {
+    // Check if the search input is not empty
     if (search) {
-      const td = tableData.concat(properties?.custom_data_arr || []);
+      // Retrieve custom meta fields using the provided function
+      const customMetaData = getCustomMetaFields(properties, metaData);
+
+      // Concatenate table data with custom data array from properties
+      let td = tableData.concat(properties?.custom_data_arr || []);
+
+      // Concatenate table data with custom meta data
+      td = tableData.concat(customMetaData);
+
+      // Filter the table data based on the search input
       const newTableData = td.filter(
         (row) =>
-          row.key?.toLowerCase()?.includes(search.toLowerCase()) ||
-          row.label?.toLowerCase()?.includes(search.toLowerCase()) ||
-          tableTempProperties[row.key]?.toLowerCase()?.includes(search.toLowerCase())
+          // Check if row key contains the search input
+          (row.key && typeof row.key === 'string' && row.key.toLowerCase().includes(search.toLowerCase())) ||
+          // Check if row label contains the search input
+          (row.label && typeof row.label === 'string' && row.label.toLowerCase().includes(search.toLowerCase())) ||
+          // Check if temporary table properties contain the search input
+          (tableTempProperties[row.key] &&
+            typeof tableTempProperties[row.key] === 'string' &&
+            tableTempProperties[row.key].toLowerCase().includes(search.toLowerCase()))
       );
 
+      // Set the filtered table data
       setFilteredTableData(newTableData);
     } else {
-      setFilteredTableData(tableData.concat(properties?.custom_data_arr || []));
+      // If search input is empty, retrieve custom meta fields
+      const customMetaData = getCustomMetaFields(properties, metaData);
+
+      // Concatenate table data with custom data array from properties
+      let td = tableData.concat(properties?.custom_data_arr || []);
+
+      // Concatenate table data with custom meta data
+      td = tableData.concat(customMetaData);
+
+      // Set the filtered table data to the concatenated table data
+      setFilteredTableData(td);
     }
   }, [search, tableData]);
 
@@ -312,6 +339,7 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
       <TableBody>
         {filteredTableData.map((data, index) => (
           <>
+            {console.log('data', data)}
             <TableRow className={index % 2 === 0 ? classes.rowGrey : classes.rowWhite}>
               <TableCell
                 className={classes.cell1}
@@ -547,6 +575,7 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
                     )}
                     {data.type === "custom" && (
                       <>
+                        {console.log('data 2', data)}
                         {["qualifier", "reviewer"].includes(data.key) && (
                           <UserList
                             id={data.key + "Input"}
