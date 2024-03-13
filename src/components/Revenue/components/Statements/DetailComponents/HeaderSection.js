@@ -215,7 +215,7 @@ function HeaderFunction(props) {
         <Grid item xs={5}>
           <Grid container className={classes.gridStyle}>
             <Grid item xs={3}>
-              <div className={classes.boldLabel}>Purchaser</div>
+              <div className={classes.boldLabel}>Payor</div>
             </Grid>
             <Grid item xs={9}>
               <Controller
