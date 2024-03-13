@@ -252,7 +252,7 @@ export default function HeaderSection(props) {
     updateProperty({
       variables: {
         property: {
-          _id: propertyDetails._id,
+          _id: propertyDetails._id || props.propertyId,
           [key]: value,
         },
       },

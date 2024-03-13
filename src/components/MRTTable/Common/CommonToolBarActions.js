@@ -157,6 +157,7 @@ export function BulkUpdate({
 					}
 				)
 			}
+			data-testid="bulk-update"
 		>
 			Bulk Update
 		</Button>

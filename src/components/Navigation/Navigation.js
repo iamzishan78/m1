@@ -178,6 +178,7 @@ export default function Navigation(props) {
       location.pathname.startsWith("/revenue/statement/details") ||
       location.pathname.includes("/line-item") ||
       location.pathname.startsWith("/revenue/property/details") ||
+      location.pathname.startsWith("/analytics/property/details") ||
       location.pathname.startsWith("/land/agreement/details") ||
       location.pathname.startsWith("/contacts/campaign/details")
     ) {
@@ -287,6 +288,7 @@ export default function Navigation(props) {
                 </Button>
               </div>
             )} */}
+
               <ProfileMenu />
             </Toolbar>
           )}
