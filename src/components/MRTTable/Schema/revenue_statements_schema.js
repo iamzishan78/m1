@@ -1,3 +1,4 @@
+// Importing necessary dependencies and components
 import React from "react";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink.js";
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
@@ -7,6 +8,7 @@ import { Warning as WarningIcon, CheckCircle } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { formatDate } from 'components/Shared/functions';
 
+// Define styles for tooltip
 const useStyles = makeStyles((theme) => ({
   tooltip: {
     position: "absolute",
@@ -18,8 +20,10 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+// Elasticsearch index for revenue statements
 const esIndex = 'checks_flat';
 
+// Metadata for the Revenue Statements table
 const RevenueStatementsMeta = {
   esIndex,
   pageSize: 50,
@@ -32,22 +36,24 @@ const RevenueStatementsMeta = {
   isInFiniteScroll: true,
   columnVirtualization: true,
   TableSchema: [
+    // Hidden columns
     {
       ...CommonSchema.HIDDEN,
       name: 'id',
       accessorKey: 'id',
     },
-
     {
       ...CommonSchema.HIDDEN,
       name: '_id',
       accessorKey: '_id',
     },
+    // Column for Check Number with link
     {
       ...CommonSchema.INITAIL_PINNED,
       name: 'checkNumber.keyword',
       accessorKey: 'checkNumber',
       header: 'Check Number',
+      // Cell rendering for Check Number column
       Cell: ({ renderedCellValue, row }) => {
         return (
           <ColumnWithLink
@@ -60,12 +66,7 @@ const RevenueStatementsMeta = {
         )
       },
     },
-    {
-      ...CommonSchema.HIDDEN,
-      name: 'payor.name.keyword',
-      accessorFn: row => row?.payor?.name,
-      id: 'payor.name',
-    },
+    // Column for Check Amount
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'checkAmount',
@@ -74,6 +75,7 @@ const RevenueStatementsMeta = {
       header: 'Check Amount',
       isSearchField: false,
     },
+    // Column for Check Date
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'checkDate',
@@ -83,10 +85,12 @@ const RevenueStatementsMeta = {
       simple: true,
       type: 'date',
       isSearchField: false,
+      // Cell rendering for Check Date column
       Cell: ({ renderedCellValue, row }) => {
         return <>{formatDate(row?.original?.checkDate)}</>
       },
     },
+    // Columns for Payee details
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'payee.name.keyword',
@@ -101,6 +105,7 @@ const RevenueStatementsMeta = {
       id: 'payee.number',
       header: 'Owner Number',
     },
+    // Column for Deposit Date
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'depositDate',
@@ -110,10 +115,12 @@ const RevenueStatementsMeta = {
       simple: true,
       type: 'date',
       isSearchField: false,
+      // Cell rendering for Deposit Date column
       Cell: ({ renderedCellValue, row }) => {
         return <>{formatDate(row?.original?.depositDate)}</>
       },
     },
+    // Column for Check Detail Lines
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'checkDetail.lines',
@@ -122,6 +129,7 @@ const RevenueStatementsMeta = {
       header: 'Lines',
       isSearchField: false,
     },
+    // Columns for additional details
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'source.keyword',
@@ -143,23 +151,26 @@ const RevenueStatementsMeta = {
       id: 'approvalStatus',
       header: 'Approval Status',
     },
+    // Columns for tags and comments
     {
       ...CommonSchema.TAGS,
+      // Cell rendering for Tags column
       Cell: ({ row }) => {
         const targetSourceId = row.getValue('_id');
         const targetLabel = 'check';
         return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={targetLabel} />;
       },
-
     },
     {
       ...CommonSchema.COMMENTS,
+      // Cell rendering for Comments column
       Cell: ({ renderedCellValue, row }) => {
         const id = row.getValue('_id');
         const targetLabel = 'check';
         return <CommentCell id={id} value={renderedCellValue.length} targetLabel={targetLabel} />;
       },
     },
+    // Column for validation status
     {
       size: 220,
       name: 'isAmountValidated',
@@ -174,6 +185,7 @@ const RevenueStatementsMeta = {
       enableResizing: false,
       filter: false,
       isSearchField: false,
+      // Cell rendering for validation status column
       Cell: ({ renderedCellValue, row }) => {
         const classes = useStyles();
         return <>

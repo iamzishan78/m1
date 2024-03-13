@@ -33,6 +33,6 @@ export const SCHEMA = {
 	CampaignTractInterestTable: TractInterestsMeta,
 	GenericTable: GenericMeta,
 	ShapesFilesGenericTable: ShapesFilesGenericMeta,
-	PropertiesTable: PropertiesMeta,
-	RevenueStatementsTable: RevenueStatementsMeta,
+	PropertiesTable: PropertiesMeta,  //main property Grid => /revenue/properties
+	RevenueStatementsTable: RevenueStatementsMeta, // Revenue Statement grid => revenue/statements
 };

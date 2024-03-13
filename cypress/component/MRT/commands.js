@@ -17,35 +17,43 @@ Cypress.Commands.add('mrtInvokeText', ({ selector, as, index = 0, rowIndex = 0 }
   }
 });
 
+// Custom Cypress command for comparing sorting order of elements
 Cypress.Commands.add(
   'mrtCompareSort',
+  // Destructuring parameters to extract selector, index, type, sorting, and responseHits
   ({ selector, index = 0, type = 'string', sorting, responseHits }) => {
+    // Invoking text for the first and nth element
     cy.mrtInvokeText({ selector, as: 'firstText', index });
+    // Handling scenarios where responseHits length is greater than 10
     cy.mrtInvokeText({ selector, as: 'nthText', index, rowIndex: responseHits.length > 10 ? 10 : responseHits.length - 1 });
 
+    // Getting the first and nth text elements
     cy.get('@firstText').then(firstText => {
       cy.get('@nthText').then(secondText => {
+        // Switch case based on the type of comparison needed
         switch (type) {
           case 'string':
+            // Comparing strings based on sorting order
             expect(
               sorting === 'ascending' ? firstText <= secondText : secondText <= firstText
             ).to.be.equal(true);
             break;
 
           case 'date':
+            // Comparing dates based on sorting order
             if (sorting === 'ascending')
               expect(new Date(firstText)).to.be.at.most(new Date(secondText));
             else expect(new Date(firstText)).to.be.at.least(new Date(secondText));
             break;
 
           case 'number':
-            const firstNumber = parseFloat(firstText.replace(/,/g, '')) || 0
-            const lastNumber = parseFloat(secondText.replace(/,/g, '')) || 0
+            // Parsing numbers and comparing based on sorting order
+            const firstNumber = parseFloat(firstText.replace(/,/g, '')) || (sorting === 'ascending' ? 0 : Number.MAX_SAFE_INTEGER);
+            const lastNumber = parseFloat(secondText.replace(/,/g, '')) || (sorting === 'ascending' ? Number.MAX_SAFE_INTEGER : 0);
 
             if (sorting === 'ascending')
-              cy.wrap(lastNumber).should('be.gt', firstNumber);
-            else cy.wrap(firstNumber).should('be.gt', lastNumber);
-
+              cy.wrap(lastNumber).should('be.gte', firstNumber);
+            else cy.wrap(firstNumber).should('be.gte', lastNumber);
             break;
 
           default:

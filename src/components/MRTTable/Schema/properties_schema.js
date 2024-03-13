@@ -1,3 +1,4 @@
+// Importing necessary dependencies and components
 import { ErrorOutline } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -8,10 +9,12 @@ import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { formatDate } from 'components/Shared/functions';
 
+// Elasticsearch index for properties
 const esIndex = 'properties_flat';
 
+// Metadata for the Properties table
 const PropertiesMeta = {
-  esIndex,
+  esIndex, //  Elasticsearch search index
   pageSize: 50,
   pagination: {
     pageIndex: 0,
@@ -21,23 +24,26 @@ const PropertiesMeta = {
   maxTableHeight: 'calc(100vh - 500px)',
   isInFiniteScroll: true,
   columnVirtualization: true,
+  // Definition of table schema
   TableSchema: [
+    // Hidden columns
     {
       ...CommonSchema.HIDDEN,
       name: 'id',
       accessorKey: 'id',
     },
-
     {
       ...CommonSchema.HIDDEN,
       name: '_id',
       accessorKey: '_id',
     },
+    // Column for Property with link
     {
       ...CommonSchema.INITAIL_PINNED,
       name: 'purchaserNumber.keyword',
       accessorKey: 'purchaserNumber',
       header: 'Property',
+      // Cell rendering for Property column
       Cell: ({ row }) => {
         const history = useHistory();
         const wells = row.getValue('wells.apiNumber');
@@ -80,6 +86,7 @@ const PropertiesMeta = {
         );
       },
     },
+    // Columns for Well API Number and Well Name
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'wells.apiNumber.keyword',
@@ -102,6 +109,7 @@ const PropertiesMeta = {
         else return ""
       }
     },
+    // Columns for Property details
     {
       ...CommonSchema.HIDDEN,
       name: 'name.keyword',
@@ -168,12 +176,14 @@ const PropertiesMeta = {
         { label: 'In Pay', value: "InPay" },
         { label: 'Not in Pay', value: "NotInPay" }
       ],
+      // Cell rendering for Pay Status column
       Cell: ({ row }) => {
         const { status } = row?.original
         const formattedStatus = status ? (status === "InPay" ? "In Pay" : "Not in Pay") : "";
         return <div>{formattedStatus}</div>
       }
     },
+    // Columns for last check details
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'lastCheck.checkNumber.keyword',
@@ -190,10 +200,12 @@ const PropertiesMeta = {
       simple: true,
       type: 'date',
       isSearchField: false,
+      // Cell rendering for Last Check Date column
       Cell: ({ row }) => {
         return <>{formatDate(row?.original?.lastCheck?.checkDate)}</>
       },
     },
+    // Columns for additional property details
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'prospectID.keyword',
@@ -236,17 +248,19 @@ const PropertiesMeta = {
       id: 'approvalStatus',
       header: 'Status',
     },
+    // Columns for tags and comments
     {
       ...CommonSchema.TAGS,
+      // Cell rendering for Tags column
       Cell: ({ row }) => {
         const targetSourceId = row.getValue('_id');
         const targetLabel = 'property';
         return <TagCell id={targetSourceId} targetSourceId={targetSourceId} tags={row?.original?.tags} targetLabel={targetLabel} />;
       },
-
     },
     {
       ...CommonSchema.COMMENTS,
+      // Cell rendering for Comments column
       Cell: ({ renderedCellValue, row }) => {
         const id = row.getValue('_id');
         const targetLabel = 'property';
