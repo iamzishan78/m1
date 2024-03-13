@@ -190,7 +190,7 @@ function HeaderFunction(props) {
             <Grid item xs={6}>
               <div className={classes.boldLabel}>Check Number</div>
             </Grid>
-            <Grid item xs={5}>
+            <Grid item xs={4}>
               <Controller
                 control={control}
                 name="checkNumber"
@@ -205,6 +205,7 @@ function HeaderFunction(props) {
                       handleUpdateCheck({ checkNumber: e.target.value });
                     }}
                     value={props.value || ""}
+                    fullWidth
                   />
                 )}
               />
@@ -315,7 +316,7 @@ function HeaderFunction(props) {
             <Grid item xs={6}>
               <div className={classes.boldLabel}>Owner Number</div>
             </Grid>
-            <Grid item xs={5}>
+            <Grid item xs={4}>
               <Controller
                 control={control}
                 name="payee.number"
@@ -325,6 +326,7 @@ function HeaderFunction(props) {
                     margin="dense"
                     type="text"
                     variant="outlined"
+                    fullWidth
                     onChange={(e) => {
                       props.onChange(e.target.value);
                       handleUpdateCheck({
@@ -438,7 +440,7 @@ function HeaderFunction(props) {
             <Grid item xs={6}>
               <div className={classes.boldLabel}>Check Amount</div>
             </Grid>
-            <Grid item xs={5}>
+            <Grid item xs={4}>
               <Controller
                 control={control}
                 name="checkAmount"
@@ -448,6 +450,7 @@ function HeaderFunction(props) {
                     margin="dense"
                     type="text"
                     variant="outlined"
+                    fullWidth
                     onChange={(e) => {
                       params.onChange(parseFloat(e.target.value).toFixed(2));
                     }}

@@ -184,6 +184,7 @@ const ExportContactsAndPurchase = ({
                     onChange={(e) => {
                       props.onChange(e.target.checked);
                     }}
+                    data-testid='export-contact-and-purchse-icon-checkbox'
                   />
                 )}
               />
@@ -206,6 +207,7 @@ const ExportContactsAndPurchase = ({
           }}
           onClick={onExport}
           disabled={exportDisabled}
+          data-testid="export-contact-and-purchse-confirm-button"
         >
           Export
         </Button>

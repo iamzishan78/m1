@@ -199,6 +199,12 @@ export default function M1neralHeaders() {
           }
         })
       }
+      if (['CHECKDETAILS'].includes(jobStateValues.jobType)) {
+        if (!return_obj["lineNumber"]) {
+          filtered_data_to_send.push(null)
+          continue;
+        }
+      }
       if (['PARCELINTERESTS'].includes(jobStateValues.jobType)) {
         if (!return_obj["parcel._id"] ||
           !return_obj["parcel.name"]) {
@@ -485,6 +491,13 @@ export default function M1neralHeaders() {
                 <div style={{ ...text_grey }}>
                   * Purchaser and Purchaser Prop # are required to be <br /> populated before
                   uploading properties.
+                </div>
+              );
+            case 'CHECKDETAILS':
+              return (
+                <div style={{ ...text_grey }}>
+                  * Line Number is required to be <br /> populated before
+                  uploading check details.
                 </div>
               );
             default:

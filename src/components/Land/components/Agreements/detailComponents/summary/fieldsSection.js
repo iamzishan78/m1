@@ -340,11 +340,13 @@ export default function FieldsSection({ updateAgreement, control, agreementDetai
                   )}
                   {field.type === "autocomplete" && field.key !== "approvalStatus" && (
                     <AutoCompleteTypeComponent
-                      value={agreementDetails?.[field.key]}
+                      value={agreementDetailCopied?.[field.key]}
                       shapeType="Agreement"
                       typeKey={field.key}
                       variant="outlined"
-                      onChange={() => { }}
+                      onChange={(event, newValue) => {
+                        setAgreementCopied({ ...agreementDetailCopied, [field.key]: newValue?.name || null })
+                      }}
                       onBlur={(event) => offClickHandler(field.key, event.target.value)}
                       autoFocus={false}
                       id={`field-${field.key}`}

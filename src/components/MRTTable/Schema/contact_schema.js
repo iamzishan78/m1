@@ -271,6 +271,51 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'phone1.keyword',
+			accessorKey: 'phone1',
+			header: 'Phone 1',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'phone2.keyword',
+			accessorKey: 'phone2',
+			header: 'Phone 2',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'phone3.keyword',
+			accessorKey: 'phone3',
+			header: 'Phone 3',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'phone4.keyword',
+			accessorKey: 'phone4',
+			header: 'Phone 4',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'phone5.keyword',
+			accessorKey: 'phone5',
+			header: 'Phone 5',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'account.keyword',
 			accessorKey: 'account',
 			header: 'Account',
