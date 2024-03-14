@@ -159,6 +159,15 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
+			name: 'formerName.keyword',
+			accessorKey: 'formerName',
+			header: 'Also Known As',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
 			name: 'lastName.keyword',
 			accessorKey: 'lastName',
 			header: 'Last Name',
@@ -580,6 +589,7 @@ const ContactMeta = {
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
+
 
 		{
 			...CommonSchema.COMMON_COLUMN,
