@@ -157,6 +157,7 @@ const ContactMeta = {
 			hidden: true,
 		},
 
+		// Make formerName to visibile in contact grid
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'formerName.keyword',
