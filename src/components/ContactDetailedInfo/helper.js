@@ -719,12 +719,10 @@ export const SUMMARY_FIELDS = (contactData) => {
       value: { contactStatus: contactData?.contactStatus },
     },
     {
-      label: "Last Updated",
-      key: "",
-      type: "text",
+      label: "Stage",
+      key: "status",
+      type: "autocomplete",
       position: "right",
-      value: getLastUpdatedByValue(contactData),
-      disabled: true,
     },
     {
       label: "Account",
