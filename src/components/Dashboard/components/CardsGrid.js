@@ -14,6 +14,7 @@ import RSSFeed from "./RssFeed"
 import Notifications from "./Notifications"
 import PermitsCard from "./PermitsCard"
 import Tasks from "./Tasks";
+import Notepad from "./Notepad";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -94,6 +95,7 @@ const CardGrid = () => {
     // { el: <PermitsCard title={6} />, size: "2x", key: 3 },
     // { el: <ProdCard title={1} />, size: "2x", key: 4 }, 
     { el: <StockCard title={3} />, size: "2x", key: 5 },
+    { el: <Notepad title={8} />, size: "2x", key: 8 },
     // { el: <TwitterCard title={2} />, size: "x", key: 6 },
     { el: <RSSFeed title={4} />, size: "2x", key: 7 },
 
