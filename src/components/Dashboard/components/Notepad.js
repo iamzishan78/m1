@@ -59,7 +59,7 @@ function Notepad() {
       margin="dense"
       variant="outlined"
       multiline
-      rows="34"
+      rows="32"
       value={description}
       label="Notes"
       fullWidth
