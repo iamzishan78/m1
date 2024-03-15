@@ -41,7 +41,7 @@ describe('MyWells ESHOC Table', () => {
           alias => {
             cy.get('[data-testid="deleteButton-popup"]').click();
             cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
-              expect(addedWellId).to.not.equal(response.response.body.data.getESSimpleSearch.hits[0]._id);
+              expect(addedWellId).to.not.equal(response.response.body.data.getESSimpleSearch.hits?.[0]?._id);
             });
           },
           { wait: false }
