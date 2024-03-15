@@ -5,6 +5,7 @@ import vf_number from "components/Shared/valueformatters/vf_number";
 import { statusData } from "components/Table/Revenue/RevenuePropertiesTable";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import { globalStateController } from "hookstate/globalStateController";
+import { formatDate } from 'components/Shared/functions';
 
 const dateCustomRender = (value) =>
   value ? (moment(new Date(value)).format("MM/DD/YYYY") === "Invalid date" ? "" : moment(new Date(value)).format("MM/DD/YYYY")) : "";
@@ -369,6 +370,64 @@ const wellsColumnHeaders = [
       customRender: (value) => <p>{value?.length ? value.join(", ") : "--"}</p>,
     },
   },
+
+  {
+    name: "createBy",
+    label: "Created By",
+    esKey: "createBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "createAt",
+    label: "Created Date",
+    esKey: "createAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+
+  {
+    name: "lastUpdateBy",
+    label: "Last Updated By",
+    esKey: "lastUpdateBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "lastUpdateAt",
+    label: "Last Updated Date",
+    esKey: "lastUpdateAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+
+
   {
     name: "commentsCounter",
     label: " ",

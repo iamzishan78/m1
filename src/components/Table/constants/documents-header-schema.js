@@ -1,5 +1,6 @@
 
 /* props is just a style object*/
+import { formatDate } from 'components/Shared/functions';
 
 const DocumentsHeadCells = [
   {
@@ -131,6 +132,63 @@ const DocumentsHeadCells = [
       setCellProps: () => ({ style: { minWidth: "175px" } }),
     },
   },
+
+  {
+    name: "createBy",
+    label: "Created By",
+    esKey: "createBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "createAt",
+    label: "Created Date",
+    esKey: "createAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+
+  {
+    name: "lastUpdateBy",
+    label: "Last Updated By",
+    esKey: "lastUpdateBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "lastUpdateAt",
+    label: "Last Updated Date",
+    esKey: "lastUpdateAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+
   // TEMPORARY COMMENT OUT UNTIL FEATURE IS FIXED
   // {
   //   name: "partyName1",
@@ -185,6 +243,7 @@ const DocumentsHeadCells = [
       viewColumns: false,
     },
   },
+
 ];
 
 

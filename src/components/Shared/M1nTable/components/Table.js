@@ -1314,6 +1314,13 @@ function SubTable(props) {
         month: "numeric",
       });
 
+    if (column.name === "createAt")
+      return anyToDate(v).toLocaleString("en-US", {
+        year: "numeric",
+        day: "numeric",
+        month: "numeric",
+      });
+
     if (column.name === "receivedDate" && !!v) return moment.parseZone(v).format("MM/DD/yyyy");
     if (column.name === "bidDate" && !!v) return moment.parseZone(v).format("MM/DD/yyyy");
     if (column.name === "closeDate" && !!v) return moment.parseZone(v).format("MM/DD/yyyy");
