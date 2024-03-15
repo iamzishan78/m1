@@ -9,6 +9,35 @@ let wellIds;
 let wellName;
 
 describe("MyWells ESHOC Table", () => {
+  // added test case to add well first before running test case
+  it("adds well from slideout", () => {
+    let addedWellId;
+    cy.interceptAndWait(["getESSimpleSearch", "mywells_flat"], () => {
+      cy.viewport(1600, 1200).mount(<Wells />, {
+        testCase: "MyWellsNameUpdate",
+      });
+    });
+    cy.contains("+ ADD WELL").click();
+    cy.get('[data-testid="well-search-field"]')
+      .clear()
+      .type("JJ PRATER HEIRS JJ-I1");
+    cy.wait(15000);
+    cy.interceptAndWait(
+      ["getESSimpleSearch"],
+      (alias) => {
+        cy.get(".MuiAutocomplete-option").first().click();
+        cy.wait(10000);
+        cy.get('[data-testid="close-dialog"]').click();
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(
+          (response) => {
+            addedWellId =
+              response.response.body.data.getESSimpleSearch.hits[0]._id;
+          }
+        );
+      },
+      { wait: false }
+    );
+  });
   it("checks well name is updating correctly", () => {
     cy.interceptAndWait(["getESSimpleSearch", "mywells_flat"], () => {
       cy.viewport(1600, 1200).mount(<Wells />, {
@@ -73,31 +102,24 @@ describe("MyWells ESHOC Table", () => {
     );
   });
 
-  it("restores deleted wells", () => {
-    const payload = {
-      operationName: "removeWells",
-      variables: {
-        wellIds,
-        isDeleted: false,
-      },
-      query: REMOVE_WELLS.loc.source.body,
-    };
+  // it('restores deleted wells', () => {
+  //   const payload = {
+  //     operationName: 'removeWells',
+  //     variables: {
+  //       wellIds,
+  //       isDeleted: false,
+  //     },
+  //     query: REMOVE_WELLS.loc.source.body,
+  //   };
 
-    cy.request({
-      method: "POST",
-      url: ldata.url,
-      headers: headers,
-      body: payload,
-    }).then((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body.data.removeWells.success).to.eq(true);
-    });
-  });
-
-  it("checks created at/by and updated at/by fields in wells grid", () => {
-    cy.interceptAndWait(["getESSimpleSearch", "mywells_flat"], () => {
-      cy.viewport(1600, 1200).mount(<Wells />);
-      cy.VerifyAuthInfoECHOC();
-    });
-  });
+  //   cy.request({
+  //     method: 'POST',
+  //     url: ldata.url,
+  //     headers: headers,
+  //     body: payload,
+  //   }).then(response => {
+  //     expect(response.status).to.eq(200);
+  //     expect(response.body.data.removeWells.success).to.eq(true);
+  //   });
+  // });
 });

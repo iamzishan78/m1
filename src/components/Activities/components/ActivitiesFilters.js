@@ -198,7 +198,7 @@ export default function CustomDatesActivities({
             }}
           />
         </Grid>
-        <Grid item xs={2.4} md={2.4} lg={2.4} xl={2.4} style={{ marginTop: "4px" }}>
+        <Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: "4px" }}>
           <CampaignFilter
             value={campaignName}
             setValue={setCampaignName}
@@ -208,7 +208,7 @@ export default function CustomDatesActivities({
             appliedFilters={appliedFilters}
           />
         </Grid>
-        <Grid item xs={2.4} md={2.4} lg={2.4} xl={2.4} style={{ marginTop: "4px" }}>
+        <Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: "4px" }}>
           <QualifierFilter
             value={qualifier}
             setValue={setQualifier}
@@ -381,7 +381,7 @@ const QualifierFilter = ({
         <TextField
           {...params}
           variant="outlined"
-          label="Qualifier"
+          label="Activity Owner"
           placeholder=""
           onChange={(e) => {
             setSearch(e.target.value);

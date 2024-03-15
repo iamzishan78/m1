@@ -252,7 +252,7 @@ export default function HeaderSection(props) {
     updateProperty({
       variables: {
         property: {
-          _id: propertyDetails._id,
+          _id: propertyDetails._id || props.propertyId,
           [key]: value,
         },
       },
@@ -465,7 +465,7 @@ export default function HeaderSection(props) {
           <Grid item xs={5}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={3}>
-                <div className={classes.label}>Purchaser Prop #</div>
+                <div className={classes.label}>Payor Prop #</div>
               </Grid>
               <Grid item xs={8}>
                 <Controller
@@ -493,7 +493,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Purchaser</div>
+                <div className={classes.label}>Payor</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller
@@ -556,7 +556,7 @@ export default function HeaderSection(props) {
           <Grid item xs={7}>
             <Grid container className={classes.gridStyle}>
               <Grid item xs={2}>
-                <div className={classes.label}>Purchaser Property Description</div>
+                <div className={classes.label}>Payor Property Description</div>
               </Grid>
               <Grid item xs={9}>
                 <Controller

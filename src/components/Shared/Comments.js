@@ -690,7 +690,7 @@ export default function Comments(props) {
                       }
                     />
                     <ListItemSecondaryAction>
-                      <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteClick(comment)}>
+                      <IconButton edge="end" aria-label="delete" data-testid={`comment-delete-icon-${index}`} onClick={() => handleDeleteClick(comment)}>
                         <DeleteIcon />
                       </IconButton>
                     </ListItemSecondaryAction>

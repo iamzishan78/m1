@@ -122,10 +122,64 @@ describe("ShapeDetailCard Component", () => {
             targetLabel={selectedShape.type}
             // deleteCustomLayer={deleteCustomLayer}
           ></ExpandableCardProvider>,
-          { spec: "ShapeDetailCard" }
+          { spec: "ShapeDetailCard", testCase: { layerId: selectedShape.id } }
         );
       });
     });
+  });
+
+  /**
+   * Test case for verifying the functionality of recalculating shape owner values.
+   * It simulates user interactions to update shape owner values, recalculate, and verify the result.
+   */
+  it("Shape Owner Recalculate Works", () => {
+    // Intercepting API calls for fetching shape owner data and waiting for completion
+    cy.interceptAndWait(["getESSimpleSearch", "shapeowners_flat"], () => {
+      // Clicking on the 'Interest Owners' tab
+      cy.get('[data-testid="shape-detail-tab-Interest Owners"]').click();
+    });
+
+    // Selecting a row in the table and updating NRA and target offer price
+    cy.get("tbody > tr")
+      .contains("1", { timeout: 5000 })
+      .click({ force: true });
+    cy.get('[data-testid="nra-field"] input').clear().type(100);
+    cy.get('[data-testid="target-offer-price-field"] input').clear().type(100);
+
+    // Intercepting API call for updating shape owners and waiting for completion
+    cy.interceptAndWait(["updateShapeOwners"], () => {
+      // Clicking on the action button to update shape owners
+      cy.get('[data-testid="action-button"]').click();
+    });
+
+    // Waiting for a period of time for the update to propagate
+    cy.wait(10000);
+
+    // Clicking on the 'Select All Button' button for recalculation
+    cy.get('[aria-label="Toggle select all"]').eq(0).click();
+
+    cy.interceptAndWait(["getESSimpleSearch", "shapeowners_flat"], () => {
+      // Clicking on the 'Recalculate' button
+      cy.get('[data-testid="recalculate"]').click();
+    });
+
+    // Intercepting API call for resetting calculated values of shape owners and waiting for completion
+    cy.interceptAndWait(["resetOwnersCalculatedValues"], () => {
+      // Clicking on the action button to reset calculated values
+      cy.get('[data-testid="action-button"]').click();
+    });
+
+    // Waiting for a period of time for the reset to propagate
+    cy.wait(10000);
+
+    // Verifying that the overridden class is removed from target offer price and NRA fields
+    cy.get("tbody > tr").contains("1").click({ force: true });
+
+    cy.get('[data-testid="target-offer-price-field"]').should(
+      "not.have.class",
+      "overridden"
+    );
+    cy.get('[data-testid="nra-field"]').should("not.have.class", "overridden");
   });
 
   it(

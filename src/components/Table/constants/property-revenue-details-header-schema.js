@@ -41,7 +41,7 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "purchaser",
-    label: "Purchaser",
+    label: "Payor",
     esKey: "check.payor.name.keyword",
     options: { sort: true, filter: true },
     style: { minWidth: 210 }
@@ -53,7 +53,7 @@ const RevenueStatementHeadCells = [
     options: {
       customHeadLabelRender: () => (
         <>
-          <div style={{ minWidth: 80 }}>Purchaser Property #</div>
+          <div style={{ minWidth: 80 }}>Payor Property #</div>
         </>
       ),
       sort: true, filter: true
@@ -117,61 +117,67 @@ const RevenueStatementHeadCells = [
     name: "price",
     label: "Avg Price",
     esKey: "price",
-    options: { sort: true, filter: true,
+    options: {
+      sort: true, filter: true,
       customRender: (value) => {
         return value ? <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p> : <p style={{ color: "#898989b0" }}>--</p>;
       },
-     },
+    },
   },
   {
     name: "grossPropertyVolume",
     label: "Prop Gross Volume",
     esKey: "grossPropertyVolume",
-    options: { sort: true, filter: true,
+    options: {
+      sort: true, filter: true,
       customRender: (value) => {
         return value ? <p>{value ? vf_number(value, 2) : ""}</p> : <p style={{ color: "#898989b0" }}>--</p>;
       },
-     },
+    },
   },
   {
     name: "grossPropertyValue",
     label: "Prop Gross Revenue",
     esKey: "grossPropertyValue",
-    options: { sort: true, filter: true,
+    options: {
+      sort: true, filter: true,
       customRender: (value) => {
         return value ? <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p> : <p style={{ color: "#898989b0" }}>--</p>;
       },
-     },
+    },
   },
   {
     name: "grossOwnerVolume",
     label: "Owner Volume",
     esKey: "grossOwnerVolume",
-    options: { sort: true, filter: true,
+    options: {
+      sort: true, filter: true,
       customRender: (value) => {
         return value ? <p>{value ? vf_number(value, 2) : ""}</p> : <p style={{ color: "#898989b0" }}>--</p>;
       },
-     },
+    },
   },
   {
     name: "grossOwnerValue",
     label: "Owner Gross Revenue",
     esKey: "grossOwnerValue",
-    options: { sort: true, filter: true,
+    options: {
+      sort: true, filter: true,
       customRender: (value) => {
         return value ? <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p> : <p style={{ color: "#898989b0" }}>--</p>;
       },
-     },
+    },
   },
   {
     name: "ownerTax",
     label: "Owner Tax Amt",
     esKey: "ownerTax",
-    options: { sort: true, filter: true,
+    options: {
+      sort: true, filter: true,
       customRender: (value) => {
         return value ? <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p> : <p style={{ color: "#898989b0" }}>--</p>;
       },
-     },
+    },
   },
   {
     name: "taxType",
@@ -183,11 +189,12 @@ const RevenueStatementHeadCells = [
     name: "ownerDeducts",
     label: "Deduct Amt",
     esKey: "ownerDeducts",
-    options: { sort: true, filter: true,
+    options: {
+      sort: true, filter: true,
       customRender: (value) => {
         return value ? <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p> : <p style={{ color: "#898989b0" }}>--</p>;
       },
-     },
+    },
   },
   {
     name: "deductType",
@@ -199,11 +206,12 @@ const RevenueStatementHeadCells = [
     name: "netOwnerValue",
     label: "Owner Net Rev",
     esKey: "netOwnerValue",
-    options: { sort: true, filter: true,
+    options: {
+      sort: true, filter: true,
       customRender: (value) => {
         return value ? <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p> : <p style={{ color: "#898989b0" }}>--</p>;
       },
-     },
+    },
   },
 ];
 

@@ -76,9 +76,9 @@ export const setColumnDisplayAndFilter = (TableHeader, selectedGridView, column)
     } else if (column.name !== ' ') {
       const tableHeaderCol = TableHeader.find(tH => tH.name === column.name)
       if (tableHeaderCol) {
-        if (typeof tableHeaderCol.options.display !== 'undefined')
+        if (typeof tableHeaderCol?.options?.display !== 'undefined')
           column.options.display = tableHeaderCol.options.display;
-        if (typeof tableHeaderCol.options.filter !== 'undefined')
+        if (typeof tableHeaderCol?.options?.filter !== 'undefined')
           column.options.filter = tableHeaderCol.options.filter;
       }
       else {
