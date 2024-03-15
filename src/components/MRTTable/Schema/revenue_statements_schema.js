@@ -55,9 +55,11 @@ const RevenueStatementsMeta = {
       header: 'Check Number',
       // Cell rendering for Check Number column
       Cell: ({ renderedCellValue, row }) => {
+        const checkNumber = row?.original?.checkNumber;
+        const payor = row.getValue('payor.name');
         return (
           <ColumnWithLink
-            value={(row?.original?.checkNumber ? `${row?.original?.checkNumber} - ${row.getValue('payor.name')}` : row.getValue('payor.name')) || "NA"}
+            value={checkNumber && payor ? `${checkNumber} - ${payor}` : checkNumber || payor || "N/A"}
             link={`/revenue/statement/details/${row.getValue('_id')}`}
             onClick={(e) => {
               e.stopPropagation();
@@ -89,6 +91,13 @@ const RevenueStatementsMeta = {
       Cell: ({ renderedCellValue, row }) => {
         return <>{formatDate(row?.original?.checkDate)}</>
       },
+    },
+    {
+      ...CommonSchema.COMMON_COLUMN,
+      name: 'payor.name.keyword',
+      accessorFn: row => row?.payor?.name,
+      id: 'payor.name',
+      header: 'Payor Name',
     },
     // Columns for Payee details
     {

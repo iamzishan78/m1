@@ -3,6 +3,7 @@ import { GlobalStickyStyles } from "GlobalSettings";
 
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
+import { formatDate } from 'components/Shared/functions';
 
 const TractsHeadCells = (isSnapGrid = false) => [
   {
@@ -25,7 +26,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
         return (
           <ColumnWithLink
             onClick={(e) => {
-              e.stopPropagation();
+              e?.stopPropagation();
               history.push(`/map/parcels/${tableMeta.rowData[0]}`, { showTractsBreadcrumb: !isSnapGrid });
             }}
             value={splitNumber?.[0] ? `${splitNumber?.[0]} - ${tableMeta?.rowData[2]}` : tableMeta?.rowData[2]}
@@ -228,6 +229,63 @@ const TractsHeadCells = (isSnapGrid = false) => [
       filter: true,
     },
   },
+
+  {
+    name: "createBy",
+    label: "Created By",
+    esKey: "createBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "createAt",
+    label: "Created Date",
+    esKey: "createAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+
+  {
+    name: "lastUpdateBy",
+    label: "Last Updated By",
+    esKey: "lastUpdateBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "lastUpdateAt",
+    label: "Last Updated Date",
+    esKey: "lastUpdateAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+
   {
     name: "tags",
     label: "Tags",

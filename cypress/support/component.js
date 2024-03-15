@@ -15,8 +15,10 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands';
-import '../component/MRT/commands';
+import './commands'
+import '../component/MRT/commands'
+import '../component/TableESHOC/commands'
+import '../component/M1nTable/commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

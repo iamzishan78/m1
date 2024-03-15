@@ -1,4 +1,5 @@
 import { GlobalStickyStyles } from "GlobalSettings";
+import { formatDate } from 'components/Shared/functions';
 
 //value formatters
 import vf_currency, { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
@@ -403,6 +404,63 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       viewColumns: false,
     },
   },
+
+  {
+    name: "createBy",
+    label: "Created By",
+    esKey: "createBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "createAt",
+    label: "Created Date",
+    esKey: "createAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+
+  {
+    name: "lastUpdateBy",
+    label: "Last Updated By",
+    esKey: "lastUpdateBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "lastUpdateAt",
+    label: "Last Updated Date",
+    esKey: "lastUpdateAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+
   {
     name: "tags",
     label: "Tags",

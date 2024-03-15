@@ -9,7 +9,7 @@ import Popper from "@material-ui/core/Popper";
 import MenuItem from "@material-ui/core/MenuItem";
 import MenuList from "@material-ui/core/MenuList";
 
-const ButtonDropDown = ({ options, children, onClick, buttonStyles = {}, sideButtonStyles = {}, ...rest }) => {
+const ButtonDropDown = ({ options, children, onClick, buttonStyles = {}, sideButtonStyles = {}, data_test_id, ...rest }) => {
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -41,7 +41,7 @@ const ButtonDropDown = ({ options, children, onClick, buttonStyles = {}, sideBut
   return (
     <>
       <ButtonGroup variant="contained" color="primary" ref={anchorRef} aria-label="split button" {...rest}>
-        <Button onClick={handleClick} id="addButton" style={buttonStyles}>
+        <Button onClick={handleClick} id="addButton" style={buttonStyles} data-testid={data_test_id}>
           <>{children}</>
           {options[selectedIndex].text}
         </Button>
