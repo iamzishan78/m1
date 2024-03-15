@@ -81,6 +81,7 @@ const TransactDealsHeadCells = (flowLineType = 'deal') => {
         label: "Closed Price",
       },
 
+      // show user Information who created
       {
         name: "createBy",
         label: "Created By",
