@@ -115,6 +115,7 @@ export function BulkUpdate({
 					tableKey
 				)
 			}
+			data-testid="bulk-update"
 		>
 			Bulk Update
 		</Button>

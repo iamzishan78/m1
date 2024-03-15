@@ -143,9 +143,7 @@ function UnitInterestsTable(props) {
               ? [[hit.tags.map((tag) => tag.tag)], hit.tags.length]
               : [[], 0];
           hit.commentsCounter = hit.comments ? hit.comments.length : 0;
-          hit = props.setGenricData(hit, hit.shape?._id, [
-            'comments', 'tags'
-          ]);
+          // hit = props.setGenricData(hit, hit.shape?._id, ['comments', 'tags']);
 
           return hit;
         });

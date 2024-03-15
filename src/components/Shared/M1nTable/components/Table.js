@@ -861,6 +861,7 @@ function SubTable(props) {
               if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
                 multiSelectMouseHoverColor(id, "#efefef");
             }}
+            data-testid={`comment-icon-button-${tableMeta.rowIndex}`}
           >
             {value}
           </Button>
@@ -2071,6 +2072,9 @@ function SubTable(props) {
                   }
                   if (props.parent === "assocTaxRollInterests" && (props.targetLabel === "unit" || props.targetLabel === 'campaignUnit')) {
                     targetSourceId = tableMeta.rowData[2];
+                  }
+                  if (props.parent === "assocTaxRollInterests" && (props.targetLabel === 'contactUnits')) {
+                    targetSourceId = tableMeta.rowData[1];
                   }
                   if (props.parent === "TractInterestsTable" && props.targetLabel === "tractInterest") {
                     targetSourceId = tableMeta.rowData[1];
