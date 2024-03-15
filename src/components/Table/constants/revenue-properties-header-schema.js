@@ -4,6 +4,7 @@ import { ErrorOutline } from "@material-ui/icons";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink.js";
+import { formatDate } from 'components/Shared/functions';
 
 const ComponentPropertyName = ({ value, tableMeta }) => {
   const history = useHistory();
@@ -244,6 +245,63 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
     label: "Status",
     esKey: "approvalStatus.keyword",
   },
+
+  {
+    name: "createBy",
+    label: "Created By",
+    esKey: "createBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "createAt",
+    label: "Created Date",
+    esKey: "createAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+
+  {
+    name: "lastUpdateBy",
+    label: "Last Updated By",
+    esKey: "lastUpdateBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "lastUpdateAt",
+    label: "Last Updated Date",
+    esKey: "lastUpdateAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+
   {
     name: "tags",
     label: "Tags",

@@ -104,6 +104,7 @@ function MyWellsGridTable(props) {
         });
       });
       hit = {
+        ...hit,
         ...hit.wellData,
         ...propertiesKeys,
         _id: hit._id,
