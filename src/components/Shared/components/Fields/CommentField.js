@@ -334,6 +334,7 @@ export default function DealComment({
           }}
           onInputChange={onInputChange}
           onChange={onChange}
+          data-testid={`comment-auto-complete`}
           renderInput={(params) => (
             <>
               <TextField
@@ -352,6 +353,7 @@ export default function DealComment({
                 placeholder="Add a question or post an update"
                 variant="outlined"
                 size="small"
+                data-testid={`comment-text-field`}
               />
               <div
                 id="colorText"
@@ -383,6 +385,7 @@ export default function DealComment({
                   color="primary"
                   id="commentButton"
                   disabled={!comment || comment === ''}
+                  data-testid={`comment-add-button`}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (!showCommentTypeDialog) {

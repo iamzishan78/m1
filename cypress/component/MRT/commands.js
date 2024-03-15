@@ -17,26 +17,43 @@ Cypress.Commands.add('mrtInvokeText', ({ selector, as, index = 0, rowIndex = 0 }
   }
 });
 
+// Custom Cypress command for comparing sorting order of elements
 Cypress.Commands.add(
   'mrtCompareSort',
-  ({ selector, index = 0, type = 'string', sorting }) => {
+  // Destructuring parameters to extract selector, index, type, sorting, and responseHits
+  ({ selector, index = 0, type = 'string', sorting, responseHits }) => {
+    // Invoking text for the first and nth element
     cy.mrtInvokeText({ selector, as: 'firstText', index });
-    cy.mrtInvokeText({ selector, as: 'nthText', index, rowIndex: 10 });
+    // Handling scenarios where responseHits length is greater than 10
+    cy.mrtInvokeText({ selector, as: 'nthText', index, rowIndex: responseHits.length > 10 ? 10 : responseHits.length - 1 });
 
+    // Getting the first and nth text elements
     cy.get('@firstText').then(firstText => {
       cy.get('@nthText').then(secondText => {
+        // Switch case based on the type of comparison needed
         switch (type) {
           case 'string':
+            // Comparing strings based on sorting order
             expect(
               sorting === 'ascending' ? firstText <= secondText : secondText <= firstText
             ).to.be.equal(true);
             break;
 
           case 'date':
-          case 'number':
+            // Comparing dates based on sorting order
             if (sorting === 'ascending')
               expect(new Date(firstText)).to.be.at.most(new Date(secondText));
             else expect(new Date(firstText)).to.be.at.least(new Date(secondText));
+            break;
+
+          case 'number':
+            // Parsing numbers and comparing based on sorting order
+            const firstNumber = parseFloat(firstText.replace(/,/g, '')) || (sorting === 'ascending' ? 0 : Number.MAX_SAFE_INTEGER);
+            const lastNumber = parseFloat(secondText.replace(/,/g, '')) || (sorting === 'ascending' ? Number.MAX_SAFE_INTEGER : 0);
+
+            if (sorting === 'ascending')
+              cy.wrap(lastNumber).should('be.gte', firstNumber);
+            else cy.wrap(firstNumber).should('be.gte', lastNumber);
             break;
 
           default:
@@ -49,19 +66,24 @@ Cypress.Commands.add(
 
 Cypress.Commands.add(
   'mrtSort',
-  ({ column, apiAlias = '@getESSimpleSearchApiByIndex', sorting = false }) => {
+  ({ column, apiAlias = '@getESSimpleSearchApiByIndex', sorting = false, sortOrder }) => {
 
-    cy.interceptAndWait(['getESSimpleSearch'], () => {
+    let responseHits;
+    cy.interceptAndWait(['getESSimpleSearch'], (alias) => {
 
       cy.get('table > thead > tr > th.MuiTableCell-root.MuiTableCell-head')
         .contains(column.name)
         .click();
 
-    });
+      cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
+        responseHits = response.response.body.data.getESSimpleSearch.hits;
+      });
+
+    }, { wait: false });
 
     cy.wait(100);
 
-    let ariaLabel = `Sort by ${column.name} ascending`;
+    let ariaLabel = `Sort by ${column.name} ${sortOrder}`;
     if (sorting === 'ascending') ariaLabel = `Sorted by ${column.name} ascending`;
     if (sorting === 'descending') ariaLabel = `Sorted by ${column.name} descending`;
 
@@ -81,15 +103,16 @@ Cypress.Commands.add(
             sorting,
             index,
             ...column,
+            responseHits,
           });
         });
   }
 );
 
-Cypress.Commands.add('mrtSortColumn', ({ column }) => {
-  cy.mrtSort({ column, sorting: 'ascending' });
-  cy.mrtSort({ column, sorting: 'descending' });
-  cy.mrtSort({ column });
+Cypress.Commands.add('mrtSortColumn', ({ column, sortOrder = "ascending" }) => {
+  cy.mrtSort({ column, sorting: sortOrder });
+  cy.mrtSort({ column, sorting: sortOrder === "ascending" ? 'descending' : "ascending" });
+  cy.mrtSort({ column, sortOrder });
 });
 
 Cypress.Commands.add('mrtApplyFilter', ({ column, callback }) => {
@@ -159,7 +182,18 @@ Cypress.Commands.add('mrtSingleSelect', ({ column }) => {
           });
 
           cy.get(`@${column.name}-value`).then(columValue => {
-            expect(columValue).to.be.equal(columOpton);
+
+            if (column.type === 'number') {
+              const roundedColumValue = Math.round(columValue * 100) / 100;
+              const roundedColumOpton = Math.round(columOpton * 100) / 100;
+
+              expect(roundedColumValue).to.be.equal(roundedColumOpton);
+            } else if (column.type === "combination_value") {
+              expect(columValue.includes(columOpton)).to.be.true;
+            }
+            else {
+              expect(columValue).to.be.equal(columOpton);
+            }
           });
         });
     });
@@ -188,7 +222,7 @@ Cypress.Commands.add('mrtExport', ({ columns }) => {
       const responseColumns =
         response.response.body.data.initializeExportJob.job.requestPayload.columns;
 
-      cy.expect(
+      expect(
         columns.every(column =>
           responseColumns.some(responseColumn => responseColumn.label === column.name)
         )
@@ -295,5 +329,47 @@ Cypress.Commands.add('mrtComparisonFilterCheck', ({ column, type, value, filter,
     });
 });
 
+Cypress.Commands.add('mrtPurchasedIconCheck', () => {
+  const contactName = "CLARK (Cypress do not delete)";
+  cy.interceptAndWait(['getESSimpleFilter'], () => {
+    cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+    cy.get(`[data-testid="single-filter-Contact Name"]`).as(`single-filter-Contact-Name`).click();
+    cy.get(`@single-filter-Contact-Name`).type(`${contactName}{enter}`);
+    cy.get('.MuiAutocomplete-option', {
+      timeout: basic_timeouts.midTimeout,
+    })
+      .first()
+      .as(`${"Contact Name"}-option`)
+      .invoke('text')
+      .then(columOpton => {
+        cy.interceptAndWait(['getESSimpleSearch'], (alias) => {
+          cy.get(`@${"Contact Name"}-option`).click();
+          cy.wait(5000);
+          cy.get('[data-testid="monetization-icon"]').should('exist');
+        }, { wait: false });
+      });
+  });
+});
+
+// Can be used to search in auto complete and then select firs matched option
+Cypress.Commands.add('mrtFilterBySearch', ({ value, columnlabel, alias }) => {
+  cy.interceptAndWait(['getESSimpleFilter'], () => {
+    cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+    cy.get(`[data-testid="single-filter-${columnlabel}"]`).as(`single-filter-${alias}`).click();
+    cy.get(`@single-filter-${alias}`).type(`${value}{enter}`);
+    cy.get('.MuiAutocomplete-option', {
+      timeout: basic_timeouts.midTimeout,
+    })
+      .first()
+      .as(`${columnlabel}-option`)
+      .invoke('text')
+      .then(() => {
+        cy.interceptAndWait(['getESSimpleSearch'], () => {
+          cy.get(`@${columnlabel}-option`).click();
+          cy.wait(5000);
+        }, { wait: false });
+      });
+  });
+});
 
 

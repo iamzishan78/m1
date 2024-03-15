@@ -52,7 +52,6 @@ Cypress.Commands.add('setMapData', ({ testId, value }) => {
   cy.get(`[data-testid="data-cell-${testId}"]`).contains(value);
 });
 
-
 describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
   it(`Restores Unit ${selectedShape.id}`, () => {
     const updateLayerPayload = {
@@ -85,7 +84,6 @@ describe('Restore Unit for ShapeDetailCard.cy.jsx if Deleted', () => {
 });
 
 describe('ShapeDetailCard Component', () => {
-
   beforeEach(() => {
     cy.request({
       method: 'POST',
@@ -94,7 +92,7 @@ describe('ShapeDetailCard Component', () => {
       body: getLayerPayload,
     }).then(response => {
       selectedShape = response?.body?.data?.customLayer;
-      let jsonLayer
+      let jsonLayer;
       if (selectedShape.shapeJson) jsonLayer = copy(selectedShape.shapeJson);
 
       jsonLayer.layer = { id: selectedShape.layer };
@@ -104,7 +102,7 @@ describe('ShapeDetailCard Component', () => {
         ...jsonLayer.properties,
         feature: jsonLayer,
         id: selectedShape._id,
-      }
+      };
 
       cy.interceptAndWait(['getCustomLayer'], alias => {
         popupController.updateState({ selectedShape });
@@ -124,16 +122,69 @@ describe('ShapeDetailCard Component', () => {
             cardHeightExpanded="calc(100vh - 64px)"
             targetSourceId={selectedShape?.id}
             targetLabel={selectedShape.type}
-          // deleteCustomLayer={deleteCustomLayer}
+            // deleteCustomLayer={deleteCustomLayer}
           ></ExpandableCardProvider>,
-          { spec: 'ShapeDetailCard' }
+          { spec: 'ShapeDetailCard', testCase: { layerId: selectedShape.id } }
         );
       });
     });
-
   });
 
-  it('IF TX ( State=CO,County=Denver ) ELSE ( State=TX,County=Austin )', retries.fiveTries,
+  /**
+   * Test case for verifying the functionality of recalculating shape owner values.
+   * It simulates user interactions to update shape owner values, recalculate, and verify the result.
+   */
+  it('Shape Owner Recalculate Works', () => {
+    // Intercepting API calls for fetching shape owner data and waiting for completion
+    cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+      // Clicking on the 'Interest Owners' tab
+      cy.get('[data-testid="shape-detail-tab-Interest Owners"]').click();
+    });
+
+    // Selecting a row in the table and updating NRA and target offer price
+    cy.get('tbody > tr').contains('1', { timeout: 5000 }).click({ force: true });
+    cy.get('[data-testid="nra-field"] input').clear().type(100);
+    cy.get('[data-testid="target-offer-price-field"] input').clear().type(100);
+
+    // Intercepting API call for updating shape owners and waiting for completion
+    cy.interceptAndWait(['updateShapeOwners'], () => {
+      // Clicking on the action button to update shape owners
+      cy.get('[data-testid="action-button"]').click();
+    });
+
+    // Waiting for a period of time for the update to propagate
+    cy.wait(10000);
+
+    // Clicking on the 'Select All Button' button for recalculation
+    cy.get('[aria-label="Toggle select all"]').eq(0).click();
+
+    cy.interceptAndWait(['getESSimpleSearch', 'shapeowners_flat'], () => {
+      // Clicking on the 'Recalculate' button
+      cy.get('[data-testid="recalculate"]').click();
+    });
+
+    // Intercepting API call for resetting calculated values of shape owners and waiting for completion
+    cy.interceptAndWait(['resetOwnersCalculatedValues'], () => {
+      // Clicking on the action button to reset calculated values
+      cy.get('[data-testid="action-button"]').click();
+    });
+
+    // Waiting for a period of time for the reset to propagate
+    cy.wait(10000);
+
+    // Verifying that the overridden class is removed from target offer price and NRA fields
+    cy.get('tbody > tr').contains('1').click({ force: true });
+
+    cy.get('[data-testid="target-offer-price-field"]').should(
+      'not.have.class',
+      'overridden'
+    );
+    cy.get('[data-testid="nra-field"]').should('not.have.class', 'overridden');
+  });
+
+  it(
+    'IF TX ( State=CO,County=Denver ) ELSE ( State=TX,County=Austin )',
+    retries.fiveTries,
     () => {
       const state = selectedShape.state;
       if (state === 'TX') {
@@ -142,11 +193,13 @@ describe('ShapeDetailCard Component', () => {
       } else {
         cy.setMapData({ testId: 'State', value: 'TX' });
         cy.setMapData({ testId: 'County', value: 'Austin' });
-
       }
-    });
+    }
+  );
 
-  it('IF TX ( Survey=ABBOTT, L, Block=37 T1N ) ELSE ( Township=035S,Range=055W )', retries.fiveTries,
+  it(
+    'IF TX ( Survey=ABBOTT, L, Block=37 T1N ) ELSE ( Township=035S,Range=055W )',
+    retries.fiveTries,
     () => {
       const state = selectedShape.state;
       if (state === 'TX') {
@@ -156,24 +209,28 @@ describe('ShapeDetailCard Component', () => {
         cy.setMapData({ testId: 'Township', value: '035S' });
         cy.setMapData({ testId: 'Range', value: '055W' });
       }
-    });
+    }
+  );
 
-  it('IF TX ( Section=47 ) ELSE ( Section=43 )', retries.fiveTries,
+  it('IF TX ( Section=47 ) ELSE ( Section=43 )', retries.fiveTries, () => {
+    const state = selectedShape.state;
+    if (state === 'TX') {
+      cy.setMapData({ testId: 'Section', value: '47' });
+    } else {
+      cy.setMapData({ testId: 'Section', value: '43' });
+    }
+  });
+
+  it(
+    'IF TX ( Description=Austin, TX - BLK 37 T1N, SEC 47 ) ELSE ( Description=Denver, CO - T035S R055W — Section 43 )',
+    retries.fiveTries,
     () => {
       const state = selectedShape.state;
       if (state === 'TX') {
-        cy.setMapData({ testId: 'Section', value: '47' });
+        cy.get('.description').should('contain', 'Austin, TX - BLK 37 T1N, SEC 47');
       } else {
-        cy.setMapData({ testId: 'Section', value: '43' });
+        cy.get('.description').should('contain', 'Denver, CO - T035S R055W — Section 43');
       }
-    });
-
-  it('IF TX ( Description=Austin, TX - BLK 37 T1N, SEC 47 ) ELSE ( Description=Denver, CO - T035S R055W — Section 43 )', retries.fiveTries, () => {
-    const state = selectedShape.state;
-    if (state === 'TX') {
-      cy.get('.description').should('contain', 'Austin, TX - BLK 37 T1N, SEC 47')
-    } else {
-      cy.get('.description').should('contain', 'Denver, CO - T035S R055W — Section 43')
     }
-  });
+  );
 });

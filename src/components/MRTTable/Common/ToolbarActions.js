@@ -127,11 +127,11 @@ function ToolbarActions({ table, tableKey, children }) {
 			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
 				{children || <div />}
 
-				<IconButton onClick={handleExport} data-testid="download-csv">
+				{!tableStateValues.isGeneric && <IconButton onClick={handleExport} data-testid="download-csv">
 					<Tooltip title="Download CSV" aria-label="add">
 						<CloudDownloadIcon />
 					</Tooltip>
-				</IconButton>
+				</IconButton>}
 
 				{isSomethingSelected && !!!tableStateValues.isDeleteDisabled && (
 					<IconButton aria-label="delete" data-testid="delete-icon-button" onClick={() => handleDelete()}>

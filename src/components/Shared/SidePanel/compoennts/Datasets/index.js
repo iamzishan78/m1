@@ -237,7 +237,12 @@ function Datasets({ headerButton, search, stateApp, setStateApp }) {
             </StyledMenuSecondaryHeaderItem>
             <div className={classes.root}>
                 {datasets?.map(({ sourceName, Icon, categories, ...rest }) => (
-                    <Grid className="item" key={sourceName} onClick={() => onItemClick({ sourceName, Icon, categories, ...rest })}>
+                    <Grid
+                        className="item"
+                        key={sourceName}
+                        data-testid={`dataset-${sourceName === 'M1 Platform' ? 'platform' : 'custom'}`}
+                        onClick={() => onItemClick({ sourceName, Icon, categories, ...rest })}
+                    >
                         <Box borderColor={getBorderColor(sourceName)} borderLeft={4} margin={1} marginLeft={0} >
 
                             <Icon className='dIcon' />

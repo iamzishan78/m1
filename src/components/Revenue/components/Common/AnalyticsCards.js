@@ -8,7 +8,6 @@ import { useLazyQuery } from "@apollo/client";
 
 import { GET_ES_AGGS_LIST } from "graphQL/useQueryESAggsList";
 import FilterIcon from "components/Common/SvgIcons/Filter";
-import { copy } from "components/Shared/functions";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -216,7 +215,7 @@ export default function AnalyticsCards({
       variables: {
         esIndex,
         search: landSearchQuery ? `${landSearchQuery}*` : "",
-        filters: esFilters,
+        filters: esFilters.filter((appliedFilter) => !appliedFilter.field === "wells._id"),
         aggs: {
           name: {
             terms: { field: "lastCheck._id.keyword" }
@@ -255,7 +254,7 @@ export default function AnalyticsCards({
       setCards(cardsDefault);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [totalCount]);
+  }, [totalCount, unmappedPropertyCount]);
 
   const handleFilterClick = (key) => {
     if (key === "inpay" || key === "notinpay") {

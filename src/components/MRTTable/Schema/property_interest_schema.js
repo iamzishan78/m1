@@ -40,7 +40,25 @@ const PropertyIntrestMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'property.number.keyword',
 			accessorKey: 'property.number',
-			header: 'Property Number',
+			header: 'Operator Property #',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'property.operator.name.keyword',
+			accessorKey: 'property.operator.name',
+			header: 'Operator',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'property.purchaser.name.keyword',
+			accessorKey: 'property.purchaser.name',
+			header: 'Payor',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: "property.purchaserNumber.keyword",
+			accessorKey: 'property.purchaserNumber',
+			header: "Payor Property #",
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
