@@ -307,6 +307,7 @@ export default function AddContactDialogContent(props) {
         <TextField
           id="firstName"
           size="small"
+          data-testid="contact-firstName-text-field"
           className={classes.maxWidth}
           multiline
           value={newContact.firstName}
@@ -611,6 +612,7 @@ export default function AddContactDialogContent(props) {
         <Button
           id="addContactButton"
           disabled={!validated}
+          data-testid="contact-add-button"
           onClick={handleClickAdd}
           variant="contained"
           color="secondary"

@@ -4,11 +4,7 @@ import { basic_timeouts } from "../../../cypress/cypressUtils/data";
 import { globalStateController } from "hookstate/globalStateController";
 import ldata from "../../fixtures/ldata.json";
 import { REVERTCYPRESSDELETE } from "graphQL/useMutationCommonCypressRevert";
-
-const headers = {
-  "Content-Type": "application/json",
-  "X-ZUMO-AUTH": ldata.x_zumo_auth,
-};
+import { headers } from "../../cypressUtils/cypressHeaders";
 
 const columns = [{ name: "M1neral System ID" }];
 
@@ -80,6 +76,10 @@ describe("Unit Table", () => {
         );
       },
     });
+  });
+
+  it("checks created at/by and updated at/by fields in unit grid", () => {
+    cy.VerifyAuthInfoMRT();
   });
 
   //test case to verify Total Unit Interest column visible in grid

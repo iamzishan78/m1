@@ -861,6 +861,7 @@ function SubTable(props) {
               if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
                 multiSelectMouseHoverColor(id, "#efefef");
             }}
+            data-testid={`comment-icon-button-${tableMeta.rowIndex}`}
           >
             {value}
           </Button>
@@ -1307,6 +1308,13 @@ function SubTable(props) {
       return vf_currency(v);
 
     if (column.name === "lastUpdateAt")
+      return anyToDate(v).toLocaleString("en-US", {
+        year: "numeric",
+        day: "numeric",
+        month: "numeric",
+      });
+
+    if (column.name === "createAt")
       return anyToDate(v).toLocaleString("en-US", {
         year: "numeric",
         day: "numeric",

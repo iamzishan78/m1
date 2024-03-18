@@ -157,6 +157,16 @@ const ContactMeta = {
 			hidden: true,
 		},
 
+		// Make formerName to visibile in contact grid
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'formerName.keyword',
+			accessorKey: 'formerName',
+			header: 'Also Known As',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'lastName.keyword',
@@ -581,6 +591,7 @@ const ContactMeta = {
 			hidden: true,
 		},
 
+
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'interestSummary.wellInterestCount',
@@ -624,16 +635,6 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'lastUpdateBy.name.keyword',
-			accessorFn: row => row?.lastUpdateBy?.name,
-			id: 'lastUpdateBy.name',
-			header: 'Updated By',
-			hidden: true,
-			enableColumnActions: false,
-			isSearchField: false,
-		},
-		{
-			...CommonSchema.COMMON_COLUMN,
 			name: 'isPurchased',
 			accessorKey: 'isPurchased',
 			header: 'Is Purchased Data',
@@ -648,15 +649,11 @@ const ContactMeta = {
 				return <>{isPurchased ? 'Yes' : 'No'}</>;
 			},
 		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'lastUpdateAt',
-			accessorKey: 'lastUpdateAt',
-			header: 'Last Updated',
-			isSearchField: false,
-			type: 'date',
-			Cell: ({ row }) => <>{formatDate(row.getValue('lastUpdateAt'))}</>,
-		},
+
+		CommonSchema.CREATED_BY,
+		CommonSchema.CREATED_DATE,
+		CommonSchema.LAST_UPDATED_BY,
+		CommonSchema.LAST_UPDATED_DATE,
 
 		{
 			...CommonSchema.TAGS,

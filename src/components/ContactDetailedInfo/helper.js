@@ -628,6 +628,12 @@ export const SUMMARY_FIELDS = (contactData) => {
       position: "left",
     },
     {
+      label: "Also Known As",
+      key: "formerName",
+      type: "text",
+      position: "left",
+    },
+    {
       label: "Last Name",
       key: "lastName",
       type: "text",
@@ -713,12 +719,10 @@ export const SUMMARY_FIELDS = (contactData) => {
       value: { contactStatus: contactData?.contactStatus },
     },
     {
-      label: "Last Updated",
-      key: "",
-      type: "text",
+      label: "Stage",
+      key: "status",
+      type: "autocomplete",
       position: "right",
-      value: getLastUpdatedByValue(contactData),
-      disabled: true,
     },
     {
       label: "Account",
@@ -737,6 +741,14 @@ export const SUMMARY_FIELDS = (contactData) => {
       key: "title",
       type: "text",
       position: "left",
+    },
+    {
+      label: "Last Updated",
+      key: "",
+      type: "text",
+      position: "right",
+      value: getLastUpdatedByValue(contactData),
+      disabled: true,
     },
   ];
 }

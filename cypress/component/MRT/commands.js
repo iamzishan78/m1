@@ -147,6 +147,46 @@ Cypress.Commands.add('mrtApplyFilter', ({ column, callback }) => {
 });
 
 
+Cypress.Commands.add('mrtApplySpecificFilter', ({ column, optioText, callback }) => {
+
+  cy.interceptAndWait(['getESSimpleFilter'], () => {
+    cy.get(`[data-testid="single-filter-${column.name}"]`).as(`single-filter-${column.name}`).click();
+  });
+
+  cy.wait(100);
+
+  cy.get('.MuiAutocomplete-popper').should('exist');
+
+  cy.get(
+    `.MuiFormControl-root[data-testid="mrt-grid-filter-text-field-${column.name}"]`
+  )
+    .click()
+    .clear()
+    .type(`${optioText}`);
+
+  cy.get('.MuiAutocomplete-option', {
+    timeout: basic_timeouts.midTimeout,
+  })
+    .first()
+    .as(`${column.name}-option`)
+    .invoke('text')
+    .then(columOpton => {
+      cy.interceptAndWait(['getESSimpleSearch'], (alias) => {
+        cy.get(`@${column.name}-option`).click();
+
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(
+          (selectedRows) => {
+            const responseData = selectedRows?.response?.body?.data?.getESSimpleSearch.hits;
+            callback(responseData);
+
+          }
+        );
+
+      }, { wait: false });
+    });
+});
+
+
 Cypress.Commands.add('mrtSingleSelect', ({ column }) => {
   cy.interceptAndWait(['getESSimpleFilter'], () => {
     cy.get(`[data-testid="single-filter-${column.name}"]`).as(`single-filter-${column.name}`).click();
@@ -350,6 +390,26 @@ Cypress.Commands.add('mrtPurchasedIconCheck', () => {
       });
   });
 });
+
+Cypress.Commands.add('VerifyAuthInfoMRT', () => {
+  cy.get('table thead th div.Mui-TableHeadCell-Content-Wrapper')
+    .contains('Created By')
+    .should('exist');
+
+  cy.get('table thead th div.Mui-TableHeadCell-Content-Wrapper')
+    .contains('Created By')
+    .should('exist');
+  cy.get('table thead th div.Mui-TableHeadCell-Content-Wrapper')
+    .contains('Created Date')
+    .should('exist');
+  cy.get('table thead th div.Mui-TableHeadCell-Content-Wrapper')
+    .contains('Last Updated By')
+    .should('exist');
+  cy.get('table thead th div.Mui-TableHeadCell-Content-Wrapper')
+    .contains('Last Updated Date')
+    .should('exist');
+});
+
 
 // Can be used to search in auto complete and then select firs matched option
 Cypress.Commands.add('mrtFilterBySearch', ({ value, columnlabel, alias }) => {
