@@ -20,9 +20,9 @@ export const FEATURES = {
     SHOWUSERPRIVILEGES: 'showUserPrivileges',
     AGREEMENT_LAYER: 'AgreementLayer',
     ANALYTICS: 'analyticsModule',
-    RECENTPERMITLAYER:'showRecentPermitsLayer',
-    TRACKEDWELLSLAYER:'showTrackedWellsLayer',
-    USERTAGSLAYER:'showUserTagsLayer',
+    RECENTPERMITLAYER: 'showRecentPermitsLayer',
+    TRACKEDWELLSLAYER: 'showTrackedWellsLayer',
+    USERTAGSLAYER: 'showUserTagsLayer',
     SEARCHLAYER: 'showSearchLayer',
 };
 
