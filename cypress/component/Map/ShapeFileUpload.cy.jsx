@@ -11,11 +11,7 @@ import { UPDATEMANYLAYERSETTINGS } from 'graphQL/useMutationUpdateManyLayerSetti
 import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 import { basic_timeouts } from '../../cypressUtils/data';
 import ldata from '../../fixtures/ldata.json';
-
-const headers = {
-  'Content-Type': 'application/json',
-  'X-ZUMO-AUTH': ldata.x_zumo_auth,
-};
+import { headers } from '../../cypressUtils/cypressHeaders';
 
 const { midTimeout, longTimeout, partialLongTimeout } = basic_timeouts;
 
@@ -163,24 +159,28 @@ describe('Map Component Shape File Upload', () => {
   });
 
   it('Restores deleted data', () => {
+    // Payload for updating the dataset
     const updateDatasetPayload = {
       operationName: 'updateDataset',
       variables: { dataset },
       query: UPDATE_DATASET.loc.source.body,
     };
 
+    // Payload for updating multiple layers
     const updatelayersPayload = {
       operationName: 'updateManyLayer',
       variables: { layers },
       query: UPDATE_MANY_LAYER.loc.source.body,
     };
 
+    // Payload for updating multiple layer settings
     const updateLayerSettingsPayload = {
       operationName: 'UpdateManyLayerSettings',
       variables: { manySettings },
       query: UPDATEMANYLAYERSETTINGS.loc.source.body,
     };
 
+    // Payload for updating user map settings
     const updateMapSettingsPayload = {
       operationName: 'updateUserMapSettings',
       variables: {
@@ -195,24 +195,30 @@ describe('Map Component Shape File Upload', () => {
       query: UPDATE_USER_MAP_SETTINGS.loc.source.body,
     };
 
+    // Making HTTP requests to update dataset, layers, map settings, and layer settings
     cy.request({
       method: 'POST',
       url: ldata.url,
       headers: headers,
       body: updateDatasetPayload,
     }).then(() => {
+      // Upon successful update of dataset, updating layers
       cy.request({
         method: 'POST',
         url: ldata.url,
         headers: headers,
         body: updatelayersPayload,
       });
+
+      // Updating user map settings
       cy.request({
         method: 'POST',
         url: ldata.url,
         headers: headers,
         body: updateMapSettingsPayload,
       });
+
+      // Updating layer settings
       cy.request({
         method: 'POST',
         url: ldata.url,
@@ -253,40 +259,52 @@ describe('Map Component Shape File Upload', () => {
   //   );
   // });
 
-  it('Data exits in dataset grid', () => {
-    // cy.wait(partialLongTimeout);
-
+  // Test case to ensure that data exists in the dataset grid
+  it('Data exists in dataset grid', () => {
+    // Intercepting requests for 'getESSimpleSearch' and 'shapefile_flat' and waiting for them to complete
     cy.interceptAndWait(['getESSimpleSearch', 'shapefile_flat'], () => {
+      // Clicking on the grid icon corresponding to the given sourceName after scrolling into view
       cy.get(`[id='grid-icon-${sourceName}']`, { timeout: longTimeout })
         .scrollIntoView()
         .click({ force: true });
     });
 
+    // Verifying that the tbody does not contain messages indicating no results or no records to display
     cy.get('tbody').should('not.contain', 'No results found');
     cy.get('tbody').should('not.contain', 'No records to display');
 
+    // Closing the modal with class '.MuiButtonBase-root' and aria-label "Close"
     cy.get('.MuiButtonBase-root[aria-label="Close"]').click();
 
+    // Waiting for 1000 milliseconds
     cy.wait(1000);
   });
 
+  // Test case to verify that the shapefile grid flyto functionality works
   it('Shapefile grid flyto works', () => {
+    // Intercepting requests for 'getESSimpleSearch' and 'shapefile_flat' and waiting for them to complete
     cy.interceptAndWait(['getESSimpleSearch', 'shapefile_flat'], () => {
+      // Clicking on the grid icon corresponding to the given sourceName after scrolling into view
       cy.get(`[id='grid-icon-${sourceName}']`, { timeout: longTimeout })
         .scrollIntoView()
         .click({ force: true });
     });
 
+    // Clicking on the first element with data-testid "mrt-fly-to-map"
     cy.get('[data-testid="mrt-fly-to-map"]').eq(0).click();
 
+    // Waiting for a short timeout before executing assertions
     cy.wait(basic_timeouts.shorTimeout).then(() => {
+      // Getting values from the popup controller for selectedShapeFile and selectedUserDefinedLayer
       const { selectedShapeFile, selectedUserDefinedLayer } = popupController.getValues([
         'selectedShapeFile',
         'selectedUserDefinedLayer',
       ]);
 
+      // Expecting selectedShapeFile to be truthy
       expect(!!selectedShapeFile).to.be.equal(true);
 
+      // Getting the bounds of the map
       const bounds = window.mapRef.getBounds();
       const bbox = [
         bounds.getWest(),
@@ -298,7 +316,8 @@ describe('Map Component Shape File Upload', () => {
 
       let isGeometryWithinBbox = false;
 
-      if (selectedShapeFile.geometry.type === 'MultiPolygon')
+      // Checking if the selectedShapeFile's geometry is within the bboxPolygon
+      if (selectedShapeFile.geometry.type === 'MultiPolygon') {
         for (let i = 0; i < selectedShapeFile.geometry.coordinates.length; i++) {
           let polygon = turf.polygon(selectedShapeFile.geometry.coordinates[i]);
           if (turf.booleanWithin(polygon, bboxPolygon)) {
@@ -306,14 +325,17 @@ describe('Map Component Shape File Upload', () => {
             break;
           }
         }
-      else
+      } else {
         isGeometryWithinBbox = turf.booleanWithin(
           selectedShapeFile.geometry,
           bboxPolygon
         );
+      }
 
+      // Expecting the geometry to be within the bbox
       expect(isGeometryWithinBbox).to.be.equal(true);
 
+      // Verifying the title and subheader of the ud-layer-card-header
       cy.get('[data-testid="ud-layer-card-header"] .MuiCardHeader-title').contains(
         getUdLayerCardTitle(selectedUserDefinedLayer)
       );
@@ -324,36 +346,46 @@ describe('Map Component Shape File Upload', () => {
           : ''
       );
 
+      // Closing the modal with class '.MuiButtonBase-root' and aria-label "Close"
       cy.get('.MuiButtonBase-root[aria-label="Close"]').click();
 
+      // Waiting for 1000 milliseconds
       cy.wait(1000);
     });
   });
 
+  // Test case to ensure that deleting a sub dataset does not delete the group
   it('Does not delete the group when a sub dataset is deleted', () => {
+    // Clicking on the manager button and ensuring it is visible
     cy.get('#managerButton', { timeout: longTimeout }).should('be.visible').click();
 
+    // Ensuring the source manager division is visible
     cy.get('#sourceManagerDiv', { timeout: longTimeout }).should('be.visible');
 
+    // Clicking on the specific source to manage
     cy.get(`[data-testid='source-${sourceName}']`, { timeout: longTimeout })
       .scrollIntoView()
       .click();
 
+    // Scrolling to the source-ul element related to the sourceName
     cy.get(`[data-testid='source-ul-${sourceName}']`, {
       timeout: longTimeout,
     }).scrollIntoView();
+
+    // Finding and clicking on the delete option for the source
     cy.get(`[data-testid='source-ul-${sourceName}']`)
       .find('[aria-controls="more-source-menu"]')
       .eq(0)
       .invoke('show')
       .click({ force: true });
 
+    // Clicking on the deleteSource option and intercepting getDatasets request
     cy.get('#deleteSource', { timeout: longTimeout }).click();
-
     cy.interceptAndWait(['getDatasets'], () => {
       cy.get('#deleteConfirmation', { timeout: longTimeout }).click();
     });
 
+    // Verifying that the group related to the sourceName still exists
     cy.get(`[data-testid="group-${sourceName}"]`);
   });
 

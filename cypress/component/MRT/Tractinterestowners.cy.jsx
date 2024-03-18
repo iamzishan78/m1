@@ -3,12 +3,7 @@ import MRTTable from 'components/MRTTable';
 import { basic_timeouts } from '../../../cypress/cypressUtils/data';
 import ldata from '../../fixtures/ldata.json';
 import { REVERTCYPRESSDELETE } from 'graphQL/useMutationCommonCypressRevert';
-
-// Define headers for the API request
-const headers = {
-  'Content-Type': 'application/json',
-  'X-ZUMO-AUTH': ldata.x_zumo_auth,
-};
+import { headers } from '../../cypressUtils/cypressHeaders';
 
 // Describe block for testing the Tract Interest Owners Table
 describe('Tract Interest Owners Table', () => {
