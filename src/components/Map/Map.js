@@ -611,7 +611,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             layer.fileViewed = hookStateLayer.fileViewed
           }
           if (hookStateLayer?.fileUrl && hookStateLayer?.fileViewed) continue
-          const visible = layer.layerSettings.showable && layer.layerSettings.visiable !== false;
+          const visible = layer.layerSettings?.showable && layer.layerSettings?.visiable !== false;
           if (layer.layerType === "file layer" && !visible) {
             layer.fileViewed = false
           }
