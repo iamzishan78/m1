@@ -165,6 +165,7 @@ export default function CampaignNameField(props) {
             className={classes.chip}
             multiple
             id="tags-outlined"
+            data-testid="campaign-name-autocomplete"
             onChange={(e, newValue, reason) => handleChange(newValue, reason)}
             options={options}
             value={inputValue}
@@ -178,6 +179,7 @@ export default function CampaignNameField(props) {
                   label={tag}
                   {...getTagProps({ index })}
                   deleteIcon={!props.disabled ? <ClearIcon /> : <></>}
+                  data-testid="campaign-name-chip"
                 />
               ))
             }}

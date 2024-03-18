@@ -420,8 +420,6 @@ export function DetailComponents(props) {
         userId: stateApp.user.mongoId,
       },
       refetchQueries: ["customLayer"],
-    }).then(() => {
-      jobController.toggleBulkUpload()
     });
   };
 

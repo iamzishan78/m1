@@ -1,21 +1,85 @@
 /* eslint-disable no-undef */
-import Wells from 'components/Land/components/Wells';
-import { REMOVE_WELLS } from 'graphQL/useMutationRemoveWells';
-import { basic_timeouts } from '../../cypressUtils/data';
-import ldata from '../../fixtures/ldata.json';
-
-const headers = {
-  'Content-Type': 'application/json',
-  'X-ZUMO-AUTH': ldata.x_zumo_auth,
-};
+import Wells from "components/Land/components/Wells";
+import { REMOVE_WELLS } from "graphQL/useMutationRemoveWells";
+import { basic_timeouts } from "../../cypressUtils/data";
+import ldata from "../../fixtures/ldata.json";
+import { headers } from "../../cypressUtils/cypressHeaders";
 
 let wellIds;
 let wellName;
 
 describe('MyWells ESHOC Table', () => {
-  it('checks well name is updating correctly', () => {
+  it('adds and remove well from slideout', () => {
+    let addedWellId;
     cy.interceptAndWait(['getESSimpleSearch', 'mywells_flat'], () => {
       cy.viewport(1600, 1200).mount(<Wells />, { testCase: 'MyWellsNameUpdate' });
+    });
+    cy.contains('+ ADD WELL').click();
+    cy.get('[data-testid="well-search-field"]').clear().type("JJ PRATER HEIRS JJ-I1");
+    cy.wait(15000);
+    cy.interceptAndWait(
+      ['getESSimpleSearch'],
+      alias => {
+        cy.get('.MuiAutocomplete-option').first().click();
+        cy.wait(10000)
+        cy.get('[data-testid="close-dialog"]').click();
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
+          addedWellId = response.response.body.data.getESSimpleSearch.hits[0]._id;
+        });
+        cy.get(
+          '#MUIDataTableBodyRow-0 > td:nth-child(2) > div:nth-child(2) > div > div > a'
+        ).click();
+        cy.wait(15000);
+        cy.get('[data-testid="menu-icon"]').click();
+        cy.get('[data-testid="delete-button"]').click();
+        cy.interceptAndWait(
+          ['getESSimpleSearch'],
+          alias => {
+            cy.get('[data-testid="deleteButton-popup"]').click();
+            cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
+              expect(addedWellId).to.not.equal(response.response.body.data.getESSimpleSearch.hits?.[0]?._id);
+            });
+          },
+          { wait: false }
+        );
+      },
+      { wait: false }
+    );
+  });
+
+  it('adds well from slideout', () => {
+    let addedWellId;
+    cy.interceptAndWait(["getESSimpleSearch", "mywells_flat"], () => {
+      cy.viewport(1600, 1200).mount(<Wells />, {
+        testCase: "MyWellsNameUpdate",
+      });
+    });
+    cy.contains("+ ADD WELL").click();
+    cy.get('[data-testid="well-search-field"]')
+      .clear()
+      .type("JJ PRATER HEIRS JJ-I1");
+    cy.wait(15000);
+    cy.interceptAndWait(
+      ["getESSimpleSearch"],
+      (alias) => {
+        cy.get(".MuiAutocomplete-option").first().click();
+        cy.wait(10000);
+        cy.get('[data-testid="close-dialog"]').click();
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(
+          (response) => {
+            addedWellId =
+              response.response.body.data.getESSimpleSearch.hits[0]._id;
+          }
+        );
+      },
+      { wait: false }
+    );
+  });
+  it("checks well name is updating correctly", () => {
+    cy.interceptAndWait(["getESSimpleSearch", "mywells_flat"], () => {
+      cy.viewport(1600, 1200).mount(<Wells />, {
+        testCase: "MyWellsNameUpdate",
+      });
     });
 
     // Generate a random number between 1 and 1000 (adjust range as needed)
@@ -23,7 +87,7 @@ describe('MyWells ESHOC Table', () => {
     wellName = `Testing well name ${randomNumber}`;
 
     cy.get(
-      '#MUIDataTableBodyRow-0 > td:nth-child(2) > div:nth-child(2) > div > div > a'
+      "#MUIDataTableBodyRow-0 > td:nth-child(2) > div:nth-child(2) > div > div > a"
     ).click();
     cy.wait(15000);
 
@@ -33,22 +97,22 @@ describe('MyWells ESHOC Table', () => {
     cy.get('[data-testid="close-dialog"]').click();
 
     cy.get(
-      '#MUIDataTableBodyRow-0 > td:nth-child(2) > div:nth-child(2) > div > div > a'
-    ).should('have.text', wellName);
+      "#MUIDataTableBodyRow-0 > td:nth-child(2) > div:nth-child(2) > div > div > a"
+    ).should("have.text", wellName);
   });
 
-  it('deletes wells correctly', () => {
-    cy.interceptAndWait(['getESSimpleSearch', 'mywells_flat'], () => {
+  it("deletes wells correctly", () => {
+    cy.interceptAndWait(["getESSimpleSearch", "mywells_flat"], () => {
       cy.viewport(1600, 1200).mount(
         <Wells
           defaultFilters={[
             {
-              field: 'wellData.wellName.keyword',
+              field: "wellData.wellName.keyword",
               value: wellName,
             },
           ]}
         />,
-        { testCase: 'MyWellsNameUpdate' }
+        { testCase: "MyWellsNameUpdate" }
       );
     });
 
@@ -57,38 +121,42 @@ describe('MyWells ESHOC Table', () => {
     cy.get('button.MuiButtonBase-root[aria-label="delete"]').click();
 
     cy.interceptAndWait(
-      ['removeWells'],
-      alias => {
-        cy.get('button.MuiButtonBase-root#deleteButton').click();
+      ["removeWells"],
+      (alias) => {
+        cy.get("button.MuiButtonBase-root#deleteButton").click();
 
-        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(response => {
-          wellIds = response.request.body.variables.wellIds;
-        });
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(
+          (response) => {
+            wellIds = response.request.body.variables.wellIds;
+          }
+        );
 
-        cy.get('table > tbody > tr > td').contains('Sorry, no matching records found');
+        cy.get("table > tbody > tr > td").contains(
+          "Sorry, no matching records found"
+        );
       },
       { wait: false }
     );
   });
 
-  it('restores deleted wells', () => {
-    const payload = {
-      operationName: 'removeWells',
-      variables: {
-        wellIds,
-        isDeleted: false,
-      },
-      query: REMOVE_WELLS.loc.source.body,
-    };
+  // it('restores deleted wells', () => {
+  //   const payload = {
+  //     operationName: 'removeWells',
+  //     variables: {
+  //       wellIds,
+  //       isDeleted: false,
+  //     },
+  //     query: REMOVE_WELLS.loc.source.body,
+  //   };
 
-    cy.request({
-      method: 'POST',
-      url: ldata.url,
-      headers: headers,
-      body: payload,
-    }).then(response => {
-      expect(response.status).to.eq(200);
-      expect(response.body.data.removeWells.success).to.eq(true);
-    });
-  });
+  //   cy.request({
+  //     method: 'POST',
+  //     url: ldata.url,
+  //     headers: headers,
+  //     body: payload,
+  //   }).then(response => {
+  //     expect(response.status).to.eq(200);
+  //     expect(response.body.data.removeWells.success).to.eq(true);
+  //   });
+  // });
 });

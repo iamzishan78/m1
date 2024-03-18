@@ -301,7 +301,7 @@ const SummarySection = ({ checkId }) => {
   // products summary
   useEffect(() => {
     if (prodSummary) {
-      const productMapping = metaData.find((meta) => meta.name === 'product_type')
+      const productMapping = metaData?.find((meta) => meta.name === 'product_type')
 
       const products = uniqBy(productMapping?.mapping, 'to').map((product) => product.to)
       let buckets = [];

@@ -20,7 +20,10 @@ export const FEATURES = {
     SHOWUSERPRIVILEGES: 'showUserPrivileges',
     AGREEMENT_LAYER: 'AgreementLayer',
     ANALYTICS: 'analyticsModule',
-    RECENTPERMITLAYER:'showRecentPermitsLayer',
+    RECENTPERMITLAYER: 'showRecentPermitsLayer',
+    TRACKEDWELLSLAYER: 'showTrackedWellsLayer',
+    USERTAGSLAYER: 'showUserTagsLayer',
+    SEARCHLAYER: 'showSearchLayer',
 };
 
 export const ROUTES = {
@@ -86,4 +89,3 @@ export const ROUTES = {
         },
     },
 };
-

@@ -151,20 +151,12 @@ const CampaignMeta = {
       header: 'Supervisor',
       isExternalFilter: true,
     },
-    {
-      ...CommonSchema.COMMON_COLUMN,
-      showInLast: true,
-      name: 'createdAt',
-      accessorKey: 'createdAt',
-      header: 'Created Date',
-      type: 'date',
-      isExternalFilter: true,
-      isSearchField: false,
-      Cell: ({ row }) => {
-        const createdAt = row.getValue('createdAt');
-        return <>{formatDate(createdAt)}</>
-      },
-    },
+
+    CommonSchema.CREATED_BY,
+    CommonSchema.CREATED_DATE,
+    CommonSchema.LAST_UPDATED_BY,
+    CommonSchema.LAST_UPDATED_DATE,
+
     {
       ...CommonSchema.TAGS,
       Cell: ({ row }) => {
