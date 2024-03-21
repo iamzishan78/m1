@@ -167,11 +167,8 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
       // Retrieve custom meta fields using the provided function
       const customMetaData = getCustomMetaFields(properties, metaData);
 
-      // Concatenate table data with custom data array from properties
-      let td = tableData.concat(properties?.custom_data_arr || []);
-
       // Concatenate table data with custom meta data
-      td = tableData.concat(customMetaData);
+      const td = tableData.concat(customMetaData);
 
       // Filter the table data based on the search input
       const newTableData = td.filter(
@@ -192,11 +189,8 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
       // If search input is empty, retrieve custom meta fields
       const customMetaData = getCustomMetaFields(properties, metaData);
 
-      // Concatenate table data with custom data array from properties
-      let td = tableData.concat(properties?.custom_data_arr || []);
-
       // Concatenate table data with custom meta data
-      td = tableData.concat(customMetaData);
+      const td = tableData.concat(customMetaData);
 
       // Set the filtered table data to the concatenated table data
       setFilteredTableData(td);
@@ -339,7 +333,6 @@ export default function SummaryTableInfo({ tableData, properties, updateProperti
       <TableBody>
         {filteredTableData.map((data, index) => (
           <>
-            {console.log('data', data)}
             <TableRow className={index % 2 === 0 ? classes.rowGrey : classes.rowWhite}>
               <TableCell
                 className={classes.cell1}
