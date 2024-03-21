@@ -136,7 +136,7 @@ const RevenuePropertiesHeadCells = (isReportingGroup = false) => [
   },
   {
     name: "purchaserNumber",
-    label: "Purchaser Prop #",
+    label: "Payor Prop #",
     esKey: "purchasernumber.keyword",
     options: {
       sort: true,

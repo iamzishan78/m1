@@ -170,7 +170,7 @@ export default function HeaderSection(props) {
       // }
       if (!purchaser || !purchaserNumber) {
         dispatch(
-          showInfoMessage("Purchaser and Purchaser Prop # are required.")
+          showInfoMessage("Payor and Payor Prop # are required.")
         );
         history.goBack();
       }

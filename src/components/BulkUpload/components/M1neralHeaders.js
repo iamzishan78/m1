@@ -489,7 +489,7 @@ export default function M1neralHeaders() {
             case 'PROPERTIES':
               return (
                 <div style={{ ...text_grey }}>
-                  * Purchaser and Purchaser Prop # are required to be <br /> populated before
+                  * Payor and Payor Prop # are required to be <br /> populated before
                   uploading properties.
                 </div>
               );

@@ -35,7 +35,7 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "purchaserName",
-    label: "Purchaser Name",
+    label: "Payor Name",
     esKey: "payor.name.keyword",
     options: {
       display: false,

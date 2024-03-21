@@ -121,14 +121,14 @@ const PropertiesMeta = {
       name: 'purchaserNumber.keyword',
       accessorFn: row => row?.purchaserNumber,
       id: 'purchaserNumber',
-      header: 'Purchaser Prop #',
+      header: 'Payor Prop #',
     },
     {
       ...CommonSchema.COMMON_COLUMN,
       name: 'purchaser.name.keyword',
       accessorFn: row => row?.purchaser?.name,
       id: 'purchaser.name',
-      header: 'Purchaser',
+      header: 'Payor',
     },
     {
       ...CommonSchema.COMMON_COLUMN,
