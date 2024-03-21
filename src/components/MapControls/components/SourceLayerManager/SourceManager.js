@@ -570,7 +570,7 @@ function SourceManager(props) {
             // Iterate through each file in the zip
             const zipFiles = {}
             zip.forEach(async (relativePath, zipEntry) => {
-              if (!zipEntry.dir && !relativePath.includes('xml') && !relativePath.includes('pdf')) {
+              if (!zipEntry.dir && !relativePath.includes('xml') && !relativePath.includes('pdf') && !relativePath.includes('__MACOSX')) {
                 const name = relativePath.split('.').slice(0, -1).join('.')
                 if (!zipFiles[name]) zipFiles[name] = []
                 zipFiles[name].push(zipEntry)
@@ -602,7 +602,6 @@ function SourceManager(props) {
                   .then(response => response.json())
                   .then(result => {
                     if (result.error) return reject(result)
-                    console.log("🚀 ~ res=awaitnewPromise ~ result:", result)
                     const name = fileName.replace(".zip", "");
                     geojsons.push(result)
                     resolve({ data: singleGeojson(result, name), originalData: { file: fileData, fileName, fileType } });
