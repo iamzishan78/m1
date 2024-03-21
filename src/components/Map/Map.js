@@ -91,6 +91,10 @@ import { useHookstate } from '@hookstate/core';
 import { hookStateApp } from "hookstate";
 import { GET_ES_SIMPLE_SEARCH } from "graphQL/useQueryESSimpleSearch";
 import { jobController } from "hookstate/jobStateController";
+import { popupController } from "hookstate/popupStateController";
+import { globalStateController } from "hookstate/globalStateController";
+
+let udLayerClickHandlerRef;
 
 const useStyles = makeStyles((theme) => ({
   mapWrapper: {
@@ -142,6 +146,9 @@ let hoveredAbstractId = null;
 function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial = true, width, hideShape = false, layerPadding = null }) {
   // context states
   const hookState = useHookstate(hookStateApp);
+
+  const { selectedShapeFile, popupStateValues } = popupController.useState(['selectedShapeFile'], 'popupStateValues');
+
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
   const history = useHistory();
@@ -367,6 +374,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         expandedCard: false,
         viewDoc: null,
       }));
+      popupController.reset();
     }
   }, []);
 
@@ -603,7 +611,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             layer.fileViewed = hookStateLayer.fileViewed
           }
           if (hookStateLayer?.fileUrl && hookStateLayer?.fileViewed) continue
-          const visible = layer.layerSettings.showable && layer.layerSettings.visiable !== false;
+          const visible = layer.layerSettings?.showable && layer.layerSettings?.visiable !== false;
           if (layer.layerType === "file layer" && !visible) {
             layer.fileViewed = false
           }
@@ -1213,6 +1221,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         ...state,
         selectedParcel: null,
         selectedShape: null,
+        selectedUserDefinedLayer: null,
         expandedCard: false,
         popupOpen: false,
         showAddShapePopup: false,
@@ -1287,21 +1296,35 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         });
       } else {
         // For user defined layers details popup
-        const featureLayer = { ...feature.layer, ...hookState.layers.get().find((l) => l.identifier === feature.layer.id) };
+        const featureLayer = {
+          ...feature.layer,
+          ...hookState.layers
+            .get()
+            .find(l =>
+              feature.layer?.id
+                ? l.identifier === feature.layer.id
+                : l.layerShapeName === feature.properties.layerShapeName
+            ),
+        };
 
         selectedUserDefinedLayer = parseUserDefinedLayerFeature(feature, featureLayer)
         feature = selectedUserDefinedLayer;
 
-        setStateApp((state) => {
-          if (state.showDrawShapesPopup) return state;
-          drawBoundary(map, selectedUserDefinedLayer);
-          state = {
-            ...state,
-            selectedUserDefinedLayer,
-            selectedParcel: null,
-          };
-          return state;
-        });
+        setTimeout(() => {
+          setStateApp((state) => {
+            if (state.showDrawShapesPopup) return state;
+            drawBoundary(map, selectedUserDefinedLayer);
+            state = {
+              ...state,
+              selectedUserDefinedLayer,
+              selectedParcel: null,
+            };
+            popupController.updateState({
+              selectedUserDefinedLayer
+            });
+            return state;
+          });
+        }, 0);
       }
       setStateApp((state) => {
         if ((!state.showDrawShapesPopup || ifDefaultSources(feature.source)) && state.shapeEditMode !== 'redraw' && state.shapeEditMode !== 'fullEdit') createUDPopUp(feature.properties);
@@ -1309,6 +1332,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       });
       map.resize();
     };
+
+    udLayerClickHandlerRef = udLayerClickHandler;
 
     const clusterClickHandler = (feature, map) => {
       if (feature && feature.properties && feature.properties.cluster_id) {
@@ -1336,6 +1361,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       let clusterUDLayers = [];
       let udLayers = [];
       let clusterLayers = [];
+
+      popupController.reset();
 
       setStateApp((state) => ({
         ...state, popupOpen: false, layerSelectionPopup: false,
@@ -1490,7 +1517,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
                   [bbox[0], bbox[1]], // southwestern corner of the bounds
                   [bbox[2], bbox[3]] // northeastern corner of the bounds
                 ],
-                { padding: { top: 40, bottom: 40, left: 40, right: 40 }, easing: () => 1, }
+                { padding: { top: 40, bottom: 700, left: 400, right: 40 }, easing: () => 1, }
               )
             }
           }
@@ -4618,6 +4645,27 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
     })();
   }, [loading, stateApp.permitSelectedCoordinates]);
 
+  useEffect(() => {
+    if (!map || !popupStateValues.selectedShapeFile || !udLayerClickHandlerRef) return;
+
+    setStateApp((state) => ({
+      ...state, popupOpen: false,
+    }));
+
+    const combined = turf.combine(turf.featureCollection([popupStateValues.selectedShapeFile]))
+    const bbox = turf.bbox(combined)
+    map.fitBounds(
+      [
+        [bbox[0], bbox[1]], // southwestern corner of the bounds
+        [bbox[2], bbox[3]] // northeastern corner of the bounds
+      ],
+      { padding: { top: 40, bottom: 700, left: 400, right: 40 }, easing: () => 1, }
+    )
+
+    udLayerClickHandlerRef(popupStateValues.selectedShapeFile)
+  }, [selectedShapeFile])
+
+
   const fetchStyles = async (abortController) => {
     const token = "&access_token=sk.eyJ1IjoibTFuZXJhbCIsImEiOiJjazdkbGg1YXAwMjVqM2VwanZzbm95Z2dvIn0.cdoQNZU42xxbybyGxlBNkw";
     let link = "https://api.mapbox.com/styles/v1/m1neral?&sortby=modified";
@@ -4977,7 +5025,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       stateNavRef.current?.filterBasin ||
       stateNavRef.current?.filterAOI ||
       stateNavRef.current?.filterParcel ||
-      stateNavRef.current?.filterDrawing[1]
+      stateNavRef.current?.filterDrawing?.[1]
     ) {
       // console.time(`querySourceFeatures`);
       let features = [];
@@ -5220,6 +5268,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       }
 
       newMap.on("load", function (e) {
+        if (globalStateController.getValue('cypress'))
+          window.mapRef = newMap;
+
         const tilesetEndpoint = "https://m1neraldata.z22.web.core.windows.net/latest.json";
         fetch(tilesetEndpoint)
           .then((response) => response.json())

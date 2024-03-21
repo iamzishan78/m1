@@ -81,7 +81,7 @@ function ContactToolbar({ table, tableKey }) {
 		return {
 			_selectedRows: selectedRows,
 			search,
-			filters: tableStateValues.filters,
+			filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters], //both filter array send to backend
 			sort,
 			total: tableStateValues?.data.total,
 			isAllRowsSelected: tableStateValues.isAllRowsSelected,
@@ -132,7 +132,7 @@ function ContactToolbar({ table, tableKey }) {
 	return (
 		<>
 			<>
-				{(!isSomethingSelected && tableStateValues?.showAddContactButton) && <ButtonDropDown options={options} />}
+				{(!isSomethingSelected && tableStateValues?.showAddContactButton) && <ButtonDropDown options={options} data_test_id="add-contact-icon-button" />}
 
 				<ViewContactData isSomethingSelected={isSomethingSelected} classes={classes} {...sidePropsPass} />
 

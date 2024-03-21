@@ -6,6 +6,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { IconButton } from '@material-ui/core';
 import RoomIcon from '@material-ui/icons/Room';
 import { makeStyles } from '@material-ui/core/styles';
+import { popupController } from 'hookstate/popupStateController';
 
 const useStyles = makeStyles(() => ({
   icons: {
@@ -17,7 +18,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const FlyToMap = ({ id }) => {
+const FlyToMap = ({ id, type, row }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -31,17 +32,39 @@ const FlyToMap = ({ id }) => {
     history.push(`/map/units/${unitId}`);
   };
 
+  const openShapePopup = selectedShapeFile => {
+    popupController.updateState({
+      selectedShapeFile,
+    })
+  };
+
+  const handleClick = () => {
+    switch (type) {
+      case 'unit':
+        openUnitDetailCard(id);
+        break;
+
+      case 'shapefile':
+        openShapePopup(row);
+        break;
+
+      default:
+        break;
+    }
+  }
+
   return (
     <Tooltip title="Fly To Map" placement="top" style={{ marginRight: '10px' }}>
       <IconButton
         id={`map-fly-to-${id}`}
+        data-testid='mrt-fly-to-map'
         size={'medium'}
         color="secondary"
         className={`${classes.icons}`}
         disabled={false}
         onClick={e => {
           e.stopPropagation();
-          openUnitDetailCard(id);
+          handleClick();
         }}
         aria-label="fly"
       >

@@ -11,7 +11,7 @@ import FileDatasetIcon from "components/Shared/svgIcons/FileDatasetIcon";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 
-import { copy, deepEqualObjects } from "components/Shared/functions";
+import { copy } from "components/Shared/functions";
 
 import { StyledListItemSecondaryAction, StyledMenuSecondaryHeaderItem, } from "../style";
 import { AppContext } from "AppContext";
@@ -22,10 +22,10 @@ import { GET_DATASETS } from "graphQL/useQueryDataset";
 import { USER_MAP_SETTINGS_QUERY } from "graphQL/useQueryUserMapSettings";
 import { scrollbarStyle } from "styles/common";
 import DatasetMenu from "./Menu";
-import { update } from "immutable";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { UPDATE_USER_MAP_SETTINGS } from "graphQL/useMutationUserMapSettings";
 import { MapControlsContext } from "components/MapControls/MapControlsContext";
+import { hookStateApp } from "hookstate";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -180,15 +180,20 @@ function Datasets({ headerButton, search, stateApp, setStateApp }) {
         dataset.visibility = value
         setChangedDataset({ ...dataset })
 
-        const updatefn = {};
         const layersSettingsToUpdate = [];
-        stateApp.layers.forEach((clayer, layerIndex) => {
+        hookStateApp.layers.get({ noproxy: true }).forEach((clayer, layerIndex) => {
             if (clayer.file === dataset.file) {
-                updatefn[layerIndex] = { layerSettings: { showable: { $set: value } } };
                 layersSettingsToUpdate.push({
                     _id: clayer._id,
                     layerSettings: { ...clayer.layerSettings, showable: value }
                 });
+
+                hookStateApp.layers[layerIndex].merge({
+                    layerSettings: {
+                        ...clayer.layerSettings,
+                        showable: value
+                    }
+                })
             }
         });
         updateUserMapSettings({
@@ -206,9 +211,6 @@ function Datasets({ headerButton, search, stateApp, setStateApp }) {
                     manySettings: layersSettingsToUpdate,
                 },
             });
-
-        const newLayers = update(stateApp.layers, updatefn)
-        setTimeout(() => { setStateApp({ ...stateApp, layers: newLayers }); }, 0)
     }
 
     const handleTransfer = (dataset) => {
@@ -237,7 +239,12 @@ function Datasets({ headerButton, search, stateApp, setStateApp }) {
             </StyledMenuSecondaryHeaderItem>
             <div className={classes.root}>
                 {datasets?.map(({ sourceName, Icon, categories, ...rest }) => (
-                    <Grid className="item" key={sourceName} onClick={() => onItemClick({ sourceName, Icon, categories, ...rest })}>
+                    <Grid
+                        className="item"
+                        key={sourceName}
+                        data-testid={`dataset-${sourceName === 'M1 Platform' ? 'platform' : 'custom'}`}
+                        onClick={() => onItemClick({ sourceName, Icon, categories, ...rest })}
+                    >
                         <Box borderColor={getBorderColor(sourceName)} borderLeft={4} margin={1} marginLeft={0} >
 
                             <Icon className='dIcon' />

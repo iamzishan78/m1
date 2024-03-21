@@ -157,7 +157,7 @@ const LayerItem = React.memo((props) => {
 
   return (
     <Flipped flipId={id}>
-      <div ref={(ref) => drop(preview(ref))} onMouseEnter={() => setHoverItem(id)} onMouseLeave={() => setHoverItem(null)}>
+      <div data-testid={`${type}-${name}`} ref={(ref) => drop(preview(ref))} onMouseEnter={() => setHoverItem(id)} onMouseLeave={() => setHoverItem(null)}>
         {
           props?.data?.emptyLayer === true ? <Box padding={props.data.collapsed ? '0px' : '20px'}></Box> : <Grid container className={classes.root} direction="row">
             <Grid

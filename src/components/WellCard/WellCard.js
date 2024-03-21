@@ -597,7 +597,7 @@ function WellCard() {
     return stateApp.selectedWell ? (
       !stateApp.expandedCard ? (
         <div>
-          <Card className={classes.card}>
+          <Card className={classes.card} data-testid="well-card" >
             <CardActions
               classes={{
                 root: classes.cardAction,
@@ -718,7 +718,7 @@ function WellCard() {
         </div>
       ) : (
         <div style={{ height: "100%" }}>
-          <Card className={classes.card}>
+          <Card className={classes.card} data-testid="well-card">
             <CardContent className={classes.content}>
               <WellCardDetails target={target} summary={wellData} />
             </CardContent>

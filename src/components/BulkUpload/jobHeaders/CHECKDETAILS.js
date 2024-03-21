@@ -285,6 +285,13 @@
 
 const checkDetailsKeys = [
     {
+        label: "UID",
+        mapped_key: "Line Number",
+        required: true,
+        actual_key: "lineNumber",
+        showAsSample: false
+    },
+    {
         label: "Purchaser",
         mapped_key: "",
         required: false,
@@ -439,6 +446,15 @@ const checkDetailsKeys = [
         mapped_key: "",
         required: false,
         actual_key: "netOwnerValue",
+    },
+
+
+    {
+        label: "Line Number",
+        mapped_key: "",
+        required: true,
+        actual_key: "lineNumber",
+        showAsSample: false
     },
 
 

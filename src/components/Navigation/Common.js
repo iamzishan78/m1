@@ -319,6 +319,7 @@ export const useStyles = makeStyles((theme) => ({
     paddingTop: "20px",
     paddingBottom: "10px",
     position: "relative",
+    height: "-webkit-fill-available"
   },
   menuListBottom: {
     paddingTop: "5%",
@@ -455,6 +456,10 @@ export const useStyles = makeStyles((theme) => ({
   tabContent: {
     display: "flex",
     alignItems: "center",
+  },
+  alignBottom:  {
+    position: "absolute",
+    bottom: 0
   },
   sideNavIcon: {
     minWidth: 0,

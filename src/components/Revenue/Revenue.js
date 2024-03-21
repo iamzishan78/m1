@@ -14,7 +14,7 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
     component: "Properties",
   },
   REVENUE_STATEMENTS: {
-    title: "Revenue Statements",
+    title: "Statements",
     link: "/revenue/statements",
     component: "RevenueStatements",
   },
@@ -39,14 +39,14 @@ export const SIDE_PANEL_MENU_ITEMS_LIST = {
   REVENUE_STATEMENT_DETAILS: {
     isExcluded: true,
     parent: "REVENUE_STATEMENTS",
-    title: "Revenue Statements",
+    title: "Statements",
     link: "/revenue/statement/details/:id",
     component: "RevenueStatementDetails",
   },
   REVENUE_STATEMENT_LINE_ITEM: {
     isExcluded: true,
     parent: "REVENUE_STATEMENTS",
-    title: "Revenue Statements",
+    title: "Statements",
     link: "/revenue/statement/details/:id/line-item",
     component: "RevenueStatementDetails",
   },

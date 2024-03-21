@@ -46,12 +46,12 @@ const ColumnWithLink = ({ value, link, ...rest }) => {
           rest.onClickForTestCase();
         }
         if (rest.onClick) {
-          rest.onClick();
+          rest.onClick(e);
         } else {
           history.push(link);
         }
-
       }}
+      data-testid='column-with-link'
     >
       {!rest.disabled ? (
         <div className={classes.root}>

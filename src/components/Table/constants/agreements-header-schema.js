@@ -1,7 +1,8 @@
 import { GlobalStickyStyles } from "GlobalSettings";
+import { formatDate } from 'components/Shared/functions';
 
 //value formatters
-import vf_currency from "components/Shared/valueformatters/vf_currency";
+import vf_currency, { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 
 const AgreementsHeadCells = (isSnapGrid = false) => [
   {
@@ -91,16 +92,6 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     options: {
       dbName: "shapeJson.properties.originalProperties.0?.County",
     }
-  },
-  {
-    name: "agreementSubtype",
-    label: "Subtype",
-    esKey: "shapeJson.properties.agreementSubtype.keyword",
-    options: {
-      display: false,
-      viewColumns: false,
-      dbName: "shapeJson.properties.agreementSubtype",
-    },
   },
   {
     name: "rightsType",
@@ -200,7 +191,7 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.bounusPayment.keyword",
     options: {
       dbName: "shapeJson.properties.bounusPayment",
-      filter: true, customRender: (value) => vf_currency(value) ,
+      filter: true, customRender: (value) => vf_currency(value),
     },
   },
   {
@@ -298,16 +289,36 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       filter: true,
     },
   },
-  // {
-  //   name: "internalCompany",
-  //   label: "Internal Company ",
-  //   esKey: "shapeJson.properties.internalCompany.keyword",
-  //   options: {
-  //     dbName: "shapeJson.properties.internalCompany",
-  //     sort: true,
-  //     filter: true,
-  //   },
-  // },
+  // synced summary fields and grid fields
+  {
+    label: "Total Acquisition Cost",
+    name: "totalAcquisitionCost",
+    esKey: "shapeJson.properties.totalAcquisitionCost",
+    options: {
+      dbName: "shapeJson.properties.totalAcquisitionCost",
+      sort: true,
+      filter: true,
+      // added a custom renderer for currency type field
+      customRender: (value) => {
+        return <p>{value ? `${vf_currency_to_fixed(value, 2)}` : ""}</p>;
+      },
+    },
+  },
+  {
+    label: "Company ID",
+    name: "internalCompany",
+    esKey: "shapeJson.properties.internalCompany.keyword",
+  },
+  {
+    label: "Description",
+    name: "metaDescription",
+    esKey: "shapeJson.properties.metaDescription.keyword",
+    options: {
+      sort: true,
+      filter: true,
+      display: true,
+    },
+  },
   {
     name: "recordedDate",
     label: "Recorded Date",
@@ -393,6 +404,63 @@ const AgreementsHeadCells = (isSnapGrid = false) => [
       viewColumns: false,
     },
   },
+
+  {
+    name: "createBy",
+    label: "Created By",
+    esKey: "createBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "createAt",
+    label: "Created Date",
+    esKey: "createAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+
+  {
+    name: "lastUpdateBy",
+    label: "Last Updated By",
+    esKey: "lastUpdateBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "lastUpdateAt",
+    label: "Last Updated Date",
+    esKey: "lastUpdateAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+
   {
     name: "tags",
     label: "Tags",

@@ -1,3 +1,4 @@
+import { formatDate } from 'components/Shared/functions';
 
 export const CommonSchema = {
 	COMMENTS: {
@@ -105,5 +106,53 @@ export const CommonSchema = {
 		enableColumnFilter: false,
 		enableResizing: false,
 		size: 80,
+	},
+	CREATED_BY: {
+		name: 'createBy.name.keyword',
+		accessorKey: 'createBy.name',
+		header: 'Created By',
+		size: 250,
+		filter: true,
+		isSearchField: false,
+		type: 'string',
+		Cell: ({ row }) => {
+			return <>{row.original?.createBy?.name}</>
+		},
+	},
+	CREATED_DATE: {
+		name: 'createAt',
+		accessorKey: 'createAt',
+		header: 'Created Date',
+		size: 250,
+		filter: true,
+		isSearchField: false,
+		type: 'date',
+		Cell: ({ row }) => {
+			return <>{formatDate(row.original?.createAt)}</>
+		},
+	},
+	LAST_UPDATED_BY: {
+		name: 'lastUpdateBy.name.keyword',
+		accessorKey: 'lastUpdateBy.name',
+		header: 'Last Updated By',
+		size: 250,
+		filter: true,
+		isSearchField: false,
+		type: 'string',
+		Cell: ({ row }) => {
+			return <>{row.original?.lastUpdateBy?.name}</>
+		},
+	},
+	LAST_UPDATED_DATE: {
+		name: 'lastUpdateAt',
+		accessorKey: 'lastUpdateAt',
+		header: 'Last Updated Date',
+		size: 250,
+		filter: true,
+		isSearchField: false,
+		type: 'date',
+		Cell: ({ row }) => {
+			return <>{formatDate(row.original?.lastUpdateAt)}</>
+		},
 	},
 };

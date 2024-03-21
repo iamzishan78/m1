@@ -95,7 +95,7 @@ import get_file_icon from "components/Shared/functions/get_file_icon.js";
 
 import RightDialog from "components/ContactDetailCard/components/RightDialog";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
-import { FEATURES } from "components/Shared/FeatureFlag/common";
+import { FEATURES, ROUTES } from "components/Shared/FeatureFlag/common";
 
 import CustomFieldText from "components/Shared/M1nTable/components/SubComponents/CustomFieldText";
 // import CustomFieldSelectV2 from "./SubComponents/CustomFieldSelectV2";
@@ -135,6 +135,7 @@ import { Link } from 'react-router-dom';
 import Checkbox from '@material-ui/core/Checkbox';
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import { GET_VIEW_TOKEN_URI } from "graphQL/useQueryGetViewTokenUri";
+import { navController } from "hookstate/navStateController";
 
 
 // suppress debug console logs
@@ -860,6 +861,7 @@ function SubTable(props) {
               if (m1nSelectedRowsIndexes.indexOf(tableMeta.rowIndex) !== -1 && m1nSelectedRowsIndexes.length > 1)
                 multiSelectMouseHoverColor(id, "#efefef");
             }}
+            data-testid={`comment-icon-button-${tableMeta.rowIndex}`}
           >
             {value}
           </Button>
@@ -1306,6 +1308,13 @@ function SubTable(props) {
       return vf_currency(v);
 
     if (column.name === "lastUpdateAt")
+      return anyToDate(v).toLocaleString("en-US", {
+        year: "numeric",
+        day: "numeric",
+        month: "numeric",
+      });
+
+    if (column.name === "createAt")
       return anyToDate(v).toLocaleString("en-US", {
         year: "numeric",
         day: "numeric",
@@ -2071,6 +2080,9 @@ function SubTable(props) {
                   if (props.parent === "assocTaxRollInterests" && (props.targetLabel === "unit" || props.targetLabel === 'campaignUnit')) {
                     targetSourceId = tableMeta.rowData[2];
                   }
+                  if (props.parent === "assocTaxRollInterests" && (props.targetLabel === 'contactUnits')) {
+                    targetSourceId = tableMeta.rowData[1];
+                  }
                   if (props.parent === "TractInterestsTable" && props.targetLabel === "tractInterest") {
                     targetSourceId = tableMeta.rowData[1];
                   }
@@ -2213,10 +2225,13 @@ function SubTable(props) {
                             setStateNav((stateNav) => ({
                               ...stateNav,
                               defaultOn: false,
-                              selectedMenuIndexContacts: 1,
-                              selectedMenuIndexFind: 0,
                               contactFromMap: true,
                             }));
+
+                            navController.updateState({
+                              selectedModule: ROUTES.CONTACT.module
+                            });
+
                             routeChange(`/contact/details/${value}`);
                             setTitle("Contact Details");
                             setSubTitle(" ");

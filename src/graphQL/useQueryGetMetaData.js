@@ -1,10 +1,11 @@
 import gql from "graphql-tag";
 
 export const GET_META_DATA = gql`
-  query getMetaData( $user: ID, $category: String) {
+  query getMetaData( $user: ID, $category: String, $isControlled: Boolean) {
     getMetaData(
       user: $user,
-      category: $category
+      category: $category,
+      isControlled: $isControlled
     )
   }
 `;

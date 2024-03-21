@@ -80,14 +80,14 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 			isShow: true,
 			action: () => {
 				navController.updateState({
-					bulkUploadShape:null,
+					bulkUploadShape: null,
 					bulkUploadFromMap: true,
 					bulkUploadParcel: popupController.getValue('selectedParcel'),
 				});
-				
-				setStateNav((state)=> ({
+
+				setStateNav((state) => ({
 					...state,
-					bulkUploadShape:null,
+					bulkUploadShape: null,
 					bulkUploadFromMap: true,
 					bulkUploadParcel: popupController.getValue('selectedParcel'),
 				}));
@@ -172,6 +172,7 @@ function TractInterestOwnerToolBar({ table, tableKey }) {
 							tableKey,
 						}
 					)}
+					data-testid="recalculate"
 				>
 					Recalculate
 				</Button>

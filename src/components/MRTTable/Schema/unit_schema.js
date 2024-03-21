@@ -147,6 +147,15 @@ const UnitMeta = {
 			header: 'Current Operator',
 		},
 
+		//added Total Unit Interest column from here 
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.totalUnitInterest.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.totalUnitInterest,
+			id: 'shapeJson.properties.totalUnitInterest',
+			header: 'Total Unit Interest',
+		},
+
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uUnitPricing.keyword',
@@ -197,15 +206,10 @@ const UnitMeta = {
 			header: 'Reviewer',
 		},
 
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: '_ts',
-			accessorKey: '_ts',
-			header: 'Last Updated',
-			type: 'date',
-			isSearchField: false,
-			Cell: ({ row }) => <div>{formatDate(row.getValue('_ts'))}</div>,
-		},
+		CommonSchema.CREATED_BY,
+		CommonSchema.CREATED_DATE,
+		CommonSchema.LAST_UPDATED_BY,
+		CommonSchema.LAST_UPDATED_DATE,
 
 		{
 			...CommonSchema.TAGS,
@@ -232,7 +236,7 @@ const UnitMeta = {
 			Cell: ({ row }) => {
 				const id = row.getValue('_id');
 
-				return <FlyToMap id={id} />;
+				return <FlyToMap id={id} type='unit' />;
 			},
 		},
 	],
