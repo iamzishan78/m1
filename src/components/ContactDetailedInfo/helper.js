@@ -627,12 +627,12 @@ export const SUMMARY_FIELDS = (contactData) => {
       type: "text",
       position: "left",
     },
-    {
-      label: "Also Known As",
-      key: "formerName",
-      type: "text",
-      position: "left",
-    },
+    // {
+    //   label: "Also Known As",
+    //   key: "formerName",
+    //   type: "text",
+    //   position: "left",
+    // },
     {
       label: "Last Name",
       key: "lastName",
