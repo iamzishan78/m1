@@ -352,6 +352,7 @@ export default function Comments(props) {
 					objectType: props.targetLabel,
 					commentType: selectedCommentType,
 					pin: false,
+					tenant: window.sessionStorage.getItem("tenantName")
 				},
 			},
 			refetchQueries: [

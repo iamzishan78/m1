@@ -223,6 +223,7 @@ export default function DealComment(props) {
         user: { name: stateApp.user.name, email: stateApp.user.email },
         isNew: true,
         type: "comment",
+        tenant:window.sessionStorage.getItem("tenantName")
       });
       props.setNewCommentId(newlyAddedComment.upsertComment.comment._id);
       setCommentsArray(sortArrayBasedOnTs([...comments]));
@@ -314,6 +315,7 @@ export default function DealComment(props) {
           _id: editCommentId,
           objectType: props.targetLabel,
           isEdited: true,
+          tenant: window.sessionStorage.getItem("tenantName")
         },
       },
       refetchQueries: [
@@ -422,6 +424,7 @@ export default function DealComment(props) {
           user: stateApp.user.mongoId,
           commentedOn: targetSourceId,
           objectType: props.targetLabel,
+          tenant: window.sessionStorage.getItem("tenantName")
         },
       },
       refetchQueries: [
