@@ -175,13 +175,13 @@ export default [
         actual_key: "property.approver",
     },
     {
-        label: "Purchaser Prop #",
+        label: "Payor Prop #",
         mapped_key: "",
         required: true,
         actual_key: "property.purchaserNumber",
     },
     {
-        label: "Purchaser",
+        label: "Payor",
         mapped_key: "",
         required: true,
         actual_key: "property.purchaser.name",
