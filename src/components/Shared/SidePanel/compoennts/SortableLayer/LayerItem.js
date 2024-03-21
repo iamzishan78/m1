@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/styles";
 import * as turf from "@turf/turf";
 import { Box, CircularProgress, Grid, ListItemIcon } from "@material-ui/core";
@@ -17,6 +17,7 @@ import Typography from "@material-ui/core/Typography";
 // icons
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: (props) => ({
@@ -71,6 +72,8 @@ const LayerItem = React.memo((props) => {
   const { id, depth, data, onToggleCollapse, onToggleGroup, updateLayer, onDragEnd, onDragBegin, map } = props;
   const itemRef = React.useRef({ id: -1, depth: -1, data: {} });
   const { type, collapsed, name } = data;
+
+  const { stateValues: { emptyGroups } } = globalStateController.useState(['emptyGroups'])
 
   const [{ isDragging }, drag, preview] = useDrag({
     collect: (monitor) => {
@@ -247,7 +250,7 @@ const LayerItem = React.memo((props) => {
                   }}
                 >
                   <Grid item style={{ paddingRight: "40px", }}>
-                    <FormControlLabel control={<Switch checked={data.visiable} onChange={() => onToggleGroup(id)} size="small" />} />
+                    <FormControlLabel control={<Switch disabled={emptyGroups?.includes?.(data.id)} checked={data.visiable} onChange={() => onToggleGroup(id)} size="small" />} />
                   </Grid>
                 </Grid>
               )}

@@ -111,7 +111,7 @@ const FileTree = ({ layerMap, panelItems }) => {
     const index = items.findIndex((item) => item.id === id);
     const item = items[index];
     const { visiable } = item;
-    const descendants = findDescendants(items, index);
+    const descendants = findDescendants(items, index).filter(l => l.layerSettings);
     const updateFn = {
       [index]: { visiable: { $set: !visiable } },
     };
@@ -241,10 +241,10 @@ const FileTree = ({ layerMap, panelItems }) => {
           <Flipper flipKey={items.map(({ id }) => id).join(".")}>
             <Sortly items={items} maxDepth={1} onChange={handleChange}>
               {(props) => {
-                if (props?.data?.layerName === "Recent Submitted Permits" 
-                || props?.data?.layerName === "Tracked Wells"
-                || props?.data?.layerName === "Search"  
-                || props?.data?.layerName === "User Tags") {
+                if (props?.data?.layerName === "Recent Submitted Permits"
+                  || props?.data?.layerName === "Tracked Wells"
+                  || props?.data?.layerName === "Search"
+                  || props?.data?.layerName === "User Tags") {
                   let layerName = '';
                   if (props?.data?.layerName === "Recent Submitted Permits") {
                     layerName = FEATURES.RECENTPERMITLAYER;
@@ -256,7 +256,7 @@ const FileTree = ({ layerMap, panelItems }) => {
                     layerName = FEATURES.SEARCHLAYER;
                   }
                   return (
-                    <FeatureFlag feature={layerName} > 
+                    <FeatureFlag feature={layerName} >
                       <LayerItem
                         {...props}
                         onToggleCollapse={handleToggleCollapse}
@@ -269,15 +269,15 @@ const FileTree = ({ layerMap, panelItems }) => {
                     </FeatureFlag>
                   )
                 } else {
-                    return (<LayerItem
-                      {...props}
-                      onToggleCollapse={handleToggleCollapse}
-                      onToggleGroup={handleToggleGroup}
-                      onDragEnd={handleDragEnd}
-                      onDragBegin={handleDragBegin}
-                      updateLayer={updateLayer}
-                      map={stateApp?.map}
-                    />)
+                  return (<LayerItem
+                    {...props}
+                    onToggleCollapse={handleToggleCollapse}
+                    onToggleGroup={handleToggleGroup}
+                    onDragEnd={handleDragEnd}
+                    onDragBegin={handleDragBegin}
+                    updateLayer={updateLayer}
+                    map={stateApp?.map}
+                  />)
                 }
               }}
             </Sortly>
