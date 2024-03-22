@@ -1,6 +1,8 @@
 import { Chip } from "@material-ui/core";
 import ListChips from "components/Common/ListChips";
 import GlobalSettings from "../../../GlobalSettings";
+import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
+import { GlobalStickyStyles } from "GlobalSettings";
 const ParcelAgreementHeadCells = [
 
     {
@@ -32,8 +34,16 @@ const ParcelAgreementHeadCells = [
         label: "Instrument Type",
         esKey: "instrumentType.keyword",
         options: {
-            display: true,
-        },
+            ...GlobalStickyStyles({
+                setCellProps: {
+                  left: '76.5px',
+                  maxWidth: "392px",
+                },
+                setCellHeaderProps: {
+                  left: '76.5px',
+                }
+              }),
+        }
     },
     {
         name: "fromPartySummary",
