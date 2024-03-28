@@ -86,6 +86,18 @@ export default function CustomDatesActivities({
     handleCustomDateTypeChange(date, null, CUSTOM_DATES, setFromDate, setToDate, minDate)
   }
 
+  const [selectedFilters, setSelectedFilters] = useState({
+    campaign: null,
+    qualifier: null
+  });
+
+  const handleFilterChange = (filterType, value) => {
+    setSelectedFilters(prevFilters => ({
+      ...prevFilters,
+      [filterType]: value
+    }));
+  };
+
   return (
     <div style={{ display: "flex" }}>
       <Grid
@@ -206,6 +218,8 @@ export default function CustomDatesActivities({
             searchFields={searchFields}
             tableFilters={tableFilters}
             appliedFilters={appliedFilters}
+            selectedFilters={selectedFilters}
+            onCampaignChange={handleFilterChange}
           />
         </Grid>
         <Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: "4px" }}>
@@ -216,6 +230,8 @@ export default function CustomDatesActivities({
             searchFields={searchFields}
             tableFilters={tableFilters}
             appliedFilters={appliedFilters}
+            selectedFilters={selectedFilters}
+            onQualifierChange={handleFilterChange}
           />
         </Grid>
       </Grid>
@@ -231,6 +247,8 @@ const CampaignFilter = ({
   tableFilters,
   appliedFilters,
   searchFields,
+  selectedFilters,
+  onCampaignChange,
 }) => {
   const [stateApp] = useContext(AppContext);
   const [search, setSearch] = useState("");
@@ -270,7 +288,8 @@ const CampaignFilter = ({
         },
       },
     });
-  }, [search]);
+    onCampaignChange('campaign', search);
+  }, [search, selectedFilters.qualifier]);
 
   return (
     <Autocomplete
@@ -317,6 +336,8 @@ const QualifierFilter = ({
   tableFilters,
   appliedFilters,
   searchFields,
+  onQualifierChange,
+  selectedFilters
 }) => {
   const [stateApp] = useContext(AppContext);
   const [search, setSearch] = useState("");
@@ -356,7 +377,8 @@ const QualifierFilter = ({
         },
       },
     });
-  }, [search]);
+    onQualifierChange('qualifier', search)
+  }, [search, selectedFilters.campaign]);
 
   return (
     <Autocomplete
