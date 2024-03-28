@@ -210,7 +210,9 @@ const AppProvider = (props) => {
     async function wait() {
       const query = queryString.parse(window.location.search);
 
-      let tenantName = query.tenant || window.sessionStorage.getItem('tenantName');
+      let tenantName = window.sessionStorage.getItem('tenantName');
+
+      if (query.tenant && globalStateController.isBypassTenant(query.tenant)) tenantName = query.tenant || tenantName;
 
       let tenant = tenantsCredentials(tenantName);
       if (tenant) {
