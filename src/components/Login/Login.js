@@ -104,7 +104,7 @@ const Login = (props) => {
 
   let history = props.history;
 
-  const handleLogin = (loginResp, userMapSettings, authGraphQLToken) => {
+  const handleLogin = (loginResp, userMapSettings, authGraphQLResponse, authGraphQLToken) => {
     let mongoUser,
       sessionData,
       mapVars = stateApp.mapVars,
@@ -142,8 +142,8 @@ const Login = (props) => {
       tenantId: sessionData.tenantId,
       mongoId: mongoUser._id,
       roles: mongoUser.roles,
-      authToken: globalStateValues.bypassLogin ? sessionData.token : sessionData.authenticationToken,
-      accessToken: globalStateValues.bypassLogin ? sessionData.token : sessionData.authenticationToken,
+      authToken: globalStateValues.bypassLogin ? sessionData.token : authGraphQLResponse.authenticationToken,
+      accessToken: globalStateValues.bypassLogin ? sessionData.token : authGraphQLToken.idToken,
       authTokenExpires,
       tenant: {
         id: sessionData.tenantId,
@@ -536,7 +536,7 @@ const Login = (props) => {
     }
     const userSettingsResp = await userSettings(mongoUser._id, authGraphQLResponse.authenticationToken, authGraphQLToken.idToken, 'baseMap');
 
-    handleLogin(loginResp, userSettingsResp, authGraphQLResponse);
+    handleLogin(loginResp, userSettingsResp, authGraphQLResponse, authGraphQLToken);
   }
 
   async function loginUser(user, authToken, idToken) {
