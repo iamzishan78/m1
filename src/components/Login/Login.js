@@ -545,7 +545,7 @@ const Login = (props) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query: GET_LOGGED_IN_USER, variables: { user } }),
+      body: JSON.stringify({ query: GET_LOGGED_IN_USER.loc.source.body, variables: { user } }),
     };
     let endpoint = stateApp.apolloClientEndpoint;
     options = setApolloHeaders(options, authToken, idToken);
@@ -563,7 +563,7 @@ const Login = (props) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ query: USER_MAP_SETTINGS, variables: { user: userId, type } }),
+      body: JSON.stringify({ query: USER_MAP_SETTINGS.loc.source.body, variables: { user: userId, type } }),
     };
     let endpoint = stateApp.apolloClientEndpoint;
     options = setApolloHeaders(options, authToken, idToken);
