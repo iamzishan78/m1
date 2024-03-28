@@ -597,21 +597,21 @@ export const AdminManagementRoutes = {
 };
 
 export const bypassTenants = [
-  "localhost",
-  "m1Preview",
-  "m1Staging",
-  "m1Production",
-  "m1Development",
-  "GHR",
-  "Quality",
-  "Foss",
-  "SantaFe",
-  "Republic",
-  "Venator",
+  // "localhost",
+  // "m1Preview",
+  // "m1Staging",
+  // "m1Production",
+  // "m1Development",
+  // "GHR",
+  // "Quality",
+  // "Foss",
+  // "SantaFe",
+  // "Republic",
+  // "Venator",
   "Frontier",
-  "m1demo",
-  "Vector",
-  "TableRock",
-  "Providence",
-  "Pheasant"
+  // "m1demo",
+  // "Vector",
+  // "TableRock",
+  // "Providence",
+  // "Pheasant"
 ];
