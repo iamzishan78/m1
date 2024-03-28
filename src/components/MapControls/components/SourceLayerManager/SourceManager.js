@@ -16,7 +16,6 @@ import { copy, deepEqual, deepEqualObjects } from "components/Shared/functions";
 import { UPDATEMANYLAYERSETTINGS } from "graphQL/useMutationUpdateManyLayerSettings";
 import { useMutation } from "@apollo/client";
 import { DropzoneAreaBase } from "material-ui-dropzone";
-import shp from "shpjs";
 import geojsonMerge from "@mapbox/geojson-merge";
 import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -44,9 +43,9 @@ import { UPDATE_DATASET } from "graphQL/useMutationDataset";
 import { hookStateApp } from "hookstate";
 import { useHookstate } from '@hookstate/core';
 
-import { showInfoMessage } from "actions";
+import { showErrorMessage, showInfoMessage } from "actions";
 import { useDispatch } from "react-redux";
-import { ExpandMore as ExpandMoreIcon, Close as ClearButton } from "@material-ui/icons";
+import { Close as ClearButton } from "@material-ui/icons";
 import JSZip from 'jszip';
 
 const useStyles = makeStyles((theme) => ({
@@ -532,102 +531,114 @@ function SourceManager(props) {
   };
 
   async function handleFileAsync(file) {
-    let inputFile = null;
-    let fileData = null;
-    let fileName = null;
-    let fileType = null;
-    if (Array.isArray(file)) {
-      inputFile = file[0].data;
-      fileData = file[0].file;
-      fileName = file[0].file.name;
-      fileType = file[0].file.type;
-    } else {
-      inputFile = file;
-      fileName = file.split("?")[0].split("/");
-      fileName = fileName[fileName.length - 1];
-    }
-    let res;
-    fileName = fileName.toLowerCase();
-    if (fileName.endsWith(".geojson") || fileName.endsWith(".json")) {
-      res = await new Promise((resolve, reject) => {
-        fetch(inputFile)
-          .then((response) => {
-            return response.json();
-          })
-          .then((response) => {
-            resolve({
-              data: singleGeojson(response, fileName.replace(".geojson", "").replace(".json", "")),
-              originalData: { file: fileData, fileName, fileType },
-            });
-          })
-          .catch((error) => reject(error));
-      });
-    } else if (fileName.endsWith(".zip")) {
-      res = await new Promise((resolve, reject) => {
-        fetch(inputFile).then(async (response) => {
-          const zip = await JSZip.loadAsync(response.arrayBuffer());
-
-          // Iterate through each file in the zip
-          const zipFiles = {}
-          zip.forEach(async (relativePath, zipEntry) => {
-            if (!zipEntry.dir && !relativePath.includes('xml') && !relativePath.includes('pdf')) {
-              const name = relativePath.split('.').slice(0, -1).join('.')
-              if (!zipFiles[name]) zipFiles[name] = []
-              zipFiles[name].push(zipEntry)
-            }
-          });
-          const geojsons = []
-          const zipKeys = Object.keys(zipFiles)
-
-          for (let i = 0; i < zipKeys.length; i++) {
-            const zipKey = zipKeys[i]
-            const newZip = new JSZip();
-            zipFiles[zipKey].forEach((file) => {
-              newZip.file(file.name, file.async('arraybuffer'));
+    try {
+      let inputFile = null;
+      let fileData = null;
+      let fileName = null;
+      let fileType = null;
+      if (Array.isArray(file)) {
+        inputFile = file[0].data;
+        fileData = file[0].file;
+        fileName = file[0].file.name;
+        fileType = file[0].file.type;
+      } else {
+        inputFile = file;
+        fileName = file.split("?")[0].split("/");
+        fileName = fileName[fileName.length - 1];
+      }
+      let res;
+      fileName = fileName.toLowerCase();
+      if (fileName.endsWith(".geojson") || fileName.endsWith(".json")) {
+        res = await new Promise((resolve, reject) => {
+          fetch(inputFile)
+            .then((response) => {
+              return response.json();
             })
-            const newZipContent = await newZip.generateAsync({ type: 'blob' });
-
-            var formdata = new FormData();
-            formdata.append("upload", newZipContent, zipKey + '.zip');
-            formdata.append("rfc7946", "on");
-
-            var requestOptions = {
-              method: 'POST',
-              body: formdata,
-              redirect: 'follow'
-            };
-            // eslint-disable-next-line no-loop-func
-            res = await new Promise((resolve) => {
-              fetch("https://ogre.adc4gis.com/convert", requestOptions)
-                .then(response => response.json())
-                .then(result => {
-                  const name = fileName.replace(".zip", "");
-                  geojsons.push(result)
-                  resolve({ data: singleGeojson(result, name), originalData: { file: fileData, fileName, fileType } });
-                })
-                .catch(error => console.log('error', error));
-            });
-          }
-
-          let allFileNames = [];
-          let allLayerTypes = [];
-          geojsons.forEach((geo) => {
-            const { layerTypes, fileNames } = parseGeoForTypesAndNames(geo, geo.name);
-            allLayerTypes = allLayerTypes.concat(layerTypes);
-            allFileNames = allFileNames.concat(fileNames);
-          });
-          const merged = geojsonMerge.merge(geojsons);
-          merged.features.forEach((feature, index) => {
-            feature.id = index + 1
-          })
-          merged.fileNames = allFileNames;
-          merged.featureTypes = allLayerTypes;
-          merged.groupName = fileName.replace(".zip", "");
-          resolve({ data: merged, originalData: { file: fileData, fileName, fileType } });
+            .then((response) => {
+              resolve({
+                data: singleGeojson(response, fileName.replace(".geojson", "").replace(".json", "")),
+                originalData: { file: fileData, fileName, fileType },
+              });
+            })
+            .catch((error) => reject(error));
         });
-      });
+      } else if (fileName.endsWith(".zip")) {
+        res = await new Promise((resolve, reject) => {
+          fetch(inputFile).then(async (response) => {
+            const zip = await JSZip.loadAsync(response.arrayBuffer());
+
+            // Iterate through each file in the zip
+            const zipFiles = {}
+            zip.forEach(async (relativePath, zipEntry) => {
+              if (!zipEntry.dir && !relativePath.includes('xml') && !relativePath.includes('pdf') && !relativePath.includes('__MACOSX')) {
+                const name = relativePath.split('.').slice(0, -1).join('.')
+                if (!zipFiles[name]) zipFiles[name] = []
+                zipFiles[name].push(zipEntry)
+              }
+            });
+            const geojsons = []
+            const zipKeys = Object.keys(zipFiles)
+
+            for (let i = 0; i < zipKeys.length; i++) {
+              const zipKey = zipKeys[i]
+              const newZip = new JSZip();
+              zipFiles[zipKey].forEach((file) => {
+                newZip.file(file.name, file.async('arraybuffer'));
+              })
+              const newZipContent = await newZip.generateAsync({ type: 'blob' });
+
+              var formdata = new FormData();
+              formdata.append("upload", newZipContent, zipKey + '.zip');
+              formdata.append("rfc7946", "on");
+
+              var requestOptions = {
+                method: 'POST',
+                body: formdata,
+                redirect: 'follow'
+              };
+              // eslint-disable-next-line no-loop-func
+              res = await new Promise((resolve) => {
+                fetch("https://ogre.adc4gis.com/convert", requestOptions)
+                  .then(response => response.json())
+                  .then(result => {
+                    if (result.error) return reject(result)
+                    const name = fileName.replace(".zip", "");
+                    geojsons.push(result)
+                    resolve({ data: singleGeojson(result, name), originalData: { file: fileData, fileName, fileType } });
+                  })
+                  .catch(error => {
+                    console.log('error', error)
+                    console.log("🚀 ~ res=awaitnewPromise ~ error:", error)
+                  });
+              });
+            }
+
+            let allFileNames = [];
+            let allLayerTypes = [];
+            geojsons.forEach((geo) => {
+              const { layerTypes, fileNames } = parseGeoForTypesAndNames(geo, geo.name);
+              allLayerTypes = allLayerTypes.concat(layerTypes);
+              allFileNames = allFileNames.concat(fileNames);
+            });
+            const merged = geojsonMerge.merge(geojsons);
+            merged.features.forEach((feature, index) => {
+              feature.id = index + 1
+            })
+            merged.fileNames = allFileNames;
+            merged.featureTypes = allLayerTypes;
+            merged.groupName = fileName.replace(".zip", "");
+            resolve({ data: merged, originalData: { file: fileData, fileName, fileType } });
+          });
+        });
+      }
+      return res;
+    } catch (err) {
+      console.log("🚀 ~ handleFileAsync ~ err:", err)
+      return {
+        error: true,
+        message: err.message
+      }
     }
-    return res;
   }
 
   async function handleFileInput(fileObj) {
@@ -637,6 +648,9 @@ function SourceManager(props) {
     }));
     let originalData;
     let fileContent = await handleFileAsync(fileObj);
+    if (fileContent.error) {
+      dispatch(showErrorMessage("Failed to parse the file"))
+    }
     if (fileContent?.originalData) {
       originalData = fileContent.originalData;
       fileContent = fileContent.data;
@@ -889,7 +903,7 @@ function SourceManager(props) {
                     )?.map((dataset, index) => (
                       <Fragment key={index}>
                         {
-                          dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 className={openDataSets[dataset.sourceName] ? 'isOpen' : ''} style={{ paddingLeft: '0px' }} button onClick={() => setOpenDataSets({ ...openDataSets, [dataset.sourceName]: !openDataSets[dataset.sourceName] })}>
+                          dataset.sourceName !== 'M1 Platform' ? <> <StyledListItem2 data-testid={`source-${dataset.sourceName}`} className={openDataSets[dataset.sourceName] ? 'isOpen' : ''} style={{ paddingLeft: '0px' }} button onClick={() => setOpenDataSets({ ...openDataSets, [dataset.sourceName]: !openDataSets[dataset.sourceName] })}>
                             <Checkbox
                               id={"source-checkbox-" + dataset.sourceName}
                               checked={dataset.visibility}
@@ -904,7 +918,7 @@ function SourceManager(props) {
                             {openDataSets[dataset.sourceName] ? <ExpandLess /> : <ExpandMore />}
                           </StyledListItem2>
                             <Collapse in={openDataSets[dataset.sourceName]} timeout="auto" unmountOnExit>
-                              <List className={classes.list}>
+                              <List className={classes.list} data-testid={`source-ul-${dataset.sourceName}`}>
                                 {dataset.categories?.map((layer, index) => {
                                   // const labelId = `m1layer-list-label-${index}`;
                                   return (

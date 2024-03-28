@@ -2,12 +2,13 @@ import React, { useState, useContext, useEffect } from "react";
 import { AppContext } from "AppContext";
 import { makeStyles } from "@material-ui/styles";
 import AnalyticsCards from "components/Revenue/components/Common/AnalyticsCards";
-import RevenuePropertiesTable from "components/Table/Revenue/RevenuePropertiesTable";
 import { setStateIfDeepEqual } from "components/Shared/functions";
+import MRTTable from "components/MRTTable";
 
 import LastCheckDateFilter from "components/Revenue/components/Common/LastCheckDateFilter";
 import { useLazyQuery } from "@apollo/client";
 import { GET_UNMAPPED_PROPERTY_COUNT } from "graphQL/useQueryGetProperty";
+import { tableController } from "hookstate/tableController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -15,8 +16,6 @@ const useStyles = makeStyles((theme) => ({
   },
   propertyTableContainer: {
     paddingTop: theme.spacing(1),
-    // paddingLeft: "38px",
-    // paddingRight: "38px",
     marginLeft: "-8px",
     "& div": {
       "&>.MuiPaper-root": {
@@ -66,13 +65,10 @@ const useStyles = makeStyles((theme) => ({
         },
       },
     },
-    // marginTop: theme.spacing(2),
   },
 
   propertyTableInfContainer: {
     paddingTop: theme.spacing(1),
-    // paddingLeft: "38px",
-    // paddingRight: "38px",
     marginLeft: "-8px",
   },
   label: {
@@ -84,25 +80,17 @@ const useStyles = makeStyles((theme) => ({
 export default function Properties() {
   const classes = useStyles();
   const [stateApp, setStateApp] = useContext(AppContext);
+  const propertiesTableState = tableController("PropertiesTable").useState(['filters', 'data', 'globalFilter']).stateValues;
   // redux
   const [filterToggle, setFilterToggle] = React.useState(false);
 
   // props to pass in table
   const esIndex = "properties_flat";
-  const startPaginationAt = 50;
 
   const [esFilters, ESFilters] = useState([]);
-  const [propertiesCount, setPropertiesCount] = useState(0);
-
-  // waypointKey should any key of Table Header which do not have customRender in schema file
-  const loadMore = { type: "infiniteScroll", height: "calc(100vh - 347px)" };
 
   const setESFilters = (newFilter) => {
     setStateIfDeepEqual(ESFilters, newFilter);
-  };
-
-  const onPropertiesCount = (count) => {
-    setPropertiesCount(count);
   };
 
   const [getUnmappedPropertyCount, { data: getUnmappedPropertyCountResult }] = useLazyQuery(GET_UNMAPPED_PROPERTY_COUNT, {
@@ -110,8 +98,12 @@ export default function Properties() {
   });
 
   useEffect(() => {
-    getUnmappedPropertyCount();
-  }, []);
+    getUnmappedPropertyCount({
+      variables: {
+        filters: propertiesTableState?.filters,
+      },
+    });
+  }, [propertiesTableState?.filters]);
 
   useEffect(() => {
     return () => {
@@ -120,6 +112,14 @@ export default function Properties() {
       });
     };
   }, []);
+
+  useEffect(() => {
+    tableController("PropertiesTable").setFilters(esFilters);
+  }, [esFilters]);
+
+  useEffect(() => {
+    tableController("PropertiesTable").setGlobalFilter(stateApp.revenueSearchQuery === "*" ? "" : stateApp.revenueSearchQuery);
+  }, [stateApp.revenueSearchQuery]);
 
   // cards default
   const cardsDefault = [
@@ -153,44 +153,25 @@ export default function Properties() {
       <LastCheckDateFilter
         field={"lastCheck.checkDate"}
         esIndex={esIndex}
-        esFilters={esFilters}
+        esFilters={propertiesTableState.filters}
         setESFilters={setESFilters}
         setFilterToggle={setFilterToggle}
         filterToggle={filterToggle}
         extraFitlers={["status", "propertyGroup"]}
       />
-
       <AnalyticsCards
-        parent={"Properties"}
         esIndex={esIndex}
-        esFilters={esFilters}
+        esFilters={propertiesTableState.filters}
         cardsDefault={cardsDefault}
-        totalCount={propertiesCount}
+        totalCount={propertiesTableState?.data?.total}
         landSearchQuery={stateApp.revenueSearchQuery}
         setESFilters={setESFilters}
         filterToggle={filterToggle}
         setFilterToggle={setFilterToggle}
         unmappedPropertyCount={getUnmappedPropertyCountResult?.getUnmappedPropertyCount?.unmappedCount}
       />
-      {/* use propertyTableContainer class as container if not using infinite scroll */}
       <div className={classes.propertyTableInfContainer}>
-        <RevenuePropertiesTable
-          searchBar={false}
-          esIndex={esIndex}
-          header="Properties"
-          esFilters={esFilters}
-          targetLabel="Revenue Properties"
-          parent="RevenuePropertiesTable"
-          loading={false}
-          filterToggle={filterToggle}
-          setESFilters={setESFilters}
-          isCheckboxSticky={true}
-          onPropertiesCount={onPropertiesCount}
-          startPaginationAt={startPaginationAt}
-          revenueSearchQuery={stateApp.revenueSearchQuery}
-          actionColumns={[" ", "Tags", "Comments"]}
-          loadMore={loadMore}
-        />
+        <MRTTable name="PropertiesTable" />
       </div>
     </div>
   );

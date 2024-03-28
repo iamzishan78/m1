@@ -292,7 +292,7 @@ const checkDetailsKeys = [
         showAsSample: false
     },
     {
-        label: "Purchaser",
+        label: "Payor",
         mapped_key: "",
         required: false,
         actual_key: "check.payor.name",
@@ -326,7 +326,7 @@ const checkDetailsKeys = [
         actual_key: "property._id",
     },
     {
-        label: "Purchaser Prop #",
+        label: "Payor Prop #",
         mapped_key: "",
         required: false,
         actual_key: "property.purchaserNumber",

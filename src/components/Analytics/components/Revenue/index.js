@@ -114,7 +114,7 @@ const StyledTab = withStyles(theme => ({
   selected: {},
 }))(props => <Tab disableRipple {...props} />);
 
-const tabs = ['Income Statement', 'Check Ledger', 'Comparisons', 'Property Interests'];
+const tabs = ['Income Statement', 'Check Details', 'Comparisons', 'Property Interests'];
 
 export default function RevenueAnalytics(props) {
   const classes = useStyles();
@@ -406,7 +406,7 @@ export default function RevenueAnalytics(props) {
         </>
       )}
 
-      {tabs[tab] === 'Check Ledger' && (
+      {tabs[tab] === 'Check Details' && (
         <div className={`${classes.sectionCard}`}>
           <CheckDetailsSection header="Check Details" loadMore={loadMore} />
         </div>

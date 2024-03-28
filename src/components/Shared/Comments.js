@@ -343,7 +343,8 @@ export default function Comments(props) {
           commentedOn,
           objectType: props.targetLabel,
           commentType: selectedCommentType,
-          pin: false
+          pin: false,
+          tenant: window.sessionStorage.getItem("tenantName")
         },
       },
       refetchQueries: [
@@ -492,7 +493,8 @@ export default function Comments(props) {
           commentedOn: props.targetSourceId,
           objectType: props.targetLabel,
           public: publicComment,
-          pin: false
+          pin: false,
+          tenant: window.sessionStorage.getItem("tenantName")
         },
       },
       refetchQueries: [
@@ -690,7 +692,7 @@ export default function Comments(props) {
                       }
                     />
                     <ListItemSecondaryAction>
-                      <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteClick(comment)}>
+                      <IconButton edge="end" aria-label="delete" data-testid={`comment-delete-icon-${index}`} onClick={() => handleDeleteClick(comment)}>
                         <DeleteIcon />
                       </IconButton>
                     </ListItemSecondaryAction>

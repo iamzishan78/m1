@@ -86,6 +86,7 @@ export default function BulkUpload(props) {
     return filter;
   });
   let initialJob = jobs[0];
+  if (props.initialJobType) initialJob = jobs.find(job => job.type === props.initialJobType);
   if (props?.match?.params?.type) {
     initialJob = jobs.find((job) => job.type.toLowerCase().includes(props.match.params.type.toLowerCase())) || jobs[0];
   }

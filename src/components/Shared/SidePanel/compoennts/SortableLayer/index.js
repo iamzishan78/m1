@@ -10,6 +10,7 @@ import { hookStateApp } from "hookstate";
 import { GET_LAYER_GROUPS } from "graphQL/useQueryLayerGroup";
 import { useLazyQuery } from "@apollo/client";
 import { Box, CircularProgress } from "@material-ui/core";
+import { globalStateController } from "hookstate/globalStateController";
 
 const getEmptyGroupAndLayer = (group, type) => {
   if (type === 'layer')
@@ -127,6 +128,8 @@ const SortableLayer = ({ mongoId, search }) => {
             return
           }
         })
+
+        globalStateController.updateState({ emptyGroups: emptyGroups.map(g => g.groupId) })
       }
 
       setPanelItems(layerAndGroups)

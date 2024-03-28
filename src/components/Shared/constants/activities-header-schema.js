@@ -40,6 +40,25 @@ const ActivitiesHeadCells = [
     label: "Activity Owner",
   },
   {
+    name: "createBy",
+    label: "Created By",
+  },
+
+  {
+    name: "createAt",
+    label: "Created Date",
+  },
+
+  {
+    name: "lastUpdateBy",
+    label: "Last Updated By",
+  },
+
+  {
+    name: "lastUpdateAt",
+    label: "Last Updated Date",
+  },
+  {
     name: "isClosed",
     label: "Completed?",
   },

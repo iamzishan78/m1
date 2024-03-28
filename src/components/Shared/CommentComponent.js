@@ -454,6 +454,7 @@ export default function CommentComponent(props) {
           _id: editCommentId,
           objectType: props.targetLabel,
           isEdited: true,
+          tenant: window.sessionStorage.getItem("tenantName")
         },
       },
       refetchQueries: [
@@ -602,6 +603,7 @@ export default function CommentComponent(props) {
           commentedOn: targetSourceId,
           objectType: props.targetLabel,
           pin: false,
+          tenant: window.sessionStorage.getItem("tenantName")
         },
       },
       refetchQueries: [

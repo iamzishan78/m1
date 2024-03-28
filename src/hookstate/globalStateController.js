@@ -5,6 +5,7 @@ import { bypassTenants } from 'utils/data';
 
 const initialState = {
 	layers: [],
+	emptyGroups: [],
 	universalLoader: false,
 	layerLoading: {},
 	user: null,

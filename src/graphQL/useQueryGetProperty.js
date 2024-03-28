@@ -7,8 +7,8 @@ export const GET_PROPERTY = gql`
 `;
 
 export const GET_UNMAPPED_PROPERTY_COUNT = gql`
-  query getUnmappedPropertyCount {
-    getUnmappedPropertyCount
+  query getUnmappedPropertyCount($filters: [JSON]) {
+    getUnmappedPropertyCount(filters: $filters)
   }
 `;
 

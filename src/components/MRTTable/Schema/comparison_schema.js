@@ -116,7 +116,7 @@ const ComparisonMeta = {
 			name: 'property.purchaser.name.keyword',
 			accessorFn: row => row?.property?.purchaser?.name,
 			id: 'property.purchaser.name',
-			header: 'Purchaser Name',
+			header: 'Payor Name',
 		},
 
 		{
@@ -349,7 +349,7 @@ const ComparisonMeta = {
 			name: 'property.purchaserNumber.keyword',
 			accessorFn: row => row?.property?.purchaserNumber,
 			id: 'property.purchaserNumber',
-			header: 'Purchaser Prop #',
+			header: 'Payor Prop #',
 		},
 
 		{

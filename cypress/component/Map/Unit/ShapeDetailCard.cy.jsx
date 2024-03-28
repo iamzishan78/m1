@@ -8,6 +8,7 @@ import ldata from '../../../fixtures/ldata.json';
 import { CUSTOMLAYER } from 'graphQL/useQueryCustomLayer';
 import { UPDATECUSTOMLAYER } from 'graphQL/useMutationUpdateCustomLayer';
 import { copy } from 'components/Shared/functions';
+import { headers } from '../../../cypressUtils/cypressHeaders';
 /* ---------------------------------- Data ---------------------------------- */
 let selectedShape = {
   id: '65b0c87166115215f9155bc4',
@@ -17,11 +18,6 @@ const getLayerPayload = {
   operationName: 'getCustomLayer',
   variables: { id: selectedShape.id },
   query: CUSTOMLAYER.loc.source.body,
-};
-
-const headers = {
-  'Content-Type': 'application/json',
-  'X-ZUMO-AUTH': ldata.x_zumo_auth,
 };
 /* ---------------------------------- Data ---------------------------------- */
 
