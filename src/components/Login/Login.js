@@ -21,6 +21,7 @@ import BypassSignInCard from "./BypassSignInCard";
 import { BYPASS_LOGIN_MUTATION } from "graphQL/useMutationBypassLogin";
 import { apolloClientEndpointDev, isDev } from "utils/helper";
 import { globalStateController } from "hookstate/globalStateController";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -299,11 +300,16 @@ const Login = (props) => {
     }
   }, [stateApp.myMSALObj, signingIn]);
 
+
+  const { loginWithRedirect } = useAuth0();
+
   const handleAADSignIn = async (tenantName, updateTenantFlags) => {
     let tenant = tenantsCredentials(tenantName);
 
     if (globalStateController.getValue('bypassLogin')) {
-      window.sessionStorage.setItem("tenantName", tenant.name);
+      // window.sessionStorage.setItem("tenantName", tenant.name);
+
+      loginWithRedirect();
 
       return;
     }
@@ -646,18 +652,18 @@ const Login = (props) => {
   const renderBody = (
     <>
       <div className={localClass.cardContainer}>
-        {globalStateValues.bypassLogin ?
+        {/* {globalStateValues.bypassLogin ?
           <BypassSignInCard
             ready={loadingSigInButton}
             handleAADSignIn={handleBypassAADSignIn}
             tenant={!stateApp.myMSALObj ? queryString.parse(props.location.search).tenant : undefined}
-          /> :
-          <SignInCard
-            ready={loadingSigInButton}
-            handleAADSignIn={handleAADSignIn}
-            tenant={!stateApp.myMSALObj ? queryString.parse(props?.location?.search).tenant : undefined}
-          />
-        }
+          /> : */}
+        <SignInCard
+          ready={loadingSigInButton}
+          handleAADSignIn={handleAADSignIn}
+          tenant={!stateApp.myMSALObj ? queryString.parse(props?.location?.search).tenant : undefined}
+        />
+        {/* } */}
       </div>
     </>
   );
