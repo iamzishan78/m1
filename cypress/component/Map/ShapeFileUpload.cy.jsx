@@ -12,6 +12,7 @@ import { UPDATE_USER_MAP_SETTINGS } from 'graphQL/useMutationUserMapSettings';
 import { basic_timeouts } from '../../cypressUtils/data';
 import ldata from '../../fixtures/ldata.json';
 import { headers } from '../../cypressUtils/cypressHeaders';
+import { isEqual } from 'lodash';
 
 const { midTimeout, longTimeout, partialLongTimeout } = basic_timeouts;
 
@@ -19,6 +20,39 @@ const fileName = 'surv025.zip';
 
 const sourceName = 'surv02595913792-9e19-47e6-ba40-ea35479a215d';
 // const sourceName = 'surv025' + uuid();
+
+const getBBox = map => {
+  const bounds = map.getBounds();
+  const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+  const bboxPolygon = turf.bboxPolygon(bbox);
+
+  return bboxPolygon;
+};
+
+const getIsGeometryWithinBbox = selectedUserDefinedLayer => {
+  // Getting the bounds of the map
+  const bboxPolygon = getBBox(window.mapRef);
+
+  let isGeometryWithinBbox = false;
+
+  // Checking if the selectedUserDefinedLayer's geometry is within the bboxPolygon
+  if (selectedUserDefinedLayer.geometry.type === 'MultiPolygon') {
+    for (let i = 0; i < selectedUserDefinedLayer.geometry.coordinates.length; i++) {
+      let polygon = turf.polygon(selectedUserDefinedLayer.geometry.coordinates[i]);
+      if (turf.booleanWithin(polygon, bboxPolygon)) {
+        isGeometryWithinBbox = true;
+        break;
+      }
+    }
+  } else {
+    isGeometryWithinBbox = turf.booleanWithin(
+      selectedUserDefinedLayer.geometry,
+      bboxPolygon
+    );
+  }
+
+  return isGeometryWithinBbox;
+};
 
 const dataset = {
   _id: '65cb5de3f20df7cc41118dc4',
@@ -304,33 +338,7 @@ describe('Map Component Shape File Upload', () => {
       // Expecting selectedShapeFile to be truthy
       expect(!!selectedShapeFile).to.be.equal(true);
 
-      // Getting the bounds of the map
-      const bounds = window.mapRef.getBounds();
-      const bbox = [
-        bounds.getWest(),
-        bounds.getSouth(),
-        bounds.getEast(),
-        bounds.getNorth(),
-      ];
-      const bboxPolygon = turf.bboxPolygon(bbox);
-
-      let isGeometryWithinBbox = false;
-
-      // Checking if the selectedShapeFile's geometry is within the bboxPolygon
-      if (selectedShapeFile.geometry.type === 'MultiPolygon') {
-        for (let i = 0; i < selectedShapeFile.geometry.coordinates.length; i++) {
-          let polygon = turf.polygon(selectedShapeFile.geometry.coordinates[i]);
-          if (turf.booleanWithin(polygon, bboxPolygon)) {
-            isGeometryWithinBbox = true;
-            break;
-          }
-        }
-      } else {
-        isGeometryWithinBbox = turf.booleanWithin(
-          selectedShapeFile.geometry,
-          bboxPolygon
-        );
-      }
+      const isGeometryWithinBbox = getIsGeometryWithinBbox(selectedShapeFile);
 
       // Expecting the geometry to be within the bbox
       expect(isGeometryWithinBbox).to.be.equal(true);
@@ -387,6 +395,51 @@ describe('Map Component Shape File Upload', () => {
 
     // Verifying that the group related to the sourceName still exists
     cy.get(`[data-testid="group-${sourceName}"]`);
+  });
+
+  it('Shapefile click works & boundary appears', () => {
+    cy.wait(100).then(() => {
+      window.mapRef.jumpTo({
+        center: {
+          lng: -97.75524486665434,
+          lat: 28.553817655727713,
+        },
+        zoom: 15.2,
+      });
+
+      cy.wait(basic_timeouts.shorTimeout).then(() => {
+        cy.get('.mapboxgl-canvas').first().click(1000, 500);
+
+        cy.wait(5000).then(() => {
+          const sourceLine = window.mapRef.getSource('boundary-line-source')._data;
+
+          // Getting values from the popup controller for selectedShapeFile and selectedUserDefinedLayer
+          const { selectedUserDefinedLayer } = popupController.getValues([
+            'selectedShapeFile',
+            'selectedUserDefinedLayer',
+          ]);
+
+          const boundaryLine = {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: selectedUserDefinedLayer.geometry.type,
+              coordinates: selectedUserDefinedLayer.geometry.coordinates,
+            },
+          };
+
+          expect(isEqual(sourceLine, boundaryLine)).to.be.equal(true);
+
+          // Expecting selectedUserDefinedLayer to be truthy
+          expect(!!selectedUserDefinedLayer).to.be.equal(true);
+
+          const isGeometryWithinBbox = getIsGeometryWithinBbox(selectedUserDefinedLayer);
+
+          // Expecting the geometry to be within the bbox
+          expect(isGeometryWithinBbox).to.be.equal(true);
+        });
+      });
+    });
   });
 
   // it('Shapefile delete works', () => {
