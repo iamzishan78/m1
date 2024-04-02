@@ -21,7 +21,6 @@ import BypassSignInCard from "./BypassSignInCard";
 import { BYPASS_LOGIN_MUTATION } from "graphQL/useMutationBypassLogin";
 import { apolloClientEndpointDev, isDev } from "utils/helper";
 import { globalStateController } from "hookstate/globalStateController";
-import { useAuth0 } from "@auth0/auth0-react";
 
 const localStyles = makeStyles((theme) => ({
   myRoot: {
@@ -301,15 +300,11 @@ const Login = (props) => {
   }, [stateApp.myMSALObj, signingIn]);
 
 
-  const { loginWithRedirect } = useAuth0();
-
   const handleAADSignIn = async (tenantName, updateTenantFlags) => {
     let tenant = tenantsCredentials(tenantName);
 
     if (globalStateController.getValue('bypassLogin')) {
-      // window.sessionStorage.setItem("tenantName", tenant.name);
-
-      loginWithRedirect();
+      window.sessionStorage.setItem("tenantName", tenant.name);
 
       return;
     }

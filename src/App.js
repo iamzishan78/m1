@@ -4,9 +4,9 @@ import { Switch, Route } from "react-router-dom";
 //components
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import Login from "./components/Login/Login";
-import SignUpCard from "./components/Login/SignUpCard";
-import ForgotPassword from "./components/Login/ForgotPassword";
+import Login from "./components/_Login/Login";
+import SignUpCard from "./components/_Login/SignUpCard";
+import ForgotPassword from "./components/_Login/ForgotPassword";
 import NavigationProvider from "./components/Navigation/NavigationProvider";
 import MapProvider from "./components/Map/MapProvider";
 import TrackProvider from "./components/Track/TrackProvider";

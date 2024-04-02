@@ -3,7 +3,7 @@ import './wdyr';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Login from "./components/Login/Login";
+import Login from "./components/_Login/Login";
 import 'components/Common/MRTable/common.css'
 import * as serviceWorker from './serviceWorker';
 import 'react-toastify/dist/ReactToastify.min.css';
