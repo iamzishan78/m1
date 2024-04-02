@@ -243,7 +243,6 @@ const FileTree = ({ layerMap, panelItems }) => {
               {(props) => {
                 if (props?.data?.layerName === "Recent Submitted Permits"
                   || props?.data?.layerName === "Tracked Wells"
-                  || props?.data?.layerName === "Search"
                   || props?.data?.layerName === "User Tags") {
                   let layerName = '';
                   if (props?.data?.layerName === "Recent Submitted Permits") {
@@ -252,8 +251,6 @@ const FileTree = ({ layerMap, panelItems }) => {
                     layerName = FEATURES.TRACKEDWELLSLAYER;
                   } else if (props?.data?.layerName === "User Tags") {
                     layerName = FEATURES.USERTAGSLAYER;
-                  } else if (props?.data?.layerName === "Search") {
-                    layerName = FEATURES.SEARCHLAYER;
                   }
                   return (
                     <FeatureFlag feature={layerName} >
