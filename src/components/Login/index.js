@@ -16,12 +16,7 @@ import { useDispatch } from 'react-redux';
 const Login = props => {
   const dispatch = useDispatch();
 
-  const {
-    isAuthenticated,
-    isLoading,
-    getIdTokenClaims,
-    loginWithRedirect,
-  } = useAuth0();
+  const { isAuthenticated, isLoading, getIdTokenClaims, loginWithRedirect } = useAuth0();
 
   const { globalStateValues } = globalStateController.useState(
     ['bypassLogin', 'apolloClientEndpoint'],
@@ -122,6 +117,7 @@ const Login = props => {
       }),
     };
     let endpoint = globalStateValues.apolloClientEndpoint;
+    console.log("🚀 ~ loginUser ~ endpoint:", endpoint, globalStateController.getValue('apolloClientEndpoint'))
     options = setApolloHeaders(options, authToken, idToken);
     return await fetch(endpoint, options)
       .then(response => response.json())
@@ -162,7 +158,6 @@ const Login = props => {
   }
 
   useEffect(() => {
-    console.log("🚀 ~ useEffect ~ isAuthenticated:", isAuthenticated)
     if (!isAuthenticated && !isLoading) {
       loginWithRedirect();
 
@@ -194,7 +189,11 @@ const Login = props => {
 
     (async () => {
       const id = await getIdTokenClaims();
+      if (!id) return;
+
       const loginRes = await loginUser(id.email, id.__raw);
+      if (!loginRes.user) return;
+
       const userMapSettings = await userSettings(
         loginRes.user._id,
         loginRes.sessionData.token
