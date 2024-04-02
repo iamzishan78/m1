@@ -144,6 +144,8 @@ const initialValue = {
 const NavigationContextProvider = (props) => {
   const [stateNav, setStateNav] = useState(initialValue);
 
+  window.setStateNav = setStateNav;
+
   const navResetAll = () => {
     setStateNav(initialValue);
   };

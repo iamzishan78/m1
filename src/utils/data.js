@@ -244,7 +244,7 @@ export const analyticsManagementRoutes = {
     search: false,
     isDefault: false,
     hideSearch: false,
-    isExcluded: true 
+    isExcluded: true
   },
 };
 
@@ -609,7 +609,7 @@ export const AdminManagementRoutes = {
 };
 
 export const bypassTenants = [
-  // "localhost",
+  "localhost",
   // "m1Preview",
   // "m1Staging",
   // "m1Production",
