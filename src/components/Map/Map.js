@@ -1439,6 +1439,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         layers: [...layers],
       });
 
+      const hasSearchCluster = features.some(f => f.layer.id === 'Search-clusters');
+
       if (!(window.event.ctrlKey && window.event.metaKey) && hoverUdIds.length > 0) {
         for (let i = 0; i < hoverUdIds.length; i++) {
           map.setFeatureState({ source: "parcels_source", id: hoverUdIds[i] }, { hover: false });
@@ -1539,7 +1541,8 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
             ifDefaultLayers(layerId) ||
             layerId === "Tracked Owners" ||
             layerId === "Tags Filter" ||
-            layerId === "Search" ||
+            ((layerId === "Search" || layerId === "Search-line")
+              && !hasSearchCluster) ||
             layerId === "recent_submitted_permits" ||
             layerId === "recent_submitted_permit_laterals":
             wellPointClick(feature);
