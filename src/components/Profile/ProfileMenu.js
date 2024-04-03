@@ -108,7 +108,12 @@ export default function UserProfile() {
       account: currentAccount,
     };
 
-    if (isAuthenticated) logout();
+    if (isAuthenticated)
+      logout({
+        logoutParams: {
+          returnTo: window.location.origin + '/'
+        }
+      });
 
     setAnchorEl(null);
     sessionStorage.clear();
