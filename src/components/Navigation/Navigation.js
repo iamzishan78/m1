@@ -98,7 +98,7 @@ export default function Navigation(props) {
   const classes = useStyles({
     mapGridCardActivated,
     user: stateApp.user,
-    isMap: location.pathname === "/" || location.pathname.startsWith("/map/"),
+    isMap: location.pathname === "/" || location.pathname.startsWith("/map/") || props.isMap,
   });
 
   useEffect(() => {
@@ -131,7 +131,7 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (location.pathname === "/" || location.pathname.startsWith("/map/")) {
+    if (location.pathname === "/" || location.pathname.startsWith("/map/") || props.isMap) {
       setMatchFind(true);
     } else {
       setMatchFind(false);
