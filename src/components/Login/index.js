@@ -117,7 +117,6 @@ const Login = props => {
       }),
     };
     let endpoint = globalStateValues.apolloClientEndpoint;
-    console.log("🚀 ~ loginUser ~ endpoint:", endpoint, globalStateController.getValue('apolloClientEndpoint'))
     options = setApolloHeaders(options, authToken, idToken);
     return await fetch(endpoint, options)
       .then(response => response.json())
@@ -158,7 +157,9 @@ const Login = props => {
   }
 
   useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
+    if (isLoading) return;
+
+    if (!isAuthenticated) {
       loginWithRedirect();
 
       return;
@@ -189,10 +190,18 @@ const Login = props => {
 
     (async () => {
       const id = await getIdTokenClaims();
-      if (!id) return;
+      if (!id) {
+        sessionStorage.clear();
+        window.location.replace(window.location.origin);
+        return;
+      }
 
       const loginRes = await loginUser(id.email, id.__raw);
-      if (!loginRes.user) return;
+      if (!loginRes?.user) {
+        sessionStorage.clear();
+        window.location.replace(window.location.origin);
+        return;
+      };
 
       const userMapSettings = await userSettings(
         loginRes.user._id,
@@ -201,7 +210,7 @@ const Login = props => {
 
       handleLogin(loginRes, userMapSettings);
     })();
-  }, [isAuthenticated]);
+  }, [isLoading, isAuthenticated]);
 
   return null;
 };
