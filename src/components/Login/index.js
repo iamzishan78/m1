@@ -18,11 +18,6 @@ const Login = props => {
 
   const { isAuthenticated, isLoading, getIdTokenClaims, loginWithRedirect } = useAuth0();
 
-  const { globalStateValues } = globalStateController.useState(
-    ['bypassLogin', 'apolloClientEndpoint'],
-    'globalStateValues'
-  );
-
   const handleLogin = (
     loginResp,
     userMapSettings,
@@ -54,8 +49,10 @@ const Login = props => {
       }
     }
 
+    const bypassLogin = globalStateController.getValue('bypassLogin');
+
     let authTokenExpires;
-    if (globalStateValues.bypassLogin)
+    if (bypassLogin)
       authTokenExpires = sessionData.authenticationToken.expiresOn;
     else if (authGraphQLToken?.expiresOn)
       authTokenExpires = new Date(
@@ -69,10 +66,10 @@ const Login = props => {
       tenantId: sessionData.tenantId,
       mongoId: mongoUser._id,
       roles: mongoUser.roles,
-      authToken: globalStateValues.bypassLogin
+      authToken: bypassLogin
         ? sessionData.token
         : authGraphQLResponse.authenticationToken,
-      accessToken: globalStateValues.bypassLogin
+      accessToken: bypassLogin
         ? sessionData.token
         : authGraphQLToken.idToken,
       authTokenExpires,
@@ -116,7 +113,7 @@ const Login = props => {
         variables: { email },
       }),
     };
-    let endpoint = globalStateValues.apolloClientEndpoint;
+    let endpoint = globalStateController.getValue('apolloClientEndpoint');
     options = setApolloHeaders(options, authToken, idToken);
     return await fetch(endpoint, options)
       .then(response => response.json())
@@ -142,7 +139,7 @@ const Login = props => {
         variables: { user: userId, type },
       }),
     };
-    let endpoint = globalStateValues.apolloClientEndpoint;
+    let endpoint = globalStateController.getValue('apolloClientEndpoint');
     options = setApolloHeaders(options, token, token);
     return await fetch(endpoint, options)
       .then(response => response.json())
