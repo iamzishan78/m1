@@ -20,7 +20,7 @@ describe('Map Component', () => {
     // Intercepting API calls and waiting for their responses
     cy.interceptAndWait(['getESSimpleSearch'], () => {
       // Typing into the search input field
-      cy.get('#cognitive-search-autocomplete').type('MACALLAN #2-17');
+      cy.get('#cognitive-search-autocomplete').clear().type('MACALLAN #2-17');
     });
 
     // Clicking on the first option in the search autocomplete dropdown
