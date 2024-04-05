@@ -193,7 +193,7 @@ const Login = props => {
         return;
       }
 
-      const loginRes = await loginUser(id.email, id.__raw);
+      const loginRes = await loginUser(id.email, id.__raw, id.__raw);
       if (!loginRes?.user) {
         sessionStorage.clear();
         window.location.replace(window.location.origin);
@@ -202,7 +202,8 @@ const Login = props => {
 
       const userMapSettings = await userSettings(
         loginRes.user._id,
-        loginRes.sessionData.token
+        loginRes.sessionData.token,
+        id.__raw,
       );
 
       handleLogin(loginRes, userMapSettings);
