@@ -20,8 +20,8 @@ describe('ContactDetailsSection', () => {
     });
   });
 
-  const addDealNameString = 'test deal';
-  const updateDealNameString = addDealNameString + ' updated';
+  let addDealName = 'test deal';
+  let updateDealName = 'test deal updated';
 
   // Test case to verify contact deal creation
   it('Add contact deal', () => {
@@ -41,7 +41,9 @@ describe('ContactDetailsSection', () => {
       .click()
       .wait(100)
       .clear()
-      .type(addDealNameString);
+      .wait(100)
+      .type(addDealName)
+      .wait(100);
 
     // Waiting for the creation response and processing the response data
     cy.interceptAndWait(
@@ -52,6 +54,7 @@ describe('ContactDetailsSection', () => {
         cy.wait(alias).then(creationResponse => {
           expect(creationResponse?.response?.statusCode).to.eq(200);
           expect(creationResponse?.response?.body?.data?.addDeal?.success).to.eq(true);
+          addDealName = creationResponse?.response?.body?.data?.addDeal?.deal?.name;
         });
       },
       { wait: false }
@@ -70,7 +73,7 @@ describe('ContactDetailsSection', () => {
     });
 
     cy.get('td[data-colindex="1"]') // Find all table rows 1st column
-      .contains(addDealNameString) // Find the cell whoes value equal to deal name
+      .contains(addDealName) // Find the cell whoes value equal to deal name
       .click();
 
     // Selecting the textarea for updating deal name
@@ -78,7 +81,9 @@ describe('ContactDetailsSection', () => {
       .click()
       .wait(100)
       .clear()
-      .type(updateDealNameString);
+      .wait(100)
+      .type(updateDealName)
+      .wait(100);
 
     // Waiting for the creation response and processing the response data
     cy.interceptAndWait(
@@ -89,6 +94,7 @@ describe('ContactDetailsSection', () => {
         cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(updateResponse => {
           expect(updateResponse?.response?.statusCode).to.eq(200);
           expect(updateResponse?.response?.body?.data?.updateDeal?.success).to.eq(true);
+          updateDealName = updateResponse?.response?.body?.data?.updateDeal?.deal?.name;
         });
       },
       { wait: false }
@@ -107,7 +113,7 @@ describe('ContactDetailsSection', () => {
     });
 
     cy.get('td[data-colindex="1"]') // Find all table rows 1st column
-      .contains(updateDealNameString) // Find the cell whoes value equal to deal name
+      .contains(updateDealName) // Find the cell whoes value equal to deal name
       .click();
 
     // Click on delete icon button
