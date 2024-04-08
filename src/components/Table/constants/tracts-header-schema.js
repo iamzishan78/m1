@@ -123,6 +123,14 @@ const TractsHeadCells = (isSnapGrid = false) => [
     },
   },
   {
+    name: "calculatedNra",
+    label: "Tract NRA",
+    esKey: "shapeJson.properties.netRoyalityAcres.calculatedNra.keyword",
+    options: {
+      dbName: "shapeJson.properties.netRoyalityAcres.calculatedNra",
+    },
+  },
+  {
     label: "Exec Net Acres",
     name: "execNetAcres",
     esKey: "shapeJson.properties.execNetAcres.keyword",
