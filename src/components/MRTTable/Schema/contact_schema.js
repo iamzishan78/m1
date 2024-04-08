@@ -637,7 +637,7 @@ const ContactMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'isPurchased',
 			accessorKey: 'isPurchased',
-			header: 'Is Purchased Data',
+			header: 'Purchased Data Exists',
 			isSearchField: false,
 			filterSelectOptions: [
 				{ label: 'Yes', value: 'true' },
