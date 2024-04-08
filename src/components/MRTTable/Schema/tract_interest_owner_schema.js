@@ -510,18 +510,18 @@ const TractPerUnitMeta = {
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'contact.isPurchased.keyword',
+			name: 'contact.isPurchased',
 			accessorFn: row => row?.contact?.isPurchased,
 			header: 'Purchased Data Exists',
 			filterSelectOptions: [
 				{ label: 'Yes', value: 'true' },
 				{ label: 'No', value: 'false' },
 			],
-			isSearchField: false,
 			Cell: ({ row }) => {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
 				return <>{isPurchased ? 'Yes' : 'No'}</>;
 			},
+			isSearchField: false
 		},
 
 		{
