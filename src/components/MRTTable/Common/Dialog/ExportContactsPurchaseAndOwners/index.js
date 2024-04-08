@@ -110,6 +110,11 @@ const ExportContactsAndPurchase = ({
     }
 
     onClose();
+    let sortOrder = {};
+    if (Object.keys(sort).length > 0) {
+      sortOrder = { field: `${sort?.field}.keyword`, order: sort?.order };
+    }
+
     dispatch(execCommonAsyncExportJobAction.STARTED({
       jobType: 'EXPORTCSV',
       client,
@@ -121,7 +126,7 @@ const ExportContactsAndPurchase = ({
         search,
         filters,
         esIndex,
-        sort,
+        sort: sortOrder,
         isSelectAll: isAllRowsSelected,
         contactIdKey,
         datasets,
