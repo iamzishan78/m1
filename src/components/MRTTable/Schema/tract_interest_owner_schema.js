@@ -83,7 +83,7 @@ const TractPerUnitMeta = {
 			name: 'contact.entityDetail.name.keyword',
 			accessorFn: row => row?.contact?.entityDetail?.name,
 			id: 'contact.entityDetail.name',
-			header: 'Owner Name 87687',
+			header: 'Owner Name',
 			Cell: ({ renderedCellValue, row }) => {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
 				return (
