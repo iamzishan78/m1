@@ -67,7 +67,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 
 		let sortOrder = {};
 		if (tableStateValues.sorting.length > 0) {
-			sortOrder = { field: tableStateValues.sorting[0]?.id, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
+			sortOrder = { field: `${tableStateValues.sorting[0]?.id}.keyword`, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
 		}
 
 		const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
