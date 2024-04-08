@@ -508,6 +508,21 @@ const TractPerUnitMeta = {
 			header: 'Depth To',
 			isExternalFilter: false,
 		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.isPurchased.keyword',
+			accessorFn: row => row?.contact?.isPurchased,
+			header: 'Purchased Data Exists',
+			filterSelectOptions: [
+				{ label: 'Yes', value: 'true' },
+				{ label: 'No', value: 'false' },
+			],
+			isSearchField: false,
+			Cell: ({ row }) => {
+				const isPurchased = [true, 'true', 'True'].includes(row.getValue('contact.isPurchased'));
+				return <>{isPurchased ? 'Yes' : 'No'}</>;
+			},
+		},
 
 		{
 			...CommonSchema.TAGS,
