@@ -290,6 +290,7 @@ export default function ParcelSummary(props) {
     }, [props.customLayer]);
 
     const tableData = React.useMemo(() => {
+        // rounding interest values
         props.properties.execNetAcres = props.properties?.execNetAcres ? addTrailingZeros(parseFloat(props.properties.execNetAcres).toFixed(8)) : 0;
         props.properties.nonExecNetAcres = props.properties?.nonExecNetAcres ? addTrailingZeros(parseFloat(props.properties.nonExecNetAcres).toFixed(8)) : 0;
         return (props.properties?.state === "TX" || props.properties?.originalProperties?.State === "TX") ?

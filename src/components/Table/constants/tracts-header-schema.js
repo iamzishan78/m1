@@ -129,6 +129,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
     options: {
       dbName: "shapeJson.properties.execNetAcres.keyword",
       customRender: (value) => {
+        // rounding interest values
         return <p>{value ? addTrailingZeros(parseFloat(value).toFixed(8)) : ""}</p>;
       },
     },
@@ -140,6 +141,7 @@ const TractsHeadCells = (isSnapGrid = false) => [
     options: {
       dbName: "shapeJson.properties.nonExecNetAcres.keyword",
       customRender: (value) => {
+        // rounding interest values
         return <p>{value ? addTrailingZeros(parseFloat(value).toFixed(8)) : ""}</p>;
       },
     },
