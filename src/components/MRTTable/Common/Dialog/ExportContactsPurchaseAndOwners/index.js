@@ -60,6 +60,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const notAllowedFields = ["createdAt", "lastUpdateAt"];
+
 const ExportContactsAndPurchase = ({
   isAllRowsSelected,
   filters,
@@ -111,7 +113,7 @@ const ExportContactsAndPurchase = ({
 
     onClose();
     let sortOrder = {};
-    if (Object.keys(sort).length > 0) {
+    if (Object.keys(sort).length > 0 && !notAllowedFields.includes(sort.field)) {
       sortOrder = { field: `${sort?.field}.keyword`, order: sort?.order };
     }
 
