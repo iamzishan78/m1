@@ -66,6 +66,7 @@ const OwnersPerUnitMeta = {
 		mainRecord: { key: '_id' },
 		parentRecord: { key: 'shape._id' }
 	},
+	defaultFlterMode: 'multiselect',
 	TableSchema: [
 		{
 			...CommonSchema.MONGO_ID,
