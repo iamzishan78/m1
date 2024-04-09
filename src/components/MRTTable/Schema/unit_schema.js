@@ -126,7 +126,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uAcres.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uAcres,
+			accessorFn: row => vf_number(row?.shapeJson?.properties?.uAcres),
 			id: 'shapeJson.properties.uAcres',
 			header: 'Unit Acres',
 		},
