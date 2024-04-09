@@ -6,6 +6,7 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import vf_currency from "components/Shared/valueformatters/vf_currency.js";
 
 const esIndex = 'shapes_flat';
 
@@ -159,7 +160,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uUnitPricing.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uUnitPricing,
+			accessorFn: row => vf_currency(row?.shapeJson?.properties?.uUnitPricing),
 			id: 'shapeJson.properties.uUnitPricing',
 			header: 'Target Price/Acre',
 		},
@@ -167,7 +168,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uMaxUnitPricing.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uMaxUnitPricing,
+			accessorFn: row => vf_currency(row?.shapeJson?.properties?.uMaxUnitPricing),
 			id: 'shapeJson.properties.uMaxUnitPricing',
 			header: 'Max Price/Acre',
 		},
