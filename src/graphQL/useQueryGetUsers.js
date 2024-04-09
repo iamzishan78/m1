@@ -1,5 +1,6 @@
 import gql from "graphql-tag";
 
+// TODO: remove this
 export const GETUSERS = gql`
   query getAllUsers {
     allUsers
