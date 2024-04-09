@@ -7,6 +7,7 @@ export const baseUrls = {
     m1production: "https://m1productiongraphql.azurewebsites.net/api/m1graph?code=8bcIQeGYGoL2XgLZ-O2sWhN7qKU3iMPpw_qboLviLIZWAzFuTQgpgQ==",
     m1staging: "https://m1staginggraphql.azurewebsites.net/api/m1graph?code=n2edloVOIkMy6q4v_Lk8HM9p--sbgpxu1B6nfbc1CUHsAzFuwKCm0w==",
     frontier: 'https://frontiergraphql.azurewebsites.net/api/m1graph?code=YsPcQQgq00Crh7NQGAgdKuQ1CNnU3uqsH3DZueYOZ2fbAzFugbo9Mw==',
+    m1cypress: 'https://cypressgraphql.azurewebsites.net/api/m1graph?code=t8n2GMsIp7aC2bypwvPMTcGsR4aSoGFTqm7lIqzba9QYAzFuEWpnzg==',
     localhost: "http://localhost:7071/api/m1graph"
 }
 
@@ -14,6 +15,7 @@ export const authMe = {
     m1production: "https://m1productiongraphql.azurewebsites.net/.auth/me",
     m1staging: "https://m1staginggraphql.azurewebsites.net/.auth/me",
     frontier: 'https://frontiergraphql.azurewebsites.net/.auth/me',
+    m1cypress: "https://cypressgraphql.azurewebsites.net/.auth/me",
     localhost: "https://m1productiongraphql.azurewebsites.net/.auth/me"
 }
 
