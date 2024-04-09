@@ -386,11 +386,15 @@ const tableESStateControllerHandler = state => ({
 		!deepEqual(state.globalFilter?.get({ noproxy: true }), globalFilter) && state.globalFilter?.set(globalFilter),
 
 	setFilter: filter => {
-		const column = state.TableSchema.get({ noproxy: true }).find(
+		const TableSchema = state.TableSchema.get({ noproxy: true }) || []
+		console.log('TableSchema', TableSchema)
+		const column = TableSchema?.find(
 			column => column.id === filter.field || column.accessorKey === filter.field
 		);
 
-		if (column.type === 'date') {
+		console.log('column', column)
+
+		if (column?.type === 'date') {
 			if (filter.type !== 'advanced') {
 				filter.type = 'advanced'
 				filter.searchType = 'betweenInclusive'

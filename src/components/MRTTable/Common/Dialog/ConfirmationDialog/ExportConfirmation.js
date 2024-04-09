@@ -59,16 +59,29 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 			return (filteredColumns[accessorKey] === true && !obj.hasOwnProperty('enableColumnFilter')) || obj?.isHiddenFieldExport;
 		});
 
-		filteredTableSchema = filteredTableSchema?.map(({ name, header, accessorKey, id, isExport }) => ({
+		filteredTableSchema = filteredTableSchema?.map(({ name, header, accessorKey, id, isExport, type }) => ({
 			name,
 			label: header,
 			esKey: isExport || accessorKey || id,
+			type,
+			accessorKey: accessorKey || id,
 		}));
 
 		let sortOrder = {};
 		if (tableStateValues.sorting.length > 0) {
-			sortOrder = { field: tableStateValues.sorting[0]?.id, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
+			const column = filteredTableSchema.find(col => col.accessorKey === tableStateValues.sorting[0]?.id);
+			let fieldName = tableStateValues.sorting[0]?.id;
+			if (column.type === "string") {
+				fieldName += ".keyword";
+			}
+			sortOrder = { field: fieldName, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
 		}
+
+		filteredTableSchema = filteredTableSchema?.map(({ name, label, esKey }) => ({
+			name,
+			label,
+			esKey,
+		}));
 
 		const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
 		const search = { fields: tableStateValues?.searchFields, query };
