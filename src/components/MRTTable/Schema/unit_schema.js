@@ -6,7 +6,6 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
-
 const esIndex = 'shapes_flat';
 
 const UnitMeta = {
@@ -238,6 +237,8 @@ const UnitMeta = {
 
 				return <FlyToMap id={id} type='unit' />;
 			},
+			isHiddenFieldExport: true,
+			hidden: true,
 		},
 	],
 };
