@@ -1,0 +1,25 @@
+trigger:
+  branches:
+    exclude:
+      - '*'
+
+pr:
+  branches:
+    include:
+      - '*'
+
+jobs:
+- job: CodeReview
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: OpenAICodeReview@1
+    inputs:
+      api_key: $(OpenAI_ApiKey)
+      ai_model: 'gpt-3.5-turbo'
+      bugs: true
+      performance: true
+      best_practices: true
+      file_extensions: 'js,ts,css,html'
+      file_excludes: 'file1.js,file2.py,secret.txt'
+      additional_prompts: 'Fix variable naming, Ensure consistent indentation, Review error handling approach'`
