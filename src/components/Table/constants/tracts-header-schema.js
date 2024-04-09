@@ -3,7 +3,7 @@ import { GlobalStickyStyles } from "GlobalSettings";
 
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
 import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
-import { formatDate } from 'components/Shared/functions';
+import { addTrailingZeros, formatDate } from 'components/Shared/functions';
 
 const TractsHeadCells = (isSnapGrid = false) => [
   {
@@ -128,6 +128,10 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.execNetAcres.keyword",
     options: {
       dbName: "shapeJson.properties.execNetAcres.keyword",
+      customRender: (value) => {
+        // rounding interest values
+        return <p>{value ? addTrailingZeros(parseFloat(value).toFixed(8)) : ""}</p>;
+      },
     },
   },
   {
@@ -136,6 +140,10 @@ const TractsHeadCells = (isSnapGrid = false) => [
     esKey: "shapeJson.properties.nonExecNetAcres.keyword",
     options: {
       dbName: "shapeJson.properties.nonExecNetAcres.keyword",
+      customRender: (value) => {
+        // rounding interest values
+        return <p>{value ? addTrailingZeros(parseFloat(value).toFixed(8)) : ""}</p>;
+      },
     },
   },
   {

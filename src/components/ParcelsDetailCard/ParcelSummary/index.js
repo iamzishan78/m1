@@ -20,7 +20,7 @@ import { useLazyQuery } from "@apollo/client";
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { SHAPE_SUMMARY_DETAILS } from "graphQL/useQueryShapeSummaryDetail";
 import { SHAPEWELLSCOUNT } from "graphQL/useQueryShapeWellsCount";
-import { getPolygonString } from "../../Shared/functions";
+import { addTrailingZeros, getPolygonString } from "../../Shared/functions";
 import { getParcelOriginalProperties } from '../utils/GetParcelOriginalProps'
 import QtrQtrSelectorNew from "../../ShapeDetailCard/Common/QtrQtrSelectorNew";
 import MetaField from "components/Table/helpers/MetaField";
@@ -290,6 +290,9 @@ export default function ParcelSummary(props) {
     }, [props.customLayer]);
 
     const tableData = React.useMemo(() => {
+        // rounding interest values
+        props.properties.execNetAcres = props.properties?.execNetAcres ? addTrailingZeros(parseFloat(props.properties.execNetAcres).toFixed(8)) : 0;
+        props.properties.nonExecNetAcres = props.properties?.nonExecNetAcres ? addTrailingZeros(parseFloat(props.properties.nonExecNetAcres).toFixed(8)) : 0;
         return (props.properties?.state === "TX" || props.properties?.originalProperties?.State === "TX") ?
             parcelDefaultData.filter((data) => data.showStateTX !== false) :
             parcelDefaultData.filter((data) => data.showStateTX !== true)
