@@ -62,7 +62,6 @@ const OwnersPerUnitMeta = {
 	height: '767px',
 	isInFiniteScroll: true,
 	columnVirtualization: true,
-	defaultFlterMode: 'multiselect',
 	deletedKeys: {
 		mainRecord: { key: '_id' },
 		parentRecord: { key: 'shape._id' }
