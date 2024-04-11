@@ -114,6 +114,7 @@ const ExportContactsAndPurchase = ({
     let sortOrder = {};
 
     if (Object.keys(sort).length > 0) {
+      // Using column name as a field key beacause it has .keyword appended based on its type
       const column = columns.find(col => col.accessorKey === sort?.field);
       sortOrder = { field: column?.name || sort?.field, order: sort?.order };
     }

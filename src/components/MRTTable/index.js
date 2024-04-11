@@ -17,6 +17,7 @@ function Table({ tableKey, hideSharedCommentCheck }) {
 					...tablePropsState,
 				}}
 			/>
+			{/* Note: Columns are passed to access in other components */}
 			<AllDialogs hideSharedCommentCheck={hideSharedCommentCheck} columns={tableProps.columns} />
 		</div>
 	);
