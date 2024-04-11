@@ -73,7 +73,7 @@ function AllDialogs(props) {
 				</Dialog>
 			)}
 
-			{type === 'exportContacts' && <ExportContactsPurchaseAndOwners {...rest} onClose={handleCloseDialog} />}
+			{type === 'exportContacts' && <ExportContactsPurchaseAndOwners {...rest} columns={props.columns} onClose={handleCloseDialog} />}
 
 			{type === 'asign' && (
 				<AssignOwnerToContactDrawerContainer

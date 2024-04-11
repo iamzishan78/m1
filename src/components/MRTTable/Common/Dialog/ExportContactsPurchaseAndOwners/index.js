@@ -60,8 +60,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const notAllowedFields = ["createdAt", "lastUpdateAt"];
-
 const ExportContactsAndPurchase = ({
   isAllRowsSelected,
   filters,
@@ -72,6 +70,7 @@ const ExportContactsAndPurchase = ({
   open,
   shapeType,
   sort,
+  columns,
   contactIdKey,
 }) => {
   const classes = useStyles();
@@ -113,8 +112,10 @@ const ExportContactsAndPurchase = ({
 
     onClose();
     let sortOrder = {};
-    if (Object.keys(sort).length > 0 && !notAllowedFields.includes(sort.field)) {
-      sortOrder = { field: `${sort?.field}.keyword`, order: sort?.order };
+
+    if (Object.keys(sort).length > 0) {
+      const column = columns.find(col => col.accessorKey === sort?.field);
+      sortOrder = { field: column?.name || sort?.field, order: sort?.order };
     }
 
     dispatch(execCommonAsyncExportJobAction.STARTED({
