@@ -239,29 +239,12 @@ export default function ReportGroupHeader({
                   );
                   if (gridView) {
                     setESFilters([
-                      ...esFilters.filter(
-                        filter =>
-                          ![
-                            'state.keyword',
-                            'county.keyword',
-                            'internalCompany.keyword',
-                          ].includes(filter.field)
-                      ),
-                      ...gridView.filters,
+                      ...gridView.filters
                     ]);
                     setFilterToggle((value) => !value);
                     // selectGridView(gridView)
                   } else {
-                    setESFilters(
-                      esFilters.filter(
-                        filter =>
-                          ![
-                            'state.keyword',
-                            'county.keyword',
-                            'internalCompany.keyword',
-                          ].includes(filter.field)
-                      )
-                    );
+                    setESFilters([]);
                     setFilterToggle((value) => !value);
                   }
                 }}
