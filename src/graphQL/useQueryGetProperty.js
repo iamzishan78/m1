@@ -1,8 +1,8 @@
 import gql from "graphql-tag";
 
 export const GET_PROPERTY = gql`
-  query getProperty($id:ID){
-    getProperty(propertyId:$id)
+  query getProperty($id:ID, $isDeletedCheck: Boolean){
+    getProperty(propertyId:$id, isDeletedCheck: $isDeletedCheck)
   }
 `;
 
