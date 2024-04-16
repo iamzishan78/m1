@@ -2207,27 +2207,6 @@ function M1nTable(props) {
 
   ////////////Parcel Interests Per Contact end/////////////////////////////////////////////////
 
-  ////////////User management//////////////////////////////////////////////////////////////////
-  useEffect(() => {
-    if (props.parent && props.parent === "UserManagement") {
-      setLoading(true);
-      getAllUsers();
-      if (userLists?.allUsers) {
-        setTargetLabel("usermanagement");
-        setHeader("Active Users");
-        setRows(userLists.allUsers);
-        setColumns(UserManagementHeadCells);
-        setLoading(false);
-        setAddAble({
-          type: "inviteUser",
-        });
-        setOrderByTracks(false);
-      } else {
-        setRows([]);
-      }
-    }
-  }, [props.parent, userLists]);
-
   ///////// Remove User ////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (props.parent && props.parent === "UserManagement") {

@@ -3958,8 +3958,6 @@ function SubTable(props) {
         if (props.addAble?.type && props.addAble?.type === "parcelInterestsToEntity")
           // handleExpandClick(null, null, null, "addOwnerToParcel");
           handleExpandClick(null, null, null, "addParcelInterestsToEntity");
-        if (props.addAble?.type && props.addAble?.type === "inviteUser")
-          handleExpandClick(null, null, null, "inviteUser");
         if (props.addAble?.type === "revenueStatementDetails") {
           const checkId = window.location.pathname.split("/")[window.location.pathname.split("/").length - 1];
           routeChange(`/revenue/statement/${checkId}/line-item`);
@@ -4177,19 +4175,6 @@ function SubTable(props) {
           selectedAgreement: rows[dataIndex],
         }));
         props.onClickAdd();
-      }
-
-      if (props.targetLabel === "usermanagement") {
-        if (rows[dataIndex]?.id) {
-          let card = { ...rows[dataIndex] };
-          setStateApp((stateApp) => ({
-            ...stateApp,
-            userDialog: true,
-            activeUser: card,
-          }));
-
-          handleExpandClick(null, null, null, "inviteUser");
-        }
       }
 
       // if (props.targetLabel === "Revenue Properties") {
@@ -5168,9 +5153,6 @@ function SubTable(props) {
                   setRows={setExpandedObject}
                   setSelectedRow={setSelectedRow}
                 />
-              )}
-              {openDialog === "inviteUser" && (
-                <InviteUserDialog rows={rows} setRows={setExpandedObject} onClose={handleCloseDialog} setSelectedRow={setSelectedRow} />
               )}
               {openDialog === "reinviteUser" && (
                 <ReinviteUserDialog
