@@ -9,6 +9,7 @@ export const GET_USER = gql`
       displayName
       role
       roles
+      rolePrivileges
       ts
     }
   }
@@ -23,6 +24,7 @@ export const GET_ALL_USERS = gql`
       displayName
       role
       roles
+      rolePrivileges
       ts
     }
   }
