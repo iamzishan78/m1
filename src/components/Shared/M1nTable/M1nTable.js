@@ -23,11 +23,10 @@ import { TAGSAMPLES } from "../../../graphQL/useQueryTagSamples";
 import { COMMENTSCOUNTER } from "../../../graphQL/useQueryCommentsCounter";
 import { OWNERSWELLSQUERY } from "../../../graphQL/useQueryOwnersWells";
 import { ABSTRACTWELLGEOQUERY } from "../../../graphQL/useQueryAbstractWellGeo";
-import { GETUSERS } from "../../../graphQL/useQueryGetUsers";
+import { GET_ALL_USERS, REMOVE_USERS } from "../../../graphQL/userManagement";
 import { GET_ES_DOCUMENTS } from "graphQL/useQueryESDocuments";
 import { CUSTOMLAYER } from "../../../graphQL/useQueryCustomLayer";
 import { REMOVE_CONTACTS } from "../../../graphQL/useMutationRemoveContact";
-import { REMOVE_USERS } from "../../../graphQL/useMutationRemoveUsers";
 import { UPDATECONTACT } from "../../../graphQL/useMutationUpdateContact";
 import { UPDATETRANSACTION } from "../../../graphQL/useMutationUpdateTransaction";
 import { PARCELOWNERSQUERY } from "../../../graphQL/useQueryParcelOwners";
@@ -182,7 +181,7 @@ function M1nTable(props) {
   const [getShapeWellsCount, { data: dataShapeWellsCount }] = useLazyQuery(SHAPEWELLSCOUNT, { fetchPolicy: "cache-and-network" });
   const [getWellOwners, { data: dataWellOwners }] = useLazyQuery(WELLOWNERSQUERY);
   const [getContactWells, { data: dataContactWells }] = useLazyQuery(CONTACTWELLS);
-  const [getAllUsers, { data: userLists }] = useLazyQuery(GETUSERS, {
+  const [getAllUsers, { data: userLists }] = useLazyQuery(GET_ALL_USERS, {
     onError: () => {
       setLoading(false);
     },
