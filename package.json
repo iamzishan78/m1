@@ -160,7 +160,7 @@
     "start": "export NODE_OPTIONS=--openssl-legacy-provider; craco start",
     "cypress:start": "cross-env CYPRESS=true yarn start",
     "legacy-build": "react-scripts build",
-    "build": "export NODE_OPTIONS=--openssl-legacy-provider craco build",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider; craco build",
     "legacy-test": "react-scripts test",
     "test": "export NODE_OPTIONS=--openssl-legacy-provider; craco test",
     "eject": "react-scripts eject",
