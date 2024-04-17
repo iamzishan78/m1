@@ -18,8 +18,6 @@ import { split } from "apollo-link";
 import { relayStylePagination } from "./graphQL/apolloPaginationSchemes.js";
 // import ProfileProvider from "./components/Profile/ProfileProvider";
 // import ProfileDetailsProvider from "./components/Profile/ProfileDetailsProvider";
-// import { UserManagementContextProvider } from "./components/UserManagement/UserManagementContext";
-// import UserManagementContainer from "./components/UserManagement/Container";
 import Notifications from "./components/Notifications/Notifications";
 //redux
 import { Provider as ReduxProvider } from "react-redux";

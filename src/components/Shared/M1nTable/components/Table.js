@@ -3895,9 +3895,6 @@ function SubTable(props) {
           },
         };
       }
-      if (props.addAble && props.parent === "UserManagement") {
-        buttonLabel = "+ ADD USER";
-      }
       if (props.addAble?.type === "ownerToParcel" || props.addAble?.type === "ownerToUnit") {
         buttonLabel = "+ ADD INTEREST OWNER";
         menuOptions = {
@@ -4016,7 +4013,6 @@ function SubTable(props) {
             )}
             {(props.addAble?.type === "wellInterest" ||
               props.addAble?.type === "suggestedOwnerToParcel" ||
-              (props.addAble && props.parent === "UserManagement") ||
               props.addAble?.type === "revenueStatementDetails") && (
                 <Button
                   color="secondary"
