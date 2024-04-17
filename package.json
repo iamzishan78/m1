@@ -9,7 +9,7 @@
   "dependencies": {
     "@amcharts/amcharts4": "^4.10.16",
     "@apollo/client": "^3.3.19",
-    "@azure/msal": "^1.4.5",
+    "msal": "^1.4.18",
     "@azure/msal-browser": "^2.12.1",
     "@azure/storage-blob": "^12.8.0",
     "@craco/craco": "^6.4.3",
@@ -156,18 +156,18 @@
     "yarn": "^1.22.19"
   },
   "scripts": {
-    "legacy-start": "react-scripts start",
+    "legacy-start": "react-scripts --openssl-legacy-provider start",
     "start": "export NODE_OPTIONS=--openssl-legacy-provider; craco start",
-    "cypress:start": "cross-env CYPRESS=true craco start",
+    "cypress:start": "cross-env CYPRESS=true yarn start",
     "legacy-build": "react-scripts build",
     "build": "export NODE_OPTIONS=--openssl-legacy-provider craco build",
     "legacy-test": "react-scripts test",
-    "test": "craco test",
+    "test": "export NODE_OPTIONS=--openssl-legacy-provider; craco test",
     "eject": "react-scripts eject",
     "cy:component": "cypress run --component --browser chrome",
     "ci:cy-login": "cross-env START_SERVER_AND_TEST_INSECURE=1 start-server-and-test cypress:start http://localhost:3000 \"cypress run --spec 'cypress/e2e/login.cy.js' --browser chrome\"",
     "cy:open": "npm run ci:cy-login && cypress open",
-    "ci:cy-login-component": "npm run ci:cy-login && npm run cy:component"
+    "ci:cy-login-component": "yarn ci:cy-login && yarn cy:component"
   },
   "eslintConfig": {
     "extends": "react-app"
