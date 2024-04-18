@@ -16,14 +16,12 @@ steps:
   - task: NodeTool@0
     inputs:
       versionSpec: "21.7.3"
-    displayName: "Install Node.js"
+    displayName: "Install Update Node.js"
 
-  - task: Npm@1
-    inputs:
-      command: "npm install --g yarn"
-     - script: |
+  - task: YarnInstaller@3
+    - script: |
       npm install --g yarn
-    displayName: "Yarn Install test"
+    displayName: "Yarn Install using NPM"
 
   - script: |
       echo $NODE_OPTIONS
