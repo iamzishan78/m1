@@ -18,9 +18,8 @@ steps:
       versionSpec: "21.7.3"
     displayName: "Install Node.js"
 
-  - task: YarnInstaller@3
-    inputs:
-      command: "npm install -g yarn"
+  - script: |
+      npm install -g yarn
     displayName: "Yarn Install Development"
 
   - script: |
