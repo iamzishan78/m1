@@ -680,7 +680,6 @@ function ContactDetailCard(props) {
                     name="Address"
                     id={contactData._id}
                     entity={contactData.entity}
-                    disabled
                     content={{
                       address1: contactData.address1,
                       address2: contactData.address2,
@@ -689,6 +688,8 @@ function ContactDetailCard(props) {
                       zip: contactData.zip,
                       country: contactData.country,
                     }}
+                    onlyChildren={false}
+                    disabled={false}
                   />
                 </Link>
               </div>
