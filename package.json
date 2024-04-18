@@ -163,7 +163,7 @@
     "legacy-test": "react-scripts --openssl-legacy-provider test",
     "test": "export NODE_OPTIONS=--openssl-legacy-provider; craco test",
     "eject": "react-scripts --openssl-legacy-provider eject",
-    "cy:component": "export NODE_OPTIONS=--openssl-legacy-provider; cypress run --component --browser chrome",
+    "cy:component": "export NODE_OPTIONS=\"--max_old_space_size=65536 --openssl-legacy-provider\" ; cypress run --component --browser chrome",
     "ci:cy-login": "cross-env START_SERVER_AND_TEST_INSECURE=1 start-server-and-test cypress:start http://localhost:3000 \"cypress run --spec 'cypress/e2e/login.cy.js' --browser chrome\"",
     "cy:open": "npm run ci:cy-login && cypress open",
     "ci:cy-login-component": "yarn ci:cy-login && yarn cy:component"
