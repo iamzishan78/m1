@@ -20,8 +20,8 @@ steps:
 
   - task: YarnInstaller@3
     inputs:
-      command: "install"
-    displayName: "Yarn Install"
+      command: "npm install -g yarn"
+    displayName: "Yarn Install Development"
 
   - script: |
       echo $NODE_OPTIONS
