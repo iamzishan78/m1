@@ -159,7 +159,7 @@
     "start": "export NODE_OPTIONS=--openssl-legacy-provider; craco start",
     "cypress:start": "cross-env CYPRESS=true yarn start",
     "legacy-build": "react-scripts build",
-    "build": "export NODE_OPTIONS=\"--max_old_space_size=65536 --openssl-legacy-provider\"; craco build",
+    "build": "export NODE_OPTIONS=\"--max_old_space_size=32768 --openssl-legacy-provider\"; craco build",
     "legacy-test": "react-scripts --openssl-legacy-provider test",
     "test": "export NODE_OPTIONS=--openssl-legacy-provider; craco test",
     "eject": "react-scripts --openssl-legacy-provider eject",
