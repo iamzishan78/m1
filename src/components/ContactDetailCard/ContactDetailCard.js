@@ -673,7 +673,6 @@ function ContactDetailCard(props) {
                     )}
                   </FieldContent>
                 </h2>
-                <Link onClick={() => window.open(getAddressUrl(contactData), "_blank")}>
                   <FieldContent
                     childrenLeft
                     noMargin
@@ -691,7 +690,6 @@ function ContactDetailCard(props) {
                     onlyChildren={false}
                     disabled={false}
                   />
-                </Link>
               </div>
               <div className={classes.tagsContainer}>
                 <div className={classes.highlighter}>
