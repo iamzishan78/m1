@@ -18,17 +18,22 @@ steps:
       versionSpec: "21.7.3"
     displayName: "Install Update Node.js"
 
-  - task: YarnInstaller@3
-    - script: |
-      npm install --g yarn
-    displayName: "Yarn Install using NPM"
+   - task: YarnInstaller@3
+    inputs:
+      command: "install"
+    displayName: "Yarn Install"
 
   - script: |
-      echo $NODE_OPTIONS
-       yarn add material-react-table  # Add this line to install 'material-react-table'
-      yarn run build
-    failOnStderr: true
-    displayName: "Prepare binaries"
+    node -v
+    yarn --version  # Check for existing Yarn installation (optional)
+    echo $NODE_OPTIONS
+    if [ ! -x "$(command -v yarn)" ]; then
+      echo "Yarn is not installed. Installing using npm..."
+      sudo npm install -g yarn  # Install Yarn globally using npm
+    fi
+    yarn run build
+  failOnStderr: true
+  displayName: "Prepare binaries and Install or Update Yarn and Build Project"
 
   ## Copy the client to the staging directory
   - task: CopyFiles@2
