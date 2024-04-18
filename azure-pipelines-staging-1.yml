@@ -24,7 +24,6 @@ steps:
 
   - script: |
       echo $NODE_OPTIONS
-       yarn add material-react-table  # Add this line to install 'material-react-table'
       yarn build
     failOnStderr: true
     displayName: "Prepare binaries"

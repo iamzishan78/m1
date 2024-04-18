@@ -24,7 +24,6 @@ steps:
 
   - script: |
       echo $NODE_OPTIONS
-      yarn install
       yarn run build
     failOnStderr: true
     displayName: "Prepare binaries"
