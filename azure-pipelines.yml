@@ -24,10 +24,16 @@ steps:
     displayName: "Yarn Install"
 
   - script: |
-      echo $NODE_OPTIONS
-      yarn build
-    failOnStderr: true
-    displayName: "Prepare binaries"
+    node -v
+    yarn --version  # Check for existing Yarn installation (optional)
+    echo $NODE_OPTIONS
+    if [ ! -x "$(command -v yarn)" ]; then
+      echo "Yarn is not installed. Installing using npm..."
+      sudo npm install -g yarn  # Install Yarn globally using npm
+    fi
+    yarn install
+  failOnStderr: true
+  displayName: "Install or Update Yarn and Build Project"
 
   ## Copy the client to the staging directory
   - task: CopyFiles@2
