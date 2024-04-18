@@ -19,7 +19,7 @@ steps:
     displayName: "Install Node.js"
 
   - script: |
-      npm install -g yarn
+      yarn install
     displayName: "Yarn Install Development"
 
   - script: |
