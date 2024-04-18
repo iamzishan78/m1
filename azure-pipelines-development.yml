@@ -16,7 +16,7 @@ steps:
   - task: NodeTool@0
     inputs:
       versionSpec: "21.7.3"
-    displayName: "Install Update Node.js"
+    displayName: "Install Update Node.js Development yml"
 
    - task: YarnInstaller@3
     inputs:
@@ -25,7 +25,8 @@ steps:
 
   - script: |
       echo $NODE_OPTIONS
-      npm run build
+       yarn add material-react-table  # Add this line to install 'material-react-table'
+      yarn run build
     failOnStderr: true
     displayName: "Prepare binaries"
 
