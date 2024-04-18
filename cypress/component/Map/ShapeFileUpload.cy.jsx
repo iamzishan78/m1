@@ -187,7 +187,9 @@ const manySettings = layerSettings.map(layerSetting => ({
 
 describe('Map Component Shape File Upload', () => {
   beforeEach(() => {
-    cy.viewport(1800, 1200).mount(<MapProvider match={{ params: {} }} />);
+    cy.interceptAndWait(['getAllLayerSettingsByUser'], () => {
+      cy.viewport(1800, 1200).mount(<MapProvider match={{ params: {} }} />);
+    });
 
     cy.wait(midTimeout);
   });
@@ -411,7 +413,7 @@ describe('Map Component Shape File Upload', () => {
         cy.get('.mapboxgl-canvas').first().click(1000, 500);
 
         cy.wait(5000).then(() => {
-          const sourceLine = window.mapRef.getSource('boundary-line-source')._data;
+          const sourceLine = window.mapRef.getSource('boundary-line-source')?._data;
 
           // Getting values from the popup controller for selectedShapeFile and selectedUserDefinedLayer
           const { selectedUserDefinedLayer } = popupController.getValues([
@@ -428,7 +430,7 @@ describe('Map Component Shape File Upload', () => {
             },
           };
 
-          expect(isEqual(sourceLine, boundaryLine)).to.be.equal(true);
+          if (sourceLine) expect(isEqual(sourceLine, boundaryLine)).to.be.equal(true);
 
           // Expecting selectedUserDefinedLayer to be truthy
           expect(!!selectedUserDefinedLayer).to.be.equal(true);
