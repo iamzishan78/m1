@@ -44,7 +44,7 @@ const UserManagementMeta = {
       header: 'Name',
       accessorKey: 'displayName',
       name: 'displayName',
-      accessorFn: (row) => row?.displayName,
+      accessorFn: (row) => row?.displayName || '',
     },
     {
       ...CommonSchema.STRING_COLUMN,
@@ -58,7 +58,14 @@ const UserManagementMeta = {
       header: 'Role',
       accessorKey: 'role',
       name: 'role',
-      accessorFn: (row) => row?.role,
+      accessorFn: (row) => row?.role || '',
+    },
+    {
+      ...CommonSchema.STRING_COLUMN,
+      header: 'Role Privileges',
+      accessorKey: 'rolePrivileges',
+      name: 'rolePrivileges',
+      accessorFn: (row) => row?.rolePrivileges || '',
     },
     {
       ...CommonSchema.STRING_COLUMN,
