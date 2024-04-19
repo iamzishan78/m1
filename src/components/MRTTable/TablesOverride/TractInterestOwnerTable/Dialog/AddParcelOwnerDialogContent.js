@@ -42,6 +42,9 @@ import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
 import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import { Status } from 'components/ContactDetailCard/components/FieldContent';
+import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/contactSubForm';
+import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
+import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/parcelOwnerForm';
 
 const qtrOptions = ['E2', 'NE', 'NW', 'N2', 'SE', 'SW', 'S2', 'W2'];
 
@@ -113,6 +116,14 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const tenantName = window.sessionStorage.getItem('tenantName');
   const [stateApp, setStateApp] = useContext(AppContext);
   const { control } = useForm();
+  const { control: contactSubFormControl, watch } = useForm();
+  const { control: parcelOwnerFormControl } = useForm({
+    defaultValues: {
+      seller_asking_price: '',
+      competitor_offer_price: '',
+      actual_offer_price: '',
+    },
+  });
   const [newOwner, setNewOwner] = useState({
     surface_interest: null,
     ownerType: null,
@@ -135,19 +146,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     customLayer: props.customLayerId,
     deals: [],
   });
-  const [newContact, setNewContact] = useState({
-    firstName: '',
-    middleName: '',
-    lastName: '',
-    mobilePhone: '',
-    homePhone: '',
-    primaryEmail: '',
-    address1: '',
-    address2: '',
-    city: '',
-    state: '',
-    zip: '',
-  });
+
   const [isNraOverridden, setIsNRAOverridden] = useState(false);
   const [leaseStatusList, setLeaseStatusList] = useState([]);
   const [isAcresOverridden, setIsAcresOverridden] = useState(false);
@@ -167,6 +166,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   };
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
+
+  const formValues = watch();
 
   useEffect(() => {
     if (selectedRow) {
@@ -505,7 +506,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       } else {
         const relatedObject = showAddNewContactFields ? {
           ...ownerToAdd,
-          ...newContact,
+          ...formValues,
         } : (ownerToAdd?.ownerEntity._id || ownerToAdd?.ownerEntity);
         addOwnerToAParcel({
           variables: {
@@ -630,208 +631,18 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
             {showAddNewContactFields &&
               <>
-                <Grid item xs={12}>
-                  <h3>First Name</h3>
-                  <TextField
-                    id="firstName"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.firstName}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        firstName: e.target.value,
-                      });
-                    }}
+                {contactSubForm({}).map((item, index) => (
+                  <TextFieldComponent
+                    key={index}
+                    label={item.label}
+                    name={item.name}
+                    control={contactSubFormControl}
                   />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Middle Name</h3>
-                  <TextField
-                    id="middleName"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.middleName}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        middleName: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Last Name</h3>
-                  <TextField
-                    id="lastName"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.lastName}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        lastName: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Entity Type</h3>
-                  <EntityType
-                    className={classes.maxWidth}
-                    setDocumentType={value => {
-                      let val = value.name;
-                      const data = contactStatusOptions.find(s => s.label === val);
-                      if (data) {
-                        val = data.value;
-                      }
-                      setNewContact({
-                        ...newContact,
-                        ownerType: val,
-                      });
-                    }}
-                    value={newContact.ownerType ?? ''}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <h3>Home phone</h3>
-                  <TextField
-                    id="homePhone"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.homePhone}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        homePhone: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <h3>Mobile Phone</h3>
-                  <TextField
-                    id="mobilePhone"
-                    size="small"
-                    // placeholder="E.g. xxx-xxx-xxxx"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.mobilePhone}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        mobilePhone: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Email</h3>
-                  <TextField
-                    id="email"
-                    size="small"
-                    // placeholder="E.g. jacob@m1neral.com"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.primaryEmail}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        primaryEmail: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Address #1</h3>
-                  <TextField
-                    id="address1"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    autoComplete="nope"
-                    value={newContact.address1}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        address1: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Address #2</h3>
-                  <TextField
-                    id="address2"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    autoComplete="nope"
-                    value={newContact.address2}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        address2: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>City</h3>
-                  <TextField
-                    id="city"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.city}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        city: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <h3>State</h3>
-                  <TextField
-                    id="state"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.state}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        state: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <h3>Zip Code</h3>
-                  <TextField
-                    id="zipCode"
-                    size="small"
-                    className={classes.maxWidth}
-                    multiline
-                    value={newContact.zip}
-                    onChange={e => {
-                      setNewContact({
-                        ...newContact,
-                        zip: e.target.value,
-                      });
-                    }}
-                  />
-                </Grid>
+                ))}
               </>
             }
 
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <h3>Surface Interest</h3>
               <TextField
                 type="number"
@@ -884,8 +695,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 }}
                 onWheel={e => e.target.blur()}
               />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid> */}
+            {/* <Grid item xs={12}>
               <h3>Non-Exec Rights Only</h3>
               <Autocomplete
                 options={[{ label: "Yes", value: "Yes" }, { label: "No", value: "No" }]}
@@ -902,8 +713,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   <TextField {...params} size="small" className={classes.maxWidth} multiline />
                 )}
               />
-            </Grid>
-            <Grid item xs={12}>
+            </Grid> */}
+            {/* <Grid item xs={12}>
               <h3>Royalty Interest (Lease)</h3>
               <TextField
                 type="number"
@@ -952,25 +763,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 }}
                 onWheel={e => e.target.blur()}
               />
-            </Grid>
-            {/* <Grid item xs={12}>
-              <h3>Record Title</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.record_title}
-                onChange={e => {
-                  const { value } = e.target;
-                  setNewOwner({
-                    ...newOwner,
-                    record_title: value ? addTrailingZeros(e.target.value) : null,
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
             </Grid> */}
-            <Grid item xs={12}>
+
+            {/* <Grid item xs={12}>
               <h3>Working Interest</h3>
               <TextField
                 type="number"
@@ -987,34 +782,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 onWheel={e => e.target.blur()}
               />
             </Grid>
-            {/* <Grid item xs={12}>
-              <h3>Net Revenue Interest (NRI)</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.nri}
-                onChange={e => {
-                  const { value } = e.target;
-                  const netAcres = calculateNetAcres(newOwner.mineral_interest);
-                  setNewOwner({
-                    ...newOwner,
-                    nri: value ? addTrailingZeros(e.target.value) : null,
-                    nra: !isNraOverridden
-                      ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
-                      : newOwner.nra,
-                  });
-                }}
-                onBlur={e => {
-                  const value = e.target.value || 0
-                  setNewOwner({
-                    ...newOwner,
-                    nri: parseFloat(value).toFixed(8),
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid> */}
             <Grid item xs={12}>
               <h3>Net Acres</h3>
               <TextField
@@ -1062,7 +829,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 }}
                 onWheel={e => e.target.blur()}
               />
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={12}>
               <h3>Target Offer Price (NMA)</h3>
@@ -1166,7 +933,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               />
             </Grid>
 
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <h3>Net Royalty Acres (NRA)</h3>
               <TextField
                 id="standard-number"
@@ -1205,7 +972,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 }}
                 onWheel={e => e.target.blur()}
               />
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={12}>
               <h3>Target Offer Price (per NRA)</h3>
@@ -1310,7 +1077,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             </Grid>
 
 
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <h3>Company Net Acres</h3>
               <TextField
                 type="number"
@@ -1326,438 +1093,19 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 }}
                 onWheel={e => e.target.blur()}
               />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Seller Asking Price</h3>
+            </Grid> */}
 
-              <Controller
-                control={control}
-                name="seller_asking_price"
-                render={props => (
-                  <TextField
-                    size="small"
-                    value={newOwner.seller_asking_price}
-                    inputRef={props.ref}
-                    onWheel={e => e.target.blur()}
-                    onChange={e => {
-                      props.onChange(e.target.value);
-                      setNewOwner({
-                        ...newOwner,
-                        seller_asking_price: e.target.value || null,
-                      });
-                    }}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                    }}
-                    fullWidth
-                    defaultValue=""
-                  />
-                )}
+            {parcelOwnerForm({}).map((item, index) => (
+              <TextFieldComponent
+                key={index}
+                label={item.label}
+                name={item.name}
+                control={parcelOwnerFormControl}
+                defaultValue={item.defaultValue}
+                InputProps={item.InputProps}
               />
-            </Grid>
+            ))}
 
-            <Grid item xs={12}>
-              <h3>Competitor Offer Price</h3>
-              <Controller
-                control={control}
-                name="competitor_offer_price"
-                render={props => (
-                  <TextField
-                    size="small"
-                    value={newOwner.competitor_offer_price}
-                    inputRef={props.ref}
-                    onWheel={e => e.target.blur()}
-                    onChange={e => {
-                      props.onChange(e.target.value);
-                      setNewOwner({
-                        ...newOwner,
-                        competitor_offer_price: e.target.value || null,
-                      });
-                    }}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                    }}
-                    fullWidth
-                    defaultValue=""
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <h3>Actual Offer Price</h3>
-              <Controller
-                control={control}
-                name="actual_offer_price"
-                render={props => (
-                  <TextField
-                    size="small"
-                    value={newOwner.actual_offer_price}
-                    inputRef={props.ref}
-                    onWheel={e => e.target.blur()}
-                    onChange={e => {
-                      props.onChange(e.target.value);
-                      setNewOwner({
-                        ...newOwner,
-                        actual_offer_price: e.target.value || null,
-                      });
-                    }}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                    }}
-                    fullWidth
-                    defaultValue=""
-                  />
-                )}
-              />
-            </Grid>
-            {tenantName === 'Providence' && (
-              <>
-                <Grid item xs={12}>
-                  <h3>Cost Bearing</h3>
-                  <TextField
-                    id="standard-number"
-                    type="text"
-                    size="small"
-                    className={classes.maxWidth}
-                    value={newOwner.cost_bearing}
-                    onChange={e => {
-                      const { value } = e.target;
-                      setNewOwner({
-                        ...newOwner,
-                        cost_bearing: value || null,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Cost Free High Value</h3>
-                  <TextField
-                    id="standard-number"
-                    type="text"
-                    size="small"
-                    className={classes.maxWidth}
-                    value={newOwner.cost_free_high_value}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                    }}
-                    onChange={e => {
-                      const value = addTrailingZeros(e.target.value);
-                      setNewOwner({
-                        ...newOwner,
-                        cost_free_high_value: Number(value) || null,
-                      });
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <h3>Cost Bearing High Value</h3>
-                  <TextField
-                    id="standard-number"
-                    type="text"
-                    size="small"
-                    className={classes.maxWidth}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                    }}
-                    value={newOwner.cost_bearing_high_value}
-                    onChange={e => {
-                      const value = addTrailingZeros(e.target.value);
-                      setNewOwner({
-                        ...newOwner,
-                        cost_bearing_high_value: Number(value) || null,
-                      });
-                    }}
-                  />
-                </Grid>
-              </>
-            )}
-            {props?.customLayer?.state !== 'TX' && (
-              <>
-                <Grid item xs={3}>
-                  <h3>QTR 1</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={option => option}
-                    value={newOwner.qtr[0]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                      qtr[0] = newInputValue || '';
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={params => (
-                      <TextField {...params} size="small" className={classes.maxWidth} multiline />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <h3>QTR 2</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={option => option}
-                    value={newOwner.qtr[1]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                      qtr[1] = newInputValue || '';
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={params => (
-                      <TextField {...params} size="small" className={classes.maxWidth} multiline />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <h3>QTR 3</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={option => option}
-                    value={newOwner.qtr[2]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                      qtr[2] = newInputValue || '';
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={params => (
-                      <TextField {...params} size="small" className={classes.maxWidth} multiline />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <h3>QTR 4</h3>
-                  <Autocomplete
-                    options={qtrOptions}
-                    getOptionLabel={option => option}
-                    value={newOwner.qtr[3]}
-                    onChange={(e, newInputValue) => {
-                      const qtr = JSON.parse(JSON.stringify(newOwner.qtr));
-                      qtr[3] = newInputValue || '';
-                      setNewOwner({
-                        ...newOwner,
-                        qtr,
-                      });
-                    }}
-                    renderInput={params => (
-                      <TextField {...params} size="small" className={classes.maxWidth} multiline />
-                    )}
-                  />
-                </Grid>
-              </>
-            )}
-
-            <Grid item xs={12}>
-              <h3>Contact Status</h3>
-
-              <Controller
-                control={control}
-                defaultValue={newOwner?.contactStatus ? newOwner?.contactStatus : ''}
-                name="contactStatus"
-                render={props => (
-                  <ContactStatus
-                    className={classes.maxWidth}
-                    setValue={value => {
-                      let val = value.name;
-                      props.onChange(val);
-                      setNewOwner({
-                        ...newOwner,
-                        contactStatus: val,
-                      });
-                    }}
-                    value={props.value ? props.value : ''}
-                    fieldKey="contactStatus"
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Contact Stage</h3>
-
-              <Controller
-                control={control}
-                defaultValue={newOwner?.status ? newOwner?.status : ''}
-                name="status"
-                render={props => (
-                  <Status
-                    className={classes.maxWidth}
-                    options={statusOptions}
-                    value={props.value}
-                    setDocumentType={value => {
-                      let val = value.name;
-                      const data = contactStatusOptions.find(s => s.label === val);
-                      if (data) {
-                        val = data.value;
-                      }
-                      props.onChange(val);
-                      setNewOwner({
-                        ...newOwner,
-                        status: val,
-                      });
-                    }}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <h3>Campaign Names</h3>
-
-              <Controller
-                control={control}
-                name="campaignName"
-                render={params => (
-                  <CampaignNameField
-                    {...params}
-                    value={newOwner?.campaignName}
-                    className={classes.maxWidth}
-                    onChange={(values, id) => {
-                      params.onChange(values);
-                      setNewOwner({
-                        ...newOwner,
-                        campaignName: values,
-                      });
-                    }}
-                    fullWidth
-                    targetLabel="Contact"
-                    simpleChips
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <h3>Campaign Priority</h3>
-              <Controller
-                control={control}
-                name="campaignPriority"
-                render={params => (
-                  <AutoCompleteWithAddNew
-                    {...params}
-                    value={newOwner?.campaignPriority}
-                    // variant="outlined"
-                    setValue={value => {
-                      if (value?._id) params.onChange({ _id: value._id, name: value.name });
-                      else params.onChange(null);
-                      if (value?._id === 'newEntity') delete value._id;
-                      setNewOwner({
-                        ...newOwner,
-                        campaignPriority: value.name,
-                      });
-                    }}
-                    options={get(priorityList, 'getESFilterList.hits', [])?.map(payor => ({
-                      _id: get(payor, `original.hits.hits.${0}._id`),
-                      name: payor.key,
-                    }))}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Lease Status</h3>
-              <Controller
-                control={control}
-                name="leaseStatus"
-                render={params => (
-                  <AutoCompleteWithAddNew
-                    {...params}
-                    value={newOwner?.leaseStatus}
-                    setValue={value => {
-                      if (value?._id) params.onChange({ _id: value._id, name: value.name });
-                      else params.onChange(null);
-                      if (value?._id === 'newEntity') delete value._id;
-                      setNewOwner({
-                        ...newOwner,
-                        leaseStatus: value?.name,
-                      });
-                    }}
-                    options={leaseStatusList}
-                  />
-                )}
-              />
-            </Grid>
-
-
-
-            <Grid item xs={12}>
-              <h3>Associated Deals</h3>
-
-              <Controller
-                control={control}
-                name="deals"
-                render={params => (
-                  <AssociatedDealField
-                    {...params}
-                    className={classes.maxWidth}
-                    onChange={(values, id) => {
-                      setNewOwner({
-                        ...newOwner,
-                        deals: values || [],
-                      });
-                      params.onChange(values);
-                    }}
-                    value={newOwner?.deals}
-                    fullWidth
-                    targetLabel="Contact"
-                    simpleChips
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Depth Restrictions</h3>
-              <RadioGroup
-                row
-                value={parcelOwnersRadioBValue}
-                onChange={event => {
-                  setParcelOwnersRadioBValue(event.target.value);
-                }}
-              >
-                <FormControlLabel value="true" control={<Radio />} label="All Depths" />
-                <FormControlLabel value="false" control={<Radio />} label="Footages/Formations" />
-              </RadioGroup>
-            </Grid>
-
-            {parcelOwnersRadioBValue === 'false' && (
-              <Grid item xs={12}>
-                <h3>Depth From</h3>
-                <TextField
-                  size="small"
-                  className={classes.maxWidth}
-                  multiline
-                  value={newOwner.depthFrom}
-                  onChange={e => {
-                    setNewOwner({
-                      ...newOwner,
-                      depthFrom: e.target.value,
-                    });
-                  }}
-                />
-              </Grid>
-            )}
-            {parcelOwnersRadioBValue === 'false' && (
-              <Grid item xs={12}>
-                <h3>Depth To</h3>
-                <TextField
-                  size="small"
-                  className={classes.maxWidth}
-                  multiline
-                  value={newOwner.depthTo}
-                  onChange={e => {
-                    setNewOwner({
-                      ...newOwner,
-                      depthTo: e.target.value,
-                    });
-                  }}
-                />
-              </Grid>
-            )}
           </Grid>
         </DialogContent>
         <DialogActions className={classes.dialogAction}>
