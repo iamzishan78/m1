@@ -208,6 +208,7 @@ const DealDialogHeader = ({
                       align: "center",
                     }}
                     onClick={handleMenuClick}
+                    data-testid="delete-deal-icon-button"
                   >
                     <MoreHorizIcon size="medium" />
                   </IconButton>
@@ -222,7 +223,7 @@ const DealDialogHeader = ({
                     anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
                     transformOrigin={{ vertical: "top", horizontal: "center" }}
                   >
-                    <MenuItem onClick={openConfirmationDialog}>
+                    <MenuItem onClick={openConfirmationDialog} data-testid="delete-confirm">
                       <ListItemIcon>
                         <DeleteIcon size="medium" />
                       </ListItemIcon>
@@ -240,6 +241,7 @@ const DealDialogHeader = ({
                   align: "center",
                 }}
                 onClick={handleClickDialogClose}
+                data-testid="add-deal-icon-button"
               >
                 <KeyboardTabBlackIcon />
               </IconButton>
