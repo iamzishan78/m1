@@ -150,7 +150,7 @@ export default function SummaryFields({ contactData }) {
       {SUMMARY_FIELDS(contactData).map((field, key) => (
         <Grid item key={key} style={{ position: "relative", width: "100%", marginRight: "30px", maxWidth: "44%", flexBasis: "7%" }}>
           <Grid container className={classes.gridStyle}>
-            <Grid item style={{ display: "flex" }}>
+            <Grid item xs={4} style={{ display: "flex", textAlign: "left" }}>
               <div id={field.label} className={classes.fieldLabel}>{featureFlagChanges(showGenericPhones, field.label)}</div>
             </Grid>
             <Grid item xs={8}>
