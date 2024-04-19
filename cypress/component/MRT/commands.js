@@ -109,6 +109,27 @@ Cypress.Commands.add(
   }
 );
 
+Cypress.Commands.add('mrtNonEmptyFilterOnColumn', ({ column }) => {
+  cy.get('.MuiButtonBase-root[aria-label="Show/Hide filters"]').click();
+
+  cy.get(".Mui-TableHeadCell-Content-Wrapper")
+    .contains(column.name) // Find the table header cell with "Section/ Range" text
+    .parent() // Go to the parent element (likely the table row)
+    .next() // Move to the next sibling element (likely the table cell containing the icons)
+    .find("[data-testid='MoreVertIcon']") // Find all MoreVertIcon elements within that cell
+    .first() // Get only the first MoreVertIcon (assuming it's the one under "Section/ Range")
+    .click({ force: true });
+  cy.wait(basic_timeouts.shorTimeout);
+  cy.get('[data-testid="sentinelStart"] + div ul li:nth-child(5)').click();
+  cy.wait(basic_timeouts.shorTimeout);
+
+  cy.interceptAndWait(['getESSimpleSearch'], () => {
+    cy.get(
+      `[data-testid="sentinelStart"] + div ul li:nth-child(${column?.emptyFilterIndex || 8}):eq(1)`
+    ).click();
+  });
+});
+
 Cypress.Commands.add('mrtSortColumn', ({ column, sortOrder = "ascending" }) => {
   cy.mrtSort({ column, sorting: sortOrder });
   cy.mrtSort({ column, sorting: sortOrder === "ascending" ? 'descending' : "ascending" });

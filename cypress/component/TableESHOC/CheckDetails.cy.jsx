@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
-import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch'
+import { GET_ES_SIMPLE_SEARCH } from 'graphQL/useQueryESSimpleSearch';
+import { GET_PROPERTY } from 'graphQL/useQueryGetProperty';
 import ldata from '../../fixtures/ldata.json';
 const headers = {
   'Content-Type': 'application/json',
@@ -13,9 +14,20 @@ const getElasticDataPayload = ({ index, search = null, filters = [], pagination 
       index: index,
       search: search,
       filters: filters,
-      pagination: pagination
+      pagination: pagination,
     },
     query: GET_ES_SIMPLE_SEARCH.loc.source.body,
+  };
+};
+
+const getPropertyPayload = ({ propertyId }) => {
+  return {
+    operationName: 'getProperty',
+    variables: {
+      id: propertyId,
+      isDeletedCheck: false,
+    },
+    query: GET_PROPERTY.loc.source.body,
   };
 };
 
@@ -25,24 +37,28 @@ describe('CheckDetails ESHOC Table', () => {
       method: 'POST',
       url: ldata.url,
       headers: headers,
-      body: getElasticDataPayload({ index: "checkdetails_flat" }),
-    }).then(checkDetailsResponse => {
-      cy.request({
-        method: 'POST',
-        url: ldata.url,
-        headers: headers,
-        body: getElasticDataPayload({
-          index: "properties_flat", pagination: {
-            "first": 10000,
-            "after": null
-          }
-        }),
-      }).then(propertiesResponse => {
-        const propertyIds = checkDetailsResponse.body.data.getESSimpleSearch.hits.map((checkDetail) => checkDetail.property._id);
-        propertyIds.map((propertyId) => {
-          const foundProperty = propertiesResponse.body.data.getESSimpleSearch.hits.find((property) => property._id === propertyId);
-          cy.wrap(foundProperty).should('exist', 'Property with propertyId exists');
-        })
+      body: getElasticDataPayload({ index: 'checkdetails_flat' }),
+    }).then((checkDetailsResponse) => {
+      const propertyIds = checkDetailsResponse.body.data.getESSimpleSearch.hits.map(
+        (checkDetail) => checkDetail.property._id
+      );
+
+      // fetching and verfying property based on property id provided by check details
+      propertyIds.map((propertyId) => {
+        cy.request({
+          method: 'POST',
+          url: ldata.url,
+          headers: headers,
+          body: getPropertyPayload({
+            propertyId: propertyId,
+          }),
+        }).then((getPropertyResponse) => {
+          cy.wrap(getPropertyResponse.body.data.getProperty).should(
+            'have.property',
+            'success',
+            true
+          );
+        });
       });
     });
   });

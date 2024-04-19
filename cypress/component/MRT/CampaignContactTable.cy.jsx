@@ -2,6 +2,13 @@
 import MRTTable from "components/MRTTable";
 import { basic_timeouts } from "../../../cypress/cypressUtils/data";
 
+const columns = [
+  {
+    name: "Contact Owner",
+    type: "string",
+  },
+];
+
 describe("Campaign Contact Table", () => {
   beforeEach(() => {
     cy.interceptAndWait(["getESSimpleSearch", "contacts_flat"], () => {
@@ -40,17 +47,33 @@ describe("Campaign Contact Table", () => {
 
         cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(
           (jobResponse) => {
-            console.log(
-              "filters",
-              jobResponse?.request?.body?.variables?.requestPayload?.filters
-            );
-
             cy.wrap(
               jobResponse?.request?.body?.variables?.requestPayload?.filters
             )
               .should("exist")
               .and("be.an", "array")
               .and("not.have.length", 0);
+          }
+        );
+      },
+      { wait: false }
+    );
+  });
+
+  it("validates the syntax of the sort request sent to the backend", () => {
+    cy.mrtSort({ column: columns[0], sorting: "descending" });
+
+    cy.interceptAndWait(
+      ["initializeExportJob"],
+      (alias) => {
+        cy.get('.MuiButtonBase-root[data-testid="download-csv"]').click();
+        cy.get('.MuiButtonBase-root[data-testid="export-confirm"]').click();
+
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(
+          (jobResponse) => {
+            const sorting =
+              jobResponse?.request?.body?.variables?.requestPayload?.sortOrder;
+            expect(sorting.field.endsWith(".keyword")).to.be.true;
           }
         );
       },
