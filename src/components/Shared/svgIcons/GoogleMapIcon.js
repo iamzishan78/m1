@@ -7,7 +7,7 @@ function GoogleMapIcon() {
   xmlnsXlink="http://www.w3.org/1999/xlink"
   viewBox="0 0 5644.173 5644.173"
   height={"15px"}
-  style={{ marginLeft:"5px" }}
+  style={{ marginLeft:"5px", cursor: "pointer" }}
 >
   <defs>
     <path
