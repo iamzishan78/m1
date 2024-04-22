@@ -1,11 +1,14 @@
-import { CurrencyFormatCustom } from "components/Shared/Forms/Formatting/CurrencyFormatCustom";
+import InputAdornment from '@material-ui/core/InputAdornment';
+import IconButton from '@material-ui/core/IconButton';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
+import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 
 const parcelOwnerForm = (contact) => {
   return [
     {
       label: "Entity Type",
-      name: "entity type ",
-      fieldtype: "entity_type"
+      name: "ownerType ",
+      renderField: "entity_type"
     },
     {
       label: "Surface Interest",
@@ -19,59 +22,185 @@ const parcelOwnerForm = (contact) => {
     },
     {
       label: "Non-Exec Rights Only",
-      name: "nonExecRightsOnly"
+      name: "nonExecRightsOnly",
+      renderField: "autoComplete",
+      options: [{ label: "Yes", value: "Yes" }, { label: "No", value: "No" }]
     },
     {
       label: "Royalty Interest (Lease)",
-      name: "royalty_interest"
+      name: "royalty_interest",
+      type: "number",
     },
     {
       label: "Overriding Royalty Interest (ORRI)",
-      name: "orri"
+      name: "orri",
+      type: "number",
     },
     {
       label: "Working Interest",
-      name: "operating_rights"
+      name: "operating_rights",
+      type: "number",
     },
     {
       label: "Net Acres",
-      name: "net_acres"
+      name: "net_acres",
+      type: "number",
+      InputProps: {
+        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        endAdornment: (
+          <InputAdornment position="end">
+            {true && (
+              <IconButton
+                aria-label="toggle offer_price_nma"
+                onClick={() => {
+                  console.log('recalculate')
+                }}
+              >
+                <AutorenewIcon />
+              </IconButton>
+            )}
+          </InputAdornment>
+        ),
+      }
     },
     {
       label: "Target Offer Price (NMA)",
-      name: "offer_price_nma"
+      name: "offer_price_nma",
+      type: "number",
+      InputProps: {
+        inputComponent: (props) => <CurrencyFormatCustom {...props} />,
+        endAdornment: (
+          <InputAdornment position="end">
+            {true && (
+              <IconButton
+                aria-label="toggle offer_price_nma"
+                onClick={() => {
+                  console.log('recalculate')
+                }}
+              >
+                <AutorenewIcon />
+              </IconButton>
+            )}
+          </InputAdornment>
+        ),
+      }
     },
     {
       label: "Max Offer Price (NMA)",
-      name: "max_offer_price_nma"
+      name: "max_offer_price_nma",
+      type: "number",
+      InputProps: {
+        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        endAdornment: (
+          <InputAdornment position="end">
+            {true && (
+              <IconButton
+                aria-label="toggle offer_price_nma"
+                onClick={() => {
+                  console.log('recalculate')
+                }}
+              >
+                <AutorenewIcon />
+              </IconButton>
+            )}
+          </InputAdornment>
+        ),
+      }
     },
     {
       label: "Net Royalty Acres (NRA)",
-      name: "nra"
+      name: "nra",
+      type: "number",
+      InputProps: {
+        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        endAdornment: (
+          <InputAdornment position="end">
+            {true && (
+              <IconButton
+                aria-label="toggle offer_price_nma"
+                onClick={() => {
+                  console.log('recalculate')
+                }}
+              >
+                <AutorenewIcon />
+              </IconButton>
+            )}
+          </InputAdornment>
+        ),
+      }
     },
     {
       label: "Target Offer Price (per NRA)",
-      name: "offer_price"
+      name: "offer_price",
+      type: "number",
+      InputProps: {
+        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        endAdornment: (
+          <InputAdornment position="end">
+            {true && (
+              <IconButton
+                aria-label="toggle offer_price_nma"
+                onClick={() => {
+                  console.log('recalculate')
+                }}
+              >
+                <AutorenewIcon />
+              </IconButton>
+            )}
+          </InputAdornment>
+        ),
+      }
     },
     {
       label: "Max Offer Price (per NRA)",
-      name: "max_offer_price"
+      name: "max_offer_price",
+      type: "number",
+      InputProps: {
+        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        endAdornment: (
+          <InputAdornment position="end">
+            {true && (
+              <IconButton
+                aria-label="toggle offer_price_nma"
+                onClick={() => {
+                  console.log('recalculate')
+                }}
+              >
+                <AutorenewIcon />
+              </IconButton>
+            )}
+          </InputAdornment>
+        ),
+      }
     },
     {
       label: "Company Net Acres",
-      name: "company_net_acres"
+      name: "company_net_acres",
+      type: "number",
     },
     {
       label: "Seller Asking Price",
-      name: "seller_asking_price"
+      name: "seller_asking_price",
+      type: "number",
+      InputProps: {
+        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+      }
     },
     {
       label: "Competitor Offer Price",
-      name: "competitor_offer_price"
+      name: "competitor_offer_price",
+      type: "number",
+      InputProps: {
+        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+      }
     },
     {
       label: "Actual Offer Price",
-      name: "actual_offer_price"
+      name: "actual_offer_price",
+      type: "number",
+      InputProps: {
+        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+      }
     },
     // {
     //   label: "Cost Bearing",
@@ -87,19 +216,63 @@ const parcelOwnerForm = (contact) => {
     // },
     {
       label: "QTR 1",
-      name: "qtr[0]"
+      name: "qtr[0]",
+      renderField: "autoComplete",
+      options: [
+        { label: 'E2', value: 'E2' },
+        { label: 'NE', value: 'NE' },
+        { label: 'NW', value: 'NW' },
+        { label: 'N2', value: 'N2' },
+        { label: 'SE', value: 'SE' },
+        { label: 'SW', value: 'SW' },
+        { label: 'S2', value: 'S2' },
+        { label: 'W2', value: 'W2' }
+      ]
     },
     {
       label: "QTR 2",
-      name: "qtr[1]"
+      name: "qtr[1]",
+      renderField: "autoComplete",
+      options: [
+        { label: 'E2', value: 'E2' },
+        { label: 'NE', value: 'NE' },
+        { label: 'NW', value: 'NW' },
+        { label: 'N2', value: 'N2' },
+        { label: 'SE', value: 'SE' },
+        { label: 'SW', value: 'SW' },
+        { label: 'S2', value: 'S2' },
+        { label: 'W2', value: 'W2' }
+      ]
     },
     {
       label: "QTR 3",
-      name: "qtr[2]"
+      name: "qtr[2]",
+      renderField: "autoComplete",
+      options: [
+        { label: 'E2', value: 'E2' },
+        { label: 'NE', value: 'NE' },
+        { label: 'NW', value: 'NW' },
+        { label: 'N2', value: 'N2' },
+        { label: 'SE', value: 'SE' },
+        { label: 'SW', value: 'SW' },
+        { label: 'S2', value: 'S2' },
+        { label: 'W2', value: 'W2' }
+      ]
     },
     {
       label: "QTR 4",
-      name: "qtr[3]"
+      name: "qtr[3]",
+      renderField: "autoComplete",
+      options: [
+        { label: 'E2', value: 'E2' },
+        { label: 'NE', value: 'NE' },
+        { label: 'NW', value: 'NW' },
+        { label: 'N2', value: 'N2' },
+        { label: 'SE', value: 'SE' },
+        { label: 'SW', value: 'SW' },
+        { label: 'S2', value: 'S2' },
+        { label: 'W2', value: 'W2' }
+      ]
     },
 
     {

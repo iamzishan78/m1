@@ -2,9 +2,25 @@
 import React from "react";
 import { Grid, TextField } from "@material-ui/core";
 import { useController } from "react-hook-form";
+import { makeStyles } from '@material-ui/core/styles';
+import { sideDialogController } from "hookstate/sideDialogController"
 
+const useStyles = makeStyles(theme => ({
+  maxWidth: {
+    width: '100%',
+  },
+  baseValueChanged: {
+    width: '100%',
+    '& .MuiInputBase-input': {
+      color: 'dodgerblue',
+      fontWeight: 'bold',
+    },
+  },
+}));
 
 function TextFieldComponent({ control, item }) {
+  const classes = useStyles();
+
   const {
     // field props
     name,
@@ -15,8 +31,6 @@ function TextFieldComponent({ control, item }) {
     fullWidth = true,
     defaultValue = null,
     multiline = false,
-    // styles 
-    className
   } = item || {};
 
   const { field } = useController({
@@ -39,14 +53,18 @@ function TextFieldComponent({ control, item }) {
         multiline={multiline}
 
         // events
-        onChange={field.onChange} // send value to hook form 
+        onChange={e => {
+          sideDialogController.updateState({ [item.name]: e.target.value })
+          field.onChange()
+        }} // send value to hook form
+
         onBlur={field.onBlur} // notify when input is touched/blur
 
         // other input props (dormants, icons etc)
-        InputProps={{ ...InputProps }}
-
-        // styles
-        className={className}
+        InputProps={{
+          ...InputProps
+        }}
+        className={true ? classes.baseValueChanged : classes.maxWidth}
       />
     </Grid>
   );

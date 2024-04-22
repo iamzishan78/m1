@@ -32,7 +32,9 @@ import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
 import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/contactSubForm';
 import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
+import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/AutoComplete';
 import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcelOwnerForm';
+import { sideDialogController } from 'hookstate/sideDialogController';
 
 
 const useStyles = makeStyles(theme => ({
@@ -531,6 +533,12 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   };
 
   const classes = useStyles();
+
+  const tableState = sideDialogController.useCompleteState();
+  const tableStateValues = tableState?.get({ noproxy: true });
+
+  console.log('tableStateValues', tableStateValues)
+
   return (
     <div className={classes.move}>
       <RightDialog open handleClickDialogClose={props.onClose} width="700px">
@@ -600,7 +608,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 {contactSubForm({}).map((item, index) => (
                   <React.Fragment key={index}>
                     {
-                      item.fieldtype === "entity_type" ? (
+                      item.renderField === "entity_type" ? (
                         <Grid item xs={12}>
                           <h3>Entity Type</h3>
                           <Controller
@@ -636,7 +644,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             {parcelOwnerForm({}).map((item, index) => (
               <React.Fragment key={index}>
                 {
-                  item.fieldtype === "entity_type" ? (
+                  item.renderField === "entity_type" ? (
                     <Grid item xs={12}>
                       <h3>Entity Type</h3>
                       <Controller
@@ -656,6 +664,12 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                         )}
                       />
                     </Grid>
+                  ) : item.renderField === "autoComplete" ? (
+                    <AutoCompleteComponent
+                      key={index}
+                      item={item}
+                      control={parcelOwnerFormControl}
+                    />
                   ) : (
                     <TextFieldComponent
                       key={index}
