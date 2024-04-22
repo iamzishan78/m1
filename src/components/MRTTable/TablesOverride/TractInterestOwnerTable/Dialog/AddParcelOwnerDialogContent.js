@@ -3,26 +3,17 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
-import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { Grid } from '@material-ui/core';
 import get from 'lodash/get';
 
 import { useMutation, useLazyQuery } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+
 import { addTrailingZeros } from 'components/Shared/functions';
 import { Controller, useForm } from 'react-hook-form';
-import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
-import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
-import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import { popupController } from 'hookstate/popupStateController';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { setStateIfDeepEqual } from 'components/Shared/functions';
@@ -38,15 +29,11 @@ import { tableGlobalController } from 'hookstate/tableController';
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
-import AutoCompleteWithAddNew from 'components/Shared/AutoCompleteWithAddNew';
-import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
-import { Status } from 'components/ContactDetailCard/components/FieldContent';
-import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/contactSubForm';
+import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
+import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/contactSubForm';
 import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
-import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/parcelOwnerForm';
+import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcelOwnerForm';
 
-const qtrOptions = ['E2', 'NE', 'NW', 'N2', 'SE', 'SW', 'S2', 'W2'];
 
 const useStyles = makeStyles(theme => ({
   maxWidth: {
@@ -113,9 +100,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     return parseFloat((parseFloat(nra || 0) * parseFloat(offer || 0)).toFixed(2));
   };
   const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing } = props?.customLayer?.shapeJson?.properties;
-  const tenantName = window.sessionStorage.getItem('tenantName');
   const [stateApp, setStateApp] = useContext(AppContext);
-  const { control } = useForm();
   const { control: contactSubFormControl, watch } = useForm();
   const { control: parcelOwnerFormControl } = useForm({
     defaultValues: {
@@ -573,537 +558,113 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         <DialogContent className={classes.dialogContent}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <h3 style={{ float: "left" }}>Name</h3>
+              {!showAddNewContactFields && <h3 style={{ float: "left" }}>Name</h3>}
               {!selectedRow && (<div className={showAddNewContactFields ? classes.addContactButtonSelected : classes.addContactButton} onClick={() => setShowAddNewContactFields(!showAddNewContactFields)}>
                 <PersonAddOutlinedIcon className={showAddNewContactFields ? classes.personAddIcon : null} />
                 <p>&nbsp;Add new</p>
               </div>)}
-              <AutocompEntityNamesVirtualizeList
-                mongoEntitiesArray={mongoEntitiesArray}
-                setMongoEntitiesArray={setMongoEntitiesArray}
-                nameAutValue={nameAutValue}
-                setNameAutValue={setNameAutValue}
-                nameAutInputValue={nameAutInputValue}
-                setNameAutInputValue={setNameAutInputValue}
-                hasNextPage={hasNextPage}
-                isNextPageLoading={isNextPageLoading}
-                loadNextPage={loadNextPage}
-                disabled={showAddNewContactFields}
-                placeholder={"Search existing contact"}
-                addNew
-                addNewOnClick={value => {
-                  const contact = { name: value };
-                  addContact({
-                    variables: {
-                      contact: {
-                        ...contact,
-                        createBy: stateApp.user.mongoId,
-                        lastUpdateBy: stateApp.user.mongoId,
+              {!showAddNewContactFields &&
+                <AutocompEntityNamesVirtualizeList
+                  mongoEntitiesArray={mongoEntitiesArray}
+                  setMongoEntitiesArray={setMongoEntitiesArray}
+                  nameAutValue={nameAutValue}
+                  setNameAutValue={setNameAutValue}
+                  nameAutInputValue={nameAutInputValue}
+                  setNameAutInputValue={setNameAutInputValue}
+                  hasNextPage={hasNextPage}
+                  isNextPageLoading={isNextPageLoading}
+                  loadNextPage={loadNextPage}
+                  disabled={showAddNewContactFields}
+                  placeholder={"Search existing contact"}
+                  addNew
+                  addNewOnClick={value => {
+                    const contact = { name: value };
+                    addContact({
+                      variables: {
+                        contact: {
+                          ...contact,
+                          createBy: stateApp.user.mongoId,
+                          lastUpdateBy: stateApp.user.mongoId,
+                        },
                       },
-                    },
-                    refetchQueries: ['getPaginatedContacts', 'getContact'],
-                    awaitRefetchQueries: true,
-                  });
-                }}
-              />
-            </Grid>
-            {!showAddNewContactFields &&
-              <Grid item xs={12}>
-                <h3>Entity Type</h3>
-                <Controller
-                  control={control}
-                  name="ownershipType"
-                  render={(props) => (
-                    <EntityType
-                      className={classes.maxWidth}
-                      setDocumentType={(value) => {
-                        setNewOwner({
-                          ...newOwner,
-                          ownerType: value ? addTrailingZeros(value.name) : null,
-                        });
-                      }}
-                      value={newOwner?.ownershipType || newOwner?.ownerType || nameAutValue?.ownerType || ""}
-                    />
-                  )}
+                      refetchQueries: ['getPaginatedContacts', 'getContact'],
+                      awaitRefetchQueries: true,
+                    });
+                  }}
                 />
-              </Grid>
-            }
+              }
+            </Grid>
 
             {showAddNewContactFields &&
               <>
                 {contactSubForm({}).map((item, index) => (
-                  <TextFieldComponent
-                    key={index}
-                    label={item.label}
-                    name={item.name}
-                    control={contactSubFormControl}
-                  />
+                  <React.Fragment key={index}>
+                    {
+                      item.fieldtype === "entity_type" ? (
+                        <Grid item xs={12}>
+                          <h3>Entity Type</h3>
+                          <Controller
+                            control={contactSubFormControl}
+                            name="ownershipType"
+                            render={(props) => (
+                              <EntityType
+                                className={classes.maxWidth}
+                                setDocumentType={(value) => {
+                                  setNewOwner({
+                                    ...newOwner,
+                                    ownerType: value ? addTrailingZeros(value.name) : null,
+                                  });
+                                }}
+                                value={newOwner?.ownershipType || newOwner?.ownerType || nameAutValue?.ownerType || ""}
+                              />
+                            )}
+                          />
+                        </Grid>
+                      ) : (
+                        <TextFieldComponent
+                          key={index}
+                          item={item}
+                          control={contactSubFormControl}
+                        />
+                      )
+                    }
+                  </React.Fragment>
                 ))}
               </>
             }
 
-            {/* <Grid item xs={12}>
-              <h3>Surface Interest</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.surface_interest}
-                onChange={e => {
-                  const { value } = e.target;
-                  setNewOwner({
-                    ...newOwner,
-                    surface_interest: value ? addTrailingZeros(e.target.value) : null,
-                  });
-                }}
-                onBlur={e => {
-                  const value = e.target.value || 0
-                  setNewOwner({
-                    ...newOwner,
-                    surface_interest: parseFloat(value).toFixed(8),
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Mineral Interest</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.mineral_interest}
-                onChange={e => {
-                  const { value } = e.target;
-                  const net_acres = !isAcresOverridden ? calculateNetAcres(value) : newOwner.net_acres;
-                  const nra = !isNraOverridden
-                    ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, value, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
-                    : newOwner.nra;
-                  setNewOwner(newOwner => ({
-                    ...newOwner,
-                    mineral_interest: value ? addTrailingZeros(value) : null,
-                    net_acres,
-                    nra,
-                  }));
-                }}
-                onBlur={e => {
-                  const value = e.target.value || 0
-                  setNewOwner({
-                    ...newOwner,
-                    mineral_interest: parseFloat(value).toFixed(8),
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid> */}
-            {/* <Grid item xs={12}>
-              <h3>Non-Exec Rights Only</h3>
-              <Autocomplete
-                options={[{ label: "Yes", value: "Yes" }, { label: "No", value: "No" }]}
-                getOptionLabel={option => option.label}
-                getOptionSelected={(option, value) => option.value === value}
-                value={newOwner?.nonExecRightsOnly ? { label: newOwner?.nonExecRightsOnly, value: newOwner?.nonExecRightsOnly } : null}
-                onChange={(e, newInputValue) => {
-                  setNewOwner({
-                    ...newOwner,
-                    nonExecRightsOnly: newInputValue?.value,
-                  })
-                }}
-                renderInput={params => (
-                  <TextField {...params} size="small" className={classes.maxWidth} multiline />
-                )}
-              />
-            </Grid> */}
-            {/* <Grid item xs={12}>
-              <h3>Royalty Interest (Lease)</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.royalty_interest}
-                onChange={e => {
-                  const { value } = e.target;
-                  setNewOwner({
-                    ...newOwner,
-                    royalty_interest: value ? addTrailingZeros(e.target.value) : null,
-                    nra: !isNraOverridden ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, e.target.value, newOwner.orri, workspaceSettings) : newOwner.nra,
-                  });
-                }}
-                onBlur={e => {
-                  const value = e.target.value || 0
-                  setNewOwner({
-                    ...newOwner,
-                    royalty_interest: parseFloat(value).toFixed(8),
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Overriding Royalty Interest (ORRI)</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.orri}
-                onChange={e => {
-                  const { value } = e.target;
-                  setNewOwner({
-                    ...newOwner,
-                    orri: value ? addTrailingZeros(e.target.value) : null,
-                    nra: !isNraOverridden ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, value, workspaceSettings) : newOwner.nra,
-                  });
-                }}
-                onBlur={e => {
-                  const value = e.target.value || 0
-                  setNewOwner({
-                    ...newOwner,
-                    orri: parseFloat(value).toFixed(8),
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid> */}
-
-            {/* <Grid item xs={12}>
-              <h3>Working Interest</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.operating_rights}
-                onChange={e => {
-                  const { value } = e.target;
-                  setNewOwner({
-                    ...newOwner,
-                    operating_rights: value ? addTrailingZeros(e.target.value) : null,
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <h3>Net Acres</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={isAcresOverridden ? classes.baseValueChanged : classes.maxWidth}
-                value={newOwner.net_acres}
-                onChange={e => {
-                  const value = addTrailingZeros(e.target.value);
-                  const netAcres = calculateNetAcres(newOwner.mineral_interest);
-                  setIsAcresOverridden(parseFloat(netAcres) !== parseFloat(value));
-                  setNewOwner(newOwner => ({
-                    ...newOwner,
-                    net_acres: value,
-                    nra: !isNraOverridden
-                      ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
-                      : newOwner.nra,
-                    offer_price_nma: calculateOfferPrice(value, uUnitPricingNMA),
-                    max_offer_price_nma: calculateOfferPrice(value, uMaxUnitPricingNMA),
-                  }));
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {isAcresOverridden && (
-                        <IconButton
-                          aria-label="toggle royality-acres"
-                          onClick={() => {
-                            const netAcres = calculateNetAcres(newOwner.mineral_interest);
-                            setIsAcresOverridden(false);
-                            setNewOwner(newOwner => ({
-                              ...newOwner,
-                              net_acres: netAcres,
-                              nra: !isNraOverridden
-                                ? calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
-                                : newOwner.nra,
-                            }));
-                          }}
-                        >
-                          <AutorenewIcon />
-                        </IconButton>
-                      )}
-                    </InputAdornment>
-                  ),
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid> */}
-
-            <Grid item xs={12}>
-              <h3>Target Offer Price (NMA)</h3>
-
-              <Controller
-                control={control}
-                name="offer_price_nma"
-                render={props => (
-                  <TextField
-                    size="small"
-                    value={newOwner?.offer_price_nma}
-                    inputRef={props.ref}
-                    onWheel={e => e.target.blur()}
-                    onChange={e => {
-                      const value = parseFloat(e.target.value).toFixed(2);
-                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.net_acres, uUnitPricingNMA);
-                      setIsOfferPriceNMAOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
-                      props.onChange(value);
-                      setNewOwner(newOwner => ({
-                        ...newOwner,
-                        offer_price_nma: value,
-                      }));
-                    }}
-                    className={isOfferPriceNMAOverridden ? classes.baseValueChanged : classes.maxWidth}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          {isOfferPriceNMAOverridden && (
-                            <IconButton
-                              aria-label="toggle offer_price_nma"
-                              onClick={() => {
-                                setIsOfferPriceNMAOverridden(false);
-                                setNewOwner(newOwner => ({
-                                  ...newOwner,
-                                  offer_price_nma: calculateOfferPrice(newOwner?.net_acres, uUnitPricingNMA),
-                                }));
-                              }}
-                            >
-                              <AutorenewIcon />
-                            </IconButton>
-                          )}
-                        </InputAdornment>
-                      ),
-                    }}
-                    fullWidth
-                    defaultValue=""
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <h3>Max Offer Price (NMA)</h3>
-
-              <Controller
-                control={control}
-                name="max_offer_price_nma"
-                render={props => (
-                  <TextField
-                    size="small"
-                    value={newOwner?.max_offer_price_nma}
-                    inputRef={props.ref}
-                    onWheel={e => e.target.blur()}
-                    onChange={e => {
-                      const value = parseFloat(e.target.value).toFixed(2);
-                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.net_acres, uMaxUnitPricingNMA);
-                      setIsMaxOfferPriceNMAOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
-                      props.onChange(value);
-                      setNewOwner(newOwner => ({
-                        ...newOwner,
-                        max_offer_price_nma: value,
-                      }));
-                    }}
-                    className={isMaxOfferPriceNMAOverridden ? classes.baseValueChanged : classes.maxWidth}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          {isMaxOfferPriceNMAOverridden && (
-                            <IconButton
-                              aria-label="toggle max_offer_price_nma"
-                              onClick={() => {
-                                setIsMaxOfferPriceNMAOverridden(false);
-                                setNewOwner(newOwner => ({
-                                  ...newOwner,
-                                  max_offer_price_nma: calculateOfferPrice(newOwner?.net_acres, uMaxUnitPricingNMA),
-                                }));
-                              }}
-                            >
-                              <AutorenewIcon />
-                            </IconButton>
-                          )}
-                        </InputAdornment>
-                      ),
-                    }}
-                    fullWidth
-                    defaultValue=""
-                  />
-                )}
-              />
-            </Grid>
-
-            {/* <Grid item xs={12}>
-              <h3>Net Royalty Acres (NRA)</h3>
-              <TextField
-                id="standard-number"
-                type="number"
-                size="small"
-                className={isNraOverridden ? classes.baseValueChanged : classes.maxWidth}
-                value={newOwner.nra}
-                onChange={e => {
-                  const value = addTrailingZeros(e.target.value);
-                  const nra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings);
-                  setIsNRAOverridden(parseFloat(nra) !== parseFloat(value));
-                  setNewOwner({
-                    ...newOwner,
-                    nra: value || null,
-                    offer_price: calculateOfferPrice(value, uUnitPricing),
-                    max_offer_price: calculateOfferPrice(value, uMaxUnitPricing)
-                  });
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {isNraOverridden && (
-                        <IconButton
-                          aria-label="toggle royality-acres"
-                          onClick={() => {
-                            const nra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, newOwner.mineral_interest, newOwner.royalty_interest, newOwner.orri, workspaceSettings)
-                            setIsNRAOverridden(false);
-                            setNewOwner({ ...newOwner, nra });
-                          }}
-                        >
-                          <AutorenewIcon />
-                        </IconButton>
-                      )}
-                    </InputAdornment>
-                  ),
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid> */}
-
-            <Grid item xs={12}>
-              <h3>Target Offer Price (per NRA)</h3>
-
-              <Controller
-                control={control}
-                name="offer_price"
-                render={props => (
-                  <TextField
-                    size="small"
-                    value={newOwner?.offer_price}
-                    inputRef={props.ref}
-                    onWheel={e => e.target.blur()}
-                    onChange={e => {
-                      const value = parseFloat(e.target.value).toFixed(2);
-                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.nra, uUnitPricing);
-                      setIsOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
-                      props.onChange(value);
-                      setNewOwner(newOwner => ({
-                        ...newOwner,
-                        offer_price: value,
-                      }));
-                    }}
-                    className={isOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          {isOfferPriceOverridden && (
-                            <IconButton
-                              aria-label="toggle offer_price"
-                              onClick={() => {
-                                setIsOfferPriceOverridden(false);
-                                setNewOwner(newOwner => ({
-                                  ...newOwner,
-                                  offer_price: calculateOfferPrice(newOwner?.nra, uUnitPricing),
-                                }));
-                              }}
-                            >
-                              <AutorenewIcon />
-                            </IconButton>
-                          )}
-                        </InputAdornment>
-                      ),
-                    }}
-                    fullWidth
-                    defaultValue=""
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <h3>Max Offer Price (per NRA)</h3>
-
-              <Controller
-                control={control}
-                name="max_offer_price"
-                render={props => (
-                  <TextField
-                    size="small"
-                    value={newOwner?.max_offer_price}
-                    inputRef={props.ref}
-                    onWheel={e => e.target.blur()}
-                    onChange={e => {
-                      const value = parseFloat(e.target.value).toFixed(2);
-                      const calculatedOfferPrice = calculateOfferPrice(newOwner?.nra, uMaxUnitPricing);
-                      setIsMaxOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
-                      props.onChange(value);
-                      setNewOwner(newOwner => ({
-                        ...newOwner,
-                        max_offer_price: value,
-                      }));
-                    }}
-                    className={isMaxOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
-                    InputProps={{
-                      inputComponent: CurrencyFormatCustom,
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          {isMaxOfferPriceOverridden && (
-                            <IconButton
-                              aria-label="toggle max_offer_price"
-                              onClick={() => {
-                                setIsMaxOfferPriceOverridden(false);
-                                setNewOwner(newOwner => ({
-                                  ...newOwner,
-                                  max_offer_price: calculateOfferPrice(newOwner?.nra, uMaxUnitPricing),
-                                }));
-                              }}
-                            >
-                              <AutorenewIcon />
-                            </IconButton>
-                          )}
-                        </InputAdornment>
-                      ),
-                    }}
-                    fullWidth
-                    defaultValue=""
-                  />
-                )}
-              />
-            </Grid>
-
-
-            {/* <Grid item xs={12}>
-              <h3>Company Net Acres</h3>
-              <TextField
-                type="number"
-                size="small"
-                className={classes.maxWidth}
-                value={newOwner.company_net_acres}
-                onChange={e => {
-                  const { value } = e.target;
-                  setNewOwner({
-                    ...newOwner,
-                    company_net_acres: value ? addTrailingZeros(e.target.value) : null,
-                  });
-                }}
-                onWheel={e => e.target.blur()}
-              />
-            </Grid> */}
-
             {parcelOwnerForm({}).map((item, index) => (
-              <TextFieldComponent
-                key={index}
-                label={item.label}
-                name={item.name}
-                control={parcelOwnerFormControl}
-                defaultValue={item.defaultValue}
-                InputProps={item.InputProps}
-              />
+              <React.Fragment key={index}>
+                {
+                  item.fieldtype === "entity_type" ? (
+                    <Grid item xs={12}>
+                      <h3>Entity Type</h3>
+                      <Controller
+                        control={contactSubFormControl}
+                        name="ownershipType"
+                        render={(props) => (
+                          <EntityType
+                            className={classes.maxWidth}
+                            setDocumentType={(value) => {
+                              setNewOwner({
+                                ...newOwner,
+                                ownerType: value ? addTrailingZeros(value.name) : null,
+                              });
+                            }}
+                            value={newOwner?.ownershipType || newOwner?.ownerType || nameAutValue?.ownerType || ""}
+                          />
+                        )}
+                      />
+                    </Grid>
+                  ) : (
+                    <TextFieldComponent
+                      key={index}
+                      item={item}
+                      control={parcelOwnerFormControl}
+                    />
+                  )
+                }
+              </React.Fragment>
             ))}
 
           </Grid>

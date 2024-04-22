@@ -1,18 +1,13 @@
 
 import React from "react";
 import { Grid, TextField } from "@material-ui/core";
-import { useController, useForm } from "react-hook-form";
+import { useController } from "react-hook-form";
 
 
-function TextFieldComponent({ control, name, ...props }) {
-  const { field } = useController({
-    name,
-    control,
-    rules: { required: true },
-  });
-
+function TextFieldComponent({ control, item }) {
   const {
     // field props
+    name,
     size,
     type,
     label,
@@ -22,8 +17,13 @@ function TextFieldComponent({ control, name, ...props }) {
     multiline = false,
     // styles 
     className
-  } = props;
-  console.log(field);
+  } = item || {};
+
+  const { field } = useController({
+    name,
+    control,
+    rules: { required: true },
+  });
 
   return (
     <Grid item xs={12}>
