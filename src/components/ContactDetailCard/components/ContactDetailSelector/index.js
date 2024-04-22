@@ -24,6 +24,8 @@ import { contactDetailInitialData } from "./data";
 
 import { CONTACT_SUMMARY } from "graphQL/useQueryContactSummary";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import moment from "moment";
+import sortBy from 'lodash/sortBy';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -148,6 +150,7 @@ function MapGridCard(props) {
   const userGridViewFilters = useSelector(({ session }) => session.userGridViewSettings?.filters);
 
   const dispatch = useDispatch();
+  const [sortedPurchaseData, setSortedPurchaseData] = useState([]);
 
   useEffect(() => {
     if (props.contactData._id)
@@ -180,6 +183,13 @@ function MapGridCard(props) {
       dispatch(setMapGridCardState({ searchResultData: [], searchloading: true }));
     }
   };
+
+  useEffect(() => {
+    if (props.purchaseData.length > 0) {
+      const sortedPurchaseData = sortBy(props.purchaseData, (item) => moment(item.sysDateTime).valueOf()).reverse();
+      setSortedPurchaseData(sortedPurchaseData);
+    }
+}, [props.purchaseData]);
 
   return (
     <div className={classes.card}>
@@ -225,7 +235,7 @@ function MapGridCard(props) {
                 <Grid item md={10} style={{ padding: "0px" }}>
                   <div style={{ position: "relative" }} classes={classes.gridTables}>
                     {searchTapValue.value === "contactInformation" && (
-                      <ContactDetailedInfo user={stateApp.user} purchaseData={props.purchaseData} contactData={props.contactData} />
+                      <ContactDetailedInfo user={stateApp.user} purchaseData={sortedPurchaseData} contactData={props.contactData} />
                     )}
                     {searchTapValue.value === "activities" && (
                       <ActivitiesTable
