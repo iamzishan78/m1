@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Grid } from "@material-ui/core";
 import { IconButton } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -17,8 +17,13 @@ function PencilEditIcon({
     content,
     handleUpdating,
     isCopy = false,
+    editContent,
+    setEditContent
 }) {
     const classes = useStyles();
+    const [copied, setCopied] = useState(false);
+
+    
     return (
         <React.Fragment>
             <EditionPopover anchorEl={anchorEl} setAnchorEl={setAnchorEl}>
@@ -43,6 +48,7 @@ function PencilEditIcon({
                             className={classes.popoverButton}
                             startIcon={<ClearSharpIcon />}
                             onClick={() => {
+                                setEditContent({ ...editContent})
                                 setAnchorEl(null);
                             }}
                         >
@@ -50,19 +56,25 @@ function PencilEditIcon({
                         </Button>
                     </Grid>
 
-                    {content.map((textF, i) => (
-                        <Grid key={i} item xs={12} style={{ marginBottom: "8px" }}>
-                            {textF}
-                        </Grid>
-                    ))}
+                    {content.map((textF, i) => {
+                        return(
+                            <Grid key={i} item xs={12} style={{ marginBottom: "8px" }}>
+                                {textF}
+                            </Grid>
+                        )
+                    })}
                 </Grid>
             </EditionPopover>
             {isCopy && (
-                <Tooltip title={"Copy"} placement="top">
+                <Tooltip title={copied ? "Copied" : "Copy"}  placement="top">
                     <IconButton
                         size="small"
                         onClick={(e) => {
+                            setCopied(true);
                             onClick(e, true);
+                            setTimeout(() => {
+                                setCopied(false);
+                            }, 1500);
                         }}
                     >
                         <CopyIcon id="copyIcon" />

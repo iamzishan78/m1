@@ -198,9 +198,7 @@ export default function FieldContent({
   const onBlurHandler = (fieldNames) => {
     const fields = {};
     fieldNames.forEach(field => fields[field] = content[field]);
-
-    setEdit(null);
-    setEditContent({ ...fields });
+    setEditContent({...editContent });
   }
 
 
@@ -495,6 +493,8 @@ export default function FieldContent({
           content={inputsArray}
           onClick={handleEditClick}
           isCopy={true}
+          setEditContent={setEditContent}
+          editContent={content}
         />
       )}
       {fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />}
