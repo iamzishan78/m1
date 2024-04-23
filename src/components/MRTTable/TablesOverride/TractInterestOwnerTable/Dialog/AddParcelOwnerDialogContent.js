@@ -13,7 +13,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { addTrailingZeros } from 'components/Shared/functions';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { popupController } from 'hookstate/popupStateController';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { setStateIfDeepEqual } from 'components/Shared/functions';
@@ -28,13 +28,11 @@ import { AppContext } from 'AppContext';
 import { tableGlobalController } from 'hookstate/tableController';
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
-import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
 import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/contactSubForm';
 import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
 import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/AutoComplete';
 import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcelOwnerForm';
 import { sideDialogController } from 'hookstate/sideDialogController';
-import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 
 const useStyles = makeStyles(theme => ({
   maxWidth: {
@@ -565,26 +563,12 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 {contactSubForm({}).map((item, index) => (
                   <React.Fragment key={index}>
                     {
-                      item.renderField === "entity_type" ? (
-                        <Grid item xs={12}>
-                          <h3>Entity Type</h3>
-                          <Controller
-                            control={contactSubFormControl}
-                            name="ownershipType"
-                            render={(props) => (
-                              <EntityType
-                                className={classes.maxWidth}
-                                setDocumentType={(value) => {
-                                  setNewOwner({
-                                    ...newOwner,
-                                    ownerType: value ? addTrailingZeros(value.name) : null,
-                                  });
-                                }}
-                                value={newOwner?.ownershipType || newOwner?.ownerType || nameAutValue?.ownerType || ""}
-                              />
-                            )}
-                          />
-                        </Grid>
+                      item.renderField === "autoComplete" ? (
+                        <AutoCompleteComponent
+                          key={index}
+                          item={item}
+                          control={contactSubFormControl}
+                        />
                       ) : (
                         <TextFieldComponent
                           key={index}
@@ -601,25 +585,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             {parcelOwnerForm({}).map((item, index) => (
               <React.Fragment key={index}>
                 {
-                  item.renderField === "entity_type" ? (
-                    <Grid item xs={12}>
-                      <h3>{item.label}</h3>
-                      <Controller
-                        control={contactSubFormControl}
-                        name="ownershipType"
-                        render={(props) => (
-                          <EntityType
-                            className={classes.maxWidth}
-                            setDocumentType={(value) => {
-                              let val = value.name;
-                              props.onChange(val);
-                            }}
-                            value={props.value ? props.value : ''}
-                          />
-                        )}
-                      />
-                    </Grid>
-                  ) : item.renderField === "autoComplete" ? (
+                  item.renderField === "autoComplete" ? (
                     <AutoCompleteComponent
                       key={index}
                       item={item}

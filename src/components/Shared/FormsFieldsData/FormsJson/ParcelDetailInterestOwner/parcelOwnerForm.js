@@ -3,13 +3,17 @@ import IconButton from '@material-ui/core/IconButton';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
+import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
 
 const parcelOwnerForm = (contact) => {
   return [
     {
       label: "Entity Type",
       name: "ownerType ",
-      renderField: "entity_type"
+      defaultOptions: entityTypeOptions,
+      renderField: "autoComplete",
+      filterKey: "ownerType.keyword",
+      esIndex: "contacts_flat",
     },
     {
       label: "Surface Interest",
