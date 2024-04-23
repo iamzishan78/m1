@@ -3,6 +3,21 @@ import React from 'react';
 import ContactDetailCard from 'components/ContactDetailCard/ContactDetailCard';
 import { basic_timeouts } from '../../cypressUtils/data';
 
+const addresses = [
+  {
+    address1Alt: 'P O BOX 2367',
+    cityAlt: 'GALVESTON',
+    stateAlt: 'TX',
+    zipAlt: '77553',
+  },
+  {
+    address1Alt: '5302 BEVERLY DR',
+    cityAlt: 'SAN ANGELO',
+    stateAlt: 'TX',
+    zipAlt: '76904',
+  },
+];
+
 // Describe block for testing the ContactDetailsSection
 describe('ContactDetailsSection', () => {
   beforeEach(() => {
@@ -136,5 +151,30 @@ describe('ContactDetailsSection', () => {
       },
       { wait: false }
     );
+  });
+
+  it('Updates Secondary Adderss', () => {
+    cy.get('[data-testid="Secondary Address"]')
+      .invoke('text')
+      .then(text => {
+        const address = text.includes(addresses[0].address1Alt)
+          ? addresses[1]
+          : addresses[0];
+
+        cy.get('[data-testid="Secondary Address"]')
+          .find('#contPencilIcon')
+          .click({ force: true });
+
+        cy.get('#fieldContentInputaddress1Alt').clear().type(address.address1Alt);
+        cy.get('#fieldContentInputcityAlt').clear().type(address.cityAlt);
+        cy.get('#fieldContentInputstateAlt').clear().type(address.stateAlt);
+        cy.get('#fieldContentInputzipAlt').clear().type(address.zipAlt);
+
+        cy.interceptAndWait(['getContact'], () => {
+          cy.get('[data-testid="checkIcon"]').click();
+        });
+
+        cy.get('[data-testid="Secondary Address"]').contains(address.address1Alt);
+      });
   });
 });
