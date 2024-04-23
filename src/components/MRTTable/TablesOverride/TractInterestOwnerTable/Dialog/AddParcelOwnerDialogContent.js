@@ -277,10 +277,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     fetchPolicy: 'no-cache',
   });
 
-  const [getCampaignPriorityList, { data: priorityList }] = useLazyQuery(GET_ES_FILTER_LIST, {
-    fetchPolicy: 'no-cache',
-  });
-
   const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 
   const [addOwnerToAParcel, { data: mutationData }] = useMutation(ADDOWNERTOAPARCEL);
@@ -305,16 +301,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       },
     });
   }, [getLeaseStatusList]);
-
-  useEffect(() => {
-    getCampaignPriorityList({
-      variables: {
-        esIndex: 'shapeowners_flat',
-        filterKey: 'campaignPriority.keyword',
-        size: 50,
-      },
-    });
-  }, [getCampaignPriorityList]);
 
   useEffect(() => {
     const uniqueList = Array.from(new Set(["HBP", "Leased", "Unleased", ...get(leaseStatusListRes, 'getESFilterList.hits', [])?.map(owner => owner.key)]));
