@@ -13,7 +13,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { addTrailingZeros } from 'components/Shared/functions';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { popupController } from 'hookstate/popupStateController';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { setStateIfDeepEqual } from 'components/Shared/functions';
@@ -33,6 +33,7 @@ import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextFie
 import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/AutoComplete';
 import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcelOwnerForm';
 import { sideDialogController } from 'hookstate/sideDialogController';
+import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 
 const useStyles = makeStyles(theme => ({
   maxWidth: {
@@ -591,6 +592,28 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                       item={item}
                       control={parcelOwnerFormControl}
                     />
+                  ) : item.renderField === "campaignName" ? (
+                    <Grid item xs={12}>
+                      <h3>Campaign Names</h3>
+
+                      <Controller
+                        control={parcelOwnerFormControl}
+                        name={item.name}
+                        render={props => (
+                          <CampaignNameField
+                            {...props}
+                            value={props?.value}
+                            className={classes.maxWidth}
+                            onChange={(values, id) => {
+                              props.onChange(values);
+                            }}
+                            fullWidth
+                            targetLabel="Contact"
+                            simpleChips
+                          />
+                        )}
+                      />
+                    </Grid>
                   ) : (
                     <TextFieldComponent
                       key={index}

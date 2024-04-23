@@ -26,7 +26,7 @@ function AutoCompleteComponent({ control, item }) {
         variables: {
           esIndex,
           filterKey,
-          size: 50,
+          size: 10000,
         },
       });
   }, []);

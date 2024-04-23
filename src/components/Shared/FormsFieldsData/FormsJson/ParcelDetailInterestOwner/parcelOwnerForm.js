@@ -287,11 +287,15 @@ const parcelOwnerForm = (contact) => {
     },
     {
       label: "Campaign Names",
-      name: "campaignName"
+      name: "campaignName",
+      renderField: "campaignName"
     },
     {
       label: "Campaign Priority",
-      name: "campaignPriority"
+      name: "campaignPriority",
+      renderField: "autoComplete",
+      esIndex: 'shapeowners_flat',
+      filterKey: 'campaignPriority.keyword',
     },
     {
       label: "Lease Status",
