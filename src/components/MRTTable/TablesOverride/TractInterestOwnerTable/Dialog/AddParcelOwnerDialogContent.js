@@ -104,13 +104,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing } = props?.customLayer?.shapeJson?.properties;
   const [stateApp, setStateApp] = useContext(AppContext);
   const { control: contactSubFormControl, watch } = useForm();
-  const { control: parcelOwnerFormControl } = useForm({
-    defaultValues: {
-      seller_asking_price: '',
-      competitor_offer_price: '',
-      actual_offer_price: '',
-    },
-  });
+  const { control: parcelOwnerFormControl } = useForm();
   const [newOwner, setNewOwner] = useState({
     surface_interest: null,
     ownerType: null,
@@ -537,7 +531,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const tableState = sideDialogController.useCompleteState();
   const tableStateValues = tableState?.get({ noproxy: true });
 
-  console.log('tableStateValues', tableStateValues)
+  // console.log('tableStateValues', tableStateValues)
 
   return (
     <div className={classes.move}>

@@ -68,7 +68,7 @@ const parcelOwnerForm = (contact) => {
       name: "offer_price_nma",
       type: "number",
       InputProps: {
-        inputComponent: (props) => <CurrencyFormatCustom {...props} />,
+        inputComponent: CurrencyFormatCustom,
         endAdornment: (
           <InputAdornment position="end">
             {true && (
