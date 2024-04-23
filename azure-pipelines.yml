@@ -18,7 +18,7 @@ steps:
       versionSpec: "21.7.3"
     displayName: "Install Node.js"
 
-   - script: |
+  - script: |
       yarn install
     displayName: "Yarn Install"
 
