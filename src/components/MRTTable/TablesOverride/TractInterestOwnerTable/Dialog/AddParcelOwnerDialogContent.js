@@ -273,10 +273,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     }
   );
 
-  const [getLeaseStatusList, { data: leaseStatusListRes }] = useLazyQuery(GET_ES_FILTER_LIST, {
-    fetchPolicy: 'no-cache',
-  });
-
   const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 
   const [addOwnerToAParcel, { data: mutationData }] = useMutation(ADDOWNERTOAPARCEL);
@@ -291,25 +287,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       });
     }
   }, [addContactData]);
-
-  useEffect(() => {
-    getLeaseStatusList({
-      variables: {
-        esIndex: 'shapeowners_flat',
-        filterKey: 'leaseStatus.keyword',
-        size: 50,
-      },
-    });
-  }, [getLeaseStatusList]);
-
-  useEffect(() => {
-    const uniqueList = Array.from(new Set(["HBP", "Leased", "Unleased", ...get(leaseStatusListRes, 'getESFilterList.hits', [])?.map(owner => owner.key)]));
-    const formattedList = uniqueList.map(leaseStatus => ({
-      _id: leaseStatus,
-      name: leaseStatus,
-    }));
-    setLeaseStatusList(formattedList);
-  }, [leaseStatusListRes])
 
   useEffect(() => {
     if (allContacts?.paginatedContacts) {

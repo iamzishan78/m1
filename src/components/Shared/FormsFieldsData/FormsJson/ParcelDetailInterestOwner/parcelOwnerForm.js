@@ -299,7 +299,11 @@ const parcelOwnerForm = (contact) => {
     },
     {
       label: "Lease Status",
-      name: "leaseStatus"
+      name: "leaseStatus",
+      renderField: "autoComplete",
+      esIndex: 'shapeowners_flat',
+      filterKey: 'leaseStatus.keyword',
+      defaultOptions: [{ label: "HBP", value: "HBP" }, { label: "Leased", value: "Leased" }, { label: "Unleased", value: "Unleased" }]
     },
     {
       label: "Associated Deals",
