@@ -44,9 +44,7 @@ const parcelOwnerForm = (contact) => {
     {
       label: "Net Acres",
       name: "net_acres",
-      type: "number",
       InputProps: {
-        startAdornment: <InputAdornment position="start">$</InputAdornment>,
         endAdornment: (
           <InputAdornment position="end">
             {true && (
@@ -66,7 +64,6 @@ const parcelOwnerForm = (contact) => {
     {
       label: "Target Offer Price (NMA)",
       name: "offer_price_nma",
-      type: "number",
       InputProps: {
         inputComponent: CurrencyFormatCustom,
         endAdornment: (
@@ -88,9 +85,8 @@ const parcelOwnerForm = (contact) => {
     {
       label: "Max Offer Price (NMA)",
       name: "max_offer_price_nma",
-      type: "number",
       InputProps: {
-        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        inputComponent: CurrencyFormatCustom,
         endAdornment: (
           <InputAdornment position="end">
             {true && (
@@ -112,7 +108,6 @@ const parcelOwnerForm = (contact) => {
       name: "nra",
       type: "number",
       InputProps: {
-        startAdornment: <InputAdornment position="start">$</InputAdornment>,
         endAdornment: (
           <InputAdornment position="end">
             {true && (
@@ -132,9 +127,8 @@ const parcelOwnerForm = (contact) => {
     {
       label: "Target Offer Price (per NRA)",
       name: "offer_price",
-      type: "number",
       InputProps: {
-        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        inputComponent: CurrencyFormatCustom,
         endAdornment: (
           <InputAdornment position="end">
             {true && (
@@ -154,9 +148,8 @@ const parcelOwnerForm = (contact) => {
     {
       label: "Max Offer Price (per NRA)",
       name: "max_offer_price",
-      type: "number",
       InputProps: {
-        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        inputComponent: CurrencyFormatCustom,
         endAdornment: (
           <InputAdornment position="end">
             {true && (
@@ -181,25 +174,22 @@ const parcelOwnerForm = (contact) => {
     {
       label: "Seller Asking Price",
       name: "seller_asking_price",
-      type: "number",
       InputProps: {
-        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        inputComponent: CurrencyFormatCustom,
       }
     },
     {
       label: "Competitor Offer Price",
       name: "competitor_offer_price",
-      type: "number",
       InputProps: {
-        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        inputComponent: CurrencyFormatCustom,
       }
     },
     {
       label: "Actual Offer Price",
       name: "actual_offer_price",
-      type: "number",
       InputProps: {
-        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+        inputComponent: CurrencyFormatCustom,
       }
     },
     // {

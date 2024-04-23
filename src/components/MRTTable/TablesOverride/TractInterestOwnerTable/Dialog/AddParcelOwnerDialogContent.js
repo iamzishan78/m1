@@ -531,7 +531,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const tableState = sideDialogController.useCompleteState();
   const tableStateValues = tableState?.get({ noproxy: true });
 
-  // console.log('tableStateValues', tableStateValues)
+  console.log('tableStateValues', tableStateValues)
 
   return (
     <div className={classes.move}>

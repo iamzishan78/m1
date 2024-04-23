@@ -1,8 +1,8 @@
 
 import React from "react";
-import { Grid, TextField } from "@material-ui/core";
-import { useController } from "react-hook-form";
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Grid, TextField, Autocomplete } from '@mui/material';
+import { Controller } from "react-hook-form";
+import { sideDialogController } from "hookstate/sideDialogController";
 
 function AutoCompleteComponent({ control, item }) {
   const {
@@ -11,23 +11,28 @@ function AutoCompleteComponent({ control, item }) {
     options,
   } = item;
 
-  const { field } = useController({
-    name,
-    control,
-    rules: { required: true },
-  });
-
   return (
     <Grid item xs={12}>
       <h3>{label}</h3>
-      <Autocomplete
-        options={options}
-        getOptionLabel={option => option.label}
-        getOptionSelected={(option, value) => option.value === value}
-        value={field.value}
-        onChange={field.onChange}
-        renderInput={params => (
-          <TextField {...params} size="small" multiline />
+
+      <Controller
+        control={control}
+        name={name}
+        render={props => (
+          <Autocomplete
+            options={options}
+            getOptionLabel={option => option.label}
+            getOptionSelected={(option, value) => option.value === value}
+            value={props.value}
+            onChange={e => {
+              sideDialogController.updateState({ [item.name]: e.target.value })
+              props.onChange(e)
+
+            }}
+            renderInput={params => (
+              <TextField {...params} size="small" multiline variant="standard" />
+            )}
+          />
         )}
       />
     </Grid>
