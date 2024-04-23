@@ -27,7 +27,6 @@ import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { AppContext } from 'AppContext';
 import { tableGlobalController } from 'hookstate/tableController';
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
-import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import EntityType from 'components/ContactDetailCard/components/FieldContent/EntityType';
 import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/contactSubForm';
@@ -35,7 +34,7 @@ import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextFie
 import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/AutoComplete';
 import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcelOwnerForm';
 import { sideDialogController } from 'hookstate/sideDialogController';
-
+import ContactStatus from 'components/ContactDetailCard/components/AutoCompleteWithAddNew';
 
 const useStyles = makeStyles(theme => ({
   maxWidth: {
@@ -283,18 +282,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     fetchPolicy: 'no-cache',
   });
 
-  const [getFilters, { data: filtersData }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: 'no-cache' });
-
-  useEffect(() => {
-    getFilters({
-      variables: {
-        esIndex: 'contacts_flat',
-        filterKey: 'status.keyword',
-        size: 50,
-      },
-    });
-  }, []);
-
   const [addContact, { data: addContactData }] = useMutation(ADDCONTACT);
 
   const [addOwnerToAParcel, { data: mutationData }] = useMutation(ADDOWNERTOAPARCEL);
@@ -309,25 +296,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       });
     }
   }, [addContactData]);
-
-  useEffect(() => {
-    if (filtersData?.getESFilterList?.hits) {
-      const allFiltersData = filtersData.getESFilterList.hits.map(hit => hit.key);
-      let filterData = filtersData.getESFilterList.hits.map(hit => hit.key);
-      for (let i = 0; i < contactStatusOptions.length; i++) {
-        filterData = filterData.filter(d => d !== contactStatusOptions[i].value && d !== contactStatusOptions[i].label);
-      }
-      for (let i = 0; i < contactStatusOptions.length; i++) {
-        if (
-          (contactStatusOptions[i].notInclude && allFiltersData.find(d => d === contactStatusOptions[i].value)) ||
-          !contactStatusOptions[i].notInclude
-        ) {
-          filterData.push(contactStatusOptions[i].label);
-        }
-      }
-      setStatusOptions(filterData);
-    }
-  }, [filtersData]);
 
   useEffect(() => {
     getLeaseStatusList({
@@ -528,11 +496,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   const classes = useStyles();
 
-  const tableState = sideDialogController.useCompleteState();
-  const tableStateValues = tableState?.get({ noproxy: true });
-
-  console.log('tableStateValues', tableStateValues)
-
   return (
     <div className={classes.move}>
       <RightDialog open handleClickDialogClose={props.onClose} width="700px">
@@ -640,7 +603,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                 {
                   item.renderField === "entity_type" ? (
                     <Grid item xs={12}>
-                      <h3>Entity Type</h3>
+                      <h3>{item.label}</h3>
                       <Controller
                         control={contactSubFormControl}
                         name="ownershipType"
@@ -648,12 +611,10 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                           <EntityType
                             className={classes.maxWidth}
                             setDocumentType={(value) => {
-                              setNewOwner({
-                                ...newOwner,
-                                ownerType: value ? addTrailingZeros(value.name) : null,
-                              });
+                              let val = value.name;
+                              props.onChange(val);
                             }}
-                            value={newOwner?.ownershipType || newOwner?.ownerType || nameAutValue?.ownerType || ""}
+                            value={props.value ? props.value : ''}
                           />
                         )}
                       />

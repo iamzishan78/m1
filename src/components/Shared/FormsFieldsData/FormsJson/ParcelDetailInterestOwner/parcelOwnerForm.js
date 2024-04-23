@@ -2,6 +2,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
+import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 
 const parcelOwnerForm = (contact) => {
   return [
@@ -24,7 +25,7 @@ const parcelOwnerForm = (contact) => {
       label: "Non-Exec Rights Only",
       name: "nonExecRightsOnly",
       renderField: "autoComplete",
-      options: [{ label: "Yes", value: "Yes" }, { label: "No", value: "No" }]
+      defaultOptions: [{ label: "Yes", value: "Yes" }, { label: "No", value: "No" }]
     },
     {
       label: "Royalty Interest (Lease)",
@@ -208,7 +209,7 @@ const parcelOwnerForm = (contact) => {
       label: "QTR 1",
       name: "qtr[0]",
       renderField: "autoComplete",
-      options: [
+      defaultOptions: [
         { label: 'E2', value: 'E2' },
         { label: 'NE', value: 'NE' },
         { label: 'NW', value: 'NW' },
@@ -223,7 +224,7 @@ const parcelOwnerForm = (contact) => {
       label: "QTR 2",
       name: "qtr[1]",
       renderField: "autoComplete",
-      options: [
+      defaultOptions: [
         { label: 'E2', value: 'E2' },
         { label: 'NE', value: 'NE' },
         { label: 'NW', value: 'NW' },
@@ -238,7 +239,7 @@ const parcelOwnerForm = (contact) => {
       label: "QTR 3",
       name: "qtr[2]",
       renderField: "autoComplete",
-      options: [
+      defaultOptions: [
         { label: 'E2', value: 'E2' },
         { label: 'NE', value: 'NE' },
         { label: 'NW', value: 'NW' },
@@ -253,7 +254,7 @@ const parcelOwnerForm = (contact) => {
       label: "QTR 4",
       name: "qtr[3]",
       renderField: "autoComplete",
-      options: [
+      defaultOptions: [
         { label: 'E2', value: 'E2' },
         { label: 'NE', value: 'NE' },
         { label: 'NW', value: 'NW' },
@@ -267,11 +268,18 @@ const parcelOwnerForm = (contact) => {
 
     {
       label: "Contact Status",
-      name: "contactStatus"
+      name: "contactStatus",
+      renderField: "autoComplete",
+      filterKey: "contactStatus.keyword",
+      esIndex: "contacts_flat",
     },
     {
       label: "Contact Stage",
-      name: "status"
+      name: "status",
+      defaultOptions: contactStatusOptions,
+      renderField: "autoComplete",
+      filterKey: "status.keyword",
+      esIndex: "contacts_flat",
     },
     {
       label: "Campaign Names",
