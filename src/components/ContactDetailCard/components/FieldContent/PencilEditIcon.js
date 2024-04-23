@@ -25,7 +25,7 @@ function PencilEditIcon({
                 <Grid container spacing={0} style={{ width: "200px" }}>
                     <Grid className={classes.buttonsRow} item xs={12}>
                         <Button
-                            variant="contained"
+                            data-testid='checkIcon'
                             size="small"
                             variant="outlined"
                             className={classes.popoverButton}
@@ -37,7 +37,6 @@ function PencilEditIcon({
                             {" "}
                         </Button>
                         <Button
-                            variant="contained"
                             size="small"
                             variant="outlined"
                             className={classes.popoverButton}
