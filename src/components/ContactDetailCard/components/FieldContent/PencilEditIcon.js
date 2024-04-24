@@ -54,13 +54,11 @@ function PencilEditIcon({
                         </Button>
                     </Grid>
 
-                    {content.map((textF, i) => {
-                        return(
-                            <Grid key={i} item xs={12} style={{ marginBottom: "8px" }}>
+                    {content.map((textF, i) =>                 
+                            (<Grid key={i} item xs={12} style={{ marginBottom: "8px" }}>
                                 {textF}
-                            </Grid>
-                        )
-                    })}
+                            </Grid>)
+                    )}
                 </Grid>
             </EditionPopover>
             {isCopy && (
