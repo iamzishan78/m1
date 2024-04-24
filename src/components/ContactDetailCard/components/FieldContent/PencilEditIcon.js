@@ -21,7 +21,7 @@ function PencilEditIcon({
     setEditContent
 }) {
     const classes = useStyles();
-    const [copied, setCopied] = useState(false); // Add new state for updating copyicon tooltip value
+    const [copied, setCopied] = useState(false); // Add new state for updating copy icon tooltip value
 
     
     return (
