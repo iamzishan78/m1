@@ -23,7 +23,6 @@ import { showErrorMessage, showSuccessMessage } from '../../../../../../src/acti
 import { UPDATEPARCELOWNER } from 'graphQL/useMutationUpdateParcelOwner';
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { ADDOWNERTOAPARCEL } from 'graphQL/useMutationAddOwnerToAParcel';
-import { GET_ES_FILTER_LIST } from 'graphQL/useQueryESFilterList';
 import { AppContext } from 'AppContext';
 import { tableGlobalController } from 'hookstate/tableController';
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
@@ -34,6 +33,8 @@ import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/Auto
 import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcelOwnerForm';
 import { sideDialogController } from 'hookstate/sideDialogController';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
+import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
 
 const useStyles = makeStyles(theme => ({
   maxWidth: {
@@ -458,6 +459,11 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   const classes = useStyles();
 
+  const tableState = sideDialogController.useCompleteState();
+  const tableStateValues = tableState?.get({ noproxy: true });
+
+  // console.log('tableStateValues', tableStateValues)
+
   return (
     <div className={classes.move}>
       <RightDialog open handleClickDialogClose={props.onClose} width="700px">
@@ -557,7 +563,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                     />
                   ) : item.renderField === "campaignName" ? (
                     <Grid item xs={12}>
-                      <h3>Campaign Names</h3>
+                      <h3>{item.label}</h3>
 
                       <Controller
                         control={parcelOwnerFormControl}
@@ -577,6 +583,34 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                         )}
                       />
                     </Grid>
+                  ) : item.renderField === "associatedDeals" ? (
+                    <Grid item xs={12}>
+                      <h3>{item.label}</h3>
+
+                      <Controller
+                        control={parcelOwnerFormControl}
+                        name={item.name}
+                        render={props => (
+                          <AssociatedDealField
+                            {...props}
+                            className={classes.maxWidth}
+                            onChange={(values, id) => {
+                              props.onChange(values);
+                            }}
+                            value={props.value}
+                            fullWidth
+                            targetLabel="Contact"
+                            simpleChips
+                          />
+                        )}
+                      />
+                    </Grid>
+                  ) : item.renderField === "depth_restrictions" ? (
+                    <RadioGroup
+                      key={index}
+                      item={item}
+                      control={parcelOwnerFormControl}
+                    />
                   ) : (
                     <TextFieldComponent
                       key={index}

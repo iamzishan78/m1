@@ -307,20 +307,26 @@ const parcelOwnerForm = (contact) => {
     },
     {
       label: "Associated Deals",
-      name: "deals"
+      name: "deals",
+      renderField: "associatedDeals"
     },
     {
       label: "Depth Restrictions",
-      name: ""
+      name: "depthBoth",
+      renderField: "depth_restrictions",
+      options: [
+        { value: "true", label: "All Depths" },
+        { value: "false", label: "Footages/Formations" },
+      ]
     },
-    {
-      label: "Depth From",
-      name: "depthFrom"
-    },
-    {
-      label: "Depth To",
-      name: "depthTo"
-    },
+    // {
+    //   label: "Depth From",
+    //   name: "depthFrom",
+    // },
+    // {
+    //   label: "Depth To",
+    //   name: "depthTo",
+    // },
   ]
 };
 
