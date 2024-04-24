@@ -71,8 +71,8 @@ function AutoCompleteComponent({ control, item }) {
             getOptionLabel={option => option.label}
             getOptionSelected={(option, value) => option.value === value}
             value={props.value}
-            onChange={e => {
-              sideDialogController.updateState({ [item.name]: e.target.value })
+            onChange={(e, option) => {
+              sideDialogController.updateState({ [item.name]: option ? option?.value : null })
               props.onChange(e)
 
             }}

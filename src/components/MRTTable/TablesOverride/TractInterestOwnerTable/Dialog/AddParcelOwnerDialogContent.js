@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -10,11 +10,9 @@ import get from 'lodash/get';
 
 import { useMutation, useLazyQuery } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { addTrailingZeros } from 'components/Shared/functions';
 import { Controller, useForm } from 'react-hook-form';
-import { popupController } from 'hookstate/popupStateController';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
@@ -23,9 +21,7 @@ import { showErrorMessage, showSuccessMessage } from '../../../../../../src/acti
 import { UPDATEPARCELOWNER } from 'graphQL/useMutationUpdateParcelOwner';
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import { ADDOWNERTOAPARCEL } from 'graphQL/useMutationAddOwnerToAParcel';
-import { AppContext } from 'AppContext';
 import { tableGlobalController } from 'hookstate/tableController';
-import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/contactSubForm';
 import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
@@ -34,6 +30,8 @@ import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelD
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
+import { sideDialogController } from 'hookstate/sideDialogController';
+import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(theme => ({
   maxWidth: {
@@ -95,14 +93,15 @@ const useStyles = makeStyles(theme => ({
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
 
-  const [stateApp, setStateApp] = useContext(AppContext);
+  const formState = sideDialogController.useCompleteState()
+  const formStateValues = formState?.get({ noproxy: true });
+
+  const { user } = globalStateController.useState(['user']);
+  const getUser = user.get({ noproxy: true });
+
   const { control: contactSubFormControl, watch } = useForm();
   const { control: parcelOwnerFormControl } = useForm();
 
-
-  const [showAddNewContactFields, setShowAddNewContactFields] = useState(false);
-
-  const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutInputValue, NameAutInputValue] = useState('');
   const setNameAutInputValue = newState => {
@@ -131,10 +130,11 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   useEffect(() => {
     if (get(addContactData, 'addContact.contact')) {
-      setNameAutValue({
+      const contact = {
         name: addContactData.addContact.contact.name,
         _id: addContactData.addContact.contact._id,
-      });
+      }
+      sideDialogController.updateState({ name: contact?.name, ownerEntity: contact?._id })
     }
   }, [addContactData]);
 
@@ -174,8 +174,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       if (type.success) {
         dispatch(
           showSuccessMessage(
-            nameAutValue && nameAutValue.name
-              ? `${nameAutValue.name} was successfully ${type.name}ed`
+            formStateValues?.name
+              ? `${formStateValues?.name} was successfully ${type.name}ed`
               : `The owner was successfully ${type.name}ed`
           )
         );
@@ -185,8 +185,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         dispatch(showErrorMessage('Error occurred'));
       }
 
-      setStateApp(state => ({
-        ...state,
+      window.setStateApp((stateApp) => ({
+        ...stateApp,
         universalCircularLoaderAct: false,
       }));
       tableGlobalController.refetch()
@@ -195,29 +195,20 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   const handleClickDialogClose = () => {
     props.onClose();
+    sideDialogController.reset()
   };
 
   const handleClickAdd = e => {
     e.preventDefault();
-
-  };
-
-  const selectedParcel = popupController.getValue('selectedParcel');
-
-  const calculateNetAcres = interest => {
-    const selectedParcel = popupController.getValue('selectedParcel');
-    if (!interest) return null;
-    const netAcres = addTrailingZeros(
-      selectedParcel?.sdGrossAcres ? (selectedParcel.sdGrossAcres * interest).toFixed(8) : null
-    );
-    return netAcres;
+    console.log('formValues', formValues)
+    console.log('formStateValues', formStateValues)
   };
 
   const classes = useStyles();
 
   return (
     <div className={classes.move}>
-      <RightDialog open handleClickDialogClose={props.onClose} width="700px">
+      <RightDialog open handleClickDialogClose={props.onClose} width="500px">
         <Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
           <Grid item md={10} xs={10}>
             <DialogTitle id="customized-dialog-title" style={{ fontWeight: 'bold' }}>
@@ -242,33 +233,39 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         <DialogContent className={classes.dialogContent}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              {!showAddNewContactFields && <h3 style={{ float: "left" }}>Name</h3>}
-              {!selectedRow && (<div className={showAddNewContactFields ? classes.addContactButtonSelected : classes.addContactButton} onClick={() => setShowAddNewContactFields(!showAddNewContactFields)}>
-                <PersonAddOutlinedIcon className={showAddNewContactFields ? classes.personAddIcon : null} />
+              {!formStateValues?.newOwner && <h3 style={{ float: "left" }}>Name</h3>}
+              {!selectedRow && (<div className={formStateValues?.newOwner ? classes.addContactButtonSelected : classes.addContactButton}
+                onClick={() => {
+                  sideDialogController.updateState({ newOwner: !formStateValues?.newOwner })
+                }}>
+                <PersonAddOutlinedIcon className={formStateValues?.newOwner ? classes.personAddIcon : null} />
                 <p>&nbsp;Add new</p>
               </div>)}
-              {!showAddNewContactFields &&
+              {!formStateValues?.newOwner &&
                 <AutocompEntityNamesVirtualizeList
                   mongoEntitiesArray={mongoEntitiesArray}
                   setMongoEntitiesArray={setMongoEntitiesArray}
-                  nameAutValue={nameAutValue}
-                  setNameAutValue={setNameAutValue}
+                  nameAutValue={formStateValues?.name}
+                  setNameAutValue={(contact) => {
+                    sideDialogController.updateState({ name: contact?.name, ownerEntity: contact?._id })
+                  }}
                   nameAutInputValue={nameAutInputValue}
                   setNameAutInputValue={setNameAutInputValue}
                   hasNextPage={hasNextPage}
                   isNextPageLoading={isNextPageLoading}
                   loadNextPage={loadNextPage}
-                  disabled={showAddNewContactFields}
+                  disabled={formStateValues?.newOwner}
                   placeholder={"Search existing contact"}
                   addNew
                   addNewOnClick={value => {
                     const contact = { name: value };
+                    sideDialogController.updateState({ name: value })
                     addContact({
                       variables: {
                         contact: {
                           ...contact,
-                          createBy: stateApp.user.mongoId,
-                          lastUpdateBy: stateApp.user.mongoId,
+                          createBy: getUser?._id,
+                          lastUpdateBy: getUser?._id,
                         },
                       },
                       refetchQueries: ['getPaginatedContacts', 'getContact'],
@@ -279,7 +276,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               }
             </Grid>
 
-            {showAddNewContactFields &&
+            {formStateValues?.newOwner &&
               <>
                 {contactSubForm({}).map((item, index) => (
                   <React.Fragment key={index}>
@@ -325,6 +322,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                             value={props?.value}
                             className={classes.maxWidth}
                             onChange={(values, id) => {
+                              sideDialogController.updateState({ [item.name]: values })
                               props.onChange(values);
                             }}
                             fullWidth
@@ -346,6 +344,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                             {...props}
                             className={classes.maxWidth}
                             onChange={(values, id) => {
+                              sideDialogController.updateState({ [item.name]: values })
                               props.onChange(values);
                             }}
                             value={props.value}
@@ -386,7 +385,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
           </Button>
           <Button
             className={classes.secondary}
-            disabled={((!nameAutValue || !nameAutValue.name || nameAutValue.name === '') && !showAddNewContactFields) ? true : false}
+            disabled={((!formStateValues?.name) && !formStateValues?.newOwner) ? true : false}
             onClick={handleClickAdd}
             color="secondary"
             style={{ marginBottom: '40px', marginRight: '20px' }}

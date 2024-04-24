@@ -9,7 +9,7 @@ const parcelOwnerForm = (contact) => {
   return [
     {
       label: "Entity Type",
-      name: "ownerType ",
+      name: "ownerType",
       defaultOptions: entityTypeOptions,
       renderField: "autoComplete",
       filterKey: "ownerType.keyword",
@@ -211,7 +211,7 @@ const parcelOwnerForm = (contact) => {
     // },
     {
       label: "QTR 1",
-      name: "qtr[0]",
+      name: "qtr1",
       renderField: "autoComplete",
       defaultOptions: [
         { label: 'E2', value: 'E2' },
@@ -226,7 +226,7 @@ const parcelOwnerForm = (contact) => {
     },
     {
       label: "QTR 2",
-      name: "qtr[1]",
+      name: "qtr2",
       renderField: "autoComplete",
       defaultOptions: [
         { label: 'E2', value: 'E2' },
@@ -241,7 +241,7 @@ const parcelOwnerForm = (contact) => {
     },
     {
       label: "QTR 3",
-      name: "qtr[2]",
+      name: "qtr3",
       renderField: "autoComplete",
       defaultOptions: [
         { label: 'E2', value: 'E2' },
@@ -256,7 +256,7 @@ const parcelOwnerForm = (contact) => {
     },
     {
       label: "QTR 4",
-      name: "qtr[3]",
+      name: "qtr4",
       renderField: "autoComplete",
       defaultOptions: [
         { label: 'E2', value: 'E2' },
