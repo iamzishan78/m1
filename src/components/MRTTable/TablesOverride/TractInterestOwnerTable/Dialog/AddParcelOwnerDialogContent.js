@@ -31,7 +31,6 @@ import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDe
 import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
 import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/AutoComplete';
 import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcelOwnerForm';
-import { sideDialogController } from 'hookstate/sideDialogController';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
@@ -92,51 +91,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const toNumber = value => (value ? parseInt(value.replace(/\$/g, '').replace(/\,/g, '')) : null);
 
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
-  const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
-  const calculateOfferPrice = (nra, offer) => {
-    return parseFloat((parseFloat(nra || 0) * parseFloat(offer || 0)).toFixed(2));
-  };
-  const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing } = props?.customLayer?.shapeJson?.properties;
+
   const [stateApp, setStateApp] = useContext(AppContext);
   const { control: contactSubFormControl, watch } = useForm();
   const { control: parcelOwnerFormControl } = useForm();
-  const [newOwner, setNewOwner] = useState({
-    surface_interest: null,
-    ownerType: null,
-    cost_bearing: null,
-    cost_bearing_high_value: null,
-    cost_free_high_value: null,
-    mineral_interest: null,
-    royalty_interest: null,
-    orri: null,
-    unknown_interest: null,
-    record_title: null,
-    operating_rights: null,
-    nri: null,
-    net_acres: null,
-    company_net_acres: null,
-    depthFrom: '',
-    depthTo: '',
-    nra: null,
-    qtr: [null, null, null, null],
-    customLayer: props.customLayerId,
-    deals: [],
-  });
 
-  const [isNraOverridden, setIsNRAOverridden] = useState(false);
-  const [leaseStatusList, setLeaseStatusList] = useState([]);
-  const [isAcresOverridden, setIsAcresOverridden] = useState(false);
-  const [isOfferPriceOverridden, setIsOfferPriceOverridden] = useState(false);
-  const [isMaxOfferPriceOverridden, setIsMaxOfferPriceOverridden] = useState(false);
-  const [isOfferPriceNMAOverridden, setIsOfferPriceNMAOverridden] = useState(false);
-  const [isMaxOfferPriceNMAOverridden, setIsMaxOfferPriceNMAOverridden] = useState(false);
-  const [parcelOwnersRadioBValue, setParcelOwnersRadioBValue] = useState('true');
+
   const [showAddNewContactFields, setShowAddNewContactFields] = useState(false);
-  const [statusOptions, setStatusOptions] = useState([]);
 
   const [nameAutValue, setNameAutValue] = useState({ name: '', _id: null });
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
@@ -148,121 +112,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
 
   const formValues = watch();
-
-  useEffect(() => {
-    if (selectedRow) {
-      const {
-        cost_bearing,
-        cost_bearing_high_value,
-        cost_free_high_value,
-        surface_interest,
-        ownerType,
-        mineral_interest,
-        royalty_interest,
-        orri,
-        unknown_interest,
-        record_title,
-        operating_rights,
-        nri,
-        depthFrom,
-        depthTo,
-        company_net_acres,
-        net_acres,
-        nra,
-        customLayer,
-        name,
-        ownerEntity,
-        qtr,
-        deals,
-        grossAcres,
-        max_offer_price,
-        offer_price,
-        offer_price_nma,
-        contact,
-        max_offer_price_nma,
-        nonExecRightsOnly,
-        leaseStatus,
-        campaignPriority,
-        campaignName,
-        seller_asking_price,
-        competitor_offer_price,
-        actual_offer_price
-
-      } = selectedRow;
-      setNameAutValue({ name, _id: ownerEntity });
-
-      setNewOwner({
-        surface_interest: surface_interest ? parseFloat(surface_interest).toFixed(8) : null,
-        ownershipType: ownerType || null,
-        cost_bearing: cost_bearing || null,
-        cost_bearing_high_value: toNumber(cost_bearing_high_value) || null,
-        cost_free_high_value: toNumber(cost_free_high_value) || null,
-        mineral_interest: mineral_interest ? parseFloat(mineral_interest).toFixed(8) : null,
-        royalty_interest: royalty_interest ? parseFloat(royalty_interest).toFixed(8) : null,
-        orri: orri ? parseFloat(orri).toFixed(8) : null,
-        seller_asking_price: seller_asking_price || null,
-        competitor_offer_price: competitor_offer_price || null,
-        actual_offer_price: actual_offer_price || null,
-        unknown_interest: unknown_interest || null,
-        record_title: record_title || null,
-        operating_rights: operating_rights || null,
-        nri: nri || null,
-        net_acres: net_acres || null,
-        company_net_acres: company_net_acres || null,
-        nra: nra || null,
-        depthFrom: depthFrom || '',
-        depthTo: depthTo || '',
-        qtr: qtr || [null, null, null, null],
-        nonExecRightsOnly,
-        leaseStatus,
-        customLayer,
-        campaignPriority,
-        campaignName,
-        deals,
-        status: contact?.status,
-        contactStatus: contact?.contactStatus,
-        max_offer_price: parseFloat(parseFloat(max_offer_price)?.toFixed(2)),
-        offer_price: parseFloat(parseFloat(offer_price)?.toFixed(2)),
-        offer_price_nma: parseFloat(parseFloat(offer_price_nma)?.toFixed(2)),
-        max_offer_price_nma: parseFloat(parseFloat(max_offer_price_nma)?.toFixed(2))
-      });
-
-      const calculatedNRA = calculateStandardNraForTract(
-        grossAcres,
-        mineral_interest,
-        royalty_interest,
-        orri,
-        workspaceSettings
-      );
-      if (!isNaN(parseFloat(calculatedNRA)))
-        setIsNRAOverridden(
-          !isNaN(parseFloat(nra)) && parseFloat(calculatedNRA) !== parseFloat(nra)
-        );
-
-      const calculatedAcres = calculateNetAcres(mineral_interest);
-      if (!isNaN(parseFloat(calculatedAcres)))
-        setIsAcresOverridden(
-          !isNaN(parseFloat(net_acres)) &&
-          parseFloat(calculatedAcres) !== parseFloat(net_acres)
-        );
-
-      if (depthTo === 'All depths' && depthFrom === 'All depths') setParcelOwnersRadioBValue('true');
-      else setParcelOwnersRadioBValue('false');
-
-      let calculatedOfferPrice = calculateOfferPrice(nra, uUnitPricing);
-      let calculatedMaxOfferPrice = calculateOfferPrice(nra, uMaxUnitPricing);
-      let calculatedOfferPriceNMA = calculateOfferPrice(net_acres, uUnitPricingNMA);
-      let calculatedMaxOfferPriceNMA = calculateOfferPrice(net_acres, uMaxUnitPricingNMA);
-      if (!isNaN(parseFloat(calculatedOfferPrice)))
-        setIsOfferPriceOverridden(calculatedOfferPrice !== parseFloat(parseFloat(offer_price).toFixed(2)) && !isNaN(parseFloat(offer_price)));
-      if (!isNaN(parseFloat(calculatedMaxOfferPrice)))
-        setIsMaxOfferPriceOverridden(calculatedMaxOfferPrice !== parseFloat(parseFloat(max_offer_price).toFixed(2)) && !isNaN(parseFloat(max_offer_price)));
-      if (!isNaN(parseFloat(calculatedOfferPriceNMA)))
-        setIsOfferPriceNMAOverridden(calculatedOfferPriceNMA !== parseFloat(parseFloat(offer_price_nma).toFixed(2)) && !isNaN(parseFloat(offer_price_nma)));
-      if (!isNaN(parseFloat(calculatedMaxOfferPriceNMA)))
-        setIsMaxOfferPriceNMAOverridden(calculatedMaxOfferPriceNMA !== parseFloat(parseFloat(max_offer_price_nma).toFixed(2)) && !isNaN(parseFloat(max_offer_price_nma)));
-    }
-  }, [selectedRow]);
 
   // CONTACT
 
@@ -344,106 +193,13 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     }
   }, [mutationData, updateData]);
 
-  const emptyStates = () => {
-    setNewOwner({
-      surface_interest: null,
-      ownershipType: null,
-      cost_bearing: null,
-      cost_bearing_high_value: null,
-      cost_free_high_value: null,
-      mineral_interest: null,
-      royalty_interest: null,
-      orri: null,
-      unknown_interest: null,
-      record_title: null,
-      operating_rights: null,
-      company_net_acres: null,
-      nri: null,
-      net_acres: null,
-      depthFrom: '',
-      depthTo: '',
-      nra: null,
-      qtr: [null, null, null, null],
-      customLayer: props.customLayerId,
-      deals: [],
-    });
-    setParcelOwnersRadioBValue('true');
-    setNameAutValue(null);
-    setNameAutInputValue('');
-    setSelectedRow && setSelectedRow(null);
-  };
-
   const handleClickDialogClose = () => {
     props.onClose();
-    emptyStates();
   };
 
   const handleClickAdd = e => {
     e.preventDefault();
-    if (nameAutValue) {
-      const ownerToAdd = { ...newOwner };
-      if (ownerToAdd.nra) {
-        ownerToAdd.nra = addTrailingZeros(parseFloat(ownerToAdd.nra).toFixed(8));
-      }
-      if (parcelOwnersRadioBValue === 'true') {
-        ownerToAdd.depthFrom = 'All depths';
-        ownerToAdd.depthTo = 'All depths';
-      }
 
-      if (nameAutValue._id && nameAutValue.name) {
-        // now that we are using descriptors we ONLY want the contact _id
-        ownerToAdd.ownerEntity = nameAutValue._id;
-        ownerToAdd.name = nameAutValue.name;
-      }
-
-      if (selectedRow) {
-        ownerToAdd._id = selectedRow._id;
-        updateParcelOwner({
-          variables: {
-            parcelOwner: {
-              ...ownerToAdd,
-              createBy: stateApp.user.mongoId,
-              lastUpdateBy: stateApp.user.mongoId,
-            },
-          },
-          refetchQueries: [
-            'getparcelOwners',
-            'getContactParcelInterests',
-            'getContactParcelInterest',
-            'getESSimpleSearch',
-            'getCustomLayer'
-          ],
-          awaitRefetchQueries: true,
-        });
-      } else {
-        const relatedObject = showAddNewContactFields ? {
-          ...ownerToAdd,
-          ...formValues,
-        } : (ownerToAdd?.ownerEntity._id || ownerToAdd?.ownerEntity);
-        addOwnerToAParcel({
-          variables: {
-            parcelOwner: {
-              newOwner: showAddNewContactFields,
-              ...ownerToAdd,
-              relatedObject,
-              createBy: stateApp.user.mongoId,
-              lastUpdateBy: stateApp.user.mongoId,
-            },
-          },
-          refetchQueries: [
-            'getCustomLayer',
-            // causing timing issue since getCustomLayer also calls this query
-            'getparcelOwners',
-            'getContactParcelInterests',
-            'getContactParcelInterest',
-            'getESSimpleSearch',
-          ],
-          awaitRefetchQueries: true,
-        });
-      }
-
-      setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
-    }
   };
 
   const selectedParcel = popupController.getValue('selectedParcel');
@@ -458,11 +214,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   };
 
   const classes = useStyles();
-
-  const tableState = sideDialogController.useCompleteState();
-  const tableStateValues = tableState?.get({ noproxy: true });
-
-  // console.log('tableStateValues', tableStateValues)
 
   return (
     <div className={classes.move}>

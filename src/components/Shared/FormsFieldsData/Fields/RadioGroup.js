@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Grid, Radio, RadioGroup, FormControlLabel } from '@mui/material';
+import { Grid, Radio, RadioGroup, FormControlLabel, TextField } from '@mui/material';
 import { Controller } from "react-hook-form";
 import { sideDialogController } from "hookstate/sideDialogController";
 
@@ -13,7 +13,6 @@ function RadioComponent({ control, item }) {
   const formState = sideDialogController.useState(['depthBoth'])
   const formStateValues = formState.stateValues
 
-  console.log('formStateValues', formStateValues?.depthBoth)
   return (
     <Grid item xs={12}>
       <h3>{label}</h3>
@@ -41,6 +40,51 @@ function RadioComponent({ control, item }) {
           </RadioGroup>
         )}
       />
+
+      {!!(formStateValues?.depthBoth === 'false') &&
+        <>
+          <Grid item xs={12}>
+            <h3>Depth From</h3>
+            <Controller
+              control={control}
+              name={"depthFrom"}
+              render={props => (
+                <TextField
+                  size="small"
+                  multiline
+                  value={props.value}
+                  fullWidth
+                  variant="standard"
+                  onChange={e => {
+                    props.onChange(e.target.value);
+                    sideDialogController.updateState({ [item.name]: e.target.value })
+                  }}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <h3>Depth To</h3>
+            <Controller
+              control={control}
+              name={"depthTo"}
+              render={props => (
+                <TextField
+                  size="small"
+                  multiline
+                  value={props.value}
+                  fullWidth
+                  variant="standard"
+                  onChange={e => {
+                    props.onChange(e.target.value);
+                    sideDialogController.updateState({ [item.name]: e.target.value })
+                  }}
+                />
+              )}
+            />
+          </Grid>
+        </>
+      }
     </Grid>
   );
 }
