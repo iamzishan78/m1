@@ -2,7 +2,7 @@ import { hookstate } from '@hookstate/core';
 import { copy } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
 
-const initialState = {
+export const initialState = {
   newOwner: false,
   surface_interest: null,
   ownerType: null,

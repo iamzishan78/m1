@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import { Grid } from '@material-ui/core';
-import get from 'lodash/get';
+import _ from "lodash";
 
 import { useMutation, useLazyQuery } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
@@ -30,7 +30,7 @@ import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelD
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
-import { sideDialogController } from 'hookstate/sideDialogController';
+import { sideDialogController, initialState } from 'hookstate/sideDialogController';
 import { globalStateController } from 'hookstate/globalStateController';
 
 const useStyles = makeStyles(theme => ({
@@ -100,7 +100,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const getUser = user.get({ noproxy: true });
 
   const { control: contactSubFormControl } = useForm();
-  const { control: parcelOwnerFormControl } = useForm();
+  const { control: parcelOwnerFormControl, reset } = useForm();
 
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutInputValue, NameAutInputValue] = useState('');
@@ -127,7 +127,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const [updateParcelOwner, { data: updateData }] = useMutation(UPDATEPARCELOWNER);
 
   useEffect(() => {
-    if (get(addContactData, 'addContact.contact')) {
+    if (_.get(addContactData, 'addContact.contact')) {
       const contact = {
         name: addContactData.addContact.contact.name,
         _id: addContactData.addContact.contact._id,
@@ -221,6 +221,17 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
     setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
   };
+
+  useEffect(() => {
+    if (selectedRow) {
+      const filteredSelectedRow = _.pick(selectedRow, Object.keys(initialState));
+      const rowData = _.merge({}, initialState, filteredSelectedRow);
+
+      (rowData?.depthFrom === "All depths" && rowData?.depthTo === "All depths") ? rowData.depthBoth = "true" : rowData.depthBoth = "false"
+      sideDialogController.updateState(rowData)
+      reset(rowData)
+    }
+  }, [selectedRow]);
 
   const classes = useStyles();
 
