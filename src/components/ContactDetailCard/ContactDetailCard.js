@@ -687,7 +687,7 @@ function ContactDetailCard(props) {
                       zip: contactData.zip,
                       country: contactData.country,
                     }}
-                    onlyChildren={false}
+                    onlyChildren={false} // add props inorder to show copy and edit options
                     disabled={false}
                   />
               </div>
