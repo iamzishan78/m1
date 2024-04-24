@@ -21,7 +21,7 @@ function PencilEditIcon({
     setEditContent
 }) {
     const classes = useStyles();
-    const [copied, setCopied] = useState(false);
+    const [copied, setCopied] = useState(false); // Add new state for updating copyicon tooltip value
 
     
     return (
@@ -30,7 +30,6 @@ function PencilEditIcon({
                 <Grid container spacing={0} style={{ width: "200px" }}>
                     <Grid className={classes.buttonsRow} item xs={12}>
                         <Button
-                            variant="contained"
                             size="small"
                             variant="outlined"
                             className={classes.popoverButton}
@@ -42,13 +41,12 @@ function PencilEditIcon({
                             {" "}
                         </Button>
                         <Button
-                            variant="contained"
                             size="small"
                             variant="outlined"
                             className={classes.popoverButton}
                             startIcon={<ClearSharpIcon />}
                             onClick={() => {
-                                setEditContent({ ...editContent})
+                                setEditContent({ ...editContent}) // reset content to default value on click of close icon 
                                 setAnchorEl(null);
                             }}
                         >
@@ -72,7 +70,7 @@ function PencilEditIcon({
                         onClick={(e) => {
                             setCopied(true);
                             onClick(e, true);
-                            setTimeout(() => {
+                            setTimeout(() => { // Show copied to user after copying the value
                                 setCopied(false);
                             }, 1500);
                         }}

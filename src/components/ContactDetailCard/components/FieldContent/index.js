@@ -198,7 +198,7 @@ export default function FieldContent({
   const onBlurHandler = (fieldNames) => {
     const fields = {};
     fieldNames.forEach(field => fields[field] = content[field]);
-    setEditContent({...editContent });
+    setEditContent({...editContent }); // show updated value in the popover
   }
 
 
