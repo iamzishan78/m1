@@ -201,7 +201,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     const qtr = [formStateValues?.qtr1 || null, formStateValues?.qtr2 || null, formStateValues?.qtr3 || null, formStateValues?.qtr4 || null]
     sideDialogController.updateState({ qtr: qtr, customLayer: props.customLayerId })
 
-    console.log('formStateValues', formStateValues)
     addOwnerToAParcel({
       variables: {
         parcelOwner: {

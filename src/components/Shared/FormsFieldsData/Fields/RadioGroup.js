@@ -57,7 +57,7 @@ function RadioComponent({ control, item }) {
                   variant="standard"
                   onChange={e => {
                     props.onChange(e.target.value);
-                    sideDialogController.updateState({ [item.name]: e.target.value })
+                    sideDialogController.updateState({ "depthFrom": e.target.value })
                   }}
                 />
               )}
@@ -77,7 +77,7 @@ function RadioComponent({ control, item }) {
                   variant="standard"
                   onChange={e => {
                     props.onChange(e.target.value);
-                    sideDialogController.updateState({ [item.name]: e.target.value })
+                    sideDialogController.updateState({ "depthTo": e.target.value })
                   }}
                 />
               )}
