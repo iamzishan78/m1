@@ -45,8 +45,6 @@ const initialState = {
   ownerEntity: null,
   name: null,
   relatedObject: null,
-  createBy: null,
-  lastUpdateBy: null
 };
 
 export const sideDialogState = hookstate(copy(initialState));

@@ -99,7 +99,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const { user } = globalStateController.useState(['user']);
   const getUser = user.get({ noproxy: true });
 
-  const { control: contactSubFormControl, watch } = useForm();
+  const { control: contactSubFormControl } = useForm();
   const { control: parcelOwnerFormControl } = useForm();
 
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
@@ -109,8 +109,6 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   };
   const [hasNextPage, setHasNextPage] = useState(true);
   const [isNextPageLoading, setIsNextPageLoading] = useState(false);
-
-  const formValues = watch();
 
   // CONTACT
 
@@ -134,7 +132,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         name: addContactData.addContact.contact.name,
         _id: addContactData.addContact.contact._id,
       }
-      sideDialogController.updateState({ name: contact?.name, ownerEntity: contact?._id })
+      sideDialogController.updateState({ name: contact?.name, ownerEntity: contact?._id, relatedObject: contact?._id })
     }
   }, [addContactData]);
 
@@ -200,15 +198,36 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   const handleClickAdd = e => {
     e.preventDefault();
-    console.log('formValues', formValues)
+    const qtr = [formStateValues?.qtr1 || null, formStateValues?.qtr2 || null, formStateValues?.qtr3 || null, formStateValues?.qtr4 || null]
+    sideDialogController.updateState({ qtr: qtr, customLayer: props.customLayerId })
+
     console.log('formStateValues', formStateValues)
+    addOwnerToAParcel({
+      variables: {
+        parcelOwner: {
+          ...formStateValues,
+          createBy: getUser?._id,
+          lastUpdateBy: getUser?._id,
+        },
+      },
+      refetchQueries: [
+        'getCustomLayer',
+        'getparcelOwners',
+        'getContactParcelInterests',
+        'getContactParcelInterest',
+        'getESSimpleSearch',
+      ],
+      awaitRefetchQueries: true,
+    });
+
+    setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
   };
 
   const classes = useStyles();
 
   return (
     <div className={classes.move}>
-      <RightDialog open handleClickDialogClose={props.onClose} width="500px">
+      <RightDialog open handleClickDialogClose={handleClickDialogClose} width="500px">
         <Grid container display="flex" direction="row" justifyContent="space-between" alignItems="center">
           <Grid item md={10} xs={10}>
             <DialogTitle id="customized-dialog-title" style={{ fontWeight: 'bold' }}>
@@ -220,11 +239,9 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               size="small"
               component="span"
               style={{
-                background: 'transparent',
-                align: 'center',
                 float: 'right',
               }}
-              onClick={props.onClose}
+              onClick={handleClickDialogClose}
             >
               <KeyboardTabBlackIcon />
             </IconButton>
@@ -247,7 +264,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   setMongoEntitiesArray={setMongoEntitiesArray}
                   nameAutValue={formStateValues?.name}
                   setNameAutValue={(contact) => {
-                    sideDialogController.updateState({ name: contact?.name, ownerEntity: contact?._id })
+                    sideDialogController.updateState({ name: contact?.name, ownerEntity: contact?._id, relatedObject: contact?._id })
                   }}
                   nameAutInputValue={nameAutInputValue}
                   setNameAutInputValue={setNameAutInputValue}
