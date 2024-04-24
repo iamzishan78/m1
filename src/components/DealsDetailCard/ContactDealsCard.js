@@ -7,6 +7,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import DealsDetailCard from "./DealsDetailCard";
 import { CONTACTDEALS } from "graphQL/useQueryContactDeals";
 import { CONTACT } from "graphQL/useQueryContact";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,7 +32,7 @@ export default function ContactDocumentsCard(props) {
   const [activeDeals, setActiveDeals] = useState([]);
   const [contactData, setContactData] = useState(null);
 
-  const contactId = history.location.pathname.split("/")[3];
+  const contactId = globalStateController.getValue('testCase')?.contactId || history.location.pathname.split("/")[3];
 
   const [getContact, { data }] = useLazyQuery(CONTACT);
   const [getContactDeals, { data: deals, loading }] = useLazyQuery(CONTACTDEALS, { fetchPolicy: "cache-and-network" });
