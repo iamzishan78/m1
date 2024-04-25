@@ -150,6 +150,7 @@ function MapGridCard(props) {
   const userGridViewFilters = useSelector(({ session }) => session.userGridViewSettings?.filters);
 
   const dispatch = useDispatch();
+  // Initialize state to hold sorted purchase data
   const [sortedPurchaseData, setSortedPurchaseData] = useState([]);
 
   useEffect(() => {
@@ -186,8 +187,9 @@ function MapGridCard(props) {
 
   useEffect(() => {
     if (props.purchaseData.length > 0) {
+      // Sort the purchase data by the system date time in descending order (latest first)
       const sortedPurchaseData = sortBy(props.purchaseData, (item) => moment(item.sysDateTime).valueOf()).reverse();
-      setSortedPurchaseData(sortedPurchaseData);
+      setSortedPurchaseData(sortedPurchaseData); // Update the state with the sorted purchase data
     }
 }, [props.purchaseData]);
 
