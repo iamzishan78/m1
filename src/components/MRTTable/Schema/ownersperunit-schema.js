@@ -1,3 +1,7 @@
+import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
+import FeatureFlag from 'components/MRTTable/Common/TableCells/FeatureFlagComponent';
+import { FEATURES } from 'components/Shared/FeatureFlag/common';
+import MonetizationOnIcon from '@material-ui/icons/LocalAtmOutlined';
 import vf_currency from 'components/Shared/valueformatters/vf_currency';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
@@ -87,9 +91,46 @@ const OwnersPerUnitMeta = {
 			isExport: 'name',
 			header: 'Owner Name',
 			Cell: ({ renderedCellValue, row }) => {
-				const isPurchased = row.getValue('contact.isPurchased');
-				return <NameCell renderedCellValue={renderedCellValue} isPurchased={isPurchased} />;
-			},
+				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
+				return (
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							alignItems: 'center',
+						}}
+					>
+						<p
+							style={{
+								display: 'flex',
+								flexDirection: 'row',
+								alignItems: 'center',
+								minWidth: '300px',
+								marginLeft: '10px',
+							}}
+						>
+							<ColumnWithLink
+								value={renderedCellValue}
+								link={`/contact/details/${row.getValue('ownerEntity')}`}
+								onClick={e => {
+									e.stopPropagation();
+								}}
+							/>
+							{isPurchased && (
+								<FeatureFlag feature={FEATURES.IDICORE}>
+									<MonetizationOnIcon
+										style={{
+											marginLeft: '10px',
+											color: "gray"
+										}}
+
+									/>
+								</FeatureFlag>
+							)}
+						</p>
+					</div>
+				)
+			}
 		},
 		{
 			...CommonSchema.COMMON_COLUMN,
