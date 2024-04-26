@@ -245,7 +245,7 @@ const SummarySection = ({ checkId }) => {
             aggs: { ownerTax: { sum: { field: "ownerTax" } } },
           },
           deductType: {
-            terms: { field: "deductType.keyword" },
+            terms: { field: "deductType.keyword", "size": 10000  },
             aggs: { ownerDeducts: { sum: { field: "ownerDeducts" } } },
           },
         },
