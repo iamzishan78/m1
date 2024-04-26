@@ -24,12 +24,7 @@ import { ADDOWNERTOAPARCEL } from 'graphQL/useMutationAddOwnerToAParcel';
 import { tableGlobalController } from 'hookstate/tableController';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/contactSubForm';
-import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
-import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/AutoComplete';
 import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcelOwnerForm';
-import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
-import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
-import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
 import { sideDialogController, initialState } from 'hookstate/sideDialogController';
 import { globalStateController } from 'hookstate/globalStateController';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
@@ -100,8 +95,21 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const { user } = globalStateController.useState(['user']);
   const getUser = user.get({ noproxy: true });
 
-  const { control: contactSubFormControl } = useForm();
-  const { control: parcelOwnerFormControl, reset } = useForm();
+  const {
+    control: contactSubFormControl,
+    reset: cotactOwnerFormRest,
+    getValues: cotactOwnerGetValues,
+    setValue: cotactOwnerSetValue,
+    watch: cotactsOwnerWatch
+  } = useForm();
+
+  const {
+    control: parcelOwnerFormControl,
+    reset: parcelOwnerFormRest,
+    getValues: parcelOwnerGetValues,
+    setValue: parcelOwnerSetValue,
+    watch: parcelOwnerWatch
+  } = useForm();
 
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutInputValue, NameAutInputValue] = useState('');
@@ -202,25 +210,25 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     const qtr = [formStateValues?.qtr1 || null, formStateValues?.qtr2 || null, formStateValues?.qtr3 || null, formStateValues?.qtr4 || null]
     sideDialogController.updateState({ qtr: qtr, customLayer: props.customLayerId })
 
-    addOwnerToAParcel({
-      variables: {
-        parcelOwner: {
-          ...formStateValues,
-          createBy: getUser?._id,
-          lastUpdateBy: getUser?._id,
-        },
-      },
-      refetchQueries: [
-        'getCustomLayer',
-        'getparcelOwners',
-        'getContactParcelInterests',
-        'getContactParcelInterest',
-        'getESSimpleSearch',
-      ],
-      awaitRefetchQueries: true,
-    });
+    // addOwnerToAParcel({
+    //   variables: {
+    //     parcelOwner: {
+    //       ...formStateValues,
+    //       createBy: getUser?._id,
+    //       lastUpdateBy: getUser?._id,
+    //     },
+    //   },
+    //   refetchQueries: [
+    //     'getCustomLayer',
+    //     'getparcelOwners',
+    //     'getContactParcelInterests',
+    //     'getContactParcelInterest',
+    //     'getESSimpleSearch',
+    //   ],
+    //   awaitRefetchQueries: true,
+    // });
 
-    setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
+    // setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
   };
 
   useEffect(() => {
@@ -230,7 +238,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
       (rowData?.depthFrom === "All depths" && rowData?.depthTo === "All depths") ? rowData.depthBoth = "true" : rowData.depthBoth = "false"
       sideDialogController.updateState(rowData)
-      reset(rowData)
+      parcelOwnerFormRest(rowData)
     }
   }, [selectedRow]);
 
@@ -305,10 +313,26 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             </Grid>
 
             {formStateValues?.newOwner &&
-              <CommonForm FormJson={contactSubForm} selectedRow={selectedRow} />
+              <CommonForm
+                FormJson={contactSubForm}
+                selectedRow={selectedRow}
+                control={contactSubFormControl}
+                reset={cotactOwnerFormRest}
+                getValues={cotactOwnerGetValues}
+                setValue={cotactOwnerSetValue}
+                watch={cotactsOwnerWatch}
+              />
             }
 
-            <CommonForm FormJson={parcelOwnerForm} selectedRow={selectedRow} />
+            <CommonForm
+              FormJson={parcelOwnerForm}
+              selectedRow={selectedRow}
+              control={parcelOwnerFormControl}
+              reset={parcelOwnerFormRest}
+              getValues={parcelOwnerGetValues}
+              setValue={parcelOwnerSetValue}
+              watch={parcelOwnerWatch}
+            />
 
           </Grid>
         </DialogContent>

@@ -1,26 +1,14 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import TextFieldComponent from 'components/Shared/FormsFieldsData/Fields/TextField';
 import AutoCompleteComponent from 'components/Shared/FormsFieldsData/Fields/AutoComplete';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
 import AssociatedDealField from 'components/ContactDetailCard/components/FieldContent/AssociatedDealField';
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
-import { sideDialogController, initialState } from 'hookstate/sideDialogController';
-import { Controller, useForm } from 'react-hook-form';
+import { sideDialogController } from 'hookstate/sideDialogController';
+import { Controller } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 
-function CommonForm({ FormJson, selectedRow = {} }) {
-  const { control, reset, getValues, setValue, watch, ...r } = useForm();
-
-  useEffect(() => {
-    if (selectedRow) {
-      const filteredSelectedRow = _.pick(selectedRow, Object.keys(initialState));
-      const rowData = _.merge({}, initialState, filteredSelectedRow);
-
-      (rowData?.depthFrom === "All depths" && rowData?.depthTo === "All depths") ? rowData.depthBoth = "true" : rowData.depthBoth = "false"
-      sideDialogController.updateState(rowData)
-      reset(rowData)
-    }
-  }, [selectedRow]);
+function CommonForm({ FormJson, selectedRow = {}, control, reset, getValues, setValue, watch }) {
 
   return (
     <>

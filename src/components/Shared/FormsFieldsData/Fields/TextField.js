@@ -33,11 +33,11 @@ function TextFieldComponent({ control, item, watch }) {
     isValueOverridden,
   } = item || {};
 
-  const watchTextField = watch(name)
+  const watchTextFieldValue = watch(name)
 
   useEffect(() => {
-    if (isValueOverridden) setbaseValueChanged(isValueOverridden(name))
-  }, [watchTextField])
+    if (isValueOverridden) setbaseValueChanged(isValueOverridden(watchTextFieldValue))
+  }, [watchTextFieldValue])
 
   return (
     <Grid item xs={12}>

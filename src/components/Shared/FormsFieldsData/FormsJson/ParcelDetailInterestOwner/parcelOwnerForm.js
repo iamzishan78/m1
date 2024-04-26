@@ -65,9 +65,8 @@ const parcelOwnerForm = (getValues, setValue) => {
       claculateOverriddenValue: (value) => {
 
       },
-      isValueOverridden: (keyName) => {
-        const { mineral_interest, ...rest } = getValues()
-        const value = rest[keyName];
+      isValueOverridden: (value) => {
+        const { mineral_interest, } = getValues()
 
         if (!value) return
         const netAcres = calculateNetAcres(mineral_interest);
