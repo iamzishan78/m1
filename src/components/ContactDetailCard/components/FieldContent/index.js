@@ -199,6 +199,8 @@ export default function FieldContent({
     const fields = {};
     fieldNames.forEach(field => fields[field] = content[field]);
 
+    if (Object.keys(editContent || {})?.length > 1) return;
+
     setEdit(null);
     setEditContent({ ...fields });
   }
@@ -423,6 +425,7 @@ export default function FieldContent({
             <TextField
               key={"fieldContentInput" + fieldName}
               id={"fieldContentInput" + fieldName}
+              data-testid={fieldName}
               className={classes.editTextField}
               variant="outlined"
               size="small"
@@ -507,7 +510,11 @@ export default function FieldContent({
 
   return (
     <React.Fragment>
-      <p className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP}`} style={{ width: "100%" }}>
+      <p
+        className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP}`}
+        style={{ width: "100%" }}
+        data-testid={name}
+      >
         {(linkType === LinkTypes.Mail || linkType === LinkTypes.Simple) && textArray.length > 0 ? (
           <a href={getHrefValue(textArray.join(", "), linkType)} target="_blank" className={classes.noTextDecoration} rel="noreferrer">
             {renderOutput}

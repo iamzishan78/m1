@@ -436,7 +436,7 @@ function ContactDetailCard(props) {
 
   let history = useHistory();
   const pathName = history.location.pathname;
-  const contactId = pathName.split("contact/details/")[1].replace("/", "");
+  const contactId = pathName.split("contact/details/")[1]?.replace("/", "") || props.contactId;
   const shrinkRightColumn = useSelector(({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn);
   const classes = useStyles({ ...props, shrinkRightColumn });
   const [openDialog, setOpenDialog] = useState(false);
