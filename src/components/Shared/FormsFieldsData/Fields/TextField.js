@@ -53,7 +53,9 @@ function TextFieldComponent({ control, item, watch }) {
             value={props.value}
             inputRef={props.ref}
             onWheel={e => e.target.blur()}
-            onChange={props.onChange}
+            onChange={(e) => {
+              props.onChange(e.target.value)
+            }}
             sx={baseValueChanged ? classes.baseValueChanged : classes.maxWidth}
             InputProps={{
               ...InputProps

@@ -210,6 +210,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     const qtr = [formStateValues?.qtr1 || null, formStateValues?.qtr2 || null, formStateValues?.qtr3 || null, formStateValues?.qtr4 || null]
     sideDialogController.updateState({ qtr: qtr, customLayer: props.customLayerId })
 
+    console.log('parcelOwnerGetValues', parcelOwnerGetValues())
     // addOwnerToAParcel({
     //   variables: {
     //     parcelOwner: {
@@ -296,6 +297,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   addNewOnClick={value => {
                     const contact = { name: value };
                     sideDialogController.updateState({ name: value })
+                    parcelOwnerSetValue('name', value)
                     addContact({
                       variables: {
                         contact: {

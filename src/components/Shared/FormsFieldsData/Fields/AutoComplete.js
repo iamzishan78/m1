@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { Grid, TextField, Autocomplete } from '@mui/material';
 import { Controller } from "react-hook-form";
-import { sideDialogController } from "hookstate/sideDialogController";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { useLazyQuery } from "@apollo/client";
 
@@ -71,8 +70,7 @@ function AutoCompleteComponent({ control, item }) {
             getOptionSelected={(option, value) => option.value === value}
             value={props.value}
             onChange={(e, option) => {
-              sideDialogController.updateState({ [item.name]: option ? option?.value : null })
-              props.onChange(e)
+              props.onChange(option ? option?.value : null)
 
             }}
             renderInput={params => (
