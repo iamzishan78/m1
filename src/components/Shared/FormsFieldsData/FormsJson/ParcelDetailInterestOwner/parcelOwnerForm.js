@@ -4,8 +4,21 @@ import AutorenewIcon from '@material-ui/icons/Autorenew';
 import { CurrencyFormatCustom } from 'components/Shared/Forms/Formatting/CurrencyFormatCustom';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
+import { popupController } from 'hookstate/popupStateController';
+import { addTrailingZeros } from 'components/Shared/functions';
+import { sideDialogController } from "hookstate/sideDialogController"
 
-const parcelOwnerForm = (contact) => {
+const calculateNetAcres = interest => {
+  const selectedParcel = popupController.getValue('selectedParcel');
+  if (!interest) return null;
+  const netAcres = addTrailingZeros(
+    selectedParcel?.sdGrossAcres ? (selectedParcel.sdGrossAcres * interest).toFixed(8) : null
+  );
+  return netAcres;
+};
+
+const parcelOwnerForm = (getValues, setValue) => {
+
   return [
     {
       label: "Entity Type",
@@ -49,14 +62,29 @@ const parcelOwnerForm = (contact) => {
     {
       label: "Net Acres",
       name: "net_acres",
+      claculateOverriddenValue: (value) => {
+
+      },
+      isValueOverridden: (keyName) => {
+        const { mineral_interest, ...rest } = getValues()
+        const value = rest[keyName];
+
+        if (!value) return
+        const netAcres = calculateNetAcres(mineral_interest);
+        const isOverride = parseFloat(netAcres) !== parseFloat(value)
+        sideDialogController.updateState({ 'showNetAcresRecalculate': isOverride })
+        return isOverride
+      },
       InputProps: {
         endAdornment: (
           <InputAdornment position="end">
-            {true && (
+            {!!sideDialogController.getValue('showNetAcresRecalculate') && (
               <IconButton
                 aria-label="toggle offer_price_nma"
                 onClick={() => {
-                  console.log('recalculate')
+                  const { mineral_interest } = getValues()
+                  const netAcres = calculateNetAcres(mineral_interest);
+                  setValue('net_acres', netAcres)
                 }}
               >
                 <AutorenewIcon />

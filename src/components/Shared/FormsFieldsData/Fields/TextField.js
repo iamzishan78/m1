@@ -1,9 +1,8 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Grid, TextField } from '@mui/material';
 
 import { Controller } from "react-hook-form";
-import { sideDialogController } from "hookstate/sideDialogController"
 
 const classes = {
   maxWidth: {
@@ -18,8 +17,8 @@ const classes = {
   },
 };
 
-function TextFieldComponent({ control, item }) {
-
+function TextFieldComponent({ control, item, watch }) {
+  const [baseValueChanged, setbaseValueChanged] = useState(false)
   const {
     // field props
     name,
@@ -30,8 +29,15 @@ function TextFieldComponent({ control, item }) {
     fullWidth = true,
     defaultValue = null,
     multiline = false,
-    variant = "standard"
+    variant = "standard",
+    isValueOverridden,
   } = item || {};
+
+  const watchTextField = watch(name)
+
+  useEffect(() => {
+    if (isValueOverridden) setbaseValueChanged(isValueOverridden(name))
+  }, [watchTextField])
 
   return (
     <Grid item xs={12}>
@@ -47,13 +53,8 @@ function TextFieldComponent({ control, item }) {
             value={props.value}
             inputRef={props.ref}
             onWheel={e => e.target.blur()}
-            onChange={e => {
-
-              sideDialogController.updateState({ [item.name]: e.target.value })
-              props.onChange(e.target.value)
-
-            }}
-            sx={true ? classes.baseValueChanged : classes.maxWidth}
+            onChange={props.onChange}
+            sx={baseValueChanged ? classes.baseValueChanged : classes.maxWidth}
             InputProps={{
               ...InputProps
             }}

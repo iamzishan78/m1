@@ -9,7 +9,7 @@ import { Controller, useForm } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 
 function CommonForm({ FormJson, selectedRow = {} }) {
-  const { control, reset } = useForm();
+  const { control, reset, getValues, setValue, watch, ...r } = useForm();
 
   useEffect(() => {
     if (selectedRow) {
@@ -24,7 +24,7 @@ function CommonForm({ FormJson, selectedRow = {} }) {
 
   return (
     <>
-      {FormJson(selectedRow).map((item, index) => (
+      {FormJson(getValues, setValue).map((item, index) => (
         <React.Fragment key={index}>
           {
             item.renderField === "autoComplete" ? (
@@ -88,6 +88,7 @@ function CommonForm({ FormJson, selectedRow = {} }) {
                 key={index}
                 item={item}
                 control={control}
+                watch={watch}
               />
             )
           }

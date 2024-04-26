@@ -5,7 +5,6 @@ import { Controller } from "react-hook-form";
 import { sideDialogController } from "hookstate/sideDialogController";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { useLazyQuery } from "@apollo/client";
-import { ConnectingAirportsOutlined } from "@mui/icons-material";
 
 function AutoCompleteComponent({ control, item }) {
   const {
