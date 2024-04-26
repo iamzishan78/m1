@@ -313,7 +313,7 @@ const parcelOwnerForm = (contact) => {
     {
       label: "Depth Restrictions",
       name: "depthBoth",
-      renderField: "depth_restrictions",
+      renderField: "radioButton",
       options: [
         { value: "true", label: "All Depths" },
         { value: "false", label: "Footages/Formations" },

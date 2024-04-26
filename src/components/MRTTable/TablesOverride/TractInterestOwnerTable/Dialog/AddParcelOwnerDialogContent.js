@@ -32,6 +32,7 @@ import AssociatedDealField from 'components/ContactDetailCard/components/FieldCo
 import RadioGroup from 'components/Shared/FormsFieldsData/Fields/RadioGroup';
 import { sideDialogController, initialState } from 'hookstate/sideDialogController';
 import { globalStateController } from 'hookstate/globalStateController';
+import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 
 const useStyles = makeStyles(theme => ({
   maxWidth: {
@@ -304,100 +305,10 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             </Grid>
 
             {formStateValues?.newOwner &&
-              <>
-                {contactSubForm({}).map((item, index) => (
-                  <React.Fragment key={index}>
-                    {
-                      item.renderField === "autoComplete" ? (
-                        <AutoCompleteComponent
-                          key={index}
-                          item={item}
-                          control={contactSubFormControl}
-                        />
-                      ) : (
-                        <TextFieldComponent
-                          key={index}
-                          item={item}
-                          control={contactSubFormControl}
-                        />
-                      )
-                    }
-                  </React.Fragment>
-                ))}
-              </>
+              <CommonForm FormJson={contactSubForm} selectedRow={selectedRow} />
             }
 
-            {parcelOwnerForm({}).map((item, index) => (
-              <React.Fragment key={index}>
-                {
-                  item.renderField === "autoComplete" ? (
-                    <AutoCompleteComponent
-                      key={index}
-                      item={item}
-                      control={parcelOwnerFormControl}
-                    />
-                  ) : item.renderField === "campaignName" ? (
-                    <Grid item xs={12}>
-                      <h3>{item.label}</h3>
-
-                      <Controller
-                        control={parcelOwnerFormControl}
-                        name={item.name}
-                        render={props => (
-                          <CampaignNameField
-                            {...props}
-                            value={props?.value}
-                            className={classes.maxWidth}
-                            onChange={(values, id) => {
-                              sideDialogController.updateState({ [item.name]: values })
-                              props.onChange(values);
-                            }}
-                            fullWidth
-                            targetLabel="Contact"
-                            simpleChips
-                          />
-                        )}
-                      />
-                    </Grid>
-                  ) : item.renderField === "associatedDeals" ? (
-                    <Grid item xs={12}>
-                      <h3>{item.label}</h3>
-
-                      <Controller
-                        control={parcelOwnerFormControl}
-                        name={item.name}
-                        render={props => (
-                          <AssociatedDealField
-                            {...props}
-                            className={classes.maxWidth}
-                            onChange={(values, id) => {
-                              sideDialogController.updateState({ [item.name]: values })
-                              props.onChange(values);
-                            }}
-                            value={props.value}
-                            fullWidth
-                            targetLabel="Contact"
-                            simpleChips
-                          />
-                        )}
-                      />
-                    </Grid>
-                  ) : item.renderField === "depth_restrictions" ? (
-                    <RadioGroup
-                      key={index}
-                      item={item}
-                      control={parcelOwnerFormControl}
-                    />
-                  ) : (
-                    <TextFieldComponent
-                      key={index}
-                      item={item}
-                      control={parcelOwnerFormControl}
-                    />
-                  )
-                }
-              </React.Fragment>
-            ))}
+            <CommonForm FormJson={parcelOwnerForm} selectedRow={selectedRow} />
 
           </Grid>
         </DialogContent>
