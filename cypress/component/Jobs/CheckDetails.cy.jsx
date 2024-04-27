@@ -64,7 +64,7 @@ describe('BulkUpload Component Check Details Uplaod', () => {
         variables: {
           sourceId,
           purchaserName: 'Cypress Test Upload',
-          propertyNames: ['1397122.1', '1397122.2'],
+          propertyNames: ['Test Property 1', 'Test Property 2'],
           propertyNumbers: ['1397122.1', '1397122.2'],
           propertyCount: 2,
           checkCount: 1,
