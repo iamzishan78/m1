@@ -156,16 +156,16 @@
   },
   "scripts": {
     "legacy-start": "react-scripts --openssl-legacy-provider start",
-    "start": "export NODE_OPTIONS=\"--max_old_space_size=32768 --openssl-legacy-provider\"; craco start",
+    "start": "cross-env NODE_OPTIONS=\"--max_old_space_size=32768 --openssl-legacy-provider\" craco start",
     "cypress:start": "cross-env CYPRESS=true yarn start",
     "legacy-build": "react-scripts build",
-    "build": "export NODE_OPTIONS=\"--max_old_space_size=32768 --openssl-legacy-provider\"; craco build",
+    "build": "cross-env NODE_OPTIONS=\"--max_old_space_size=32768 --openssl-legacy-provider\" craco build",
     "legacy-test": "react-scripts --openssl-legacy-provider test",
-    "test": "export NODE_OPTIONS=\"--max_old_space_size=32768 --openssl-legacy-provider\"; craco test",
+    "test": "cross-env NODE_OPTIONS=\"--max_old_space_size=32768 --openssl-legacy-provider\" craco test",
     "eject": "react-scripts --openssl-legacy-provider eject",
-    "cy:component": "export NODE_OPTIONS=\"--max_old_space_size=32768 --openssl-legacy-provider\"; cypress run --component --browser chrome",
+    "cy:component": "cross-env NODE_OPTIONS=\"--max_old_space_size=32768 --openssl-legacy-provider\" cypress run --component --browser chrome",
     "ci:cy-login": "cross-env START_SERVER_AND_TEST_INSECURE=1 start-server-and-test cypress:start http://localhost:3000 \"cypress run --spec 'cypress/e2e/login.cy.js' --browser chrome\"",
-    "cy:open": "yarn run ci:cy-login && export NODE_OPTIONS=\"--max_old_space_size=32768 --openssl-legacy-provider\"; cypress open",
+    "cy:open": "yarn run ci:cy-login && cross-env NODE_OPTIONS=\"--max_old_space_size=32768 --openssl-legacy-provider\" cypress open",
     "ci:cy-login-component": "yarn ci:cy-login && yarn cy:component"
   },
   "eslintConfig": {
