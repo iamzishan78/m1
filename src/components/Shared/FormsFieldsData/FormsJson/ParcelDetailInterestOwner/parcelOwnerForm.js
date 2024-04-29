@@ -244,15 +244,28 @@ const parcelOwnerForm = (getValues, setValue) => {
     {
       label: "Target Offer Price (per NRA)",
       name: "offer_price",
+      isValueOverridden: (value) => {
+        const { nra } = getValues()
+
+        const uUnitPricing = sideDialogController.getValue('uUnitPricing')
+
+        const calculatedOfferPrice = calculateOfferPrice(nra, uUnitPricing);
+        const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
+        sideDialogController.updateState({ 'showTargetOfferRecalculate': isOverride })
+        return isOverride
+      },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
         endAdornment: (
           <InputAdornment position="end">
-            {true && (
+            {!!sideDialogController.getValue('showTargetOfferRecalculate') && (
               <IconButton
                 aria-label="toggle offer_price_nma"
                 onClick={() => {
-                  console.log('recalculate')
+                  const { nra } = getValues()
+
+                  const uUnitPricing = sideDialogController.getValue('uUnitPricing')
+                  setValue('offer_price', calculateOfferPrice(nra, uUnitPricing))
                 }}
               >
                 <AutorenewIcon />
@@ -265,15 +278,26 @@ const parcelOwnerForm = (getValues, setValue) => {
     {
       label: "Max Offer Price (per NRA)",
       name: "max_offer_price",
+      isValueOverridden: (value) => {
+        const { nra } = getValues()
+
+        const uMaxUnitPricing = sideDialogController.getValue('uMaxUnitPricing')
+
+        const calculatedOfferPrice = calculateOfferPrice(nra, uMaxUnitPricing);
+        const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
+        sideDialogController.updateState({ 'showMaxOfferRecalculate': isOverride })
+        return isOverride
+      },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
         endAdornment: (
           <InputAdornment position="end">
-            {true && (
+            {!!sideDialogController.getValue('showMaxOfferRecalculate') && (
               <IconButton
                 aria-label="toggle offer_price_nma"
                 onClick={() => {
-                  console.log('recalculate')
+                  const uMaxUnitPricing = sideDialogController.getValue('uMaxUnitPricing')
+                  setValue('max_offer_price', calculateOfferPrice(nra, uMaxUnitPricing))
                 }}
               >
                 <AutorenewIcon />
