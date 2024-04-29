@@ -196,12 +196,17 @@ export default function FieldContent({
   }
 
   const onBlurHandler = (fieldNames) => {
-    const fields = {};
+    const fields = {}; // Initialize an empty object to store field values
+
+    // Iterate over fieldNames and assign corresponding values from content object
     fieldNames.forEach(field => fields[field] = content[field]);
 
+    // Check if editContent exists and has more than one property, return if true
+    // if editContent has more than one property we don't need to close popup on blur
     if (Object.keys(editContent || {})?.length > 1) return;
 
-    setEdit(null);
+    // Reset edit state and update editContent with field values
+    setEdit(null); // It closes popup on blur
     setEditContent({ ...fields });
   }
 
