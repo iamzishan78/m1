@@ -894,7 +894,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           if (feature.geometry.type == "Point") {
             output = feature;
           } else {
-            output = { ...turf.centroid(feature), properties: feature.properties };
+            try {
+              output = { ...turf.centroid(feature), properties: feature.properties };
+            } catch (e) {
+              output = null;
+            }
           }
 
           return output;

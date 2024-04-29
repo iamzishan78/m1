@@ -1,4 +1,4 @@
-import * as msal2 from "@azure/msal";
+import * as msal2 from "msal";
 
 const B2CTenants = JSON.parse(
   process.env.REACT_APP_TENANS_B2C_CREDENTIALS

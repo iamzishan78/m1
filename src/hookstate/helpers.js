@@ -120,6 +120,13 @@ export const handleMRTSchema = ({
       };
 
       schemaColumn.MultiSelect = function Comp({ column }) {
+        const getValue = () => {
+            const selectedValues = column?.getFilterValue() || [];
+            const selectedLabels = column.columnDef.filterSelectOptions
+              .filter(option => selectedValues.includes(option.value))
+              .map(option => option.label);
+              return selectedLabels
+        }
         return (
           <div>
             <ESAutoCompleteFilter
@@ -130,7 +137,8 @@ export const handleMRTSchema = ({
                 label: column.columnDef.header,
                 type: column.columnDef.type,
                 setFilterValue: column.setFilterValue,
-                filterValue: column?.getFilterValue() || [],
+                filterSelectOptions: column.columnDef.filterSelectOptions,
+                filterValue: (column.columnDef.filterSelectOptions ? getValue() : column?.getFilterValue() || []),
               }}
               multiple
             />
