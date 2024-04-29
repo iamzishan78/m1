@@ -31,6 +31,8 @@ function TextFieldComponent({ control, item, watch }) {
     multiline = false,
     variant = "standard",
     isValueOverridden,
+    onBlur,
+    onChange
   } = item || {};
 
   const watchTextFieldValue = watch(name)
@@ -54,7 +56,12 @@ function TextFieldComponent({ control, item, watch }) {
             inputRef={props.ref}
             onWheel={e => e.target.blur()}
             onChange={(e) => {
-              props.onChange(e.target.value)
+              onChange ? onChange(e.target.value) : props.onChange(e.target.value)
+            }}
+            onBlur={e => {
+              let value = e.target.value || 0
+              if (onBlur) value = onBlur(value)
+              props.onChange(value)
             }}
             sx={baseValueChanged ? classes.baseValueChanged : classes.maxWidth}
             InputProps={{

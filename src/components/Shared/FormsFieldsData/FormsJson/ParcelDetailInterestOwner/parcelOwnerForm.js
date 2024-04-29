@@ -7,6 +7,7 @@ import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
 import { popupController } from 'hookstate/popupStateController';
 import { addTrailingZeros } from 'components/Shared/functions';
 import { sideDialogController } from "hookstate/sideDialogController"
+import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
 
 const calculateNetAcres = interest => {
   const selectedParcel = popupController.getValue('selectedParcel');
@@ -15,6 +16,10 @@ const calculateNetAcres = interest => {
     selectedParcel?.sdGrossAcres ? (selectedParcel.sdGrossAcres * interest).toFixed(8) : null
   );
   return netAcres;
+};
+
+const calculateOfferPrice = (nra, offer) => {
+  return parseFloat((parseFloat(nra || 0) * parseFloat(offer || 0)).toFixed(2));
 };
 
 const parcelOwnerForm = (getValues, setValue) => {
@@ -32,11 +37,17 @@ const parcelOwnerForm = (getValues, setValue) => {
       label: "Surface Interest",
       name: "surface_interest",
       type: "number",
+      onBlur: (value) => {
+        return parseFloat(value).toFixed(8)
+      },
     },
     {
       label: "Mineral Interest",
       name: "mineral_interest",
       type: "number",
+      onBlur: (value) => {
+        return parseFloat(value).toFixed(8)
+      },
     },
     {
       label: "Non-Exec Rights Only",
@@ -48,11 +59,17 @@ const parcelOwnerForm = (getValues, setValue) => {
       label: "Royalty Interest (Lease)",
       name: "royalty_interest",
       type: "number",
+      onBlur: (value) => {
+        return parseFloat(value).toFixed(8)
+      },
     },
     {
       label: "Overriding Royalty Interest (ORRI)",
       name: "orri",
       type: "number",
+      onBlur: (value) => {
+        return parseFloat(value).toFixed(8)
+      },
     },
     {
       label: "Working Interest",
@@ -71,6 +88,20 @@ const parcelOwnerForm = (getValues, setValue) => {
         sideDialogController.updateState({ 'showNetAcresRecalculate': isOverride })
         return isOverride
       },
+      onChange: (value) => {
+        const { mineral_interest, nra, royalty_interest, orri } = getValues()
+        const selectedParcel = popupController.getValue('selectedParcel');
+        const workspaceSettings = sideDialogController.getValue('workspaceSettings')
+        const uUnitPricingNMA = sideDialogController.getValue('uUnitPricingNMA')
+        const uMaxUnitPricingNMA = sideDialogController.getValue('uMaxUnitPricingNMA')
+        setValue('net_acres', value)
+        if (!nra) {
+          const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
+          setValue('nra', calculatedNra)
+        }
+        setValue('offer_price_nma', calculateOfferPrice(value, uUnitPricingNMA))
+        setValue('max_offer_price_nma', calculateOfferPrice(value, uMaxUnitPricingNMA))
+      },
       InputProps: {
         endAdornment: (
           <InputAdornment position="end">
@@ -78,9 +109,19 @@ const parcelOwnerForm = (getValues, setValue) => {
               <IconButton
                 aria-label="toggle offer_price_nma"
                 onClick={() => {
-                  const { mineral_interest } = getValues()
+                  const selectedParcel = popupController.getValue('selectedParcel');
+                  const workspaceSettings = sideDialogController.getValue('workspaceSettings')
+                  const uUnitPricingNMA = sideDialogController.getValue('uUnitPricingNMA')
+                  const uMaxUnitPricingNMA = sideDialogController.getValue('uMaxUnitPricingNMA')
+                  const { mineral_interest, nra, royalty_interest, orri } = getValues()
                   const netAcres = calculateNetAcres(mineral_interest);
                   setValue('net_acres', netAcres)
+                  if (!nra) {
+                    const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
+                    setValue('nra', calculatedNra)
+                  }
+                  setValue('offer_price_nma', calculateOfferPrice(netAcres, uUnitPricingNMA))
+                  setValue('max_offer_price_nma', calculateOfferPrice(netAcres, uMaxUnitPricingNMA))
                 }}
               >
                 <AutorenewIcon />

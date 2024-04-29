@@ -10,9 +10,9 @@ import _ from "lodash";
 
 import { useMutation, useLazyQuery } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
 import { setStateIfDeepEqual } from 'components/Shared/functions';
 import { PAGINATEDCONTACTSQUERY } from 'graphQL/useQueryPaginatedContacts';
@@ -88,6 +88,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
+  const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
 
   const formState = sideDialogController.useCompleteState()
   const formStateValues = formState?.get({ noproxy: true });
@@ -200,6 +201,21 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     }
   }, [mutationData, updateData]);
 
+  useEffect(() => {
+    const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing } = props?.customLayer?.shapeJson?.properties;
+    sideDialogController.updateState({
+      uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing
+    })
+
+  }, [props?.customLayer?.shapeJson?.properties])
+
+  useEffect(() => {
+    sideDialogController.updateState({
+      workspaceSettings
+    })
+  }, [workspaceSettings])
+
+
   const handleClickDialogClose = () => {
     props.onClose();
     sideDialogController.reset()
@@ -207,29 +223,33 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   const handleClickAdd = e => {
     e.preventDefault();
-    const qtr = [formStateValues?.qtr1 || null, formStateValues?.qtr2 || null, formStateValues?.qtr3 || null, formStateValues?.qtr4 || null]
-    sideDialogController.updateState({ qtr: qtr, customLayer: props.customLayerId })
+    const parcelOwnerFormValue = parcelOwnerGetValues();
+    const qtr = [parcelOwnerFormValue?.qtr1 || null, parcelOwnerFormValue?.qtr2 || null, parcelOwnerFormValue?.qtr3 || null, parcelOwnerFormValue?.qtr4 || null]
+    sideDialogController.updateState({
+      ...parcelOwnerFormValue,
+      qtr: qtr,
+      customLayer: props.customLayerId
+    })
 
-    console.log('parcelOwnerGetValues', parcelOwnerGetValues())
-    // addOwnerToAParcel({
-    //   variables: {
-    //     parcelOwner: {
-    //       ...formStateValues,
-    //       createBy: getUser?._id,
-    //       lastUpdateBy: getUser?._id,
-    //     },
-    //   },
-    //   refetchQueries: [
-    //     'getCustomLayer',
-    //     'getparcelOwners',
-    //     'getContactParcelInterests',
-    //     'getContactParcelInterest',
-    //     'getESSimpleSearch',
-    //   ],
-    //   awaitRefetchQueries: true,
-    // });
+    addOwnerToAParcel({
+      variables: {
+        parcelOwner: {
+          ...formStateValues,
+          createBy: getUser?._id,
+          lastUpdateBy: getUser?._id,
+        },
+      },
+      refetchQueries: [
+        'getCustomLayer',
+        'getparcelOwners',
+        'getContactParcelInterests',
+        'getContactParcelInterest',
+        'getESSimpleSearch',
+      ],
+      awaitRefetchQueries: true,
+    });
 
-    // setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
+    setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
   };
 
   useEffect(() => {
