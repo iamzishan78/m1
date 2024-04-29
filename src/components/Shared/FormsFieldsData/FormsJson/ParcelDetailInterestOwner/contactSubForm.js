@@ -1,7 +1,7 @@
 
 import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcelOwnerForm';
 
-const contactSubForm = (contact) => {
+const contactSubForm = () => {
   return [
     {
       label: "First Name",

@@ -22,9 +22,9 @@ const calculateOfferPrice = (nra, offer) => {
   return parseFloat((parseFloat(nra || 0) * parseFloat(offer || 0)).toFixed(2));
 };
 
-const parcelOwnerForm = (getValues, setValue) => {
+const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
 
-  return [
+  const formFields = [
     {
       label: "Entity Type",
       name: "ownerType",
@@ -335,79 +335,6 @@ const parcelOwnerForm = (getValues, setValue) => {
       }
     },
     {
-      label: "Cost Bearing",
-      name: "cost_bearing"
-    },
-    {
-      label: "Cost Free High Value",
-      name: "cost_free_high_value"
-    },
-    {
-      label: "Cost Bearing High Value",
-      name: "cost_bearing_high_value"
-    },
-    {
-      label: "QTR 1",
-      name: "qtr1",
-      renderField: "autoComplete",
-      defaultOptions: [
-        { label: 'E2', value: 'E2' },
-        { label: 'NE', value: 'NE' },
-        { label: 'NW', value: 'NW' },
-        { label: 'N2', value: 'N2' },
-        { label: 'SE', value: 'SE' },
-        { label: 'SW', value: 'SW' },
-        { label: 'S2', value: 'S2' },
-        { label: 'W2', value: 'W2' }
-      ]
-    },
-    {
-      label: "QTR 2",
-      name: "qtr2",
-      renderField: "autoComplete",
-      defaultOptions: [
-        { label: 'E2', value: 'E2' },
-        { label: 'NE', value: 'NE' },
-        { label: 'NW', value: 'NW' },
-        { label: 'N2', value: 'N2' },
-        { label: 'SE', value: 'SE' },
-        { label: 'SW', value: 'SW' },
-        { label: 'S2', value: 'S2' },
-        { label: 'W2', value: 'W2' }
-      ]
-    },
-    {
-      label: "QTR 3",
-      name: "qtr3",
-      renderField: "autoComplete",
-      defaultOptions: [
-        { label: 'E2', value: 'E2' },
-        { label: 'NE', value: 'NE' },
-        { label: 'NW', value: 'NW' },
-        { label: 'N2', value: 'N2' },
-        { label: 'SE', value: 'SE' },
-        { label: 'SW', value: 'SW' },
-        { label: 'S2', value: 'S2' },
-        { label: 'W2', value: 'W2' }
-      ]
-    },
-    {
-      label: "QTR 4",
-      name: "qtr4",
-      renderField: "autoComplete",
-      defaultOptions: [
-        { label: 'E2', value: 'E2' },
-        { label: 'NE', value: 'NE' },
-        { label: 'NW', value: 'NW' },
-        { label: 'N2', value: 'N2' },
-        { label: 'SE', value: 'SE' },
-        { label: 'SW', value: 'SW' },
-        { label: 'S2', value: 'S2' },
-        { label: 'W2', value: 'W2' }
-      ]
-    },
-
-    {
       label: "Contact Status",
       name: "contactStatus",
       renderField: "autoComplete",
@@ -465,6 +392,99 @@ const parcelOwnerForm = (getValues, setValue) => {
     //   name: "depthTo",
     // },
   ]
+
+  if (tenantName === 'Providence') {
+    const providenceFields = [
+      {
+        label: "Cost Bearing",
+        name: "cost_bearing"
+      },
+      {
+        label: "Cost Free High Value",
+        name: "cost_free_high_value",
+        InputProps: {
+          inputComponent: CurrencyFormatCustom
+        }
+      },
+      {
+        label: "Cost Bearing High Value",
+        name: "cost_bearing_high_value",
+        InputProps: { inputComponent: CurrencyFormatCustom }
+      }
+    ];
+
+    formFields.push(...providenceFields);
+  }
+
+  if (state !== 'TX') {
+    const stateSpecificFields = [
+      {
+        label: "QTR 1",
+        name: "qtr1",
+        renderField: "autoComplete",
+        defaultOptions: [
+          { label: 'E2', value: 'E2' },
+          { label: 'NE', value: 'NE' },
+          { label: 'NW', value: 'NW' },
+          { label: 'N2', value: 'N2' },
+          { label: 'SE', value: 'SE' },
+          { label: 'SW', value: 'SW' },
+          { label: 'S2', value: 'S2' },
+          { label: 'W2', value: 'W2' }
+        ]
+      },
+      {
+        label: "QTR 2",
+        name: "qtr2",
+        renderField: "autoComplete",
+        defaultOptions: [
+          { label: 'E2', value: 'E2' },
+          { label: 'NE', value: 'NE' },
+          { label: 'NW', value: 'NW' },
+          { label: 'N2', value: 'N2' },
+          { label: 'SE', value: 'SE' },
+          { label: 'SW', value: 'SW' },
+          { label: 'S2', value: 'S2' },
+          { label: 'W2', value: 'W2' }
+        ]
+      },
+      {
+        label: "QTR 3",
+        name: "qtr3",
+        renderField: "autoComplete",
+        defaultOptions: [
+          { label: 'E2', value: 'E2' },
+          { label: 'NE', value: 'NE' },
+          { label: 'NW', value: 'NW' },
+          { label: 'N2', value: 'N2' },
+          { label: 'SE', value: 'SE' },
+          { label: 'SW', value: 'SW' },
+          { label: 'S2', value: 'S2' },
+          { label: 'W2', value: 'W2' }
+        ]
+      },
+      {
+        label: "QTR 4",
+        name: "qtr4",
+        renderField: "autoComplete",
+        defaultOptions: [
+          { label: 'E2', value: 'E2' },
+          { label: 'NE', value: 'NE' },
+          { label: 'NW', value: 'NW' },
+          { label: 'N2', value: 'N2' },
+          { label: 'SE', value: 'SE' },
+          { label: 'SW', value: 'SW' },
+          { label: 'S2', value: 'S2' },
+          { label: 'W2', value: 'W2' }
+        ]
+      },
+    ]
+    formFields.push(...stateSpecificFields);
+  }
+
+
+  return formFields;
+
 };
 
 export default parcelOwnerForm;

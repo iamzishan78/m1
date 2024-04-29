@@ -8,7 +8,7 @@ import { sideDialogController } from 'hookstate/sideDialogController';
 import { Controller } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 
-function CommonForm({ FormJson, selectedRow = {}, control, reset, getValues, setValue, watch }) {
+function CommonForm({ FormJson, control, watch }) {
 
   return (
     <>

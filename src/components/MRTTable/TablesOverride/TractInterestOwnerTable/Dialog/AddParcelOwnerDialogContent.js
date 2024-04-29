@@ -89,6 +89,7 @@ const useStyles = makeStyles(theme => ({
 export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRow, ...props }) {
   const dispatch = useDispatch();
   const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
+  const tenantName = window.sessionStorage.getItem('tenantName');
 
   const formState = sideDialogController.useCompleteState()
   const formStateValues = formState?.get({ noproxy: true });
@@ -336,23 +337,21 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
             {formStateValues?.newOwner &&
               <CommonForm
-                FormJson={contactSubForm(cotactOwnerGetValues, cotactOwnerSetValue)}
-                selectedRow={selectedRow}
+                FormJson={contactSubForm()}
                 control={contactSubFormControl}
-                reset={cotactOwnerFormRest}
-                getValues={cotactOwnerGetValues}
-                setValue={cotactOwnerSetValue}
                 watch={cotactsOwnerWatch}
               />
             }
 
             <CommonForm
-              FormJson={parcelOwnerForm(parcelOwnerGetValues, parcelOwnerSetValue)}
-              selectedRow={selectedRow}
+              FormJson={parcelOwnerForm({
+                getValues: parcelOwnerGetValues,
+                setValue: parcelOwnerSetValue,
+                tenantName,
+                state: props?.customLayer?.state
+              })}
               control={parcelOwnerFormControl}
               reset={parcelOwnerFormRest}
-              getValues={parcelOwnerGetValues}
-              setValue={parcelOwnerSetValue}
               watch={parcelOwnerWatch}
             />
 
