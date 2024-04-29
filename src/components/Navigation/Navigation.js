@@ -98,6 +98,7 @@ export default function Navigation(props) {
   const classes = useStyles({
     mapGridCardActivated,
     user: stateApp.user,
+    // Determine if the component is rendered on the map page based on location pathname and props
     isMap: location.pathname === "/" || location.pathname.startsWith("/map/") || props.isMap,
   });
 
@@ -131,10 +132,11 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
+    // Update matchFind state based on whether the component is rendered on the map page
     if (location.pathname === "/" || location.pathname.startsWith("/map/") || props.isMap) {
-      setMatchFind(true);
+      setMatchFind(true); // Set matchFind to true if component is on the map page
     } else {
-      setMatchFind(false);
+      setMatchFind(false); // Set matchFind to false if component is not on the map page
     }
   }, [location.pathname]);
 

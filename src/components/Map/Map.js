@@ -1443,6 +1443,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         layers: [...layers],
       });
 
+      // Get if features have a Search Cluster
       const hasSearchCluster = features.some(f => f.layer.id === 'Search-clusters');
 
       if (!(window.event.ctrlKey && window.event.metaKey) && hoverUdIds.length > 0) {
