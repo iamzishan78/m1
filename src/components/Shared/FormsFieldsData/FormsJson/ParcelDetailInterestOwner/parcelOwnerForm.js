@@ -134,15 +134,26 @@ const parcelOwnerForm = (getValues, setValue) => {
     {
       label: "Target Offer Price (NMA)",
       name: "offer_price_nma",
+      isValueOverridden: (value) => {
+        if (!value) return
+        const { net_acres } = getValues();
+        const uUnitPricingNMA = sideDialogController.getValue('uUnitPricingNMA')
+        const calculatedOfferPrice = calculateOfferPrice(net_acres, uUnitPricingNMA);
+        const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
+        sideDialogController.updateState({ 'showTargetOfferPriceRecalculate': isOverride })
+        return isOverride
+      },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
         endAdornment: (
           <InputAdornment position="end">
-            {true && (
+            {!!sideDialogController.getValue('showTargetOfferPriceRecalculate') && (
               <IconButton
                 aria-label="toggle offer_price_nma"
                 onClick={() => {
-                  console.log('recalculate')
+                  const { net_acres } = getValues();
+                  const uUnitPricingNMA = sideDialogController.getValue('uUnitPricingNMA')
+                  setValue('offer_price_nma', calculateOfferPrice(net_acres, uUnitPricingNMA))
                 }}
               >
                 <AutorenewIcon />
