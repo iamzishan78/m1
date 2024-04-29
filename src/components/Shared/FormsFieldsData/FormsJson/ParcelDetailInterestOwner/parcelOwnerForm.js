@@ -199,14 +199,39 @@ const parcelOwnerForm = (getValues, setValue) => {
       label: "Net Royalty Acres (NRA)",
       name: "nra",
       type: "number",
+      onChange: (value) => {
+        setValue('nra', value)
+        const uUnitPricing = sideDialogController.getValue('uUnitPricing')
+        const uMaxUnitPricing = sideDialogController.getValue('uMaxUnitPricing')
+        setValue('offer_price', calculateOfferPrice(value, uUnitPricing))
+        setValue('max_offer_price', calculateOfferPrice(value, uMaxUnitPricing))
+      },
+
+      isValueOverridden: (value) => {
+        if (!value) return
+        const selectedParcel = popupController.getValue('selectedParcel');
+        const workspaceSettings = sideDialogController.getValue('workspaceSettings')
+        const { mineral_interest, royalty_interest, orri } = getValues()
+
+        const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
+        const isOverride = parseFloat(calculatedNra) !== parseFloat(value)
+        sideDialogController.updateState({ 'showNraRecalculate': isOverride })
+        return isOverride
+      },
       InputProps: {
         endAdornment: (
           <InputAdornment position="end">
-            {true && (
+            {!!sideDialogController.getValue('showNraRecalculate') && (
               <IconButton
                 aria-label="toggle offer_price_nma"
                 onClick={() => {
-                  console.log('recalculate')
+                  const selectedParcel = popupController.getValue('selectedParcel');
+                  const workspaceSettings = sideDialogController.getValue('workspaceSettings')
+                  const { mineral_interest, royalty_interest, orri } = getValues()
+
+                  const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
+                  setValue('nra', calculatedNra)
+
                 }}
               >
                 <AutorenewIcon />
