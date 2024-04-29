@@ -21,7 +21,7 @@ import '../component/MRT/commands'
 import '../component/TableESHOC/commands'
 import '../component/M1nTable/commands'
 import '../component/Jobs/commands'
-
+import '../component/Map/LayerManager/commands'
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 

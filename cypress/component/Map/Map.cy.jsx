@@ -5,6 +5,11 @@ import { basic_timeouts } from '../../cypressUtils/data'; // Importing basic tim
 
 // Test suite for the Map Component
 describe('Map Component', () => {
+  it('User Layer Settings are updated', () => {
+    // Update User Layer Settings to only show Land Grids
+    cy.updateAllUserLayersVisibility({ layersToShow: ['Land Grid'] });
+  });
+
   // Test case: Checks that search layer click works
   it('Checks that search layer click works', () => {
     // Intercepting API calls and waiting for their responses
