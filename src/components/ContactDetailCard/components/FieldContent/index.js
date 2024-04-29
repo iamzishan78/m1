@@ -25,6 +25,9 @@ import EntityType from "./EntityType";
 import CampaignNameField from "./CampaignNameField";
 import ContactStatus from "components/ContactDetailCard/components/AutoCompleteWithAddNew";
 import AutoCompleteAddNewField from "./AutoCompleteAddNewField";
+import Link from "@material-ui/core/Link";
+import { getAddressUrl } from "utils/helper";
+import GoogleMapIcon from "components/Shared/svgIcons/GoogleMapIcon";
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -507,7 +510,12 @@ export default function FieldContent({
       )}
       {fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />}
       {isPurchased && <CopyPurchaseInfo updateContact={updateContact} userId={stateApp.user.mongoId} content={content} contactId={id} />}
-
+      {textArray.length > 0 && name === 'Address' ?
+          <Link onClick={() => window.open(getAddressUrl(content), "_blank")}>
+              <GoogleMapIcon />
+          </Link>
+        : ""
+      }
       {!childrenLeft && !onlyChildren && children ? children : ""}
       {isCurEdited ? " (edited)" : ""}
     </span>
@@ -517,7 +525,7 @@ export default function FieldContent({
     <React.Fragment>
       <p
         className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP}`}
-        style={{ width: "100%" }}
+        style={{ width: "auto" }}
         data-testid={name}
       >
         {(linkType === LinkTypes.Mail || linkType === LinkTypes.Simple) && textArray.length > 0 ? (
