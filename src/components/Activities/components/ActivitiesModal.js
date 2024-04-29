@@ -474,6 +474,7 @@ export default function ActivitiesModal({ events, setSelectedActivityId }) {
           isClosed: closed,
           user: stateApp.user._id,
           createdBy: stateApp?.user?._id,
+          tenant: window.sessionStorage.getItem("tenantName")
         },
       },
     });

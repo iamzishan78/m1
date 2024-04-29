@@ -1,11 +1,8 @@
 import React from 'react';
 import { hookstate } from '@hookstate/core';
 import _, { get, isEqual, isEmpty } from 'lodash';
-import ESAutoCompleteFilter from 'components/MRTTable/Common/ESAutoCompleteFilter';
 import { copy, deepEqual, formatDate } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
-import { stringFilterOptions, numberFilterOptions, dateFilterOptions, customFilterOptions } from 'components/MRTTable/utils/data';
-import filterModeMenu from 'components/MRTTable/utils/filterModeMenu';
 import { GET_META_DATA } from "graphQL/useQueryGetMetaData";
 import { CommonSchema } from 'components/MRTTable/Schema/common_schema';
 import { globalStateController } from 'hookstate/globalStateController';
@@ -17,7 +14,7 @@ import { gridViewStateController } from 'components/MRTTable/Common/GridView/Gri
 import { formatGridViewToMRT } from "components/MRTTable/utils/helper"
 import TableHeaderMoreOptions from 'components/MRTTable/Common/TableHeaderMoreOptions';
 import MRT_SelectCheckbox_OverRide from 'components/MRTTable/Common/MRT_SelectCheckbox_OverRide';
-
+import { handleMRTSchema, handleVisiblityMenu } from './helpers';
 
 function isDateFormat(inputString) {
 	// Regular expression for MM/DD/YYYY format
@@ -27,7 +24,6 @@ function isDateFormat(inputString) {
 	// Check if the inputString matches the date format
 	return mmddyyy.test(inputString) || mmddyy.test(inputString);
 }
-
 
 const initialState = {
 	defaultFilters: [],
@@ -45,79 +41,14 @@ const initialState = {
 		left: [],
 	},
 }
+
 export const tableESState = {};
 export const tableGlobalState = hookstate({
 	refetch: false,
 	reInitialized: false,
 });
 
-const handleVisiblityMenu = () => {
-	const interval2 = setInterval(() => {
-		const elements = document.querySelectorAll('ul[role="menu"] .MuiFormControlLabel-label');
-		// || element?.className.includes('Mui-disabled')
-		if (elements) {
-			elements.forEach(element => {
-				if (['Select', 'Row Numbers'].includes(element.outerText) || element.outerText === '')
-					while (element !== null) {
-						if (element.tagName === 'LI') {
-							element.style.display = 'none';
-							break;
-						}
-						element = element.parentNode;
-					}
-			});
-			clearInterval(interval2);
-		}
-	}, 0);
-};
-
-const handleVisiblityMenuClick = () => {
-	const interval = setInterval(() => {
-		const element = document.querySelector('[aria-label="Show/Hide columns"]');
-		if (element) {
-			element.addEventListener('click', () => {
-				handleVisiblityMenu();
-			});
-			clearInterval(interval);
-		}
-	}, 1000);
-};
-
-const handleColumnMenuClick = () => {
-	setInterval(() => {
-		const elements = document.querySelectorAll('[aria-label="Column Actions"]');
-		if (elements) {
-			elements.forEach(element => {
-				const clickListner = () => {
-					const interval2 = setInterval(() => {
-						const ulElement = document.querySelector('.MuiPaper-elevation1 ul[role="menu"]'); // Replace "your-ul-id" with the actual ID of your <ul> element
-						if (ulElement) {
-							const liElements = ulElement.getElementsByTagName('li');
-							for (let i = 0; i < liElements.length; i++) {
-								const li = liElements[i];
-								const divElement = li.querySelector('div');
-								if (
-									divElement &&
-									(divElement.textContent.includes('Pin to right') ||
-										divElement.textContent.includes('Show all columns'))
-								) {
-									li.style.display = 'none';
-									// break;
-								}
-							}
-							clearInterval(interval2);
-						}
-					}, 0);
-				};
-				element.removeEventListener('click', clickListner);
-				element.addEventListener('click', clickListner);
-			});
-		}
-	}, 300);
-};
-
 async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey) {
-
 	const _user = globalStateController.getValue('user')
 
 	const result = await client.query({
@@ -187,8 +118,11 @@ async function fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyC
 	return newTableSchema
 }
 
-async function fetchGridViews(client, module, tableKey) {
-	const user = globalStateController.getValue('user')
+async function fetchGridViews(client, module, tableKey, gridViewOverride) {
+	// Retrieve the current user's information from a global state controller.
+	const user = globalStateController.getValue('user');
+
+	// Execute a GraphQL query to fetch grid views for the specified module and user ID.
 	const result = await client.query({
 		variables: {
 			module,
@@ -196,14 +130,24 @@ async function fetchGridViews(client, module, tableKey) {
 		},
 		query: GET_GRID_VIEWS,
 	});
-	const allGridViews = result?.data?.getGridViews?.gridViews
-	const gridViewController = gridViewStateController(tableKey)
+
+	// Extract the grid views from the query result.
+	const allGridViews = result?.data?.getGridViews?.gridViews;
+
+	// Initialize the grid view state controller with the fetched grid views for the specified table.
+	const gridViewController = gridViewStateController(tableKey);
 	gridViewController?.initialize(tableKey, allGridViews);
 
-	const defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(user?._id));
-	return defaultDisplay
-}
+	// Attempt to find a grid view that matches the override name, if provided.
+	let defaultDisplay = allGridViews?.find(obj => obj.name === gridViewOverride);
 
+	// If no override is found or provided, attempt to find a default grid view for the user.
+	if (!defaultDisplay)
+		defaultDisplay = allGridViews?.find(obj => obj.defaultDisplayBy?.includes(user?._id));
+
+	// Return the determined default or overridden grid view configuration.
+	return defaultDisplay;
+}
 
 const tableESStateControllerHandler = state => ({
 	initialize: async (
@@ -224,7 +168,10 @@ const tableESStateControllerHandler = state => ({
 			fetchMetaData,
 			onCustomKeyChange,
 			gridViewSettings,
+			density = 'comfortable',
+			advanceSearch = [],
 			isDefaultGridView,
+			enableHiding = true,
 			...rest
 		},
 		client,
@@ -232,16 +179,17 @@ const tableESStateControllerHandler = state => ({
 		if (state.TableSchema.get()) return;
 
 		let _Schema = TableSchema;
-		_Schema.unshift({
-			...CommonSchema.SELECT_SOME,
-			Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
-			Cell: ({ row }) => {
-				const tableState = tableController(tableKey).useState(['mrtTableRef']);
-				const tableStateValues = tableState.stateValues;
-				// eslint-disable-next-line react/jsx-pascal-case
-				return <MRT_SelectCheckbox_OverRide row={row} selectAll={false} table={tableStateValues?.mrtTableRef} tableKey={tableKey} />
-			},
-		});
+		if (!rest.isGeneric)
+			_Schema.unshift({
+				...CommonSchema.SELECT_SOME,
+				Header: () => <TableHeaderMoreOptions tableKey={tableKey} />,
+				Cell: ({ row }) => {
+					const tableState = tableController(tableKey).useState(['mrtTableRef']);
+					const tableStateValues = tableState.stateValues;
+					// eslint-disable-next-line react/jsx-pascal-case
+					return <MRT_SelectCheckbox_OverRide row={row} selectAll={false} table={tableStateValues?.mrtTableRef} tableKey={tableKey} />
+				},
+			});
 
 		if (fetchMetaData) {
 			_Schema = await fetchTableSchema(client, fetchMetaData, TableSchema, onCustomKeyChange, tableKey)
@@ -251,174 +199,46 @@ const tableESStateControllerHandler = state => ({
 		let gridView = {};
 
 		if (gridViewSettings) {
-			const userDefaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey)
+			// Fetch user-specific or default grid views based on provided settings and overrides.
+			const userDefaultDisplay = await fetchGridViews(client, gridViewSettings.module, tableKey, rest.gridViewOverride);
 
-			formatedGridView = formatGridViewToMRT(userDefaultDisplay)
+			// Format the fetched grid view for use with a specific grid view library or framework, assumed to be Material-UI's React Table (MRT).
+			formatedGridView = formatGridViewToMRT(userDefaultDisplay);
+
+			// Setup the gridView object with the selected grid view configuration and some flags for UI control.
 			gridView = {
-				selectedGridView: isDefaultGridView || !userDefaultDisplay ? gridViewSettings.defaultView : userDefaultDisplay,
+				selectedGridView:
+					isDefaultGridView || !userDefaultDisplay
+						? gridViewSettings.defaultView
+						: userDefaultDisplay,
 				showViewModal: false,
 				showSaveAsNew: false,
-			}
-		}
-
-		_Schema = _.uniqBy(_Schema, (item) => item.accessorKey || item.id);
-
-		const _TableSchema = _Schema.map(schemaColumn => {
-			if (schemaColumn.filter && !schemaColumn.Filter) {
-				schemaColumn.SingleSelect = function Comp({ column }) {
-					return (
-						<div>
-							<ESAutoCompleteFilter
-								tableKey={tableKey}
-								esIndex={esIndex}
-								column={{
-									field: column.columnDef.name,
-									isComposite: column.columnDef.isComposite,
-									label: column.columnDef.header,
-									type: column.columnDef.type,
-									setFilterValue: column.setFilterValue,
-									filterSelectOptions: column.columnDef.filterSelectOptions,
-									filterValue: column?.getFilterValue() || '',
-								}}
-								multiple={false}
-							/>
-							<span style={{ fontSize: '0.7rem', color: 'rgba(0, 0, 0, 0.6)', fontWeight: 400 }}>
-								Filter Mode: Single Select
-							</span>
-						</div>
-					);
-				};
-
-				schemaColumn.MultiSelect = function Comp({ column }) {
-					return (
-						<div>
-							<ESAutoCompleteFilter
-								tableKey={tableKey}
-								esIndex={esIndex}
-								column={{
-									field: column.columnDef.name,
-									label: column.columnDef.header,
-									type: column.columnDef.type,
-									setFilterValue: column.setFilterValue,
-									filterValue: column?.getFilterValue() || [],
-								}}
-								multiple
-							/>
-							<span style={{ fontSize: '0.7rem', color: 'rgba(0, 0, 0, 0.6)', fontWeight: 400 }}>
-								{' '}
-								Filter Mode: Multi Select
-							</span>
-						</div>
-					);
-				};
-
-				schemaColumn.Filter = defaultFlterMode === 'multiselect' ? schemaColumn.MultiSelect : schemaColumn.SingleSelect;
-			}
-			if (schemaColumn.filter) {
-				let options;
-				switch (schemaColumn.type) {
-					case 'string':
-						options = stringFilterOptions;
-						break;
-
-					case 'number':
-						options = numberFilterOptions;
-						break;
-
-					case 'date':
-						options = dateFilterOptions;
-						break;
-
-					default:
-						options = customFilterOptions;
-						break;
-				}
-
-				if (schemaColumn.isComposite)
-					options = options.filter((option) => option !== 'multiselect')
-
-				schemaColumn.columnFilterModeOptions = options;
-				schemaColumn.renderColumnFilterModeMenuItems = filterModeMenu({
-					options,
-					tableKey,
-					name: schemaColumn.accessorKey || schemaColumn.id,
-				});
-			}
-
-			return schemaColumn;
-		});
-
-		const searchFields = search ? search?.fields : _TableSchema.filter(column => column.isSearchField !== false).map(
-			column => column.id || column.accessorKey
-		);
-
-		const ExternalFilter = _TableSchema.filter(column => column.isExternalFilter === true).map(column => column.name);
-
-		const pinnedColumns = _TableSchema.filter(column => column.isPinned);
-		const pinnedFields = pinnedColumns.map(column => {
-			column.enableResizing = false;
-			column.enableColumnDragging = false;
-			column.enableColumnOrdering = false;
-			return column.id || column.accessorKey;
-		});
-
-		const columnOrder = _TableSchema.map(column => {
-			let col = column.accessorKey || column.id
-			if (Array.isArray(col)) col = col[0]
-			return col
-		});
-
-		const tableCss = {
-			'& .MuiDialog-root': {
-				zIndex: '99999',
-			},
-			'& .MuiToolbar-root': {
-				backgroundColor: '#F2F2F2',
-				borderBottom: '1px solid rgba(224, 224, 224, 1)',
-			},
-			'& th.MuiToolbar-root, .MuiTableRow-head, th.MuiTableCell-head': {
-				backgroundColor: '#F2F2F2',
-			},
-			'& .Mui-TableHeadCell-Content-Labels': {
-				width: '100%',
-			},
-			'& .Mui-selected': {
-				'&:hover': {
-					'& td': {
-						backgroundColor: '##cdd4de !important',
-					},
-				},
-				'& td': {
-					backgroundColor: '#e6ecf5 !important',
-				},
-			},
-		};
-		handleVisiblityMenuClick();
-		handleColumnMenuClick();
-
-		if (pinnedColumns.length > 0 && columnVirtualization) {
-			let size = 60;
-			pinnedColumns.forEach(column => {
-				size += column.size;
-			});
-			tableCss['& .MuiTableRow-root>:nth-child(2)'] = {
-				marginLeft: `-${size}px !important`,
 			};
 		}
-		const groupedField =
-			_TableSchema.find(column => column.isGrouped)?.accessorKey || _TableSchema.find(column => column.isGrouped)?.id;
 
-		const columnVisibility = _TableSchema.reduce(
-			(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: !cur?.hidden }),
-			{}
-		);
-		const filterModes = _TableSchema.filter(column => column.filter).reduce(
-			(acc, cur) => ({ ...acc, [cur.accessorKey || cur.id]: 'custom' }),
-			{}
-		);
+		const {
+			_TableSchema,
+			tableCss,
+			searchFields,
+			groupedField,
+			ExternalFilter,
+			columnVisibility,
+			filterModes,
+			columnOrder,
+			pinnedFields,
+		} = handleMRTSchema({
+			_Schema,
+			tableKey,
+			esIndex,
+			defaultFlterMode,
+			search,
+			columnVirtualization,
+		});
 
 		state.merge({
 			...rest,
+			defaultFlterMode,
+			search,
 			initialized: true,
 			tableKey,
 			esIndex,
@@ -450,6 +270,9 @@ const tableESStateControllerHandler = state => ({
 			columnVisibility: formatedGridView?.columnVisibility ? formatedGridView.columnVisibility : columnVisibility,
 			defaultSort,
 			filterModes,
+			density,
+			advanceSearch,
+			enableHiding,
 			columnOrdering: formatedGridView?.columnOrdering ? formatedGridView.columnOrdering : ['over-ride-checkbox', 'mrt-row-numbers', ...columnOrder],
 			columnPinning: formatedGridView?.columnPinning ? formatedGridView.columnPinning : {
 				left: [
@@ -563,11 +386,15 @@ const tableESStateControllerHandler = state => ({
 		!deepEqual(state.globalFilter?.get({ noproxy: true }), globalFilter) && state.globalFilter?.set(globalFilter),
 
 	setFilter: filter => {
-		const column = state.TableSchema.get({ noproxy: true }).find(
+		const TableSchema = state.TableSchema.get({ noproxy: true }) || []
+		console.log('TableSchema', TableSchema)
+		const column = TableSchema?.find(
 			column => column.id === filter.field || column.accessorKey === filter.field
 		);
 
-		if (column.type === 'date') {
+		console.log('column', column)
+
+		if (column?.type === 'date') {
 			if (filter.type !== 'advanced') {
 				filter.type = 'advanced'
 				filter.searchType = 'betweenInclusive'
@@ -651,7 +478,113 @@ const tableESStateControllerHandler = state => ({
 
 	setMrtTableRef: mrtTableRef => {
 		!deepEqual(state.mrtTableRef?.get({ noproxy: true }), mrtTableRef) && state.mrtTableRef?.set(mrtTableRef)
-	}
+	},
+
+	setAdvanceSearch: (value, otherState) => {
+		if (!isEqual(value, state.advanceSearch.get({ noproxy: true }))) {
+			state.merge({
+				advanceSearch: value,
+				...(otherState && { globalFilter: otherState.globalFilter || '' }),
+			})
+		}
+	},
+
+	getGenericState: rows => {
+		const getGenericKeys = (orderKeys, excludedKeys, nestedKey) => {
+			orderKeys = orderKeys || ['_id', 'id', 'name', 'flatSyncAt', '_ts'];
+			excludedKeys = excludedKeys || ['isDeleted', 'IsDeleted', 'sort'];
+
+			if (nestedKey) excludedKeys.push(nestedKey);
+
+			let keys = [];
+
+			rows.forEach(row => {
+				keys = [
+					...new Set([
+						...keys,
+						...Object.keys(row).filter(key => !excludedKeys.includes(key)),
+						...(nestedKey ? Object.keys(row[nestedKey] || {}) : []),
+					]),
+				];
+			});
+
+			keys = keys.sort((a, b) => {
+				const aIndex = orderKeys.indexOf(a);
+				const bIndex = orderKeys.indexOf(b);
+
+				// If both keys are in the orderKeys array, sort based on their order in orderKeys.
+				if (aIndex !== -1 && bIndex !== -1) {
+					return aIndex - bIndex;
+				}
+
+				// If only one key is in the orderKeys array, prioritize it.
+				if (aIndex !== -1) {
+					return -1;
+				}
+
+				if (bIndex !== -1) {
+					return 1;
+				}
+
+				// If neither key is in the orderKeys array, maintain the original order.
+				return 0;
+			});
+
+			return keys;
+		};
+
+		const genericState = {};
+
+		const {
+			isGeneric,
+			orderKeys,
+			excludedKeys,
+			nestedKey,
+			generateSchema,
+			tableKey,
+			esIndex,
+			defaultFlterMode,
+			search,
+			columnVirtualization,
+		} = state.get({
+			noproxy: true,
+		});
+
+		if (!isGeneric || rows?.length === 0) return genericState;
+
+		const keys = getGenericKeys(orderKeys, excludedKeys, nestedKey);
+
+		const {
+			_TableSchema,
+			tableCss,
+			// searchFields,
+			groupedField,
+			ExternalFilter,
+			columnVisibility,
+			filterModes,
+			columnOrder,
+			pinnedFields,
+		} = handleMRTSchema({
+			_Schema: generateSchema(keys, rows),
+			tableKey,
+			esIndex,
+			defaultFlterMode,
+			search,
+			columnVirtualization,
+		});
+
+		genericState.TableSchema = _TableSchema;
+		genericState.tableCss = tableCss;
+		// genericState.searchFields = searchFields; // causes infinite loop
+		genericState.groupedField = groupedField;
+		genericState.ExternalFilter = ExternalFilter;
+		genericState.columnVisibility = columnVisibility;
+		genericState.filterModes = filterModes;
+		genericState.columnOrder = columnOrder;
+		genericState.pinnedFields = pinnedFields;
+
+		return genericState;
+	},
 
 });
 

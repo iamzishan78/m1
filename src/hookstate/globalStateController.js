@@ -4,6 +4,7 @@ import { hookStateController } from 'hookstate/hookStateController';
 
 const initialState = {
 	layers: [],
+	emptyGroups: [],
 	universalLoader: false,
 	layerLoading: {},
 	user: null,

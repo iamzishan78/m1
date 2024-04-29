@@ -33,7 +33,7 @@ import { v4 as uuid } from "uuid";
 
 // Constants
 const workSpace = Cypress.env('TENENT') || "localhost"
-const { longTimeout, extraTimeout } = basic_timeouts
+const { longTimeout, extraTimeout, midExtraLongTimeout } = basic_timeouts
 
 Cypress.on('uncaught:exception', (err, runnable) => {
     return false
@@ -99,7 +99,7 @@ Cypress.Commands.add('interceptApi', (operationName, payloadKey = null, alias = 
 
 Cypress.Commands.add('interceptAndWait', (dataKeys, interceptionFunction, options = { wait: true }, url = baseUrls[workSpace]) => {
 
-    const alias = uuid() + dataKeys[0]
+    const alias = dataKeys[0] + uuid();
     cy.log(alias)
 
     cy.intercept('POST', url, req => {

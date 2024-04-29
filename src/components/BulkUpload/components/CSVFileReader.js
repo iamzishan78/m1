@@ -298,7 +298,7 @@ export default function CSVFileReader(props) {
       <div style={{ ...text_grey, ...padding_div }}>Don't forget to upload CSV with first row containing the column headers</div>
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          <div className={classes.csvReader}>
+          <div data-testid="csv-dropzone" className={classes.csvReader}>
             <CSVReader
               onDrop={(csvData) => {
                 csvData.forEach(({ data }) => {

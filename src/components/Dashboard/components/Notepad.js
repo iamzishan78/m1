@@ -62,9 +62,9 @@ function Notepad() {
       margin="dense"
       variant="outlined"
       multiline
-      rows="8"
+      rows="32"
       value={description}
-      label="Description"
+      label="Notes"
       fullWidth
       //   required
       onChange={(e) => {

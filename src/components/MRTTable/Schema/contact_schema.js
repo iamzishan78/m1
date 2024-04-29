@@ -157,6 +157,16 @@ const ContactMeta = {
 			hidden: true,
 		},
 
+		// // Make formerName to visibile in contact grid
+		// {
+		// 	...CommonSchema.COMMON_COLUMN,
+		// 	name: 'formerName.keyword',
+		// 	accessorKey: 'formerName',
+		// 	header: 'Also Known As',
+		// 	isHiddenFieldExport: true,
+		// 	hidden: true,
+		// },
+
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'lastName.keyword',
@@ -267,6 +277,51 @@ const ContactMeta = {
 			name: 'mobilePhone.keyword',
 			accessorKey: 'mobilePhone',
 			header: 'Primary Mobile Phone',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'phone1.keyword',
+			accessorKey: 'phone1',
+			header: 'Phone 1',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'phone2.keyword',
+			accessorKey: 'phone2',
+			header: 'Phone 2',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'phone3.keyword',
+			accessorKey: 'phone3',
+			header: 'Phone 3',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'phone4.keyword',
+			accessorKey: 'phone4',
+			header: 'Phone 4',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'phone5.keyword',
+			accessorKey: 'phone5',
+			header: 'Phone 5',
+			isHiddenFieldExport: true,
+			hidden: true,
 		},
 
 		{
@@ -536,6 +591,7 @@ const ContactMeta = {
 			hidden: true,
 		},
 
+
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'interestSummary.wellInterestCount',
@@ -579,39 +635,26 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'lastUpdateBy.name.keyword',
-			accessorFn: row => row?.lastUpdateBy?.name,
-			id: 'lastUpdateBy.name',
-			header: 'Updated By',
-			hidden: true,
-			enableColumnActions: false,
-			isSearchField: false,
-		},
-		{
-			...CommonSchema.COMMON_COLUMN,
 			name: 'isPurchased',
 			accessorKey: 'isPurchased',
-			header: 'Is Purchased Data',
+			header: 'Purchased Data Exists',
 			isSearchField: false,
 			filterSelectOptions: [
 				{ label: 'Yes', value: 'true' },
 				{ label: 'No', value: 'false' },
 			],
+			type: "boolean",
 			Cell: ({ row }) => {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
 
 				return <>{isPurchased ? 'Yes' : 'No'}</>;
 			},
 		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'lastUpdateAt',
-			accessorKey: 'lastUpdateAt',
-			header: 'Last Updated',
-			isSearchField: false,
-			type: 'date',
-			Cell: ({ row }) => <>{formatDate(row.getValue('lastUpdateAt'))}</>,
-		},
+
+		CommonSchema.CREATED_BY,
+		CommonSchema.CREATED_DATE,
+		CommonSchema.LAST_UPDATED_BY,
+		CommonSchema.LAST_UPDATED_DATE,
 
 		{
 			...CommonSchema.TAGS,

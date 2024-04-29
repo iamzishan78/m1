@@ -245,7 +245,7 @@ const SummarySection = ({ checkId }) => {
             aggs: { ownerTax: { sum: { field: "ownerTax" } } },
           },
           deductType: {
-            terms: { field: "deductType.keyword" },
+            terms: { field: "deductType.keyword", "size": 10000  },
             aggs: { ownerDeducts: { sum: { field: "ownerDeducts" } } },
           },
         },
@@ -301,7 +301,7 @@ const SummarySection = ({ checkId }) => {
   // products summary
   useEffect(() => {
     if (prodSummary) {
-      const productMapping = metaData.find((meta) => meta.name === 'product_type')
+      const productMapping = metaData?.find((meta) => meta.name === 'product_type')
 
       const products = uniqBy(productMapping?.mapping, 'to').map((product) => product.to)
       let buckets = [];

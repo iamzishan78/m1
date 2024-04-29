@@ -129,7 +129,7 @@ const ContactBulkProgress = () => {
       if (status === "Started" || status === "Pending") {
         message = lastMessage;
       }
-      else if (status === "Completed" && requestPayload.async) {
+      else if (status === "Completed" && requestPayload?.async) {
         if (requestPayload.refetch)
           refetchHelperDebounced(requestPayload.refetch);
         message = lastMessage;

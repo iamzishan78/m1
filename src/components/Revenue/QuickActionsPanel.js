@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState,  useEffect }  from "react";
+
 import clsx from "clsx";
-import { useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useLocation } from "react-router-dom";
 import { IconButton } from "@material-ui/core";
 import ListItemText from "@material-ui/core/ListItemText";
 import { Divider, Grid, Typography, Drawer } from "@material-ui/core";
@@ -12,14 +13,34 @@ import MenuIcon from "@material-ui/icons/Menu";
 
 import { useStyles, StyledMenu, StyledMenuItem } from "./styles";
 import { SIDE_PANEL_MENU_ITEMS_LIST } from "components/Revenue/Revenue";
+import { toggleQuickActionsPanel } from "store/actions/commonActions";
 
 export default function QuickActionsPanel({ children, handlePanelStateChange, expandedPanel, activeModule }) {
   const classes = useStyles();
   const history = useHistory();
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const [sideBarPanel , setSideBarPanel] = useState(false);
+
 
   const handleMenuItemClick = (path) => {
     history.push(path);
   };
+
+  useEffect(() => {
+    if (location.pathname.includes("details")) {
+      dispatch(toggleQuickActionsPanel(false));
+      setSideBarPanel(true);
+    } else {
+      dispatch(toggleQuickActionsPanel(true));
+      setSideBarPanel(false);
+    }
+    return () => {
+      dispatch(toggleQuickActionsPanel(true)); // Dispatch the action on unmount
+    };
+  }
+, [location.pathname]);
+
   return (
     <>
       <Drawer
@@ -67,14 +88,15 @@ export default function QuickActionsPanel({ children, handlePanelStateChange, ex
         </div>
       </Drawer>
       <div
-        className={clsx({
+        className={
+          clsx({
           [classes.revenueRootExpanded]: expandedPanel,
           [classes.revenueRootCollapsed]: !expandedPanel,
         })}
       >
         {children}
       </div>
-      <div className={classes.pulloutBox} onClick={handlePanelStateChange}>
+      <div className={classes.pulloutBox} onClick={handlePanelStateChange} style={{ display: !sideBarPanel ? 'flex' : 'none' }}>
         {expandedPanel ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
       </div>
     </>

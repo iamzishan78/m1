@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-  - ahmadfaraz/cypress-component-testing
+  - master
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -15,13 +15,12 @@ variables:
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: '16.15.0'
+      versionSpec: '21.7.3'
     displayName: 'Install Node.js'
 
-  - task: Npm@1
-    inputs:
-      command: 'install'
-    displayName: 'Npm Install'
+  - script: |
+      yarn install
+    displayName: 'Yarn Install'
 
   - script: |
       sed -i "s/cypress open/cypress open --env TENENT='$(TENENT)'/" ./package.json
@@ -44,15 +43,18 @@ steps:
         echo "##vso[task.setvariable variable=SCREENSHOTS_NOT_EMPTY]false"
       fi
     displayName: 'Check Screenshots Folder'
+    condition: succeededOrFailed()
 
   ## Copy the client to the staging directory
   - task: CopyFiles@2
     inputs:
-      sourceFolder: "cypress/screenshots"
-      contents: "**/*"
+      sourceFolder: "cypress"
+      contents: |
+        screenshots/**/*
+        videos/**/*
       targetFolder: "$(Build.ArtifactStagingDirectory)"
       cleanTargetFolder: true
-    displayName: 'Copy Screenshots'
+    displayName: 'Copy Screenshots and Videos'
     condition: eq(variables.SCREENSHOTS_NOT_EMPTY, 'true')  # Only run if the Screenshots folder is not empty
 
   ## Archive the files into a zip file for publishing

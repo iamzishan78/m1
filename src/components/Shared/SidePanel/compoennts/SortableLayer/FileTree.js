@@ -13,6 +13,9 @@ import { useMutation } from "@apollo/client";
 import { deepEqual } from "components/Shared/functions";
 import { useStyles } from '../style';
 import { hookStateApp } from "hookstate";
+import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
+import { FEATURES } from "components/Shared/FeatureFlag/common";
+
 
 const FileTree = ({ layerMap, panelItems }) => {
   const [stateApp] = useContext(AppContext);
@@ -108,7 +111,7 @@ const FileTree = ({ layerMap, panelItems }) => {
     const index = items.findIndex((item) => item.id === id);
     const item = items[index];
     const { visiable } = item;
-    const descendants = findDescendants(items, index);
+    const descendants = findDescendants(items, index).filter(l => l.layerSettings);
     const updateFn = {
       [index]: { visiable: { $set: !visiable } },
     };
@@ -237,17 +240,43 @@ const FileTree = ({ layerMap, panelItems }) => {
         >
           <Flipper flipKey={items.map(({ id }) => id).join(".")}>
             <Sortly items={items} maxDepth={1} onChange={handleChange}>
-              {(props) => (
-                <LayerItem
-                  {...props}
-                  onToggleCollapse={handleToggleCollapse}
-                  onToggleGroup={handleToggleGroup}
-                  onDragEnd={handleDragEnd}
-                  onDragBegin={handleDragBegin}
-                  updateLayer={updateLayer}
-                  map={stateApp?.map}
-                />
-              )}
+              {(props) => {
+                if (props?.data?.layerName === "Recent Submitted Permits"
+                  || props?.data?.layerName === "Tracked Wells"
+                  || props?.data?.layerName === "User Tags") {
+                  let layerName = '';
+                  if (props?.data?.layerName === "Recent Submitted Permits") {
+                    layerName = FEATURES.RECENTPERMITLAYER;
+                  } else if (props?.data?.layerName === "Tracked Wells") {
+                    layerName = FEATURES.TRACKEDWELLSLAYER;
+                  } else if (props?.data?.layerName === "User Tags") {
+                    layerName = FEATURES.USERTAGSLAYER;
+                  }
+                  return (
+                    <FeatureFlag feature={layerName} >
+                      <LayerItem
+                        {...props}
+                        onToggleCollapse={handleToggleCollapse}
+                        onToggleGroup={handleToggleGroup}
+                        onDragEnd={handleDragEnd}
+                        onDragBegin={handleDragBegin}
+                        updateLayer={updateLayer}
+                        map={stateApp?.map}
+                      />
+                    </FeatureFlag>
+                  )
+                } else {
+                  return (<LayerItem
+                    {...props}
+                    onToggleCollapse={handleToggleCollapse}
+                    onToggleGroup={handleToggleGroup}
+                    onDragEnd={handleDragEnd}
+                    onDragBegin={handleDragBegin}
+                    updateLayer={updateLayer}
+                    map={stateApp?.map}
+                  />)
+                }
+              }}
             </Sortly>
           </Flipper>
         </Box>

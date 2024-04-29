@@ -6,6 +6,7 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 const esIndex = 'shapes_flat';
 
@@ -126,7 +127,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uAcres.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uAcres,
+			accessorFn: row => vf_number(row?.shapeJson?.properties?.uAcres),
 			id: 'shapeJson.properties.uAcres',
 			header: 'Unit Acres',
 		},
@@ -145,6 +146,15 @@ const UnitMeta = {
 			accessorFn: row => row?.shapeJson?.properties?.uPrimaryOperator,
 			id: 'shapeJson.properties.uPrimaryOperator',
 			header: 'Current Operator',
+		},
+
+		//added Total Unit Interest column from here 
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shapeJson.properties.totalUnitInterest.keyword',
+			accessorFn: row => row?.shapeJson?.properties?.totalUnitInterest,
+			id: 'shapeJson.properties.totalUnitInterest',
+			header: 'Total Unit Interest',
 		},
 
 		{
@@ -197,15 +207,10 @@ const UnitMeta = {
 			header: 'Reviewer',
 		},
 
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: '_ts',
-			accessorKey: '_ts',
-			header: 'Last Updated',
-			type: 'date',
-			isSearchField: false,
-			Cell: ({ row }) => <div>{formatDate(row.getValue('_ts'))}</div>,
-		},
+		CommonSchema.CREATED_BY,
+		CommonSchema.CREATED_DATE,
+		CommonSchema.LAST_UPDATED_BY,
+		CommonSchema.LAST_UPDATED_DATE,
 
 		{
 			...CommonSchema.TAGS,
@@ -232,7 +237,7 @@ const UnitMeta = {
 			Cell: ({ row }) => {
 				const id = row.getValue('_id');
 
-				return <FlyToMap id={id} />;
+				return <FlyToMap id={id} type='unit' />;
 			},
 		},
 	],

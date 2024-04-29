@@ -212,7 +212,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       }
       let calculatedNRA = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri, workspaceSettings })
       let calculatedOfferPrice = calculateOfferPrice(nra);
-      if (!isNaN(parseFloat(calculatedNRA))) setIsNRAOverridden(calculatedNRA !== nra && !isNaN(parseFloat(nra)));
+      if (!isNaN(parseFloat(calculatedNRA))) setIsNRAOverridden(parseFloat(calculatedNRA) !== parseFloat(nra) && !isNaN(parseFloat(nra)));
 
       if (!isNaN(parseFloat(calculatedOfferPrice)))
         setIsOfferPriceOverridden(calculatedOfferPrice !== owner.offer_price && !isNaN(parseFloat(offer_price)));
@@ -901,7 +901,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
                         params.onChange(e.target.value);
                       }}
-                      className={isNraOverridden ? classes.baseValueChanged : classes.maxWidth}
+                      className={isOfferPriceOverridden ? `overridden ${classes.baseValueChanged}` : classes.maxWidth}
+                      data-testid='nra-field'
                       InputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
@@ -1032,7 +1033,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                         setIsOfferPriceOverridden(parseFloat(value) !== parseFloat(calculatedOfferPrice));
                         props.onChange(value);
                       }}
-                      className={isOfferPriceOverridden ? classes.baseValueChanged : classes.maxWidth}
+                      className={isOfferPriceOverridden ? `overridden ${classes.baseValueChanged}` : classes.maxWidth}
+                      data-testid="target-offer-price-field"
                       InputProps={{
                         inputComponent: CurrencyFormatCustom,
                         endAdornment: (
@@ -1224,6 +1226,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               onClick={handleClickAdd}
               color="secondary"
               style={{ marginBottom: '40px', marginRight: '20px' }}
+              data-testid='action-button'
             >
               {selectedRow ? 'Update' : 'Add'}
             </Button>

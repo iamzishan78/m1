@@ -1,6 +1,6 @@
 export const RevenueStatementHeadCells = [
     {
-        id: "property.purchaserNumber", title: "Purchaser Prop #", filterKey: ['purchaserNumber.keyword', 'name.keyword'], sort: true, type: 'autocomplete', esIndex: 'properties_flat', width: '200px'
+        id: "property.purchaserNumber", title: "Payor Prop #", filterKey: ['purchaserNumber.keyword', 'name.keyword'], sort: true, type: 'autocomplete', esIndex: 'properties_flat', width: '200px'
     },
     {
         id: "property.name", title: "Property Name", filterKey: 'property.name.keyword', sort: true, width: '275px', disabled: true

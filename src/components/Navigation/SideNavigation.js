@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import _ from "underscore";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
 import { useLazyQuery } from "@apollo/client";
@@ -19,7 +18,6 @@ import MenuIcon from "@material-ui/icons/Menu";
 import Typography from "@material-ui/core/Typography";
 import FlowIcon from "@material-ui/icons/Repeat";
 import ActivityIcon from "@material-ui/icons/Event";
-import SearchIcon from "@material-ui/icons/Search";
 import MapIcon from '@material-ui/icons/Map';
 import BarChartIcon from "@material-ui/icons/BarChart";
 import EditIcon from "@material-ui/icons/Edit";
@@ -32,11 +30,12 @@ import { GET_WORKSPACE_SETTINGS } from "graphQL/useQueryWorkspaceSettings";
 import { VIEWFILEQUERY } from "graphQL/useQueryViewFile";
 
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
-import { FEATURES } from "components/Shared/FeatureFlag/common";
+import { FEATURES, ROUTES } from "components/Shared/FeatureFlag/common";
 import WorkspaceEditModal from "components/Navigation/components/WorkSpaceEditModal";
 import Analytics from "components/Shared/svgIcons/analytics";
 import AdminIcon from ".././Shared/svgIcons/admin-setting";
 import { workspaceTenantName } from "components/Shared/functions";
+import { navController } from "hookstate/navStateController";
 
 const M1neralLogoWhiteLetters = styled(M1neralLogoNavNoAuth)`
   width: 260px;
@@ -62,6 +61,8 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
   const [viewFile, { data: viewFileResult }] = useLazyQuery(VIEWFILEQUERY, {
     fetchPolicy: "no-cache",
   });
+
+  const { stateValues: { selectedModule } } = navController.useState(['selectedModule'])
 
   useEffect(() => {
     getWorkspaceSettings({
@@ -162,7 +163,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               selected: classes.menuListItemSelected,
             }}
             button
-            selected={stateNav.selectedMenuIndexDashboard === 1}
+            selected={selectedModule === ROUTES.DASHBOARD.module}
             onClick={(event) => handleListItemClick("/dashboard")}
             key="dashboard"
           >
@@ -185,7 +186,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               selected: classes.menuListItemSelected,
             }}
             button
-            selected={stateNav.selectedMenuIndexFind === 1}
+            selected={selectedModule === ROUTES.MAP.module}
             onClick={(event) => handleListItemClick("/")}
             key="home"
           >
@@ -205,7 +206,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               selected: classes.menuListItemSelected,
             }}
             button
-            selected={stateNav.selectedMenuIndexContacts === 1}
+            selected={selectedModule === ROUTES.CONTACT.module}
             onClick={(event) => {
               setStateApp((stateApp) => ({
                 ...stateApp,
@@ -236,7 +237,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               selected: classes.menuListItemSelected,
             }}
             button
-            selected={stateNav.selectedMenuIndexTransact === 1}
+            selected={selectedModule === ROUTES.FLOW.module}
             onClick={(event) => handleListItemClick("/flow")}
             key="flow"
           >
@@ -262,7 +263,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                 selected: classes.menuListItemSelected,
               }}
               button
-              selected={stateNav.selectedMenuIndexLand === 1}
+              selected={selectedModule === ROUTES.LANDMODULE.module}
               onClick={(event) => {
                 handleListItemClick("/land/agreements");
               }}
@@ -291,7 +292,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                 selected: classes.menuListItemSelected,
               }}
               button
-              selected={stateNav.selectedMenuIndexRevenue === 1}
+              selected={selectedModule === ROUTES.REVENUEMODULE.module}
               onClick={(event) => {
                 handleListItemClick("/revenue/properties");
               }}
@@ -319,7 +320,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               selected: classes.menuListItemSelected,
             }}
             button
-            selected={stateNav.selectedMenuIndexDocuments === 1}
+            selected={selectedModule === ROUTES.FILES.module}
             onClick={(event) => {
               setStateApp((stateApp) => ({
                 ...stateApp,
@@ -354,7 +355,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               selected: classes.menuListItemSelected,
             }}
             button
-            selected={stateNav.selectedMenuIndexCalendar === 1}
+            selected={selectedModule === ROUTES.CALENDER.module}
             onClick={(event) => handleListItemClick("/calendar/activities")}
             key="calendar"
           >
@@ -380,7 +381,6 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
               selected: classes.menuListItemSelected,
             }}
             button
-            selected={stateNav.selectedMenuIndexStudio === 1}
             onClick={(event) => handleListItemClick("/studio")}
             key="studio"
           >
@@ -412,7 +412,7 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
                 selected: classes.menuListItemSelected,
               }}
               button
-              selected={stateNav.selectedMenuIndexAnalytics === 1}
+              selected={selectedModule === ROUTES.ANALYTICS.module}
               onClick={(event) => {
                 setStateApp((stateApp) => ({
                   ...stateApp,
@@ -446,11 +446,11 @@ const SideNavigation = ({ openDrawer, stateNav, setStateNav, setStateApp, handle
           {(stateApp.user.roles.includes("Admin") || stateApp.user.roles.includes("Owner")) && (
             <ListItem
               classes={{
-                root: classes.menuListItem,
+                root: classes.menuListItem +' '+ classes.alignBottom ,
                 selected: classes.menuListItemSelected,
               }}
               button
-              selected={stateNav.selectedMenuIndexAdmin === 1}
+              selected={selectedModule === ROUTES.ADMIN_SETTINGS.module}
               onClick={() => {
                 setStateApp((stateApp) => ({
                   ...stateApp,
