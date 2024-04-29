@@ -435,7 +435,7 @@ function ContactDetailCard(props) {
 
   let history = useHistory();
   const pathName = history.location.pathname;
-  const contactId = pathName.split("contact/details/")[1].replace("/", "");
+  const contactId = pathName.split("contact/details/")[1]?.replace("/", "") || props.contactId;
   const shrinkRightColumn = useSelector(({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn);
   const classes = useStyles({ ...props, shrinkRightColumn });
   const [openDialog, setOpenDialog] = useState(false);
@@ -753,7 +753,7 @@ function ContactDetailCard(props) {
               <div className={classes.summarySection}>
                 <Grid item xs={12} container spacing={0} style={{
                   padding: "5px 20px",
-                  height: "650px",
+                  height: "450px",
                   // marginBottom: "-100px",
                   // marginTop: "20px",
                   textAlign: "center"
