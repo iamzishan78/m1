@@ -296,6 +296,7 @@ const parcelOwnerForm = (getValues, setValue) => {
               <IconButton
                 aria-label="toggle offer_price_nma"
                 onClick={() => {
+                  const { nra } = getValues()
                   const uMaxUnitPricing = sideDialogController.getValue('uMaxUnitPricing')
                   setValue('max_offer_price', calculateOfferPrice(nra, uMaxUnitPricing))
                 }}
@@ -333,18 +334,18 @@ const parcelOwnerForm = (getValues, setValue) => {
         inputComponent: CurrencyFormatCustom,
       }
     },
-    // {
-    //   label: "Cost Bearing",
-    //   name: "cost_bearing"
-    // },
-    // {
-    //   label: "Cost Free High Value",
-    //   name: "cost_free_high_value"
-    // },
-    // {
-    //   label: "Cost Bearing High Value",
-    //   name: "cost_bearing_high_value"
-    // },
+    {
+      label: "Cost Bearing",
+      name: "cost_bearing"
+    },
+    {
+      label: "Cost Free High Value",
+      name: "cost_free_high_value"
+    },
+    {
+      label: "Cost Bearing High Value",
+      name: "cost_bearing_high_value"
+    },
     {
       label: "QTR 1",
       name: "qtr1",

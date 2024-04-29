@@ -336,7 +336,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
             {formStateValues?.newOwner &&
               <CommonForm
-                FormJson={contactSubForm}
+                FormJson={contactSubForm(cotactOwnerGetValues, cotactOwnerSetValue)}
                 selectedRow={selectedRow}
                 control={contactSubFormControl}
                 reset={cotactOwnerFormRest}
@@ -347,7 +347,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
             }
 
             <CommonForm
-              FormJson={parcelOwnerForm}
+              FormJson={parcelOwnerForm(parcelOwnerGetValues, parcelOwnerSetValue)}
               selectedRow={selectedRow}
               control={parcelOwnerFormControl}
               reset={parcelOwnerFormRest}

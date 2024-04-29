@@ -12,7 +12,7 @@ function CommonForm({ FormJson, selectedRow = {}, control, reset, getValues, set
 
   return (
     <>
-      {FormJson(getValues, setValue).map((item, index) => (
+      {FormJson.map((item, index) => (
         <React.Fragment key={index}>
           {
             item.renderField === "autoComplete" ? (
