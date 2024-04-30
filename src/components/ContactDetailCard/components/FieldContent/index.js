@@ -203,7 +203,13 @@ export default function FieldContent({
 
     // Iterate over fieldNames and assign corresponding values from content object
     fieldNames.forEach(field => fields[field] = content[field]);
-    setEditContent({...editContent }); // show updated value in the popover
+    // Check if editContent exists and has more than one property, return if true
+    // if editContent has more than one property we don't need to close popup on blur
+    if (Object.keys(editContent || {})?.length > 1) return;
+
+    // Reset edit state and update editContent with field values
+    setEdit(null); // It closes popup on blur
+    setEditContent({ ...fields });
   }
 
 
