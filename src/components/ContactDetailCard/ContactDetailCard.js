@@ -52,7 +52,6 @@ import { get } from "lodash";
 import { AppContext } from "AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { toggleRightColumn } from "actions/ContactDetailCard";
-import { getAddressUrl } from "utils/helper";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
@@ -673,8 +672,7 @@ function ContactDetailCard(props) {
                     )}
                   </FieldContent>
                 </h2>
-                <Link onClick={() => window.open(getAddressUrl(contactData), "_blank")}>
-                  <FieldContent
+                <FieldContent
                     childrenLeft
                     noMargin
                     name="Address"
@@ -690,7 +688,6 @@ function ContactDetailCard(props) {
                       country: contactData.country,
                     }}
                   />
-                </Link>
               </div>
               <div className={classes.tagsContainer}>
                 <div className={classes.highlighter}>
