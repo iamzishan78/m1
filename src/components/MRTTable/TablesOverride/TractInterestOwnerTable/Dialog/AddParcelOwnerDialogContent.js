@@ -236,6 +236,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       variables: {
         parcelOwner: {
           ...formStateValues,
+          deals: formStateValues?.deals || [],
           createBy: getUser?._id,
           lastUpdateBy: getUser?._id,
         },
