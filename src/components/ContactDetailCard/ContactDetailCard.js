@@ -52,7 +52,6 @@ import { get } from "lodash";
 import { AppContext } from "AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { toggleRightColumn } from "actions/ContactDetailCard";
-import { getAddressUrl } from "utils/helper";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
@@ -436,7 +435,7 @@ function ContactDetailCard(props) {
 
   let history = useHistory();
   const pathName = history.location.pathname;
-  const contactId = pathName.split("contact/details/")[1].replace("/", "");
+  const contactId = pathName.split("contact/details/")[1]?.replace("/", "") || props.contactId;
   const shrinkRightColumn = useSelector(({ ContactDetailCard }) => ContactDetailCard.shrinkRightColumn);
   const classes = useStyles({ ...props, shrinkRightColumn });
   const [openDialog, setOpenDialog] = useState(false);
@@ -673,8 +672,7 @@ function ContactDetailCard(props) {
                     )}
                   </FieldContent>
                 </h2>
-                <Link onClick={() => window.open(getAddressUrl(contactData), "_blank")}>
-                  <FieldContent
+                <FieldContent
                     childrenLeft
                     noMargin
                     name="Address"
@@ -690,7 +688,6 @@ function ContactDetailCard(props) {
                       country: contactData.country,
                     }}
                   />
-                </Link>
               </div>
               <div className={classes.tagsContainer}>
                 <div className={classes.highlighter}>
@@ -756,7 +753,7 @@ function ContactDetailCard(props) {
               <div className={classes.summarySection}>
                 <Grid item xs={12} container spacing={0} style={{
                   padding: "5px 20px",
-                  height: "650px",
+                  height: "450px",
                   // marginBottom: "-100px",
                   // marginTop: "20px",
                   textAlign: "center"

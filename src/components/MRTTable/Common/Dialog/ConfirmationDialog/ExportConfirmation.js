@@ -70,10 +70,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		let sortOrder = {};
 		if (tableStateValues.sorting.length > 0) {
 			const column = filteredTableSchema.find(col => col.accessorKey === tableStateValues.sorting[0]?.id);
-			let fieldName = tableStateValues.sorting[0]?.id;
-			if (column.type === "string") {
-				fieldName += ".keyword";
-			}
+			let fieldName = column?.name || tableStateValues.sorting[0]?.id;
 			sortOrder = { field: fieldName, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
 		}
 

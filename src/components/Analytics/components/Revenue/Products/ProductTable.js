@@ -28,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: "bold",
     },
     "& .MuiTableCell-head": {
-      lineHeight: "0.5rem",
       borderBottom: "none",
     },
   },
