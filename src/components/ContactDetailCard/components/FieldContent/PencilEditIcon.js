@@ -30,6 +30,7 @@ function PencilEditIcon({
                 <Grid container spacing={0} style={{ width: "200px" }}>
                     <Grid className={classes.buttonsRow} item xs={12}>
                         <Button
+                            data-testid='checkIcon'
                             size="small"
                             variant="outlined"
                             className={classes.popoverButton}

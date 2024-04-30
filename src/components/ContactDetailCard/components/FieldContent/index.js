@@ -25,6 +25,9 @@ import EntityType from "./EntityType";
 import CampaignNameField from "./CampaignNameField";
 import ContactStatus from "components/ContactDetailCard/components/AutoCompleteWithAddNew";
 import AutoCompleteAddNewField from "./AutoCompleteAddNewField";
+import Link from "@material-ui/core/Link";
+import { getAddressUrl } from "utils/helper";
+import GoogleMapIcon from "components/Shared/svgIcons/GoogleMapIcon";
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -196,7 +199,9 @@ export default function FieldContent({
   }
 
   const onBlurHandler = (fieldNames) => {
-    const fields = {};
+    const fields = {}; // Initialize an empty object to store field values
+
+    // Iterate over fieldNames and assign corresponding values from content object
     fieldNames.forEach(field => fields[field] = content[field]);
     setEditContent({...editContent }); // show updated value in the popover
   }
@@ -421,6 +426,7 @@ export default function FieldContent({
             <TextField
               key={"fieldContentInput" + fieldName}
               id={"fieldContentInput" + fieldName}
+              data-testid={fieldName}
               className={classes.editTextField}
               variant="outlined"
               size="small"
@@ -499,7 +505,12 @@ export default function FieldContent({
       )}
       {fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />}
       {isPurchased && <CopyPurchaseInfo updateContact={updateContact} userId={stateApp.user.mongoId} content={content} contactId={id} />}
-
+      {textArray.length > 0 && name === 'Address' ?
+          <Link onClick={() => window.open(getAddressUrl(content), "_blank")}>
+              <GoogleMapIcon />
+          </Link>
+        : ""
+      }
       {!childrenLeft && !onlyChildren && children ? children : ""}
       {isCurEdited ? " (edited)" : ""}
     </span>
@@ -507,7 +518,11 @@ export default function FieldContent({
 
   return (
     <React.Fragment>
-      <p className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP}`} style={{ width: "100%" }}>
+      <p
+        className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP}`}
+        style={{ width: "auto" }}
+        data-testid={name}
+      >
         {(linkType === LinkTypes.Mail || linkType === LinkTypes.Simple) && textArray.length > 0 ? (
           <a href={getHrefValue(textArray.join(", "), linkType)} target="_blank" className={classes.noTextDecoration} rel="noreferrer">
             {renderOutput}

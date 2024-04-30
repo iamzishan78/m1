@@ -33,7 +33,7 @@ import { v4 as uuid } from "uuid";
 
 // Constants
 const workSpace = Cypress.env('TENENT') || "localhost"
-const { longTimeout, extraTimeout } = basic_timeouts
+const { longTimeout, extraTimeout, midExtraLongTimeout } = basic_timeouts
 
 Cypress.on('uncaught:exception', (err, runnable) => {
     return false

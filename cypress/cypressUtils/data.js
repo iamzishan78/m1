@@ -24,6 +24,7 @@ export const basic_timeouts = {
     midTimeout: 10 * 1000,
     partialLongTimeout: 20 * 1000,
     longTimeout: 100 * 1000,
+    midExtraLongTimeout: 500 * 1000,
     extraTimeout: 1500 * 1000
 }
 
