@@ -37,17 +37,11 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       label: "Surface Interest",
       name: "surface_interest",
       type: "number",
-      onBlur: (value) => {
-        return parseFloat(value).toFixed(8)
-      },
     },
     {
       label: "Mineral Interest",
       name: "mineral_interest",
       type: "number",
-      onBlur: (value) => {
-        return parseFloat(value).toFixed(8)
-      },
     },
     {
       label: "Non-Exec Rights Only",
@@ -59,17 +53,11 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       label: "Royalty Interest (Lease)",
       name: "royalty_interest",
       type: "number",
-      onBlur: (value) => {
-        return parseFloat(value).toFixed(8)
-      },
     },
     {
       label: "Overriding Royalty Interest (ORRI)",
       name: "orri",
       type: "number",
-      onBlur: (value) => {
-        return parseFloat(value).toFixed(8)
-      },
     },
     {
       label: "Working Interest",
@@ -143,6 +131,11 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         sideDialogController.updateState({ 'showTargetOfferPriceRecalculate': isOverride })
         return isOverride
       },
+      onBlur: (value) => {
+        const numericValue = parseFloat(value.slice(1));
+        const formattedValue = numericValue.toFixed(8);
+        return parseFloat(formattedValue).toFixed(8)
+      },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
         endAdornment: (
@@ -174,6 +167,11 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
         sideDialogController.updateState({ 'showMaxOfferPriceRecalculate': isOverride })
         return isOverride
+      },
+      onBlur: (value) => {
+        const numericValue = parseFloat(value.slice(1));
+        const formattedValue = numericValue.toFixed(8);
+        return parseFloat(formattedValue).toFixed(8)
       },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
@@ -245,6 +243,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       label: "Target Offer Price (per NRA)",
       name: "offer_price",
       isValueOverridden: (value) => {
+        if (!value) return
         const { nra } = getValues()
 
         const uUnitPricing = sideDialogController.getValue('uUnitPricing')
@@ -254,13 +253,18 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         sideDialogController.updateState({ 'showTargetOfferRecalculate': isOverride })
         return isOverride
       },
+      onBlur: (value) => {
+        const numericValue = parseFloat(value.slice(1));
+        const formattedValue = numericValue.toFixed(8);
+        return parseFloat(formattedValue).toFixed(8)
+      },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
         endAdornment: (
           <InputAdornment position="end">
             {!!sideDialogController.getValue('showTargetOfferRecalculate') && (
               <IconButton
-                aria-label="toggle offer_price_nma"
+                aria-label="toggle offer_price"
                 onClick={() => {
                   const { nra } = getValues()
 
@@ -279,6 +283,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       label: "Max Offer Price (per NRA)",
       name: "max_offer_price",
       isValueOverridden: (value) => {
+        if (!value) return
         const { nra } = getValues()
 
         const uMaxUnitPricing = sideDialogController.getValue('uMaxUnitPricing')
@@ -288,13 +293,18 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         sideDialogController.updateState({ 'showMaxOfferRecalculate': isOverride })
         return isOverride
       },
+      onBlur: (value) => {
+        const numericValue = parseFloat(value.slice(1));
+        const formattedValue = numericValue.toFixed(8);
+        return parseFloat(formattedValue).toFixed(8)
+      },
       InputProps: {
         inputComponent: CurrencyFormatCustom,
         endAdornment: (
           <InputAdornment position="end">
             {!!sideDialogController.getValue('showMaxOfferRecalculate') && (
               <IconButton
-                aria-label="toggle offer_price_nma"
+                aria-label="toggle max_offer_price"
                 onClick={() => {
                   const { nra } = getValues()
                   const uMaxUnitPricing = sideDialogController.getValue('uMaxUnitPricing')
@@ -318,79 +328,37 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       name: "seller_asking_price",
       InputProps: {
         inputComponent: CurrencyFormatCustom,
-      }
+      },
+      onBlur: (value) => {
+        const numericValue = parseFloat(value.slice(1));
+        const formattedValue = numericValue.toFixed(8);
+        return parseFloat(formattedValue).toFixed(8)
+      },
     },
     {
       label: "Competitor Offer Price",
       name: "competitor_offer_price",
       InputProps: {
         inputComponent: CurrencyFormatCustom,
-      }
+      },
+      onBlur: (value) => {
+        const numericValue = parseFloat(value.slice(1));
+        const formattedValue = numericValue.toFixed(8);
+        return parseFloat(formattedValue).toFixed(8)
+      },
     },
     {
       label: "Actual Offer Price",
       name: "actual_offer_price",
       InputProps: {
         inputComponent: CurrencyFormatCustom,
-      }
+      },
+      onBlur: (value) => {
+        const numericValue = parseFloat(value.slice(1));
+        const formattedValue = numericValue.toFixed(8);
+        return parseFloat(formattedValue).toFixed(8)
+      },
     },
-    {
-      label: "Contact Status",
-      name: "contactStatus",
-      renderField: "autoComplete",
-      filterKey: "contactStatus.keyword",
-      esIndex: "contacts_flat",
-    },
-    {
-      label: "Contact Stage",
-      name: "status",
-      defaultOptions: contactStatusOptions,
-      renderField: "autoComplete",
-      filterKey: "status.keyword",
-      esIndex: "contacts_flat",
-    },
-    {
-      label: "Campaign Names",
-      name: "campaignName",
-      renderField: "campaignName"
-    },
-    {
-      label: "Campaign Priority",
-      name: "campaignPriority",
-      renderField: "autoComplete",
-      esIndex: 'shapeowners_flat',
-      filterKey: 'campaignPriority.keyword',
-    },
-    {
-      label: "Lease Status",
-      name: "leaseStatus",
-      renderField: "autoComplete",
-      esIndex: 'shapeowners_flat',
-      filterKey: 'leaseStatus.keyword',
-      defaultOptions: [{ label: "HBP", value: "HBP" }, { label: "Leased", value: "Leased" }, { label: "Unleased", value: "Unleased" }]
-    },
-    {
-      label: "Associated Deals",
-      name: "deals",
-      renderField: "associatedDeals"
-    },
-    {
-      label: "Depth Restrictions",
-      name: "depthBoth",
-      renderField: "radioButton",
-      options: [
-        { value: "true", label: "All Depths" },
-        { value: "false", label: "Footages/Formations" },
-      ]
-    },
-    // {
-    //   label: "Depth From",
-    //   name: "depthFrom",
-    // },
-    // {
-    //   label: "Depth To",
-    //   name: "depthTo",
-    // },
   ]
 
   if (tenantName === 'Providence') {
@@ -482,9 +450,64 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
     formFields.push(...stateSpecificFields);
   }
 
+  const otherFields = [
+    {
+      label: "Contact Status",
+      name: "contactStatus",
+      renderField: "autoComplete",
+      filterKey: "contactStatus.keyword",
+      esIndex: "contacts_flat",
+    },
+    {
+      label: "Contact Stage",
+      name: "status",
+      defaultOptions: contactStatusOptions,
+      renderField: "autoComplete",
+      filterKey: "status.keyword",
+      esIndex: "contacts_flat",
+    },
+    {
+      label: "Campaign Names",
+      name: "campaignName",
+      renderField: "campaignName"
+    },
+    {
+      label: "Campaign Priority",
+      name: "campaignPriority",
+      renderField: "autoComplete",
+      esIndex: 'shapeowners_flat',
+      filterKey: 'campaignPriority.keyword',
+    },
+    {
+      label: "Lease Status",
+      name: "leaseStatus",
+      renderField: "autoComplete",
+      esIndex: 'shapeowners_flat',
+      filterKey: 'leaseStatus.keyword',
+      defaultOptions: [{ label: "HBP", value: "HBP" }, { label: "Leased", value: "Leased" }, { label: "Unleased", value: "Unleased" }]
+    },
+    {
+      label: "Associated Deals",
+      name: "deals",
+      renderField: "associatedDeals"
+    },
+    {
+      label: "Depth Restrictions",
+      name: "depthBoth",
+      renderField: "radioButton",
+      options: [
+        { value: "true", label: "All Depths" },
+        { value: "false", label: "Footages/Formations" },
+      ]
+    },
+  ]
+
+  formFields.push(...otherFields);
 
   return formFields;
 
 };
 
 export default parcelOwnerForm;
+
+//parseFloat(e.target.value).toFixed(2);
