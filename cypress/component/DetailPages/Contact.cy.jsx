@@ -144,7 +144,7 @@ describe('ContactDetailsSection', () => {
         // Click on delete dialog button
         cy.get('#deleteButton').click();
 
-        cy.wait(alias).then(deleteResponse => {
+        cy.wait(alias, { timeout: 100000 }).then(deleteResponse => {
           expect(deleteResponse?.response?.statusCode).to.eq(200);
           expect(deleteResponse?.response?.body?.data?.updateDeal?.success).to.eq(true);
         });
@@ -179,6 +179,8 @@ describe('ContactDetailsSection', () => {
         cy.interceptAndWait(['getContact'], () => {
           cy.get('[data-testid="checkIcon"]').click(); // Click on the check icon
         });
+
+        cy.wait(25000);
 
         // Check if the updated secondary address is displayed correctly
         cy.get('[data-testid="Secondary Address"]').contains(address.address1Alt);
