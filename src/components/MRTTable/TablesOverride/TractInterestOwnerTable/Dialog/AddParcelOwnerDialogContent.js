@@ -232,24 +232,46 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       customLayer: props.customLayerId
     })
 
-    addOwnerToAParcel({
-      variables: {
-        parcelOwner: {
-          ...formStateValues,
-          deals: formStateValues?.deals || [],
-          createBy: getUser?._id,
-          lastUpdateBy: getUser?._id,
+    if (selectedRow) {
+      updateParcelOwner({
+        variables: {
+          parcelOwner: {
+            _id: selectedRow?._id,
+            ...formStateValues,
+            deals: formStateValues?.deals || [],
+            createBy: getUser?._id,
+            lastUpdateBy: getUser?._id,
+          },
         },
-      },
-      refetchQueries: [
-        'getCustomLayer',
-        'getparcelOwners',
-        'getContactParcelInterests',
-        'getContactParcelInterest',
-        'getESSimpleSearch',
-      ],
-      awaitRefetchQueries: true,
-    });
+        refetchQueries: [
+          'getparcelOwners',
+          'getContactParcelInterests',
+          'getContactParcelInterest',
+          'getESSimpleSearch',
+          'getCustomLayer'
+        ],
+        awaitRefetchQueries: true,
+      });
+    } else {
+      addOwnerToAParcel({
+        variables: {
+          parcelOwner: {
+            ...formStateValues,
+            deals: formStateValues?.deals || [],
+            createBy: getUser?._id,
+            lastUpdateBy: getUser?._id,
+          },
+        },
+        refetchQueries: [
+          'getCustomLayer',
+          'getparcelOwners',
+          'getContactParcelInterests',
+          'getContactParcelInterest',
+          'getESSimpleSearch',
+        ],
+        awaitRefetchQueries: true,
+      });
+    }
 
     setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
   };
