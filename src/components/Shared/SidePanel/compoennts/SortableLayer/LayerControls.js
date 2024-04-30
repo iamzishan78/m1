@@ -196,6 +196,7 @@ const LayerControls = ({ type, layer, labelId, index, updateLayer, isHover }) =>
           <FormControlLabel
             control={
               <Switch
+                data-testid={`layer-${layer.name}-toggle`}
                 disabled={
                   !ifLayerHaveData(layer, stateApp)
                     ? classes.disabledLayerTitle
