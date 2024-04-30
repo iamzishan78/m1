@@ -68,7 +68,7 @@ function AutoCompleteComponent({ control, item }) {
             options={options}
             getOptionLabel={option => option.label}
             getOptionSelected={(option, value) => option.value === value}
-            value={props.value}
+            value={props.value ? { label: props.value, value: props.value } : props.value}
             onChange={(e, option) => {
               props.onChange(option ? option?.value : null)
 
