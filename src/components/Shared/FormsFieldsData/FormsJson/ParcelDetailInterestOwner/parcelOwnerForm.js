@@ -68,16 +68,16 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       label: "Net Acres",
       name: "net_acres",
       isValueOverridden: (value) => {
-        const { mineral_interest } = getValues()
-
         if (!value) return
+        const { mineral_interest } = getValues() || {}
+
         const netAcres = calculateNetAcres(mineral_interest);
         const isOverride = parseFloat(netAcres) !== parseFloat(value)
         sideDialogController.updateState({ 'showNetAcresRecalculate': isOverride })
         return isOverride
       },
       onChange: (value) => {
-        const { mineral_interest, nra, royalty_interest, orri } = getValues()
+        const { mineral_interest, nra, royalty_interest, orri } = getValues() || {}
         const selectedParcel = popupController.getValue('selectedParcel');
         const workspaceSettings = sideDialogController.getValue('workspaceSettings')
         const uUnitPricingNMA = sideDialogController.getValue('uUnitPricingNMA')
@@ -101,7 +101,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
                   const workspaceSettings = sideDialogController.getValue('workspaceSettings')
                   const uUnitPricingNMA = sideDialogController.getValue('uUnitPricingNMA')
                   const uMaxUnitPricingNMA = sideDialogController.getValue('uMaxUnitPricingNMA')
-                  const { mineral_interest, nra, royalty_interest, orri } = getValues()
+                  const { mineral_interest, nra, royalty_interest, orri } = getValues() || {}
                   const netAcres = calculateNetAcres(mineral_interest);
                   setValue('net_acres', netAcres)
                   if (!nra) {
@@ -124,7 +124,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       name: "offer_price_nma",
       isValueOverridden: (value) => {
         if (!value) return
-        const { net_acres } = getValues();
+        const { net_acres } = getValues() || {};
         const uUnitPricingNMA = sideDialogController.getValue('uUnitPricingNMA')
         const calculatedOfferPrice = calculateOfferPrice(net_acres, uUnitPricingNMA);
         const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
@@ -144,7 +144,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
               <IconButton
                 aria-label="toggle offer_price_nma"
                 onClick={() => {
-                  const { net_acres } = getValues();
+                  const { net_acres } = getValues() || {};
                   const uUnitPricingNMA = sideDialogController.getValue('uUnitPricingNMA')
                   setValue('offer_price_nma', calculateOfferPrice(net_acres, uUnitPricingNMA))
                 }}
@@ -161,7 +161,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       name: "max_offer_price_nma",
       isValueOverridden: (value) => {
         if (!value) return
-        const { net_acres } = getValues();
+        const { net_acres } = getValues() || {};
         const uMaxUnitPricingNMA = sideDialogController.getValue('uMaxUnitPricingNMA')
         const calculatedOfferPrice = calculateOfferPrice(net_acres, uMaxUnitPricingNMA);
         const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
@@ -181,7 +181,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
               <IconButton
                 aria-label="toggle offer_price_nma"
                 onClick={() => {
-                  const { net_acres } = getValues();
+                  const { net_acres } = getValues() || {};
                   const uMaxUnitPricingNMA = sideDialogController.getValue('uMaxUnitPricingNMA')
                   setValue('max_offer_price_nma', calculateOfferPrice(net_acres, uMaxUnitPricingNMA))
                 }}
@@ -209,7 +209,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         if (!value) return
         const selectedParcel = popupController.getValue('selectedParcel');
         const workspaceSettings = sideDialogController.getValue('workspaceSettings')
-        const { mineral_interest, royalty_interest, orri } = getValues()
+        const { mineral_interest, royalty_interest, orri } = getValues() || {}
 
         const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
         const isOverride = parseFloat(calculatedNra) !== parseFloat(value)
@@ -225,7 +225,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
                 onClick={() => {
                   const selectedParcel = popupController.getValue('selectedParcel');
                   const workspaceSettings = sideDialogController.getValue('workspaceSettings')
-                  const { mineral_interest, royalty_interest, orri } = getValues()
+                  const { mineral_interest, royalty_interest, orri } = getValues() || {}
 
                   const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
                   setValue('nra', calculatedNra)
@@ -244,7 +244,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       name: "offer_price",
       isValueOverridden: (value) => {
         if (!value) return
-        const { nra } = getValues()
+        const { nra } = getValues() || {}
 
         const uUnitPricing = sideDialogController.getValue('uUnitPricing')
 
@@ -266,7 +266,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
               <IconButton
                 aria-label="toggle offer_price"
                 onClick={() => {
-                  const { nra } = getValues()
+                  const { nra } = getValues() || {}
 
                   const uUnitPricing = sideDialogController.getValue('uUnitPricing')
                   setValue('offer_price', calculateOfferPrice(nra, uUnitPricing))
@@ -284,7 +284,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       name: "max_offer_price",
       isValueOverridden: (value) => {
         if (!value) return
-        const { nra } = getValues()
+        const { nra } = getValues() || {}
 
         const uMaxUnitPricing = sideDialogController.getValue('uMaxUnitPricing')
 
@@ -306,7 +306,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
               <IconButton
                 aria-label="toggle max_offer_price"
                 onClick={() => {
-                  const { nra } = getValues()
+                  const { nra } = getValues() || {}
                   const uMaxUnitPricing = sideDialogController.getValue('uMaxUnitPricing')
                   setValue('max_offer_price', calculateOfferPrice(nra, uMaxUnitPricing))
                 }}
@@ -509,5 +509,3 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
 };
 
 export default parcelOwnerForm;
-
-//parseFloat(e.target.value).toFixed(2);

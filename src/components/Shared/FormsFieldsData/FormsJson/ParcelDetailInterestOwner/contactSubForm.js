@@ -1,8 +1,8 @@
 
 import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcelOwnerForm';
 
-const contactSubForm = () => {
-  return [
+const contactSubForm = ({ getValues, setValue, tenantName, state }) => {
+  const formFields = [
     {
       label: "First Name",
       name: "firstName"
@@ -15,7 +15,12 @@ const contactSubForm = () => {
       label: "Last Name",
       name: "lastName"
     },
-    parcelOwnerForm({})[0],
+    parcelOwnerForm({
+      getValues,
+      setValue,
+      tenantName,
+      state
+    })[0],
     {
       label: "Home phone",
       name: "homePhone"
@@ -48,8 +53,15 @@ const contactSubForm = () => {
       label: "Zip Code",
       name: "zipCode"
     },
-    ...parcelOwnerForm({}).slice(1)
+    ...parcelOwnerForm({
+      getValues,
+      setValue,
+      tenantName,
+      state
+    }).slice(1)
   ]
+
+  return formFields
 };
 
 export default contactSubForm;

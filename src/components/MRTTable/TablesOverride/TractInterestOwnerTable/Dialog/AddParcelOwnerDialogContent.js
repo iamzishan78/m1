@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -98,20 +98,22 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const getUser = user.get({ noproxy: true });
 
   const {
-    control: contactSubFormControl,
-    reset: cotactOwnerFormRest,
-    getValues: cotactOwnerGetValues,
-    setValue: cotactOwnerSetValue,
-    watch: cotactsOwnerWatch
+    control,
+    reset,
+    getValues,
+    setValue,
+    watch
   } = useForm();
 
-  const {
-    control: parcelOwnerFormControl,
-    reset: parcelOwnerFormRest,
-    getValues: parcelOwnerGetValues,
-    setValue: parcelOwnerSetValue,
-    watch: parcelOwnerWatch
-  } = useForm();
+  const formJson = useMemo(() => {
+    const formFunction = formStateValues?.newOwner ? contactSubForm : parcelOwnerForm;
+    return formFunction({
+      getValues,
+      setValue,
+      tenantName,
+      state: props?.customLayer?.state
+    });
+  }, [formStateValues?.newOwner]);
 
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutInputValue, NameAutInputValue] = useState('');
@@ -224,7 +226,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   const handleClickAdd = e => {
     e.preventDefault();
-    const parcelOwnerFormValue = parcelOwnerGetValues();
+    const parcelOwnerFormValue = getValues();
     const qtr = [parcelOwnerFormValue?.qtr1 || null, parcelOwnerFormValue?.qtr2 || null, parcelOwnerFormValue?.qtr3 || null, parcelOwnerFormValue?.qtr4 || null]
     sideDialogController.updateState({
       ...parcelOwnerFormValue,
@@ -282,8 +284,14 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       const rowData = _.merge({}, initialState, filteredSelectedRow);
 
       (rowData?.depthFrom === "All depths" && rowData?.depthTo === "All depths") ? rowData.depthBoth = "true" : rowData.depthBoth = "false"
+      rowData.qtr1 = selectedRow?.qtr?.[0]
+      rowData.qtr2 = selectedRow?.qtr?.[1]
+      rowData.qtr3 = selectedRow?.qtr?.[2]
+      rowData.qtr4 = selectedRow?.qtr?.[3]
+      rowData.contactStatus = selectedRow?.contact?.contactStatus
+      rowData.status = selectedRow?.contact?.status
       sideDialogController.updateState(rowData)
-      parcelOwnerFormRest(rowData)
+      reset(rowData)
     }
   }, [selectedRow]);
 
@@ -341,7 +349,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   addNewOnClick={value => {
                     const contact = { name: value };
                     sideDialogController.updateState({ name: value })
-                    parcelOwnerSetValue('name', value)
+                    setValue('name', value)
                     addContact({
                       variables: {
                         contact: {
@@ -358,24 +366,11 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               }
             </Grid>
 
-            {formStateValues?.newOwner &&
-              <CommonForm
-                FormJson={contactSubForm()}
-                control={contactSubFormControl}
-                watch={cotactsOwnerWatch}
-              />
-            }
-
             <CommonForm
-              FormJson={parcelOwnerForm({
-                getValues: parcelOwnerGetValues,
-                setValue: parcelOwnerSetValue,
-                tenantName,
-                state: props?.customLayer?.state
-              })}
-              control={parcelOwnerFormControl}
-              reset={parcelOwnerFormRest}
-              watch={parcelOwnerWatch}
+              FormJson={formJson}
+              control={control}
+              reset={reset}
+              watch={watch}
             />
 
           </Grid>
