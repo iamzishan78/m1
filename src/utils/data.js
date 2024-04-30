@@ -224,6 +224,16 @@ export const analyticsManagementRoutes = {
     isDefault: true,
     hideSearch: true,
   },
+  AUDITING_REPORTING: {
+    featureFlag: "CONTACTSUBMENU",
+    title: "Audit Reporting",
+    link: "/analytics/audit",
+    component: "AuditReporting",
+    value: "Permits", // Need to change value 
+    search: true,
+    isDefault: true,
+    hideSearch: true,
+  },
   PRODUCTION: {
     featureFlag: "CONTACTSUBMENU",
     title: "Production by State/County",

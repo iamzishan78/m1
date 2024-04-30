@@ -9,6 +9,7 @@ import { FEATURES } from "components/Shared/FeatureFlag/common";
 import RevenueAnalytics from "components/Analytics/components/Revenue";
 import LandAnalytics from "components/Analytics/components/Land";
 import ActivitiesDashboard from "components/Activities/components/ActivitiesDashboard";
+import AuditReporting from "components/AuditReporting/AuditReporting";
 import RigsCard from "components/Dashboard/components/RigsCard";
 import PermitsCard from "components/Dashboard/components/PermitsCard";
 import ProdCard from "components/Dashboard/components/ProdCard";
@@ -26,7 +27,8 @@ const Components = {
   PermitsCard: PermitsCard,
   ProdCard: ProdCard,
   RevenuePropertyDetails,
-  AdvancedSearch: AdvancedSearch
+  AdvancedSearch: AdvancedSearch,
+  AuditReporting: AuditReporting,
 };
 
 export default function Analytics() {
