@@ -23,12 +23,15 @@ describe('ContactDetailsSection', () => {
   beforeEach(() => {
     cy.interceptAndWait(['getContact'], () => {
       // Mounting the ContactDetailCard component with predefined props
-      cy.viewport(1600, 1200).mount(<ContactDetailCard contactId="65ad9213ede1b8fc69df499f" />, {
-        // Providing additional props for test case execution
-        testCase: {
-          contactId: '65ad9213ede1b8fc69df499f',
-        },
-      });
+      cy.viewport(1600, 1200).mount(
+        <ContactDetailCard contactId="65ad9213ede1b8fc69df499f" />,
+        {
+          // Providing additional props for test case execution
+          testCase: {
+            contactId: '65ad9213ede1b8fc69df499f',
+          },
+        }
+      );
     });
   });
 
@@ -60,10 +63,10 @@ describe('ContactDetailsSection', () => {
     // Waiting for the creation response and processing the response data
     cy.interceptAndWait(
       ['addDeal'],
-      (alias) => {
+      alias => {
         cy.get('[data-testid="add-deal-icon-button"]').click();
 
-        cy.wait(alias).then((creationResponse) => {
+        cy.wait(alias).then(creationResponse => {
           expect(creationResponse?.response?.statusCode).to.eq(200);
           expect(creationResponse?.response?.body?.data?.addDeal?.success).to.eq(true);
           addDealName = creationResponse?.response?.body?.data?.addDeal?.deal?.name;
@@ -100,10 +103,10 @@ describe('ContactDetailsSection', () => {
     // Waiting for the creation response and processing the response data
     cy.interceptAndWait(
       ['updateDeal'],
-      (alias) => {
+      alias => {
         cy.get('.MuiButtonBase-root[data-testid="add-deal-icon-button"]').click();
 
-        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then((updateResponse) => {
+        cy.wait(alias, { timeout: basic_timeouts.longTimeout }).then(updateResponse => {
           expect(updateResponse?.response?.statusCode).to.eq(200);
           expect(updateResponse?.response?.body?.data?.updateDeal?.success).to.eq(true);
           updateDealName = updateResponse?.response?.body?.data?.updateDeal?.deal?.name;
@@ -137,11 +140,11 @@ describe('ContactDetailsSection', () => {
     // Waiting for the creation response and processing the response data
     cy.interceptAndWait(
       ['updateDeal'],
-      (alias) => {
+      alias => {
         // Click on delete dialog button
         cy.get('#deleteButton').click();
 
-        cy.wait(alias, { timeout: 100000 }).then((deleteResponse) => {
+        cy.wait(alias, { timeout: 100000 }).then(deleteResponse => {
           expect(deleteResponse?.response?.statusCode).to.eq(200);
           expect(deleteResponse?.response?.body?.data?.updateDeal?.success).to.eq(true);
         });
@@ -150,22 +153,36 @@ describe('ContactDetailsSection', () => {
     );
   });
 
+  // Test case to Update Secondary Adderss
   it('Updates Secondary Adderss', () => {
-    cy.get('[data-testid="Secondary Address"]')
-      .invoke('text')
-      .then((text) => {
-        const address = text.includes(addresses[0].address1Alt) ? addresses[1] : addresses[0];
+    cy.get('[data-testid="Secondary Address"]') // Get the element with data-testid "Secondary Address"
+      .invoke('text') // Get the text content of the element
+      .then(text => {
+        // Execute the following code after getting the text
+        // Determine which address to use based on whether the text includes the address1Alt property of the first or second address
+        const address = text.includes(addresses[0].address1Alt)
+          ? addresses[1]
+          : addresses[0];
 
-        cy.get('[data-testid="Secondary Address"]').find('#contPencilIcon').click({ force: true });
+        // Find and click on the pencil icon within the "Secondary Address" element
+        cy.get('[data-testid="Secondary Address"]')
+          .find('#contPencilIcon')
+          .click({ force: true }); // Use force to click even if the element is covered
 
+        // Clear and type new values for address fields
         cy.get('#fieldContentInputaddress1Alt').clear().type(address.address1Alt);
         cy.get('#fieldContentInputcityAlt').clear().type(address.cityAlt);
         cy.get('#fieldContentInputstateAlt').clear().type(address.stateAlt);
         cy.get('#fieldContentInputzipAlt').clear().type(address.zipAlt);
+
+        // Intercept and wait for 'getContact' request before continuing
         cy.interceptAndWait(['getContact'], () => {
-          cy.get('[data-testid="checkIcon"]').click();
+          cy.get('[data-testid="checkIcon"]').click(); // Click on the check icon
         });
+
         cy.wait(25000);
+
+        // Check if the updated secondary address is displayed correctly
         cy.get('[data-testid="Secondary Address"]').contains(address.address1Alt);
       });
   });
