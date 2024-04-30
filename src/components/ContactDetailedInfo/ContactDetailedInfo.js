@@ -320,6 +320,7 @@ export default function DetailInfo(props) {
                           content={row.data}
                           linkType={row.linkType}
                           isPurchased={selectedTab === "Purchased Info"}
+                          name={key}
                         />
                       </Grid>
                     </React.Fragment>
