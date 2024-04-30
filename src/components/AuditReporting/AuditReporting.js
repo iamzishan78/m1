@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useLazyQuery } from "@apollo/client";
 
-// import ActivityAnalytics from "./ActivityAnalytics";
-// import ActivitiesDashboardFilter from "./ActivitiesDashboardFilter";
-// import ActivitiesTable from "components/Table/Activities/ActivitiesTable";
+ import ActivitiesDashboardFilter from "components/Activities/components/ActivitiesDashboardFilter";
 import { GET_ES_MIN_VALUE } from "graphQL/useQueryESMinValue";
 
 const useStyles = makeStyles((theme) => ({
@@ -71,7 +69,7 @@ const ActivitiesDashboard = () => {
 
   return (
     <div className={classes.root}>
-      {/* <ActivitiesDashboardFilter
+      { <ActivitiesDashboardFilter
         esIndex={esIndex}
         searchFields={searchFields}
         setFilterToggle={setFilterToggle}
@@ -80,22 +78,8 @@ const ActivitiesDashboard = () => {
         appliedFilters={appliedFilters}
         minDate={minDate}
         setAppliedFilters={setAppliedFilters}
-      /> */}
-      {/* <ActivityAnalytics
-        filterToggle={filterToggle}
-        tableFilters={tableFilters}
-        appliedFilters={appliedFilters}
-        setAppliedFilters={setAppliedFilters}
-      />
-      <ActivitiesTable
-        esIndex={esIndex}
-        searchFields={searchFields}
-        filtersChange={filtersChange}
-        appliedFilters={appliedFilters}
-        filterToggle={filterToggle}
-        targetLabel={"activitiesDashboard"}
-        header="Activities"
-      /> */}
+        label={"User"} // to pass the dynamic label in filter
+      /> }
     </div>
   );
 };

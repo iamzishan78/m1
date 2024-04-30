@@ -10,6 +10,7 @@ import { GET_ES_SIMPLE_FILTER } from "graphQL/useQueryESSimpleFilter";
 import { getFilters } from "components/Table/Activities/ActivitiesTable";
 import { AppContext } from "AppContext";
 import { CUSTOM_DATES } from 'utils/data'
+import { useSelector } from "react-redux";
 import { handleCustomDateTypeChange } from 'utils/helper';
 
 const useStyles = makeStyles((theme) => ({
@@ -70,9 +71,10 @@ export default function CustomDatesActivities({
   setFilterToggle,
   filterToggle,
   setAppliedFilters,
+  label,
 }) {
   const classes = useStyles();
-
+  const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
   useEffect(() => {
     if (minDate) handleDateTypeChange(CUSTOM_DATES.ALL_DATES);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -210,18 +212,31 @@ export default function CustomDatesActivities({
             }}
           />
         </Grid>
-        <Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: "4px" }}>
-          <CampaignFilter
-            value={campaignName}
-            setValue={setCampaignName}
-            esIndex={esIndex}
-            searchFields={searchFields}
-            tableFilters={tableFilters}
-            appliedFilters={appliedFilters}
-            selectedFilters={selectedFilters}
-            onCampaignChange={handleFilterChange}
-          />
-        </Grid>
+        {/* Show Campaign dropdown for CRM tab only */}
+        {
+          activeModule.value == 'CRM' &&
+          <Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: "4px" }}>
+            <CampaignFilter
+              value={campaignName}
+              setValue={setCampaignName}
+              esIndex={esIndex}
+              searchFields={searchFields}
+              tableFilters={tableFilters}
+              appliedFilters={appliedFilters}
+              selectedFilters={selectedFilters}
+              onCampaignChange={handleFilterChange}
+            />
+          </Grid>
+        }
+        {/* Show Entity dropdown for Audit Reporting tab only */}
+        {
+          activeModule.title == 'Audit Reporting' &&
+          <Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: "4px" }}>
+            <EntityFilter
+              label={"Entity Type"}
+            />
+          </Grid>
+        }
         <Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: "4px" }}>
           <QualifierFilter
             value={qualifier}
@@ -231,11 +246,12 @@ export default function CustomDatesActivities({
             tableFilters={tableFilters}
             appliedFilters={appliedFilters}
             selectedFilters={selectedFilters}
+            label={label}
             onQualifierChange={handleFilterChange}
           />
         </Grid>
       </Grid>
-      
+
     </div>
   );
 }
@@ -337,7 +353,8 @@ const QualifierFilter = ({
   appliedFilters,
   searchFields,
   onQualifierChange,
-  selectedFilters
+  selectedFilters,
+  label
 }) => {
   const [stateApp] = useContext(AppContext);
   const [search, setSearch] = useState("");
@@ -400,10 +417,12 @@ const QualifierFilter = ({
         option?.key?.toString().replace(/^\,|\,$/gm, "")
       }
       renderInput={(params) => (
+
         <TextField
           {...params}
           variant="outlined"
-          label="Activity Owner"
+          //label="Activity Owner"
+          label={label}
           placeholder=""
           onChange={(e) => {
             setSearch(e.target.value);
@@ -416,4 +435,25 @@ const QualifierFilter = ({
       id="custom-date-dropdown"
     />
   );
+};
+
+const EntityFilter = ({
+  label
+}) => {
+  const options = ['Contacts'];
+
+  return (
+    <Autocomplete
+      size="small"
+      options={options}
+      defaultValue="Contacts"
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          variant="outlined"
+          label={label}
+          id="custom-entity-dropdown"
+        />
+      )}
+    />);
 };
