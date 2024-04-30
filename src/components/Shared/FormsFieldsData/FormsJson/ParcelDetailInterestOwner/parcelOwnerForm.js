@@ -73,7 +73,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
 
         const netAcres = calculateNetAcres(mineral_interest);
         const isOverride = parseFloat(netAcres) !== parseFloat(value)
-        sideDialogController.updateState({ 'showNetAcresRecalculate': isOverride })
+        sideDialogController.updateState({ 'showNetAcresRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onChange: (value) => {
@@ -128,7 +128,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         const uUnitPricingNMA = sideDialogController.getValue('uUnitPricingNMA')
         const calculatedOfferPrice = calculateOfferPrice(net_acres, uUnitPricingNMA);
         const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
-        sideDialogController.updateState({ 'showTargetOfferPriceRecalculate': isOverride })
+        sideDialogController.updateState({ 'showTargetOfferPriceRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {
@@ -165,7 +165,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         const uMaxUnitPricingNMA = sideDialogController.getValue('uMaxUnitPricingNMA')
         const calculatedOfferPrice = calculateOfferPrice(net_acres, uMaxUnitPricingNMA);
         const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
-        sideDialogController.updateState({ 'showMaxOfferPriceRecalculate': isOverride })
+        sideDialogController.updateState({ 'showMaxOfferPriceRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {
@@ -213,7 +213,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
 
         const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
         const isOverride = parseFloat(calculatedNra) !== parseFloat(value)
-        sideDialogController.updateState({ 'showNraRecalculate': isOverride })
+        sideDialogController.updateState({ 'showNraRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       InputProps: {
@@ -250,7 +250,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
 
         const calculatedOfferPrice = calculateOfferPrice(nra, uUnitPricing);
         const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
-        sideDialogController.updateState({ 'showTargetOfferRecalculate': isOverride })
+        sideDialogController.updateState({ 'showTargetOfferRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {
@@ -290,7 +290,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
 
         const calculatedOfferPrice = calculateOfferPrice(nra, uMaxUnitPricing);
         const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
-        sideDialogController.updateState({ 'showMaxOfferRecalculate': isOverride })
+        sideDialogController.updateState({ 'showMaxOfferRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {

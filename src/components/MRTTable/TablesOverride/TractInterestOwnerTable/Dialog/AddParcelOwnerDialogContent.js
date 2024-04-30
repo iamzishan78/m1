@@ -113,7 +113,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       tenantName,
       state: props?.customLayer?.state
     });
-  }, [formStateValues?.newOwner]);
+  }, [formStateValues?.newOwner, formState?.rerenderJson]);
 
   const [mongoEntitiesArray, setMongoEntitiesArray] = useState([]);
   const [nameAutInputValue, NameAutInputValue] = useState('');
