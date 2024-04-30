@@ -39,6 +39,6 @@ module.exports = defineConfig({
       framework: "create-react-app",
       bundler: "webpack",
     },
-    specPattern: 'cypress/component/**/(ShapeFileUpload|ShapeDetailCard).cy*'
+    specPattern: 'cypress/component/**/*.cy*'
   },
 });
