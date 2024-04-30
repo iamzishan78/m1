@@ -231,8 +231,11 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     sideDialogController.updateState({
       ...parcelOwnerFormValue,
       qtr: qtr,
-      customLayer: props.customLayerId
+      customLayer: props.customLayerId,
     })
+    if (formStateValues?.newOwner) {
+      sideDialogController.updateState({ relatedObject: { ...parcelOwnerFormValue } })
+    }
 
     if (selectedRow) {
       updateParcelOwner({
