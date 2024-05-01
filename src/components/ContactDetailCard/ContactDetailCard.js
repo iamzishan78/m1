@@ -246,6 +246,9 @@ const useStyles = makeStyles((theme) => ({
     overflow: "overlay",
     maxHeight: "calc(100vh - 85px)",
     width: "100%",
+    '&::-webkit-scrollbar': {
+      width: "0.4em !important", /* Set Width of the scrollbar to fix alignment issue of summary section field */
+    }
   },
   shrinkRightColumn: {
     position: "absolute",
