@@ -280,8 +280,8 @@ export const getZillowAddressUrl = (owner) => {  // create and return zillow lin
   if (state) address += `${encodeURIComponent(state)},`;
   if (zip) address += `${encodeURIComponent(zip)}`;
 
-  // Adding '_rb' and '_zpid' to the end of the Zillow link
-  address += "_rb/" + encodeURIComponent(zip) + "_zpid/";
+  // Adding '_rb' to the end of the Zillow link
+  address += "_rb/";
 
   return address;
 };
