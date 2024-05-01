@@ -271,6 +271,21 @@ export const getAddressUrl = (owner) => {
   return address;
 };
 
+export const getZillowAddressUrl = (owner) => {  // create and return zillow link from the address
+  let address = "https://www.zillow.com/homes/";
+  const { address1, city, state, zip } = owner;  
+
+  if (address1) address += `${encodeURIComponent(address1)},`;
+  if (city) address += `${encodeURIComponent(city)},`;
+  if (state) address += `${encodeURIComponent(state)},`;
+  if (zip) address += `${encodeURIComponent(zip)}`;
+
+  // Adding '_rb' and '_zpid' to the end of the Zillow link
+  address += "_rb/" + encodeURIComponent(zip) + "_zpid/";
+
+  return address;
+};
+
 export const getMapFilters = (stateNav, searchInput, gridPolygonString, format) => {
   const extendSearchQuery = searchInput
 
