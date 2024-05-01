@@ -271,7 +271,7 @@ export const getAddressUrl = (owner) => {
   return address;
 };
 
-export const getZillowAddressUrl = (owner) => {
+export const getZillowAddressUrl = (owner) => {  // create and return zillow link from the address
   let address = "https://www.zillow.com/homes/";
   const { address1, city, state, zip } = owner;  
 

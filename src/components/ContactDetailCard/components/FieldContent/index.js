@@ -511,7 +511,7 @@ export default function FieldContent({
       )}
       {fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />}
       {isPurchased && <CopyPurchaseInfo updateContact={updateContact} userId={stateApp.user.mongoId} content={content} contactId={id} />}
-      {textArray.length > 0 && name === 'Address' ?
+      {textArray.length > 0 && name === 'Address' ? // show google map and zillow icon when address exists
           <>
             <Link onClick={() => window.open(getAddressUrl(content), "_blank")}>
               <GoogleMapIcon />
