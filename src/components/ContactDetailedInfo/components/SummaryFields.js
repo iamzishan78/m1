@@ -31,7 +31,6 @@ const useStyles = makeStyles(() => ({
   fieldLabel: {
     fontWeight: "bold",
     fontSize: "15px",
-    textAlign: "left" // set text alignment left for labels
   },
   field: {
     "& .MuiAutocomplete-clearIndicator": {
@@ -83,7 +82,8 @@ export default function SummaryFields({ contactData }) {
           ..._contact,
           contactInterests: {
             nraSum: getCommaValue(_contact.contactInterests.nraSum),
-            offerPriceSum: getCommaValue(_contact.contactInterests.offerPriceSum)
+            offerPriceSum: getCommaValue(_contact.contactInterests.offerPriceSum),
+            maxOfferPriceSum: getCommaValue(_contact.contactInterests.maxOfferPriceSum)
           }
         };
       }
@@ -139,6 +139,8 @@ export default function SummaryFields({ contactData }) {
       return get(contactData, "evaluatedContactInterests.nraSum")?.toFixed(2) !== _value?.toFixed(2);
     } else if (key.includes("offerPriceSum")) {
       return get(contactData, "evaluatedContactInterests.offerPriceSum")?.toFixed(2) !== _value?.toFixed(2);
+    } else if (key.includes("maxOfferPriceSum")) {
+      return get(contactData, "evaluatedContactInterests.maxOfferPriceSum")?.toFixed(2) !== _value?.toFixed(2);
     }
     return false;
   }
@@ -148,7 +150,7 @@ export default function SummaryFields({ contactData }) {
       {SUMMARY_FIELDS(contactData).map((field, key) => (
         <Grid item key={key} style={{ position: "relative", width: "100%", marginRight: "30px", maxWidth: "44%", flexBasis: "7%" }}>
           <Grid container className={classes.gridStyle}>
-            <Grid xs={4} item style={{ display: "flex" }}>
+            <Grid item xs={4} style={{ display: "flex", textAlign: "left" }}>
               <div id={field.label} className={classes.fieldLabel}>{featureFlagChanges(showGenericPhones, field.label)}</div>
             </Grid>
             <Grid item xs={8}>
@@ -165,7 +167,7 @@ export default function SummaryFields({ contactData }) {
                   useEffect(() => {
                     if (initialized.current) return
 
-                    if (field.key.includes('offerPriceSum') || field.key.includes('nraSum')) {
+                    if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum')) {
                       let value = field.value ?? params.value;
                       if (value) {
                         initialized.current = true
@@ -197,7 +199,7 @@ export default function SummaryFields({ contactData }) {
                               // params.onChange(parseFloat(event.target.value).toFixed(2));
                             }
 
-                            if (field.key.includes('offerPriceSum') || field.key.includes('nraSum')) currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''))
+                            if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum')) currValue = parseFloat(currValue.replace(/[^\d.-]/g, ''))
 
                             const prevValue = get(contactData, field.key) || ''
 
@@ -236,7 +238,7 @@ export default function SummaryFields({ contactData }) {
                                         const key = `evaluatedContactInterests.${field.key.split(".")[1]}`;
 
                                         let value = get(contactData, key)
-                                        if (field.key.includes('offerPriceSum') || field.key.includes('nraSum')) {
+                                        if (field.key.includes('offerPriceSum') || field.key.includes('nraSum') || field.key.includes('maxOfferPriceSum')) {
                                           value = parseFloat(value).toFixed(2);
                                         }
 
