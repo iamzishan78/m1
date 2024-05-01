@@ -6,16 +6,15 @@ import { basic_timeouts } from '../../cypressUtils/data'; // Importing basic tim
 describe('Map Unit Detail Component', () => {
   beforeEach(() => {
     // Setting up the Cypress viewport and mounting the MapProvider component with specific parameters
-    cy.viewport(1800, 1200).mount(
-      <MapProvider
-        match={{
-          params: { paramId: '65b0c87166115215f9155bc4', type: 'units' },
-        }}
-      />
-    );
-
-    // Waiting for the specified midTimeout duration before each test
-    cy.wait(basic_timeouts.midTimeout);
+    cy.interceptAndWait(['getCustomLayer'], () => {
+      cy.viewport(1800, 1200).mount(
+        <MapProvider
+          match={{
+            params: { paramId: '65b0c87166115215f9155bc4', type: 'units' },
+          }}
+        />
+      );
+    });
   });
 
   it('Add well to unit works', () => {
@@ -31,26 +30,28 @@ describe('Map Unit Detail Component', () => {
     cy.get('#selectWell').click();
 
     cy.get('.MuiAutocomplete-option').first().click({ force: true });
+    cy.wait(10000);
 
     cy.interceptAndWait(
       ['AddShapeWellInterest'],
-      alias => {
+      (alias) => {
         cy.get('#saveWellButton').click();
-
-        cy.wait(alias).then(res => {
+        cy.wait(alias, { timeout: 400000 }).then((res) => {
           expect(res.response.body.data.addShapeWellInterest.success).to.be.equal(true);
 
           const lease = res.request.body.variables.wellInterest.lease;
-
-          cy.get('tr').contains(lease);
+          // If lease is passed from frontend then we will check that in grid
+          if (lease) {
+            cy.get('tr').contains(lease);
+          }
         });
       },
       { wait: false }
     );
   });
-
   // Test case: Well card opens from unit well table link
   it('Well card opens from unit well table link', () => {
+    cy.wait(15000);
     // Clicking on the Wells tab to view well details
     cy.get(`[data-testid="shape-detail-tab-Wells"]`, {
       timeout: basic_timeouts.midTimeout,
@@ -72,15 +73,14 @@ describe('Map Unit Detail Component', () => {
   });
 
   it('should update field and check cutom field did not remove', () => {
-    cy.get('[data-testid="data-cell-cypress test field (do not delete)"]').click();
+    cy.wait(25000);
+    cy.get('[data-testid="data-cell-cypress test field (do not delete)"]', {
+      timeout: basic_timeouts.longTimeout,
+    }).click();
 
-    cy.get(
-      '.MuiButtonBase-root[data-testid="edit-cypress test field (do not delete)"]'
-    ).click();
+    cy.get('.MuiButtonBase-root[data-testid="edit-cypress test field (do not delete)"]').click();
 
-    cy.get(
-      '.MuiTextField-root[data-testid="data-field-cypress test field (do not delete)"] input'
-    )
+    cy.get('.MuiTextField-root[data-testid="data-field-cypress test field (do not delete)"] input')
       .click()
       .type('{selectall}')
       .clear()

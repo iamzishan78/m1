@@ -6,6 +6,7 @@ import CommentCell from 'components/MRTTable/Common/TableCells/Comment';
 import TagCell from 'components/MRTTable/Common/TableCells/Tag';
 import ColumnWithLink from 'components/Common/MRTable/ColumnWithLink';
 import CampaignNameField from 'components/ContactDetailCard/components/FieldContent/CampaignNameField';
+import vf_number from 'components/Shared/valueformatters/vf_number';
 
 const esIndex = 'shapes_flat';
 
@@ -126,7 +127,7 @@ const UnitMeta = {
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'shapeJson.properties.uAcres.keyword',
-			accessorFn: row => row?.shapeJson?.properties?.uAcres,
+			accessorFn: row => vf_number(row?.shapeJson?.properties?.uAcres),
 			id: 'shapeJson.properties.uAcres',
 			header: 'Unit Acres',
 		},

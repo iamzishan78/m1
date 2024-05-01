@@ -52,7 +52,6 @@ import { get } from "lodash";
 import { AppContext } from "AppContext";
 import { NavigationContext } from "../Navigation/NavigationContext";
 import { toggleRightColumn } from "actions/ContactDetailCard";
-import { getAddressUrl } from "utils/helper";
 import FeatureFlag from "components/Shared/FeatureFlag/FeatureFlagComponent";
 import { FEATURES } from "components/Shared/FeatureFlag/common";
 
@@ -247,6 +246,9 @@ const useStyles = makeStyles((theme) => ({
     overflow: "overlay",
     maxHeight: "calc(100vh - 85px)",
     width: "100%",
+    '&::-webkit-scrollbar': {
+      width: "0.4em !important", /* Set Width of the scrollbar to fix alignment issue of summary section field */
+    }
   },
   shrinkRightColumn: {
     position: "absolute",
@@ -673,8 +675,7 @@ function ContactDetailCard(props) {
                     )}
                   </FieldContent>
                 </h2>
-                <Link onClick={() => window.open(getAddressUrl(contactData), "_blank")}>
-                  <FieldContent
+                <FieldContent
                     childrenLeft
                     noMargin
                     name="Address"
@@ -690,7 +691,6 @@ function ContactDetailCard(props) {
                       country: contactData.country,
                     }}
                   />
-                </Link>
               </div>
               <div className={classes.tagsContainer}>
                 <div className={classes.highlighter}>
@@ -756,7 +756,7 @@ function ContactDetailCard(props) {
               <div className={classes.summarySection}>
                 <Grid item xs={12} container spacing={0} style={{
                   padding: "5px 20px",
-                  height: "650px",
+                  height: "450px",
                   // marginBottom: "-100px",
                   // marginTop: "20px",
                   textAlign: "center"

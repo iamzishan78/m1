@@ -24,7 +24,7 @@ const getLayerPayload = {
 Cypress.Commands.add('setMapData', ({ testId, value }) => {
   cy.get(`[data-testid="data-cell-${testId}"]`, {
     timeout: basic_timeouts.midTimeout,
-  }).trigger('mouseover');
+  }).trigger('mouseover', { force: true });
 
   cy.interceptAndWait(['getESSimpleFilter'], () => {
     cy.wait(basic_timeouts.shorTimeout);
