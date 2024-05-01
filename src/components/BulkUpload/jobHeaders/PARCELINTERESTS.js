@@ -85,6 +85,30 @@ export default [
         actual_key: "parcel.actual_offer_price"
     },
     {
+        label: "Max Pricing (per NRA)",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.uMaxUnitPricing"
+    },
+    {
+        label: "Target Pricing (per NRA)",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.uUnitPricing"
+    },
+    {
+        label: "Target Pricing (per NMA)",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.uUnitPricingNMA"
+    },
+    {
+        label: "Max Pricing (per NMA)",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.uMaxUnitPricingNMA"
+    },
+    {
         label: "Target Offer (NRA)",
         mapped_key: "",
         required: false,
@@ -131,6 +155,24 @@ export default [
         mapped_key: "",
         required: false,
         actual_key: "parcel.nonExecRightsOnly"
+    },
+    {
+        label: "Department",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.department"
+    },
+    {
+        label: "Map Status",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.mapStatus"
+    },
+    {
+        label: "Data Source",
+        mapped_key: "",
+        required: false,
+        actual_key: "parcel.dataSource"
     },
     {
         label: "Depth From",
