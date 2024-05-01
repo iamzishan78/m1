@@ -378,6 +378,7 @@ export default function M1neralHeaders() {
             case 'AGREEMENT_HEADER':
             case 'SHAPE_TO_M1_LAYER':
             case 'UNITS':
+            case 'TRACTS':
               return (
                 <>
                   <div style={{ ...medium_text, ...padding_div_top }}>
@@ -420,7 +421,7 @@ export default function M1neralHeaders() {
                     </Select>
                   </div>
 
-                  {jobStateValues.jobType !== 'UNITS' && (
+                  {!['UNITS', 'TRACTS'].includes(jobStateValues.jobType) && (
                     <div style={{ ...text_grey }}>
                       *Note: Existing{' '}
                       {jobStateValues?.transferData?.selectedPlatformCategory?.label} will be
