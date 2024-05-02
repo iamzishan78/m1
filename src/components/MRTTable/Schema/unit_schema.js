@@ -239,8 +239,8 @@ const UnitMeta = {
 
 				return <FlyToMap id={id} type='unit' />;
 			},
-			isHiddenFieldExport: true,
-			hidden: true,
+			isHiddenFieldExport: true, // Hide location field from the export csv
+			hidden: true, // Hide location field from the export
 		},
 	],
 };
