@@ -45,6 +45,10 @@ export const initialState = {
   ownerEntity: null,
   name: null,
   relatedObject: null,
+  working_interest: null,
+  unitTractId: null,
+  tractAcres: null,
+  dataSource: null,
 };
 
 export const sideDialogState = hookstate(copy(initialState));

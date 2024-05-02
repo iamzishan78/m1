@@ -32,7 +32,8 @@ function TextFieldComponent({ control, item, watch }) {
     variant = "standard",
     isValueOverridden,
     onBlur,
-    onChange
+    onChange,
+    disabled = false
   } = item || {};
 
   const watchTextFieldValue = watch(name)
@@ -71,6 +72,7 @@ function TextFieldComponent({ control, item, watch }) {
             defaultValue={defaultValue}
             multiline={multiline}
             variant={variant}
+            disabled={disabled}
           />
         )}
       />
