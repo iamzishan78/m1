@@ -1,0 +1,3 @@
+.mapboxgl-popup {
+  transform: translate(40%, -220%) !important;
+}

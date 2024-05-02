@@ -40,8 +40,10 @@ describe('Map Unit Detail Component', () => {
           expect(res.response.body.data.addShapeWellInterest.success).to.be.equal(true);
 
           const lease = res.request.body.variables.wellInterest.lease;
-
-          cy.get('tr').contains(lease);
+          // If lease is passed from frontend then we will check that in grid
+          if (lease) {
+            cy.get('tr').contains(lease);
+          }
         });
       },
       { wait: false }

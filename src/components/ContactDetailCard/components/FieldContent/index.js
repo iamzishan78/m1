@@ -25,6 +25,10 @@ import EntityType from "./EntityType";
 import CampaignNameField from "./CampaignNameField";
 import ContactStatus from "components/ContactDetailCard/components/AutoCompleteWithAddNew";
 import AutoCompleteAddNewField from "./AutoCompleteAddNewField";
+import Link from "@material-ui/core/Link";
+import { getAddressUrl, getZillowAddressUrl } from "utils/helper";
+import GoogleMapIcon from "components/Shared/svgIcons/GoogleMapIcon";
+import ZillowIcon from "components/Shared/svgIcons/ZillowIcon";
 
 const filter = createFilterOptions();
 export default function FieldContent({
@@ -196,12 +200,17 @@ export default function FieldContent({
   }
 
   const onBlurHandler = (fieldNames) => {
-    const fields = {};
+    const fields = {}; // Initialize an empty object to store field values
+
+    // Iterate over fieldNames and assign corresponding values from content object
     fieldNames.forEach(field => fields[field] = content[field]);
 
+    // Check if editContent exists and has more than one property, return if true
+    // if editContent has more than one property we don't need to close popup on blur
     if (Object.keys(editContent || {})?.length > 1) return;
 
-    setEdit(null);
+    // Reset edit state and update editContent with field values
+    setEdit(null); // It closes popup on blur
     setEditContent({ ...fields });
   }
 
@@ -502,7 +511,18 @@ export default function FieldContent({
       )}
       {fieldType === FieldTypes.Contact && isMerged && <MergeHistory handleUpdating={handleUpdating} content={content} contactId={id} />}
       {isPurchased && <CopyPurchaseInfo updateContact={updateContact} userId={stateApp.user.mongoId} content={content} contactId={id} />}
+      {textArray.length > 0 && name === 'Address' ? // show google map and zillow icon when address exists
+          <>
+            <Link onClick={() => window.open(getAddressUrl(content), "_blank")}>
+              <GoogleMapIcon />
+            </Link>
+            <Link onClick={() => window.open(getZillowAddressUrl(content), "_blank")}>
+              <ZillowIcon />
+            </Link>
+          </>
 
+        : ""
+      }
       {!childrenLeft && !onlyChildren && children ? children : ""}
       {isCurEdited ? " (edited)" : ""}
     </span>
@@ -512,7 +532,7 @@ export default function FieldContent({
     <React.Fragment>
       <p
         className={`${textArray.length === 0 ? classes.notAvailableP : ""} ${classes.fieldContentP}`}
-        style={{ width: "100%" }}
+        style={{ width: "auto" }}
         data-testid={name}
       >
         {(linkType === LinkTypes.Mail || linkType === LinkTypes.Simple) && textArray.length > 0 ? (

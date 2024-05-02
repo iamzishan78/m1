@@ -194,6 +194,12 @@ describe('Map Component Shape File Upload', () => {
     cy.wait(midTimeout);
   });
 
+  it('Layer Settings are updated', () => {
+    cy.updateAllUserLayersVisibility({
+      layersToShow: ['Land Grid'],
+    });
+  });
+
   it('Restores deleted data', () => {
     // Payload for updating the dataset
     const updateDatasetPayload = {
