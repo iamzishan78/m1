@@ -30,9 +30,6 @@ import { globalStateController } from 'hookstate/globalStateController';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 
 const useStyles = makeStyles(theme => ({
-  maxWidth: {
-    width: '100%',
-  },
   dialogContent: {
     '& header': {
       position: 'absolute',
@@ -56,29 +53,19 @@ const useStyles = makeStyles(theme => ({
   move: {
     zIndex: 10000,
   },
-  baseValueChanged: {
-    width: '100%',
-    '& .MuiInputBase-input': {
-      color: 'dodgerblue',
-      fontWeight: 'bold',
-    },
-  },
   addContactButton: {
     float: "right",
     display: "flex",
     alignItems: "center",
-    // marginTop: "15px",
     cursor: "pointer",
   },
   addContactButtonSelected: {
     float: "right",
     display: "flex",
     alignItems: "center",
-    // marginTop: "15px",
     cursor: "pointer",
     color: `${theme.palette.secondary.main} !important`,
   },
-
   personAddIcon: {
     color: `${theme.palette.secondary.main} !important`,
     fill: `${theme.palette.secondary.main} !important`,
