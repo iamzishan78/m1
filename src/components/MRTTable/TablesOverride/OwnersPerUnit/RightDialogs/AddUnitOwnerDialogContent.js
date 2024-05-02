@@ -188,8 +188,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       ...unitOwnerFormValue,
     })
 
-    console.log('formStateValues', formStateValues);
-
     addOwnerToAShape({
       variables: {
         shapeType: props.shapeType,
@@ -246,7 +244,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
           <DialogContent className={classes.dialogContent}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <h3 style={{ float: "left" }}>Name</h3>
+                {!formStateValues?.newOwner && <h3 style={{ float: "left" }}>Name</h3>}
                 {!selectedRow && (<div className={formStateValues?.newOwner ? classes.addContactButtonSelected : classes.addContactButton}
                   onClick={() => {
                     sideDialogController.updateState({ newOwner: !formStateValues?.newOwner })
