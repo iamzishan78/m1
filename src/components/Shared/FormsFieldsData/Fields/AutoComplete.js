@@ -27,7 +27,7 @@ function AutoCompleteComponent({ control, item }) {
           size: 10000,
         },
       });
-  }, []);
+  }, [esIndex, filterKey]);
 
   useEffect(() => {
     if (filterOptions?.getESFilterList?.hits) {
@@ -63,21 +63,30 @@ function AutoCompleteComponent({ control, item }) {
       <Controller
         control={control}
         name={name}
-        render={props => (
-          <Autocomplete
-            options={options}
-            getOptionLabel={option => option.label}
-            getOptionSelected={(option, value) => option.value === value}
-            value={props.value ? { label: props.value, value: props.value } : props.value}
-            onChange={(e, option) => {
-              props.onChange(option ? option?.value : null)
+        render={props => {
+          if (name === 'ownerType') {
+            console.log(name, 'options', options)
+          }
 
-            }}
-            renderInput={params => (
-              <TextField {...params} size="small" multiline variant="standard" />
-            )}
-          />
-        )}
+          if (name === "nonExecRightsOnly") {
+            console.log(name, 'options', options)
+          }
+          return (
+            <Autocomplete
+              options={options}
+              getOptionLabel={option => option.label}
+              getOptionSelected={(option, value) => option.value === value}
+              value={props.value ? { label: props.value, value: props.value } : props.value}
+              onChange={(e, option) => {
+                props.onChange(option ? option?.value : null)
+
+              }}
+              renderInput={params => (
+                <TextField {...params} size="small" multiline variant="standard" />
+              )}
+            />
+          )
+        }}
       />
     </Grid>
   );
