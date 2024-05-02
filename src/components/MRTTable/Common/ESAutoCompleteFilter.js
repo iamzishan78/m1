@@ -82,7 +82,7 @@ function ESAutoCompleteFilter({
 		}
 
 		options = options.filter((op) => {
-			op.label = formatValue(op.label)
+			op.label = formatValue(op.label) // format value to show $ sign as prefix
 			return op.value;
 		});
 
@@ -124,6 +124,7 @@ function ESAutoCompleteFilter({
 	}
 	const id = Array.isArray(field) ? field.join(' ') : field
 
+	// format value to show filter value & option with $ sign as prefix
 	const formatValue = (value) => {
 		if (field === 'shapeJson.properties.uMaxUnitPricing.keyword' || field === 'shapeJson.properties.uUnitPricing.keyword') {
 			value = vf_currency(value);
