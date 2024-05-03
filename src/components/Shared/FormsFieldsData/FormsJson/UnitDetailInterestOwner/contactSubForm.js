@@ -54,8 +54,6 @@ const contactSubForm = ({ getValues, setValue }) => {
     ...unitInterestOwnerForm({
       getValues,
       setValue,
-      tenantName,
-      state
     }).slice(1)
   ]
 

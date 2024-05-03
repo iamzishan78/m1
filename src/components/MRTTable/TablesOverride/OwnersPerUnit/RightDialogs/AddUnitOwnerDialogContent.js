@@ -21,7 +21,7 @@ import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIco
 import { tableGlobalController } from 'hookstate/tableController';
 import { sideDialogController, initialState } from 'hookstate/sideDialogController';
 import { globalStateController } from 'hookstate/globalStateController';
-import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/contactSubForm';
+import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/UnitDetailInterestOwner/contactSubForm';
 import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/UnitDetailInterestOwner/unitInterestOwnerForm';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 
@@ -94,15 +94,6 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
   const { control, reset, setValue, getValues, watch } = useForm();
 
-
-
-
-  useEffect(() => {
-    if (selectedRow) {
-
-    }
-  }, [selectedRow]);
-
   // CONTACT
 
   const [addOwnerToAShape, { data: mutationData }] = useMutation(ADD_OWNER_TOA_SHAPE);
@@ -132,7 +123,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
       rowData.contactStatus = selectedRow?.contact?.contactStatus
       rowData.status = selectedRow?.contact?.status
-
+      rowData.relatedObject = selectedRow?.contactId || selectedRow?.ownerEntity
       sideDialogController.updateState(rowData)
       reset(rowData)
     }
@@ -176,8 +167,34 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
     reset()
   };
 
-  const handleAddUpdate = ownerToAdd => {
-
+  const handleUpdateContact = ownerToAdd => {
+    if (
+      ((ownerToAdd.contactStatus || selectedRow?.contactStatus) &&
+        selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
+      ((ownerToAdd.status || selectedRow?.status) &&
+        selectedRow?.status !== ownerToAdd.status) ||
+      ((ownerToAdd.ownerType || selectedRow?.ownerType) &&
+        selectedRow?.ownerType !== ownerToAdd.ownerType) ||
+      ((ownerToAdd.campaignPriority || selectedRow?.campaignPriority) &&
+        selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
+      ((ownerToAdd.campaignName || selectedRow?.campaignName) &&
+        selectedRow?.campaignName !== ownerToAdd.campaignName) ||
+      ownerToAdd.campaignName ||
+      selectedRow?.campaignName !== ownerToAdd.campaignName
+    ) {
+      updateContact({
+        variables: {
+          contact: {
+            _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
+            contactStatus: ownerToAdd.contactStatus,
+            status: ownerToAdd.status,
+            lastUpdateBy: getUser?._id,
+            ownerType: ownerToAdd.ownerType,
+            campaignPriority: ownerToAdd.campaignPriority,
+          },
+        },
+      });
+    }
 
   };
 
@@ -188,20 +205,46 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       ...unitOwnerFormValue,
     })
 
-    addOwnerToAShape({
-      variables: {
-        shapeType: props.shapeType,
-        shapeOwner: {
-          ...formStateValues,
-          shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
-          createBy: getUser?._id,
-          lastUpdateBy: getUser?._id,
-        },
-      },
-      refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
-      awaitRefetchQueries: true,
-    });
+    if (formStateValues?.newOwner) {
+      sideDialogController.updateState({ relatedObject: { ...unitOwnerFormValue } })
+    } else {
+      handleUpdateContact(formStateValues)
+    }
 
+    if (selectedRow) {
+      updateShapeOwners({
+        variables: {
+          shapeType: props.shapeType,
+          shapeOwners: [
+            {
+              _id: selectedRow?._id,
+              ...formStateValues,
+              shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
+              createBy: getUser?._id,
+              lastUpdateBy: getUser?._id,
+            }
+          ],
+          userId: getUser?._id,
+        },
+        refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+        awaitRefetchQueries: true,
+      });
+    } else {
+      addOwnerToAShape({
+        variables: {
+          shapeType: props.shapeType,
+          shapeOwner: {
+            ...formStateValues,
+            shapeId: props.shapeId ?? get(selectedRow, 'customLayer._id'),
+            createBy: getUser?._id,
+            lastUpdateBy: getUser?._id,
+          },
+        },
+        refetchQueries: ['getESPaginatedList', 'getESSimpleSearch', 'getESFilterList', 'getCustomLayer'],
+        awaitRefetchQueries: true,
+      });
+    }
+    setStateApp(state => ({ ...state, universalCircularLoaderAct: true }));
   };
 
   const classes = useStyles();

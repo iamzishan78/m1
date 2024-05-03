@@ -64,13 +64,6 @@ function AutoCompleteComponent({ control, item }) {
         control={control}
         name={name}
         render={props => {
-          if (name === 'ownerType') {
-            console.log(name, 'options', options)
-          }
-
-          if (name === "nonExecRightsOnly") {
-            console.log(name, 'options', options)
-          }
           return (
             <Autocomplete
               options={options}
