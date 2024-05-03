@@ -28,6 +28,7 @@ import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelD
 import { sideDialogController, initialState } from 'hookstate/sideDialogController';
 import { globalStateController } from 'hookstate/globalStateController';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
+import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
 
 const useStyles = makeStyles(theme => ({
   dialogContent: {
@@ -126,6 +127,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   const [updateParcelOwner, { data: updateData }] = useMutation(UPDATEPARCELOWNER);
 
+  const [updateContact] = useMutation(UPDATECONTACT);
+
   useEffect(() => {
     if (_.get(addContactData, 'addContact.contact')) {
       const contact = {
@@ -211,6 +214,37 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     sideDialogController.reset()
   };
 
+  const handleUpdateContact = ownerToAdd => {
+    if (
+      ((ownerToAdd.contactStatus || selectedRow?.contactStatus) &&
+        selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
+      ((ownerToAdd.status || selectedRow?.status) &&
+        selectedRow?.status !== ownerToAdd.status) ||
+      ((ownerToAdd.ownerType || selectedRow?.ownerType) &&
+        selectedRow?.ownerType !== ownerToAdd.ownerType) ||
+      ((ownerToAdd.campaignPriority || selectedRow?.campaignPriority) &&
+        selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
+      ((ownerToAdd.campaignName || selectedRow?.campaignName) &&
+        selectedRow?.campaignName !== ownerToAdd.campaignName) ||
+      ownerToAdd.campaignName ||
+      selectedRow?.campaignName !== ownerToAdd.campaignName
+    ) {
+      updateContact({
+        variables: {
+          contact: {
+            _id: ownerToAdd.ownerEntity._id || ownerToAdd.ownerEntity,
+            contactStatus: ownerToAdd.contactStatus,
+            status: ownerToAdd.status,
+            lastUpdateBy: getUser?._id,
+            ownerType: ownerToAdd.ownerType,
+            campaignPriority: ownerToAdd.campaignPriority,
+          },
+        },
+      });
+    }
+
+  };
+
   const handleClickAdd = e => {
     e.preventDefault();
     const parcelOwnerFormValue = getValues();
@@ -222,6 +256,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     })
     if (formStateValues?.newOwner) {
       sideDialogController.updateState({ relatedObject: { ...parcelOwnerFormValue } })
+    } else {
+      handleUpdateContact(formStateValues)
     }
 
     if (selectedRow) {
@@ -280,6 +316,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       rowData.qtr4 = selectedRow?.qtr?.[3]
       rowData.contactStatus = selectedRow?.contact?.contactStatus
       rowData.status = selectedRow?.contact?.status
+      rowData.relatedObject = selectedRow?.contactId || selectedRow?.ownerEntity
       sideDialogController.updateState(rowData)
       reset(rowData)
     }
