@@ -133,6 +133,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       },
       onBlur: (value) => {
         const numericValue = parseFloat(value.slice(1));
+        console.log(numericValue, 'numericValue', value)
         const formattedValue = numericValue.toFixed(8);
         return parseFloat(formattedValue).toFixed(8)
       },
@@ -170,6 +171,7 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       },
       onBlur: (value) => {
         const numericValue = parseFloat(value.slice(1));
+        console.log(numericValue, 'numericValue', value)
         const formattedValue = numericValue.toFixed(8);
         return parseFloat(formattedValue).toFixed(8)
       },
@@ -255,6 +257,8 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       },
       onBlur: (value) => {
         const numericValue = parseFloat(value.slice(1));
+        console.log(numericValue, 'numericValue', value)
+
         const formattedValue = numericValue.toFixed(8);
         return parseFloat(formattedValue).toFixed(8)
       },
@@ -295,6 +299,8 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       },
       onBlur: (value) => {
         const numericValue = parseFloat(value.slice(1));
+        console.log(numericValue, 'numericValue', value)
+
         const formattedValue = numericValue.toFixed(8);
         return parseFloat(formattedValue).toFixed(8)
       },
@@ -331,6 +337,8 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       },
       onBlur: (value) => {
         const numericValue = parseFloat(value.slice(1));
+        console.log(numericValue, 'numericValue', value)
+
         const formattedValue = numericValue.toFixed(8);
         return parseFloat(formattedValue).toFixed(8)
       },
@@ -343,6 +351,8 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       },
       onBlur: (value) => {
         const numericValue = parseFloat(value.slice(1));
+        console.log(numericValue, 'numericValue', value)
+
         const formattedValue = numericValue.toFixed(8);
         return parseFloat(formattedValue).toFixed(8)
       },
@@ -355,6 +365,8 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       },
       onBlur: (value) => {
         const numericValue = parseFloat(value.slice(1));
+        console.log(numericValue, 'numericValue', value)
+
         const formattedValue = numericValue.toFixed(8);
         return parseFloat(formattedValue).toFixed(8)
       },
