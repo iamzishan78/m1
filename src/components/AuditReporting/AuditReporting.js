@@ -5,6 +5,8 @@ import { useLazyQuery } from '@apollo/client';
 import ActivitiesDashboardFilter from 'components/Activities/components/ActivitiesDashboardFilter';
 import ActivityAnalytics from 'components/Activities/components/ActivityAnalytics';
 import { GET_DB_MIN_VALUE } from 'graphQL/useQueryDbQuery';
+import { Box } from '@material-ui/core';
+import MRTTable from 'components/MRTTable';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -87,6 +89,9 @@ const ActivitiesDashboard = () => {
 					setAppliedFilters={setAppliedFilters}
 				/>
 			}
+			<Box sx={{ padding: '1em', marginLeft: '1em' }}>
+				<MRTTable name="AuditReportingTable" />
+			</Box>
 		</div>
 	);
 };
