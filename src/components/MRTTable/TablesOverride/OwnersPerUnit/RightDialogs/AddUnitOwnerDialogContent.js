@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
 export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow, uAcres, uUnitPricing, ...props }) {
   const dispatch = useDispatch();
 
-  const formState = sideDialogController.useCompleteState()
+  const formState = sideDialogController("unitInterestDialog").useCompleteState()
   const formStateValues = formState?.get({ noproxy: true });
 
   const { user } = globalStateController.useState(['user']);
@@ -104,14 +104,14 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
 
   useEffect(() => {
-    sideDialogController.updateState({
+    sideDialogController("unitInterestDialog").updateState({
       uAcres, uUnitPricing,
     })
 
   }, [uAcres, uUnitPricing])
 
   useEffect(() => {
-    sideDialogController.updateState({
+    sideDialogController("unitInterestDialog").updateState({
       workspaceSettings
     })
   }, [workspaceSettings])
@@ -124,7 +124,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
       rowData.contactStatus = selectedRow?.contact?.contactStatus
       rowData.status = selectedRow?.contact?.status
       rowData.relatedObject = selectedRow?.contactId || selectedRow?.ownerEntity
-      sideDialogController.updateState(rowData)
+      sideDialogController("unitInterestDialog").updateState(rowData)
       reset(rowData)
     }
   }, [selectedRow]);
@@ -163,7 +163,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   const handleClickDialogClose = () => {
     props.onClose();
-    sideDialogController.reset()
+    sideDialogController("unitInterestDialog").reset()
     reset()
   };
 
@@ -201,12 +201,12 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
   const handleClickAdd = e => {
     e.preventDefault();
     const unitOwnerFormValue = getValues();
-    sideDialogController.updateState({
+    sideDialogController("unitInterestDialog").updateState({
       ...unitOwnerFormValue,
     })
 
     if (formStateValues?.newOwner) {
-      sideDialogController.updateState({ relatedObject: { ...unitOwnerFormValue } })
+      sideDialogController("unitInterestDialog").updateState({ relatedObject: { ...unitOwnerFormValue } })
     } else {
       handleUpdateContact(formStateValues)
     }
@@ -290,7 +290,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 {!formStateValues?.newOwner && <h3 style={{ float: "left" }}>Name</h3>}
                 {!selectedRow && (<div className={formStateValues?.newOwner ? classes.addContactButtonSelected : classes.addContactButton}
                   onClick={() => {
-                    sideDialogController.updateState({ newOwner: !formStateValues?.newOwner })
+                    sideDialogController("unitInterestDialog").updateState({ newOwner: !formStateValues?.newOwner })
                   }}>
                   <PersonAddOutlinedIcon className={formStateValues?.newOwner ? classes.personAddIcon : null} />
                   <p>&nbsp;Add new</p>
@@ -300,7 +300,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                     userId={getUser?._id}
                     nameAutValue={formStateValues?.name}
                     setNameAutValue={(contact) => {
-                      sideDialogController.updateState({ name: contact?.name, ownerEntity: contact?._id, relatedObject: contact?._id })
+                      sideDialogController("unitInterestDialog").updateState({ name: contact?.name, ownerEntity: contact?._id, relatedObject: contact?._id })
                     }}
                     placeholder={"Search existing contact"}
                   />
@@ -313,6 +313,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 control={control}
                 reset={reset}
                 watch={watch}
+                DialogKey={"unitInterestDialog"}
               />
 
             </Grid>

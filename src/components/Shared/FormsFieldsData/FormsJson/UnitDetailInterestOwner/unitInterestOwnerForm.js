@@ -8,7 +8,7 @@ import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
 import { calculateStandardNraForUnit } from "utils/calculatedNraHelper"
 
 const calculateOfferPrice = nra => {
-  const uUnitPricing = sideDialogController.getValue('uUnitPricing')
+  const uUnitPricing = sideDialogController("unitInterestDialog").getValue('uUnitPricing')
   return parseFloat((parseFloat(nra || 0) * parseFloat(uUnitPricing || 0)).toFixed(2));
 };
 
@@ -28,11 +28,11 @@ const unitInterestOwnerForm = ({ getValues, setValue }) => {
       name: "working_interest",
       type: "number",
       onBlur: (value) => {
-        if (!sideDialogController.getValue('showNetRoyaltyAcresRecalculate')) {
+        if (!sideDialogController('unitInterestDialog').getValue('showNetRoyaltyAcresRecalculate')) {
           const { royalty_interest, orri, nri } = getValues() || {}
 
-          const workspaceSettings = sideDialogController.getValue('workspaceSettings')
-          const uAcres = sideDialogController.getValue('uAcres')
+          const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
+          const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
           const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest: value, royalty_interest, orri, nri, workspaceSettings })
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
@@ -47,11 +47,11 @@ const unitInterestOwnerForm = ({ getValues, setValue }) => {
       type: "number",
       onBlur: (value) => {
 
-        if (!sideDialogController.getValue('showNetRoyaltyAcresRecalculate')) {
+        if (!sideDialogController("unitInterestDialog").getValue('showNetRoyaltyAcresRecalculate')) {
           const { working_interest, orri, nri } = getValues() || {}
 
-          const workspaceSettings = sideDialogController.getValue('workspaceSettings')
-          const uAcres = sideDialogController.getValue('uAcres')
+          const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
+          const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
           const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest: value, orri, nri, workspaceSettings })
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
@@ -66,11 +66,11 @@ const unitInterestOwnerForm = ({ getValues, setValue }) => {
       type: "number",
       onBlur: (value) => {
 
-        if (!sideDialogController.getValue('showNetRoyaltyAcresRecalculate')) {
+        if (!sideDialogController("unitInterestDialog").getValue('showNetRoyaltyAcresRecalculate')) {
           const { working_interest, royalty_interest, nri } = getValues() || {}
 
-          const workspaceSettings = sideDialogController.getValue('workspaceSettings')
-          const uAcres = sideDialogController.getValue('uAcres')
+          const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
+          const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
           const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri: value, nri, workspaceSettings })
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
@@ -86,11 +86,11 @@ const unitInterestOwnerForm = ({ getValues, setValue }) => {
       onBlur: (value) => {
 
 
-        if (!sideDialogController.getValue('showNetRoyaltyAcresRecalculate')) {
+        if (!sideDialogController("unitInterestDialog").getValue('showNetRoyaltyAcresRecalculate')) {
           const { working_interest, royalty_interest, orri } = getValues() || {}
 
-          const workspaceSettings = sideDialogController.getValue('workspaceSettings')
-          const uAcres = sideDialogController.getValue('uAcres')
+          const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
+          const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
           const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri: value, workspaceSettings })
           setValue('nra', calculatedNra)
           setValue('offer_price', calculateOfferPrice(calculatedNra));
@@ -112,26 +112,26 @@ const unitInterestOwnerForm = ({ getValues, setValue }) => {
         if (!value) return
         const { working_interest, royalty_interest, orri, nri } = getValues() || {}
 
-        const workspaceSettings = sideDialogController.getValue('workspaceSettings')
-        const uAcres = sideDialogController.getValue('uAcres')
+        const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
+        const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
         const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri, workspaceSettings })
 
         setValue('offer_price', calculateOfferPrice(calculatedNra));
         const isOverride = parseFloat(calculatedNra) !== parseFloat(value)
-        sideDialogController.updateState({ 'showNetRoyaltyAcresRecalculate': isOverride, rerenderJson: isOverride })
+        sideDialogController("unitInterestDialog").updateState({ 'showNetRoyaltyAcresRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       InputProps: {
         endAdornment: (
           <InputAdornment position="end">
-            {!!sideDialogController.getValue('showNetRoyaltyAcresRecalculate') && (
+            {!!sideDialogController("unitInterestDialog").getValue('showNetRoyaltyAcresRecalculate') && (
               <IconButton
                 aria-label="toggle nra"
                 onClick={() => {
                   const { working_interest, royalty_interest, orri, nri } = getValues() || {}
 
-                  const workspaceSettings = sideDialogController.getValue('workspaceSettings')
-                  const uAcres = sideDialogController.getValue('uAcres')
+                  const workspaceSettings = sideDialogController("unitInterestDialog").getValue('workspaceSettings')
+                  const uAcres = sideDialogController("unitInterestDialog").getValue('uAcres')
                   const calculatedNra = calculateStandardNraForUnit({ uAcres, working_interest, royalty_interest, orri, nri, workspaceSettings })
 
                   setValue('nra', calculatedNra)
@@ -189,7 +189,7 @@ const unitInterestOwnerForm = ({ getValues, setValue }) => {
 
         const calculatedOfferPrice = calculateOfferPrice(nra);
         const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
-        sideDialogController.updateState({ 'showTargetOfferRecalculate': isOverride, rerenderJson: isOverride })
+        sideDialogController("unitInterestDialog").updateState({ 'showTargetOfferRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {
@@ -202,7 +202,7 @@ const unitInterestOwnerForm = ({ getValues, setValue }) => {
         inputComponent: CurrencyFormatCustom,
         endAdornment: (
           <InputAdornment position="end">
-            {!!sideDialogController.getValue('showTargetOfferRecalculate') && (
+            {!!sideDialogController('unitInterestDialog').getValue('showTargetOfferRecalculate') && (
               <IconButton
                 aria-label="toggle offer_price"
                 onClick={() => {

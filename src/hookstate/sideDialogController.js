@@ -79,19 +79,23 @@ export const contactState = {
 }
 
 
-const initialState = {
-  ...tractInterestOwnerState,
-  ...unitInterestOwnerState,
-  ...contactState,
+const initialStates = {
+  tractInterestDialog: tractInterestOwnerState,
+  unitInterestDialog: unitInterestOwnerState,
+  contactDialog: contactState,
 };
 
-export const sideDialogState = hookstate(copy(initialState));
+export const sideDialogState = {};
 
 const sideDialogStateControllerHandler = () => ({
 
 });
 
-export const sideDialogController = {
-  ...sideDialogStateControllerHandler(sideDialogState),
-  ...hookStateController(sideDialogState, initialState),
+export const sideDialogController = DialogKey => {
+  if (!sideDialogState[DialogKey]) sideDialogState[DialogKey] = hookstate(copy(initialStates[DialogKey]));
+
+  return {
+    ...sideDialogStateControllerHandler(sideDialogState[DialogKey]),
+    ...hookStateController(sideDialogState[DialogKey], initialStates[DialogKey]),
+  }
 };

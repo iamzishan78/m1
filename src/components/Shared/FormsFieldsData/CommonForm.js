@@ -8,7 +8,7 @@ import { sideDialogController } from 'hookstate/sideDialogController';
 import { Controller } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 
-function CommonForm({ FormJson, control, watch }) {
+function CommonForm({ FormJson, control, watch, DialogKey }) {
 
   return (
     <>
@@ -33,7 +33,7 @@ function CommonForm({ FormJson, control, watch }) {
                       {...props}
                       value={props?.value}
                       onChange={(values, id) => {
-                        sideDialogController.updateState({ [item.name]: values })
+                        sideDialogController(DialogKey).updateState({ [item.name]: values })
                         props.onChange(values);
                       }}
                       fullWidth
@@ -54,7 +54,7 @@ function CommonForm({ FormJson, control, watch }) {
                     <AssociatedDealField
                       {...props}
                       onChange={(values, id) => {
-                        sideDialogController.updateState({ [item.name]: values })
+                        sideDialogController(DialogKey).updateState({ [item.name]: values })
                         props.onChange(values);
                       }}
                       value={props.value}
@@ -70,6 +70,7 @@ function CommonForm({ FormJson, control, watch }) {
                 key={index}
                 item={item}
                 control={control}
+                DialogKey={DialogKey}
               />
             ) : (
               <TextFieldComponent

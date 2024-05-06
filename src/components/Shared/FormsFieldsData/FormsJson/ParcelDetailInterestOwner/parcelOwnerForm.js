@@ -73,15 +73,15 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
 
         const netAcres = calculateNetAcres(mineral_interest);
         const isOverride = parseFloat(netAcres) !== parseFloat(value)
-        sideDialogController.updateState({ 'showNetAcresRecalculate': isOverride, rerenderJson: isOverride })
+        sideDialogController("tractInterestDialog").updateState({ 'showNetAcresRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onChange: (value) => {
         const { mineral_interest, nra, royalty_interest, orri } = getValues() || {}
         const selectedParcel = popupController.getValue('selectedParcel');
-        const workspaceSettings = sideDialogController.getValue('workspaceSettings')
-        const uUnitPricingNMA = sideDialogController.getValue('uUnitPricingNMA')
-        const uMaxUnitPricingNMA = sideDialogController.getValue('uMaxUnitPricingNMA')
+        const workspaceSettings = sideDialogController("tractInterestDialog").getValue('workspaceSettings')
+        const uUnitPricingNMA = sideDialogController("tractInterestDialog").getValue('uUnitPricingNMA')
+        const uMaxUnitPricingNMA = sideDialogController("tractInterestDialog").getValue('uMaxUnitPricingNMA')
         setValue('net_acres', value)
         if (!nra) {
           const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
@@ -93,14 +93,12 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       InputProps: {
         endAdornment: (
           <InputAdornment position="end">
-            {!!sideDialogController.getValue('showNetAcresRecalculate') && (
+            {!!sideDialogController("tractInterestDialog").getValue('showNetAcresRecalculate') && (
               <IconButton
                 aria-label="toggle offer_price_nma"
                 onClick={() => {
                   const selectedParcel = popupController.getValue('selectedParcel');
-                  const workspaceSettings = sideDialogController.getValue('workspaceSettings')
-                  const uUnitPricingNMA = sideDialogController.getValue('uUnitPricingNMA')
-                  const uMaxUnitPricingNMA = sideDialogController.getValue('uMaxUnitPricingNMA')
+                  const workspaceSettings = sideDialogController("tractInterestDialog").getValue('workspaceSettings')
                   const { mineral_interest, nra, royalty_interest, orri } = getValues() || {}
                   const netAcres = calculateNetAcres(mineral_interest);
                   setValue('net_acres', netAcres)
@@ -108,8 +106,6 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
                     const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
                     setValue('nra', calculatedNra)
                   }
-                  setValue('offer_price_nma', calculateOfferPrice(netAcres, uUnitPricingNMA))
-                  setValue('max_offer_price_nma', calculateOfferPrice(netAcres, uMaxUnitPricingNMA))
                 }}
               >
                 <AutorenewIcon />
@@ -125,10 +121,10 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       isValueOverridden: (value) => {
         if (!value) return
         const { net_acres } = getValues() || {};
-        const uUnitPricingNMA = sideDialogController.getValue('uUnitPricingNMA')
+        const uUnitPricingNMA = sideDialogController("tractInterestDialog").getValue('uUnitPricingNMA')
         const calculatedOfferPrice = calculateOfferPrice(net_acres, uUnitPricingNMA);
         const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
-        sideDialogController.updateState({ 'showTargetOfferPriceRecalculate': isOverride, rerenderJson: isOverride })
+        sideDialogController("tractInterestDialog").updateState({ 'showTargetOfferPriceRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {
@@ -141,12 +137,12 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         inputComponent: CurrencyFormatCustom,
         endAdornment: (
           <InputAdornment position="end">
-            {!!sideDialogController.getValue('showTargetOfferPriceRecalculate') && (
+            {!!sideDialogController("tractInterestDialog").getValue('showTargetOfferPriceRecalculate') && (
               <IconButton
                 aria-label="toggle offer_price_nma"
                 onClick={() => {
                   const { net_acres } = getValues() || {};
-                  const uUnitPricingNMA = sideDialogController.getValue('uUnitPricingNMA')
+                  const uUnitPricingNMA = sideDialogController("tractInterestDialog").getValue('uUnitPricingNMA')
                   setValue('offer_price_nma', calculateOfferPrice(net_acres, uUnitPricingNMA))
                 }}
               >
@@ -163,10 +159,10 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       isValueOverridden: (value) => {
         if (!value) return
         const { net_acres } = getValues() || {};
-        const uMaxUnitPricingNMA = sideDialogController.getValue('uMaxUnitPricingNMA')
+        const uMaxUnitPricingNMA = sideDialogController("tractInterestDialog").getValue('uMaxUnitPricingNMA')
         const calculatedOfferPrice = calculateOfferPrice(net_acres, uMaxUnitPricingNMA);
         const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
-        sideDialogController.updateState({ 'showMaxOfferPriceRecalculate': isOverride, rerenderJson: isOverride })
+        sideDialogController("tractInterestDialog").updateState({ 'showMaxOfferPriceRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {
@@ -179,12 +175,12 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         inputComponent: CurrencyFormatCustom,
         endAdornment: (
           <InputAdornment position="end">
-            {!!sideDialogController.getValue('showMaxOfferPriceRecalculate') && (
+            {!!sideDialogController("tractInterestDialog").getValue('showMaxOfferPriceRecalculate') && (
               <IconButton
                 aria-label="toggle offer_price_nma"
                 onClick={() => {
                   const { net_acres } = getValues() || {};
-                  const uMaxUnitPricingNMA = sideDialogController.getValue('uMaxUnitPricingNMA')
+                  const uMaxUnitPricingNMA = sideDialogController("tractInterestDialog").getValue('uMaxUnitPricingNMA')
                   setValue('max_offer_price_nma', calculateOfferPrice(net_acres, uMaxUnitPricingNMA))
                 }}
               >
@@ -201,8 +197,8 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       type: "number",
       onChange: (value) => {
         setValue('nra', value)
-        const uUnitPricing = sideDialogController.getValue('uUnitPricing')
-        const uMaxUnitPricing = sideDialogController.getValue('uMaxUnitPricing')
+        const uUnitPricing = sideDialogController("tractInterestDialog").getValue('uUnitPricing')
+        const uMaxUnitPricing = sideDialogController("tractInterestDialog").getValue('uMaxUnitPricing')
         setValue('offer_price', calculateOfferPrice(value, uUnitPricing))
         setValue('max_offer_price', calculateOfferPrice(value, uMaxUnitPricing))
       },
@@ -210,23 +206,23 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       isValueOverridden: (value) => {
         if (!value) return
         const selectedParcel = popupController.getValue('selectedParcel');
-        const workspaceSettings = sideDialogController.getValue('workspaceSettings')
+        const workspaceSettings = sideDialogController("tractInterestDialog").getValue('workspaceSettings')
         const { mineral_interest, royalty_interest, orri } = getValues() || {}
 
         const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
         const isOverride = parseFloat(calculatedNra) !== parseFloat(value)
-        sideDialogController.updateState({ 'showNraRecalculate': isOverride, rerenderJson: isOverride })
+        sideDialogController("tractInterestDialog").updateState({ 'showNraRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       InputProps: {
         endAdornment: (
           <InputAdornment position="end">
-            {!!sideDialogController.getValue('showNraRecalculate') && (
+            {!!sideDialogController("tractInterestDialog").getValue('showNraRecalculate') && (
               <IconButton
                 aria-label="toggle offer_price_nma"
                 onClick={() => {
                   const selectedParcel = popupController.getValue('selectedParcel');
-                  const workspaceSettings = sideDialogController.getValue('workspaceSettings')
+                  const workspaceSettings = sideDialogController("tractInterestDialog").getValue('workspaceSettings')
                   const { mineral_interest, royalty_interest, orri } = getValues() || {}
 
                   const calculatedNra = calculateStandardNraForTract(selectedParcel?.sdGrossAcres, mineral_interest, royalty_interest, orri, workspaceSettings)
@@ -248,11 +244,11 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         if (!value) return
         const { nra } = getValues() || {}
 
-        const uUnitPricing = sideDialogController.getValue('uUnitPricing')
+        const uUnitPricing = sideDialogController("tractInterestDialog").getValue('uUnitPricing')
 
         const calculatedOfferPrice = calculateOfferPrice(nra, uUnitPricing);
         const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
-        sideDialogController.updateState({ 'showTargetOfferRecalculate': isOverride, rerenderJson: isOverride })
+        sideDialogController("tractInterestDialog").updateState({ 'showTargetOfferRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {
@@ -266,13 +262,13 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         inputComponent: CurrencyFormatCustom,
         endAdornment: (
           <InputAdornment position="end">
-            {!!sideDialogController.getValue('showTargetOfferRecalculate') && (
+            {!!sideDialogController("tractInterestDialog").getValue('showTargetOfferRecalculate') && (
               <IconButton
                 aria-label="toggle offer_price"
                 onClick={() => {
                   const { nra } = getValues() || {}
 
-                  const uUnitPricing = sideDialogController.getValue('uUnitPricing')
+                  const uUnitPricing = sideDialogController("tractInterestDialog").getValue('uUnitPricing')
                   setValue('offer_price', calculateOfferPrice(nra, uUnitPricing))
                 }}
               >
@@ -290,11 +286,11 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         if (!value) return
         const { nra } = getValues() || {}
 
-        const uMaxUnitPricing = sideDialogController.getValue('uMaxUnitPricing')
+        const uMaxUnitPricing = sideDialogController("tractInterestDialog").getValue('uMaxUnitPricing')
 
         const calculatedOfferPrice = calculateOfferPrice(nra, uMaxUnitPricing);
         const isOverride = parseFloat(calculatedOfferPrice) !== parseFloat(value)
-        sideDialogController.updateState({ 'showMaxOfferRecalculate': isOverride, rerenderJson: isOverride })
+        sideDialogController("tractInterestDialog").updateState({ 'showMaxOfferRecalculate': isOverride, rerenderJson: isOverride })
         return isOverride
       },
       onBlur: (value) => {
@@ -308,12 +304,12 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
         inputComponent: CurrencyFormatCustom,
         endAdornment: (
           <InputAdornment position="end">
-            {!!sideDialogController.getValue('showMaxOfferRecalculate') && (
+            {!!sideDialogController("tractInterestDialog").getValue('showMaxOfferRecalculate') && (
               <IconButton
                 aria-label="toggle max_offer_price"
                 onClick={() => {
                   const { nra } = getValues() || {}
-                  const uMaxUnitPricing = sideDialogController.getValue('uMaxUnitPricing')
+                  const uMaxUnitPricing = sideDialogController("tractInterestDialog").getValue('uMaxUnitPricing')
                   setValue('max_offer_price', calculateOfferPrice(nra, uMaxUnitPricing))
                 }}
               >

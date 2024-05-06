@@ -79,7 +79,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
   const workspaceSettings = useSelector(({ app }) => app.workspaceSettings);
   const tenantName = window.sessionStorage.getItem('tenantName');
 
-  const formState = sideDialogController.useCompleteState()
+  const formState = sideDialogController("tractInterestDialog").useCompleteState()
   const formStateValues = formState?.get({ noproxy: true });
 
   const { user } = globalStateController.useState(['user']);
@@ -135,7 +135,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
         name: addContactData.addContact.contact.name,
         _id: addContactData.addContact.contact._id,
       }
-      sideDialogController.updateState({ name: contact?.name, ownerEntity: contact?._id, relatedObject: contact?._id })
+      sideDialogController("tractInterestDialog").updateState({ name: contact?.name, ownerEntity: contact?._id, relatedObject: contact?._id })
     }
   }, [addContactData]);
 
@@ -196,14 +196,14 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   useEffect(() => {
     const { uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing } = props?.customLayer?.shapeJson?.properties;
-    sideDialogController.updateState({
+    sideDialogController("tractInterestDialog").updateState({
       uUnitPricingNMA, uMaxUnitPricingNMA, uUnitPricing, uMaxUnitPricing
     })
 
   }, [props?.customLayer?.shapeJson?.properties])
 
   useEffect(() => {
-    sideDialogController.updateState({
+    sideDialogController("tractInterestDialog").updateState({
       workspaceSettings
     })
   }, [workspaceSettings])
@@ -211,7 +211,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   const handleClickDialogClose = () => {
     props.onClose();
-    sideDialogController.reset()
+    sideDialogController("tractInterestDialog").reset()
   };
 
   const handleUpdateContact = ownerToAdd => {
@@ -249,13 +249,13 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
     e.preventDefault();
     const parcelOwnerFormValue = getValues();
     const qtr = [parcelOwnerFormValue?.qtr1 || null, parcelOwnerFormValue?.qtr2 || null, parcelOwnerFormValue?.qtr3 || null, parcelOwnerFormValue?.qtr4 || null]
-    sideDialogController.updateState({
+    sideDialogController("tractInterestDialog").updateState({
       ...parcelOwnerFormValue,
       qtr: qtr,
       customLayer: props.customLayerId,
     })
     if (formStateValues?.newOwner) {
-      sideDialogController.updateState({ relatedObject: { ...parcelOwnerFormValue } })
+      sideDialogController("tractInterestDialog").updateState({ relatedObject: { ...parcelOwnerFormValue } })
     } else {
       handleUpdateContact(formStateValues)
     }
@@ -317,7 +317,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
       rowData.contactStatus = selectedRow?.contact?.contactStatus
       rowData.status = selectedRow?.contact?.status
       rowData.relatedObject = selectedRow?.contactId || selectedRow?.ownerEntity
-      sideDialogController.updateState(rowData)
+      sideDialogController("tractInterestDialog").updateState(rowData)
       reset(rowData)
     }
   }, [selectedRow]);
@@ -352,7 +352,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               {!formStateValues?.newOwner && <h3 style={{ float: "left" }}>Name</h3>}
               {!selectedRow && (<div className={formStateValues?.newOwner ? classes.addContactButtonSelected : classes.addContactButton}
                 onClick={() => {
-                  sideDialogController.updateState({ newOwner: !formStateValues?.newOwner })
+                  sideDialogController("tractInterestDialog").updateState({ newOwner: !formStateValues?.newOwner })
                 }}>
                 <PersonAddOutlinedIcon className={formStateValues?.newOwner ? classes.personAddIcon : null} />
                 <p>&nbsp;Add new</p>
@@ -363,7 +363,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   setMongoEntitiesArray={setMongoEntitiesArray}
                   nameAutValue={formStateValues?.name}
                   setNameAutValue={(contact) => {
-                    sideDialogController.updateState({ name: contact?.name, ownerEntity: contact?._id, relatedObject: contact?._id })
+                    sideDialogController("tractInterestDialog").updateState({ name: contact?.name, ownerEntity: contact?._id, relatedObject: contact?._id })
                   }}
                   nameAutInputValue={nameAutInputValue}
                   setNameAutInputValue={setNameAutInputValue}
@@ -375,7 +375,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
                   addNew
                   addNewOnClick={value => {
                     const contact = { name: value };
-                    sideDialogController.updateState({ name: value })
+                    sideDialogController("tractInterestDialog").updateState({ name: value })
                     setValue('name', value)
                     addContact({
                       variables: {
@@ -398,6 +398,7 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
               control={control}
               reset={reset}
               watch={watch}
+              DialogKey={"tractInterestDialog"}
             />
 
           </Grid>
