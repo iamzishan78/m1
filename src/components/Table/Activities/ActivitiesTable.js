@@ -30,25 +30,50 @@ export const getFilters = (appliedFilters) => {
   let filters = [];
   if (appliedFilters) {
     let range = [];
-    range = getRangeFilters(
+    if(appliedFilters.filter != 'audit')
       {
-        dateTime: {
-          from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-          to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-        },
-      },
-      "simple"
-    );
-    if (range.length > 0) filters = [...filters, ...range];
-    range = getRangeFilters(
-      {
-        endDateTime: {
-          from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
-          to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
-        },
-      },
-      "simple"
-    );
+        range = getRangeFilters(
+          {
+            dateTime: {
+              from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+              to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+            },
+          },
+          "simple"
+        );
+        if (range.length > 0) filters = [...filters, ...range];
+        range = getRangeFilters(
+          {
+            endDateTime: {
+              from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+              to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+            },
+          },
+          "simple"
+        );
+      }
+      else{
+        range = getRangeFilters(
+          {
+            createAt: {
+              from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+              to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+            },
+          },
+          "simple"
+        );
+        if (range.length > 0) filters = [...filters, ...range];
+        range = getRangeFilters(
+          {
+            createAt: {
+              from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
+              to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
+            },
+          },
+          "simple"
+        );
+      }
+    
     if (range.length > 0) filters = [...filters, ...range];
     if (appliedFilters.campaignName) {
       filters.push({
@@ -58,7 +83,7 @@ export const getFilters = (appliedFilters) => {
     }
     if (appliedFilters.qualifier) {
       filters.push({
-        field: "ownerName.keyword",
+        field: appliedFilters.filter == 'audit' ? "lastUpdateBy.name.keyword" : "ownerName.keyword",
         value: appliedFilters.qualifier,
       });
     }

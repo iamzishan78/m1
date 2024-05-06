@@ -55,8 +55,8 @@ const defaultSeriesDeals = [
 ];
 const defaultUpdateUsers = [
   {
-    key: "updates",
-    name: "updates",
+    key: "total",
+    name: "total",
     color: "#A3B2DD",
     data: [],
   },
@@ -83,7 +83,6 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
     fetchPolicy: "no-cache",
 
     onCompleted: (data) => {
-      debugger;
       if (data?.getActivityAnalytics) {
         setAnalyticsData(data?.getActivityAnalytics);
       }
@@ -94,21 +93,23 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
     fetchPolicy: "no-cache",
 
     onCompleted: (data) => {
-      debugger;
       if (data?.getContactAnalytics) {
         setContactData(data?.getContactAnalytics);
       }
     },
   });
-
+  const { activeModule } = useSelector(({ common }) => common);
   const getAllFilters = () => {
     let rangeFilters = [];
     if (!tableFilters.find((filter) => filter.type === "range")) {
+      if (activeModule.title == 'Audit Reporting') {
+        appliedFilters.filter = 'audit';
+      }
       rangeFilters = getFilters(appliedFilters);
     }
     return [...rangeFilters, ...tableFilters];
   };
-  const { quickActionsPanelState, activeModule } = useSelector(({ common }) => common);
+  
   useEffect(() => {
     setActivitiesPerQualifier({
       series: copy(defaultSeriesActivities),

@@ -234,7 +234,6 @@ export default function CustomDatesActivities({
           <Grid item xs={2} md={2} lg={2} xl={2} style={{ marginTop: "4px" }}>
             <EntityFilter
               label={"Entity Type"}
-              esIndex={esIndex}
             />
           </Grid>
         }
@@ -242,7 +241,8 @@ export default function CustomDatesActivities({
           <QualifierFilter
             value={qualifier}
             setValue={setQualifier}
-            esIndex={esIndex}
+            // esIndex={esIndex}
+            esIndex={activeModule.title === 'Audit Reporting' ? 'contacts_flat' : 'activities_flat'}
             searchFields={searchFields}
             tableFilters={tableFilters}
             appliedFilters={appliedFilters}
@@ -368,10 +368,15 @@ const QualifierFilter = ({
   const getAllFilters = () => {
     let rangeFilters = [];
     if (!tableFilters.find((filter) => filter.type === "range")) {
+      if(esIndex === 'contacts_flat'){
+        appliedFilters.filter = 'audit';
+      }
       rangeFilters = getFilters(appliedFilters);
     }
     const filters = [...rangeFilters, ...tableFilters]
-    const index = filters.findIndex(f => f.field === 'ownerName.keyword')
+    const searchKeyword = esIndex === 'contacts_flat' ? 'lastUpdateBy.name.keyword' : 'ownerName.keyword';
+    
+    const index = filters.findIndex(f => f.field === searchKeyword)
     if (index > -1) {
       filters.splice(index, 1);
     }
@@ -379,7 +384,7 @@ const QualifierFilter = ({
   };
 
   useEffect(() => {
-    const filterKey = "ownerName.keyword";
+    const filterKey = esIndex === 'contacts_flat' ? 'lastUpdateBy.name.keyword' : 'ownerName.keyword';
     getQualifiers({
       variables: {
         esIndex,
@@ -395,8 +400,9 @@ const QualifierFilter = ({
         },
       },
     });
-    onQualifierChange('qualifier', search)
-  }, [search, selectedFilters.campaign]);
+    
+    onQualifierChange(esIndex === 'contacts_flat' ? 'audit' : 'qualifier', search)
+  }, [search, esIndex === 'contacts_flat' ? selectedFilters.ownerType : selectedFilters.campaign]);
 
   return (
     <Autocomplete
@@ -439,28 +445,9 @@ const QualifierFilter = ({
 };
 
 const EntityFilter = ({
-  esIndex,
   label
 }) => {
-  const [stateApp] = useContext(AppContext);
-  const [search, setSearch] = useState("");
-
-  const [getEntity, { data: filtersData }] = useLazyQuery(
-    GET_ES_SIMPLE_FILTER,
-    { fetchPolicy: "no-cache" }
-  );
-  const getAllFilters = () => {
-    let rangeFilters = [];
-    if (!tableFilters.find((filter) => filter.type === "range")) {
-      rangeFilters = getFilters(appliedFilters);
-    }
-    const filters = [...rangeFilters, ...tableFilters]
-    const index = filters.findIndex(f => f.field === 'ownerName.keyword')
-    if (index > -1) {
-      filters.splice(index, 1);
-    }
-    return filters;
-  };
+  
   const options = ['Contacts'];
 
   return (

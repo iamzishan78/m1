@@ -40,6 +40,7 @@ const ActivitiesDashboard = () => {
   const [appliedFilters, setAppliedFilters] = useState({
     toDate: null,
     fromDate: null,
+    filter:'audit'
   });
   const [tableFilters, setTableFilters] = useState([]);
   const [minDate, setMinDate] = useState("");
@@ -58,7 +59,7 @@ const ActivitiesDashboard = () => {
     getESMinValue({
       variables: {
         esIndex,
-        field: "dateTime",
+        field: "lastUpdateAt",
         value_as_string: true,
       },
     });
