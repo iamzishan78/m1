@@ -90,7 +90,8 @@ export default function CustomDatesActivities({
 
   const [selectedFilters, setSelectedFilters] = useState({
     campaign: null,
-    qualifier: null
+    qualifier: null,
+    audit: null
   });
 
   const handleFilterChange = (filterType, value) => {

@@ -123,24 +123,28 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
       series: copy(defaultUpdateUsers),
       xaxis: [],
     });
-    getActivityAnalytics({
-      variables: {
-        search: {
-          fields: ["name", "_all"],
-          query: stateApp.activitySearchQuery,
+    if (activeModule.title === 'Audit Reporting') {
+      getContactAnalytics({
+        variables: {
+          search: {
+            fields: ["name", "_all"],
+            query: stateApp.activitySearchQuery,
+          },
+          filters: getAllFilters(),
         },
-        filters: getAllFilters(),
-      },
-    });
-    getContactAnalytics({
-      variables: {
-        search: {
-          fields: ["name", "_all"],
-          query: stateApp.activitySearchQuery,
+      });
+    }
+    else {
+      getActivityAnalytics({
+        variables: {
+          search: {
+            fields: ["name", "_all"],
+            query: stateApp.activitySearchQuery,
+          },
+          filters: getAllFilters(),
         },
-        filters: getAllFilters(),
-      },
-    });
+      });
+    }
   }, [stateApp.activitySearchQuery, appliedFilters, tableFilters]);
 
   useEffect(() => {
