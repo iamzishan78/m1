@@ -109,7 +109,6 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
     }
     return [...rangeFilters, ...tableFilters];
   };
-  
   useEffect(() => {
     setActivitiesPerQualifier({
       series: copy(defaultSeriesActivities),
@@ -210,11 +209,10 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
   return (
     <Grid container direction="row" display="flex" align="center" spacing={4} textAlign="left" style={{ padding: "30px" }}>
       {
-        activeModule.value == 'CRM' &&
-        <Grid item md={4} style={{ padding: "10px" }}>
+        <Grid item md={activeModule.value == 'CRM' ? 4 : 6} style={{ padding: "10px" }}>
           <Card variant="outlined">
             <CardContent style={{ height: "265px" }}>
-              <label>Total Activities</label>
+              <label>{activeModule.value == 'CRM' ? 'Total Activities' : 'Total Updates'}</label>
               <div
                 style={{
                   position: "relative",
@@ -222,89 +220,65 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
                   fontSize: 18,
                 }}
               >
-                {get(analyticsData, "total", 0)}
+                {activeModule.value == 'CRM' ? get(analyticsData, "total", 0) : get(contactData, "total", 0)}
               </div>
-              <DonutChart
-                height={240}
-                marginTop={-15}
-                data={[
-                  {
-                    title: "Calls",
-                    value: get(analyticsData, "activitiesCount.call", 0),
-                    color: "#A3B2DD",
-                  },
-                  {
-                    title: "Emails",
-                    value: get(analyticsData, "activitiesCount.email", 0),
-                    color: "#FFD78E",
-                  },
-                  {
-                    title: "Texts",
-                    value: get(analyticsData, "activitiesCount.text_message", 0),
-                    color: "#CDCDCD",
-                  },
-                  {
-                    title: "Mailers",
-                    value: get(analyticsData, "activitiesCount.mailer", 0),
-                    color: "#F5B296",
-                  },
-                ]}
-              />
+              {activeModule.value == 'CRM' &&
+                <DonutChart
+                  height={240}
+                  marginTop={-15}
+                  data={[
+                    {
+                      title: "Calls",
+                      value: get(analyticsData, "activitiesCount.call", 0),
+                      color: "#A3B2DD",
+                    },
+                    {
+                      title: "Emails",
+                      value: get(analyticsData, "activitiesCount.email", 0),
+                      color: "#FFD78E",
+                    },
+                    {
+                      title: "Texts",
+                      value: get(analyticsData, "activitiesCount.text_message", 0),
+                      color: "#CDCDCD",
+                    },
+                    {
+                      title: "Mailers",
+                      value: get(analyticsData, "activitiesCount.mailer", 0),
+                      color: "#F5B296",
+                    },
+                  ]}
+                />
+              }
+              {
+                activeModule.title == 'Audit Reporting' &&
+                <DonutChart
+                  height={240}
+                  marginTop={-15}
+                  options={{
+                    legend: { display: false, labels: { display: false } }
+                  }}
+                  data={[
+                    {
+                      title: "",
+                      value: get(contactData, "total", 0),
+                      color: "#A3B2DD",
+                    },
+                  ]}
+                />
+              }
+
             </CardContent>
           </Card>
         </Grid>
       }
+      
       {
-        activeModule.title == 'Audit Reporting' &&
-        <Grid item md={6} style={{ padding: "10px" }}>
-          <Card variant="outlined">
-            <CardContent style={{ height: "265px" }}>
-              <label>Total Updates</label>
-              <div
-                style={{
-                  position: "relative",
-                  top: "85px",
-                  fontSize: 18,
-                }}
-              >
-                {get(contactData, "total", 0)}
-              </div>
-              <DonutChart
-                height={240}
-                marginTop={-15}
-                options={{
-                  legend: { display: false, labels: { display: false } }
-                }}
-                data={[
-                  {
-                    title: "",
-                    value: get(contactData, "total", 0),
-                    color: "#A3B2DD",
-                  },
-                ]}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
-      }
-      {
-        activeModule.value == 'CRM' &&
-        <Grid item md={4} style={{ padding: "10px" }}>
+        <Grid item md={activeModule.value == 'CRM' ? 4 : 6} style={{ padding: "10px" }}>
           <Card variant="outlined">
             <CardContent style={{ height: "265px", overflow: "auto" }}>
-              <label>Activities Per Qualifier</label>
-              {!loading && <StackedBarChart data={activitiesPerQualifier} />}
-            </CardContent>
-          </Card>
-        </Grid>
-      }
-      {
-        activeModule.title == 'Audit Reporting' &&
-        <Grid item md={6} style={{ padding: "10px" }}>
-          <Card variant="outlined">
-            <CardContent style={{ height: "265px", overflow: "auto" }}>
-              <label>Updates Per User</label>
-              {!loading && <StackedBarChart data={updatesPerUser} />}
+              <label>{activeModule.value == 'CRM' ? 'Activities Per Qualifier' : 'Updates Per User'}</label>
+              { !loading && <StackedBarChart data={activeModule.value == 'CRM' ? activitiesPerQualifier : updatesPerUser } />}
             </CardContent>
           </Card>
         </Grid>

@@ -27,6 +27,7 @@ import Chip from '@material-ui/core/Chip';
 import { TableFilterList } from "mui-datatables";
 
 export const getFilters = (appliedFilters) => {
+  debugger
   let filters = [];
   if (appliedFilters) {
     let range = [];
@@ -55,7 +56,7 @@ export const getFilters = (appliedFilters) => {
       else{
         range = getRangeFilters(
           {
-            createAt: {
+            lastUpdateAt: {
               from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
               to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
             },
@@ -65,7 +66,7 @@ export const getFilters = (appliedFilters) => {
         if (range.length > 0) filters = [...filters, ...range];
         range = getRangeFilters(
           {
-            createAt: {
+            lastUpdateAt: {
               from: appliedFilters.fromDate ? new Date(appliedFilters.fromDate).toISOString() : null,
               to: appliedFilters.toDate ? new Date(appliedFilters.toDate).toISOString() : null,
             },
