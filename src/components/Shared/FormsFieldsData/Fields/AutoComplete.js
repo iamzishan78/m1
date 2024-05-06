@@ -4,36 +4,28 @@ import { Grid, TextField, Autocomplete } from '@mui/material';
 import { Controller } from "react-hook-form";
 import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 import { useLazyQuery } from "@apollo/client";
+import { useApolloClient } from '@apollo/client';
 
 function AutoCompleteComponent({ control, item }) {
   const {
     name,
     label,
     defaultOptions = [],
-    esIndex,
-    filterKey
+    variables,
+    query,
+    getOptions
   } = item;
 
+  const client = useApolloClient();
   const [options, setOptions] = useState(defaultOptions);
 
-  const [getOptions, { data: filterOptions }] = useLazyQuery(GET_ES_FILTER_LIST, { fetchPolicy: "no-cache" });
-
-  useEffect(() => {
-    if (esIndex && filterKey)
-      getOptions({
-        variables: {
-          esIndex,
-          filterKey,
-          size: 10000,
-        },
+  const callQuery = async () => {
+    if (variables && query) {
+      const res = await client.query({
+        variables,
+        query,
       });
-  }, [esIndex, filterKey]);
-
-  useEffect(() => {
-    if (filterOptions?.getESFilterList?.hits) {
-      let filterData = filterOptions.getESFilterList.hits.map(
-        (hit) => hit.key
-      );
+      let filterData = getOptions(res)
       for (let i = 0; i < defaultOptions.length; i++) {
         filterData = filterData.filter(
           (d) =>
@@ -54,7 +46,11 @@ function AutoCompleteComponent({ control, item }) {
 
       setOptions(filterData);
     }
-  }, [filterOptions]);
+  }
+
+  useEffect(() => {
+    callQuery()
+  }, [])
 
   return (
     <Grid item xs={12}>

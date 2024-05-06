@@ -8,6 +8,7 @@ import { popupController } from 'hookstate/popupStateController';
 import { addTrailingZeros } from 'components/Shared/functions';
 import { sideDialogController } from "hookstate/sideDialogController"
 import { calculateStandardNraForTract } from 'utils/calculatedNraHelper';
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 const calculateNetAcres = interest => {
   const selectedParcel = popupController.getValue('selectedParcel');
@@ -30,8 +31,18 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       name: "ownerType",
       defaultOptions: entityTypeOptions,
       renderField: "autoComplete",
-      filterKey: "ownerType.keyword",
-      esIndex: "contacts_flat",
+      variables: {
+        esIndex: "contacts_flat",
+        filterKey: "ownerType.keyword",
+        size: 10000,
+      },
+      query: GET_ES_FILTER_LIST,
+      getOptions: (apiRes) => {
+        const filterData = apiRes.data.getESFilterList.hits.map(
+          (hit) => hit.key
+        );
+        return filterData
+      }
     },
     {
       label: "Surface Interest",
@@ -464,16 +475,36 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       label: "Contact Status",
       name: "contactStatus",
       renderField: "autoComplete",
-      filterKey: "contactStatus.keyword",
-      esIndex: "contacts_flat",
+      variables: {
+        esIndex: "contacts_flat",
+        filterKey: "contactStatus.keyword",
+        size: 10000,
+      },
+      query: GET_ES_FILTER_LIST,
+      getOptions: (apiRes) => {
+        const filterData = apiRes.data.getESFilterList.hits.map(
+          (hit) => hit.key
+        );
+        return filterData
+      }
     },
     {
       label: "Contact Stage",
       name: "status",
       defaultOptions: contactStatusOptions,
       renderField: "autoComplete",
-      filterKey: "status.keyword",
-      esIndex: "contacts_flat",
+      variables: {
+        esIndex: "contacts_flat",
+        filterKey: "status.keyword",
+        size: 10000,
+      },
+      query: GET_ES_FILTER_LIST,
+      getOptions: (apiRes) => {
+        const filterData = apiRes.data.getESFilterList.hits.map(
+          (hit) => hit.key
+        );
+        return filterData
+      }
     },
     {
       label: "Campaign Names",
@@ -484,15 +515,35 @@ const parcelOwnerForm = ({ getValues, setValue, tenantName, state }) => {
       label: "Campaign Priority",
       name: "campaignPriority",
       renderField: "autoComplete",
-      esIndex: 'shapeowners_flat',
-      filterKey: 'campaignPriority.keyword',
+      variables: {
+        esIndex: "shapeowners_flat",
+        filterKey: "campaignPriority.keyword",
+        size: 10000,
+      },
+      query: GET_ES_FILTER_LIST,
+      getOptions: (apiRes) => {
+        const filterData = apiRes.data.getESFilterList.hits.map(
+          (hit) => hit.key
+        );
+        return filterData
+      }
     },
     {
       label: "Lease Status",
       name: "leaseStatus",
       renderField: "autoComplete",
-      esIndex: 'shapeowners_flat',
-      filterKey: 'leaseStatus.keyword',
+      variables: {
+        esIndex: "shapeowners_flat",
+        filterKey: "leaseStatus.keyword",
+        size: 10000,
+      },
+      query: GET_ES_FILTER_LIST,
+      getOptions: (apiRes) => {
+        const filterData = apiRes.data.getESFilterList.hits.map(
+          (hit) => hit.key
+        );
+        return filterData
+      },
       defaultOptions: [{ label: "HBP", value: "HBP" }, { label: "Leased", value: "Leased" }, { label: "Unleased", value: "Unleased" }]
     },
     {
