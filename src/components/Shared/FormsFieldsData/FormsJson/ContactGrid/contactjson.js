@@ -1,6 +1,8 @@
 import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
+import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
-const contactForm = ({ contactOwerOptions }) => {
+const contactForm = () => {
   const formFields = [
     {
       label: "First Name",
@@ -19,8 +21,18 @@ const contactForm = ({ contactOwerOptions }) => {
       name: "ownerType",
       defaultOptions: entityTypeOptions,
       renderField: "autoComplete",
-      filterKey: "ownerType.keyword",
-      esIndex: "contacts_flat",
+      variables: {
+        esIndex: "contacts_flat",
+        filterKey: "ownerType.keyword",
+        size: 10000,
+      },
+      query: GET_ES_FILTER_LIST,
+      getOptions: (apiRes) => {
+        const filterData = apiRes.data.getESFilterList.hits.map(
+          (hit) => hit.key
+        );
+        return filterData
+      }
     },
     {
       label: "Home phone",
@@ -61,8 +73,15 @@ const contactForm = ({ contactOwerOptions }) => {
     {
       label: "Contact Owner",
       name: "contactOwner",
-      defaultOptions: contactOwerOptions,
       renderField: "autoComplete",
+      query: GETMONGOUSERS,
+      getOptions: (apiRes) => {
+        const filterData = apiRes.data.allMongoUsers.map(user => ({
+          value: user._id,
+          label: user.name,
+        }))
+        return filterData
+      }
     },
   ]
 

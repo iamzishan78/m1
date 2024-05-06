@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { Grid, TextField, Autocomplete } from '@mui/material';
 import { Controller } from "react-hook-form";
-import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
-import { useLazyQuery } from "@apollo/client";
 import { useApolloClient } from '@apollo/client';
 
 function AutoCompleteComponent({ control, item }) {
@@ -20,7 +18,7 @@ function AutoCompleteComponent({ control, item }) {
   const [options, setOptions] = useState(defaultOptions);
 
   const callQuery = async () => {
-    if (variables && query) {
+    if (query) {
       const res = await client.query({
         variables,
         query,
@@ -37,7 +35,14 @@ function AutoCompleteComponent({ control, item }) {
         filterData.push(defaultOptions[i].label);
       }
 
-      filterData = filterData.filter(item => item.trim())
+      filterData = filterData.map(item => {
+        if (typeof item === 'string') {
+          return { label: item.trim(), value: item.trim() };
+        } else {
+          return item;
+        }
+      });
+
       const alreadyInLabelValueForm = filterData.every(item => typeof item === 'object' && 'label' in item && 'value' in item);
       filterData = alreadyInLabelValueForm ? filterData : filterData.map(item => ({
         label: item,

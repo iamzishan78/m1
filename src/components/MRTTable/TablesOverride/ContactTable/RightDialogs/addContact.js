@@ -1,15 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import DialogContent from '@material-ui/core/DialogContent';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Grid } from '@material-ui/core';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { makeStyles } from '@material-ui/core/styles';
 import { ADDCONTACT } from 'graphQL/useMutationAddContact';
 import RightDialog from 'components/ContactDetailCard/components/RightDialog';
-import { GETMONGOUSERS } from 'graphQL/useQueryGetUsers';
 import { tableGlobalController } from 'hookstate/tableController';
 import contactForm from 'components/Shared/FormsFieldsData/FormsJson/ContactGrid/contactjson';
 import { sideDialogController } from 'hookstate/sideDialogController';
@@ -59,8 +58,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function AddContactDialogContent(props) {
-  const [contactOwerOptions, setContactOwerOptions] = useState([]);
-
   const Controller = sideDialogController("contactDialog")
   const formState = Controller.useCompleteState()
   const formStateValues = formState?.get({ noproxy: true });
@@ -78,32 +75,11 @@ export default function AddContactDialogContent(props) {
   const { firstName } = getValues() || {}
 
   const formJson = useMemo(() => {
-    return contactForm({
-      contactOwerOptions
-    });
-  }, [contactOwerOptions, formState?.rerenderJson]);
-
-  const [getAllMongoUsers, { data: userLists }] = useLazyQuery(GETMONGOUSERS, {
-    fetchPolicy: 'cache-and-network',
-  });
+    return contactForm();
+  }, [formState?.rerenderJson]);
 
   const [addContact, { loading }] = useMutation(ADDCONTACT);
 
-
-  useEffect(() => {
-    getAllMongoUsers();
-  }, []);
-
-  useEffect(() => {
-    if (userLists && userLists.allMongoUsers) {
-      setContactOwerOptions(
-        userLists.allMongoUsers.map(user => ({
-          value: user._id,
-          label: user.name,
-        }))
-      );
-    }
-  }, [userLists]);
 
   const handleClickDialogClose = e => {
     e.preventDefault();
