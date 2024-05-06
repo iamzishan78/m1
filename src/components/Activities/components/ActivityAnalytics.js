@@ -252,7 +252,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
       }
       {
         activeModule.title == 'Audit Reporting' &&
-        <Grid item md={4} style={{ padding: "10px" }}>
+        <Grid item md={6} style={{ padding: "10px" }}>
           <Card variant="outlined">
             <CardContent style={{ height: "265px" }}>
               <label>Total Updates</label>
@@ -296,7 +296,7 @@ const ActivityAnalytics = ({ appliedFilters, tableFilters }) => {
       }
       {
         activeModule.title == 'Audit Reporting' &&
-        <Grid item md={4} style={{ padding: "10px" }}>
+        <Grid item md={6} style={{ padding: "10px" }}>
           <Card variant="outlined">
             <CardContent style={{ height: "265px", overflow: "auto" }}>
               <label>Updates Per User</label>
