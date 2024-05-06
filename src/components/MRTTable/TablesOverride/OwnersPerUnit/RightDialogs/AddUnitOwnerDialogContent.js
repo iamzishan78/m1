@@ -19,7 +19,7 @@ import { useForm } from 'react-hook-form';
 import AutocompEntityNamesList from 'components/Shared/Forms/Fields/AutocompEntityNamesList';
 import KeyboardTabBlackIcon from 'components/Shared/svgIcons/KeyboardTabBlackIcon';
 import { tableGlobalController } from 'hookstate/tableController';
-import { sideDialogController, initialState } from 'hookstate/sideDialogController';
+import { sideDialogController, unitInterestOwnerState } from 'hookstate/sideDialogController';
 import { globalStateController } from 'hookstate/globalStateController';
 import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/UnitDetailInterestOwner/contactSubForm';
 import unitInterestOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/UnitDetailInterestOwner/unitInterestOwnerForm';
@@ -118,8 +118,8 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
 
   useEffect(() => {
     if (selectedRow) {
-      const filteredSelectedRow = _.pick(selectedRow, Object.keys(initialState));
-      const rowData = _.merge({}, initialState, filteredSelectedRow);
+      const filteredSelectedRow = _.pick(selectedRow, Object.keys(unitInterestOwnerState));
+      const rowData = _.merge({}, unitInterestOwnerState, filteredSelectedRow);
 
       rowData.contactStatus = selectedRow?.contact?.contactStatus
       rowData.status = selectedRow?.contact?.status

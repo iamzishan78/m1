@@ -25,7 +25,7 @@ import { tableGlobalController } from 'hookstate/tableController';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import contactSubForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/contactSubForm';
 import parcelOwnerForm from 'components/Shared/FormsFieldsData/FormsJson/ParcelDetailInterestOwner/parcelOwnerForm';
-import { sideDialogController, initialState } from 'hookstate/sideDialogController';
+import { sideDialogController, tractInterestOwnerState } from 'hookstate/sideDialogController';
 import { globalStateController } from 'hookstate/globalStateController';
 import CommonForm from 'components/Shared/FormsFieldsData/CommonForm';
 import { UPDATECONTACT } from 'graphQL/useMutationUpdateContact';
@@ -216,17 +216,17 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   const handleUpdateContact = ownerToAdd => {
     if (
-      ((ownerToAdd.contactStatus || selectedRow?.contactStatus) &&
+      ((ownerToAdd?.contactStatus || selectedRow?.contactStatus) &&
         selectedRow?.contactStatus !== ownerToAdd.contactStatus) ||
-      ((ownerToAdd.status || selectedRow?.status) &&
+      ((ownerToAdd?.status || selectedRow?.status) &&
         selectedRow?.status !== ownerToAdd.status) ||
-      ((ownerToAdd.ownerType || selectedRow?.ownerType) &&
+      ((ownerToAdd?.ownerType || selectedRow?.ownerType) &&
         selectedRow?.ownerType !== ownerToAdd.ownerType) ||
-      ((ownerToAdd.campaignPriority || selectedRow?.campaignPriority) &&
+      ((ownerToAdd?.campaignPriority || selectedRow?.campaignPriority) &&
         selectedRow?.campaignPriority !== ownerToAdd.campaignPriority) ||
-      ((ownerToAdd.campaignName || selectedRow?.campaignName) &&
+      ((ownerToAdd?.campaignName || selectedRow?.campaignName) &&
         selectedRow?.campaignName !== ownerToAdd.campaignName) ||
-      ownerToAdd.campaignName ||
+      ownerToAdd?.campaignName ||
       selectedRow?.campaignName !== ownerToAdd.campaignName
     ) {
       updateContact({
@@ -306,8 +306,8 @@ export default function AddParcelOwnerDialogContent({ selectedRow, setSelectedRo
 
   useEffect(() => {
     if (selectedRow) {
-      const filteredSelectedRow = _.pick(selectedRow, Object.keys(initialState));
-      const rowData = _.merge({}, initialState, filteredSelectedRow);
+      const filteredSelectedRow = _.pick(selectedRow, Object.keys(tractInterestOwnerState));
+      const rowData = _.merge({}, tractInterestOwnerState, filteredSelectedRow);
 
       (rowData?.depthFrom === "All depths" && rowData?.depthTo === "All depths") ? rowData.depthBoth = "true" : rowData.depthBoth = "false"
       rowData.qtr1 = selectedRow?.qtr?.[0]

@@ -2,53 +2,87 @@ import { hookstate } from '@hookstate/core';
 import { copy } from 'components/Shared/functions';
 import { hookStateController } from 'hookstate/hookStateController';
 
-export const initialState = {
+export const commonIterestOwnerStates = {
   newOwner: false,
-  surface_interest: null,
+  name: null,
   ownerType: null,
-  cost_bearing: null,
-  cost_bearing_high_value: null,
-  cost_free_high_value: null,
-  mineral_interest: null,
   royalty_interest: null,
   orri: null,
-  unknown_interest: null,
-  record_title: null,
-  operating_rights: null,
-  nri: null,
   net_acres: null,
-  company_net_acres: null,
-  depthFrom: "All depths",
-  depthTo: "All depths",
   nra: null,
+  seller_asking_price: null,
+  competitor_offer_price: null,
+  offer_price: null,
+  contactStatus: null,
+  status: null,
+  campaignName: [],
+  campaignPriority: null,
+  deals: [],
+  ownerEntity: null,
+}
+
+export const tractInterestOwnerState = {
+  ...commonIterestOwnerStates,
+  surface_interest: null,
+  mineral_interest: null,
+  nonExecRightsOnly: null,
+
+  operating_rights: null,
+  offer_price_nma: null,
+  max_offer_price_nma: null,
+  max_offer_price: null,
+  company_net_acres: null,
+  actual_offer_price: null,
+  cost_bearing: null,
+  cost_free_high_value: null,
+  cost_bearing_high_value: null,
   qtr: [
     null,
     null,
     null,
     null
   ],
-  customLayer: null,
-  deals: [],
-  nonExecRightsOnly: null,
-  offer_price_nma: null,
-  max_offer_price_nma: null,
-  offer_price: null,
-  max_offer_price: null,
-  seller_asking_price: null,
-  competitor_offer_price: null,
-  actual_offer_price: null,
-  contactStatus: null,
-  status: null,
-  campaignName: [],
-  campaignPriority: null,
+
   leaseStatus: null,
-  ownerEntity: null,
-  name: null,
+  depthFrom: "All depths",
+  depthTo: "All depths",
+  customLayer: null,
   relatedObject: null,
+}
+
+export const unitInterestOwnerState = {
+  ...commonIterestOwnerStates,
   working_interest: null,
+  unknown_interest: null,
+  record_title: null,
+  nri: null,
   unitTractId: null,
   tractAcres: null,
   dataSource: null,
+  taxYear: null,
+}
+
+export const contactState = {
+  firstName: null,
+  middleName: null,
+  lastName: null,
+  homePhone: null,
+  mobilePhone: null,
+  email: null,
+  address1: null,
+  address2: null,
+  city: null,
+  state: null,
+  zipCode: null,
+  country: null,
+  contactOwner: null,
+}
+
+
+const initialState = {
+  ...tractInterestOwnerState,
+  ...unitInterestOwnerState,
+  ...contactState,
 };
 
 export const sideDialogState = hookstate(copy(initialState));

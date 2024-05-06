@@ -160,8 +160,8 @@ const unitInterestOwnerForm = ({ getValues, setValue }) => {
         inputComponent: CurrencyFormatCustom,
       },
       onBlur: (value) => {
+        console.log('value', value)
         const numericValue = parseFloat(value.slice(1));
-        console.log(numericValue, 'numericValue', value)
         const formattedValue = numericValue.toFixed(8);
         return parseFloat(formattedValue).toFixed(8)
       },
@@ -173,8 +173,9 @@ const unitInterestOwnerForm = ({ getValues, setValue }) => {
         inputComponent: CurrencyFormatCustom,
       },
       onBlur: (value) => {
+        console.log('value', value)
+
         const numericValue = parseFloat(value.slice(1));
-        console.log(numericValue, 'numericValue', value)
         const formattedValue = numericValue.toFixed(8);
         return parseFloat(formattedValue).toFixed(8)
       },
@@ -192,8 +193,8 @@ const unitInterestOwnerForm = ({ getValues, setValue }) => {
         return isOverride
       },
       onBlur: (value) => {
+        console.log('value', value)
         const numericValue = parseFloat(value.slice(1));
-        console.log(numericValue, 'numericValue', value)
         const formattedValue = numericValue.toFixed(8);
         return parseFloat(formattedValue).toFixed(8)
       },
