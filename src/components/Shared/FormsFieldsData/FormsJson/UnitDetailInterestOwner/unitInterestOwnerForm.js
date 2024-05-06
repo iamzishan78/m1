@@ -6,6 +6,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { contactStatusOptions } from 'components/ContactDetailedInfo/helper';
 import { entityTypeOptions } from "components/ContactDetailedInfo/helper";
 import { calculateStandardNraForUnit } from "utils/calculatedNraHelper"
+import { GET_ES_FILTER_LIST } from "graphQL/useQueryESFilterList";
 
 const calculateOfferPrice = nra => {
   const uUnitPricing = sideDialogController("unitInterestDialog").getValue('uUnitPricing')
@@ -20,8 +21,18 @@ const unitInterestOwnerForm = ({ getValues, setValue }) => {
       name: "ownerType",
       defaultOptions: entityTypeOptions,
       renderField: "autoComplete",
-      filterKey: "ownerType.keyword",
-      esIndex: "contacts_flat",
+      variables: {
+        esIndex: "contacts_flat",
+        filterKey: "ownerType.keyword",
+        size: 10000,
+      },
+      query: GET_ES_FILTER_LIST,
+      getOptions: (apiRes) => {
+        const filterData = apiRes.data.getESFilterList.hits.map(
+          (hit) => hit.key
+        );
+        return filterData
+      }
     },
     {
       label: "Working Interest",
@@ -222,16 +233,36 @@ const unitInterestOwnerForm = ({ getValues, setValue }) => {
       label: "Contact Status",
       name: "contactStatus",
       renderField: "autoComplete",
-      filterKey: "contactStatus.keyword",
-      esIndex: "contacts_flat",
+      variables: {
+        esIndex: "contacts_flat",
+        filterKey: "contactStatus.keyword",
+        size: 10000,
+      },
+      query: GET_ES_FILTER_LIST,
+      getOptions: (apiRes) => {
+        const filterData = apiRes.data.getESFilterList.hits.map(
+          (hit) => hit.key
+        );
+        return filterData
+      }
     },
     {
       label: "Contact Stage",
       name: "status",
       defaultOptions: contactStatusOptions,
       renderField: "autoComplete",
-      filterKey: "status.keyword",
-      esIndex: "contacts_flat",
+      variables: {
+        esIndex: "contacts_flat",
+        filterKey: "status.keyword",
+        size: 10000,
+      },
+      query: GET_ES_FILTER_LIST,
+      getOptions: (apiRes) => {
+        const filterData = apiRes.data.getESFilterList.hits.map(
+          (hit) => hit.key
+        );
+        return filterData
+      }
     },
     {
       label: "Campaign Names",
@@ -242,8 +273,18 @@ const unitInterestOwnerForm = ({ getValues, setValue }) => {
       label: "Campaign Priority",
       name: "campaignPriority",
       renderField: "autoComplete",
-      esIndex: 'shapeowners_flat',
-      filterKey: 'campaignPriority.keyword',
+      variables: {
+        esIndex: "shapeowners_flat",
+        filterKey: "campaignPriority.keyword",
+        size: 10000,
+      },
+      query: GET_ES_FILTER_LIST,
+      getOptions: (apiRes) => {
+        const filterData = apiRes.data.getESFilterList.hits.map(
+          (hit) => hit.key
+        );
+        return filterData
+      }
     },
     {
       label: "Associated Deals",
