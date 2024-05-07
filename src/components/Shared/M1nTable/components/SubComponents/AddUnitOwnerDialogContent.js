@@ -1054,6 +1054,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onChange={e => {
                         const value = parseFloat(e.target.value).toFixed(2);
                         setIsTargetPriceOverridden(value !== parseFloat(uUnitPricing).toFixed(2));
+                        setValue('offer_price', calculateOfferPrice(value, getValues().nra));
                         props.onChange(value);
                       }}
                       className={isTargetPriceOverridden ? `overridden ${classes.baseValueChanged}` : classes.maxWidth}
@@ -1187,6 +1188,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                       onChange={e => {
                         const value = parseFloat(e.target.value).toFixed(2);
                         setIsMaxPriceOverridden(value !== parseFloat(uMaxUnitPricing).toFixed(2));
+                        setValue('max_offer_price', calculateOfferPrice(value, getValues().nra));
                         props.onChange(value);
                       }}
                       className={isMaxPriceOverridden ? `overridden ${classes.baseValueChanged}` : classes.maxWidth}

@@ -27,6 +27,7 @@ const onClickedRow = selectedRow => {
 			shapeId: customLayer?._id,
 			uAcres: customLayer?.shapeJson?.properties?.uAcres,
 			uUnitPricing: customLayer?.shapeJson?.properties?.uUnitPricing,
+			uMaxUnitPricing: customLayer?.shapeJson?.properties?.uMaxUnitPricing,
 			shapeType: 'Unit',
 			selectedRow,
 		},
