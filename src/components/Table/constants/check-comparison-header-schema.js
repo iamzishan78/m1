@@ -107,7 +107,7 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "purchaser",
-    label: "Purchaser Name",
+    label: "Payor Name",
     esKey: "property.purchaser.name.keyword",
     options: { sort: true, filter: true },
   },
@@ -269,7 +269,7 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "purchaserNumber",
-    label: "Purchaser Prop #",
+    label: "Payor Prop #",
     esKey: "property.purchaserNumber.keyword",
     options: { sort: true, filter: true },
   },

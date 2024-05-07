@@ -74,6 +74,10 @@ function TractInterestTable(props) {
   }, [GridViewModule]);
 
   useEffect(() => {
+    props.setESFilters(props.selectedGridView?.filters || []);
+  }, [props.selectedGridView]);
+
+  useEffect(() => {
     setTableMeta({
       extendSearchQuery: esExtentedSearch(props.landSearchQuery, searchInput),
       searchFields: [
@@ -132,7 +136,7 @@ function TractInterestTable(props) {
       className={classes.container}
       id={props.id ? props.id : props.parent}
     >
-        <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
+      <Dialog open={props.openDialog ? true : false} onClose={() => props.setOpenDialog(null)} fullWidth={true} maxWidth={"sm"}>
         {props.openDialog === "delete" && (
           <DeleteConfirmationDialogContent
             header={`Delete Tract Interest(s)`}

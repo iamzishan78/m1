@@ -23,6 +23,7 @@ import AddMyWell from "./AddMyWell";
 import RevenueProperties from "./RevenueProperties";
 import Agreements from "./Agreements";
 import DeleteConfirmationDialogContent from "components/Shared/M1nTable/components/SubComponents/DeleteConfirmationDialogContent";
+import { globalStateController } from "hookstate/globalStateController";
 
 const useStyles = makeStyles({
   drawer: {
@@ -159,8 +160,10 @@ export default function MyWellDialog(props) {
   const [myWellData, setMyWellData] = useState();
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
-
-  const { id: globalWellId } = useParams();
+  const { stateValues } = globalStateController.useState(['testCase']);
+  let globalWellId = useParams().id;
+  if (stateValues?.testCase?.globalWellId)
+    globalWellId = stateValues?.testCase?.globalWellId;
   const history = useHistory();
   const client = useApolloClient();
 
@@ -212,6 +215,8 @@ export default function MyWellDialog(props) {
       const { data: wellDataResp } = promises[1]
       platformWellData = { ...platformWellData, ...get(wellDataResp, "myWellByGlobalId.myWell.wellData", {}), ...well, ...get(wellDataResp, "myWellByGlobalId.myWell", {}) }
 
+      delete platformWellData.wellData;
+
       platformWellData.permitApprovedDate = platformWellData.PermitDate
       platformWellData.spudDate = platformWellData.SpudDate
       platformWellData.firstProductionDate = platformWellData.FirstProdDate
@@ -231,7 +236,8 @@ export default function MyWellDialog(props) {
     // Delete Document Logic goes here
     deleteMyWell({
       variables: {
-        myWellId: get(myWellData, "myWellByGlobalId.myWell._id")
+        // added proper well id
+        myWellId: platformWell?._id || platformWell?.tenantWellId
       },
       refetchQueries: ["getESSimpleSearch"],
       awaitRefetchQueries: true,
@@ -269,7 +275,7 @@ export default function MyWellDialog(props) {
           anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
           transformOrigin={{ vertical: "top", horizontal: "center" }}
         >
-          <MenuItem onClick={() => setOpenDeleteConfirmDialog(true)}>
+          <MenuItem data-testid="delete-button" onClick={() => setOpenDeleteConfirmDialog(true)}>
             <ListItemIcon>
               <DeleteIcon size="medium" />
             </ListItemIcon>
@@ -306,6 +312,7 @@ export default function MyWellDialog(props) {
                   <IconButton
                     size="small"
                     component="span"
+                    data-testid="menu-icon"
                     style={{
                       background: "transparent",
                       paddingLeft: "10px",
@@ -315,7 +322,7 @@ export default function MyWellDialog(props) {
                   >
                     <MoreHorizIcon size="medium" />
                   </IconButton>
-                  <IconButton size="small" onClick={handleCloseDialog}>
+                  <IconButton data-testid="close-dialog" size="small" onClick={handleCloseDialog}>
                     <CloseIcon />
                   </IconButton>
                 </div>

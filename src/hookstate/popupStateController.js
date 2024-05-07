@@ -11,6 +11,7 @@ const initialState = {
 	parcelDetailCardTabIndex: 0,
 	selectedUserDefinedLayer: null,
 	selectedShape: null,
+	selectedShapeFile: null,
 	selectedParcel: null,
 	selectedWell: null,
 	selectedWellId: null,

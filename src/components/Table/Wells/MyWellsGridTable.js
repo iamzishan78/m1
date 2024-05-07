@@ -104,8 +104,10 @@ function MyWellsGridTable(props) {
         });
       });
       hit = {
+        ...hit,
         ...hit.wellData,
         ...propertiesKeys,
+        _id: hit._id,
         sort: hit.sort,
         permitApprovedDate: hit.wellData.permitApprovedDate ? convert_date(hit.wellData.permitApprovedDate) : null,
         spudDate: hit.wellData.spudDate ? convert_date(hit.wellData.spudDate) : null,
@@ -125,7 +127,7 @@ function MyWellsGridTable(props) {
             header={`Delete Well(s)`}
             onClose={() => props.setOpenDialog(null)}
             deleteFunc={deleteFunc}
-            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex]._id)}
+            m1nSelectedRowsIds={props.selectedRows.map((sR) => props.rows[sR.dataIndex].Id)}
             setM1nSelectedRowsIndexes={props.setSelectedRows}
           >
             {`Do you want to delete the selected Well${props.selectedRows && props.selectedRows.length > 1 && props.selectedRows.length > 1 ? "s" : ""

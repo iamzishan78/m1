@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useSelector } from "react-redux";
 import { copy } from "utils/helper";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -22,9 +21,11 @@ import ExpandableSearch from "components/Shared/Forms/Fields/ExpandableSearch";
 import QtrQtrSelectorNew from "components/ShapeDetailCard/Common/QtrQtrSelectorNew";
 import { AppContext } from "AppContext";
 import MetaField from "components/Table/helpers/MetaField";
+import { globalStateController } from "hookstate/globalStateController";
 
 export default function UnitSummary(props) {
-    const user = useSelector(({ app }) => app.user);
+    const { stateValues: { user } } = globalStateController.useState(['user']);
+
     const [search, setSearch] = useState("");
     const [unitProperties, setProperties] = useState(props.properties);
     const [tableDataState, setTableDataState] = useState({});
@@ -74,6 +75,19 @@ export default function UnitSummary(props) {
         props.updateProperties(null, "custom_data", customData);
     };
 
+
+    const filteredUnitDefaultData = React.useMemo(() => {
+        // Check if the state in properties or originalProperties is "TX"
+        const isTexasState = props.properties?.state === "TX" || props.properties?.originalProperties?.State === "TX";
+
+        // Use useMemo to memoize the result based on the state value
+        return isTexasState ?
+            // If state is "TX", filter unitDefaultData based on showStateTX !== false
+            unitDefaultData.filter((data) => data.showStateTX !== false) :
+            // If state is not "TX", filter unitDefaultData based on showStateTX !== true
+            unitDefaultData.filter((data) => data.showStateTX !== true);
+    }, [props.properties?.state]);
+
     return (
         <>
             <Grid container direction="row" className={classes.summaryCard}>
@@ -121,7 +135,7 @@ export default function UnitSummary(props) {
                         </Grid>
                         <Grid item>
                             <SummaryTable
-                                tableData={unitDefaultData}
+                                tableData={filteredUnitDefaultData}
                                 properties={props.properties}
                                 updateProperties={props.updateProperties}
                                 updateCustomProperties={props.updateCustomProperties}
@@ -129,6 +143,7 @@ export default function UnitSummary(props) {
                                 metaData={metaDataRes}
                                 id={props.id}
                                 updating={props.updating}
+                                isCustomLayerAutoComplete={['unit'].includes(props.properties.type)}
                             />
                         </Grid>
                         <Grid item>

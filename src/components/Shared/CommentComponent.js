@@ -1,7 +1,6 @@
 import React, {
   useState,
   useEffect,
-  useContext,
   Fragment,
   useRef,
   useCallback,
@@ -20,7 +19,6 @@ import {
 } from "@material-ui/icons";
 import { useSelector, useDispatch } from "react-redux";
 import { updatePinComments } from "store/actions/commonActions";
-import { AppContext } from "AppContext";
 import { GETMONGOUSERS } from "graphQL/useQueryGetUsers";
 import { GET_PROFILE_IMAGE } from "graphQL/useQueryGetProfile";
 import { GET_PROFILES_IMAGES } from "graphQL/useQueryGetProfile";
@@ -36,6 +34,7 @@ import ru from "javascript-time-ago/locale/ru";
 import moment from "moment";
 import DOMPurify from "dompurify";
 import { TOGGLECOMMENTREACTION } from "graphQL/userMutationToggleCommentReaction";
+import { globalStateController } from "hookstate/globalStateController";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(ru);
@@ -250,9 +249,10 @@ export default function CommentComponent(props) {
     commentsHeight,
     isFileDetail: props.targetLabel === "file" || false,
   });
-  const [stateApp] = useContext(AppContext);
   const dispatch = useDispatch();
   const { pinComment } = useSelector((state) => state.pin);
+
+  const { stateValues: { user } } = globalStateController.useState(['user']);
 
   const [users, setUsers] = useState([]);
   const [comment, setComment] = useState("");
@@ -356,7 +356,7 @@ export default function CommentComponent(props) {
       const comments = JSON.parse(JSON.stringify(commentsArray));
       comments.push({
         ...newlyAddedComment.upsertComment.comment,
-        user: { name: stateApp.user.name, email: stateApp.user.email },
+        user: { name: user.name, email: user.email },
         isNew: true,
       });
       if (props.setNewCommentId)
@@ -372,13 +372,13 @@ export default function CommentComponent(props) {
   }, [profilesData]);
 
   useEffect(() => {
-    if (stateApp?.user?.email) {
+    if (user?.email) {
       getProfileImage({
-        variables: { email: stateApp.user.email },
+        variables: { email: user.email },
         fetchPolicy: "network-only",
       });
     }
-  }, [stateApp.user]);
+  }, [user]);
 
   useEffect(() => {
     if (
@@ -449,11 +449,12 @@ export default function CommentComponent(props) {
             typeof value === "object"
               ? value.commentType || "General"
               : "General",
-          user: stateApp.user.mongoId,
+          user: user.mongoId,
           commentedOn: targetSourceId,
           _id: editCommentId,
           objectType: props.targetLabel,
           isEdited: true,
+          tenant: window.sessionStorage.getItem("tenantName")
         },
       },
       refetchQueries: [
@@ -562,7 +563,7 @@ export default function CommentComponent(props) {
   }, [commentsArray, scrollIntoView]);
 
   const addNewComment = (value) => {
-    const userDetails = stateApp.user;
+    const userDetails = user;
     setCommentsArray((state) => {
       let newComment = {
         commentedOn: targetSourceId,
@@ -598,10 +599,11 @@ export default function CommentComponent(props) {
               ? value.commentType || "General"
               : "General",
           public: true,
-          user: stateApp.user.mongoId,
+          user: user.mongoId,
           commentedOn: targetSourceId,
           objectType: props.targetLabel,
           pin: false,
+          tenant: window.sessionStorage.getItem("tenantName")
         },
       },
       refetchQueries: [
@@ -624,14 +626,14 @@ export default function CommentComponent(props) {
 
   const didILikedThisComment = useCallback(
     (comment) => {
-      if (!stateApp?.user?._id) return false;
+      if (!user?._id) return false;
 
       const likedBy = comment?.likedBy || [];
-      const find = likedBy.find((user) => user._id === stateApp.user._id);
+      const find = likedBy.find((u) => u._id === user._id);
 
       return !!find;
     },
-    [stateApp.user]
+    [user]
   );
 
   const callToggleCommentReactionMutation = useCallback((comment) => {
@@ -720,7 +722,7 @@ export default function CommentComponent(props) {
                         <>
                           {getLikedPeoplesName(
                             pinnedComment,
-                            stateApp.user._id
+                            user._id
                           )}
                         </>
                       }
@@ -851,7 +853,7 @@ export default function CommentComponent(props) {
                                 (Edited)
                               </span>
                             )}
-                            {eachComment?.user?.email === stateApp.user.email &&
+                            {eachComment?.user?.email === user.email &&
                               showCommentActionId === eachComment?._id &&
                               editCommentId !== eachComment?._id &&
                               eachComment?.commentType?.commentType !==
@@ -860,7 +862,7 @@ export default function CommentComponent(props) {
                                   className={`${classes.floatRight} ${classes.cursorPointer
                                     } ${classes.inlineFlex} ${!(
                                       eachComment?.user?.email ===
-                                      stateApp.user.email &&
+                                      user.email &&
                                       showCommentActionId === eachComment?._id &&
                                       editCommentId !== eachComment?._id
                                     ) && classes.hideMenuIcon
@@ -959,7 +961,7 @@ export default function CommentComponent(props) {
                                       <>
                                         {getLikedPeoplesName(
                                           eachComment,
-                                          stateApp.user._id
+                                          user._id
                                         )}
                                       </>
                                     }
@@ -1003,7 +1005,7 @@ export default function CommentComponent(props) {
                   {profileImage ? (
                     <Avatar src={profileImage} size="38" round />
                   ) : (
-                    <Avatar name={stateApp.user.name} size="38" round />
+                    <Avatar name={user.name} size="38" round />
                   )}
                 </IconButton>
               </Grid>

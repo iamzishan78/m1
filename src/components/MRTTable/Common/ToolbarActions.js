@@ -7,12 +7,16 @@ import GridView from 'components/MRTTable/Common/GridView';
 import TabHeader from 'components/MRSimpleTable/Common/TabHeader';
 import { globalStateController } from 'hookstate/globalStateController';
 import { excludeFilters } from './CommonToolBarActions';
+import _ from 'lodash';
 
 function ToolbarActions({ table, tableKey, children }) {
 	const tableState = tableController(tableKey).useCompleteState();
 	const tableStateValues = tableState?.get({ noproxy: true });
 	const { user } = globalStateController.useState(['user']);
 	const getUser = user.get({ noproxy: true });
+
+	const globalState = tableGlobalController.useState(['cypress']);
+	const globalStateValues = globalState.stateValues;
 
 	const isAllRowsSelected = table.getIsAllRowsSelected();
 	const isSomeRowsSelected = table.getIsSomeRowsSelected() || Object.keys(tableStateValues?.rowSelection)?.length ? true : false;
@@ -123,14 +127,14 @@ function ToolbarActions({ table, tableKey, children }) {
 			<div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
 				{children || <div />}
 
-				<IconButton onClick={handleExport}>
+				{!tableStateValues.isGeneric && <IconButton onClick={handleExport} data-testid="download-csv">
 					<Tooltip title="Download CSV" aria-label="add">
 						<CloudDownloadIcon />
 					</Tooltip>
-				</IconButton>
+				</IconButton>}
 
 				{isSomethingSelected && !!!tableStateValues.isDeleteDisabled && (
-					<IconButton aria-label="delete" onClick={() => handleDelete()}>
+					<IconButton aria-label="delete" data-testid="delete-icon-button" onClick={() => handleDelete()}>
 						<Tooltip title="Delete">
 							<DeleteIcon />
 						</Tooltip>

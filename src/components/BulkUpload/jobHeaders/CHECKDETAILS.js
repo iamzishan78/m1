@@ -285,7 +285,14 @@
 
 const checkDetailsKeys = [
     {
-        label: "Purchaser",
+        label: "UID",
+        mapped_key: "Line Number",
+        required: true,
+        actual_key: "lineNumber",
+        showAsSample: false
+    },
+    {
+        label: "Payor",
         mapped_key: "",
         required: false,
         actual_key: "check.payor.name",
@@ -319,7 +326,7 @@ const checkDetailsKeys = [
         actual_key: "property._id",
     },
     {
-        label: "Purchaser Prop #",
+        label: "Payor Prop #",
         mapped_key: "",
         required: false,
         actual_key: "property.purchaserNumber",
@@ -335,6 +342,18 @@ const checkDetailsKeys = [
         mapped_key: "",
         required: false,
         actual_key: "property.internalID",
+    },
+    {
+        label: "Property Name",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.name",
+    },
+    {
+        label: "Operator Name",
+        mapped_key: "",
+        required: false,
+        actual_key: "property.operator",
     },
     {
         label: "Owner Number",
@@ -439,6 +458,15 @@ const checkDetailsKeys = [
         mapped_key: "",
         required: false,
         actual_key: "netOwnerValue",
+    },
+
+
+    {
+        label: "Line Number",
+        mapped_key: "",
+        required: true,
+        actual_key: "lineNumber",
+        showAsSample: false
     },
 
 

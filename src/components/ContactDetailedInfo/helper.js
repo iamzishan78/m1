@@ -607,6 +607,7 @@ export const getBasicPurchaseInfoExpContent = (contactData) => {
 
 export const SUMMARY_FIELDS = (contactData) => {
   let nraSumKey = contactData?.contactInterests?.nraSum ? "contactInterests.nraSum" : "evaluatedContactInterests.nraSum",
+    maxOfferPriceSum = contactData?.contactInterests?.maxOfferPriceSum ? "contactInterests.maxOfferPriceSum" : "evaluatedContactInterests.maxOfferPriceSum",
     offerPriceSum = contactData?.contactInterests?.offerPriceSum ? "contactInterests.offerPriceSum" : "evaluatedContactInterests.offerPriceSum";
   return [
     {
@@ -627,53 +628,17 @@ export const SUMMARY_FIELDS = (contactData) => {
       type: "text",
       position: "left",
     },
+    // {
+    //   label: "Also Known As",
+    //   key: "formerName",
+    //   type: "text",
+    //   position: "left",
+    // },
     {
       label: "Last Name",
       key: "lastName",
       type: "text",
       position: "left",
-    },
-    {
-      label: "Primary Address 1",
-      key: "address1",
-      type: "text",
-      position: "left",
-    },
-    {
-      label: "Primary Address 2",
-      key: "address2",
-      type: "text",
-      position: "left",
-    },
-    {
-      label: "City",
-      key: "city",
-      type: "text",
-      position: "left",
-    },
-    {
-      label: "State",
-      key: "state",
-      type: "text",
-      position: "left",
-    },
-    {
-      label: "Zip Code",
-      key: "zip",
-      type: "text",
-      position: "left",
-    },
-    {
-      label: "Total Unit NRA",
-      key: nraSumKey,
-      type: "text",
-      position: "right",
-    },
-    {
-      label: "Total Offer Price",
-      key: offerPriceSum,
-      type: "currency",
-      position: "right",
     },
     {
       label: "Home Phone",
@@ -682,14 +647,8 @@ export const SUMMARY_FIELDS = (contactData) => {
       position: "right",
     },
     {
-      label: "Mobile Phone 1",
+      label: "Mobile Phone",
       key: "mobilePhone",
-      type: "text",
-      position: "right",
-    },
-    {
-      label: "Mobile Phone 2",
-      key: "mobilephone2",
       type: "text",
       position: "right",
     },
@@ -713,30 +672,36 @@ export const SUMMARY_FIELDS = (contactData) => {
       value: { contactStatus: contactData?.contactStatus },
     },
     {
+      label: "Stage",
+      key: "status",
+      type: "autocomplete",
+      position: "right",
+    },
+    {
+      label: "Total Unit NRA",
+      key: nraSumKey,
+      type: "text",
+      position: "right",
+    },
+    {
+      label: "Target Offer Amount",
+      key: offerPriceSum,
+      type: "currency",
+      position: "right",
+    },
+    {
+      label: "Max Offer Amount",
+      key: maxOfferPriceSum,
+      type: "currency",
+      position: "right",
+    },
+    {
       label: "Last Updated",
       key: "",
       type: "text",
       position: "right",
       value: getLastUpdatedByValue(contactData),
       disabled: true,
-    },
-    {
-      label: "Account",
-      key: "account",
-      type: "autocomplete",
-      position: "left",
-    },
-    {
-      label: "Department",
-      key: "department",
-      type: "text",
-      position: "right",
-    },
-    {
-      label: "Title",
-      key: "title",
-      type: "text",
-      position: "left",
     },
   ];
 }

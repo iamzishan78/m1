@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import { AppContext } from "AppContext";
 import { useQuery, useApolloClient } from "@apollo/client";
 import { useMutation } from "@apollo/client";
@@ -10,12 +10,13 @@ import Loader from "components/Loaders/serverLoader";
 import { setReduxKey } from "store/actions/commonActions";
 import useRefetchHelper from "components/Shared/Hooks/useRefetchHelper";
 import { jobController } from "hookstate/jobStateController";
+import { debounce } from "lodash";
 
 const ContactBulkProgress = () => {
   const [stateApp] = useContext(AppContext);
   const bulkUpload = useSelector((state) => state.common.bulkUpload);
   const refetchHelper = useRefetchHelper()
-
+  const refetchHelperDebounced = useMemo(() => debounce((requestPayload) => refetchHelper(requestPayload), 1000), []);
   const jobState = jobController.useState(
     ['bulkUpload'],
     'jobStateValues'
@@ -110,41 +111,46 @@ const ContactBulkProgress = () => {
     }
   };
 
+  // Function for creating and updated Job Toast
   const createOrUpdateToast = (state) => {
-    const asyncOperations = ["commentsCreation"];
+    const asyncOperations = ["commentsCreation"]; // Array of async operations
 
+    // Loop through jobs
     for (let i = 0; i < dataJobs.getJobsStatus.jobs.length; i++) {
-      let progress = 0;
-      const status = dataJobs.getJobsStatus.jobs[i].status;
-      const jobProgress = dataJobs.getJobsStatus.jobs[i].progress;
-      const totalProgress = dataJobs.getJobsStatus.jobs[i].totalProgress;
-      const requestPayload = dataJobs.getJobsStatus.jobs[i].requestPayload;
-      const lastMessage = dataJobs.getJobsStatus.jobs[i].activitiesStatus[dataJobs.getJobsStatus.jobs[i].activitiesStatus.length - 1];
+      let progress = 0; // Initialize progress
+      // Extract job status, progress, totalProgress, requestPayload, and activitiesStatus
+      const { status, progress: jobProgress, totalProgress, requestPayload, activitiesStatus } = dataJobs.getJobsStatus.jobs[i];
+      // Extract lastMessage from activitiesStatus
+      const lastMessage = activitiesStatus[activitiesStatus.length - 1];
 
+      // Calculate progress percentage if jobProgress and totalProgress are available
       if (jobProgress && totalProgress) {
         progress = (jobProgress / totalProgress) * 100;
       }
-      let message = "";
+
+      let message = ""; // Initialize message
+
+      // Determine message based on job status
       if (status === "Started" || status === "Pending") {
-        message = lastMessage;
-      }
-      else if (status === "Completed" && requestPayload.async) {
+        message = lastMessage; // Use last message for started or pending status
+      } else if (status === "Completed" && requestPayload?.async) {
         if (requestPayload.refetch)
-          refetchHelper(requestPayload.refetch);
-        message = lastMessage;
-      }
-      else {
+          refetchHelperDebounced(requestPayload.refetch); // Debounced refetch if async operation is completed
+        message = lastMessage; // Use last message for completed async operation
+      } else {
         if (status === "Completed")
-          dispatch(setReduxKey("contactsAdded", true))
-        const type = dataJobs.getJobsStatus.jobs[i].type;
+          dispatch(setReduxKey("contactsAdded", true)) // Dispatch action if status is completed
+        const type = dataJobs.getJobsStatus.jobs[i].type; // Extract job type
+
+        // Determine message for different job types
         if (type === 'contacts') {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Contacts creation completed" : "Contacts creation failed";
         } else if (type === 'PROPERTIES') {
           message = status === "Created" ? "Waiting for job to start" : status === "Completed" ? "Import successfully completed" : "Import Failed";
-        }
-        else {
-          const labelType = ['checkDetails'].includes(type) ? 'Import' : 'Export'
+        } else {
+          const labelType = ['checkDetails'].includes(type) ? 'Import' : 'Export'; // Determine label type based on job type
 
+          // Determine message for general job types
           if (status === 'Created') {
             message = 'Waiting for job to start';
           } else if (status === 'Completed') {
@@ -155,15 +161,17 @@ const ContactBulkProgress = () => {
             message = `${asyncOperations.includes(type) ? 'Async operation' : labelType} Failed`;
           }
 
+          // Additional action for specific job type and status
           if (
             type === 'SHAPEOWNER' &&
             (status === 'Completed' || status.includes('Completed'))
           )
             refetchHelper(['getCustomLayer']);
         }
-        if (status === 'Completed with errors') message = status
+        if (status === 'Completed with errors') message = status; // Update message for completed with errors status
       }
 
+      // Create or update toast based on state
       if (state === "create") {
         if (status !== "Completed" && status !== "Failed") {
           Loader.createToast(dataJobs.getJobsStatus.jobs[i]._id, message, progress, onCloseToast);

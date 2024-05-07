@@ -35,7 +35,8 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 		'filters',
 		'defaultFilters',
 		'isAllRowsSelected',
-		'isSubSetSelect'
+		'isSubSetSelect',
+		'customProps'
 	]);
 	const tableStateValues = tableState.stateValues;
 
@@ -55,19 +56,29 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 
 		let filteredTableSchema = tableStateValues?.TableSchema.filter(obj => {
 			const accessorKey = obj?.accessorKey || obj?.id;
-			return filteredColumns[accessorKey] === true && !obj.hasOwnProperty('enableColumnFilter');
+			return (filteredColumns[accessorKey] === true && !obj.hasOwnProperty('enableColumnFilter')) || obj?.isHiddenFieldExport;
 		});
 
-		filteredTableSchema = filteredTableSchema?.map(({ name, header, accessorKey, id, isExport }) => ({
+		filteredTableSchema = filteredTableSchema?.map(({ name, header, accessorKey, id, isExport, type }) => ({
 			name,
 			label: header,
 			esKey: isExport || accessorKey || id,
+			type,
+			accessorKey: accessorKey || id,
 		}));
 
 		let sortOrder = {};
 		if (tableStateValues.sorting.length > 0) {
-			sortOrder = { field: tableStateValues.sorting[0]?.id, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
+			const column = filteredTableSchema.find(col => col.accessorKey === tableStateValues.sorting[0]?.id);
+			let fieldName = column?.name || tableStateValues.sorting[0]?.id;
+			sortOrder = { field: fieldName, order: tableStateValues.sorting[0]?.desc ? 'desc' : 'asc' };
 		}
+
+		filteredTableSchema = filteredTableSchema?.map(({ name, label, esKey }) => ({
+			name,
+			label,
+			esKey,
+		}));
 
 		const query = tableStateValues?.globalFilter ? `*${tableStateValues?.globalFilter}*` : '*';
 		const search = { fields: tableStateValues?.searchFields, query };
@@ -85,6 +96,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 					search,
 					filters: [...tableStateValues.filters, ...tableStateValues.defaultFilters, ...excludedIds],
 					esIndex: tableStateValues.esIndex,
+					extraExportValues: tableStateValues?.customProps?.exportValues,
 					columns: filteredTableSchema,
 					sortOrder,
 					defaultSort: tableStateValues?.defaultSort,
@@ -120,7 +132,7 @@ export default function ExportConfirmationDialog({ table, tableKey, header, onCl
 				>
 					Cancel
 				</Button>
-				<Button id="deleteButton" onClick={handleExport} color="secondary">
+				<Button id="deleteButton" data-testid="export-confirm" onClick={handleExport} color="secondary">
 					Export
 				</Button>
 			</DialogActions>

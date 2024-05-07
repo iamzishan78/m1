@@ -396,6 +396,7 @@ function AddActivityDialog(props) {
           isClosed: closed?.value,
           user: stateApp.user._id,
           createdBy: stateApp?.user?._id,
+          tenant: window.sessionStorage.getItem("tenantName")
         },
       },
       refetchQueries: ["getContact"],

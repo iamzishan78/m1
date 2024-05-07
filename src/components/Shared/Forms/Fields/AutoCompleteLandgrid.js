@@ -47,7 +47,7 @@ const newOptionsParams = {
   }
 }
 
-export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ onChange, filterKey, type, extendSearchQuery, esIndex = 'platformData:landgrid', filters, label, value, variant, compoundValue, newOptions, newOptionFilters, onBlur, disabled = false }) {
+export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ onChange, filterKey, type, extendSearchQuery, esIndex = 'platformData:landgrid', filters, label, value, variant, compoundValue, newOptions, newOptionFilters, onBlur, disabled = false, autoCompleteType = 'AgreementShapeOwner' }) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const [search, setSearch] = useState(value);
@@ -56,12 +56,19 @@ export const AutoCompleteLandgrid = React.memo(function AutoCompleteLandgrid({ o
 
   const [getautoCompleteList, { data: dataAutoCompleteList = [] }] = useLazyQuery(GET_AUTOCOMPLETE_LIST);
 
-  const condition = useMemo(() => Object.entries(newOptionFilters || {}).reduce((acc, [key, val]) => ({ ...acc, [`tract.${key}`]: val }), {}), [newOptionFilters])
+  const condition = useMemo(
+    () =>
+      Object.entries(newOptionFilters || {}).reduce(
+        (acc, [key, val]) => ({ ...acc, [`${key}`]: val }),
+        {}
+      ),
+    [newOptionFilters]
+  );
 
   useEffect(() => {
     if (!newOptions) return
 
-    getautoCompleteList({ variables: { type: "AgreementShapeOwner", data: { key: label.toLowerCase(), inTract: true, condition } } });
+    getautoCompleteList({ variables: { type: autoCompleteType, data: { key: label.toLowerCase(), inTract: autoCompleteType === 'AgreementShapeOwner', condition } } });
   }, [label, condition]);
 
   const autoCompleteList = React.useMemo(

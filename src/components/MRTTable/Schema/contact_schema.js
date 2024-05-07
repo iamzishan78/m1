@@ -57,9 +57,11 @@ const ContactMeta = {
 	showAddContactButton: true,
 	TableSchema: [
 		{
-			...CommonSchema.HIDDEN,
+			...CommonSchema.MONGO_ID,
 			name: '_id',
 			accessorKey: '_id',
+			header: "M1neral Contact System ID",
+			isHiddenFieldExport: true,
 		},
 
 		{
@@ -101,7 +103,7 @@ const ContactMeta = {
 						>
 							<ColumnWithLink
 								value={renderedCellValue}
-								link={`/contact/details/${row.getValue('_id')}/?tenant=${window.sessionStorage.getItem('tenantName')}`}
+								link={`/contact/details/${row.getValue('_id')}`}
 								onClick={e => {
 									e.stopPropagation();
 								}}
@@ -142,6 +144,7 @@ const ContactMeta = {
 			name: 'firstName.keyword',
 			accessorKey: 'firstName',
 			header: 'First Name',
+			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
@@ -150,14 +153,26 @@ const ContactMeta = {
 			name: 'middleName.keyword',
 			accessorKey: 'middleName',
 			header: 'Middle Name',
+			isHiddenFieldExport: true,
 			hidden: true,
 		},
+
+		// // Make formerName to visibile in contact grid
+		// {
+		// 	...CommonSchema.COMMON_COLUMN,
+		// 	name: 'formerName.keyword',
+		// 	accessorKey: 'formerName',
+		// 	header: 'Also Known As',
+		// 	isHiddenFieldExport: true,
+		// 	hidden: true,
+		// },
 
 		{
 			...CommonSchema.COMMON_COLUMN,
 			name: 'lastName.keyword',
 			accessorKey: 'lastName',
 			header: 'Last Name',
+			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
@@ -221,6 +236,7 @@ const ContactMeta = {
 			name: 'city.keyword',
 			accessorKey: 'city',
 			header: 'City',
+			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
@@ -229,6 +245,7 @@ const ContactMeta = {
 			name: 'state.keyword',
 			accessorKey: 'state',
 			header: 'State',
+			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
@@ -237,6 +254,7 @@ const ContactMeta = {
 			name: 'zip.keyword',
 			accessorKey: 'zip',
 			header: 'Zip',
+			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
@@ -259,6 +277,51 @@ const ContactMeta = {
 			name: 'mobilePhone.keyword',
 			accessorKey: 'mobilePhone',
 			header: 'Primary Mobile Phone',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'phone1.keyword',
+			accessorKey: 'phone1',
+			header: 'Phone 1',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'phone2.keyword',
+			accessorKey: 'phone2',
+			header: 'Phone 2',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'phone3.keyword',
+			accessorKey: 'phone3',
+			header: 'Phone 3',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'phone4.keyword',
+			accessorKey: 'phone4',
+			header: 'Phone 4',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'phone5.keyword',
+			accessorKey: 'phone5',
+			header: 'Phone 5',
+			isHiddenFieldExport: true,
+			hidden: true,
 		},
 
 		{
@@ -408,6 +471,31 @@ const ContactMeta = {
 			name: 'age.keyword',
 			accessorKey: 'age',
 			header: 'Age',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'bankruptcy.keyword',
+			accessorKey: 'bankruptcy',
+			header: 'Bankruptcy Flag ',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'deceased.keyword',
+			accessorKey: 'deceased',
+			header: 'Deceased Flag',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'lien.keyword',
+			accessorKey: 'lien',
+			header: 'Lien Flag',
+			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
@@ -454,6 +542,7 @@ const ContactMeta = {
 			name: 'territory.keyword',
 			accessorKey: 'territory',
 			header: 'Territory',
+			isHiddenFieldExport: true,
 			hidden: true,
 		},
 
@@ -462,6 +551,7 @@ const ContactMeta = {
 			name: 'campaignName.keyword',
 			accessorKey: 'campaignName',
 			header: 'Campaign Name',
+			isHiddenFieldExport: true,
 			hidden: true,
 			Cell: ({ row }) => {
 				return <CampaignNameField value={row?.original?.campaignName?.[0]} fullWidth disabled />
@@ -497,8 +587,10 @@ const ContactMeta = {
 			name: 'leadSource.keyword',
 			accessorKey: 'leadSource',
 			header: 'Lead Source',
+			isHiddenFieldExport: true,
 			hidden: true,
 		},
+
 
 		{
 			...CommonSchema.COMMON_COLUMN,
@@ -506,6 +598,7 @@ const ContactMeta = {
 			accessorFn: row => row?.interestSummary?.wellInterestCount,
 			id: 'interestSummary.wellInterestCount',
 			header: 'Well Interest Count',
+			isHiddenFieldExport: true,
 			hidden: true,
 			isSearchField: false,
 		},
@@ -542,40 +635,26 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'lastUpdateBy.name.keyword',
-			accessorFn: row => row?.lastUpdateBy?.name,
-			id: 'lastUpdateBy.name',
-			header: 'Updated By',
-			hidden: true,
-			enableColumnActions: false,
-			isSearchField: false,
-		},
-		{
-			...CommonSchema.COMMON_COLUMN,
 			name: 'isPurchased',
 			accessorKey: 'isPurchased',
-			header: 'Is Purchased Data',
+			header: 'Purchased Data Exists',
 			isSearchField: false,
 			filterSelectOptions: [
 				{ label: 'Yes', value: 'true' },
 				{ label: 'No', value: 'false' },
 			],
+			type: "boolean",
 			Cell: ({ row }) => {
 				const isPurchased = [true, 'true', 'True'].includes(row.getValue('isPurchased'));
 
 				return <>{isPurchased ? 'Yes' : 'No'}</>;
 			},
 		},
-		{
-			...CommonSchema.COMMON_COLUMN,
-			name: 'lastUpdateAt',
-			accessorKey: 'lastUpdateAt',
-			header: 'Last Updated',
-			filter: false,
-			enableColumnActions: false,
-			isSearchField: false,
-			Cell: ({ renderedCellValue }) => <>{formatDate(renderedCellValue, false)}</>,
-		},
+
+		CommonSchema.CREATED_BY,
+		CommonSchema.CREATED_DATE,
+		CommonSchema.LAST_UPDATED_BY,
+		CommonSchema.LAST_UPDATED_DATE,
 
 		{
 			...CommonSchema.TAGS,

@@ -68,14 +68,14 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     },
   });
 
-  const [getESAggsGrossAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsGrossAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.grossAcresSum) {
         const grossAcresSum = aggsData.getESAggsList.aggregations.grossAcresSum.value.sum;
         setCardPoint(
-          (Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
+          (Math.round((grossAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + "K",
           1
         );
         // props.onGrossAcresSum(
@@ -85,14 +85,14 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     },
   });
 
-  const [getESAggsNetAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsNetAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.netAcresSum) {
         const netAcresSum = aggsData.getESAggsList.aggregations.netAcresSum.value;
         setCardPoint(
-          (Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
+          (Math.round((netAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + "K",
           2
         );
         // props.onNetAcresSum(
@@ -102,14 +102,14 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     },
   });
 
-  const [getESAggsNetRoyaltyAcresSum, {}] = useLazyQuery(GET_ES_AGGS_LIST, {
+  const [getESAggsNetRoyaltyAcresSum, { }] = useLazyQuery(GET_ES_AGGS_LIST, {
     context: { batch: true },
     fetchPolicy: "no-cache",
     onCompleted: (aggsData) => {
       if (aggsData?.getESAggsList?.aggregations?.netRoyaltyAcresSum) {
         const netRoyaltyAcresSum = aggsData.getESAggsList.aggregations.netRoyaltyAcresSum.value;
         setCardPoint(
-          (Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "K",
+          (Math.round((netRoyaltyAcresSum + Number.EPSILON) * 100) / 100000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + "K",
           3
         );
         // props.onNetRoyaltyAcresSum(
@@ -163,7 +163,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : "",
-        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters.slice(1)],
+        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters],
         aggs: {
           grossAcresSum: {
             scripted_metric: {
@@ -198,7 +198,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : "",
-        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters.slice(1)],
+        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters],
         aggs: {
           netAcresSum: {
             sum: {
@@ -212,7 +212,7 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
       variables: {
         esIndex: "shapeowners_flat",
         search: landSearchQuery ? `${landSearchQuery}*` : "",
-        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters.slice(1)],
+        filters: [{ field: "shape.layer", value: "parcel" }, ...esFilters],
         aggs: {
           netRoyaltyAcresSum: {
             sum: {
@@ -228,9 +228,10 @@ export default function AnalyticsCards({ parent, esIndex, esFilters, totalCount,
     if (totalCount > 0) {
       if (parent === "Agreements") {
         agreementAnalytics();
-      } else if (parent === "Tracts") {
-        tractsAnalytics();
       }
+    }
+    if (parent === "Tracts") {
+      tractsAnalytics();
     }
   };
 

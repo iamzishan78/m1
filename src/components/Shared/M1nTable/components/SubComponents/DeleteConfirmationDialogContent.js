@@ -29,6 +29,7 @@ export default function DeleteConfirmationDialogContent(props) {
         </Button>
         <Button
           id="deleteButton"
+          data-testid="deleteButton-popup"
           onClick={() => {
             props.completelyDelete
               ? props.deleteFunc(props.m1nSelectedRowsIds, props.completelyDelete === "false" ? false : true)

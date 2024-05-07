@@ -13,12 +13,6 @@ const RevenueStatementHeadCells = [
         name: "_id", options: { filter: false, display: false, sort: false, viewColumns: false, }
     },
     {
-        name: "purchaserNumber", label: "Purchaser Prop #", esKey: 'property.purchaserNumber.keyword', options: { display: false, sort: false, filter: true, style: { minWidth: 250 }, }
-    },
-    {
-        name: "name", label: "Property Name", esKey: 'property.name.keyword', options: { display: false, sort: false, filter: true }
-    },
-    {
         /// this is the control column for properties 
         name: "purchaserNumber",
         label: "Property",
@@ -39,8 +33,8 @@ const RevenueStatementHeadCells = [
 
             customRender: (value, tableMeta) => <ColumnWithLink
                 value={value?.split("_")?.[0]
-                    ? tableMeta?.rowData[2] ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[2]}` : value
-                    : tableMeta?.rowData[2]}
+                    ? tableMeta?.rowData[3] ? `${value?.split("_")?.[0]} - ${tableMeta?.rowData[3]}` : value
+                    : tableMeta?.rowData[3]}
                 link={`/revenue/property/details/${tableMeta.rowData[21]}`}
                 onClick={(e) => {
                     e.stopPropagation();
@@ -49,7 +43,13 @@ const RevenueStatementHeadCells = [
         },
     },
     {
-        name: "number", label: "Operator Prop #", esKey: 'property.number.keyword', options: { display: false, sort: false, filter: true, style: { minWidth: 250 }, }
+        name: "purchaserNumber", label: "Payor Prop #", esKey: 'property.purchaserNumber.keyword', options: { filter: true, style: { minWidth: 250 }, }
+    },
+    {
+        name: "name", label: "Property Name", esKey: 'property.name.keyword', options: { filter: true }
+    },
+    {
+        name: "number", label: "Operator Prop #", esKey: 'property.number.keyword', options: { filter: true, style: { minWidth: 250 }, }
     },
     {
         name: "state", label: "State", esKey: 'property.state.keyword', options: { sort: true, filter: true }

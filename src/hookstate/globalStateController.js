@@ -4,9 +4,14 @@ import { hookStateController } from 'hookstate/hookStateController';
 
 const initialState = {
 	layers: [],
+	emptyGroups: [],
 	universalLoader: false,
 	layerLoading: {},
 	user: null,
+	apolloClientEndpoint: null,
+	x_zumo_auth: null,
+	cypress: null,
+	testCase: null,
 };
 
 export const globalState = hookstate(copy(initialState));

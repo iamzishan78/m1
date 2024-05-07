@@ -28,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
       fontWeight: "bold",
     },
     "& .MuiTableCell-head": {
-      lineHeight: "0.5rem",
       borderBottom: "none",
     },
   },
@@ -125,7 +124,7 @@ export default function AdjustmentTable({ monthsInterval, items, total }) {
                 <TableRow>
                   <TableCell style={{ paddingLeft: 0 }} >
                     <CSVDownloader datas={convertAnalyticsDataToCSV(csvItems, monthsInterval)} filename={`Adjustments`} type="link">
-                      <IconButton style={{ display: 'flex' }}>
+                      <IconButton style={{ display: 'flex', padding: '0 0 0 15px' }}>
                         <Tooltip title="Download CSV" aria-label="add">
                           <CloudDownloadIcon />
                         </Tooltip>

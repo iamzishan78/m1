@@ -18,6 +18,7 @@ export default function InitializeProfile() {
       const {
         profileByEmail: {
           profile: {
+            _id,
             fullname,
             displayName,
             activity,
@@ -57,6 +58,7 @@ export default function InitializeProfile() {
       setStateProfile({
         ...stateProfile,
         fields: {
+          _id,
           fullname,
           displayName,
           activity,

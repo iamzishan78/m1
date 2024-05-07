@@ -2,13 +2,11 @@ import React, { useState, useContext, useEffect } from "react";
 import { NavigationContext } from "./NavigationContext";
 // contexts
 import { AppContext } from "AppContext";
-import { MapGridContext } from "../../components/MapGridCard/MapGridContext.js";
 
 import { useHistory, useLocation } from "react-router-dom";
 import clsx from "clsx";
 
 //3rd party packages
-import _ from "lodash";
 import PropTypes from "prop-types";
 
 //@material-ui components
@@ -24,7 +22,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { analyticsManagementRoutes, contactManagementRoutes } from "utils/data";
+import { contactManagementRoutes } from "utils/data";
 import SupportCenterModal from "./components/SupportCenter";
 import { useStyles } from "./Common";
 
@@ -53,6 +51,8 @@ import ProfileMenu from "components/Profile/ProfileMenu";
 import LandAppBar from "./AppBar/Land";
 import RevenueAppBar from "components/Navigation/AppBar/Revenue";
 import AdminSettingsAppBar from "components/Navigation/AppBar/AdminSettings";
+import { ROUTES } from "components/Shared/FeatureFlag/common";
+import { navController } from "hookstate/navStateController";
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -80,18 +80,14 @@ TabPanel.propTypes = {
 export default function Navigation(props) {
   const mapGridCardActivated = useSelector(({ MapGridCard }) => MapGridCard.mapGridCardActivated);
 
-  const { quickActionsPanelState } = useSelector(({ common }) => common);
-
   // contexts
   const [stateApp, setStateApp] = useContext(AppContext);
   const [stateNav, setStateNav] = useContext(NavigationContext);
-  const [, setStateGrid] = useContext(MapGridContext);
 
   const [openSupportCenter, setOpenSupportCenter] = useState(false);
   const [openContactForm, setOpenContactForm] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [supportDrawer, setSupportDrawer] = useState(false);
-  const [matchLocation, setMatchLocation] = useState(false);
   const [matchTrack, setMatchTrack] = useState(false);
   const [matchActivities, setMatchActivities] = useState(false);
   const [matchFind, setMatchFind] = useState(false);
@@ -102,268 +98,21 @@ export default function Navigation(props) {
   const classes = useStyles({
     mapGridCardActivated,
     user: stateApp.user,
-    isMap: location.pathname === "/" || location.pathname.startsWith("/map/"),
+    // Determine if the component is rendered on the map page based on location pathname and props
+    isMap: location.pathname === "/" || location.pathname.startsWith("/map/") || props.isMap,
   });
 
   useEffect(() => {
-    if (location.pathname === "/" || location.pathname.startsWith("/map/")) {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 1,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexStudio: 0,
-        selectedMenuIndexCalendar: 0,
-        selectedMenuIndexDocuments: 0,
-        selectedMenuIndexRevenue: 0,
-        selectedMenuIndexLand: 0,
-        selectedMenuIndexAnalytics: 0,
-        selectedMenuIndexAdmin: 0,
-      }));
-    } else if (location.pathname === "/track") {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 1,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexStudio: 0,
-        selectedMenuIndexCalendar: 0,
-        selectedMenuIndexDocuments: 0,
-        selectedMenuIndexRevenue: 0,
-        selectedMenuIndexLand: 0,
-        selectedMenuIndexAnalytics: 0,
-        selectedMenuIndexAdmin: 0,
-      }));
-    } else if (location.pathname.startsWith("/flow")) {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 1,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexStudio: 0,
-        selectedMenuIndexCalendar: 0,
-        selectedMenuIndexDocuments: 0,
-        selectedMenuIndexRevenue: 0,
-        selectedMenuIndexLand: 0,
-        selectedMenuIndexAnalytics: 0,
-        selectedMenuIndexAdmin: 0,
-      }));
-    } else if (location.pathname === "/title") {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 1,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexM1Studio: 0,
-        selectedMenuIndexStudio: 0,
-        selectedMenuIndexCalendar: 0,
-        selectedMenuIndexDocuments: 0,
-        selectedMenuIndexRevenue: 0,
-        selectedMenuIndexLand: 0,
-        selectedMenuIndexAnalytics: 0,
-        selectedMenuIndexAdmin: 0,
-      }));
-    } else if (location.pathname === "/contacts") {
-      setStateGrid((state) => ({
-        ...state,
-        gridSearchTarget: null,
-      }));
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 1,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexStudio: 0,
-        selectedMenuIndexCalendar: 0,
-        selectedMenuIndexDocuments: 0,
-        selectedMenuIndexRevenue: 0,
-        selectedMenuIndexLand: 0,
-        selectedMenuIndexAnalytics: 0,
-        selectedMenuIndexAdmin: 0,
-      }));
-    } else if (location.pathname === "/alerts") {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 1,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexStudio: 0,
-        selectedMenuIndexCalendar: 0,
-        selectedMenuIndexDocuments: 0,
-        selectedMenuIndexRevenue: 0,
-        selectedMenuIndexLand: 0,
-        selectedMenuIndexAnalytics: 0,
-        selectedMenuIndexAdmin: 0,
-      }));
-    } else if (location.pathname === "/dashboard") {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 1,
-        selectedMenuIndexStudio: 0,
-        selectedMenuIndexCalendar: 0,
-        selectedMenuIndexDocuments: 0,
-        selectedMenuIndexRevenue: 0,
-        selectedMenuIndexLand: 0,
-        selectedMenuIndexAnalytics: 0,
-        selectedMenuIndexAdmin: 0,
-      }));
-    } else if (location.pathname === "/studio") {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexStudio: 1,
-        selectedMenuIndexCalendar: 0,
-        selectedMenuIndexDocuments: 0,
-        selectedMenuIndexRevenue: 0,
-        selectedMenuIndexLand: 0,
-        selectedMenuIndexAnalytics: 0,
-        selectedMenuIndexAdmin: 0,
-      }));
-    } else if (location.pathname === "/calendar/activities") {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexStudio: 0,
-        selectedMenuIndexCalendar: 1,
-        selectedMenuIndexDocuments: 0,
-        selectedMenuIndexRevenue: 0,
-        selectedMenuIndexLand: 0,
-        selectedMenuIndexAnalytics: 0,
-        selectedMenuIndexAdmin: 0,
-      }));
-    } else if (location.pathname === "/documents") {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexStudio: 0,
-        selectedMenuIndexCalendar: 0,
-        selectedMenuIndexDocuments: 1,
-        selectedMenuIndexRevenue: 0,
-        selectedMenuIndexLand: 0,
-        selectedMenuIndexAnalytics: 0,
-        selectedMenuIndexAdmin: 0,
-      }));
-    } else if (location.pathname.startsWith("/revenue")) {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexStudio: 0,
-        selectedMenuIndexCalendar: 0,
-        selectedMenuIndexDocuments: 0,
-        selectedMenuIndexRevenue: 1,
-        selectedMenuIndexLand: 0,
-        selectedMenuIndexAnalytics: 0,
-        selectedMenuIndexAdmin: 0,
-      }));
-    } else if (location.pathname.startsWith("/land")) {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexStudio: 0,
-        selectedMenuIndexCalendar: 0,
-        selectedMenuIndexDocuments: 0,
-        selectedMenuIndexRevenue: 0,
-        selectedMenuIndexLand: 1,
-        selectedMenuIndexAnalytics: 0,
-        selectedMenuIndexAdmin: 0,
-      }));
-    } else if (location.pathname === "/analytics") {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexStudio: 0,
-        selectedMenuIndexCalendar: 0,
-        selectedMenuIndexDocuments: 0,
-        selectedMenuIndexRevenue: 0,
-        selectedMenuIndexLand: 0,
-        selectedMenuIndexAdmin: 0,
-        selectedMenuIndexAnalytics: 1,
-      }));
-    } else if (location.pathname.startsWith("/admin")) {
-      setStateNav((state) => ({
-        ...state,
-        selectedMenuIndexFind: 0,
-        selectedMenuIndexTrack: 0,
-        selectedMenuIndexTransact: 0,
-        selectedMenuIndexTitle: 0,
-        selectedMenuIndexAlerts: 0,
-        selectedMenuIndexContacts: 0,
-        selectedMenuIndexDashboard: 0,
-        selectedMenuIndexStudio: 0,
-        selectedMenuIndexCalendar: 0,
-        selectedMenuIndexDocuments: 0,
-        selectedMenuIndexRevenue: 0,
-        selectedMenuIndexLand: 0,
-        selectedMenuIndexAnalytics: 0,
-        selectedMenuIndexAdmin: 1,
-      }));
-    }
+    Object.values(ROUTES).forEach(value => {
+      if (
+        value.route.equals?.some(path => path === location.pathname) ||
+        value.route.startsWith?.some(path => location.pathname.startsWith(path))
+      ) {
+        navController.updateState({
+          selectedModule: value.module
+        })
+      }
+    });
   }, [location, setStateNav]);
 
   useEffect(() => {
@@ -383,12 +132,11 @@ export default function Navigation(props) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (location.pathname === "/" || location.pathname.startsWith("/map/")) {
-      setMatchLocation(true);
-      setMatchFind(true);
+    // Update matchFind state based on whether the component is rendered on the map page
+    if (location.pathname === "/" || location.pathname.startsWith("/map/") || props.isMap) {
+      setMatchFind(true); // Set matchFind to true if component is on the map page
     } else {
-      setMatchLocation(false);
-      setMatchFind(false);
+      setMatchFind(false); // Set matchFind to false if component is not on the map page
     }
   }, [location.pathname]);
 
@@ -432,6 +180,7 @@ export default function Navigation(props) {
       location.pathname.startsWith("/revenue/statement/details") ||
       location.pathname.includes("/line-item") ||
       location.pathname.startsWith("/revenue/property/details") ||
+      location.pathname.startsWith("/analytics/property/details") ||
       location.pathname.startsWith("/land/agreement/details") ||
       location.pathname.startsWith("/contacts/campaign/details")
     ) {
@@ -447,9 +196,9 @@ export default function Navigation(props) {
   //   return false;
   // };
 
-  const matchAgreements = () => {
-    return location.pathname === "/landmanagement/agreements";
-  };
+  // const matchAgreements = () => {
+  //   return location.pathname === "/landmanagement/agreements";
+  // };
 
   return (
     <div className={classes.root}>
@@ -541,6 +290,7 @@ export default function Navigation(props) {
                 </Button>
               </div>
             )} */}
+
               <ProfileMenu />
             </Toolbar>
           )}

@@ -563,6 +563,7 @@ export default function AssignOwnerToContactDrawer({
                   <Autocomplete
                     freeSolo
                     id="free-solo-2-demo"
+                    data-testid="select-field-autocomplete"
                     disableClearable
                     options={fieldsToUpdate.map(field => field.title)}
                     onChange={(e, field) => {
@@ -605,6 +606,7 @@ export default function AssignOwnerToContactDrawer({
               disabled={!fieldKey}
               style={!fieldKey ? {} : { backgroundColor: '#00abed', color: 'white' }}
               onClick={onAssign}
+              data-testid='action-button'
             >
               Update
             </Button>

@@ -2,6 +2,7 @@ import { GlobalStickyStyles } from "GlobalSettings";
 import { vf_currency_to_fixed } from "components/Shared/valueformatters/vf_currency";
 import convert_date from "components/Shared/valueformatters/convert_date.js";
 import ColumnWithLink from "components/Shared/M1nTable/components/SubComponents/ColumnWithLink";
+import { formatDate } from 'components/Shared/functions';
 
 const RevenueStatementHeadCells = [
   {
@@ -34,7 +35,7 @@ const RevenueStatementHeadCells = [
   },
   {
     name: "purchaserName",
-    label: "Purchaser Name",
+    label: "Payor Name",
     esKey: "payor.name.keyword",
     options: {
       display: false,
@@ -107,6 +108,63 @@ const RevenueStatementHeadCells = [
     label: "Approval Status",
     esKey: "approvalStatus.keyword",
   },
+
+  {
+    name: "createBy",
+    label: "Created By",
+    esKey: "createBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "createAt",
+    label: "Created Date",
+    esKey: "createAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+
+  {
+    name: "lastUpdateBy",
+    label: "Last Updated By",
+    esKey: "lastUpdateBy",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{value?.name}</>
+      }
+    },
+  },
+
+  {
+    name: "lastUpdateAt",
+    label: "Last Updated Date",
+    esKey: "lastUpdateAt",
+    options: {
+      display: true,
+      customRender: (value) => {
+        return <>{formatDate(value)}</>
+      }
+    },
+    custom: {
+      key_as_string: true,
+      isDate: true,
+    },
+  },
+
   {
     name: "tags",
     label: "Tags",

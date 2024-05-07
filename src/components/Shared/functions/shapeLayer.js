@@ -39,6 +39,7 @@ export const ifGenericShapeSource = (source) => {
 }
 
 export const ifFileShapeSource = source => {
+    // Check if source is not in predefined sources and isn't a serach layer
     return ![
         'interests_source',
         'units_source',
@@ -48,7 +49,7 @@ export const ifFileShapeSource = source => {
         'leases_source',
         'surfaces_source',
         'parcels_source',
-    ].includes(source);
+    ].includes(source) && !source.includes('_from_search_user_defined_source');
 };
 
 export const setLayerLabelLayout = (layerId, labelLayout) => {
