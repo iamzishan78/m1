@@ -473,8 +473,9 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         popupOpen: false,
         expandedCard: true,
       }));
-    }
-    // }
+    } else {
+			history.push('/');
+		}
   }
 
   useEffect(() => {
@@ -484,7 +485,11 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
   useEffect(() => {
     if (paramId) {
-      getCustomLayer();
+      try {
+        getCustomLayer();
+      } catch (err) {
+			  history.push('/');
+      }
     }
   }, [loading, paramId, map]);
 
