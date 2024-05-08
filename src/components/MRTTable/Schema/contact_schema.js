@@ -201,18 +201,11 @@ const ContactMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: ['address1.keyword', 'city.keyword', 'state.keyword', 'zip.keyword'].join(','),
-			accessorKey: ['address1', 'city', 'state', 'zip'].join(','),
+			name: 'primaryAddress.keyword',
+			accessorKey: 'primaryAddress',
 			header: 'Primary Address',
 			size: 700,
-			isComposite: true,
 			isSearchField: false,
-
-			Cell: cell =>
-				[(cell.row.getValue('address1') || ''),
-				(cell.row.getValue('city') || ''),
-				(cell.row.getValue('state') || ''),
-				(cell.row.getValue('zip') || '')]?.join(' ')
 		},
 
 		{
