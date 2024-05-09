@@ -428,13 +428,15 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
       }
       return;
     }
-    // if (!stateApp[keys[type]] || paramId !== stateApp[keys[type]]?.id) {
+    // Send a GraphQL query to fetch a custom layer from the server
     const { data: layer } = await client.query({
       query: CUSTOMLAYER,
       variables: {
-        id: paramId,
+        id: paramId, // Pass the paramId variable as a query variable
       },
     });
+    // Check if the response contains a property named 'customLayer' and if it's truthy
+    // If a customLayer exists and is truthy, initialize the map at 'customLayer' location
     if (layer?.customLayer) {
       let jsonLayer = JSON.parse(layer.customLayer.shape);
       if (layer.customLayer.shapeJson) jsonLayer = copy(layer.customLayer.shapeJson);
@@ -473,8 +475,10 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
         popupOpen: false,
         expandedCard: true,
       }));
+    } else {
+      // If the customLayer doesn't exist or is falsy, redirect the user to the home page
+      history.push('/');
     }
-    // }
   }
 
   useEffect(() => {
@@ -484,7 +488,13 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
   useEffect(() => {
     if (paramId) {
-      getCustomLayer();
+      try {
+        // Attempt to fetch the custom layer if `paramId` exists using `getCustomLayer` function
+        getCustomLayer();
+      } catch (err) {
+        // If an error occurs during the fetch operation, redirect to the home page
+        history.push('/');
+      }
     }
   }, [loading, paramId, map]);
 
