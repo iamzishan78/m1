@@ -6,17 +6,17 @@ import { VERIFY_SHAPE_UPLOAD_JOB } from 'graphQL/useMutationCypressVerifyShapeUp
 import { basic_timeouts } from '../../cypressUtils/data';
 
 // Define the filename for the CSV file
-const fileName = 'TEST_TRACTS_Upload.csv';
+const fileName = 'TEST_UNITS_Upload.csv';
 
 // Describe block for the test suite
-describe('BulkUpload Component Tract Upload', () => {
+describe('BulkUpload Component Unit Upload', () => {
   // Before each test case, mount the BulkUpload component
   beforeEach(() => {
-    cy.viewport(1800, 1200).mount(<BulkUpload routes={[]} initialJobType="TRACTS" />);
+    cy.viewport(1800, 1200).mount(<BulkUpload routes={[]} initialJobType="UNITS" />);
   });
 
-  // Test case for Tracts Upload functionality
-  it('Check Tracts Upload works', () => {
+  // Test case for Units Upload functionality
+  it('Check Units Upload works', () => {
     // Select the CSV file using the file input
     cy.get('[data-testid="csv-dropzone"] input', { force: true }).selectFile(
       `cypress/files/${fileName}`,
@@ -54,9 +54,9 @@ describe('BulkUpload Component Tract Upload', () => {
     );
   });
 
-  // Test case for verifying the Tracts Upload
-  it('Tracts Upload is verified', () => {
-    // Send a request to verify the Tracts Upload
+  // Test case for verifying the Units Upload
+  it('Units Upload is verified', () => {
+    // Send a request to verify the Units Upload
     cy.request({
       method: 'POST',
       url: ldata.url,
@@ -64,15 +64,15 @@ describe('BulkUpload Component Tract Upload', () => {
       body: {
         operationName: 'verifyShapeUploadJob',
         variables: {
-          _id: '6634b60129c95c897bd1736e',
-          royalty_interest: '0.00067827',
-          offer_price: '10000',
-          max_offer_price: '11570',
-          offer_price_nma: '12000',
-          max_offer_price_nma: '16000',
-          name: 'TEST UPLOAD PARCEL A-678',
-          shapeType: 'parcel',
+          _id: '663c7440c5501cd9af29e719',
+          royalty_interest: '0.000068',
+          offer_price: '3283.99',
+          uAcres: '500',
+          uUnitPricing: '12500',
+          nra: '0.26271936',
+          shapeType: 'unit',
           campaignName: 'Summer Camapaign',
+          name: 'TEST UPLOAD UNIT A-678',
         },
         query: VERIFY_SHAPE_UPLOAD_JOB.loc.source.body, // GraphQL query
       },
@@ -81,12 +81,12 @@ describe('BulkUpload Component Tract Upload', () => {
       const res = response.body.data.verifyShapeUploadJob; // Extract response data
 
       Cypress.log({
-        name: 'Check Tract Added',
+        name: 'Check Unit Added',
         message: res.data.isShapeAdded,
       });
 
       Cypress.log({
-        name: 'Check Tract Updated',
+        name: 'Check Unit Updated',
         message: res.data.isShapeUpdated,
       });
 
