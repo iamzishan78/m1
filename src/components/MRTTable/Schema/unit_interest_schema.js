@@ -80,7 +80,52 @@ const UnitInterestMeta = {
 			...CommonSchema.COMMON_COLUMN,
 			name: 'contact.entityDetail.primaryAddress.keyword',
 			accessorKey: 'contact.entityDetail.primaryAddress',
-			header: 'Primary Address',
+			header: 'Primary Address - Full',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.entityDetail.address1.keyword',
+			accessorKey: 'contact.entityDetail.address1',
+			header: 'Primary Address 1',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.entityDetail.address2.keyword',
+			accessorKey: 'contact.entityDetail.address2',
+			header: 'Primary Address 2',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+	
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.entityDetail.city.keyword',
+			accessorKey: 'contact.entityDetail.city',
+			header: 'Primary Address City',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.entityDetail.state.keyword',
+			accessorKey: 'contact.entityDetail.state',
+			header: 'Primary Address State',
+			isHiddenFieldExport: true,
+			hidden: true,
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'contact.entityDetail.zip.keyword',
+			accessorKey: 'contact.entityDetail.zip',
+			header: 'Primary Address Zip Code',
 			isHiddenFieldExport: true,
 			hidden: true,
 		},
@@ -101,9 +146,9 @@ const UnitInterestMeta = {
 
 		{
 			...CommonSchema.COMMON_COLUMN,
-			name: 'shape.shapeJson.properties.originalProperties.StateAbbreviation.keyword',
-			id: 'shape.shapeJson.properties.originalProperties.StateAbbreviation',
-			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.StateAbbreviation,
+			name: 'shape.shapeJson.properties.originalProperties.State.keyword',
+			id: 'shape.shapeJson.properties.originalProperties.State',
+			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.State,
 			header: 'State',
 		},
 
@@ -113,6 +158,35 @@ const UnitInterestMeta = {
 			id: 'shape.shapeJson.properties.originalProperties.County',
 			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.County,
 			header: 'County',
+		},
+
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shape.shapeJson.properties.originalProperties.surveyMerdian.keyword',
+			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.surveyMerdian,
+			id: 'shape.shapeJson.properties.originalProperties.surveyMerdian',
+			header: 'Survey/ Meridian',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shape.shapeJson.properties.originalProperties.blockTownship.keyword',
+			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.blockTownship,
+			id: 'shape.shapeJson.properties.originalProperties.blockTownship',
+			header: 'Block/ Township',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shape.shapeJson.properties.originalProperties.rangeSection.keyword',
+			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.rangeSection,
+			id: 'shape.shapeJson.properties.originalProperties.rangeSection',
+			header: 'Section/ Range',
+		},
+		{
+			...CommonSchema.COMMON_COLUMN,
+			name: 'shape.shapeJson.properties.originalProperties.abstractNameShortName.keyword',
+			accessorFn: row => row?.shape?.shapeJson?.properties?.originalProperties?.abstractNameShortName,
+			id: 'shape.shapeJson.properties.originalProperties.abstractNameShortName',
+			header: 'Abstract/ Section',
 		},
 
 		{
