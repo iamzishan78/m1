@@ -880,7 +880,7 @@ const ShapeActionsPopup = (props) => {
 
               <Tooltip title="Area of Interest" className={props.onlyAddShape || enableEditOnly ? classes.disableAction : ''}>
                 <IconButton size="small" disabled={props.onlyAddShape ? true : enableEditOnly} onClick={actionAOI} aria-label="Area of Interest">
-                  <span style={{ "& svg": { color: "white" } }}>AOI</span>
+                  <span style={{ color: "white" }}>AOI</span>
                 </IconButton>
               </Tooltip>
             </>

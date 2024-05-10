@@ -137,7 +137,7 @@ function LayerSelectionPopup(props) {
             const properties = layer?.properties
             if (layer.source === 'wellsVT') {
                 return `${properties.api}-${properties.wellName}`
-            } else if (layer.source === 'parcels_source') {
+            } else if (layer.source === 'parcels_source' || layer.source === 'area of interest_source') {
                 return properties.shapeLabel
             } else if (layer.source === 'units_source') {
                 return `${properties.uNumber ? properties.uNumber + '-' : ''}${properties.shapeLabel}`
@@ -173,6 +173,39 @@ function LayerSelectionPopup(props) {
             });
             props.map?.resize?.();
 
+            return
+        } else if (layer.source === "area of interest_source") {
+            const selectedUserDefinedLayer = copy(layer)
+            props.setStateApp((state) => {
+                if (state.isDrawing) return state;
+                state = {
+                    ...state,
+                    showShapeActionsPopup: true,
+                    selectedUserDefinedLayer,
+                    selectedParcel: null,
+                    openDrawShapesControl: true,
+                };
+                drawBoundary(props.map, selectedUserDefinedLayer);
+                if (!state.editDraw) {
+                    state = {
+                        ...state,
+                        showDrawShapesPopup: !state.showDrawShapesPopup,
+                        editDraw: true,
+                    };
+                } else {
+                    state = {
+                        ...state,
+                        editDraw: false,
+                        currentFeature: undefined,
+                        isAbstractedLayersPolygon: false,
+                        multiSelectLandGrids: false,
+                        selectedAbstracts: [],
+                        showShapeActionsPopup: false,
+                        showDrawShapesPopup: false,
+                    };
+                }
+                return state;
+            });
             return
         }
 
@@ -225,7 +258,7 @@ function LayerSelectionPopup(props) {
                             <LayerSelectionIcon className={classes.icons} />
                         </Grid>
                         <Grid item>
-                            Available Layers
+                            Available Layers 123
                         </Grid>
                     </Grid>
                 </Grid>

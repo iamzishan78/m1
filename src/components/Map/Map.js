@@ -1267,7 +1267,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
           };
         });
         drawBoundary(map, selectedUserDefinedLayer);
-      } else if (feature.source === "interests_source" && !drawMode.includes("draw") && !drawMode.includes("drag")) {
+      } else if (feature.source === "area of interest_source" && !drawMode.includes("draw") && !drawMode.includes("drag")) {
         setStateApp((state) => {
           if (state.isDrawing) return state;
           state = {
@@ -1596,7 +1596,7 @@ function Map({ type, paramId, lati, longi, expandedPanel = true, openSpeedDial =
 
       let wellsFeatures = map.queryRenderedFeatures(polygon, { layers: ['wellpoints'] });
       features = features.concat(wellsFeatures)
-      features = features.filter((feature) => feature.source !== 'interests_source')
+      // features = features.filter((feature) => feature.source !== 'area of interest_source')
 
       let coordinates = [e.lngLat.lng, e.lngLat.lat];
       setTimeout(() => {
