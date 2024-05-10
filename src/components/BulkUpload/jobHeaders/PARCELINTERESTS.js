@@ -7,6 +7,12 @@ fields.splice(CONTACTS_FIELDS.length - 1, 1)
 export default [
     ...fields,
     {
+        label: "Owner Tags",
+        mapped_key: "",
+        required: false,
+        actual_key: "contact.tags"
+    },
+    {
         label: "Parcel Id",
         mapped_key: "",
         required: true,
@@ -241,7 +247,7 @@ export default [
         actual_key: "comment"
     },
     {
-        label: "Tags",
+        label: "Parcel Tags",
         mapped_key: "",
         required: false,
         actual_key: "parcel.tags"
