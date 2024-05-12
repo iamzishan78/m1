@@ -1129,6 +1129,51 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
               </Grid>
 
               <Grid item xs={12}>
+                <h3>Max Price/NRA</h3>
+
+                <Controller
+                  control={control}
+                  name="uMaxUnitPricingInterest"
+                  render={props => (
+                    <TextField
+                      size="small"
+                      value={props.value}
+                      inputRef={props.ref}
+                      onWheel={e => e.target.blur()}
+                      onChange={e => {
+                        const value = parseFloat(e.target.value).toFixed(2);
+                        setIsMaxPriceOverridden(value !== parseFloat(uMaxUnitPricing).toFixed(2));
+                        setValue('max_offer_price', calculateOfferPrice(value, getValues().nra));
+                        props.onChange(value);
+                      }}
+                      className={isMaxPriceOverridden ? `overridden ${classes.baseValueChanged}` : classes.maxWidth}
+                      data-testid="uMaxUnitPricingInterest-field"
+                      InputProps={{
+                        inputComponent: CurrencyFormatCustom,
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            {isMaxPriceOverridden && (
+                              <IconButton
+                                aria-label="toggle uMaxUnitPricingInterest"
+                                onClick={() => {
+                                  setIsMaxPriceOverridden(false);
+                                  setValue('uMaxUnitPricingInterest', uMaxUnitPricing);
+                                }}
+                              >
+                                <AutorenewIcon />
+                              </IconButton>
+                            )}
+                          </InputAdornment>
+                        ),
+                      }}
+                      fullWidth
+                      defaultValue={uUnitPricing}
+                    />
+                  )}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
                 <h3>Max Offer Price</h3>
 
                 <Controller
@@ -1173,50 +1218,7 @@ export default function AddUnitOwnerDialogContent({ selectedRow, setSelectedRow,
                 />
               </Grid>
 
-              <Grid item xs={12}>
-                <h3>Max Price/NRA</h3>
 
-                <Controller
-                  control={control}
-                  name="uMaxUnitPricingInterest"
-                  render={props => (
-                    <TextField
-                      size="small"
-                      value={props.value}
-                      inputRef={props.ref}
-                      onWheel={e => e.target.blur()}
-                      onChange={e => {
-                        const value = parseFloat(e.target.value).toFixed(2);
-                        setIsMaxPriceOverridden(value !== parseFloat(uMaxUnitPricing).toFixed(2));
-                        setValue('max_offer_price', calculateOfferPrice(value, getValues().nra));
-                        props.onChange(value);
-                      }}
-                      className={isMaxPriceOverridden ? `overridden ${classes.baseValueChanged}` : classes.maxWidth}
-                      data-testid="uMaxUnitPricingInterest-field"
-                      InputProps={{
-                        inputComponent: CurrencyFormatCustom,
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            {isMaxPriceOverridden && (
-                              <IconButton
-                                aria-label="toggle uMaxUnitPricingInterest"
-                                onClick={() => {
-                                  setIsMaxPriceOverridden(false);
-                                  setValue('uMaxUnitPricingInterest', uMaxUnitPricing);
-                                }}
-                              >
-                                <AutorenewIcon />
-                              </IconButton>
-                            )}
-                          </InputAdornment>
-                        ),
-                      }}
-                      fullWidth
-                      defaultValue={uUnitPricing}
-                    />
-                  )}
-                />
-              </Grid>
               <Grid item xs={12}>
                 <h3>Contact Status</h3>
 
