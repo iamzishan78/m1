@@ -3,9 +3,10 @@ import moment from "moment";
 import { getSession } from "utils/user";
 import { wellsKeys } from "utils/data";
 import { tenantsCredentials } from "components/Login/AADAuthConfig";
+import { globalStateController } from "hookstate/globalStateController";
 
-const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
-const isDev = process.env.REACT_APP_NODE_ENV === "development";
+export const apolloClientEndpointDev = "http://localhost:7071/api/m1graph";
+export const isDev = process.env.REACT_APP_NODE_ENV === "development";
 const decimalForamtter = new Intl.NumberFormat('en-US', {
   style: 'decimal',
   useGrouping: true,
@@ -63,7 +64,7 @@ export const getURL = () => {
 export const getHeaders = () => {
   const session = getSession();
   const headers = { "X-ZUMO-AUTH": session.authToken };
-  if (isDev) {
+  if (isDev || globalStateController.getValue('bypassLogin')) {
     headers["X-MS-TOKEN-AAD-ID-TOKEN"] = session.accessToken;
   }
   return headers;

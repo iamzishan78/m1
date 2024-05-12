@@ -607,3 +607,23 @@ export const AdminManagementRoutes = {
   //   isDefault: true,
   // },
 };
+
+export const bypassTenants = [
+  // "localhost",
+  // "m1Preview",
+  // "m1Staging",
+  // "m1Production",
+  // "m1Development",
+  // "GHR",
+  // "Quality",
+  // "Foss",
+  // "SantaFe",
+  // "Republic",
+  // "Venator",
+  "Frontier",
+  // "m1demo",
+  // "Vector",
+  // "TableRock",
+  // "Providence",
+  // "Pheasant"
+];
