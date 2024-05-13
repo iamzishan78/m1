@@ -37,14 +37,55 @@ describe('Unit Interest Owners Table', () => {
     );
   });
 
-  it('checks slideouts has offer price fields', () => {
+  it('checks slideouts has offer price fields and there calculation logic', () => {
     cy.wait(15000);
     cy.get('tr').eq(1).find('td').eq(3).click();
-    cy.wait(15000);
+    cy.wait(10000);
+
     // Will check if the field exists
     cy.get('[data-testid="max-offer-price-field"]').should('exist');
     cy.get('[data-testid="uUnitPricingInterest-field"]').should('exist');
     cy.get('[data-testid="uMaxUnitPricingInterest-field"]').should('exist');
+
+    // Checking target offer price calculation
+    cy.get('[data-testid="nra-field"] div input')
+      .invoke('val')
+      .then((nra) => {
+        cy.get('[data-testid="target-offer-price-field"] div input')
+          .invoke('val')
+          .then((targetOfferPrice) => {
+            cy.get('[data-testid="max-offer-price-field"] div input')
+              .invoke('val')
+              .then((maxOfferPrice) => {
+                cy.get('[data-testid="uUnitPricingInterest-field"] div input')
+                  .invoke('val')
+                  .then((targetPriceInterest) => {
+                    cy.get('[data-testid="uMaxUnitPricingInterest-field"] div input')
+                      .invoke('val')
+                      .then((maxOfferPriceInterest) => {
+                        // Remove dollar sign and convert to integer
+                        nra = parseInt(nra || '0');
+                        targetOfferPrice = targetOfferPrice.replace(/\$|,/g, '');
+                        maxOfferPrice = maxOfferPrice.replace(/\$|,/g, '');
+                        targetPriceInterest = parseInt(targetPriceInterest.replace('$', ''));
+                        maxOfferPriceInterest = parseInt(maxOfferPriceInterest.replace('$', ''));
+
+                        // Added buffer of 1 because we show values on frontend upto 2 decimal points and caluclation can differ from 1
+                        expect(parseInt(targetOfferPrice.split('.')[0] || '0')).to.oneOf([
+                          parseInt((nra * targetPriceInterest).toString().split('.')[0]) - 1,
+                          parseInt((nra * targetPriceInterest).toString().split('.')[0]),
+                          parseInt((nra * targetPriceInterest).toString().split('.')[0]) + 1,
+                        ]);
+                        expect(parseInt(maxOfferPrice.split('.')[0] || '0')).to.oneOf([
+                          parseInt((nra * maxOfferPriceInterest).toString().split('.')[0]) - 1,
+                          parseInt((nra * maxOfferPriceInterest).toString().split('.')[0]),
+                          parseInt((nra * maxOfferPriceInterest).toString().split('.')[0]) + 1,
+                        ]);
+                      });
+                  });
+              });
+          });
+      });
     cy.get('body').click();
   });
 
